@@ -4,12 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newsletter Subscription</title>
+  <title>Unidy newsletters</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
     import { UnidyClient } from './src/client.js';
     import { NewsletterService } from './src/newsletters.js';
 
+    // TODO
     const client = new UnidyClient('http://localhost:3000', '8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0');
     const emailInput = document.getElementById('email');
     const messageContainer = document.getElementById('message-container');

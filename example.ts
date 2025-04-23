@@ -12,10 +12,11 @@ client.newsletters.onInvalidEmailError((error) => {
 });
 
 const response = await client.newsletters.createSubscriptions({
-  email: "example+2@mail.com",
+  email: "example@gmail.com",
   newsletter_subscriptions: [
     { newsletter_internal_name: 'test' },
-    { newsletter_internal_name: 'other', preference_identifiers: ['testic'] }
+    { newsletter_internal_name: 'other'},
+    // { newsletter_internal_name: 'other', preference_identifiers: ["invalid"]}
   ]
 });
 

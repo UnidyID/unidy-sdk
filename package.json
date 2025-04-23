@@ -1,7 +1,6 @@
 {
   "name": "unidy-sdk",
   "version": "1.0.0",
-  "description": "TypeScript SDK for interacting with the Unidy API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.esm.js",
