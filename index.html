@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Subscription</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import { UnidyClient } from './src/client.js';
+    import { NewsletterService } from './src/newsletters.js';
+
+    const client = new UnidyClient('http://localhost:3000', '8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0');
+    const emailInput = document.getElementById('email');
+    const messageContainer = document.getElementById('message-container');
+
+    client.newsletters.onInvalidEmailError((error) => {
+      emailInput.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+      messageContainer.textContent = 'Invalid email address!';
+      messageContainer.classList.add('text-red-500');
+
+      setTimeout(() => {
+        messageContainer.textContent = '';
+      }, 10000);
+    });
+
+    client.newsletters.onSubscriptionsCreated((response) => {
+      emailInput.classList.add('border-green-500', 'focus:border-green-500', 'focus:ring-green-500');
+      messageContainer.textContent = 'Subscription created!';
+      messageContainer.classList.add('text-green-500');
+
+      setTimeout(() => {
+        messageContainer.textContent = '';
+      }, 10000);
+    })
+
+    client.newsletters.onExistingUnconfirmedSubscriptionError((response) => {
+      emailInput.classList.add('border-orange-500', 'focus:border-orange-500', 'focus:ring-orange-500');
+      messageContainer.textContent = 'Subscription already exist but is unconfirmed !';
+      messageContainer.classList.add('text-orange-500');
+
+      setTimeout(() => {
+        messageContainer.textContent = '';
+      }, 10000);
+    })
+
+    document.getElementById('subscribeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+
+      try {
+        const response = await client.newsletters.createSubscriptions({
+          email,
+          newsletter_subscriptions: [{ newsletter_internal_name: 'test' }]
+        });
+
+        console.log(response)
+
+        document.getElementById('email').value = '';
+      } catch (error) {
+        alert('Error subscribing: ' + error.message);
+      }
+    });
+  </script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Unidy newsletters 🚀 </h1>
+
+    <form id="subscribeForm" class="space-y-4">
+      <div>
+        <input id="email" required
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter your email">
+        <div id="message-container" class="my-2"></div>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        Subscribe here
+      </button>
+    </form>
+  </div>
+</body>
+
+</html>
