@@ -204,27 +204,28 @@ class NewsletterService {
   }
   onSubscriptionsCreated(callback) {
     this.client.on("success", (response) => {
-      if (response.data && "created_subscriptions" in response.data) {
-        callback(response.data);
-      }
+      callback(response.data.created);
     });
   }
-  onSubscriptionError(callback) {
-    this.client.on("error", callback);
-  }
-  onExistingUnconfirmedSubscriptionError(callback) {
+  onError(callback) {
     this.client.on("error", (response) => {
-      const errors = response.data.errors || [];
-      if (errors.some((error) => error.error_identifier === "unconfirmed")) {
-        callback(response);
-      }
+      callback(response.data.errors);
     });
+  }
+  onUnconfirmedSubscriptionError(callback) {
+    this.onSpecificError(callback, "unconfirmed");
+  }
+  onAlreadySubscribedError(callback) {
+    this.onSpecificError(callback, "already_subscribed");
   }
   onInvalidEmailError(callback) {
+    this.onSpecificError(callback, "invalid_email");
+  }
+  onSpecificError(callback, errorIdentifier) {
     this.client.on("error", (response) => {
-      const errors = response.data.errors || [];
-      if (errors.some((error) => error.error_identifier === "validation_error" && error.details?.email)) {
-        callback(response);
+      const specificErrors = response.data.errors.filter((error) => error.error_identifier === errorIdentifier);
+      if (specificErrors.length > 0) {
+        callback(specificErrors);
       }
     });
   }
@@ -260,10 +261,11 @@ class UnidyClient extends o {
         status: res.status,
         headers: res.headers
       };
-      if (!res.ok) {
-        this.emit("error", response);
-      } else {
+      if (res.ok) {
         this.emit("success", response);
+      }
+      if (!res.ok || res.status === 207) {
+        this.emit("error", response);
       }
       return response;
     } catch (error) {
@@ -273,7 +275,6 @@ class UnidyClient extends o {
           message: error.message
         });
       }
-      throw error;
     }
   }
 }
