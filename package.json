@@ -9,8 +9,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build"
+    "clean": "rm -rf dist",
+    "bundle": "bun build src/*.ts --outdir dist --minify --sourcemap",
+    "types": "tsc",
+    "build": "npm run clean && npm run bundle && npm run types"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -63,8 +63,20 @@ export class NewsletterService {
     this.onSpecificError(callback, "invalid_email");
   }
 
+  onRateLimitError(callback: () => void): void {
+    this.client.on('error', (response: ApiResponse) => {
+      if (response.status === 429) {
+        callback();
+      }
+    });
+  }
+
   private onSpecificError(callback: (errors: NewsletterSubscriptionError[]) => void, errorIdentifier: string): void {
     this.client.on('error', (response: ApiResponse) => {
+      if (!response.data.errors) {
+        return;
+      }
+
       const specificErrors = response.data.errors.filter((error: { error_identifier: string }) => error.error_identifier === errorIdentifier);
 
       if (specificErrors.length > 0) {

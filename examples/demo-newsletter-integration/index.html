@@ -6,9 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unidy newsletters</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script type="module">
-    import { UnidyClient } from './src/client.js';
-    import { NewsletterService } from './src/newsletters.js';
+    import { UnidyClient } from '../../dist/client.js';
+    import { NewsletterService } from '../../dist/newsletters.js';
 
     const client = new UnidyClient('http://localhost:3000', '8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0');
     const messageContainer = document.getElementById('message-container');
@@ -17,6 +18,10 @@
       subscriptions.map((sub) => {
         messageContainer.textContent += `subscribed to ${sub.newsletter_internal_name} successfully, `;
       })
+    })
+
+    client.newsletters.onRateLimitError(() => {
+      alert('Rate limit exceeded. Please try again in few seconds');
     })
 
     client.newsletters.onInvalidEmailError((error) => {
