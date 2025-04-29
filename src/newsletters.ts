@@ -1,86 +1,116 @@
-import { UnidyClient } from "./client";
-import type { ApiResponse } from "./client";
+import * as z from "@zod/mini";
+import { ApiClient, ApiResponse } from "./api_client";
+import { EventEmitter } from "events";
 
-export interface CreateSubscriptionsResponse {
-  created: NewsletterSubscription[],
-  errors: NewsletterSubscriptionError[]
-}
+const NewsletterSubscriptionSchema = z.object({
+  id: z.number(),
+  email: z.string(),
+  newsletter_internal_name: z.string(),
+  preference_identifiers: z.array(z.string()),
+  preference_token: z.string(),
+  confirmed_at: z.union([z.string(), z.null()])
+});
 
-export interface NewsletterSubscription {
-  id: string;
-  email: string;
-  newsletter_internal_name: string;
-  preference_identifiers?: string[];
-  created_at: string;
-  updated_at: string;
-}
+const NewsletterSubscriptionErrorSchema = z.object({
+  newsletter_internal_name: z.string(),
+  error_identifier: z.string(),
+});
 
-export interface NewsletterSubscriptionError {
-  newsletter_internal_name: string;
-  error_identifier: string;
-}
+const CreateSubscriptionsResponseSchema = z.object({
+  results: z.array(NewsletterSubscriptionSchema),
+  errors: z.array(NewsletterSubscriptionErrorSchema),
+});
 
-export interface createSubscriptionsPayload {
-  email: string;
-  newsletter_subscriptions: {
-    newsletter_internal_name: string;
-    preference_identifiers?: string[];
-  }[];
-}
+const CreateSubscriptionsPayloadSchema = z.object({
+  email: z.string(),
+  newsletter_subscriptions: z.array(
+    z.object({
+      newsletter_internal_name: z.string(),
+      preference_identifiers: z.optional(z.array(z.string())),
+    })
+  ),
+});
 
-export class NewsletterService {
-  private client: UnidyClient;
+export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
+export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPayloadSchema>;
 
-  constructor(client: UnidyClient) {
+export type CreateSubscriptionsResult =
+  | ['schema_validation_error', ApiResponse]
+  | ['rate_limit_exceeded', ApiResponse]
+  | ['newsletter_error', ApiResponse]
+  | ['network_error', ApiResponse]
+  | ['server_error', ApiResponse]
+  | ['error', ApiResponse]
+  | [null, ApiResponse<CreateSubscriptionsResponse>];
+
+export class NewsletterService extends EventEmitter {
+  private client: ApiClient;
+
+  constructor(client: ApiClient) {
+    super();
     this.client = client;
   }
 
-  async createSubscriptions(payload: createSubscriptionsPayload): Promise<ApiResponse<CreateSubscriptionsResponse>> {
-    return this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletter_subscriptions", payload);
+  async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
+    CreateSubscriptionsPayloadSchema.parse(payload);
+
+    const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletter_subscriptions", payload);
+
+    switch (response.status) {
+      default:
+        if (response.data) {
+          try {
+            const validatedData = CreateSubscriptionsResponseSchema.parse(response.data);
+
+            if (validatedData.errors.length > 0) {
+              this.emit('newsletter_error', response);
+
+              return ['newsletter_error', response];
+            }
+
+            return [null, response];
+          } catch (validationError) {
+
+            return ['schema_validation_error', response];
+          }
+        }
+
+        return ['error', response];
+      case 429:
+        this.emit('rate_limit_exceeded', response);
+        return ['rate_limit_exceeded', response];
+      case 500:
+        return ['server_error', response];
+      case 0:
+        return ['network_error', response];
+    }
   }
 
-  onSubscriptionsCreated(callback: (subscriptions: NewsletterSubscription[]) => void): void {
-    this.client.on('success', (response: ApiResponse) => {
-      callback(response.data.created as NewsletterSubscription[]);
-    });
-  }
-
-  onError(callback: (errors: NewsletterSubscriptionError[]) => void): void {
-    this.client.on('error', (response: ApiResponse) => {
-      callback(response.data.errors as NewsletterSubscriptionError[]);
-    });
-  }
-
-  onUnconfirmedSubscriptionError(callback: (errors: NewsletterSubscriptionError[]) => void): void {
-    this.onSpecificError(callback, "unconfirmed");
-  }
-
-  onAlreadySubscribedError(callback: (errors: NewsletterSubscriptionError[]) => void): void {
-    this.onSpecificError(callback, "already_subscribed");
-  }
-
-  onInvalidEmailError(callback: (errors: NewsletterSubscriptionError[]) => void): void {
-    this.onSpecificError(callback, "invalid_email");
-  }
-
-  onRateLimitError(callback: () => void): void {
-    this.client.on('error', (response: ApiResponse) => {
-      if (response.status === 429) {
-        callback();
-      }
-    });
-  }
-
-  private onSpecificError(callback: (errors: NewsletterSubscriptionError[]) => void, errorIdentifier: string): void {
-    this.client.on('error', (response: ApiResponse) => {
+  onError(
+    callback: (errors: z.infer<typeof NewsletterSubscriptionErrorSchema>[]) => void,
+    errorIdentifier?: 'unconfirmed' | 'already_subscribed' | 'invalid_email',
+  ): void {
+    this.on('newsletter_error', (response: ApiResponse) => {
       if (!response.data.errors) {
         return;
       }
 
-      const specificErrors = response.data.errors.filter((error: { error_identifier: string }) => error.error_identifier === errorIdentifier);
+      const errors = errorIdentifier
+        ? response.data.errors.filter(
+          (error: { error_identifier: string }) => error.error_identifier === errorIdentifier
+        )
+        : response.data.errors;
 
-      if (specificErrors.length > 0) {
-        callback(specificErrors);
+      if (errors.length > 0) {
+        callback(errors);
+      }
+    });
+  }
+
+  onRateLimitError(callback: () => void): void {
+    this.on('rate_limit_exceeded', (response: ApiResponse) => {
+      if (response.status === 429) {
+        callback();
       }
     });
   }

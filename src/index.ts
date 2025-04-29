@@ -1,2 +1,13 @@
-export * from "./client";
-export * from "./newsletters";
+import { ApiClient } from "./api_client";
+import { NewsletterService } from "./newsletters";
+
+export class UnidyClient {
+  private apiClient: ApiClient
+
+  newsletters: NewsletterService;
+
+  constructor(baseUrl: string, apiKey: string) {
+    this.apiClient = new ApiClient(baseUrl, apiKey);
+    this.newsletters = new NewsletterService(this.apiClient);
+  }
+}
