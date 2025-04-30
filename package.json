@@ -1,27 +1,11 @@
 {
-  "name": "@unidy.io/unidy-sdk",
-  "version": "0.1.1",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "dist/index.esm.js",
-  "type": "module",
-  "files": [
-    "dist"
+  "name": "unidy-sdk",
+  "private": "true",
+  "workspaces": [
+    "packages/unidy-sdk",
+    "packages/newsletter-component"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
-    "bundle": "bun build src/*.ts --outdir dist --minify --sourcemap",
-    "types": "tsc",
-    "build": "npm run clean && npm run bundle && npm run types"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "^5.0.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@zod/mini": "^4.0.0-beta.0"
+    "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/newsletter-component/node_modules"
   }
 }

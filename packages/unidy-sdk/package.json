@@ -1,0 +1,27 @@
+{
+  "name": "@unidy.io/unidy-sdk",
+  "version": "0.1.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.esm.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "bundle": "bun build src/*.ts --outdir dist --minify --sourcemap",
+    "types": "tsc",
+    "build": "npm run clean && npm run bundle && npm run types"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@zod/mini": "^4.0.0-beta.0"
+  }
+}

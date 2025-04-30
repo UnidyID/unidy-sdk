@@ -6,7 +6,6 @@ export interface ApiResponse<T = any> {
   error?: any;
 }
 
-
 export class ApiClient {
   constructor(public baseUrl: string, public api_key: string) {
     this.api_key = api_key;
@@ -44,7 +43,7 @@ export class ApiClient {
       return response;
     } catch (error) {
       const response: ApiResponse = {
-        status: res ? res.status : (error instanceof TypeError ? 0 : 500), // Use 0 for network errors
+        status: res ? res.status : (error instanceof TypeError ? 0 : 500),
         error: error instanceof Error ? error.message : String(error),
         headers: res ? res.headers : new Headers(),
         success: false,

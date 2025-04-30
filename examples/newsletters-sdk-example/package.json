@@ -1,0 +1,14 @@
+{
+  "name": "getting_started",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@unidy.io/unidy-sdk": "^0.1.2"
+  }
+}
