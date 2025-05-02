@@ -1,6 +1,7 @@
 {
   "name": "@unidy.io/sdk-api-client",
-  "version": "0.1.2",
+  "version": "0.1.2-alpha.0",
+  "description": "Unidy API Client SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.esm.js",
@@ -15,6 +16,7 @@
     "build": "npm run clean && npm run bundle && npm run types"
   },
   "devDependencies": {
+    "@types/events": "^3.0.3",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
