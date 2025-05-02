@@ -31,6 +31,8 @@ const CreateSubscriptionsPayloadSchema = z.object({
   ),
 });
 
+export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
+export type NewsletterSubscriptionError = z.infer<typeof NewsletterSubscriptionErrorSchema>;
 export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
 export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPayloadSchema>;
 
