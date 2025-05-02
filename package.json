@@ -2,10 +2,10 @@
   "name": "unidy-sdk",
   "private": "true",
   "workspaces": [
-    "packages/unidy-sdk",
+    "packages/sdk-api-client",
     "packages/newsletter-component"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/newsletter-component/node_modules"
+    "clean": "rm -rf node_modules packages/sdk-api-client/node_modules packages/newsletter-component/node_modules"
   }
 }
