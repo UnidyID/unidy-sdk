@@ -1,20 +1,23 @@
 {
-  "name": "unidy-newsletter-component",
-  "version": "0.0.1",
+  "name": "@unidy.io/web-components",
+  "description": "Unidy Web Components",
+  "keywords": [
+    "web-components",
+    "unidy",
+    "unidy-web-components",
+    "unidy-sdk"
+  ],
+  "version": "0.0.1-alpha.0",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/unidy-newsletter-component/unidy-newsletter-component.esm.js",
+  "unpkg": "dist/unidy-web-components/unidy-web-components.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/unidy-newsletter-component/unidy-newsletter-component.esm.js",
-      "require": "./dist/unidy-newsletter-component/unidy-newsletter-component.cjs.js"
-    },
-    "./my-component": {
-      "import": "./dist/components/my-component.js",
-      "types": "./dist/components/my-component.d.ts"
+      "import": "./dist/unidy-web-components/unidy-web-components.esm.js",
+      "require": "./dist/unidy-web-components/unidy-web-components.cjs.js"
     },
     "./loader": {
       "import": "./loader/index.js",
@@ -24,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stenciljs/component-starter.git"
+    "url": "https://github.com/UnidyID/unidy-sdk.git"
   },
   "files": [
     "dist/",
