@@ -24,7 +24,8 @@
 
     unidy-newsletter {
       font-family: 'Roboto', sans-serif;
-      max-width: 600px;
+      max-width: 800px;
+      min-width: 400px;
     }
 
     unidy-newsletter::part(container) {
@@ -83,25 +84,37 @@
       margin-top: 1rem;
     }
 
-
     unidy-newsletter::part(error-unconfirmed) {
       color: orange !important
+    }
+
+    unidy-newsletter::part(error-already_subscribed) {
+      color: orange !important
+    }
+
+    unidy-newsletter::part(error-invalid_email) {
+      color: red !important
     }
   </style>
 
 </head>
 
 <body>
-  <unidy-newsletter title="Immer die neuesten Infos vom VfL Bochum 1848 in deinem Postfach"
+  <unidy-newsletter header="Immer die neuesten Infos vom VfL Bochum 1848 in deinem Postfach"
     api-url="http://localhost:3000" api-key="8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0"
     email-placeholder="" submit-button-text="Abonnieren" default-newsletter-internal-name="test">
   </unidy-newsletter>
 
   <script>
     const newsletterComponent = document.querySelector('unidy-newsletter');
-    newsletterComponent.addEventListener('success', (event) => {
-      console.log("Successfully subscribed", event);
+
+    newsletterComponent.addEventListener('on:success', (event) => {
+      console.log("Successfully subscribed", event.detail);
     });
+    newsletterComponent.addEventListener('on:error', (event) => {
+      console.log("Error subscribing", event.detail);
+    });
+
   </script>
 </body>
 

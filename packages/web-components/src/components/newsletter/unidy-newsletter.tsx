@@ -1,5 +1,5 @@
 import { Component, h, State, Prop, Event, EventEmitter } from '@stencil/core';
-import { UnidyClient } from "@unidy.io/sdk-api-client"
+import { UnidyClient, NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client"
 
 @Component({
   tag: 'unidy-newsletter',
@@ -7,12 +7,12 @@ import { UnidyClient } from "@unidy.io/sdk-api-client"
   shadow: true,
 })
 export class Newsletter {
-  @Prop() title: string;
+  @Prop() header: string;
   @Prop() newslettersConfig: { internal_name: string; label: string; checked?: boolean }[] = [];
   @Prop() defaultNewsletterInternalName: string;
   @Prop() submitButtonText: string = 'Subscribe';
   @Prop() emailLabel: string = 'E-mail';
-  @Prop() emailPlaceholder: string = 'Enter your email';
+  @Prop() emailPlaceholder: string = 'E-mail';
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
 
@@ -21,7 +21,13 @@ export class Newsletter {
   @State() messages: { color: string; text: string, error_identifier: string }[] = [];
   @State() showSuccessCheckmark: boolean = false;
 
-  @Event() success: EventEmitter<any>; // Define the event
+  @Event({
+    eventName: 'on:success',
+  }) successEvent: EventEmitter<NewsletterSubscription[]>;
+
+  @Event({
+    eventName: 'on:error',
+  }) errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
 
   private client: UnidyClient;
 
@@ -36,6 +42,7 @@ export class Newsletter {
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.messages = [];
+    this.showSuccessCheckmark = false;
 
     const payload = {
       email: this.email,
@@ -51,6 +58,7 @@ export class Newsletter {
     if (error) {
       if (error === 'newsletter_error') {
         const errors = response.data?.errors || [];
+        this.errorEvent.emit(errors);
 
         let errorMessages = errors.map((error: { error_identifier: string; newsletter_internal_name: string }) => {
           switch (error.error_identifier) {
@@ -65,21 +73,15 @@ export class Newsletter {
           }
         });
 
-        errorMessages = errorMessages.filter(
-          (message, index, self) => index === self.findIndex((m) => m.text === message.text)
-        );
-
         this.messages = [...this.messages, ...errorMessages];
         return;
       }
       if (error === 'rate_limit_exceeded') {
-        // TODO: handle rate limit exceeded error
-
         alert('Rate limit exceeded. Please try again later.');
       }
     } else {
       this.showSuccessCheckmark = true;
-      this.success.emit(response.data.created);
+      this.successEvent.emit(response.data.results);
     }
 
     this.email = '';
@@ -94,12 +96,13 @@ export class Newsletter {
   render() {
     return (
       <div part="container" class="max-w-lg border">
-        <h1 part="heading">{this.title}</h1>
+        <h1 part="heading">{this.header}</h1>
         <slot name="description"></slot>
         <form onSubmit={this.handleSubmit} class="space-y-4">
           <div part="email-input-group">
             <label part="email-input-label">{this.emailLabel}</label>
             <input
+              type="email"
               part="email-input"
               required
               placeholder={this.emailPlaceholder}

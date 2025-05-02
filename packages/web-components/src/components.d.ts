@@ -12,9 +12,9 @@ export namespace Components {
         "defaultNewsletterInternalName": string;
         "emailLabel": string;
         "emailPlaceholder": string;
+        "header": string;
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
         "submitButtonText": string;
-        "title": string;
     }
 }
 export interface UnidyNewsletterCustomEvent<T> extends CustomEvent<T> {
@@ -23,7 +23,8 @@ export interface UnidyNewsletterCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     interface HTMLUnidyNewsletterElementEventMap {
-        "success": any;
+        "on:success": NewsletterSubscription[];
+        "on:error": NewsletterSubscriptionError[];
     }
     interface HTMLUnidyNewsletterElement extends Components.UnidyNewsletter, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyNewsletterElementEventMap>(type: K, listener: (this: HTMLUnidyNewsletterElement, ev: UnidyNewsletterCustomEvent<HTMLUnidyNewsletterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -50,10 +51,11 @@ declare namespace LocalJSX {
         "defaultNewsletterInternalName"?: string;
         "emailLabel"?: string;
         "emailPlaceholder"?: string;
+        "header"?: string;
         "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
-        "onSuccess"?: (event: UnidyNewsletterCustomEvent<any>) => void;
+        "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
+        "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "submitButtonText"?: string;
-        "title"?: string;
     }
     interface IntrinsicElements {
         "unidy-newsletter": UnidyNewsletter;
