@@ -3,9 +3,9 @@
   "private": "true",
   "workspaces": [
     "packages/unidy-sdk",
-    "packages/newsletter-component"
+    "packages/web-components"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/newsletter-component/node_modules"
+    "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/web-components/node_modules"
   }
 }
