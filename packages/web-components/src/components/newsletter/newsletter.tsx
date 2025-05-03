@@ -3,7 +3,7 @@ import { UnidyClient, NewsletterSubscription, NewsletterSubscriptionError } from
 
 @Component({
   tag: 'unidy-newsletter',
-  styleUrl: 'unidy-newsletter.css',
+  styleUrl: 'newsletter.css',
   shadow: true,
 })
 export class Newsletter {
