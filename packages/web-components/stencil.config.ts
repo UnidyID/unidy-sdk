@@ -4,7 +4,7 @@ import autoprefixer from 'autoprefixer';
 import tailwind from '@tailwindcss/postcss7-compat'; // Use the correct TailwindCSS PostCSS plugin
 
 export const config: Config = {
-  namespace: 'unidy-newsletter-component',
+  namespace: 'web-components',
   outputTargets: [
     {
       type: 'dist',
