@@ -1,0 +1,79 @@
+{
+  "name": "@unidy.io/login-sdk",
+  "version": "1.1.0",
+  "description": "A lightweight SDK for handling authentication via iframe in web applications",
+  "main": "dist/unidy-login.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/unidy-login.min.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "bundle": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "types": "tsc",
+    "build": "npm run clean && npm run bundle && npm run types",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest --testPathPattern=tests/modules",
+    "test:integration": "jest --testPathPattern=tests/.*\\.integration\\.test\\.js$",
+    "test:mock-server": "jest --testPathPattern=__tests__/mock-server",
+    "test:performance": "jest --config performance-jest.config.js",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "test:dual-server": "node ./tests/e2e/setup/start-servers.js",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "authentication",
+    "oauth",
+    "login",
+    "iframe"
+  ],
+  "author": "Unidy Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "@playwright/test": "^1.40.0",
+    "babel-jest": "^29.5.0",
+    "babel-loader": "^9.1.2",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-jest": "^27.6.0",
+    "express": "^4.21.2",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "msw": "^1.2.2",
+    "style-loader": "^3.3.3",
+    "terser-webpack-plugin": "^5.3.9",
+    "typescript": "^5.0.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "not dead",
+              "not ie <= 11"
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
