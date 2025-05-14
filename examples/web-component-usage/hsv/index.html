@@ -1,43 +1,45 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html lang="en">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <script type="module" src="/build/web-components.esm.js"></script>
-  <script nomodule src="/build/web-components.js"></script>
+  <title>Unidy Newsletter</title>
+  <script type="module"
+    src="https://unpkg.com/@unidy.io/web-components@0.0.1-alpha.2/dist/web-components/web-components.esm.js"></script>
+
   <style>
     :root {
-      --vfl-blue: #003e74;
+      --hsv-blue: #003e74;
+      --hsv-light-blue: #1961ac;
+      --hsv-black: #000000;
+      --hsv-white: #ffffff;
+      --hsv-red: #e30613;
     }
 
     body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       background-color: #f5f5f5;
-
-      display: flex;
-      justify-content: center;
-      height: 100vh;
-      margin: 2rem;
+      padding: 1rem;
+      color: #333;
+      line-height: 1.5;
     }
 
     unidy-newsletter {
-      font-family: 'Roboto', sans-serif;
-      max-width: 800px;
-      min-width: 400px;
+      max-width: 600px;
+      margin: 2rem auto;
+      background-color: var(--hsv-white);
     }
 
     unidy-newsletter::part(container) {
-      background-color: #ffffff;
-      padding: 1.5rem;
       max-width: 600px;
-      margin: auto;
+      padding: 2rem;
     }
 
     unidy-newsletter::part(heading) {
-      color: var(--vfl-blue);
-      ;
+      color: var(--hsv-blue);
       font-size: 2.25rem;
       font-weight: 700;
       line-height: 1.2;
@@ -59,6 +61,11 @@
       z-index: 1;
     }
 
+    unidy-newsletter::part(email-input):focus {
+      outline: none;
+      border-color: var(--hsv-light-blue);
+    }
+
     unidy-newsletter::part(email-input-label) {
       position: absolute;
       left: 0;
@@ -73,7 +80,7 @@
     }
 
     unidy-newsletter::part(submit-button) {
-      background-color: var(--vfl-blue);
+      background-color: var(--hsv-blue);
       color: white;
       border: none;
       padding: 0.75rem 2rem;
@@ -82,6 +89,11 @@
       text-transform: uppercase;
       cursor: pointer;
       margin-top: 1rem;
+      width: auto;
+    }
+
+    unidy-newsletter::part(submit-button):hover {
+      background-color: var(--hsv-light-blue);
     }
 
     unidy-newsletter::part(error-unconfirmed) {
@@ -93,16 +105,16 @@
     }
 
     unidy-newsletter::part(error-invalid_email) {
-      color: red !important
+      color: var(--hsv-red)
     }
   </style>
 
 </head>
 
 <body>
-  <unidy-newsletter header="Immer die neuesten Infos vom VfL Bochum 1848 in deinem Postfach"
-    api-url="http://localhost:3000" api-key="8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0"
-    email-placeholder="" submit-button-text="Abonnieren" default-newsletter-internal-name="test">
+  <unidy-newsletter header="Immer die neuesten Infos vom HSV direkt in dein Postfach"
+    api-url="https://hsv.staging.unidy.de" api-key="6ba1722e9aa8f8ccebf90d26aba6f6d1d43ace718be3bcf794733314d6e19c19"
+    email-placeholder="" submit-button-text="Abonnieren" default-newsletter-internal-name="main">
   </unidy-newsletter>
 
   <script>
