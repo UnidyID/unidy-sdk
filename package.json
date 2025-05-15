@@ -2,8 +2,7 @@
   "name": "unidy-sdk",
   "private": "true",
   "workspaces": [
-    "packages/unidy-sdk",
-    "packages/web-components"
+    "packages/*"
   ],
   "scripts": {
     "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/web-components/node_modules"
