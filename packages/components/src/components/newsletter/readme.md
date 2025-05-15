@@ -1,6 +1,6 @@
 # unidy-newsletter
 
-
+foobar
 
 <!-- Auto Generated Below -->
 
@@ -12,11 +12,11 @@
 | `apiKey`                        | `api-key`                          |             | `string`                                                         | `undefined`   |
 | `apiUrl`                        | `api-url`                          |             | `string`                                                         | `undefined`   |
 | `defaultNewsletterInternalName` | `default-newsletter-internal-name` |             | `string`                                                         | `undefined`   |
-| `emailLabel`                    | `email-label`                      |             | `string`                                                         | `'E-mail'`    |
-| `emailPlaceholder`              | `email-placeholder`                |             | `string`                                                         | `'E-mail'`    |
+| `emailLabel`                    | `email-label`                      |             | `string`                                                         | `"E-mail"`    |
+| `emailPlaceholder`              | `email-placeholder`                |             | `string`                                                         | `"E-mail"`    |
 | `header`                        | `header`                           |             | `string`                                                         | `undefined`   |
 | `newslettersConfig`             | `newsletters-config`               |             | `{ internal_name: string; label: string; checked?: boolean; }[]` | `[]`          |
-| `submitButtonText`              | `submit-button-text`               |             | `string`                                                         | `'Subscribe'` |
+| `submitButtonText`              | `submit-button-text`               |             | `string`                                                         | `"Subscribe"` |
 
 
 ## Events

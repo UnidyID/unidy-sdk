@@ -2,10 +2,14 @@
   "name": "unidy-sdk",
   "private": true,
   "packageManager": "bun@1.2.13",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "scripts": {
-    "clean": "rm -rf ./node_modules"
+    "clean": "rm -rf ./node_modules",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
   }
 }

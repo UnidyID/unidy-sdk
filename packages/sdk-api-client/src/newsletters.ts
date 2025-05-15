@@ -8,7 +8,7 @@ const NewsletterSubscriptionSchema = z.object({
   newsletter_internal_name: z.string(),
   preference_identifiers: z.array(z.string()),
   preference_token: z.string(),
-  confirmed_at: z.union([z.string(), z.null()])
+  confirmed_at: z.union([z.string(), z.null()]),
 });
 
 const NewsletterSubscriptionErrorSchema = z.object({
@@ -27,7 +27,7 @@ const CreateSubscriptionsPayloadSchema = z.object({
     z.object({
       newsletter_internal_name: z.string(),
       preference_identifiers: z.optional(z.array(z.string())),
-    })
+    }),
   ),
 });
 
@@ -37,12 +37,12 @@ export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResp
 export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPayloadSchema>;
 
 export type CreateSubscriptionsResult =
-  | ['schema_validation_error', ApiResponse]
-  | ['rate_limit_exceeded', ApiResponse]
-  | ['newsletter_error', ApiResponse]
-  | ['network_error', ApiResponse]
-  | ['server_error', ApiResponse]
-  | ['error', ApiResponse]
+  | ["schema_validation_error", ApiResponse]
+  | ["rate_limit_exceeded", ApiResponse]
+  | ["newsletter_error", ApiResponse]
+  | ["network_error", ApiResponse]
+  | ["server_error", ApiResponse]
+  | ["error", ApiResponse]
   | [null, ApiResponse<CreateSubscriptionsResponse>];
 
 export class NewsletterService extends EventEmitter {
@@ -65,42 +65,39 @@ export class NewsletterService extends EventEmitter {
             const validatedData = CreateSubscriptionsResponseSchema.parse(response.data);
 
             if (validatedData.errors.length > 0) {
-              this.emit('newsletter_error', response);
+              this.emit("newsletter_error", response);
 
-              return ['newsletter_error', response];
+              return ["newsletter_error", response];
             }
 
             return [null, response];
           } catch (validationError) {
-
-            return ['schema_validation_error', response];
+            return ["schema_validation_error", response];
           }
         }
 
-        return ['error', response];
+        return ["error", response];
       case 429:
-        this.emit('rate_limit_exceeded', response);
-        return ['rate_limit_exceeded', response];
+        this.emit("rate_limit_exceeded", response);
+        return ["rate_limit_exceeded", response];
       case 500:
-        return ['server_error', response];
+        return ["server_error", response];
       case 0:
-        return ['network_error', response];
+        return ["network_error", response];
     }
   }
 
   onError(
     callback: (errors: z.infer<typeof NewsletterSubscriptionErrorSchema>[]) => void,
-    errorIdentifier?: 'unconfirmed' | 'already_subscribed' | 'invalid_email',
+    errorIdentifier?: "unconfirmed" | "already_subscribed" | "invalid_email",
   ): void {
-    this.on('newsletter_error', (response: ApiResponse) => {
+    this.on("newsletter_error", (response: ApiResponse) => {
       if (!response.data.errors) {
         return;
       }
 
       const errors = errorIdentifier
-        ? response.data.errors.filter(
-          (error: { error_identifier: string }) => error.error_identifier === errorIdentifier
-        )
+        ? response.data.errors.filter((error: { error_identifier: string }) => error.error_identifier === errorIdentifier)
         : response.data.errors;
 
       if (errors.length > 0) {
@@ -110,7 +107,7 @@ export class NewsletterService extends EventEmitter {
   }
 
   onRateLimitError(callback: () => void): void {
-    this.on('rate_limit_exceeded', (response: ApiResponse) => {
+    this.on("rate_limit_exceeded", (response: ApiResponse) => {
       if (response.status === 429) {
         callback();
       }

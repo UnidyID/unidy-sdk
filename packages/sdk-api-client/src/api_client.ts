@@ -7,7 +7,10 @@ export interface ApiResponse<T = any> {
 }
 
 export class ApiClient {
-  constructor(public baseUrl: string, public api_key: string) {
+  constructor(
+    public baseUrl: string,
+    public api_key: string,
+  ) {
     this.api_key = api_key;
   }
 
@@ -16,12 +19,12 @@ export class ApiClient {
 
     try {
       res = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'POST',
-        mode: 'cors',
+        method: "POST",
+        mode: "cors",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${this.api_key}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${this.api_key}`,
         },
         body: JSON.stringify(body),
       });
@@ -37,13 +40,13 @@ export class ApiClient {
         data,
         status: res.status,
         headers: res.headers,
-        success: res.ok
+        success: res.ok,
       };
 
       return response;
     } catch (error) {
       const response: ApiResponse = {
-        status: res ? res.status : (error instanceof TypeError ? 0 : 500),
+        status: res ? res.status : error instanceof TypeError ? 0 : 500,
         error: error instanceof Error ? error.message : String(error),
         headers: res ? res.headers : new Headers(),
         success: false,

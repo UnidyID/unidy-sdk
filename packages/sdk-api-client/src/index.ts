@@ -5,7 +5,7 @@ export * from "./api_client";
 export * from "./newsletters";
 
 export class UnidyClient {
-  private apiClient: ApiClient
+  private apiClient: ApiClient;
 
   newsletters: NewsletterService;
 

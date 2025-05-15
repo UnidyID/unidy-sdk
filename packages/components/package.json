@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/components",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -57,15 +57,7 @@
     "type": "git",
     "url": "https://github.com/UnidyID/unidy-sdk.git"
   },
-  "files": [
-    "dist/",
-    "loader/"
-  ],
+  "files": ["dist/", "loader/"],
   "description": "Unidy SDK Components",
-  "keywords": [
-    "web-components",
-    "unidy",
-    "unidy-sdk",
-    "unidy-web-components"
-  ]
+  "keywords": ["web-components", "unidy", "unidy-sdk", "unidy-web-components"]
 }
