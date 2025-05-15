@@ -11,9 +11,12 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "bundle": "bun build src/*.ts --outdir dist --minify --sourcemap",
-    "types": "tsc",
-    "build": "npm run clean && npm run bundle && npm run types"
+    "build:js": "bun build src/*.ts --outdir dist --minify --sourcemap",
+    "build:types": "tsc",
+    "build": "bun run clean && bun run build:js && bun run build:types",
+    "dev:js": "bun run watch src/*.ts --outdir dist --minify --sourcemap",
+    "dev:types": "tsc --watch",
+    "dev": "bunx concurrently \"bun run dev:js\" \"bun run dev:types\""
   },
   "devDependencies": {
     "@types/events": "^3.0.3",

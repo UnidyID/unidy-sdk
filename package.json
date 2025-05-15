@@ -5,6 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules packages/unidy-sdk/node_modules packages/web-components/node_modules"
+    "clean": "rm -rf ./node_modules"
   }
 }
