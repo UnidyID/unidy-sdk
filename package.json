@@ -1,6 +1,7 @@
 {
   "name": "unidy-sdk",
-  "private": "true",
+  "private": true,
+  "packageManager": "bun@1.2.13",
   "workspaces": [
     "packages/*"
   ],

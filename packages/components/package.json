@@ -1,7 +1,8 @@
 {
   "name": "@unidy.io/components",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.4",
   "license": "MIT",
+  "private": false,
   "scripts": {
     "build": "stencil build",
     "dev": "stencil build --dev --watch --serve",
@@ -30,11 +31,22 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/unidy-components/unidy-components.esm.js",
+  "unpkg": "dist/unidy-components/index.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/unidy-components/unidy-components.esm.js",
-      "require": "./dist/unidy-components/unidy-components.cjs.js"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "unpkg": "./dist/unidy-components/index.esm.js"
+    },
+    "./all": {
+      "import": "./dist/esm/unidy-components.js",
+      "require": "./dist/cjs/unidy-components.js",
+      "unpkg": "./dist/unidy-components/unidy-components.esm.js"
+    },
+    "./newsletter": {
+      "import": "./dist/esm/unidy-newsletter.js",
+      "require": "./dist/cjs/unidy-newsletter.js",
+      "unpkg": "./dist/per-component/unidy-newsletter.js"
     },
     "./loader": {
       "import": "./loader/index.js",
