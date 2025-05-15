@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <title>Unidy Newsletter</title>
+  <script type="module" src="https://unpkg.com/@unidy.io/components@0.0.9/newsletter"></script>
+
+  <!-- <style>
+    :root {
+      --vfl-blue: #003e74;
+    }
+
+    body {
+      background-color: #f5f5f5;
+
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin: 2rem;
+    }
+
+    unidy-newsletter {
+      font-family: 'Roboto', sans-serif;
+      max-width: 800px;
+      min-width: 400px;
+    }
+
+    unidy-newsletter::part(container) {
+      background-color: #ffffff;
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    unidy-newsletter::part(heading) {
+      color: var(--vfl-blue);
+      ;
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 2.5rem;
+    }
+
+    unidy-newsletter::part(email-input-group) {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    unidy-newsletter::part(email-input) {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    unidy-newsletter::part(email-input-label) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-50%);
+      background: white;
+      padding: 0 0.5rem;
+      color: #666;
+      font-size: 1rem;
+      margin-left: 1rem;
+      z-index: 2;
+    }
+
+    unidy-newsletter::part(submit-button) {
+      background-color: var(--vfl-blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    unidy-newsletter::part(error-unconfirmed) {
+      color: orange !important
+    }
+
+    unidy-newsletter::part(error-already_subscribed) {
+      color: orange !important
+    }
+
+    unidy-newsletter::part(error-invalid_email) {
+      color: red !important
+    }
+  </style> -->
+
+</head>
+
+<body>
+  <unidy-newsletter header="Unidy Newsletter 🚀" api-url="https://vfl1848.staging.unidy.de"
+    api-key="bc6fab7214fed6a56389b48692a31d017a10f5d58f5e8eae5d8996708dc3d2f6" email-placeholder=""
+    submit-button-text="Subscribe" default-newsletter-internal-name="default_newsletter">
+  </unidy-newsletter>
+
+  <script>
+    const newsletterComponent = document.querySelector('unidy-newsletter');
+
+    newsletterComponent.addEventListener('on:success', (event) => {
+      console.log("Successfully subscribed", event.detail);
+    });
+    newsletterComponent.addEventListener('on:error', (event) => {
+      console.log("Error subscribing", event.detail);
+    });
+
+  </script>
+</body>
+
+</html>
