@@ -1,7 +1,5 @@
 import { Config } from '@stencil/core';
-import { postcss } from '@stencil/postcss';
-import autoprefixer from 'autoprefixer';
-import tailwind from '@tailwindcss/postcss7-compat'; // Use the correct TailwindCSS PostCSS plugin
+import tailwind from 'stencil-tailwind-plugin';
 
 export const config: Config = {
   namespace: 'unidy-components',
@@ -25,12 +23,5 @@ export const config: Config = {
     //   serviceWorker: null, // disable service workers
     // },
   ],
-  plugins: [
-    postcss({
-      plugins: [
-        tailwind(), // TailwindCSS plugin
-        autoprefixer(), // Autoprefixer for cross-browser compatibility
-      ],
-    }),
-  ],
+  plugins: [tailwind()],
 };
