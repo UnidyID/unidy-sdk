@@ -1,6 +1,6 @@
 import * as z from "@zod/mini";
-import { ApiClient, ApiResponse } from "./api_client";
-import { EventEmitter } from "events";
+import type { ApiClient, ApiResponse } from "./api_client";
+import { EventEmitter } from "node:events";
 
 const NewsletterSubscriptionSchema = z.object({
   id: z.number(),
@@ -59,6 +59,13 @@ export class NewsletterService extends EventEmitter {
     const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletter_subscriptions", payload);
 
     switch (response.status) {
+      case 429:
+        this.emit("rate_limit_exceeded", response);
+        return ["rate_limit_exceeded", response];
+      case 500:
+        return ["server_error", response];
+      case 0:
+        return ["network_error", response];
       default:
         if (response.data) {
           try {
@@ -77,13 +84,6 @@ export class NewsletterService extends EventEmitter {
         }
 
         return ["error", response];
-      case 429:
-        this.emit("rate_limit_exceeded", response);
-        return ["rate_limit_exceeded", response];
-      case 500:
-        return ["server_error", response];
-      case 0:
-        return ["network_error", response];
     }
   }
 
