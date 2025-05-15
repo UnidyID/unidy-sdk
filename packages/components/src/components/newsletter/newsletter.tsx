@@ -3,11 +3,7 @@ import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyCli
 
 @Component({
   tag: "unidy-newsletter",
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  styleUrl: 'newsletter.css',
   shadow: true,
 })
 export class Newsletter {

@@ -1,5 +1,10 @@
 import type { Config } from "@stencil/core";
-import tailwind from "stencil-tailwind-plugin";
+import tailwind, { tailwindHMR, setPluginConfigurationDefaults } from 'stencil-tailwind-plugin';
+
+setPluginConfigurationDefaults({
+  enableDebug: false,
+  tailwindCssPath: './src/styles/tailwind.css',
+});
 
 export const config: Config = {
   namespace: "unidy-components",
@@ -23,5 +28,5 @@ export const config: Config = {
     //   serviceWorker: null, // disable service workers
     // },
   ],
-  plugins: [tailwind()],
+  plugins: [tailwind(), tailwindHMR()],
 };
