@@ -13,7 +13,8 @@
       "./**/loader/**/*",
       "./**/www/build/*",
       "./**/tsconfig.*.json",
-      "./**/tsconfig.json"
+      "./**/tsconfig.json",
+      "./examples"
     ]
   },
   "formatter": {

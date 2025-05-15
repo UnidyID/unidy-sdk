@@ -1,9 +1,9 @@
-export interface ApiResponse<T = any> {
-  data?: T | null;
+export interface ApiResponse<T> {
+  data?: T;
   success: boolean;
   status: number;
   headers: Headers;
-  error?: any;
+  error?: Error | string;
 }
 
 export class ApiClient {
@@ -14,7 +14,7 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T = any>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
     let res: Response | null = null;
 
     try {
