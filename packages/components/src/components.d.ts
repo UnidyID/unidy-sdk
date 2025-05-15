@@ -5,6 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
+export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
         "apiKey": string;
