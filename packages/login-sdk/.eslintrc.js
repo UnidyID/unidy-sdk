@@ -7,8 +7,7 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    node: true,
-    jest: true
+    node: true
   },
   extends: [
     'eslint:recommended'
@@ -17,9 +16,7 @@ module.exports = {
     ecmaVersion: 2021,
     sourceType: 'module'
   },
-  plugins: [
-    'jest'
-  ],
+  plugins: [],
   rules: {
     // Possible errors
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -70,27 +67,6 @@ module.exports = {
     'no-duplicate-imports': 'error',
     'no-var': 'error',
     'prefer-const': 'error',
-    'prefer-template': 'error',
-    
-    // Jest plugin rules
-    'jest/no-disabled-tests': 'warn',
-    'jest/no-focused-tests': 'error',
-    'jest/no-identical-title': 'error',
-    'jest/valid-expect': 'error'
-  },
-  overrides: [
-    // Test files
-    {
-      files: [
-        '**/__tests__/**/*.{js,jsx}',
-        '**/*.{spec,test}.{js,jsx}'
-      ],
-      env: {
-        jest: true
-      },
-      rules: {
-        'max-len': 'off'
-      }
-    }
-  ]
+    'prefer-template': 'error'
+  }
 };

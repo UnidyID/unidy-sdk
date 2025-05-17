@@ -1,8 +1,3 @@
-/**
- * Unidy Login SDK Styles
- */
-
-/* Wrapper div that contains the iframe */
 #unidyAuthFrameWrapper {
   position: fixed;
   top: 0;
@@ -18,13 +13,11 @@
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Active state for the wrapper */
 #unidyAuthFrameWrapper.active {
   opacity: 1;
   display: flex;
 }
 
-/* The iframe itself */
 #unidyAuthFrame {
   width: 400px;
   height: 600px;
@@ -36,12 +29,10 @@
   transform: scale(0.95);
 }
 
-/* Active state for the iframe */
 #unidyAuthFrameWrapper.active #unidyAuthFrame {
   transform: scale(1);
 }
 
-/* Responsive adjustments for mobile devices */
 @media (max-width: 480px) {
   #unidyAuthFrame {
     width: 90%;
