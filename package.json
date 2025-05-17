@@ -3,9 +3,13 @@
   "private": "true",
   "workspaces": [
     "packages/sdk-api-client",
-    "packages/newsletter-component"
+    "packages/login-sdk"
   ],
   "scripts": {
-    "clean": "rm -rf node_modules packages/sdk-api-client/node_modules packages/newsletter-component/node_modules"
+    "clean": "rm -rf node_modules packages/sdk-api-client/node_modules packages/login-sdk/node_modules"
+  },
+  "dependencies": {
+    "bun": "^1.2.12",
+    "mitt": "^3.0.1"
   }
 }

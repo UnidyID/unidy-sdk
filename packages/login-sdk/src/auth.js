@@ -7,22 +7,17 @@
  * @author Unidy Team
  */
 
-import { DOM_IDS, DEFAULTS, LOGOUT_ENDPOINTS } from './modules/constants';
-import { parseToken, startRefreshTimer, createRefreshTokenFunction } from './modules/token-manager';
-import { startSessionCheckTimer, createSessionCheckFunction } from './modules/session-manager';
-import { iFrameSource, buildWrapper, activateWrapperDiv, disableWrapperDiv, buildIframe } from './modules/ui-components';
-import { createEventSystem, createMessageHandler } from './modules/event-system';
-import { ErrorTypes, createErrorHandler } from './modules/error-handler';
+import { DOM_IDS, DEFAULTS } from './modules/constants';
+import { iFrameSource, activateWrapperDiv, disableWrapperDiv, buildIframe } from './modules/ui-components';
+import { createErrorHandler } from './modules/error-handler';
+import mitt from 'mitt';
 
 export default function (unidyUrl, {
   clientId,
   scope = DEFAULTS.SCOPE,
   responseType = DEFAULTS.RESPONSE_TYPE,
   prompt,
-  maxAge,
-  autoRefresh = DEFAULTS.AUTO_REFRESH,
-  refreshInterval = DEFAULTS.REFRESH_INTERVAL,
-  sessionCheckInterval = DEFAULTS.SESSION_CHECK_INTERVAL
+  maxAge
 }) {
   // Normalize the URL by removing trailing slashes
   unidyUrl = unidyUrl.replace(/\/+$/, '');
@@ -35,24 +30,19 @@ export default function (unidyUrl, {
   let iframe;
   let wrapperDiv;
   let isInitialized = false;
-  let refreshTimer = null;
-  let sessionCheckTimer = null;
-  let tokenExpiryTime = null;
+  let currentIdToken = null; // Store token in memory instead of sessionStorage
   
   // Event listeners
   const listeners = {
     auth: null,
-    logout: null,
-    error: null,
-    tokenRefresh: null,
-    sessionExpired: null
+    error: null
   };
   
-  // Create event system
-  const { on, off, emit } = createEventSystem();
+  // Create event system using Mitt directly
+  const emitter = mitt();
   
   // Create error handler
-  const handleError = createErrorHandler(emit);
+  const handleError = createErrorHandler(emitter.emit.bind(emitter));
   
   // Store listeners globally for access by other modules
   window.unidyLoginListeners = listeners;
@@ -67,59 +57,63 @@ export default function (unidyUrl, {
     maxAge
   }, target);
   
-  // Create message handler
-  const handleMessage = createMessageHandler({
-    unidyUrl,
-    listeners,
-    emit,
-    handleError
-  });
-  
-  // Create session check function
-  const checkSession = createSessionCheckFunction({
-    unidyUrl,
-    tokenExpiryTime,
-    handleError,
-    emit
-  });
-  
-  // Create refresh token function
-  const refreshToken = createRefreshTokenFunction({
-    unidyUrl,
-    iFrameSource: getIframeSource,
-    handleError,
-    emit,
-    startRefreshTimer: (token) => {
-      const result = startRefreshTimer(token, {
-        autoRefresh,
-        refreshInterval,
-        refreshToken,
-        startSessionCheckTimer: () => {
-          sessionCheckTimer = startSessionCheckTimer({
-            sessionCheckInterval,
-            checkSession
-          });
-        },
-        handleError,
-        emit
-      });
+  /**
+   * Creates a message handler function for iframe communication.
+   *
+   * @param {MessageEvent} event - The message event from the iframe
+   * @returns {void}
+   */
+  const handleMessage = function(event) {
+    try {
+      // Make the origin check more flexible by removing trailing slashes
+      const normalizedUnidyUrl = unidyUrl.replace(/\/+$/, '');
+      const normalizedOrigin = event.origin.replace(/\/+$/, '');
       
-      tokenExpiryTime = result.tokenExpiryTime;
-      refreshTimer = result.refreshTimer;
+      // Check if the message is from the expected origin
+      if (normalizedOrigin !== normalizedUnidyUrl) {
+        return;
+      }
+      
+      // Validate the message data
+      if (!event.data || typeof event.data !== 'object') {
+        return;
+      }
+
+      const action = event.data.action;
+      
+      // Emit event for this action
+      try {
+        emitter.emit(`action:${action}`, event.data);
+      } catch (error) {
+        console.error(`Error in action:${action} event handler:`, error);
+      }
+      
+      // Check if there's a listener for this action
+      const listener = listeners[action];
+      if (!listener) {
+        return;
+      }
+      
+      // Call the listener with the message data
+      listener(event.data);
+    } catch (error) {
+      handleError('internal_error', 'Error handling message', error);
     }
-  });
+  };
+  
+  // No session check or refresh token functions
   
   /**
-   * Initializes the authentication iframe based on session state.
-   * If an ID token exists in session storage, builds a blank iframe and triggers the auth event.
+   * Initializes the authentication iframe based on authentication state.
+   * If an ID token exists in memory, builds a blank iframe and triggers the auth event.
    * Otherwise, builds a login iframe.
    *
    * @returns {void}
    */
   function initFrame() {
-    if (sessionStorage.idToken) {
+    if (currentIdToken) {
       buildIframeWithConfig("blank");
-      listeners.auth({ idToken: sessionStorage.idToken });
+      listeners.auth({ idToken: currentIdToken });
     } else {
       buildIframeWithConfig("login");
     }
@@ -230,95 +224,6 @@ export default function (unidyUrl, {
     },
     
     /**
-     * Sets the logout event handler.
-     * This handler is called when a user logs out.
-     *
-     * @param {Function} logoutHandler - The function to call on logout
-     * @param {Object} logoutHandler.data - The logout event data
-     * @returns {Object} The SDK instance for method chaining
-     */
-    onLogout: function(logoutHandler) {
-      if (typeof logoutHandler !== 'function') {
-        return this;
-      }
-      
-      listeners.logout = ({ close }) => {
-        try {
-          // Clear all session storage
-          sessionStorage.clear();
-          
-          // Clear cookies thoroughly
-          var cookies = document.cookie.split(";");
-          
-          // Get the domain parts
-          var domain = window.location.hostname;
-          var domainParts = domain.split('.');
-          var domains = [];
-          
-          // Add all possible domain variations
-          domains.push(domain);
-          domains.push('.' + domain);
-          
-          for (var i = 1; i < domainParts.length; i++) {
-            var d = domainParts.slice(i).join('.');
-            domains.push(d);
-            domains.push('.' + d);
-          }
-          
-          domains.push('');
-          
-          // Get all paths
-          var paths = ['/', ''];
-          
-          // Clear cookies for all domain and path combinations
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            var eqPos = cookie.indexOf("=");
-            var name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-            
-            if (name) { // Only process cookies with non-empty names
-              // Try all domain and path combinations
-              for (var j = 0; j < domains.length; j++) {
-                for (var k = 0; k < paths.length; k++) {
-                  var domainPart = domains[j] ? '; domain=' + domains[j] : '';
-                  var pathPart = '; path=' + paths[k];
-                  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + domainPart + pathPart;
-                }
-              }
-            }
-          }
-          
-          // Call the logout handler
-          logoutHandler();
-          
-          if (close) {
-            disableWrapperDivWithConfig();
-          }
-          
-          // Try multiple server-side logout endpoints
-          LOGOUT_ENDPOINTS.forEach(function(endpoint) {
-            var img = new Image();
-            img.src = unidyUrl + endpoint + '?client_id=' + clientId + '&redirect_uri=' + encodeURIComponent(window.location.href) + '&t=' + new Date().getTime();
-          });
-          
-          // Also try a direct XHR request with credentials
-          try {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', unidyUrl + '/oauth/logout', true);
-            xhr.withCredentials = true;
-            xhr.send();
-          } catch (e) {
-            // Silently handle errors
-          }
-        } catch (error) {
-          // Silently handle errors
-        }
-      };
-      
-      return this;
-    },
-    
-    /**
      * Sets the authentication event handler.
      * This handler is called when a user successfully authenticates.
      *
@@ -333,7 +238,7 @@ export default function (unidyUrl, {
       
       listeners.auth = ({ idToken }) => {
         try {
-          sessionStorage.setItem("idToken", idToken);
+          currentIdToken = idToken; // Store token in memory instead of sessionStorage
           authHandler(idToken);
           disableWrapperDivWithConfig();
         } catch (error) {
@@ -350,21 +255,21 @@ export default function (unidyUrl, {
      * @returns {boolean} True if the user is authenticated (has an ID token), false otherwise
      */
     isAuthenticated: function() {
-      return !!sessionStorage.getItem('idToken');
+      return !!currentIdToken;
     },
     
     /**
-     * Retrieves the current ID token from session storage.
+     * Retrieves the current ID token from memory.
      *
      * @returns {string|null} The current ID token or null if not available
      */
     getIdToken: function() {
-      return sessionStorage.getItem('idToken');
+      return currentIdToken;
     },
     
-    // Expose event system
-    on,
-    off,
-    emit
+    // Expose event system methods
+    on: emitter.on.bind(emitter),
+    off: emitter.off.bind(emitter),
+    emit: emitter.emit.bind(emitter)
   };
 }
