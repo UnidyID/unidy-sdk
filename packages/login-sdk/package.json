@@ -9,7 +9,6 @@
     "dist"
   ],
   "dependencies": {
-    "mitt": "^3.0.1"
   },
   "scripts": {
     "clean": "rm -rf dist",

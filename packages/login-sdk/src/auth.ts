@@ -1,7 +1,6 @@
 import { DOM_IDS, DEFAULTS } from './modules/constants';
 import { iFrameSource, activateWrapperDiv, disableWrapperDiv, buildIframe } from './modules/ui-components';
 import { createErrorHandler, ErrorData } from './modules/error-handler';
-import mitt, { Emitter } from 'mitt';
 
 export interface UnidyLoginConfig {
   clientId: string;
@@ -24,13 +23,10 @@ export interface UnidyLoginSDK {
   onAuth(authHandler: (idToken: string) => void): UnidyLoginSDK;
   isAuthenticated(): boolean;
   getIdToken(): string | null;
-  on(type: string, handler: (data: any) => void): void;
-  off(type: string, handler: (data: any) => void): void;
-  emit(type: string, data: any): void;
 }
 
 export default function(
-  unidyUrl: string, 
+  unidyUrl: string,
   {
     clientId,
     scope = DEFAULTS.SCOPE,
@@ -39,7 +35,8 @@ export default function(
     maxAge
   }: UnidyLoginConfig
 ): UnidyLoginSDK {
-  unidyUrl = unidyUrl.replace(/\/+$/, '');
+  // Normalize URL once at initialization
+  const normalizedUnidyUrl = unidyUrl.replace(/\/+$/, '');
   
   const body = document.getElementsByTagName("body")[0];
   const wrapperDivId = DOM_IDS.WRAPPER_DIV;
@@ -48,7 +45,7 @@ export default function(
   let iframe: HTMLIFrameElement;
   let wrapperDiv: HTMLDivElement;
   let isInitialized = false;
-  let currentIdToken: string | null = null; 
+  let currentIdToken: string | null = null;
   
   const listeners: {
     auth: ((data: MessageData) => void) | null;
@@ -59,14 +56,15 @@ export default function(
     error: null
   };
   
-  const emitter: Emitter<any> = mitt();
-  
-  const handleError = createErrorHandler(emitter.emit.bind(emitter));
-  
-  (window as any).unidyLoginListeners = listeners;
+  const handleError = createErrorHandler((type: string, data: ErrorData) => {
+    const errorListener = listeners.error;
+    if (errorListener) {
+      errorListener(data);
+    }
+  });
   
   const getIframeSource = (target: string): string => iFrameSource({
-    unidyUrl,
+    unidyUrl: normalizedUnidyUrl,
     clientId,
     scope,
     responseType,
@@ -76,7 +74,6 @@ export default function(
 
   const handleMessage = function(event: MessageEvent): void {
     try {
-      const normalizedUnidyUrl = unidyUrl.replace(/\/+$/, '');
       const normalizedOrigin = event.origin.replace(/\/+$/, '');
       
       if (normalizedOrigin !== normalizedUnidyUrl) {
@@ -88,14 +85,8 @@ export default function(
       }
 
       const action = event.data.action;
-      
-      try {
-        emitter.emit(`action:${action}`, event.data);
-      } catch (error) {
-        console.error(`Error in action:${action} event handler:`, error);
-      }
-      
       const listener = listeners[action];
+      
       if (!listener) {
         return;
       }
@@ -196,11 +187,12 @@ export default function(
       listeners.auth = ({ idToken }: MessageData): void => {
         try {
           if (idToken) {
-            currentIdToken = idToken; 
+            currentIdToken = idToken;
             authHandler(idToken);
             disableWrapperDivWithConfig();
           }
         } catch (error) {
+          handleError('internal_error', 'Error in auth handler', error instanceof Error ? error : new Error(String(error)));
         }
       };
       
@@ -213,10 +205,6 @@ export default function(
     
     getIdToken: function(): string | null {
       return currentIdToken;
-    },
-    
-    on: emitter.on.bind(emitter),
-    off: emitter.off.bind(emitter),
-    emit: emitter.emit.bind(emitter)
+    }
   };
 }

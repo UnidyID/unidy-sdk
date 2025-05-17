@@ -13,7 +13,7 @@ export interface ErrorData {
   timestamp: Date;
 }
 
-export function createErrorHandler(emit: (type: string, data: ErrorData) => void): 
+export function createErrorHandler(errorCallback: (type: string, data: ErrorData) => void):
   (type: string, message: string, originalError?: Error | null) => void {
    return function handleError(type: string, message: string, originalError: Error | null = null): void {
     const errorData: ErrorData = {
@@ -23,11 +23,6 @@ export function createErrorHandler(emit: (type: string, data: ErrorData) => void
       timestamp: new Date()
     };
     
-    emit('error', errorData);
-    
-    const listeners = (window as any).unidyLoginListeners || {};
-    if (listeners.error) {
-      listeners.error(errorData);
-    }
+    errorCallback('error', errorData);
   };
 }
