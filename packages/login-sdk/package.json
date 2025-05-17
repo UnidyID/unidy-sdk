@@ -21,14 +21,15 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:unit": "jest --testPathPattern=tests/modules",
-    "test:integration": "jest --testPathPattern=tests/.*\\.integration\\.test\\.js$",
+    "test:integration": "jest --testPathPattern=tests/.*\\.integration\\.test\\.(js|ts)$",
     "test:mock-server": "jest --testPathPattern=__tests__/mock-server",
     "test:performance": "jest --config performance-jest.config.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "test:dual-server": "node ./tests/e2e/setup/start-servers.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "authentication",
@@ -41,7 +42,9 @@
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
+    "@babel/preset-typescript": "^7.27.1",
     "@playwright/test": "^1.40.0",
+    "@types/jest": "^29.5.14",
     "babel-jest": "^29.5.0",
     "babel-loader": "^9.1.2",
     "body-parser": "^1.20.3",

@@ -6,8 +6,8 @@
     "esModuleInterop": true,
     "declaration": true,
     "outDir": "dist",
-    "strict": false,
-    "allowJs": true,
+    "strict": true,
+    "allowJs": false,
     "checkJs": false,
     "emitDeclarationOnly": true,
     "skipLibCheck": true,
@@ -17,6 +17,6 @@
     "noEmit": false,
     "lib": ["DOM", "DOM.Iterable", "ESNext"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "__tests__"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

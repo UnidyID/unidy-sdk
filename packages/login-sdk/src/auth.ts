@@ -9,16 +9,61 @@
 
 import { DOM_IDS, DEFAULTS } from './modules/constants';
 import { iFrameSource, activateWrapperDiv, disableWrapperDiv, buildIframe } from './modules/ui-components';
-import { createErrorHandler } from './modules/error-handler';
-import mitt from 'mitt';
+import { createErrorHandler, ErrorData } from './modules/error-handler';
+import mitt, { Emitter } from 'mitt';
 
-export default function (unidyUrl, {
-  clientId,
-  scope = DEFAULTS.SCOPE,
-  responseType = DEFAULTS.RESPONSE_TYPE,
-  prompt,
-  maxAge
-}) {
+/**
+ * Configuration options for the Unidy Login SDK
+ */
+export interface UnidyLoginConfig {
+  clientId: string;
+  scope?: string;
+  responseType?: string;
+  prompt?: string;
+  maxAge?: number;
+}
+
+/**
+ * Message data structure for iframe communication
+ */
+export interface MessageData {
+  action: string;
+  idToken?: string;
+  [key: string]: any;
+}
+
+/**
+ * Unidy Login SDK interface
+ */
+export interface UnidyLoginSDK {
+  init(): UnidyLoginSDK;
+  show(options?: { target?: string }): UnidyLoginSDK;
+  close(): UnidyLoginSDK;
+  onAuth(authHandler: (idToken: string) => void): UnidyLoginSDK;
+  isAuthenticated(): boolean;
+  getIdToken(): string | null;
+  on(type: string, handler: (data: any) => void): void;
+  off(type: string, handler: (data: any) => void): void;
+  emit(type: string, data: any): void;
+}
+
+/**
+ * Creates a new instance of the Unidy Login SDK
+ * 
+ * @param unidyUrl - The URL of the Unidy authentication server
+ * @param config - Configuration options for the SDK
+ * @returns An instance of the Unidy Login SDK
+ */
+export default function(
+  unidyUrl: string, 
+  {
+    clientId,
+    scope = DEFAULTS.SCOPE,
+    responseType = DEFAULTS.RESPONSE_TYPE,
+    prompt,
+    maxAge
+  }: UnidyLoginConfig
+): UnidyLoginSDK {
   // Normalize the URL by removing trailing slashes
   unidyUrl = unidyUrl.replace(/\/+$/, '');
   
@@ -27,28 +72,32 @@ export default function (unidyUrl, {
   const iFrameId = DOM_IDS.IFRAME;
 
   // State variables
-  let iframe;
-  let wrapperDiv;
+  let iframe: HTMLIFrameElement;
+  let wrapperDiv: HTMLDivElement;
   let isInitialized = false;
-  let currentIdToken = null; // Store token in memory instead of sessionStorage
+  let currentIdToken: string | null = null; // Store token in memory instead of sessionStorage
   
   // Event listeners
-  const listeners = {
+  const listeners: {
+    auth: ((data: MessageData) => void) | null;
+    error: ((data: ErrorData) => void) | null;
+    [key: string]: ((data: any) => void) | null;
+  } = {
     auth: null,
     error: null
   };
   
   // Create event system using Mitt directly
-  const emitter = mitt();
+  const emitter: Emitter<any> = mitt();
   
   // Create error handler
   const handleError = createErrorHandler(emitter.emit.bind(emitter));
   
   // Store listeners globally for access by other modules
-  window.unidyLoginListeners = listeners;
+  (window as any).unidyLoginListeners = listeners;
   
   // Create iframe source function with config
-  const getIframeSource = (target) => iFrameSource({
+  const getIframeSource = (target: string): string => iFrameSource({
     unidyUrl,
     clientId,
     scope,
@@ -63,7 +112,7 @@ export default function (unidyUrl, {
    * @param {MessageEvent} event - The message event from the iframe
    * @returns {void}
    */
-  const handleMessage = function(event) {
+  const handleMessage = function(event: MessageEvent): void {
     try {
       // Make the origin check more flexible by removing trailing slashes
       const normalizedUnidyUrl = unidyUrl.replace(/\/+$/, '');
@@ -97,7 +146,7 @@ export default function (unidyUrl, {
       // Call the listener with the message data
       listener(event.data);
     } catch (error) {
-      handleError('internal_error', 'Error handling message', error);
+      handleError('internal_error', 'Error handling message', error instanceof Error ? error : new Error(String(error)));
     }
   };
   
@@ -110,10 +159,12 @@ export default function (unidyUrl, {
    *
    * @returns {void}
    */
-  function initFrame() {
+  function initFrame(): void {
     if (currentIdToken) {
       buildIframeWithConfig("blank");
-      listeners.auth({ idToken: currentIdToken });
+      if (listeners.auth) {
+        listeners.auth({ action: 'auth', idToken: currentIdToken });
+      }
     } else {
       buildIframeWithConfig("login");
     }
@@ -125,7 +176,7 @@ export default function (unidyUrl, {
    * @param {string} target - The target page to load in the iframe
    * @returns {void}
    */
-  function buildIframeWithConfig(target) {
+  function buildIframeWithConfig(target: string): void {
     const result = buildIframe({
       iFrameId,
       wrapperDivId,
@@ -143,7 +194,7 @@ export default function (unidyUrl, {
    *
    * @returns {void}
    */
-  function activateWrapperDivWithConfig() {
+  function activateWrapperDivWithConfig(): void {
     activateWrapperDiv(wrapperDiv);
   }
   
@@ -152,7 +203,7 @@ export default function (unidyUrl, {
    *
    * @returns {void}
    */
-  function disableWrapperDivWithConfig() {
+  function disableWrapperDivWithConfig(): void {
     disableWrapperDiv(wrapperDiv, iframe);
   }
 
@@ -161,9 +212,9 @@ export default function (unidyUrl, {
      * Initializes the Unidy Login SDK.
      * Creates the necessary iframe and sets up event listeners.
      *
-     * @returns {Object} The SDK instance for method chaining
+     * @returns {UnidyLoginSDK} The SDK instance for method chaining
      */
-    init: function() {
+    init: function(): UnidyLoginSDK {
       if (isInitialized) {
         return this;
       }
@@ -178,16 +229,17 @@ export default function (unidyUrl, {
      *
      * @param {Object} options - The options object
      * @param {string} [options.target="login"] - The target page to show ('login')
-     * @returns {Object} The SDK instance for method chaining
+     * @returns {UnidyLoginSDK} The SDK instance for method chaining
      */
-    show: function({ target } = { target: "login" }) {
+    show: function({ target } = { target: "login" }): UnidyLoginSDK {
       if (!isInitialized) {
         this.init();
       }
       
       if (typeof wrapperDiv !== "undefined") {
-        if (getIframeSource(target) !== iframe.getAttribute("src")) {
-          iframe.setAttribute("src", getIframeSource(target));
+        const targetStr = target || "login";
+        if (getIframeSource(targetStr) !== iframe.getAttribute("src")) {
+          iframe.setAttribute("src", getIframeSource(targetStr));
 
           iframe.addEventListener("load", () => {
             activateWrapperDivWithConfig();
@@ -198,7 +250,7 @@ export default function (unidyUrl, {
         return this;
       }
 
-      buildIframeWithConfig(target);
+      buildIframeWithConfig(target || "login");
 
       iframe.addEventListener("load", () => {
         activateWrapperDivWithConfig();
@@ -210,11 +262,11 @@ export default function (unidyUrl, {
     /**
      * Closes the authentication iframe by hiding the wrapper div.
      *
-     * @returns {Object} The SDK instance for method chaining
+     * @returns {UnidyLoginSDK} The SDK instance for method chaining
      */
-    close: function() {
-      iframe = document.getElementById(iFrameId);
-      wrapperDiv = document.getElementById(wrapperDivId);
+    close: function(): UnidyLoginSDK {
+      iframe = document.getElementById(iFrameId) as HTMLIFrameElement;
+      wrapperDiv = document.getElementById(wrapperDivId) as HTMLDivElement;
 
       if (iframe && wrapperDiv) {
         disableWrapperDivWithConfig();
@@ -229,18 +281,20 @@ export default function (unidyUrl, {
      *
      * @param {Function} authHandler - The function to call on successful authentication
      * @param {string} authHandler.idToken - The ID token received after successful authentication
-     * @returns {Object} The SDK instance for method chaining
+     * @returns {UnidyLoginSDK} The SDK instance for method chaining
      */
-    onAuth: function(authHandler) {
+    onAuth: function(authHandler: (idToken: string) => void): UnidyLoginSDK {
       if (typeof authHandler !== 'function') {
         return this;
       }
       
-      listeners.auth = ({ idToken }) => {
+      listeners.auth = ({ idToken }: MessageData): void => {
         try {
-          currentIdToken = idToken; // Store token in memory instead of sessionStorage
-          authHandler(idToken);
-          disableWrapperDivWithConfig();
+          if (idToken) {
+            currentIdToken = idToken; // Store token in memory instead of sessionStorage
+            authHandler(idToken);
+            disableWrapperDivWithConfig();
+          }
         } catch (error) {
           // Silently handle errors
         }
@@ -254,7 +308,7 @@ export default function (unidyUrl, {
      *
      * @returns {boolean} True if the user is authenticated (has an ID token), false otherwise
      */
-    isAuthenticated: function() {
+    isAuthenticated: function(): boolean {
       return !!currentIdToken;
     },
     
@@ -263,7 +317,7 @@ export default function (unidyUrl, {
      *
      * @returns {string|null} The current ID token or null if not available
      */
-    getIdToken: function() {
+    getIdToken: function(): string | null {
       return currentIdToken;
     },
     

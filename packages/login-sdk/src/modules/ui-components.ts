@@ -5,15 +5,40 @@
  */
 
 /**
+ * Configuration for the iframe source
+ */
+export interface IFrameSourceConfig {
+  unidyUrl: string;
+  clientId: string;
+  scope: string;
+  responseType: string;
+  prompt?: string;
+  maxAge?: number;
+}
+
+/**
+ * Configuration for building the iframe
+ */
+export interface BuildIframeConfig {
+  iFrameId: string;
+  wrapperDivId: string;
+  iFrameSource: (target: string) => string;
+  handleMessage: (event: MessageEvent) => void;
+  disableWrapperDiv: () => void;
+}
+
+/**
+ * Result of building the iframe
+ */
+export interface BuildIframeResult {
+  iframe: HTMLIFrameElement;
+  wrapperDiv: HTMLDivElement;
+}
+
+/**
  * Generates the appropriate URL for the iframe based on the target.
  *
- * @param {Object} config - Configuration object
- * @param {string} config.unidyUrl - The Unidy URL
- * @param {string} config.clientId - The client ID for OAuth
- * @param {string} config.scope - The OAuth scope
- * @param {string} config.responseType - The OAuth response type
- * @param {string|undefined} config.prompt - The OAuth prompt parameter
- * @param {number|undefined} config.maxAge - The OAuth max_age parameter
+ * @param {IFrameSourceConfig} config - Configuration object
  * @param {string} target - The target page to load ('blank' or 'login')
  * @returns {string} The URL to load in the iframe
  */
@@ -24,7 +49,7 @@ export function iFrameSource({
   responseType,
   prompt,
   maxAge
-}, target) {
+}: IFrameSourceConfig, target: string): string {
   switch (target) {
     case "blank":
       return "";
@@ -36,7 +61,7 @@ export function iFrameSource({
       }
 
       // Build the OAuth URL with additional parameters
-      var url = `${unidyUrl}/oauth/authorize` +
+      let url = `${unidyUrl}/oauth/authorize` +
         `?client_id=${clientId}` +
         `&scope=${scope}` +
         `&response_type=${responseType}` +
@@ -65,9 +90,9 @@ export function iFrameSource({
  *
  * @param {string} wrapperDivId - The ID to assign to the wrapper div
  * @param {Function} disableWrapperDiv - Function to disable the wrapper div
- * @returns {HTMLElement} The created wrapper div
+ * @returns {HTMLDivElement} The created wrapper div
  */
-export function buildWrapper(wrapperDivId, disableWrapperDiv) {
+export function buildWrapper(wrapperDivId: string, disableWrapperDiv: () => void): HTMLDivElement {
   const wrapperDiv = document.createElement("div");
   wrapperDiv.setAttribute("id", wrapperDivId);
 
@@ -82,12 +107,10 @@ export function buildWrapper(wrapperDivId, disableWrapperDiv) {
  * Makes the wrapper div visible and adds the active class with a small delay
  * to ensure CSS transitions work properly.
  *
- * @param {HTMLElement} wrapperDiv - The wrapper div element
+ * @param {HTMLDivElement} wrapperDiv - The wrapper div element
  * @returns {void}
  */
-export function activateWrapperDiv(wrapperDiv) {
-  // wrapperDiv.style.display = "block"; // This line is removed
-
+export function activateWrapperDiv(wrapperDiv: HTMLDivElement): void {
   setTimeout(() => {
     // Ensure the wrapper is displayed before adding 'active' for transition
     // The .active class itself will set display: flex
@@ -106,11 +129,11 @@ export function activateWrapperDiv(wrapperDiv) {
  * Hides the wrapper div by removing the active class and setting display to none
  * after the CSS transition completes.
  *
- * @param {HTMLElement} wrapperDiv - The wrapper div element
- * @param {HTMLElement} iframe - The iframe element
+ * @param {HTMLDivElement} wrapperDiv - The wrapper div element
+ * @param {HTMLIFrameElement} iframe - The iframe element
  * @returns {void}
  */
-export function disableWrapperDiv(wrapperDiv, iframe) {
+export function disableWrapperDiv(wrapperDiv: HTMLDivElement, iframe: HTMLIFrameElement): void {
   wrapperDiv.classList.remove("active");
 
   setTimeout(
@@ -125,14 +148,9 @@ export function disableWrapperDiv(wrapperDiv, iframe) {
  * Creates and appends the authentication iframe to the DOM.
  * Sets up the message event listener for iframe communication.
  *
- * @param {Object} config - Configuration object
- * @param {string} config.iFrameId - The ID to assign to the iframe
- * @param {string} config.wrapperDivId - The ID to assign to the wrapper div
- * @param {Function} config.iFrameSource - Function to generate iframe source URL
- * @param {Function} config.handleMessage - Function to handle iframe messages
- * @param {Function} config.disableWrapperDiv - Function to disable the wrapper div
+ * @param {BuildIframeConfig} config - Configuration object
  * @param {string} target - The target page to load in the iframe
- * @returns {Object} The created iframe and wrapper div
+ * @returns {BuildIframeResult} The created iframe and wrapper div
  */
 export function buildIframe({
   iFrameId,
@@ -140,7 +158,7 @@ export function buildIframe({
   iFrameSource,
   handleMessage,
   disableWrapperDiv
-}, target) {
+}: BuildIframeConfig, target: string): BuildIframeResult {
   const body = document.getElementsByTagName("body")[0];
   const wrapperDiv = buildWrapper(wrapperDivId, disableWrapperDiv);
 

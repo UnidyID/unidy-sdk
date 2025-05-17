@@ -8,7 +8,7 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
   
   return {
-    entry: './src/index.js',
+    entry: './src/index.ts',
     
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -25,7 +25,25 @@ module.exports = (env, argv) => {
     
     module: {
       rules: [
-        // JavaScript/JSX files
+        // TypeScript files
+        {
+          test: /\.tsx?$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                ['@babel/preset-env', {
+                  targets: {
+                    browsers: ['last 2 versions', 'not dead', 'not ie <= 11']
+                  }
+                }],
+                '@babel/preset-typescript'
+              ]
+            }
+          }
+        },
+        // JavaScript files
         {
           test: /\.js$/,
           exclude: /node_modules/,
@@ -51,7 +69,7 @@ module.exports = (env, argv) => {
     },
     
     resolve: {
-      extensions: ['.js', '.json']
+      extensions: ['.ts', '.js', '.json']
     },
     
     devtool: isProduction ? 'source-map' : 'eval-source-map',
