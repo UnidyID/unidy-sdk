@@ -16,10 +16,16 @@ export class Newsletter {
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
 
+  @Prop() renderErrorMessages = false;
+  @Prop() errorUnconfirmedText = "Email not confirmed";
+  @Prop() errorAlreadySubscribedText = "Already subscribed";
+  @Prop() errorInvalidEmailText = "Invalid email address";
+  @Prop() errorUnknownText = "Unknown error occured";
+
   @State() email = "";
   @State() checkedNewsletters: string[] = [];
   @State() messages: { color: string; text: string; error_identifier: string }[] = [];
-  @State() showSuccessCheckmark = false;
+  @State() showSuccessSlot = false;
 
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
@@ -38,7 +44,7 @@ export class Newsletter {
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.messages = [];
-    this.showSuccessCheckmark = false;
+    this.showSuccessSlot = false;
 
     const payload = {
       email: this.email,
@@ -58,13 +64,13 @@ export class Newsletter {
         const errorMessages = errors.map((error: { error_identifier: string; newsletter_internal_name: string }) => {
           switch (error.error_identifier) {
             case "unconfirmed":
-              return { color: "red", text: "Email not confirmed", error_identifier: error.error_identifier };
+              return { color: "red", text: this.errorUnconfirmedText, error_identifier: error.error_identifier };
             case "already_subscribed":
-              return { color: "red", text: "Already subscribed", error_identifier: error.error_identifier };
+              return { color: "red", text: this.errorAlreadySubscribedText, error_identifier: error.error_identifier };
             case "invalid_email":
-              return { color: "red", text: "Invalid email address", error_identifier: error.error_identifier };
+              return { color: "red", text: this.errorInvalidEmailText, error_identifier: error.error_identifier };
             default:
-              return { color: "red", text: "Unknown error occured", error_identifier: error.error_identifier };
+              return { color: "red", text: this.errorUnknownText, error_identifier: error.error_identifier };
           }
         });
 
@@ -75,7 +81,7 @@ export class Newsletter {
         alert("Rate limit exceeded. Please try again later.");
       }
     } else {
-      this.showSuccessCheckmark = true;
+      this.showSuccessSlot = true;
       this.successEvent.emit(response.data.results);
     }
 
@@ -131,22 +137,17 @@ export class Newsletter {
             {this.submitButtonText}
           </button>
 
-          <div part="error-messages-container" class="text-sm">
-            {this.messages.map((message, index) => (
-              <div key={`error-${index}-${message.error_identifier}`} part={`error-${message.error_identifier}`} class="!mt-1">
-                {message.text}
-              </div>
-            ))}
-          </div>
-
-          {this.showSuccessCheckmark && (
-            <div part="success-checkmark" class="flex items-center justify-center mt-4 text-green-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <title>Success</title>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+          {this.renderErrorMessages && (
+            <div part="error-messages-container" class="text-sm">
+              {this.messages.map((message, index) => (
+                <div key={`error-${index}-${message.error_identifier}`} part={`error-${message.error_identifier}`} class="!mt-1">
+                  {message.text}
+                </div>
+              ))}
             </div>
           )}
+
+          {this.showSuccessSlot && <slot name="success-container" />}
         </form>
         <slot name="footer" />
       </div>

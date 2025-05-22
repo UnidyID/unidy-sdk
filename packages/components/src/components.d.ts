@@ -14,8 +14,13 @@ export namespace Components {
         "defaultNewsletterInternalName": string;
         "emailLabel": string;
         "emailPlaceholder": string;
+        "errorAlreadySubscribedText": string;
+        "errorInvalidEmailText": string;
+        "errorUnconfirmedText": string;
+        "errorUnknownText": string;
         "header": string;
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
+        "renderErrorMessages": boolean;
         "submitButtonText": string;
     }
 }
@@ -53,10 +58,15 @@ declare namespace LocalJSX {
         "defaultNewsletterInternalName"?: string;
         "emailLabel"?: string;
         "emailPlaceholder"?: string;
+        "errorAlreadySubscribedText"?: string;
+        "errorInvalidEmailText"?: string;
+        "errorUnconfirmedText"?: string;
+        "errorUnknownText"?: string;
         "header"?: string;
         "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
+        "renderErrorMessages"?: boolean;
         "submitButtonText"?: string;
     }
     interface IntrinsicElements {
