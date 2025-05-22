@@ -22,7 +22,7 @@
     }
 
     unidy-newsletter {
-      font-family: 'Roboto', sans-serif;
+      font-family: VisbyCF, system-ui, -apple-system, "system-ui", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
     }
 
     unidy-newsletter::part(container) {
@@ -106,17 +106,6 @@
       color: var(--vfl-blue);
     }
 
-    .b-heading::after {
-      content: '';
-      display: block;
-      width: 1.5rem;
-      height: 3px;
-      background-color: var(--vfl-blue);
-      position: relative;
-      bottom: 0.7rem;
-      left: 9.5rem;
-    }
-
     .description {
       color: var(--vfl-blue);
       padding-bottom: 1rem;
@@ -131,6 +120,12 @@
       color: var(--vfl-blue);
       text-decoration: underline;
     }
+
+    #success-checkmark {
+      color: green;
+      width: 2rem;
+      margin: auto;
+    }
   </style>
 
 </head>
@@ -138,11 +133,15 @@
 <body>
   <unidy-newsletter api-url="https://vfl1848.unidy.de"
     api-key="ce4e3cdc3e20b14b7d5c94615cea4ec8f3dd473851703d64568e4b8469c26e0e" email-placeholder=""
-    submit-button-text="Abonnieren" default-newsletter-internal-name="main">
+    submit-button-text="Abonnieren" default-newsletter-internal-name="main" render-error-messages="true"
+    error-unconfirmed-text="Bitte bestätige deine E-Mail-Adresse"
+    error-already-subscribed-text="Du bist bereits für den Newsletter angemeldet"
+    error-invalid-email-text="Bitte gib eine gültige E-Mail-Adresse ein"
+    error-unknown-text="Ein unbekannter Fehler ist aufgetreten">
 
     <div slot="header" class="header">
       <div class="b-heading">
-        VfL-NEWSLETTTER
+        VfL-NEWSLETTTER &nbsp;⸺
       </div>
       <h1>Castroper Fanpost</h1>
     </div>
@@ -160,6 +159,15 @@
           href="https://www.vfl-bochum.de/de/datenschutz" target="_blank">Datenschutzbestimmungen</a>.
       </p>
     </div>
+
+    <div slot="success-container">
+      <div id="success-checkmark" class="flex items-center justify-center mt-4 text-green-500">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <title>Success</title>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+    </div>
   </unidy-newsletter>
 
   <script>
@@ -171,7 +179,6 @@
     newsletterComponent.addEventListener('on:error', (event) => {
       console.log("Error subscribing", event.detail);
     });
-
   </script>
 </body>
 
