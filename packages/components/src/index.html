@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="ltr" lang="en">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>Unidy Components Demo</title>
 
-  <title>Unidy Newsletter</title>
-  <script type="module" src="https://unpkg.com/@unidy.io/components@0.0.11/newsletter"></script>
+  <script type="module" src="/build/unidy-components.esm.js"></script>
+  <script nomodule src="/build/unidy-components.js"></script>
 
-  <!-- <style>
+  <style>
     :root {
       --vfl-blue: #003e74;
     }
@@ -20,34 +20,24 @@
       display: flex;
       justify-content: center;
       height: 100vh;
-      margin: 2rem;
+      margin: 1rem;
     }
 
     unidy-newsletter {
       font-family: 'Roboto', sans-serif;
-      max-width: 800px;
-      min-width: 400px;
     }
 
     unidy-newsletter::part(container) {
       background-color: #ffffff;
-      padding: 1.5rem;
+      padding: 2rem;
       max-width: 600px;
+      min-width: 300px;
       margin: auto;
-    }
-
-    unidy-newsletter::part(heading) {
-      color: var(--vfl-blue);
-      ;
-      font-size: 2.25rem;
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 2.5rem;
     }
 
     unidy-newsletter::part(email-input-group) {
       position: relative;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
     unidy-newsletter::part(email-input) {
@@ -96,14 +86,82 @@
     unidy-newsletter::part(error-invalid_email) {
       color: red !important
     }
-  </style> -->
+
+    .header {
+      color: var(--vfl-blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      margin-top: 0;
+    }
+
+    .b-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      color: var(--vfl-blue);
+    }
+
+    .b-heading::after {
+      content: '';
+      display: block;
+      width: 1.5rem;
+      height: 3px;
+      background-color: var(--vfl-blue);
+      position: relative;
+      bottom: 0.7rem;
+      left: 9.5rem;
+    }
+
+    .description {
+      color: var(--vfl-blue);
+      padding-bottom: 1rem;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .footer a {
+      color: var(--vfl-blue);
+      text-decoration: underline;
+    }
+  </style>
 
 </head>
 
 <body>
-  <unidy-newsletter header="Unidy Newsletter 🚀" api-url="https://vfl1848.staging.unidy.de"
+  <unidy-newsletter api-url="https://vfl1848.staging.unidy.de"
     api-key="bc6fab7214fed6a56389b48692a31d017a10f5d58f5e8eae5d8996708dc3d2f6" email-placeholder=""
-    submit-button-text="Subscribe" default-newsletter-internal-name="default_newsletter">
+    submit-button-text="Abonnieren" default-newsletter-internal-name="default_newsletter">
+
+    <div slot="header" class="header">
+      <div class="b-heading">
+        VfL-NEWSLETTTER
+      </div>
+      <h1>Castroper Fanpost</h1>
+    </div>
+
+    <h2 slot="description" class="description">
+      Immer die neuesten Infos vom VfL Bochum 1848 in deinem Postfach
+    </h2>
+
+    <div slot="footer" class="footer">
+      <p>Ich möchte den Newsletter des VfL mit Informationen zu deren Angeboten und Specials
+        aus dem Bereich Entertainment per E-Mail erhalten. Meine Daten werden keinesfalls an Dritte weitergegeben. Meine
+        Einwilligung kann ich jederzeit per E-Mail unter service@vfl-bochum.de widerrrufen.</p>
+      </p>
+      <p>Ich akzeptiere die <a href="https://www.vfl-bochum.de/de/nutzungsbedingungen" target="_blank">AGB</a> und <a
+          href="https://www.vfl-bochum.de/de/datenschutz" target="_blank">Datenschutzbestimmungen</a>.
+      </p>
+    </div>
   </unidy-newsletter>
 
   <script>

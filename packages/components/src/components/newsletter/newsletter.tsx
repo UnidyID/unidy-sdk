@@ -3,7 +3,7 @@ import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyCli
 
 @Component({
   tag: "unidy-newsletter",
-  styleUrl: 'newsletter.css',
+  styleUrl: "newsletter.css",
   shadow: true,
 })
 export class Newsletter {
@@ -90,8 +90,9 @@ export class Newsletter {
 
   render() {
     return (
-      <div part="container" class="max-w-lg border">
-        <h1 part="heading">{this.header}</h1>
+      <div part="container" class="max-w-lg">
+        <slot name="header" />
+        {this.header && <h1 part="heading">{this.header}</h1>}
         <slot name="description" />
         <form onSubmit={this.handleSubmit} class="space-y-4">
           <div part="email-input-group">
@@ -126,8 +127,6 @@ export class Newsletter {
             </label>
           ))}
 
-          <slot />
-
           <button part="submit-button" type="submit" class="w-full border">
             {this.submitButtonText}
           </button>
@@ -149,6 +148,7 @@ export class Newsletter {
             </div>
           )}
         </form>
+        <slot name="footer" />
       </div>
     );
   }
