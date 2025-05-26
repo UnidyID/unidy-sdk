@@ -11,6 +11,7 @@ export namespace Components {
         "baseUrl": string;
         "clientId": string;
         "hide": () => Promise<void>;
+        "logout": () => Promise<void>;
         "prompt": string;
         "responseType": string;
         "scope": string;
@@ -25,7 +26,6 @@ declare global {
     interface HTMLUnidyLoginElementEventMap {
         "onAuth": { token: string };
         "onClose": void;
-        "onError": Error;
     }
     interface HTMLUnidyLoginElement extends Components.UnidyLogin, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyLoginElementEventMap>(type: K, listener: (this: HTMLUnidyLoginElement, ev: UnidyLoginCustomEvent<HTMLUnidyLoginElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -51,7 +51,6 @@ declare namespace LocalJSX {
         "clientId"?: string;
         "onOnAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         "onOnClose"?: (event: UnidyLoginCustomEvent<void>) => void;
-        "onOnError"?: (event: UnidyLoginCustomEvent<Error>) => void;
         "prompt"?: string;
         "responseType"?: string;
         "scope"?: string;

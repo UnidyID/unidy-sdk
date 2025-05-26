@@ -15,13 +15,13 @@ export class UnidyLogin {
   @Prop() prompt = "login";
 
   @State() isVisible = false;
-  @State() iframeUrl = null;
+  @State() iframeUrl = "";
+  @State() isLoading = false;
 
   @Event() onAuth: EventEmitter<{ token: string }>;
   @Event() onClose: EventEmitter<void>;
-  @Event() onError: EventEmitter<Error>;
 
-  private dialogRef?: HTMLDialogElement;
+  private dialog?: HTMLDialogElement;
 
   @Listen("keydown", { target: "document" })
   handleKeyDown(event: KeyboardEvent) {
@@ -31,7 +31,7 @@ export class UnidyLogin {
   }
 
   componentDidLoad() {
-    this.dialogRef = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
+    this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
   }
 
   @Method()
@@ -41,15 +41,21 @@ export class UnidyLogin {
   }
 
   @Method()
+  async logout() {
+    this.iframeUrl = `${this.baseUrl}/oauth/logout`;
+  }
+
+  @Method()
   async show() {
-    this.dialogRef.showModal();
+    this.dialog.showModal();
     this.isVisible = true;
   }
 
   @Method()
   async hide() {
-    this.dialogRef.close();
+    this.dialog.close();
     this.isVisible = false;
+    this.isLoading = false;
     this.onClose.emit();
   }
 
@@ -62,32 +68,41 @@ export class UnidyLogin {
       redirect_uri: window.location.origin,
     });
 
-    this.iframeUrl = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
+    const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
+
+    if (url !== this.iframeUrl) {
+      this.iframeUrl = url;
+      this.isLoading = true;
+    }
   }
 
   private handleIframeLoad(event: Event) {
     const iframe = event.target as HTMLIFrameElement;
+    this.isLoading = false;
 
     try {
-      // TODO figure out 'blocked href access of cross-origin frame blabla...'
-      // TODO also blocked focus of input element in frame
-      const url = new URL(iframe.contentWindow?.location.href || "");
+      const iframeUrl = iframe.contentWindow?.location.href;
 
-      if (url.origin === window.location.origin) {
-        const token = url.hash
-          .substring(1)
-          .split("&")
-          .find((param) => param.startsWith("id_token="))
-          ?.split("=")[1];
+      if (iframeUrl) {
+        const url = new URL(iframeUrl);
 
-        if (token) {
-          this.hide();
-          this.onAuth.emit({ token });
+        // Redirect url has same origin
+        if (url.origin === window.location.origin) {
+          const token = url.hash
+            .substring(1)
+            .split("&")
+            .find((param) => param.startsWith("id_token="))
+            ?.split("=")[1];
+
+          if (token) {
+            this.hide();
+            this.onAuth.emit({ token });
+          }
         }
       }
     } catch (error) {
-      console.error("Error handling iframe load:", error);
-      this.onError.emit(error);
+      // Different origin location access blocked, this is expected but would still like to avoid this...
+      console.debug("Cross-origin iframe error:", error);
     }
   }
 
@@ -98,7 +113,23 @@ export class UnidyLogin {
           <button type="button" class="close-button" onClick={() => this.hide()}>
             ×
           </button>
-          <iframe src={this.iframeUrl} onLoad={(e) => this.handleIframeLoad(e)} class="login-iframe" title="Unidy Login" />
+
+          {this.isLoading && (
+            <div class="loading-spinner">
+              <svg class="spinner" viewBox="0 0 50 50" role="status" aria-label="Loading">
+                <circle class="spinner-circle" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+                <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+              </svg>
+            </div>
+          )}
+
+          <iframe
+            src={this.iframeUrl}
+            onLoad={(e) => this.handleIframeLoad(e)}
+            id="unidy-login-iframe"
+            class="login-iframe"
+            title="Unidy Login"
+          />
         </div>
       </dialog>
     );

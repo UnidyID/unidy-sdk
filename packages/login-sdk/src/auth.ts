@@ -2,6 +2,7 @@ import type { UnidyAuthConfig, UnidyAuthOptions, UnidyAuthInstance } from "./typ
 
 interface UnidyLoginComponent extends HTMLElement {
   auth: () => void;
+  logout: () => void;
   show: () => void;
   hide: () => void;
 }
@@ -45,6 +46,10 @@ export class Auth implements UnidyAuthInstance {
     this.component.auth();
   }
 
+  logout() {
+    this.component.logout();
+  }
+
   show() {
     this.component.show();
   }
@@ -73,13 +78,6 @@ export class Auth implements UnidyAuthInstance {
 
     this.component.addEventListener("onClose", () => {
       this.options.onClose?.();
-    });
-
-    this.component.addEventListener("onError", (event: CustomEvent) => {
-      const { error } = event.detail;
-      if (error) {
-        this.options.onError?.(error);
-      }
     });
   }
 }
