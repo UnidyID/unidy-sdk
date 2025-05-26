@@ -13,6 +13,7 @@ export interface UnidyAuthOptions {
 }
 
 export interface UnidyAuthInstance {
+  auth: () => void;
   show: () => void;
   hide: () => void;
   isAuthenticated: () => boolean;

@@ -71,31 +71,34 @@
   </div>
 
   <script type="module">
-    import { Unidy } from './build/index.esm.js';
+    import { UnidyAuth } from './build/index.esm.js';
 
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
     const status = document.getElementById('status');
     const tokenInfo = document.getElementById('token-info');
 
-    let auth;
+
+    let unidyAuth = UnidyAuth.init("http://localhost:3000", {
+      clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
+      scope: "openid profile email",
+      responseType: "id_token",
+    }, {
+      onAuth: (token) => {
+        console.log("Authenticated, token:", token)
+        updateUI(true);
+        displayToken(token);
+      },
+      onClose: () => {
+        console.log("Dialog clooooosed");
+      },
+      onError: () => {
+        console.error("Oh noo")
+      }
+    });
 
     loginButton.addEventListener('click', async () => {
-      auth = Unidy.auth("http://localhost:3000", {
-        clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
-        scope: "openid profile email",
-        responseType: "id_token",
-      }, {
-        onAuth: (token) => {
-          updateUI(true);
-          displayToken(token);
-        },
-        onClose: () => {
-          console.log("Dialog clooooosed");
-        },
-      });
-
-      await auth.show();
+      await unidyAuth.auth();
     });
 
     logoutButton.addEventListener('click', () => {
@@ -128,9 +131,9 @@
       }
     }
 
-    if (sessionStorage.getItem('idToken')) {
+    if (unidyAuth.isAuthenticated()) {
       updateUI(true);
-      displayToken(sessionStorage.getItem('idToken'));
+      displayToken(auth.getIdToken());
     }
   </script>
 </body>

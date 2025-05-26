@@ -10,7 +10,7 @@ export class UnidyLogin {
 
   @Prop() baseUrl = "";
   @Prop() clientId = "";
-  @Prop() scope = "openid profile email";
+  @Prop() scope = "openid email";
   @Prop() responseType = "id_token";
   @Prop() prompt = "login";
 
@@ -18,6 +18,8 @@ export class UnidyLogin {
   @State() iframeUrl = null;
 
   @Event() onAuth: EventEmitter<{ token: string }>;
+  @Event() onClose: EventEmitter<void>;
+  @Event() onError: EventEmitter<Error>;
 
   private dialogRef?: HTMLDialogElement;
 
@@ -33,7 +35,25 @@ export class UnidyLogin {
   }
 
   @Method()
+  async auth() {
+    this.setIframeUrl();
+    this.show();
+  }
+
+  @Method()
   async show() {
+    this.dialogRef.showModal();
+    this.isVisible = true;
+  }
+
+  @Method()
+  async hide() {
+    this.dialogRef.close();
+    this.isVisible = false;
+    this.onClose.emit();
+  }
+
+  private setIframeUrl() {
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
@@ -43,15 +63,6 @@ export class UnidyLogin {
     });
 
     this.iframeUrl = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
-
-    this.dialogRef.showModal();
-    this.isVisible = true;
-  }
-
-  @Method()
-  async hide() {
-    this.dialogRef.close();
-    this.isVisible = false;
   }
 
   private handleIframeLoad(event: Event) {
@@ -59,8 +70,7 @@ export class UnidyLogin {
 
     try {
       // TODO figure out 'blocked href access of cross-origin frame blabla...'
-      // TODO also blocked focus of input element in frame :sa
-
+      // TODO also blocked focus of input element in frame
       const url = new URL(iframe.contentWindow?.location.href || "");
 
       if (url.origin === window.location.origin) {
@@ -77,6 +87,7 @@ export class UnidyLogin {
       }
     } catch (error) {
       console.error("Error handling iframe load:", error);
+      this.onError.emit(error);
     }
   }
 
@@ -87,7 +98,7 @@ export class UnidyLogin {
           <button type="button" class="close-button" onClick={() => this.hide()}>
             ×
           </button>
-          <iframe src={this.iframeUrl} onLoad={(e) => this.handleIframeLoad(e)} class="login-iframe" title="Unidy Login" scrolling="no" />
+          <iframe src={this.iframeUrl} onLoad={(e) => this.handleIframeLoad(e)} class="login-iframe" title="Unidy Login" />
         </div>
       </dialog>
     );

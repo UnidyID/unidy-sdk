@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface UnidyLogin {
+        "auth": () => Promise<void>;
         "baseUrl": string;
         "clientId": string;
         "hide": () => Promise<void>;
@@ -23,6 +24,8 @@ export interface UnidyLoginCustomEvent<T> extends CustomEvent<T> {
 declare global {
     interface HTMLUnidyLoginElementEventMap {
         "onAuth": { token: string };
+        "onClose": void;
+        "onError": Error;
     }
     interface HTMLUnidyLoginElement extends Components.UnidyLogin, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyLoginElementEventMap>(type: K, listener: (this: HTMLUnidyLoginElement, ev: UnidyLoginCustomEvent<HTMLUnidyLoginElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -47,6 +50,8 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
         "clientId"?: string;
         "onOnAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
+        "onOnClose"?: (event: UnidyLoginCustomEvent<void>) => void;
+        "onOnError"?: (event: UnidyLoginCustomEvent<Error>) => void;
         "prompt"?: string;
         "responseType"?: string;
         "scope"?: string;
