@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Listen, Element, Method, Event, type EventEmitter } from "@stencil/core";
+import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
 @Component({
   tag: "unidy-login",
