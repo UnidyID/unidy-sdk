@@ -83,7 +83,6 @@
       scope: "openid profile email",
       responseType: "id_token",
       onAuth: (token) => {
-        console.log("Authenticated, token:", token)
         updateUI(true);
         displayToken(token);
       },
@@ -120,8 +119,10 @@
 
     function displayToken(token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = unidyAuth.parseTokenPayload()
+
         tokenInfo.textContent = JSON.stringify(payload, null, 2);
+
       } catch (error) {
         tokenInfo.textContent = 'Error parsing token';
       }

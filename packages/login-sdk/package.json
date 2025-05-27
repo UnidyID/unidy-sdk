@@ -13,7 +13,8 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@unidy.io/sdk-api-client": "workspace:*"
+    "@unidy.io/sdk-api-client": "workspace:*",
+    "jwt-decode": "4.0.0"
   },
   "devDependencies": {
     "@stencil/core": "^4.27.1",

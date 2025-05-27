@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 export interface UnidyAuthConfig {
   clientId: string;
   scope?: string;
@@ -9,6 +11,14 @@ export interface UnidyAuthConfig {
 }
 
 const UNIDY_ID_TOKEN = "UnidyIdToken";
+
+interface TokenPayload {
+  sub: string;
+  email?: string;
+  exp: number;
+  iat: number;
+  [key: string]: string | number | boolean | undefined;
+}
 
 export class Auth {
   private baseUrl: string;
@@ -44,11 +54,54 @@ export class Auth {
   }
 
   get isAuthenticated(): boolean {
-    return !!sessionStorage.getItem(UNIDY_ID_TOKEN);
+    const token = this.idToken;
+    if (!token) return false;
+
+    try {
+      const payload = this.parseTokenPayload();
+      if (!payload) return false;
+
+      // Check if token is expired
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp > now;
+    } catch {
+      return false;
+    }
   }
 
   get idToken(): string | null {
     return sessionStorage.getItem(UNIDY_ID_TOKEN);
+  }
+
+  parseTokenPayload(): TokenPayload | null {
+    const token = this.idToken;
+    if (!token) return null;
+
+    try {
+      return jwtDecode<TokenPayload>(token);
+    } catch (error) {
+      console.error("Failed to parse token:", error);
+      return null;
+    }
+  }
+
+  private validateAndStoreToken(token: string): boolean {
+    try {
+      const payload = jwtDecode<TokenPayload>(token);
+      const now = Math.floor(Date.now() / 1000);
+
+      if (payload.exp > now) {
+        sessionStorage.setItem(UNIDY_ID_TOKEN, token);
+        this.config.onAuth?.(token);
+        return true;
+      }
+
+      console.warn("Token expired");
+      return false;
+    } catch (error) {
+      console.error("Invalid token:", error);
+      return false;
+    }
   }
 
   private initAuth() {
@@ -73,8 +126,7 @@ export class Auth {
     this.component.addEventListener("onAuth", (event: CustomEvent) => {
       const { token } = event.detail;
       if (token) {
-        sessionStorage.setItem(UNIDY_ID_TOKEN, token);
-        this.config.onAuth?.(token);
+        this.validateAndStoreToken(token);
       }
     });
 
@@ -93,8 +145,7 @@ export class Auth {
         ?.split("=")[1];
 
       if (token) {
-        sessionStorage.setItem(UNIDY_ID_TOKEN, token);
-        this.config.onAuth?.(token);
+        this.validateAndStoreToken(token);
       }
     }
   }
