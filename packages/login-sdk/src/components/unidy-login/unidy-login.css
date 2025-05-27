@@ -11,7 +11,7 @@
   max-width: 90vw;
   max-height: 90vh;
   width: 400px;
-  height: 800px;
+  height: 720px;
   overflow: hidden;
 
   margin: auto
@@ -37,7 +37,7 @@
   height: 28px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
   color: #666;
   cursor: pointer;
   display: flex;

@@ -94,7 +94,7 @@ export class UnidyLogin {
         }
       }
     } catch (error) {
-      // Different origin location access blocked, this is expected but would still like to avoid this...
+      // Different origin location access blocked, this is expected but would still like to avoid this
       console.debug("Cross-origin iframe error:", error);
     }
   }

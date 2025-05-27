@@ -82,7 +82,6 @@
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
       responseType: "id_token",
-    }, {
       onAuth: (token) => {
         console.log("Authenticated, token:", token)
         updateUI(true);
@@ -128,9 +127,9 @@
       }
     }
 
-    if (unidyAuth.isAuthenticated()) {
+    if (unidyAuth.isAuthenticated) {
       updateUI(true);
-      displayToken(unidyAuth.getIdToken());
+      displayToken(unidyAuth.getIdToken);
     }
   </script>
 </body>
