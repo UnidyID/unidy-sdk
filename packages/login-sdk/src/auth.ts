@@ -31,6 +31,7 @@ export class Auth {
 
   logout() {
     this.component.logout();
+    sessionStorage.removeItem(UNIDY_ID_TOKEN);
   }
 
   show() {
@@ -39,7 +40,7 @@ export class Auth {
 
   hide() {
     this.component.hide();
-    this.config.onClose();
+    this.config.onClose?.();
   }
 
   get isAuthenticated(): boolean {
@@ -92,6 +93,7 @@ export class Auth {
         ?.split("=")[1];
 
       if (token) {
+        sessionStorage.setItem(UNIDY_ID_TOKEN, token);
         this.config.onAuth?.(token);
       }
     }
