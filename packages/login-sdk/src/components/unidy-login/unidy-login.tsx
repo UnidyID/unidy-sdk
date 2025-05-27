@@ -23,13 +23,6 @@ export class UnidyLogin {
 
   private dialog?: HTMLDialogElement;
 
-  @Listen("keydown", { target: "document" })
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.key === "Escape" && this.isVisible) {
-      this.hide();
-    }
-  }
-
   componentDidLoad() {
     this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
   }
@@ -111,7 +104,10 @@ export class UnidyLogin {
       <dialog class="unidy-dialog">
         <div class="dialog-content">
           <button type="button" class="close-button" onClick={() => this.hide()}>
-            ×
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Close">
+              <title>Close</title>
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </button>
 
           {this.isLoading && (
