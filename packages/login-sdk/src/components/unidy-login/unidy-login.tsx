@@ -26,7 +26,6 @@ export class UnidyLogin {
 
   componentDidLoad() {
     this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
-    //console.log("Iframe mounted:", this.dialog);
   }
 
   connectedCallback() {
