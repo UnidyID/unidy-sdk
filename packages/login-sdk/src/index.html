@@ -6,40 +6,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="/build/unidy-login.esm.js"></script>
   <script nomodule src="/build/unidy-login.js"></script>
-  <title>Login SDK Example</title>
+  <title>Dinamo Zagreb Fan Page</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem;
-      line-height: 1.5;
+    :root {
+      --dinamo-blue: #0a2463;
+      --dinamo-light-blue: #1e3a8a;
+      --dinamo-white: #ffffff;
+      --dinamo-gray: #f3f4f6;
     }
 
-    .container {
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--dinamo-gray);
+      color: #333;
+    }
+
+    .header {
+      background: var(--dinamo-blue);
+      color: var(--dinamo-white);
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
       gap: 1rem;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header img {
+      height: 60px;
+      width: auto;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin: 0.5rem 0 0;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .auth-section {
+      background: var(--dinamo-white);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
     .button {
-      background: #2563eb;
-      color: white;
+      background: var(--dinamo-white);
+      color: var(--dinamo-blue);
       border: none;
       padding: 0.75rem 1.5rem;
       border-radius: 0.4rem;
       cursor: pointer;
       font-size: 1rem;
+      transition: all 0.2s;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .button img {
+      height: 20px;
+      width: auto;
     }
 
     .button:hover {
-      background: #1d4ed8;
+      background: var(--dinamo-gray);
     }
 
     .status {
       padding: 1rem;
       border-radius: 0.4rem;
-      background: #f3f4f6;
+      background: var(--dinamo-gray);
     }
 
     .status.authenticated {
@@ -47,27 +113,136 @@
       color: #166534;
     }
 
+    .fan-content {
+      display: none;
+      background: var(--dinamo-white);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .fan-content.visible {
+      display: block;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .news-card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .news-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .news-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .news-card-content {
+      padding: 1.5rem;
+    }
+
+    .news-card h3 {
+      margin: 0 0 1rem;
+      color: var(--dinamo-blue);
+      font-weight: 700;
+    }
+
+    .news-card p {
+      margin: 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
     .token-info {
+      display: none;
       padding: 1rem;
       background: rgb(0, 0, 0, 0.05);
       font-family: monospace;
       white-space: pre-wrap;
+      margin-top: 1rem;
+      border-radius: 4px;
+    }
+
+    .unidy-logo {
+      max-width: 4rem;
+      height: 20px
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div>
-      <button id="login-button" class="button">Login with Unidy</button>
+  <div class="header">
+    <div class="header-left">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Dinamo_Zagreb_logo.png/960px-Dinamo_Zagreb_logo.png"
+        alt="GNK Dinamo Logo" style="height: 60px; width: auto;">
+      <div>
+        <h1>FC Dinamo Zagreb</h1>
+        <p>Official Fan Page</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="login-button" class="button">
+        Login with Unidy
+      </button>
       <button id="logout-button" class="button" style="display: none;">Logout</button>
     </div>
+  </div>
 
-    <div id="status" class="status">
-      Not authenticated
+  <div class="container">
+    <div class="auth-section">
+      <div id="status" class="status">
+        Not authenticated, login to get fan content
+      </div>
     </div>
-    <div id="token-info" class="token-info" style="display: none;">
+
+    <div id="fan-content" class="fan-content">
+      <h2>Welcome to the Dinamo Family!</h2>
+      <div class="news-grid">
+        <div class="news-card">
+          <img src="https://dinamo.blob.core.windows.net/dinamo/Repository/2015/9/zagreb_ligaprvaka1_1200x799.jpg"
+            alt="Maksimir Stadium">
+          <div class="news-card-content">
+            <h3>Maksimir Stadium</h3>
+            <p>Our historic home ground, where legends are made and memories are created. The stadium has been our
+              fortress since 1912.</p>
+          </div>
+        </div>
+        <div class="news-card">
+          <img
+            src="https://dinamo.blob.core.windows.net/dinamo/PXL_111219_27141577_5d7fb27a-4cab-4287-9ed1-997b7e6849d3.jpg"
+            alt="Team">
+          <div class="news-card-content">
+            <h3>Current Season</h3>
+            <p>Follow our journey in the Croatian First League and European competitions. Join us in our quest for
+              glory!</p>
+          </div>
+        </div>
+        <div class="news-card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTM7wtJmtykMQf78JR1_N9Pna_jsy1UX7dJtg&s"
+            alt="Fans">
+          <div class="news-card-content">
+            <h3>Bad Blue Boys</h3>
+            <p>Join the most passionate supporters in Croatian football. Be part of the famous BBB ultras group.</p>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div id="token-info" class="token-info"></div>
   </div>
 
   <script type="module">
@@ -77,27 +252,31 @@
     const logoutButton = document.getElementById('logout-button');
     const status = document.getElementById('status');
     const tokenInfo = document.getElementById('token-info');
+    const fanContent = document.getElementById('fan-content');
 
     let unidyAuth = UnidyAuth.init("http://localhost:3000", {
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
       responseType: "id_token",
+      prompt: 'none',
       onAuth: (token) => {
         updateUI(true);
         displayToken(token);
       },
       onClose: () => {
-        console.log("Dialog clooooosed");
+        console.log("Dialog closed");
       }
     });
 
+    unidyAuth.mountComponent();
+    unidyAuth.auth()
+
     loginButton.addEventListener('click', async () => {
-      await unidyAuth.auth();
+      await unidyAuth.show();
     });
 
     logoutButton.addEventListener('click', () => {
-      unidyAuth.logout()
-      sessionStorage.removeItem('UnidyIdToken');
+      unidyAuth.logout();
       updateUI(false);
     });
 
@@ -105,24 +284,30 @@
       if (isAuthenticated) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
-        status.textContent = 'Authenticated';
+        try {
+          const payload = unidyAuth.parseTokenPayload();
+          const userName = payload.name || payload.email || 'Dinamo Fan';
+          status.textContent = `Welcome back, ${userName}!`;
+        } catch (error) {
+          status.textContent = 'Welcome to the Dinamo Family!';
+        }
         status.classList.add('authenticated');
+        fanContent.classList.add('visible');
         tokenInfo.style.display = 'block';
       } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
-        status.textContent = 'Not authenticated';
+        status.textContent = 'Please login to access fan content';
         status.classList.remove('authenticated');
+        fanContent.classList.remove('visible');
         tokenInfo.style.display = 'none';
       }
     }
 
     function displayToken(token) {
       try {
-        const payload = unidyAuth.parseTokenPayload()
-
+        const payload = unidyAuth.parseTokenPayload();
         tokenInfo.textContent = JSON.stringify(payload, null, 2);
-
       } catch (error) {
         tokenInfo.textContent = 'Error parsing token';
       }

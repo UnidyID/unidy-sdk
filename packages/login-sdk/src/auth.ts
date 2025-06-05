@@ -34,14 +34,31 @@ export class Auth {
     this.extractTokenIfPresent();
   }
 
+  mountComponent() {
+    if (this.isInitialized) return;
+
+    Object.assign(this.component, {
+      baseUrl: this.baseUrl,
+      clientId: this.config.clientId,
+      scope: this.config.scope,
+      responseType: this.config.responseType,
+      prompt: this.config.prompt,
+    });
+
+    this.initEventListeners();
+
+    document.body.appendChild(this.component);
+
+    this.isInitialized = true;
+  }
+
   auth() {
-    this.initAuth();
     this.component.auth();
   }
 
   logout() {
-    this.component.logout();
     sessionStorage.removeItem(UNIDY_ID_TOKEN);
+    this.component.logout();
   }
 
   show() {
@@ -50,7 +67,10 @@ export class Auth {
 
   hide() {
     this.component.hide();
-    this.config.onClose?.();
+  }
+
+  get idToken(): string | null {
+    return sessionStorage.getItem(UNIDY_ID_TOKEN);
   }
 
   get isAuthenticated(): boolean {
@@ -69,11 +89,7 @@ export class Auth {
     }
   }
 
-  get idToken(): string | null {
-    return sessionStorage.getItem(UNIDY_ID_TOKEN);
-  }
-
-  parseTokenPayload(): TokenPayload | null {
+  private parseTokenPayload(): TokenPayload | null {
     const token = this.idToken;
     if (!token) return null;
 
@@ -102,24 +118,6 @@ export class Auth {
       console.error("Invalid token:", error);
       return false;
     }
-  }
-
-  private initAuth() {
-    if (this.isInitialized) return;
-
-    Object.assign(this.component, {
-      baseUrl: this.baseUrl,
-      clientId: this.config.clientId,
-      scope: this.config.scope,
-      responseType: this.config.responseType,
-      prompt: this.config.prompt,
-    });
-
-    this.initEventListeners();
-
-    document.body.appendChild(this.component);
-
-    this.isInitialized = true;
   }
 
   private initEventListeners() {

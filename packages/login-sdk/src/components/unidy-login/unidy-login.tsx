@@ -14,23 +14,28 @@ export class UnidyLogin {
   @Prop() responseType = "id_token";
   @Prop() prompt = "login";
 
-  @State() isVisible = false;
   @State() iframeUrl = "";
   @State() isLoading = false;
+  @State() popupWindow: Window | null = null;
 
   @Event() onAuth: EventEmitter<{ token: string }>;
   @Event() onClose: EventEmitter<void>;
 
   private dialog?: HTMLDialogElement;
+  private popupCheckInterval?: number;
 
   componentDidLoad() {
     this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
+    //console.log("Iframe mounted:", this.dialog);
+  }
+
+  connectedCallback() {
+    window.addEventListener("message", this.handleIframeMessage.bind(this));
   }
 
   @Method()
   async auth() {
-    this.setIframeUrl();
-    this.show();
+    this.setAuthorizeUrl();
   }
 
   @Method()
@@ -41,18 +46,16 @@ export class UnidyLogin {
   @Method()
   async show() {
     this.dialog.showModal();
-    this.isVisible = true;
   }
 
   @Method()
   async hide() {
     this.dialog.close();
-    this.isVisible = false;
     this.isLoading = false;
     this.onClose.emit();
   }
 
-  private setIframeUrl() {
+  private setAuthorizeUrl() {
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
@@ -74,28 +77,76 @@ export class UnidyLogin {
     this.isLoading = false;
 
     try {
-      const iframeUrl = iframe.contentWindow?.location.href;
+      const token = this.tryExtractToken(iframe.contentWindow?.location.href);
 
-      if (iframeUrl) {
-        const url = new URL(iframeUrl);
-
-        // Redirect url has same origin
-        if (url.origin === window.location.origin) {
-          const token = url.hash
-            .substring(1)
-            .split("&")
-            .find((param) => param.startsWith("id_token="))
-            ?.split("=")[1];
-
-          if (token) {
-            this.hide();
-            this.onAuth.emit({ token });
-          }
-        }
+      if (token) {
+        this.dialog.close();
+        this.isLoading = false;
+        this.onAuth.emit({ token });
       }
     } catch (error) {
       // Different origin location access blocked, this is expected but would still like to avoid this
       console.debug("Cross-origin iframe error:", error);
+    }
+  }
+
+  private handleIframeMessage(event: MessageEvent) {
+    if (event.source !== this.el.shadowRoot?.querySelector("iframe")?.contentWindow) {
+      return;
+    }
+
+    if (event.data?.type === "SOCIAL_LOGIN_STARTED") {
+      const { url } = event.data;
+
+      this.openPopupWithForm(url);
+    }
+  }
+
+  private openPopupWithForm(url: string) {
+    const width = 500;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    this.popupWindow = window.open(
+      url,
+      "Unidy",
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`,
+    );
+
+    this.dialog.close();
+    this.startPopupTokenCheck();
+  }
+
+  private startPopupTokenCheck() {
+    this.popupCheckInterval = window.setInterval(() => {
+      try {
+        const token = this.tryExtractToken(this.popupWindow.location.href);
+
+        if (token) {
+          this.popupWindow.close();
+
+          clearInterval(this.popupCheckInterval);
+          this.popupCheckInterval = undefined;
+
+          this.onAuth.emit({ token });
+        }
+      } catch (error) {
+        console.debug("Cross-origin error:", error);
+      }
+    }, 100);
+  }
+
+  private tryExtractToken(windowHref: string) {
+    const url = new URL(windowHref);
+
+    if (url.origin === window.location.origin) {
+      const token = url.hash
+        .substring(1)
+        .split("&")
+        .find((param) => param.startsWith("id_token="))
+        ?.split("=")[1];
+      return token;
     }
   }
 

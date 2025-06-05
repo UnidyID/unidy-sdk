@@ -11,6 +11,7 @@ export const UnidyAuth = {
 
     const instance = new Auth(baseUrl, config);
     window[AUTH_INSTANCE_KEY] = instance;
+
     return instance;
   },
 };
