@@ -5,7 +5,7 @@ export interface UnidyAuthConfig {
   scope?: string;
   responseType?: string;
   prompt?: string;
-  maxAge?: number;
+  redirectUrl?: string;
   onAuth?: (token: string) => void;
   onClose?: () => void;
 }
@@ -30,8 +30,6 @@ export class Auth {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
-
-    this.extractTokenIfPresent();
   }
 
   mountComponent() {
@@ -43,6 +41,7 @@ export class Auth {
       scope: this.config.scope,
       responseType: this.config.responseType,
       prompt: this.config.prompt,
+      redirectUrl: this.config.redirectUrl,
     });
 
     this.initEventListeners();
@@ -131,20 +130,5 @@ export class Auth {
     this.component.addEventListener("onClose", () => {
       this.config.onClose?.();
     });
-  }
-
-  private extractTokenIfPresent() {
-    const hash = window.location.hash;
-    if (hash) {
-      const token = hash
-        .substring(1)
-        .split("&")
-        .find((param) => param.startsWith("id_token="))
-        ?.split("=")[1];
-
-      if (token) {
-        this.validateAndStoreToken(token);
-      }
-    }
   }
 }
