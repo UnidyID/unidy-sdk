@@ -1,5 +1,11 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
+interface AuthResult {
+  success: boolean;
+  token?: string;
+  error?: string;
+}
+
 @Component({
   tag: "unidy-login",
   styleUrl: "unidy-login.css",
@@ -24,6 +30,7 @@ export class UnidyLogin {
 
   private dialog?: HTMLDialogElement;
   private popupCheckInterval?: number;
+  private authPromiseResolve: ((result: AuthResult) => void) | null = null;
 
   componentDidLoad() {
     this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
@@ -34,9 +41,13 @@ export class UnidyLogin {
   }
 
   @Method()
-  async auth(trySilentAuth = false) {
+  async auth(trySilentAuth = false): Promise<AuthResult> {
     this.isSilentAuth = trySilentAuth;
     this.setAuthorizeUrl();
+
+    return new Promise((resolve) => {
+      this.authPromiseResolve = resolve;
+    });
   }
 
   @Method()
@@ -77,16 +88,30 @@ export class UnidyLogin {
     this.isLoading = false;
 
     try {
-      const token = this.extractToken(iframe.contentWindow?.location.href);
+      const token = this.extractParam(iframe.contentWindow?.location.href, "id_token");
 
       if (token) {
         this.dialog.close();
         this.isLoading = false;
         this.onAuth.emit({ token });
+
+        this.authPromiseResolve?.({ success: true, token });
+        this.authPromiseResolve = null;
+        return;
       }
 
       if (this.isSilentAuth) {
         this.isSilentAuth = false;
+
+        if (!token) {
+          const error = this.extractParam(iframe.contentWindow?.location.href, "error");
+          if (error) {
+            this.authPromiseResolve?.({ success: false, error });
+          } else {
+            this.authPromiseResolve?.({ success: false, error: "No token received" });
+          }
+          this.authPromiseResolve = null;
+        }
       }
     } catch (error) {
       console.debug("Cross-origin iframe error:", error);
@@ -123,7 +148,7 @@ export class UnidyLogin {
   private startPopupTokenCheck() {
     this.popupCheckInterval = window.setInterval(() => {
       try {
-        const token = this.extractToken(this.popupWindow.location.href);
+        const token = this.extractParam(this.popupWindow.location.href, "id_token");
 
         if (token) {
           this.popupWindow.close();
@@ -132,6 +157,8 @@ export class UnidyLogin {
           this.popupCheckInterval = undefined;
 
           this.onAuth.emit({ token });
+          this.authPromiseResolve?.({ success: true, token });
+          this.authPromiseResolve = null;
         }
       } catch (error) {
         console.debug("Cross-origin error:", error);
@@ -139,16 +166,16 @@ export class UnidyLogin {
     }, 100);
   }
 
-  private extractToken(windowHref: string) {
+  private extractParam(windowHref: string, paramName: string) {
     const url = new URL(windowHref);
 
     if (url.origin === window.location.origin) {
-      const token = url.hash
+      const param = url.hash
         .substring(1)
         .split("&")
-        .find((param) => param.startsWith("id_token="))
+        .find((param) => param.startsWith(`${paramName}=`))
         ?.split("=")[1];
-      return token;
+      return param;
     }
   }
 

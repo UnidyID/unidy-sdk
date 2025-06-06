@@ -31,7 +31,7 @@ export class Auth {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
-    this.storeToken = config.storeTokenInSession || true;
+    this.storeToken = config.storeTokenInSession;
   }
 
   mountComponent() {
@@ -53,8 +53,9 @@ export class Auth {
     this.isInitialized = true;
   }
 
-  auth(trySilentAuth = false) {
-    this.component.auth(trySilentAuth);
+  async auth(trySilentAuth = false) {
+    console.log("Auth started, silent: ", trySilentAuth);
+    return this.component.auth(trySilentAuth);
   }
 
   logout() {

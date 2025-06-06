@@ -257,8 +257,10 @@
     let unidyAuth = UnidyAuth.init("http://localhost:3000", {
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
+      redirectUrl: "http://localhost:3333/profile",
+      storeTokenInSession: true,
       onAuth: (token) => {
-        updateUI(true);
+        console.log("We can still use callbacks, token", token)
       }
     });
 
@@ -267,15 +269,29 @@
     if (unidyAuth.isAuthenticated()) {
       updateUI(true);
     } else {
-      // silent auth attempt
-      unidyAuth.auth({ silentAuth: true })
+
+      if (window.location.href === `${window.location.origin}/`) {
+        // silent auth attempt
+        const res = await unidyAuth.auth({ silentAuth: true })
+
+        if (res.success) {
+          console.log("WOoohooo, token", res.token)
+        } else {
+          console.log("Error:", res.error)
+        }
+      }
     }
 
     loginButton.addEventListener('click', async () => {
-      await unidyAuth.auth()
-
-      // maybe show should be default behaviour for non-silent auth
+      // show should probably be default behaviour for non-silent auth
       unidyAuth.show();
+
+      const res = await unidyAuth.auth()
+      if (res.success) {
+        console.log("Wooohooo, token", res.token)
+      } else {
+        console.log("Error:", res.error)
+      }
     });
 
     logoutButton.addEventListener('click', () => {

@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface UnidyLogin {
-        "auth": (trySilentAuth?: boolean) => Promise<void>;
+        "auth": (trySilentAuth?: boolean) => Promise<AuthResult>;
         "baseUrl": string;
         "clientId": string;
         "hide": () => Promise<void>;
