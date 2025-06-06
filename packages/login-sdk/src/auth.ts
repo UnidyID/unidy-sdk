@@ -7,7 +7,6 @@ export interface UnidyAuthConfig {
   prompt?: string;
   redirectUrl?: string;
   onAuth?: (token: string) => void;
-  onClose?: () => void;
 }
 
 const UNIDY_ID_TOKEN = "UnidyIdToken";
@@ -125,10 +124,6 @@ export class Auth {
       if (token) {
         this.validateAndStoreToken(token);
       }
-    });
-
-    this.component.addEventListener("onClose", () => {
-      this.config.onClose?.();
     });
   }
 }

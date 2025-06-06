@@ -26,7 +26,6 @@ export interface UnidyLoginCustomEvent<T> extends CustomEvent<T> {
 declare global {
     interface HTMLUnidyLoginElementEventMap {
         "onAuth": { token: string };
-        "onClose": void;
     }
     interface HTMLUnidyLoginElement extends Components.UnidyLogin, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyLoginElementEventMap>(type: K, listener: (this: HTMLUnidyLoginElement, ev: UnidyLoginCustomEvent<HTMLUnidyLoginElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -51,7 +50,6 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
         "clientId"?: string;
         "onOnAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
-        "onOnClose"?: (event: UnidyLoginCustomEvent<void>) => void;
         "prompt"?: string;
         "redirectUrl"?: string;
         "responseType"?: string;

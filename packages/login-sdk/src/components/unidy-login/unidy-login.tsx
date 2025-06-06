@@ -21,7 +21,6 @@ export class UnidyLogin {
   @State() isSilentAuth = false;
 
   @Event() onAuth: EventEmitter<{ token: string }>;
-  @Event() onClose: EventEmitter<void>;
 
   private dialog?: HTMLDialogElement;
   private popupCheckInterval?: number;
@@ -54,7 +53,6 @@ export class UnidyLogin {
   async hide() {
     this.dialog.close();
     this.isLoading = false;
-    this.onClose.emit();
   }
 
   private setAuthorizeUrl() {
