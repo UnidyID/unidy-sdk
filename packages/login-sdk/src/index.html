@@ -257,7 +257,6 @@
     let unidyAuth = UnidyAuth.init("http://localhost:3000", {
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
-      responseType: "id_token",
       onAuth: (token) => {
         updateUI(true);
       }
@@ -265,7 +264,7 @@
 
     unidyAuth.mountComponent();
 
-    if (unidyAuth.isAuthenticated) {
+    if (unidyAuth.isAuthenticated()) {
       updateUI(true);
     } else {
       // silent auth attempt

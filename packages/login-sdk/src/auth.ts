@@ -6,10 +6,11 @@ export interface UnidyAuthConfig {
   responseType?: string;
   prompt?: string;
   redirectUrl?: string;
+  storeTokenInSession: boolean;
   onAuth?: (token: string) => void;
 }
 
-const UNIDY_ID_TOKEN = "UnidyIdToken";
+const UNIDY_ID_TOKEN = "UnidyIDToken";
 
 interface TokenPayload {
   sub: string;
@@ -24,11 +25,13 @@ export class Auth {
   private config: UnidyAuthConfig;
   private component: HTMLUnidyLoginElement;
   private isInitialized = false;
+  private storeToken = true;
 
   constructor(baseUrl: string, config: UnidyAuthConfig) {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
+    this.storeToken = config.storeTokenInSession || true;
   }
 
   mountComponent() {
@@ -68,18 +71,21 @@ export class Auth {
   }
 
   get idToken(): string | null {
+    if (!this.storeToken) {
+      return null;
+    }
+
     return sessionStorage.getItem(UNIDY_ID_TOKEN);
   }
 
-  get isAuthenticated(): boolean {
-    const token = this.idToken;
+  isAuthenticated(token_: string = null): boolean {
+    const token = this.idToken || token_;
     if (!token) return false;
 
     try {
       const payload = this.parseTokenPayload();
       if (!payload) return false;
 
-      // Check if token is expired
       const now = Math.floor(Date.now() / 1000);
       return payload.exp > now;
     } catch {
@@ -87,8 +93,8 @@ export class Auth {
     }
   }
 
-  private parseTokenPayload(): TokenPayload | null {
-    const token = this.idToken;
+  parseTokenPayload(token_: string = null): TokenPayload | null {
+    const token = this.idToken || token_;
     if (!token) return null;
 
     try {
@@ -105,12 +111,15 @@ export class Auth {
       const now = Math.floor(Date.now() / 1000);
 
       if (payload.exp > now) {
-        sessionStorage.setItem(UNIDY_ID_TOKEN, token);
+        if (this.storeToken) {
+          sessionStorage.setItem(UNIDY_ID_TOKEN, token);
+        }
+
         this.config.onAuth?.(token);
         return true;
       }
 
-      console.warn("Token expired");
+      console.warn("ID Token expired");
       return false;
     } catch (error) {
       console.error("Invalid token:", error);
