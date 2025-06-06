@@ -9,9 +9,28 @@
     },
     "packages/components": {
       "name": "@unidy.io/components",
-      "version": "0.0.9",
+      "version": "0.0.13",
       "dependencies": {
         "@unidy.io/sdk-api-client": "workspace:*",
+      },
+      "devDependencies": {
+        "@stencil/core": "^4.27.1",
+        "@tailwindcss/postcss": "^4.1.7",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.13.5",
+        "autoprefixer": "^10.4.21",
+        "jest": "^29.7.0",
+        "jest-cli": "^29.7.0",
+        "stencil-tailwind-plugin": "^2.0.5",
+        "tailwindcss": "^4.1.7",
+      },
+    },
+    "packages/login-sdk": {
+      "name": "@unidy.io/auth",
+      "version": "0.0.1",
+      "dependencies": {
+        "@unidy.io/sdk-api-client": "workspace:*",
+        "jwt-decode": "4.0.0",
       },
       "devDependencies": {
         "@stencil/core": "^4.27.1",
@@ -258,6 +277,8 @@
     "@types/yargs": ["@types/yargs@17.0.33", "", { "dependencies": { "@types/yargs-parser": "*" } }, "sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA=="],
 
     "@types/yargs-parser": ["@types/yargs-parser@21.0.3", "", {}, "sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ=="],
+
+    "@unidy.io/auth": ["@unidy.io/auth@workspace:packages/login-sdk"],
 
     "@unidy.io/components": ["@unidy.io/components@workspace:packages/components"],
 
@@ -544,6 +565,8 @@
     "json5": ["json5@2.2.3", "", { "bin": { "json5": "lib/cli.js" } }, "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg=="],
 
     "jsonfile": ["jsonfile@6.1.0", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ=="],
+
+    "jwt-decode": ["jwt-decode@4.0.0", "", {}, "sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA=="],
 
     "kleur": ["kleur@3.0.3", "", {}, "sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w=="],
 
