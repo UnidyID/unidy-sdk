@@ -7,12 +7,13 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface UnidyLogin {
-        "auth": () => Promise<void>;
+        "auth": (trySilentAuth?: boolean) => Promise<void>;
         "baseUrl": string;
         "clientId": string;
         "hide": () => Promise<void>;
         "logout": () => Promise<void>;
         "prompt": string;
+        "redirectUrl": string;
         "responseType": string;
         "scope": string;
         "show": () => Promise<void>;
@@ -52,6 +53,7 @@ declare namespace LocalJSX {
         "onOnAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         "onOnClose"?: (event: UnidyLoginCustomEvent<void>) => void;
         "prompt"?: string;
+        "redirectUrl"?: string;
         "responseType"?: string;
         "scope"?: string;
     }

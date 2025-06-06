@@ -52,8 +52,8 @@ export class Auth {
     this.isInitialized = true;
   }
 
-  auth() {
-    this.component.auth();
+  auth(trySilentAuth = false) {
+    this.component.auth(trySilentAuth);
   }
 
   logout() {
@@ -147,7 +147,4 @@ export class Auth {
       }
     }
   }
-
-  // TODO silent login
-  // check iframe
 }

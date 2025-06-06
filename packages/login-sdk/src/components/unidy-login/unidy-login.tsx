@@ -12,11 +12,13 @@ export class UnidyLogin {
   @Prop() clientId = "";
   @Prop() scope = "openid email";
   @Prop() responseType = "id_token";
-  @Prop() prompt = "login";
+  @Prop() prompt = "";
+  @Prop() redirectUrl = window.location.origin;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
   @State() popupWindow: Window | null = null;
+  @State() isSilentAuth = false;
 
   @Event() onAuth: EventEmitter<{ token: string }>;
   @Event() onClose: EventEmitter<void>;
@@ -33,7 +35,8 @@ export class UnidyLogin {
   }
 
   @Method()
-  async auth() {
+  async auth(trySilentAuth = false) {
+    this.isSilentAuth = trySilentAuth;
     this.setAuthorizeUrl();
   }
 
@@ -59,8 +62,8 @@ export class UnidyLogin {
       client_id: this.clientId,
       scope: this.scope,
       response_type: this.responseType,
-      prompt: this.prompt,
-      redirect_uri: window.location.origin,
+      redirect_uri: this.redirectUrl,
+      prompt: this.isSilentAuth ? "none" : this.prompt,
     });
 
     const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
@@ -76,15 +79,18 @@ export class UnidyLogin {
     this.isLoading = false;
 
     try {
-      const token = this.tryExtractToken(iframe.contentWindow?.location.href);
+      const token = this.extractToken(iframe.contentWindow?.location.href);
 
       if (token) {
         this.dialog.close();
         this.isLoading = false;
         this.onAuth.emit({ token });
       }
+
+      if (this.isSilentAuth) {
+        this.isSilentAuth = false;
+      }
     } catch (error) {
-      // Different origin location access blocked, this is expected but would still like to avoid this
       console.debug("Cross-origin iframe error:", error);
     }
   }
@@ -96,7 +102,6 @@ export class UnidyLogin {
 
     if (event.data?.type === "SOCIAL_LOGIN_STARTED") {
       const { url } = event.data;
-
       this.openPopupWithForm(url);
     }
   }
@@ -120,7 +125,7 @@ export class UnidyLogin {
   private startPopupTokenCheck() {
     this.popupCheckInterval = window.setInterval(() => {
       try {
-        const token = this.tryExtractToken(this.popupWindow.location.href);
+        const token = this.extractToken(this.popupWindow.location.href);
 
         if (token) {
           this.popupWindow.close();
@@ -136,7 +141,7 @@ export class UnidyLogin {
     }, 100);
   }
 
-  private tryExtractToken(windowHref: string) {
+  private extractToken(windowHref: string) {
     const url = new URL(windowHref);
 
     if (url.origin === window.location.origin) {

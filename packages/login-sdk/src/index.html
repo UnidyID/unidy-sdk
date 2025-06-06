@@ -258,10 +258,8 @@
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
       responseType: "id_token",
-      prompt: 'login',
       onAuth: (token) => {
         updateUI(true);
-        displayToken(token);
       },
       onClose: () => {
         console.log("Dialog closed");
@@ -269,10 +267,19 @@
     });
 
     unidyAuth.mountComponent();
-    unidyAuth.auth()
+
+    if (unidyAuth.isAuthenticated) {
+      updateUI(true);
+    } else {
+      // silent auth attempt
+      unidyAuth.auth({ silentAuth: true })
+    }
 
     loginButton.addEventListener('click', async () => {
-      await unidyAuth.show();
+      await unidyAuth.auth()
+
+      // maybe show should be default behaviour for non-silent auth
+      unidyAuth.show();
     });
 
     logoutButton.addEventListener('click', () => {
@@ -294,6 +301,8 @@
         status.classList.add('authenticated');
         fanContent.classList.add('visible');
         tokenInfo.style.display = 'block';
+
+        displayToken();
       } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
@@ -304,18 +313,13 @@
       }
     }
 
-    function displayToken(token) {
+    function displayToken() {
       try {
         const payload = unidyAuth.parseTokenPayload();
         tokenInfo.textContent = JSON.stringify(payload, null, 2);
       } catch (error) {
         tokenInfo.textContent = 'Error parsing token';
       }
-    }
-
-    if (unidyAuth.isAuthenticated) {
-      updateUI(true);
-      displayToken(unidyAuth.getIdToken);
     }
   </script>
 </body>
