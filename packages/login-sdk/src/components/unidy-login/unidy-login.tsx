@@ -72,8 +72,13 @@ export class UnidyLogin {
       scope: this.scope,
       response_type: this.responseType,
       redirect_uri: this.redirectUrl,
-      prompt: this.isSilentAuth ? "none" : this.prompt,
     });
+
+    if (this.isSilentAuth) {
+      params.append("prompt", "none");
+    } else if (this.prompt) {
+      params.append("prompt", this.prompt);
+    }
 
     const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
 
@@ -105,11 +110,13 @@ export class UnidyLogin {
 
         if (!token) {
           const error = this.extractParam(iframe.contentWindow?.location.href, "error");
+
           if (error) {
             this.authPromiseResolve?.({ success: false, error });
           } else {
             this.authPromiseResolve?.({ success: false, error: "No token received" });
           }
+
           this.authPromiseResolve = null;
         }
       }

@@ -53,9 +53,8 @@ export class Auth {
     this.isInitialized = true;
   }
 
-  async auth(trySilentAuth = false) {
-    console.log("Auth started, silent: ", trySilentAuth);
-    return this.component.auth(trySilentAuth);
+  async auth(silent = false) {
+    return this.component.auth(silent);
   }
 
   logout() {
@@ -120,7 +119,7 @@ export class Auth {
         return true;
       }
 
-      console.warn("ID Token expired");
+      console.log("ID Token expired");
       return false;
     } catch (error) {
       console.error("Invalid token:", error);
