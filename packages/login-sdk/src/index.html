@@ -263,7 +263,6 @@
         console.log("We can still use onAuth callback: ", token)
       }
     });
-
     unidyAuth.mountComponent();
 
     if (unidyAuth.isAuthenticated()) {
@@ -283,10 +282,8 @@
     }
 
     loginButton.addEventListener('click', async () => {
-      // show should probably be default behaviour for non-silent auth ?
-      unidyAuth.show();
-
       const res = await unidyAuth.auth()
+
       if (res.success) {
         console.log("Token", res.token);
         updateUI(true);

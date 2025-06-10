@@ -54,6 +54,10 @@ export class Auth {
   }
 
   async auth(silent = false) {
+    if (!silent) {
+      this.show();
+    }
+
     return this.component.auth(silent);
   }
 
