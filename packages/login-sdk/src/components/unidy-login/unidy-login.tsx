@@ -6,6 +6,8 @@ interface AuthResult {
   error?: string;
 }
 
+type PromptOption = "none" | "login" | "consent" | "select_account" | null;
+
 @Component({
   tag: "unidy-login",
   styleUrl: "unidy-login.css",
@@ -14,11 +16,11 @@ interface AuthResult {
 export class UnidyLogin {
   @Element() el!: HTMLElement;
 
-  @Prop() baseUrl = "";
-  @Prop() clientId = "";
+  @Prop() baseUrl!: string;
+  @Prop() clientId!: string;
   @Prop() scope = "openid email";
   @Prop() responseType = "id_token";
-  @Prop() prompt = "";
+  @Prop() prompt: PromptOption = null;
   @Prop() redirectUrl = window.location.origin;
 
   @State() iframeUrl = "";
@@ -28,13 +30,9 @@ export class UnidyLogin {
 
   @Event() onAuth: EventEmitter<{ token: string }>;
 
-  private dialog?: HTMLDialogElement;
+  private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;
   private authPromiseResolve: ((result: AuthResult) => void) | null = null;
-
-  componentDidLoad() {
-    this.dialog = this.el.shadowRoot.querySelector("dialog") as HTMLDialogElement;
-  }
 
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
@@ -63,7 +61,6 @@ export class UnidyLogin {
   @Method()
   async hide() {
     this.dialog.close();
-    this.isLoading = false;
   }
 
   private setAuthorizeUrl() {
@@ -186,9 +183,13 @@ export class UnidyLogin {
     }
   }
 
+  private setDialogRef = (el: Element | null) => {
+    this.dialog = el as HTMLDialogElement;
+  };
+
   render() {
     return (
-      <dialog class="unidy-dialog">
+      <dialog class="unidy-dialog" ref={this.setDialogRef}>
         <div class="dialog-content">
           <button type="button" class="close-button" onClick={() => this.hide()}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Close">
@@ -199,6 +200,7 @@ export class UnidyLogin {
 
           {this.isLoading && (
             <div class="loading-spinner">
+              {/* biome-ignore lint/a11y/useSemanticElements: */}
               <svg class="spinner" viewBox="0 0 50 50" role="status" aria-label="Loading">
                 <circle class="spinner-circle" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
                 <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />

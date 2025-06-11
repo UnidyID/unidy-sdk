@@ -12,7 +12,7 @@ export namespace Components {
         "clientId": string;
         "hide": () => Promise<void>;
         "logout": () => Promise<void>;
-        "prompt": string;
+        "prompt": PromptOption;
         "redirectUrl": string;
         "responseType": string;
         "scope": string;
@@ -47,10 +47,10 @@ declare global {
 }
 declare namespace LocalJSX {
     interface UnidyLogin {
-        "baseUrl"?: string;
-        "clientId"?: string;
+        "baseUrl": string;
+        "clientId": string;
         "onOnAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
-        "prompt"?: string;
+        "prompt"?: PromptOption;
         "redirectUrl"?: string;
         "responseType"?: string;
         "scope"?: string;
