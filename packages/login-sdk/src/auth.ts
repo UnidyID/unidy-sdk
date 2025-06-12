@@ -23,7 +23,7 @@ interface TokenPayload {
 export class Auth {
   private baseUrl: string;
   private config: UnidyAuthConfig;
-  private component: HTMLUnidyLoginElement;
+  public readonly component: HTMLUnidyLoginElement;
   private isInitialized = false;
 
   constructor(baseUrl: string, config: UnidyAuthConfig) {
