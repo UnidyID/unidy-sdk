@@ -94,11 +94,8 @@ export class UnidyLogin {
 
       if (token) {
         this.dialog.close();
-        this.isLoading = false;
-        this.onAuth.emit({ token });
+        this.handleSuccessfulAuth(token);
 
-        this.authPromiseResolve?.({ success: true, token });
-        this.authPromiseResolve = null;
         return;
       }
 
@@ -153,21 +150,27 @@ export class UnidyLogin {
     this.popupCheckInterval = window.setInterval(() => {
       try {
         const token = this.extractParam(this.popupWindow.location.href, "id_token");
+        if (!token) return;
 
-        if (token) {
-          this.popupWindow.close();
-
-          clearInterval(this.popupCheckInterval);
-          this.popupCheckInterval = undefined;
-
-          this.onAuth.emit({ token });
-          this.authPromiseResolve?.({ success: true, token });
-          this.authPromiseResolve = null;
-        }
+        this.cleanupPopup();
+        this.handleSuccessfulAuth(token);
       } catch (error) {
         console.debug("Cross-origin error:", error);
       }
     }, 100);
+  }
+
+  private cleanupPopup() {
+    this.popupWindow.close();
+    clearInterval(this.popupCheckInterval);
+    this.popupCheckInterval = undefined;
+  }
+
+  private handleSuccessfulAuth(token: string) {
+    this.onAuth.emit({ token });
+
+    this.authPromiseResolve?.({ success: true, token });
+    this.authPromiseResolve = null;
   }
 
   private extractParam(windowHref: string, paramName: string) {
