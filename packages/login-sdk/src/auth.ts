@@ -25,13 +25,11 @@ export class Auth {
   private config: UnidyAuthConfig;
   private component: HTMLUnidyLoginElement;
   private isInitialized = false;
-  private storeToken = true;
 
   constructor(baseUrl: string, config: UnidyAuthConfig) {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
-    this.storeToken = config.storeTokenInSession;
   }
 
   mountComponent() {
@@ -75,7 +73,7 @@ export class Auth {
   }
 
   get idToken(): string | null {
-    if (!this.storeToken) {
+    if (!this.config.storeTokenInSession) {
       return null;
     }
 
@@ -115,7 +113,7 @@ export class Auth {
       const now = Math.floor(Date.now() / 1000);
 
       if (payload.exp > now) {
-        if (this.storeToken) {
+        if (this.config.storeTokenInSession) {
           sessionStorage.setItem(UNIDY_ID_TOKEN, token);
         }
 

@@ -97,3 +97,4 @@ interface UnidyAuthConfig {
 - `isAuthenticated()`: Checks if the user is currently authenticated
 
 - `parseTokenPayload()`: Returns the decoded JWT token payload
+
