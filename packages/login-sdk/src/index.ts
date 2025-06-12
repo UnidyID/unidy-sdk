@@ -1,16 +1,20 @@
 import { Auth, type UnidyAuthConfig } from "./auth";
 
-const AUTH_INSTANCE_KEY = "UnidyAuthInstance";
+declare global {
+  interface Window {
+    UnidyAuthInstance?: Auth;
+  }
+}
 
 export const UnidyAuth = {
   init: (baseUrl: string, config: UnidyAuthConfig) => {
-    const existingInstance = window[AUTH_INSTANCE_KEY];
+    const existingInstance = window.UnidyAuthInstance;
     if (existingInstance) {
       return existingInstance;
     }
 
     const instance = new Auth(baseUrl, config);
-    window[AUTH_INSTANCE_KEY] = instance;
+    window.UnidyAuthInstance = instance;
 
     return instance;
   },
