@@ -174,12 +174,8 @@ export class UnidyLogin {
     const url = new URL(windowHref);
 
     if (url.origin === window.location.origin) {
-      const param = url.hash
-        .substring(1)
-        .split("&")
-        .find((param) => param.startsWith(`${paramName}=`))
-        ?.split("=")[1];
-      return param;
+      const hashParams = new URLSearchParams(url.hash.substring(1));
+      return hashParams.get(paramName);
     }
   }
 
