@@ -40,6 +40,11 @@ export class UnidyLogin {
 
   @Method()
   async auth(trySilentAuth = false): Promise<AuthResult> {
+    if (this.authPromiseResolve) {
+      console.warn("Authentication already in progress");
+      return;
+    }
+
     this.isSilentAuth = trySilentAuth;
     this.setAuthorizeUrl();
 
