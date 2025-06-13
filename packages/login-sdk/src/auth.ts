@@ -44,7 +44,12 @@ export class Auth {
       redirectUrl: this.config.redirectUrl,
     });
 
-    this.initEventListeners();
+    this.component.addEventListener("onAuth", (event: CustomEvent) => {
+      const { token } = event.detail;
+      if (token) {
+        this.validateAndStoreToken(token);
+      }
+    });
 
     document.body.appendChild(this.component);
 
@@ -144,14 +149,5 @@ export class Auth {
       sessionStorage.setItem(UNIDY_ID_TOKEN, token);
     }
     this.config.onAuth?.(token);
-  }
-
-  private initEventListeners() {
-    this.component.addEventListener("onAuth", (event: CustomEvent) => {
-      const { token } = event.detail;
-      if (token) {
-        this.validateAndStoreToken(token);
-      }
-    });
   }
 }
