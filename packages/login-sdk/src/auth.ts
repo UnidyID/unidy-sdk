@@ -64,11 +64,11 @@ export class Auth {
     this.component.logout();
   }
 
-  show() {
+  async show() {
     this.component.show();
   }
 
-  hide() {
+  async hide() {
     this.component.hide();
   }
 
