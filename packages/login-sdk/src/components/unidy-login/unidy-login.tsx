@@ -6,6 +6,10 @@ interface AuthResult {
   error?: string;
 }
 
+interface LogoutResult {
+  success: boolean;
+}
+
 type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 
 @Component({
@@ -33,6 +37,7 @@ export class UnidyLogin {
   private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;
   private authPromiseResolve: ((result: AuthResult) => void) | null = null;
+  private logoutPromiseResolve: ((result: LogoutResult) => void) | null = null;
 
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
@@ -54,8 +59,17 @@ export class UnidyLogin {
   }
 
   @Method()
-  async logout() {
+  async logout(): Promise<LogoutResult> {
+    if (this.logoutPromiseResolve) {
+      console.warn("Logout already in progress");
+      return;
+    }
+
     this.iframeUrl = `${this.baseUrl}/oauth/logout`;
+
+    return new Promise((resolve) => {
+      this.logoutPromiseResolve = resolve;
+    });
   }
 
   @Method()
@@ -93,6 +107,13 @@ export class UnidyLogin {
   private handleIframeLoad(event: Event) {
     const iframe = event.target as HTMLIFrameElement;
     this.isLoading = false;
+
+    if (iframe.src.includes("oauth/logout")) {
+      this.logoutPromiseResolve({ success: true });
+      this.logoutPromiseResolve = null;
+
+      return;
+    }
 
     try {
       const token = this.extractParam(iframe.contentWindow?.location.href, "id_token");

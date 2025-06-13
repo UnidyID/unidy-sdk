@@ -59,9 +59,10 @@ export class Auth {
     return this.component.auth(silent);
   }
 
-  logout() {
+  async logout() {
     sessionStorage.removeItem(UNIDY_ID_TOKEN);
-    this.component.logout();
+
+    return this.component.logout();
   }
 
   async show() {

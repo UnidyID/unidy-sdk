@@ -292,9 +292,14 @@
       }
     });
 
-    logoutButton.addEventListener('click', () => {
-      unidyAuth.logout();
-      updateUI(false);
+    logoutButton.addEventListener('click', async () => {
+      const res = await unidyAuth.logout();
+      if (res.success) {
+        console.log("Logged out successfully");
+        updateUI(false);
+      } else {
+        console.log("Logout error:");
+      }
     });
 
     function updateUI(isAuthenticated) {

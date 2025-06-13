@@ -11,7 +11,7 @@ export namespace Components {
         "baseUrl": string;
         "clientId": string;
         "hide": () => Promise<void>;
-        "logout": () => Promise<void>;
+        "logout": () => Promise<LogoutResult>;
         "prompt": PromptOption;
         "redirectUrl": string;
         "responseType": string;
