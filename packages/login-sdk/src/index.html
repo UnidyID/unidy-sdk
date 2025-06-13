@@ -265,7 +265,7 @@
     });
     unidyAuth.mountComponent();
 
-    if (unidyAuth.isAuthenticated()) {
+    if (await unidyAuth.isAuthenticated()) {
       updateUI(true);
     } else {
       // silent auth attemot on 'homepage'
@@ -307,8 +307,8 @@
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
         try {
-          const payload = unidyAuth.parseTokenPayload();
-          const userName = payload.name || payload.email || 'Dinamo Fan';
+          const userData = unidyAuth.userTokenData();
+          const userName = userData.name || userData.email || 'Dinamo Fan';
           status.textContent = `Welcome back, ${userName}!`;
         } catch (error) {
           status.textContent = 'Welcome to the Dinamo Family!';
@@ -330,8 +330,8 @@
 
     function displayToken() {
       try {
-        const payload = unidyAuth.parseTokenPayload();
-        tokenInfo.textContent = JSON.stringify(payload, null, 2);
+        const userData = unidyAuth.userTokenData();
+        tokenInfo.textContent = JSON.stringify(userData, null, 2);
       } catch (error) {
         tokenInfo.textContent = 'Error parsing token';
       }

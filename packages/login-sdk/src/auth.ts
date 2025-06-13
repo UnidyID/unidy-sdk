@@ -81,25 +81,34 @@ export class Auth {
     return sessionStorage.getItem(UNIDY_ID_TOKEN);
   }
 
-  isAuthenticated(token_: string = null): boolean {
-    const token = this.idToken || token_;
-    if (!token) return false;
+  async isAuthenticated(token_: string | null = null, fallbackToSilentAuthRequest = false): Promise<boolean> {
+    let token = token_ || this.idToken;
 
-    try {
-      const payload = this.parseTokenPayload();
-      if (!payload) return false;
+    if (!token && fallbackToSilentAuthRequest) {
+      const res = await this.component.auth(true);
 
-      const now = Math.floor(Date.now() / 1000);
-      return payload.exp > now;
-    } catch {
+      if (res.success) {
+        token = res.token;
+      } else {
+        return false;
+      }
+    } else {
       return false;
     }
+
+    return Auth.validateToken(token);
   }
 
-  parseTokenPayload(token_: string = null): TokenPayload | null {
-    const token = this.idToken || token_;
-    if (!token) return null;
+  userTokenData(token_: string | null = null): TokenPayload | null {
+    const token = token_ || this.idToken;
 
+    if (!token) return null;
+    if (!Auth.validateToken(token)) return null;
+
+    return Auth.safeParseToken(token);
+  }
+
+  static safeParseToken(token: string): TokenPayload | null {
     try {
       return jwtDecode<TokenPayload>(token);
     } catch (error) {
@@ -108,26 +117,33 @@ export class Auth {
     }
   }
 
-  private validateAndStoreToken(token: string): boolean {
+  static validateToken(token: string) {
     try {
-      const payload = jwtDecode<TokenPayload>(token);
+      const payload = Auth.safeParseToken(token);
       const now = Math.floor(Date.now() / 1000);
 
       if (payload.exp > now) {
-        if (this.config.storeTokenInSession) {
-          sessionStorage.setItem(UNIDY_ID_TOKEN, token);
-        }
-
-        this.config.onAuth?.(token);
         return true;
       }
 
-      console.log("ID Token expired");
       return false;
     } catch (error) {
       console.error("Invalid token:", error);
       return false;
     }
+  }
+
+  private validateAndStoreToken(token: string): boolean {
+    const tokenValid = Auth.validateToken(token);
+
+    if (!tokenValid) {
+      return;
+    }
+
+    if (this.config.storeTokenInSession) {
+      sessionStorage.setItem(UNIDY_ID_TOKEN, token);
+    }
+    this.config.onAuth?.(token);
   }
 
   private initEventListeners() {
