@@ -45,6 +45,11 @@ export class UnidyLogin {
 
   @Method()
   async auth(trySilentAuth = false): Promise<AuthResult> {
+    const token = this.extractParam(window.location.href, "id_token");
+    if (token) {
+      this.handleSuccessfulAuth(token);
+    }
+
     if (this.authPromiseResolve) {
       console.warn("Authentication already in progress");
       return;
