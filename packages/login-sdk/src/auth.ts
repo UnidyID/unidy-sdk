@@ -58,14 +58,14 @@ export class Auth {
 
   async auth(silent = false) {
     if (!silent) {
-      this.show();
+      await this.show();
     }
 
     return this.component.auth(silent);
   }
 
   async logout() {
-    sessionStorage.removeItem(UNIDY_ID_TOKEN);
+    sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
 
     return this.component.logout();
   }
@@ -83,7 +83,7 @@ export class Auth {
       return null;
     }
 
-    return sessionStorage.getItem(UNIDY_ID_TOKEN);
+    return sessionStorage.getItem(UNIDY_ID_TOKEN_SESSION_KEY);
   }
 
   async isAuthenticated(token_: string | null = null, fallbackToSilentAuthRequest = false): Promise<boolean> {
@@ -146,7 +146,7 @@ export class Auth {
     }
 
     if (this.config.storeTokenInSession) {
-      sessionStorage.setItem(UNIDY_ID_TOKEN, token);
+      sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
     }
     this.config.onAuth?.(token);
   }
