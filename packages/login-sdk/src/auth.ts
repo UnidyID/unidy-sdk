@@ -10,7 +10,7 @@ export interface UnidyAuthConfig {
   onAuth?: (token: string) => void;
 }
 
-const UNIDY_ID_TOKEN = "unidy_id_token";
+export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
 
 interface TokenPayload {
   sub: string;
