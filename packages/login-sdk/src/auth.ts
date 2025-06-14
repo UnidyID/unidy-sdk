@@ -71,11 +71,11 @@ export class Auth {
   }
 
   async show() {
-    this.component.show();
+    return this.component.show();
   }
 
   async hide() {
-    this.component.hide();
+    return this.component.hide();
   }
 
   get idToken(): string | null {
