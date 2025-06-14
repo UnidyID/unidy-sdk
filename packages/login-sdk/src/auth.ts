@@ -21,8 +21,8 @@ interface TokenPayload {
 }
 
 export class Auth {
-  private baseUrl: string;
-  private config: UnidyAuthConfig;
+  public readonly baseUrl: string;
+  public readonly config: UnidyAuthConfig;
   public readonly component: HTMLUnidyLoginElement;
   private isInitialized = false;
 
