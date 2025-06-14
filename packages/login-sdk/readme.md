@@ -66,7 +66,7 @@ logoutButton.addEventListener('click', async () => {
 
 ### Example: Custom Token Storage
 
-When `storeTokenInSession` is set to `false`, you can handle token storage yourself:
+When `storeTokenInSession` is set to `false`, you have to handle token storage yourself:
 
 ```typescript
 import { UnidyAuth } from '@unidy.io/auth';
