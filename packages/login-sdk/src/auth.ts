@@ -36,7 +36,7 @@ export class Auth<
   public readonly baseUrl: string;
   public readonly config: UnidyAuthConfig<Scope>;
   public readonly component: HTMLUnidyLoginElement;
-  private isInitialized = false;
+  private initState: "loading" | "done" | null = null;
 
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
@@ -45,7 +45,9 @@ export class Auth<
   }
 
   mountComponent() {
-    if (this.isInitialized) return;
+    if (this.initState) return;
+
+    this.initState = "loading";
 
     Object.assign(this.component, {
       baseUrl: this.baseUrl,
@@ -65,7 +67,7 @@ export class Auth<
 
     document.body.appendChild(this.component);
 
-    this.isInitialized = true;
+    this.initState = "done";
   }
 
   parse(): BasePayload & CustomPayload {
@@ -103,6 +105,10 @@ export class Auth<
     }
 
     return sessionStorage.getItem(UNIDY_ID_TOKEN_SESSION_KEY);
+  }
+
+  get isInitialized(): boolean {
+    return !!this.initState;
   }
 
   async isAuthenticated(token_: string | null = null, fallbackToSilentAuthRequest = false): Promise<boolean> {
