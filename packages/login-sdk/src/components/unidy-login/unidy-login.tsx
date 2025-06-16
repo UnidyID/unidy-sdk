@@ -44,7 +44,7 @@ export class UnidyLogin {
   }
 
   @Method()
-  async auth(trySilentAuth = false): Promise<AuthResult> {
+  async auth({ trySilentAuth = false }: { trySilentAuth?: boolean } = {}): Promise<AuthResult> {
     const token = this.extractParam(window.location.href, "id_token");
     if (token) {
       this.handleSuccessfulAuth(token);

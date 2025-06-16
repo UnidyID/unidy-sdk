@@ -77,12 +77,18 @@ export class Auth<
     } as any;
   }
 
-  async auth(silent = false) {
+  /**
+   * Initiates the authentication process
+   * @param {Object} options - Authentication options
+   * @param {boolean} [options.silent=false] - If true, attempts silent authentication without showing UI
+   * @returns {Promise<AuthResult>} Promise resolving to authentication result containing success status and token/error
+   */
+  async auth({ silent = false }: { silent?: boolean } = {}) {
     if (!silent) {
       await this.show();
     }
 
-    return this.component.auth(silent);
+    return this.component.auth({ trySilentAuth: silent });
   }
 
   async logout() {
@@ -115,7 +121,7 @@ export class Auth<
     let token = token_ || this.idToken;
 
     if (!token && fallbackToSilentAuthRequest) {
-      const res = await this.component.auth(true);
+      const res = await this.component.auth({ trySilentAuth: true });
 
       if (res.success) {
         token = res.token;
