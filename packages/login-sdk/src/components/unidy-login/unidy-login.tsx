@@ -32,7 +32,7 @@ export class UnidyLogin {
   @State() popupWindow: Window | null = null;
   @State() isSilentAuth = false;
 
-  @Event() onAuth: EventEmitter<{ token: string }>;
+  @Event() Auth: EventEmitter<{ token: string }>;
 
   private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;
@@ -198,7 +198,7 @@ export class UnidyLogin {
   }
 
   private handleSuccessfulAuth(token: string) {
-    this.onAuth.emit({ token });
+    this.Auth.emit({ token });
 
     this.authPromiseResolve?.({ success: true, token });
     this.authPromiseResolve = null;
