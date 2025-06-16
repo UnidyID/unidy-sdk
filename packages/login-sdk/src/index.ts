@@ -26,7 +26,6 @@ export class UnidyAuth<Payload extends Record<string, unknown>> {
 //   responseType: "id_token",
 //   prompt: "none",
 //   redirectUrl: "https://example.com",
-//   storeTokenInSession: true,
 //   onAuth: (token: string) => {
 //     console.log(token);
 //   },

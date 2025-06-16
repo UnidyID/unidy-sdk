@@ -6,7 +6,7 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   responseType?: string;
   prompt?: string;
   redirectUrl?: string;
-  storeTokenInSession: boolean;
+  storeTokenInSession?: boolean;
   onAuth?: (token: string) => void;
 }
 
@@ -42,10 +42,13 @@ export class Auth<
   /** The state of the initialization process */
   private initState: "loading" | "done" | null = null;
 
+  private storeTokenInSession = true;
+
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
+    this.storeTokenInSession = config.storeTokenInSession ?? true;
   }
 
   mountComponent() {
@@ -110,7 +113,7 @@ export class Auth<
   }
 
   get idToken(): string | null {
-    if (!this.config.storeTokenInSession) {
+    if (!this.storeTokenInSession) {
       return null;
     }
 
@@ -180,7 +183,7 @@ export class Auth<
       return;
     }
 
-    if (this.config.storeTokenInSession) {
+    if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
     }
     this.config.onAuth?.(token);
