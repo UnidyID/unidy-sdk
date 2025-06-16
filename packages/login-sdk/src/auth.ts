@@ -65,7 +65,7 @@ export class Auth<
       redirectUrl: this.config.redirectUrl,
     });
 
-    this.component.addEventListener("onAuth", (event: CustomEvent) => {
+    this.component.addEventListener("Auth", (event: CustomEvent) => {
       const { token } = event.detail;
       if (token) {
         this.validateAndStoreToken(token);
