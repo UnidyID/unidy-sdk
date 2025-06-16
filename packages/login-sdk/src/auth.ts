@@ -33,9 +33,13 @@ export class Auth<
     : // biome-ignore lint/complexity/noBannedTypes: <explanation>
       {}),
 > {
+  /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
   public readonly baseUrl: string;
+  /** Configuration options for the authentication process */
   public readonly config: UnidyAuthConfig<Scope>;
+  /** The web component instance which contains the authentication UI and handles the authentication process */
   public readonly component: HTMLUnidyLoginElement;
+  /** The state of the initialization process */
   private initState: "loading" | "done" | null = null;
 
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
