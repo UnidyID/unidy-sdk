@@ -2,20 +2,34 @@ import { Auth, type UnidyAuthConfig } from "./auth";
 
 declare global {
   interface Window {
-    UnidyAuthInstance?: Auth;
+    UnidyAuthInstance?: Auth<Record<string, unknown>, string>;
   }
 }
 
-export const UnidyAuth = {
-  init: (baseUrl: string, config: UnidyAuthConfig) => {
-    const existingInstance = window.UnidyAuthInstance;
+export class UnidyAuth<Payload extends Record<string, unknown>> {
+  init<Scope extends string>(baseUrl: string, config: UnidyAuthConfig<Scope>): Auth<Payload, Scope> {
+    const existingInstance = window.UnidyAuthInstance as Auth<Payload, Scope> | undefined;
     if (existingInstance) {
       return existingInstance;
     }
 
-    const instance = new Auth(baseUrl, config);
+    const instance = new Auth<Payload, Scope>(baseUrl, config);
     window.UnidyAuthInstance = instance;
 
     return instance;
-  },
-};
+  }
+}
+
+// const res = new UnidyAuth<{ firstname: string }>().init("https://api.unidy.io", {
+//   clientId: "123",
+//   scope: "openid email",
+//   responseType: "id_token",
+//   prompt: "none",
+//   redirectUrl: "https://example.com",
+//   storeTokenInSession: true,
+//   onAuth: (token: string) => {
+//     console.log(token);
+//   },
+// });
+
+// const foo = res.parse();

@@ -1,8 +1,8 @@
 import { jwtDecode } from "jwt-decode";
 
-export interface UnidyAuthConfig {
+export interface UnidyAuthConfig<Scope extends string = string> {
   clientId: string;
-  scope?: string;
+  scope?: Scope;
   responseType?: string;
   prompt?: string;
   redirectUrl?: string;
@@ -20,13 +20,25 @@ interface TokenPayload {
   [key: string]: string | number | boolean | undefined;
 }
 
-export class Auth {
+export class Auth<
+  CustomPayload = Record<string, unknown>,
+  Scope extends string = string,
+  BasePayload = {
+    sub: string;
+    exp: number;
+    iat: number;
+    [key: string]: string | number | boolean | undefined;
+  } & (Scope extends `${string}email${string}`
+    ? { email: string }
+    : // biome-ignore lint/complexity/noBannedTypes: <explanation>
+      {}),
+> {
   public readonly baseUrl: string;
-  public readonly config: UnidyAuthConfig;
+  public readonly config: UnidyAuthConfig<Scope>;
   public readonly component: HTMLUnidyLoginElement;
   private isInitialized = false;
 
-  constructor(baseUrl: string, config: UnidyAuthConfig) {
+  constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
@@ -54,6 +66,13 @@ export class Auth {
     document.body.appendChild(this.component);
 
     this.isInitialized = true;
+  }
+
+  parse(): BasePayload & CustomPayload {
+    return {
+      ...this.userTokenData(),
+      ...this.config.onAuth,
+    } as any;
   }
 
   async auth(silent = false) {
