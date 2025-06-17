@@ -19,16 +19,3 @@ export class UnidyAuth<Payload extends Record<string, unknown>> {
     return instance;
   }
 }
-
-// const res = new UnidyAuth<{ firstname: string }>().init("https://api.unidy.io", {
-//   clientId: "123",
-//   scope: "openid email",
-//   responseType: "id_token",
-//   prompt: "none",
-//   redirectUrl: "https://example.com",
-//   onAuth: (token: string) => {
-//     console.log(token);
-//   },
-// });
-
-// const foo = res.parse();
