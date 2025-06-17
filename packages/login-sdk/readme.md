@@ -171,9 +171,9 @@ if (result.success) {
 ```
 
 ## Notes
-- The SDK can store the authentication token in the browser's session storage. This is controlled by the `storeTokenInSession` configuration option. If you disable this you can handle token storage on your own if needed.
-- Tokens are automatically validated for expiration
-- Silent authentication is supported for seamless user experience
+- The SDK can store the authentication token in the browser's session storage. This is controlled by the `storeTokenInSession` configuration option. If you disable this you have to handle token storage on your own if needed.
+- Tokens are validated for expiration
+- Silent authentication is supported for seamless login experience using `promtp='none'`
 
 ## Configuration Options
 
