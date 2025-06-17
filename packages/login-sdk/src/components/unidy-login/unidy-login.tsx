@@ -48,6 +48,7 @@ export class UnidyLogin {
     const token = this.extractParam(window.location.href, "id_token");
     if (token) {
       this.handleSuccessfulAuth(token);
+      return;
     }
 
     if (this.authPromiseResolve) {
@@ -112,7 +113,7 @@ export class UnidyLogin {
     this.isLoading = false;
 
     if (iframe.src.includes("oauth/logout")) {
-      this.logoutPromiseResolve({ success: true });
+      this.logoutPromiseResolve?.({ success: true });
       this.logoutPromiseResolve = null;
 
       return;
