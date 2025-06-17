@@ -131,7 +131,11 @@ export class UnidyLogin {
         this.authPromiseResolve = null;
       }
     } catch (error) {
-      console.debug("Cross-origin iframe error:", error);
+      if (error instanceof DOMException && error.name === "SecurityError") {
+        // Ignore cross-origin errors as they are expected when accessing iframe content
+        return;
+      }
+      console.warn("Unexpected error in iframe:", error);
     }
   }
 
