@@ -192,7 +192,6 @@ interface UnidyAuthConfig {
 
 - `auth(silentAuth?: boolean)`: Initiates the authentication process
   - Returns a Promise with `{ success: true, token: string} | { success: false, error: string }`
-  - Set `silentAuth` to true for silent authentication attempt
 
 - `logout()`: Logs out the user
   - Returns a Promise with `{ success: boolean }`
