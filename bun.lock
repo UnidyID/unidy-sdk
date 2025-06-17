@@ -29,7 +29,6 @@
       "name": "@unidy.io/auth",
       "version": "0.0.1",
       "dependencies": {
-        "@unidy.io/sdk-api-client": "workspace:*",
         "jwt-decode": "4.0.0",
       },
       "devDependencies": {
