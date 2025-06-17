@@ -195,11 +195,8 @@ export class UnidyLogin {
 
   private extractParam(windowHref: string, paramName: string) {
     const url = new URL(windowHref);
-
-    if (url.origin === window.location.origin) {
-      const hashParams = new URLSearchParams(url.hash.substring(1));
-      return hashParams.get(paramName);
-    }
+    const hashParams = new URLSearchParams(url.hash.substring(1));
+    return hashParams.get(paramName);
   }
 
   private setDialogRef = (el: Element | null) => {
