@@ -1,10 +1,6 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
-interface AuthResult {
-  success: boolean;
-  token?: string;
-  error?: string;
-}
+type AuthResult = { success: true; token: string } | { success: false; error: string };
 
 interface LogoutResult {
   success: boolean;
