@@ -1,5 +1,9 @@
 import { jwtDecode } from "jwt-decode";
 import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
+// ts-ignore
+import { UnidyLogin } from "./components/unidy-login/unidy-login";
+
+console.log(UnidyLogin);
 
 export interface UnidyAuthConfig<Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */

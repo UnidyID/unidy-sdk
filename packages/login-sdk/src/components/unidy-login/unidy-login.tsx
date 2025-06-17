@@ -42,7 +42,7 @@ export class UnidyLogin {
   @State() popupWindow: Window | null = null;
 
   @Event()
-  Auth!: EventEmitter<{ token: string }>;
+  Auth!: EventEmitter<{ token: string }>; //TODO: rename to authEvent
 
   private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;

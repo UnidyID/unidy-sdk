@@ -5,7 +5,7 @@
     "allowUnreachableCode": false,
     "declaration": false,
     "experimentalDecorators": true,
-    "lib": ["dom", "es2024"],
+    "lib": ["dom", "ESNext"],
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
