@@ -202,12 +202,10 @@ export class Auth<
     }
   }
 
-  private validateAndStoreToken(token: string) {
+  private validateAndStoreToken(token: string): void {
     const tokenValid = this.validateToken(token);
 
-    if (!tokenValid) {
-      return;
-    }
+    if (!tokenValid) return;
 
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
