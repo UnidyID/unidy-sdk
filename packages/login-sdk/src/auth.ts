@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
+import { Utils } from "./utils";
 
 export interface UnidyAuthConfig<Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
@@ -98,6 +99,9 @@ export class Auth<
     });
 
     document.body.appendChild(this.component);
+
+    // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
+    this.tryAuthFromRedirect();
 
     this.initState = "done";
   }
@@ -255,5 +259,13 @@ export class Auth<
     }
 
     this.config.onAuth?.(token);
+  }
+
+  private tryAuthFromRedirect(): void {
+    const token = Utils.extractUrlParam(window.location.href, "id_token");
+
+    if (token) {
+      this.validateAndStoreToken(token);
+    }
   }
 }

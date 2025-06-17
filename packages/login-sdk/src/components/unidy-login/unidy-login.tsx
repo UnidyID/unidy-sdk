@@ -1,4 +1,5 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
+import { Utils } from "../../utils";
 
 export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 export type ResponseType = "code" | "id_token" | "token";
@@ -74,13 +75,6 @@ export class UnidyLogin {
    */
   @Method()
   async auth({ trySilentAuth = false }: { trySilentAuth?: boolean } = {}): Promise<AuthResult> {
-    const token = this.extractParam(window.location.href, "id_token");
-    if (token) {
-      const result = { success: true, token } as const;
-      this.handleSuccessfulAuth(token);
-      return result;
-    }
-
     if (this.authPromise) {
       return this.authPromise.promise;
     }
@@ -185,13 +179,13 @@ export class UnidyLogin {
       const href = iframe.contentWindow?.location.href;
       if (!href) return;
 
-      const token = this.extractParam(href, "id_token");
+      const token = Utils.extractUrlParam(href, "id_token");
 
       if (token) {
         this.dialog.close();
         this.handleSuccessfulAuth(token);
       } else {
-        const error_msg = this.extractParam(href, "error") ?? "No token received";
+        const error_msg = Utils.extractUrlParam(href, "error") ?? "No token received";
         this.authPromise?.resolve({ success: false, error: error_msg });
         this.authPromise = null;
       }
@@ -239,7 +233,7 @@ export class UnidyLogin {
 
         if (!this.popupWindow?.location.href) return;
 
-        const token = this.extractParam(this.popupWindow.location.href, "id_token");
+        const token = Utils.extractUrlParam(this.popupWindow.location.href, "id_token");
         if (!token) return;
 
         this.cleanupPopup();
@@ -263,12 +257,6 @@ export class UnidyLogin {
 
     this.authPromise?.resolve({ success: true, token });
     this.authPromise = null;
-  }
-
-  private extractParam(windowHref: string, paramName: string) {
-    const url = new URL(windowHref);
-    const hashParams = new URLSearchParams(url.hash.substring(1));
-    return hashParams.get(paramName);
   }
 
   private setDialogRef = (el: HTMLDialogElement) => {
