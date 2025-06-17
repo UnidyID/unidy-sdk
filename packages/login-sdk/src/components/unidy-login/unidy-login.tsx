@@ -259,7 +259,7 @@ export class UnidyLogin {
   }
 
   private handleSuccessfulAuth(token: string) {
-    this.Auth.emit({ token });
+    this.authEvent.emit({ token });
 
     this.authPromise?.resolve({ success: true, token });
     this.authPromise = null;
