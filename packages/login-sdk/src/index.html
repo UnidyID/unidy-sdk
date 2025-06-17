@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="/build/unidy-login.esm.js"></script>
+
+  <!--
+    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.5-alpha/dist/unidy-login/index.esm.js"></script>
+    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.5-alpha/dist/unidy-login/unidy-login.esm.js"></script>
+  -->
+
   <title>Dinamo Zagreb Fan Page</title>
   <style>
     :root {
@@ -246,6 +252,7 @@
 
   <script type="module">
     import { UnidyAuth } from './build/index.esm.js';
+    //import { UnidyAuth } from 'https://unpkg.com/@unidy.io/auth@0.0.5-alpha/dist/unidy-login/index.esm.js';
 
     const loginButton = document.getElementById('login-button');
     const logoutButton = document.getElementById('logout-button');
