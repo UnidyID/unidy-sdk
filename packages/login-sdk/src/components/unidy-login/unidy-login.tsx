@@ -162,7 +162,6 @@ export class UnidyLogin {
       `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`,
     );
 
-    this.dialog.close();
     this.startPopupTokenCheck();
   }
 
@@ -173,6 +172,7 @@ export class UnidyLogin {
         if (!token) return;
 
         this.cleanupPopup();
+        this.dialog.close();
         this.handleSuccessfulAuth(token);
       } catch (error) {
         console.debug("Cross-origin error:", error);
@@ -182,6 +182,7 @@ export class UnidyLogin {
 
   private cleanupPopup() {
     this.popupWindow.close();
+    this.popupWindow = null;
     clearInterval(this.popupCheckInterval);
     this.popupCheckInterval = undefined;
   }
@@ -221,6 +222,12 @@ export class UnidyLogin {
                 <circle class="spinner-circle" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
                 <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
               </svg>
+            </div>
+          )}
+
+          {this.popupWindow && (
+            <div class="popup-overlay">
+              <h2>Continue in popup window</h2>
             </div>
           )}
 
