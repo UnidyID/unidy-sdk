@@ -1,6 +1,5 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
-// TypeScript declaration for Promise.withResolvers()
 declare global {
   interface PromiseConstructor {
     withResolvers<T>(): {

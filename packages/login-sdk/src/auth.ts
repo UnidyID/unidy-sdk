@@ -155,37 +155,47 @@ export class Auth<
       return false;
     }
 
-    return Auth.validateToken(token);
+    return this.validateToken(token);
   }
 
-  userTokenData(token_: string | null = null): TokenPayload | null {
+  userTokenData(token_: string | null = null): (BasePayload & CustomPayload) | null {
     const token = token_ || this.idToken;
 
     if (!token) return null;
-    if (!Auth.validateToken(token)) return null;
+    if (!this.validateToken(token)) return null;
 
-    return Auth.safeParseToken(token);
+    return this.safeParseToken(token);
   }
 
-  static safeParseToken(token: string): TokenPayload | null {
+  /**
+   * Parses a JWT token and returns the payload with proper typing.
+   *
+   * @param token - The JWT token to parse
+   * @returns The parsed token payload or null if parsing fails
+   */
+  safeParseToken(token: string): (BasePayload & CustomPayload) | null {
     try {
-      return jwtDecode<TokenPayload>(token);
+      const decoded = jwtDecode<TokenPayload>(token);
+      return decoded as BasePayload & CustomPayload;
     } catch (error) {
       console.error("Failed to parse token:", error);
       return null;
     }
   }
 
-  static validateToken(token: string) {
+  /**
+   * Validates a JWT token by checking its expiration time.
+   *
+   * @param token - The JWT token to validate
+   * @returns True if the token is valid and not expired, false otherwise
+   */
+  validateToken(token: string): boolean {
     try {
-      const payload = Auth.safeParseToken(token);
+      const decoded = jwtDecode<TokenPayload>(token);
+      if (!decoded) return false;
+
       const now = Math.floor(Date.now() / 1000);
-
-      if (!payload) {
-        return false;
-      }
-
-      return payload.exp > now;
+      return decoded.exp > now;
     } catch (error) {
       console.error("Invalid token:", error);
       return false;
@@ -193,7 +203,7 @@ export class Auth<
   }
 
   private validateAndStoreToken(token: string) {
-    const tokenValid = Auth.validateToken(token);
+    const tokenValid = this.validateToken(token);
 
     if (!tokenValid) {
       return;
