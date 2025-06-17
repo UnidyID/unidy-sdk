@@ -63,6 +63,28 @@ export class UnidyLogin {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
   }
 
+  /**
+   * Initiates the authentication process
+   *
+   * @param options - Options for the authentication process
+   * @param options.trySilentAuth - Whether to attempt silent authentication without showing UI (defaults to false)
+   * @returns Promise that resolves with authentication result containing success status and token or error
+   *
+   * @example
+   * ```typescript
+   * // Default authentication, using the prompt prop
+   * const result = await component.auth();
+   *
+   * // Silent authentication, will override the prompt prop with 'none'
+   * const result = await component.auth({ trySilentAuth: true });
+   *
+   * if (result.success) {
+   *   console.log('Token:', result.token);
+   * } else {
+   *   console.error('Auth failed:', result.error);
+   * }
+   * ```
+   */
   @Method()
   async auth({ trySilentAuth = false }: { trySilentAuth?: boolean } = {}): Promise<AuthResult> {
     const token = this.extractParam(window.location.href, "id_token");
@@ -84,6 +106,20 @@ export class UnidyLogin {
     return this.authPromise.promise;
   }
 
+  /**
+   * Logs out the current user and clears any stored session data.
+   *
+   * @returns Promise that resolves with logout result indicating success status
+   *
+   * @example
+   * ```typescript
+   * const result = await component.logout();
+   *
+   * if (result.success) {
+   *   console.log('Successfully logged out');
+   * }
+   * ```
+   */
   @Method()
   async logout(): Promise<LogoutResult> {
     if (this.logoutPromise) {
@@ -98,11 +134,31 @@ export class UnidyLogin {
     return this.logoutPromise.promise;
   }
 
+  /**
+   * Shows the authentication dialog modal to the user.
+   *
+   * @returns Promise that resolves when the dialog is shown
+   *
+   * @example
+   * ```typescript
+   * await component.show();
+   * ```
+   */
   @Method()
   async show() {
     this.dialog.showModal();
   }
 
+  /**
+   * Hides the authentication dialog modal.
+   *
+   * @returns Promise that resolves when the dialog is hidden
+   *
+   * @example
+   * ```typescript
+   * await component.hide();
+   * ```
+   */
   @Method()
   async hide() {
     this.dialog.close();
@@ -157,7 +213,7 @@ export class UnidyLogin {
         // Ignore cross-origin errors as they are expected when accessing iframe content
         return;
       }
-      console.warn("Unexpected error in iframe:", error);
+      console.warn("Unexpected error:", error);
     }
   }
 

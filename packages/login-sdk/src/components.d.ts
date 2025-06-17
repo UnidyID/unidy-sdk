@@ -7,6 +7,13 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface UnidyLogin {
+        /**
+          * Initiates the authentication process
+          * @param options - Options for the authentication process
+          * @param options.trySilentAuth - Whether to attempt silent authentication without showing UI (defaults to false)
+          * @returns Promise that resolves with authentication result containing success status and token or error
+          * @example ```typescript // Default authentication, using the prompt prop const result = await component.auth();  // Silent authentication, will override the prompt prop with 'none' const result = await component.auth({ trySilentAuth: true });  if (result.success) {   console.log('Token:', result.token); } else {   console.error('Auth failed:', result.error); } ```
+         */
         "auth": ({ trySilentAuth }?: { trySilentAuth?: boolean; }) => Promise<AuthResult>;
         /**
           * The base URL of the Unidy authentication server, example: https://your-domain.unidy.de
@@ -16,7 +23,17 @@ export namespace Components {
           * The client ID for the application
          */
         "clientId": string;
+        /**
+          * Hides the authentication dialog modal.
+          * @returns Promise that resolves when the dialog is hidden
+          * @example ```typescript await component.hide(); ```
+         */
         "hide": () => Promise<void>;
+        /**
+          * Logs out the current user and clears any stored session data.
+          * @returns Promise that resolves with logout result indicating success status
+          * @example ```typescript const result = await component.logout();  if (result.success) {   console.log('Successfully logged out'); } ```
+         */
         "logout": () => Promise<LogoutResult>;
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
@@ -34,6 +51,11 @@ export namespace Components {
           * The OAuth scopes to request, defaults to "openid email"
          */
         "scope": string;
+        /**
+          * Shows the authentication dialog modal to the user.
+          * @returns Promise that resolves when the dialog is shown
+          * @example ```typescript await component.show(); ```
+         */
         "show": () => Promise<void>;
     }
 }
