@@ -1,4 +1,6 @@
-# Unidy SDK for integrating Unidy authentication into your web
+# Unidy Auth SDK
+
+The Unidy Auth SDK provides a convenient way to integrate Unidy authentication into your web application. It is built with a web component and can be used with or without a front-end framework,
 
 ## Installation
 
@@ -8,33 +10,34 @@ npm install @unidy.io/auth
 
 ## Basic Usage
 
-### Example: SDK-managed Token Storage
+### Example: SDK-managed token storage (suggested approach)
 
-When `storeTokenInSession` is set to `true`, the SDK automatically handles token storage in session storage:
+When `storeTokenInSession` is `true` (the default), the SDK automatically handles token storage in the browser's session storage.
 
 ```typescript
 import { UnidyAuth } from '@unidy.io/auth';
 
-// Initialize the SDK with automatic token storage
-const unidyAuth = UnidyAuth.init("https://your-unidy-instance-url.com", {
+const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
   scope: "openid profile email",
-  storeTokenInSession: true
 });
 
-// Mount the login component
+// Mount the <unidy-login> web component to the DOM.
+// This should be done once when your application loads.
 unidyAuth.mountComponent();
 
-// Init login on button click
+// Example of how to handle login, logout, and check authentication status
 const loginButton = document.getElementById('login-button');
+
 loginButton.addEventListener('click', async () => {
-  const result = await unidyAuth.auth();
+  const result = await unidyAuth.auth();  // `auth` method initiates the oidc flow
+
   if (result.success) {
     console.log('Logged in successfully!');
     try {
       const userData = unidyAuth.userTokenData();
-      const userName = userData.name || userData.email;
-      console.log('Welcome back,', userName);
+
+      console.log('Welcome back,', userData.name || userData.email);
     } catch (error) {
       console.log('Error getting user data:', error);
     }
@@ -44,19 +47,22 @@ loginButton.addEventListener('click', async () => {
 });
 
 // Check if user is authenticated
-if (unidyAuth.isAuthenticated()) {
+if (await unidyAuth.isAuthenticated()) {
   try {
     const userData = unidyAuth.userTokenData();
-    console.log('User data:', userData);
+    console.log('User is authenticated. User data:', userData);
   } catch (error) {
     console.log('Error getting user data:', error);
   }
+} else {
+    console.log('User is not authenticated.');
 }
 
 // Handle logout
 const logoutButton = document.getElementById('logout-button');
 logoutButton.addEventListener('click', async () => {
   const result = await unidyAuth.logout();
+
   if (result.success) {
     console.log('Logged out successfully!');
     // Token is automatically removed from session storage
@@ -64,15 +70,19 @@ logoutButton.addEventListener('click', async () => {
 });
 ```
 
-### Example: Custom Token Storage
+### Example: User managed token storage (custom approach)
 
-When `storeTokenInSession` is set to `false`, you have to handle token storage yourself:
+When `storeTokenInSession` is set to `false`, you are responsible for handling token storage.
+
+The SDK provides helper methods like `validateToken()` and `parseToken()` for this purpose so you can easily handle the authentication (example below).
+
+**Important note:** Methods `isAuthenticated` and `userTokenData` in this case always return false since they rely on the session storage for token management, which is disabled when `storeTokenInSession` is set to `false`.
 
 ```typescript
 import { UnidyAuth } from '@unidy.io/auth';
 
-// Initialize the SDK without automatic token storage
-const auth = UnidyAuth.init("https://your-unidy-instance-url.com", {
+// Initialize the SDK without the token session storage
+const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
   scope: "openid profile email",
   storeTokenInSession: false
@@ -81,19 +91,16 @@ const auth = UnidyAuth.init("https://your-unidy-instance-url.com", {
 // Mount the login component
 unidyAuth.mountComponent();
 
-// Custom token storage functions
+// Custom token storage example
 const storeToken = (token: string) => {
-  // Store token in your preferred storage
   localStorage.setItem('auth_token', token);
 };
 
 const getToken = () => {
-  // Retrieve token from your storage
   return localStorage.getItem('auth_token');
 };
 
 const removeToken = () => {
-  // Remove token from your storage
   localStorage.removeItem('auth_token');
 };
 
@@ -103,12 +110,13 @@ loginButton.addEventListener('click', async () => {
   const result = await unidyAuth.auth();
   if (result.success) {
     console.log('Logged in successfully!');
+
     // Store the token yourself
     storeToken(result.token);
 
     // Get user data from the token
     try {
-      const userData = unidyAuth.userTokenData();
+      const userData = unidyAuth.parseToken(result.token);
       const userName = userData.name || userData.email || 'User';
       console.log('Welcome back,', userName);
     } catch (error) {
@@ -121,20 +129,19 @@ loginButton.addEventListener('click', async () => {
 
 // Check if user is authenticated
 const token = getToken();
-if (token) {
-  // Verify token is still valid
-  if (unidyAuth.isAuthenticated()) {
+if (token && unidyAuth.validateToken(token)) {
     try {
-      const userData = unidyAuth.userTokenData();
-      console.log('User data:', userData);
+        const userData = unidyAuth.parseToken(token);
+        console.log('User is authenticated. User data:', userData);
     } catch (error) {
-      console.log('Error getting user data:', error);
+        console.log('Error getting user data:', error);
     }
-  } else {
+} else {
     // Token is invalid or expired
     removeToken();
-  }
+    console.log('User is not authenticated.');
 }
+
 
 // Handle logout
 const logoutButton = document.getElementById('logout-button');
@@ -150,58 +157,79 @@ logoutButton.addEventListener('click', async () => {
 
 ## Silent Authentication
 
-You can start silent authentication when your app loads:
+You can attempt to authenticate a user silently (without user interaction) when your application loads. This is useful for checking if a user has an active session with the authentication server.
 
 ```typescript
-// Try silent authentication
 const result = await unidyAuth.auth({ silent: true })
+
 if (result.success) {
   // User was silently authenticated
   console.log('Silent auth successful');
-  try {
-    const userData = unidyAuth.userTokenData();
-    console.log('User data:', userData);
-  } catch (error) {
-    console.log('Error getting user data:', error);
-  }
+
+  // If storeTokenInSession is true, the token is already stored.
+  // You can get user data:
+  const userData = unidyAuth.userTokenData();
+  console.log('User data:', userData);
+
+  // If storeTokenInSession is false, you should store the token yourself:
+  storeToken(result.token);
 } else {
-  // Silent auth failed, user needs to log in manually
+  // Silent auth failed, user needs to log in manually (click on the button)
   console.log('Silent auth failed:', result.error);
 }
 ```
-
-## Notes
-- The SDK can store the authentication token in the browser's session storage. This is controlled by the `storeTokenInSession` configuration option. If you disable this you have to handle token storage on your own if needed.
-- Tokens are validated for expiration
-- Silent authentication is supported for seamless login experience using `promtp='none'`
 
 ## Configuration Options
 
 ```typescript
 interface UnidyAuthConfig {
-  clientId: string;           // Required: Your application's client ID
-  scope?: string;             // Optional: OAuth scopes (default: "openid email")
-  responseType?: string;      // Optional: Response type (default: "id_token")
-  prompt?: string;            // Optional: Prompt parameter for auth
-  redirectUrl?: string;       // Optional: Redirect URL (default: window.location.origin)
-  storeTokenInSession: boolean; // Required: Whether to store token in session storage
+  // Required: The base URL of the Unidy authentication server
+  baseUrl: string;
+  // Required: Your application's client ID
+  clientId: string;
+  // Optional: OAuth scopes (default: "openid email")
+  scope?: string;
+  // Optional: Response type, 'id_token' | 'token' | 'code' (default: "id_token")
+  responseType?: "id_token" | "token" | "code";
+  // Optional: Prompt parameter for auth, 'none' | 'login' | 'consent' | 'select_account' | null
+  prompt?: 'none' | 'login' | 'consent' | 'select_account' | null;
+  // Optional: Redirect URL after authentication (default: window.location.origin)
+  redirectUrl?: string;
+  // Optional: Whether to store token in session storage (default: true)
+  storeTokenInSession?: boolean;
+  // Optional: Fallback to silent auth request in 'isAuthenticated' if no token is found (default: false)
+  fallbackToSilentAuthRequest?: boolean;
+  // Optional: Callback function called when authentication is successful
+  onAuth?: (token: string) => void;
 }
 ```
 
 ## Methods
 
-- `auth(silentAuth?: boolean)`: Initiates the authentication process
-  - Returns a Promise with `{ success: true, token: string} | { success: false, error: string }`
+- `mountComponent()`: Mounts the `<unidy-login>` web component to the DOM. This should be called once when your application loads.
 
-- `logout()`: Logs out the user
-  - Returns a Promise with `{ success: boolean }`
+- `auth({ silent: boolean })`: Initiates the authentication process. If `silent` is true, it attempts to authenticate without user interaction.
+  - Returns a `Promise` with `{ success: true, token: string} | { success: false, error: string }`
 
-- `show()`: Shows the login dialog
+- `logout()`: Logs the user out by clearing the session token and performing a logout request to the Unidy authentication server.
+  - Returns a `Promise` with `{ success: boolean }`
 
-- `hide()`: Hides the login dialog
+- `show()`: Shows the login dialog.
+  - Returns a `Promise<void>`
 
-- `isAuthenticated()`: Checks if the user is currently authenticated
+- `hide()`: Hides the login dialog.
+  - Returns a `Promise<void>`
 
-- `userTokenData()`: Returns the decoded user data from the token
-  - Throws an error if token is invalid or not available
+- `parseToken(token: string)`: Decodes a JWT token and returns its payload. Returns `null` if parsing fails.
 
+- `validateToken(token: string)`: Validates a JWT token by decoding it and checking its expiration time.
+  - Returns `boolean`
+
+- `isAuthenticated()`: Checks if the user is currently authenticated by validating the token from session storage. If no token is found and `fallbackToSilentAuthRequest` is true, it attempts a silent login. Always returns false if storeTokenInSession is disabled.
+  - Returns a `Promise<boolean>`
+
+- `userTokenData()`: Returns the decoded user data from the token stored in session storage. Returns `null` if the token is not present or invalid. Always returns false if storeTokenInSession is disabled.
+
+## Properties
+- `idToken`: Retrieves the ID token from session storage. Returns `null` if not found or if `storeTokenInSession` is disabled.
+- `isInitialized`: Returns `true` if the component is initialized (mounted with `mountComponent` to the DOM), `false` otherwise.
