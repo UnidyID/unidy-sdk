@@ -67,7 +67,7 @@ export interface UnidyLoginCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     interface HTMLUnidyLoginElementEventMap {
-        "Auth": { token: string };
+        "authEvent": { token: string };
     }
     interface HTMLUnidyLoginElement extends Components.UnidyLogin, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyLoginElementEventMap>(type: K, listener: (this: HTMLUnidyLoginElement, ev: UnidyLoginCustomEvent<HTMLUnidyLoginElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -97,7 +97,7 @@ declare namespace LocalJSX {
           * The client ID for the application
          */
         "clientId": string;
-        "onAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
+        "onAuthEvent"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
          */

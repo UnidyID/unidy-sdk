@@ -79,7 +79,7 @@ export class Auth<
       redirectUrl: this.config.redirectUrl,
     });
 
-    this.component.addEventListener("Auth", (event: CustomEvent) => {
+    this.component.addEventListener("authEvent", (event: CustomEvent) => {
       const { token } = event.detail;
 
       if (token) {
