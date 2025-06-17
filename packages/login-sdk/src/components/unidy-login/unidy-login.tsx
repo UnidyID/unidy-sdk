@@ -43,7 +43,8 @@ export class UnidyLogin {
   @State() isLoading = false;
   @State() popupWindow: Window | null = null;
 
-  @Event() Auth: EventEmitter<{ token: string }>;
+  @Event()
+  Auth!: EventEmitter<{ token: string }>;
 
   private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;
@@ -137,15 +138,17 @@ export class UnidyLogin {
 
       return;
     }
-
     try {
-      const token = this.extractParam(iframe.contentWindow?.location.href, "id_token");
+      const href = iframe.contentWindow?.location.href;
+      if (!href) return;
+
+      const token = this.extractParam(href, "id_token");
 
       if (token) {
         this.dialog.close();
         this.handleSuccessfulAuth(token);
       } else {
-        const error_msg = this.extractParam(iframe.contentWindow?.location.href, "error") ?? "No token received";
+        const error_msg = this.extractParam(href, "error") ?? "No token received";
         this.authPromise?.resolve({ success: false, error: error_msg });
         this.authPromise = null;
       }
@@ -187,6 +190,8 @@ export class UnidyLogin {
   private startPopupTokenCheck() {
     this.popupCheckInterval = window.setInterval(() => {
       try {
+        if (!this.popupWindow?.location.href) return;
+
         const token = this.extractParam(this.popupWindow.location.href, "id_token");
         if (!token) return;
 
@@ -200,7 +205,7 @@ export class UnidyLogin {
   }
 
   private cleanupPopup() {
-    this.popupWindow.close();
+    this.popupWindow?.close();
     this.popupWindow = null;
     clearInterval(this.popupCheckInterval);
     this.popupCheckInterval = undefined;
@@ -219,13 +224,13 @@ export class UnidyLogin {
     return hashParams.get(paramName);
   }
 
-  private setDialogRef = (el: Element | null) => {
-    this.dialog = el as HTMLDialogElement;
+  private setDialogRef = (el: HTMLDialogElement) => {
+    this.dialog = el;
   };
 
   render() {
     return (
-      <dialog class="unidy-dialog" ref={this.setDialogRef}>
+      <dialog class="unidy-dialog" ref={(el) => this.setDialogRef(el as HTMLDialogElement)}>
         <div class="dialog-content">
           <button type="button" class="close-button" onClick={() => this.hide()}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Close">
