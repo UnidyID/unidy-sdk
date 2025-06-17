@@ -73,7 +73,7 @@ export class Auth<
   }
 
   /**
-   * Mounts the authentication web component <unidy-login>  to the DOM.
+   * Mounts the authentication web component <unidy-login> to the DOM.
    * This method should be called once to initialize the component.
    */
   mountComponent() {
@@ -93,15 +93,16 @@ export class Auth<
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
       const { token } = event.detail;
 
-      if (token) {
-        this.validateAndStoreToken(token);
+      if (token && this.validateToken(token)) {
+        this.storeToken(token);
+        this.config.onAuth?.(token);
       }
     });
 
     document.body.appendChild(this.component);
 
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
-    this.tryAuthFromRedirect();
+    this.tryAuthAfterRedirect();
 
     this.initState = "done";
   }
@@ -193,7 +194,7 @@ export class Auth<
         return false;
       }
 
-      this.validateAndStoreToken(res.token);
+      this.storeToken(res.token);
     }
 
     return !!this.idToken && this.validateToken(this.idToken);
@@ -249,23 +250,22 @@ export class Auth<
     }
   }
 
-  private validateAndStoreToken(token: string): void {
-    const tokenValid = this.validateToken(token);
-
-    if (!tokenValid) return;
-
+  private storeToken(token: string): void {
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
     }
-
-    this.config.onAuth?.(token);
   }
 
-  private tryAuthFromRedirect(): void {
+  private tryAuthAfterRedirect() {
+    if (!!this.idToken && this.validateToken(this.idToken)) {
+      return;
+    }
+
     const token = Utils.extractUrlParam(window.location.href, "id_token");
 
-    if (token) {
-      this.validateAndStoreToken(token);
+    if (token && this.validateToken(token)) {
+      this.storeToken(token);
+      this.config.onAuth?.(token);
     }
   }
 }
