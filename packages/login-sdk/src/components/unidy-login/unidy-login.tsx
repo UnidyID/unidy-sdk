@@ -1,5 +1,16 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
+// TypeScript declaration for Promise.withResolvers()
+declare global {
+  interface PromiseConstructor {
+    withResolvers<T>(): {
+      promise: Promise<T>;
+      resolve: (value: T | PromiseLike<T>) => void;
+      reject: (reason?: unknown) => void;
+    };
+  }
+}
+
 type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 
 type AuthResult = { success: true; token: string } | { success: false; error: string };
@@ -36,8 +47,16 @@ export class UnidyLogin {
 
   private dialog!: HTMLDialogElement;
   private popupCheckInterval?: number;
-  private authPromiseResolve: ((result: AuthResult) => void) | null = null;
-  private logoutPromiseResolve: ((result: LogoutResult) => void) | null = null;
+  private authPromise: {
+    promise: Promise<AuthResult>;
+    resolve: (result: AuthResult) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
+  private logoutPromise: {
+    promise: Promise<LogoutResult>;
+    resolve: (result: LogoutResult) => void;
+    reject: (reason?: unknown) => void;
+  } | null = null;
 
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
@@ -47,35 +66,35 @@ export class UnidyLogin {
   async auth({ trySilentAuth = false }: { trySilentAuth?: boolean } = {}): Promise<AuthResult> {
     const token = this.extractParam(window.location.href, "id_token");
     if (token) {
+      const result = { success: true, token } as const;
       this.handleSuccessfulAuth(token);
-      return;
+      return result;
     }
 
-    if (this.authPromiseResolve) {
-      console.warn("Authentication already in progress");
-      return;
+    if (this.authPromise) {
+      return this.authPromise.promise;
     }
+
+    this.authPromise = Promise.withResolvers<AuthResult>();
 
     const prompt = trySilentAuth ? "none" : this.prompt;
     this.setAuthorizeUrl(prompt);
 
-    return new Promise((resolve) => {
-      this.authPromiseResolve = resolve;
-    });
+    return this.authPromise.promise;
   }
 
   @Method()
   async logout(): Promise<LogoutResult> {
-    if (this.logoutPromiseResolve) {
+    if (this.logoutPromise) {
       console.warn("Logout already in progress");
-      return;
+      return this.logoutPromise.promise;
     }
+
+    this.logoutPromise = Promise.withResolvers<LogoutResult>();
 
     this.iframeUrl = `${this.baseUrl}/oauth/logout`;
 
-    return new Promise((resolve) => {
-      this.logoutPromiseResolve = resolve;
-    });
+    return this.logoutPromise.promise;
   }
 
   @Method()
@@ -113,8 +132,8 @@ export class UnidyLogin {
     this.isLoading = false;
 
     if (iframe.src.includes("oauth/logout")) {
-      this.logoutPromiseResolve?.({ success: true });
-      this.logoutPromiseResolve = null;
+      this.logoutPromise?.resolve({ success: true });
+      this.logoutPromise = null;
 
       return;
     }
@@ -127,8 +146,8 @@ export class UnidyLogin {
         this.handleSuccessfulAuth(token);
       } else {
         const error_msg = this.extractParam(iframe.contentWindow?.location.href, "error") ?? "No token received";
-        this.authPromiseResolve?.({ success: false, error: error_msg });
-        this.authPromiseResolve = null;
+        this.authPromise?.resolve({ success: false, error: error_msg });
+        this.authPromise = null;
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === "SecurityError") {
@@ -190,8 +209,8 @@ export class UnidyLogin {
   private handleSuccessfulAuth(token: string) {
     this.Auth.emit({ token });
 
-    this.authPromiseResolve?.({ success: true, token });
-    this.authPromiseResolve = null;
+    this.authPromise?.resolve({ success: true, token });
+    this.authPromise = null;
   }
 
   private extractParam(windowHref: string, paramName: string) {

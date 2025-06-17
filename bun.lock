@@ -42,6 +42,7 @@
         "jest-cli": "^29.7.0",
         "stencil-tailwind-plugin": "^2.0.5",
         "tailwindcss": "^4.1.7",
+        "typescript": "^5.8.3",
       },
     },
     "packages/sdk-api-client": {
