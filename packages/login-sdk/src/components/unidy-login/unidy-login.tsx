@@ -31,7 +31,6 @@ export class UnidyLogin {
   @State() iframeUrl = "";
   @State() isLoading = false;
   @State() popupWindow: Window | null = null;
-  @State() isSilentAuth = false;
 
   @Event() Auth: EventEmitter<{ token: string }>;
 
@@ -56,8 +55,8 @@ export class UnidyLogin {
       return;
     }
 
-    this.isSilentAuth = trySilentAuth;
-    this.setAuthorizeUrl();
+    const prompt = trySilentAuth ? "none" : this.prompt;
+    this.setAuthorizeUrl(prompt);
 
     return new Promise((resolve) => {
       this.authPromiseResolve = resolve;
@@ -88,7 +87,7 @@ export class UnidyLogin {
     this.dialog.close();
   }
 
-  private setAuthorizeUrl() {
+  private setAuthorizeUrl(prompt: PromptOption = null) {
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
@@ -96,10 +95,8 @@ export class UnidyLogin {
       redirect_uri: this.redirectUrl,
     });
 
-    if (this.isSilentAuth) {
-      params.append("prompt", "none");
-    } else if (this.prompt) {
-      params.append("prompt", this.prompt);
+    if (prompt) {
+      params.append("prompt", prompt);
     }
 
     const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
@@ -127,24 +124,10 @@ export class UnidyLogin {
       if (token) {
         this.dialog.close();
         this.handleSuccessfulAuth(token);
-
-        return;
-      }
-
-      if (this.isSilentAuth) {
-        this.isSilentAuth = false;
-
-        if (!token) {
-          const error = this.extractParam(iframe.contentWindow?.location.href, "error");
-
-          if (error) {
-            this.authPromiseResolve?.({ success: false, error });
-          } else {
-            this.authPromiseResolve?.({ success: false, error: "No token received" });
-          }
-
-          this.authPromiseResolve = null;
-        }
+      } else {
+        const error_msg = this.extractParam(iframe.contentWindow?.location.href, "error") ?? "No token received";
+        this.authPromiseResolve?.({ success: false, error: error_msg });
+        this.authPromiseResolve = null;
       }
     } catch (error) {
       console.debug("Cross-origin iframe error:", error);
