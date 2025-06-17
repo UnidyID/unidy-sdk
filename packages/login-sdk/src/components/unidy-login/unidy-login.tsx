@@ -244,6 +244,10 @@ export class UnidyLogin {
   private startPopupTokenCheck() {
     this.popupCheckInterval = window.setInterval(() => {
       try {
+        if (this.popupWindow?.closed) {
+          this.popupWindow = null;
+        }
+
         if (!this.popupWindow?.location.href) return;
 
         const token = this.extractParam(this.popupWindow.location.href, "id_token");
