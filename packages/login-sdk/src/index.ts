@@ -1,5 +1,5 @@
 import { Auth, type UnidyAuthConfig } from "./auth";
-import "./components/unidy-login/unidy-login";
+import "./components";
 
 declare global {
   interface Window {

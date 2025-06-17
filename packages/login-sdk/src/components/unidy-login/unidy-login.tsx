@@ -1,15 +1,5 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
-declare global {
-  interface PromiseConstructor {
-    withResolvers<T>(): {
-      promise: Promise<T>;
-      resolve: (value: T | PromiseLike<T>) => void;
-      reject: (reason?: unknown) => void;
-    };
-  }
-}
-
 export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 export type ResponseType = "code" | "id_token" | "token";
 
