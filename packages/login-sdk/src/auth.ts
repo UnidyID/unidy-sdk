@@ -53,7 +53,7 @@ export class Auth<
   public readonly component: HTMLUnidyLoginElement;
   /** The state of the initialization process */
   private initState: "loading" | "done" | null = null;
-
+  /** Whether to store the token in session storage, defaults to true */
   private storeTokenInSession = true;
   private fallbackToSilentAuthRequest = false;
 
@@ -145,29 +145,21 @@ export class Auth<
     if (!this.idToken && this.fallbackToSilentAuthRequest) {
       const res = await this.component.auth({ trySilentAuth: true });
 
-      if (res.success) {
-        this.validateAndStoreToken(res.token);
-      } else {
+      if (!res.success) {
         return false;
       }
-    } else if (!this.idToken) {
-      return false;
+
+      this.validateAndStoreToken(res.token);
     }
 
-    if (!this.idToken) {
-      return false;
-    }
-
-    return this.validateToken(this.idToken);
+    return !!this.idToken && this.validateToken(this.idToken);
   }
 
-  userTokenData(token_: string | null = null): (BasePayload & CustomPayload) | null {
-    const token = token_ || this.idToken;
+  userTokenData(): (BasePayload & CustomPayload) | null {
+    if (!this.idToken) return null;
+    if (!this.validateToken(this.idToken)) return null;
 
-    if (!token) return null;
-    if (!this.validateToken(token)) return null;
-
-    return this.parseToken(token);
+    return this.parseToken(this.idToken);
   }
 
   /**
