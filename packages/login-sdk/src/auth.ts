@@ -41,7 +41,7 @@ export class Auth<
     iat: number;
     [key: string]: string | number | boolean | undefined;
   } & (Scope extends `${string}email${string}`
-    ? { email: string }
+    ? { email: string; email_verified: boolean }
     : // biome-ignore lint/complexity/noBannedTypes: <explanation>
       {}),
 > {
@@ -96,7 +96,7 @@ export class Auth<
     return {
       ...this.userTokenData(),
       ...this.config.onAuth,
-    } as any;
+    } as BasePayload & CustomPayload;
   }
 
   /**
@@ -167,7 +167,7 @@ export class Auth<
     if (!token) return null;
     if (!this.validateToken(token)) return null;
 
-    return this.safeParseToken(token);
+    return this.parseToken(token);
   }
 
   /**
@@ -176,7 +176,7 @@ export class Auth<
    * @param token - The JWT token to parse
    * @returns The parsed token payload or null if parsing fails
    */
-  safeParseToken(token: string): (BasePayload & CustomPayload) | null {
+  parseToken(token: string): (BasePayload & CustomPayload) | null {
     try {
       const decoded = jwtDecode<TokenPayload>(token);
       return decoded as BasePayload & CustomPayload;
