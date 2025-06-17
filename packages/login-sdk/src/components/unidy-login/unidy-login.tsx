@@ -1,12 +1,11 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 
-type AuthResult = { success: true; token: string } | { success: false; error: string };
+type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 
+type AuthResult = { success: true; token: string } | { success: false; error: string };
 interface LogoutResult {
   success: boolean;
 }
-
-type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 
 @Component({
   tag: "unidy-login",
@@ -16,11 +15,17 @@ type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 export class UnidyLogin {
   @Element() el!: HTMLElement;
 
+  /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
   @Prop() baseUrl!: string;
+  /** The client ID for the application */
   @Prop() clientId!: string;
+  /** The OAuth scopes to request, defaults to "openid email" */
   @Prop() scope = "openid email";
+  /** The OAuth response type, defaults to "id_token" */
   @Prop() responseType = "id_token";
+  /** The prompt option for authentication, can be "none", "login", "consent", "select_account" or null */
   @Prop() prompt: PromptOption = null;
+  /** The URL to redirect to after authentication, defaults to current origin */
   @Prop() redirectUrl = window.location.origin;
 
   @State() iframeUrl = "";

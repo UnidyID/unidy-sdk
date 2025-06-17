@@ -8,13 +8,31 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface UnidyLogin {
         "auth": ({ trySilentAuth }?: { trySilentAuth?: boolean; }) => Promise<AuthResult>;
+        /**
+          * The base URL of the Unidy authentication server, example: https://your-domain.unidy.de
+         */
         "baseUrl": string;
+        /**
+          * The client ID for the application
+         */
         "clientId": string;
         "hide": () => Promise<void>;
         "logout": () => Promise<LogoutResult>;
+        /**
+          * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
+         */
         "prompt": PromptOption;
+        /**
+          * The URL to redirect to after authentication, defaults to current origin
+         */
         "redirectUrl": string;
+        /**
+          * The OAuth response type, defaults to "id_token"
+         */
         "responseType": string;
+        /**
+          * The OAuth scopes to request, defaults to "openid email"
+         */
         "scope": string;
         "show": () => Promise<void>;
     }
@@ -47,12 +65,30 @@ declare global {
 }
 declare namespace LocalJSX {
     interface UnidyLogin {
+        /**
+          * The base URL of the Unidy authentication server, example: https://your-domain.unidy.de
+         */
         "baseUrl": string;
+        /**
+          * The client ID for the application
+         */
         "clientId": string;
         "onAuth"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
+        /**
+          * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
+         */
         "prompt"?: PromptOption;
+        /**
+          * The URL to redirect to after authentication, defaults to current origin
+         */
         "redirectUrl"?: string;
+        /**
+          * The OAuth response type, defaults to "id_token"
+         */
         "responseType"?: string;
+        /**
+          * The OAuth scopes to request, defaults to "openid email"
+         */
         "scope"?: string;
     }
     interface IntrinsicElements {
