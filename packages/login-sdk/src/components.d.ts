@@ -5,6 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { AuthResult, LogoutResult, PromptOption, ResponseType } from "./components/unidy-login/unidy-login";
+export { AuthResult, LogoutResult, PromptOption, ResponseType } from "./components/unidy-login/unidy-login";
 export namespace Components {
     interface UnidyLogin {
         /**
@@ -46,7 +48,7 @@ export namespace Components {
         /**
           * The OAuth response type, defaults to "id_token"
          */
-        "responseType": string;
+        "responseType": ResponseType;
         /**
           * The OAuth scopes to request, defaults to "openid email"
          */
@@ -107,7 +109,7 @@ declare namespace LocalJSX {
         /**
           * The OAuth response type, defaults to "id_token"
          */
-        "responseType"?: string;
+        "responseType"?: ResponseType;
         /**
           * The OAuth scopes to request, defaults to "openid email"
          */

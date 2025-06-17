@@ -11,12 +11,11 @@ declare global {
   }
 }
 
-type PromptOption = "none" | "login" | "consent" | "select_account" | null;
+export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
+export type ResponseType = "code" | "id_token" | "token";
 
-type AuthResult = { success: true; token: string } | { success: false; error: string };
-interface LogoutResult {
-  success: boolean;
-}
+export type AuthResult = { success: true; token: string } | { success: false; error: string };
+export type LogoutResult = { success: boolean };
 
 @Component({
   tag: "unidy-login",
@@ -33,7 +32,7 @@ export class UnidyLogin {
   /** The OAuth scopes to request, defaults to "openid email" */
   @Prop() scope = "openid email";
   /** The OAuth response type, defaults to "id_token" */
-  @Prop() responseType = "id_token";
+  @Prop() responseType: ResponseType = "id_token";
   /** The prompt option for authentication, can be "none", "login", "consent", "select_account" or null */
   @Prop() prompt: PromptOption = null;
   /** The URL to redirect to after authentication, defaults to current origin */

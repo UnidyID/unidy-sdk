@@ -1,12 +1,22 @@
 import { jwtDecode } from "jwt-decode";
+import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
 
 export interface UnidyAuthConfig<Scope extends string = string> {
+  /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
+  baseUrl: string;
+  /** The client ID for the application */
   clientId: string;
+  /** The OAuth scopes to request, defaults to "openid email" */
   scope?: Scope;
-  responseType?: string;
-  prompt?: string;
+  /** The OAuth response type, defaults to "id_token" */
+  responseType?: ResponseType;
+  /** The prompt option for authentication, can be "none", "login", "consent", "select_account" or null */
+  prompt?: PromptOption;
+  /** The URL to redirect to after authentication, defaults to current origin */
   redirectUrl?: string;
+  /** Whether to store the token in session storage, defaults to true */
   storeTokenInSession?: boolean;
+  /** Callback function called when authentication is successful */
   onAuth?: (token: string) => void;
 }
 
@@ -90,7 +100,7 @@ export class Auth<
    * @param {boolean} [options.silent=false] - If true, attempts silent authentication without showing UI
    * @returns {Promise<AuthResult>} Promise resolving to authentication result containing success status and token/error
    */
-  async auth({ silent = false }: { silent?: boolean } = {}) {
+  async auth({ silent = false }: { silent?: boolean } = {}): Promise<AuthResult> {
     if (!silent) {
       await this.show();
     }
@@ -98,17 +108,17 @@ export class Auth<
     return this.component.auth({ trySilentAuth: silent });
   }
 
-  async logout() {
+  async logout(): Promise<LogoutResult> {
     sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
 
     return this.component.logout();
   }
 
-  async show() {
+  async show(): Promise<void> {
     return this.component.show();
   }
 
-  async hide() {
+  async hide(): Promise<void> {
     return this.component.hide();
   }
 
