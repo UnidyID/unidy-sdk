@@ -17,9 +17,9 @@
 
 ## Events
 
-| Event  | Description | Type                              |
-| ------ | ----------- | --------------------------------- |
-| `Auth` |             | `CustomEvent<{ token: string; }>` |
+| Event       | Description | Type                              |
+| ----------- | ----------- | --------------------------------- |
+| `authEvent` |             | `CustomEvent<{ token: string; }>` |
 
 
 ## Methods
