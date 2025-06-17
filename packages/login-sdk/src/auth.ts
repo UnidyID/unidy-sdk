@@ -55,8 +55,14 @@ export class Auth<
   private initState: "loading" | "done" | null = null;
   /** Whether to store the token in session storage, defaults to true */
   private storeTokenInSession = true;
+  /** Whether to fallback to silent auth request when checking authentication status, defaults to false */
   private fallbackToSilentAuthRequest = false;
 
+  /**
+   * Initializes a new instance of the Auth class.
+   * @param baseUrl - The base URL of the Unidy authentication server.
+   * @param config - Configuration options for the authentication process.
+   */
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
     this.config = config;
@@ -65,6 +71,10 @@ export class Auth<
     this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
   }
 
+  /**
+   * Mounts the authentication web component <unidy-login>  to the DOM.
+   * This method should be called once to initialize the component.
+   */
   mountComponent() {
     if (this.initState) return;
 
@@ -113,6 +123,10 @@ export class Auth<
     return this.component.auth({ trySilentAuth: silent });
   }
 
+  /**
+   * Logs the user out by clearing the session token and performing a logout request to the Unidy authentication server
+   * @returns A promise that resolves with the logout result.
+   */
   async logout(): Promise<LogoutResult> {
     if (this.storeTokenInSession) {
       sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
@@ -121,14 +135,27 @@ export class Auth<
     return this.component.logout();
   }
 
+  /**
+   * Shows the authentication dialog.
+   * @returns A promise that resolves when the dialog is shown.
+   */
   async show(): Promise<void> {
     return this.component.show();
   }
 
+  /**
+   * Hides the authentication dialog.
+   * @returns A promise that resolves when the dialog is hidden.
+   */
   async hide(): Promise<void> {
     return this.component.hide();
   }
 
+  /**
+   * Retrieves the ID token from session storage.
+   *
+   * @returns The ID token, or null if not found or if `storeTokenInSession` is disabled (false).
+   */
   get idToken(): string | null {
     if (!this.storeTokenInSession) {
       return null;
@@ -137,10 +164,23 @@ export class Auth<
     return sessionStorage.getItem(UNIDY_ID_TOKEN_SESSION_KEY);
   }
 
+  /**
+   * Checks if the authentication component has been initialized.
+   * @returns True if the component is initialized (mounted with `mountComponent` to the DOM), false otherwise.
+   */
   get isInitialized(): boolean {
     return !!this.initState;
   }
 
+  /**
+   * Checks if the user is authenticated.
+   * If not authenticated and fallbackToSilentAuthRequest is enabled, it attempts a silent login.
+   *
+   * Note: method should be used if `storeTokenInSession` is enabled (true) which is the default behavior.
+   * If storeTokenInSession is disabled (false), the method will always return false.
+   *
+   * @returns A promise that resolves to true if the user is authenticated, false otherwise.
+   */
   async isAuthenticated(): Promise<boolean> {
     if (!this.idToken && this.fallbackToSilentAuthRequest) {
       const res = await this.component.auth({ trySilentAuth: true });
@@ -155,6 +195,14 @@ export class Auth<
     return !!this.idToken && this.validateToken(this.idToken);
   }
 
+  /**
+   * Retrieves the decoded user token data.
+   *
+   * Note: method should be used if `storeTokenInSession` is enabled (true) which is the default behavior.
+   * If `storeTokenInSession` is disabled (false), the method will always return null.
+   *
+   * @returns The decoded token payload, or null if the token is invalid or not present.
+   */
   userTokenData(): (BasePayload & CustomPayload) | null {
     if (!this.idToken) return null;
     if (!this.validateToken(this.idToken)) return null;
@@ -179,7 +227,7 @@ export class Auth<
   }
 
   /**
-   * Validates a JWT token by checking its expiration time.
+   * Validates a JWT token by decoding it and checking its expiration time.
    *
    * @param token - The JWT token to validate
    * @returns True if the token is valid and not expired, false otherwise
