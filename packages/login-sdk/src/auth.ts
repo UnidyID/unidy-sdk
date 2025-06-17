@@ -16,6 +16,8 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   redirectUrl?: string;
   /** Whether to store the token in session storage, defaults to true */
   storeTokenInSession?: boolean;
+  /** Whether to fallback to silent auth request when checking authentication status, defaults to false */
+  fallbackToSilentAuthRequest?: boolean;
   /** Callback function called when authentication is successful */
   onAuth?: (token: string) => void;
 }
@@ -53,12 +55,14 @@ export class Auth<
   private initState: "loading" | "done" | null = null;
 
   private storeTokenInSession = true;
+  private fallbackToSilentAuthRequest = false;
 
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
     this.config = config;
     this.component = document.createElement("unidy-login");
     this.storeTokenInSession = config.storeTokenInSession ?? true;
+    this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
   }
 
   mountComponent() {
@@ -77,6 +81,7 @@ export class Auth<
 
     this.component.addEventListener("Auth", (event: CustomEvent) => {
       const { token } = event.detail;
+
       if (token) {
         this.validateAndStoreToken(token);
       }
@@ -136,26 +141,24 @@ export class Auth<
     return !!this.initState;
   }
 
-  async isAuthenticated(token_: string | null = null, fallbackToSilentAuthRequest = false): Promise<boolean> {
-    let token = token_ || this.idToken;
-
-    if (!token && fallbackToSilentAuthRequest) {
+  async isAuthenticated(): Promise<boolean> {
+    if (!this.idToken && this.fallbackToSilentAuthRequest) {
       const res = await this.component.auth({ trySilentAuth: true });
 
       if (res.success) {
-        token = res.token;
+        this.validateAndStoreToken(res.token);
       } else {
         return false;
       }
-    } else {
+    } else if (!this.idToken) {
       return false;
     }
 
-    if (!token) {
+    if (!this.idToken) {
       return false;
     }
 
-    return this.validateToken(token);
+    return this.validateToken(this.idToken);
   }
 
   userTokenData(token_: string | null = null): (BasePayload & CustomPayload) | null {
