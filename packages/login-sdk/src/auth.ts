@@ -109,7 +109,9 @@ export class Auth<
   }
 
   async logout(): Promise<LogoutResult> {
-    sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
+    if (this.storeTokenInSession) {
+      sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
+    }
 
     return this.component.logout();
   }
