@@ -139,6 +139,10 @@ export class Auth<
       return false;
     }
 
+    if (!token) {
+      return false;
+    }
+
     return Auth.validateToken(token);
   }
 
@@ -165,18 +169,18 @@ export class Auth<
       const payload = Auth.safeParseToken(token);
       const now = Math.floor(Date.now() / 1000);
 
-      if (payload.exp > now) {
-        return true;
+      if (!payload) {
+        return false;
       }
 
-      return false;
+      return payload.exp > now;
     } catch (error) {
       console.error("Invalid token:", error);
       return false;
     }
   }
 
-  private validateAndStoreToken(token: string): boolean {
+  private validateAndStoreToken(token: string) {
     const tokenValid = Auth.validateToken(token);
 
     if (!tokenValid) {
@@ -186,6 +190,7 @@ export class Auth<
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
     }
+
     this.config.onAuth?.(token);
   }
 }
