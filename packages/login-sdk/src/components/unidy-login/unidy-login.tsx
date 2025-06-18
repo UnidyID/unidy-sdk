@@ -266,7 +266,7 @@ export class UnidyLogin {
   render() {
     return (
       <dialog
-        class="unidy-dialog m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden"
+        class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden"
         ref={(el) => this.setDialogRef(el as HTMLDialogElement)}
       >
         <div class="relative w-full h-full min-w-[320px] overflow-hidden">

@@ -2,7 +2,7 @@
   display: block;
 }
 
-.unidy-dialog {
+dialog {
   max-width: 90vw;
   max-height: 90vh;
   width: 400px;
