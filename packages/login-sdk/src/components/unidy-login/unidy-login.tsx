@@ -284,6 +284,7 @@ export class UnidyLogin {
           {this.isLoading && (
             <div class="absolute inset-0 bg-white z-[2]">
               <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] flex items-center justify-center">
+                {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
                 <svg class="w-9 h-9 animate-[rotate_2s_linear_infinite]" viewBox="0 0 50 50" role="status" aria-label="Loading">
                   <circle class="stroke-gray-300 opacity-25" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
                   <circle
