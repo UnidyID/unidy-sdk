@@ -275,12 +275,14 @@ export class UnidyLogin {
           </button>
 
           {this.isLoading && (
-            <div class="loading-spinner">
-              {/* biome-ignore lint/a11y/useSemanticElements: */}
-              <svg class="spinner" viewBox="0 0 50 50" role="status" aria-label="Loading">
-                <circle class="spinner-circle" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
-                <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
-              </svg>
+            <div class="w-full h-full bg-white">
+              <div class="loading-spinner">
+                {/* biome-ignore lint/a11y/useSemanticElements: */}
+                <svg class="spinner" viewBox="0 0 50 50" role="status" aria-label="Loading">
+                  <circle class="spinner-circle" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+                  <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+                </svg>
+              </div>
             </div>
           )}
 
