@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
 import { Utils } from "./utils";
+import { Logger } from "./logger";
 
 export interface UnidyAuthConfig<Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
@@ -21,6 +22,8 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   fallbackToSilentAuthRequest?: boolean;
   /** Callback function called when authentication is successful */
   onAuth?: (token: string) => void;
+  /** Whether to enable logging, defaults to true */
+  enableLogging?: boolean;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
@@ -70,6 +73,8 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   /** Whether to fallback to silent auth request when checking authentication status, defaults to false */
   private fallbackToSilentAuthRequest = false;
 
+  private readonly logger: Logger;
+
   /**
    * Initializes a new instance of the Auth class.
    * @param baseUrl - The base URL of the Unidy authentication server.
@@ -81,6 +86,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     this.component = document.createElement("unidy-login");
     this.storeTokenInSession = config.storeTokenInSession ?? true;
     this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
+    this.logger = new Logger(config.enableLogging ?? false);
   }
 
   /**
@@ -99,6 +105,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       responseType: this.config.responseType,
       prompt: this.config.prompt,
       redirectUrl: this.config.redirectUrl,
+      enableLogging: this.logger.enabled,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
@@ -236,7 +243,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     try {
       return jwtDecode<BasePayload<Scope> & CustomPayload>(token);
     } catch (error) {
-      console.error("Failed to parse token:", error);
+      this.logger.error("Failed to parse token:", error);
       return null;
     }
   }
@@ -255,7 +262,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       const now = Math.floor(Date.now() / 1000);
       return decoded.exp > now;
     } catch (error) {
-      console.error("Invalid token:", error);
+      this.logger.error("Invalid token:", error);
       return false;
     }
   }

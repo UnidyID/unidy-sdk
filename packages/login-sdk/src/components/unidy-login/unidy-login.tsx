@@ -1,5 +1,6 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 import { Utils } from "../../utils";
+import { Logger } from "../../logger";
 
 export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 export type ResponseType = "code" | "id_token" | "token";
@@ -27,6 +28,8 @@ export class UnidyLogin {
   @Prop() prompt: PromptOption = null;
   /** The URL to redirect to after authentication, defaults to current origin */
   @Prop() redirectUrl = window.location.origin;
+  /** Whether to enable logging, defaults to true */
+  @Prop() enableLogging = true;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -47,8 +50,13 @@ export class UnidyLogin {
     reject: (reason?: unknown) => void;
   } | null = null;
 
+  // The reason we're initializing it here is that IT MIGHT not be available and break our code if it's not there
+  private logger: Logger = new Logger(false);
+
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
+
+    this.logger = new Logger(this.enableLogging);
   }
 
   /**
@@ -104,7 +112,8 @@ export class UnidyLogin {
   @Method()
   async logout(): Promise<LogoutResult> {
     if (this.logoutPromise) {
-      console.warn("Logout already in progress");
+      this.logger.log("Logout already in progress");
+
       return this.logoutPromise.promise;
     }
 
@@ -194,7 +203,7 @@ export class UnidyLogin {
         // Ignore cross-origin errors as they are expected when accessing iframe content
         return;
       }
-      console.warn("Unexpected error:", error);
+      this.logger.error("Unexpected error:", error);
     }
   }
 
@@ -240,7 +249,7 @@ export class UnidyLogin {
         this.dialog.close();
         this.handleSuccessfulAuth(token);
       } catch (error) {
-        console.debug("Cross-origin error:", error);
+        this.logger.error("Cross-origin error:", error);
       }
     }, 100);
   }
