@@ -113,7 +113,14 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     document.body.appendChild(this.component);
 
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
-    this.tryAuthAfterRedirect();
+    if (!this.idToken || !this.validateToken(this.idToken)) {
+      const token = Utils.extractUrlParam(window.location.href, "id_token");
+
+      if (token && this.validateToken(token)) {
+        this.storeToken(token);
+        this.config.onAuth?.(token);
+      }
+    }
 
     this.initState = "done";
   }
@@ -256,19 +263,6 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   private storeToken(token: string): void {
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
-    }
-  }
-
-  private tryAuthAfterRedirect() {
-    if (!!this.idToken && this.validateToken(this.idToken)) {
-      return;
-    }
-
-    const token = Utils.extractUrlParam(window.location.href, "id_token");
-
-    if (token && this.validateToken(token)) {
-      this.storeToken(token);
-      this.config.onAuth?.(token);
     }
   }
 }
