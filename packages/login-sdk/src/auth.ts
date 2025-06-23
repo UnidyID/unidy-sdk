@@ -28,7 +28,7 @@ export interface UnidyAuthConfig<Scope extends string = string> {
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
 
-type BasePayload<Scope extends string> = {
+export type BasePayload<Scope extends string> = {
   /** The subject of the token */
   sub: string;
   /** The expiration time of the token */
