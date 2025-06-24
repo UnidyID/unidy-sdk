@@ -1,5 +1,6 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 import { Utils } from "../../utils";
+import { Logger } from "../../logger";
 
 export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
 export type ResponseType = "code" | "id_token" | "token";
@@ -27,6 +28,8 @@ export class UnidyLogin {
   @Prop() prompt: PromptOption = null;
   /** The URL to redirect to after authentication, defaults to current origin */
   @Prop() redirectUrl = window.location.origin;
+  /** Whether to enable logging, defaults to true */
+  @Prop() enableLogging = true;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -34,21 +37,18 @@ export class UnidyLogin {
 
   @Event() authEvent!: EventEmitter<{ token: string }>;
 
-  private dialog!: HTMLDialogElement;
+  private dialog: HTMLDialogElement | undefined;
   private popupCheckInterval?: number;
-  private authPromise: {
-    promise: Promise<AuthResult>;
-    resolve: (result: AuthResult) => void;
-    reject: (reason?: unknown) => void;
-  } | null = null;
-  private logoutPromise: {
-    promise: Promise<LogoutResult>;
-    resolve: (result: LogoutResult) => void;
-    reject: (reason?: unknown) => void;
-  } | null = null;
+  private authPromise: PromiseWithResolvers<AuthResult> | null = null;
+  private logoutPromise: PromiseWithResolvers<LogoutResult> | null = null;
+
+  // The reason we're initializing it here is that IT MIGHT not be available and break our code if it's not there
+  private logger: Logger = new Logger(false);
 
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
+
+    this.logger = new Logger(this.enableLogging);
   }
 
   /**
@@ -104,7 +104,8 @@ export class UnidyLogin {
   @Method()
   async logout(): Promise<LogoutResult> {
     if (this.logoutPromise) {
-      console.warn("Logout already in progress");
+      this.logger.log("Logout already in progress");
+
       return this.logoutPromise.promise;
     }
 
@@ -127,7 +128,7 @@ export class UnidyLogin {
    */
   @Method()
   async show() {
-    this.dialog.showModal();
+    this.dialog?.showModal();
   }
 
   /**
@@ -142,7 +143,7 @@ export class UnidyLogin {
    */
   @Method()
   async hide() {
-    this.dialog.close();
+    this.dialog?.close();
   }
 
   private setAuthorizeUrl(prompt: PromptOption = null) {
@@ -182,7 +183,7 @@ export class UnidyLogin {
       const token = Utils.extractUrlParam(href, "id_token");
 
       if (token) {
-        this.dialog.close();
+        this.dialog?.close();
         this.handleSuccessfulAuth(token);
       } else {
         const error_msg = Utils.extractUrlParam(href, "error") ?? "No token received";
@@ -194,7 +195,7 @@ export class UnidyLogin {
         // Ignore cross-origin errors as they are expected when accessing iframe content
         return;
       }
-      console.warn("Unexpected error:", error);
+      this.logger.error("Unexpected error:", error);
     }
   }
 
@@ -237,10 +238,10 @@ export class UnidyLogin {
         if (!token) return;
 
         this.cleanupPopup();
-        this.dialog.close();
+        this.dialog?.close();
         this.handleSuccessfulAuth(token);
       } catch (error) {
-        console.debug("Cross-origin error:", error);
+        this.logger.error("Cross-origin error:", error);
       }
     }, 100);
   }
@@ -259,15 +260,13 @@ export class UnidyLogin {
     this.authPromise = null;
   }
 
-  private setDialogRef = (el: HTMLDialogElement) => {
-    this.dialog = el;
-  };
-
   render() {
     return (
       <dialog
         class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden"
-        ref={(el) => this.setDialogRef(el as HTMLDialogElement)}
+        ref={(el) => {
+          this.dialog = el;
+        }}
       >
         <div class="relative w-full h-full min-w-[320px] overflow-hidden">
           <button

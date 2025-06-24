@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
 import { Utils } from "./utils";
+import { Logger } from "./logger";
 
 export interface UnidyAuthConfig<Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
@@ -21,31 +22,44 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   fallbackToSilentAuthRequest?: boolean;
   /** Callback function called when authentication is successful */
   onAuth?: (token: string) => void;
+  /** Whether to enable logging, defaults to true */
+  enableLogging?: boolean;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
 
-interface TokenPayload {
+export type BasePayload<Scope extends string> = {
+  /** The subject of the token */
   sub: string;
-  email?: string;
+  /** The expiration time of the token */
   exp: number;
+  /** The issued at time of the token */
   iat: number;
+  /** The issuer of the token */
+  iss: string;
+  /** The audience of the token */
+  aud: string;
+  /** The nonce of the token */
+  nonce: string;
+  /** The authentication time of the token */
+  auth_time: number;
   [key: string]: string | number | boolean | undefined;
-}
-
-export class Auth<
-  CustomPayload = Record<string, unknown>,
-  Scope extends string = string,
-  BasePayload = {
-    sub: string;
-    exp: number;
-    iat: number;
-    [key: string]: string | number | boolean | undefined;
-  } & (Scope extends `${string}email${string}`
-    ? { email: string; email_verified: boolean }
+} & (Scope extends `${string}email${string}`
+  ? { email: string; email_verified: boolean }
+  : // biome-ignore lint/complexity/noBannedTypes: <explanation>
+    {}) &
+  (Scope extends `${string}profile${string}`
+    ? {
+        name: string;
+        given_name: string;
+        family_name: string;
+        gender: "male" | "female" | "other";
+        updated_at: number;
+      }
     : // biome-ignore lint/complexity/noBannedTypes: <explanation>
-      {}),
-> {
+      {});
+
+export class Auth<CustomPayload extends Record<string, unknown> = Record<string, unknown>, Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
   public readonly baseUrl: string;
   /** Configuration options for the authentication process */
@@ -59,6 +73,8 @@ export class Auth<
   /** Whether to fallback to silent auth request when checking authentication status, defaults to false */
   private fallbackToSilentAuthRequest = false;
 
+  private readonly logger: Logger;
+
   /**
    * Initializes a new instance of the Auth class.
    * @param baseUrl - The base URL of the Unidy authentication server.
@@ -70,6 +86,7 @@ export class Auth<
     this.component = document.createElement("unidy-login");
     this.storeTokenInSession = config.storeTokenInSession ?? true;
     this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
+    this.logger = new Logger(config.enableLogging ?? false);
   }
 
   /**
@@ -88,6 +105,7 @@ export class Auth<
       responseType: this.config.responseType,
       prompt: this.config.prompt,
       redirectUrl: this.config.redirectUrl,
+      enableLogging: this.logger.enabled,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
@@ -102,16 +120,16 @@ export class Auth<
     document.body.appendChild(this.component);
 
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
-    this.tryAuthAfterRedirect();
+    if (!this.idToken || !this.validateToken(this.idToken)) {
+      const token = Utils.extractUrlParam(window.location.href, "id_token");
+
+      if (token && this.validateToken(token)) {
+        this.storeToken(token);
+        this.config.onAuth?.(token);
+      }
+    }
 
     this.initState = "done";
-  }
-
-  parse(): BasePayload & CustomPayload {
-    return {
-      ...this.userTokenData(),
-      ...this.config.onAuth,
-    } as BasePayload & CustomPayload;
   }
 
   /**
@@ -208,7 +226,7 @@ export class Auth<
    *
    * @returns The decoded token payload, or null if the token is invalid or not present.
    */
-  userTokenData(): (BasePayload & CustomPayload) | null {
+  userTokenData(): (BasePayload<Scope> & CustomPayload) | null {
     if (!this.idToken) return null;
     if (!this.validateToken(this.idToken)) return null;
 
@@ -221,12 +239,11 @@ export class Auth<
    * @param token - The JWT token to parse
    * @returns The parsed token payload or null if parsing fails
    */
-  parseToken(token: string): (BasePayload & CustomPayload) | null {
+  parseToken(token: string): (BasePayload<Scope> & CustomPayload) | null {
     try {
-      const decoded = jwtDecode<TokenPayload>(token);
-      return decoded as BasePayload & CustomPayload;
+      return jwtDecode<BasePayload<Scope> & CustomPayload>(token);
     } catch (error) {
-      console.error("Failed to parse token:", error);
+      this.logger.error("Failed to parse token:", error);
       return null;
     }
   }
@@ -239,13 +256,13 @@ export class Auth<
    */
   validateToken(token: string): boolean {
     try {
-      const decoded = jwtDecode<TokenPayload>(token);
+      const decoded = this.parseToken(token);
       if (!decoded) return false;
 
       const now = Math.floor(Date.now() / 1000);
       return decoded.exp > now;
     } catch (error) {
-      console.error("Invalid token:", error);
+      this.logger.error("Invalid token:", error);
       return false;
     }
   }
@@ -253,19 +270,6 @@ export class Auth<
   private storeToken(token: string): void {
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
-    }
-  }
-
-  private tryAuthAfterRedirect() {
-    if (!!this.idToken && this.validateToken(this.idToken)) {
-      return;
-    }
-
-    const token = Utils.extractUrlParam(window.location.href, "id_token");
-
-    if (token && this.validateToken(token)) {
-      this.storeToken(token);
-      this.config.onAuth?.(token);
     }
   }
 }
