@@ -23,7 +23,7 @@ import { UnidyAuth } from '@unidy.io/auth';
 const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
   scope: "openid profile email",
-  redirectUrl: "https://your-app.com
+  redirectUrl: "https://your-app.com"
 });
 
 // Example of how to handle login, logout, and check authentication status
@@ -70,7 +70,7 @@ When `storeTokenInSession` is set to `false`, you are responsible for handling t
 
 The SDK provides helper methods like `validateToken()` and `parseToken()` for this purpose so you can easily handle the authentication (example below).
 
-**Important note:** Methods `isAuthenticated` and `userTokenData` in this case always return false since they rely on the session storage for token management, which is disabled when `storeTokenInSession` is set to `false`.
+**Important note:** Methods `isAuthenticated` and `userTokenData` in this case always return false and null since they rely on the session storage for token management, which is disabled when `storeTokenInSession` is set to `false`.
 
 ```typescript
 import { UnidyAuth } from '@unidy.io/auth';
@@ -194,7 +194,7 @@ interface UnidyAuthConfig {
 
 ## Methods
 
-- `mountComponent()`: Mounts the `<unidy-login>` web component to the DOM. This should be called once when your application loads.
+- `mountComponent()`: Mounts the `<unidy-login>` web component to the DOM. This should be called once when your application loads. This is automatically called when you initialize the Auth instance.
 
 - `auth({ silent: boolean })`: Initiates the authentication process. If `silent` is true, it attempts to authenticate without user interaction.
   - Returns a `Promise` with `{ success: true, token: string, userTokenData: object } | { success: false, error: string }`
