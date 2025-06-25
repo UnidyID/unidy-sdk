@@ -165,7 +165,11 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     const result = await this.component.auth({ trySilentAuth: silent });
 
     if (result.success) {
-      return { success: true, token: result.token, userTokenData: this.userTokenData() };
+      if (this.validateToken(result.token)) {
+        return { success: true, token: result.token, userTokenData: this.parseToken(result.token) };
+      }
+
+      return { success: false, error: "Invalid token" };
     }
 
     return result;
