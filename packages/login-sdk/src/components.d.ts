@@ -26,6 +26,10 @@ export namespace Components {
          */
         "clientId": string;
         /**
+          * Whether to enable logging, defaults to true
+         */
+        "enableLogging": boolean;
+        /**
           * Hides the authentication dialog modal.
           * @returns Promise that resolves when the dialog is hidden
           * @example ```typescript await component.hide(); ```
@@ -97,6 +101,10 @@ declare namespace LocalJSX {
           * The client ID for the application
          */
         "clientId": string;
+        /**
+          * Whether to enable logging, defaults to true
+         */
+        "enableLogging"?: boolean;
         "onAuthEvent"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
