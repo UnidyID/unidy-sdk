@@ -1,7 +1,9 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 import { Utils } from "../../utils";
 import { Logger } from "../../logger";
-import type { AuthResult, LogoutResult, PromptOption, ResponseType } from "../../auth";
+import type { LogoutResult, PromptOption, ResponseType } from "../../auth";
+
+export type AuthResult = { success: true; token: string } | { success: false; error: string };
 
 @Component({
   tag: "unidy-login",
@@ -256,7 +258,7 @@ export class UnidyLogin {
   private handleSuccessfulAuth(token: string) {
     this.authEvent.emit({ token });
 
-    this.authPromise?.resolve({ success: true, token, userTokenData: null });
+    this.authPromise?.resolve({ success: true, token });
     this.authPromise = null;
   }
 
