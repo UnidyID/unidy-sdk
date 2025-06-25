@@ -3,6 +3,16 @@ import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./com
 import { Utils } from "./utils";
 import { Logger } from "./logger";
 
+/**
+ * Error thrown when trying to use authentication methods before the unidy-login component is mounted
+ */
+export class UnidyNotMounted extends Error {
+  constructor() {
+    super("Unidy component is not mounted");
+    this.name = "UnidyNotMounted";
+  }
+}
+
 export interface UnidyAuthConfig<Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
   baseUrl: string;
