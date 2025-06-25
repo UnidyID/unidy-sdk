@@ -263,12 +263,11 @@
     let unidyAuth = new UnidyAuth().init("http://localhost:3000", {
       clientId: "zHNnTUpks5HnMwquYjIEY3IslkWrslEk0cdux1Bj6Gw",
       scope: "openid profile email",
-      redirectUrl: "http://localhost:3333/",
+      redirectUrl: "http://localhost:3333",
       onAuth: (token) => {
         // console.log("We can still use onAuth callback: ", token)
       }
     });
-    unidyAuth.mountComponent();
 
     if (await unidyAuth.isAuthenticated()) {
       updateUI(true);

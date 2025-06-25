@@ -95,6 +95,8 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     this.storeTokenInSession = config.storeTokenInSession ?? true;
     this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
     this.logger = new Logger(config.enableLogging ?? false);
+
+    this.mountComponent();
   }
 
   /**
