@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/auth",
-  "version": "0.0.8-alpha",
+  "version": "0.0.9-alpha",
   "license": "MIT",
   "private": false,
   "scripts": {
