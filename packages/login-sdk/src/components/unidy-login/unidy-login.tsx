@@ -263,7 +263,7 @@ export class UnidyLogin {
   render() {
     return (
       <dialog
-        class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden"
+        class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden max-w-[90vw] max-h-[90vh] w-[400px] h-[720px] [&::backdrop]:bg-black/60"
         ref={(el) => {
           this.dialog = el;
         }}
@@ -283,16 +283,25 @@ export class UnidyLogin {
           {this.isLoading && (
             <div class="absolute inset-0 bg-white z-[2]">
               <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] flex items-center justify-center">
-                {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
-                <svg class="w-9 h-9 animate-[rotate_2s_linear_infinite]" viewBox="0 0 50 50" role="status" aria-label="Loading">
-                  <circle class="stroke-gray-300 opacity-25" cx="25" cy="25" r="20" fill="none" stroke-width="5" />
+                <svg class="w-9 h-9 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Loading">
+                  <title>Loading</title>
                   <circle
-                    class="stroke-gray-600 stroke-round animate-[dash_1.5s_ease-in-out_infinite]"
-                    cx="25"
-                    cy="25"
-                    r="20"
+                    class="opacity-25"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
                     fill="none"
-                    stroke-width="5"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    class="opacity-75"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    fill="none"
+                    d="M12 2a10 10 0 0 1 10 10"
                   />
                 </svg>
               </div>
