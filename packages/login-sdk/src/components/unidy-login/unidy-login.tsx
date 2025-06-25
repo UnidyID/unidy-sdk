@@ -180,13 +180,13 @@ export class UnidyLogin {
       const href = iframe.contentWindow?.location.href;
       if (!href) return;
 
-      const token = Utils.extractUrlParam(href, "id_token");
+      const token = Utils.extractHashUrlParam(href, "id_token");
 
       if (token) {
         this.dialog?.close();
         this.handleSuccessfulAuth(token);
       } else {
-        const error_msg = Utils.extractUrlParam(href, "error") ?? "No token received";
+        const error_msg = Utils.extractHashUrlParam(href, "error") ?? "No token received";
         this.authPromise?.resolve({ success: false, error: error_msg });
         this.authPromise = null;
       }
@@ -234,7 +234,7 @@ export class UnidyLogin {
 
         if (!this.popupWindow?.location.href) return;
 
-        const token = Utils.extractUrlParam(this.popupWindow.location.href, "id_token");
+        const token = Utils.extractHashUrlParam(this.popupWindow.location.href, "id_token");
         if (!token) return;
 
         this.cleanupPopup();
