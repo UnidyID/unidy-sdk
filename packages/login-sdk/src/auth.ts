@@ -147,6 +147,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns {Promise<AuthResult>} Promise resolving to authentication result containing success status and token/error
    */
   async auth({ silent = false }: { silent?: boolean } = {}): Promise<AuthResult> {
+    if (this.initState !== "done") {
+      throw new UnidyNotMounted();
+    }
+
     if (!silent) {
       await this.show();
     }
@@ -159,6 +163,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves with the logout result.
    */
   async logout(): Promise<LogoutResult> {
+    if (this.initState !== "done") {
+      throw new UnidyNotMounted();
+    }
+
     if (this.storeTokenInSession) {
       sessionStorage.removeItem(UNIDY_ID_TOKEN_SESSION_KEY);
     }
@@ -171,6 +179,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves when the dialog is shown.
    */
   async show(): Promise<void> {
+    if (this.initState !== "done") {
+      throw new UnidyNotMounted();
+    }
+
     return this.component.show();
   }
 
@@ -179,6 +191,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves when the dialog is hidden.
    */
   async hide(): Promise<void> {
+    if (this.initState !== "done") {
+      throw new UnidyNotMounted();
+    }
+
     return this.component.hide();
   }
 
