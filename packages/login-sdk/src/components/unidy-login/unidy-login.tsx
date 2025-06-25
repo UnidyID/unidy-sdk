@@ -178,7 +178,12 @@ export class UnidyLogin {
     }
     try {
       const href = iframe.contentWindow?.location.href;
-      if (!href) return;
+      if (!href) {
+        this.logger.error("Iframe failed to load correctly - no href");
+        this.authPromise?.resolve({ success: false, error: "Authentication iframe failed to load" });
+        this.authPromise = null;
+        return;
+      }
 
       const token = Utils.extractHashUrlParam(href, "id_token");
 
