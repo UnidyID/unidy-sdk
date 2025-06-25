@@ -14,8 +14,6 @@ export class UnidyNotMounted extends Error {
 }
 
 export interface UnidyAuthConfig<Scope extends string = string> {
-  /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
-  baseUrl: string;
   /** The client ID for the application */
   clientId: string;
   /** The OAuth scopes to request, defaults to "openid email" */
