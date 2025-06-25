@@ -1,5 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import type { PromptOption, ResponseType, AuthResult, LogoutResult } from "./components/unidy-login/unidy-login";
 import { Utils } from "./utils";
 import { Logger } from "./logger";
 
@@ -66,6 +65,14 @@ export type BasePayload<Scope extends string> = {
       }
     : // biome-ignore lint/complexity/noBannedTypes: <explanation>
       {});
+
+export type AuthResult<CustomPayload extends Record<string, unknown> = Record<string, unknown>, Scope extends string = string> =
+  | { success: true; token: string; userTokenData: (BasePayload<Scope> & CustomPayload) | null }
+  | { success: false; error: string };
+export type LogoutResult = { success: boolean };
+
+export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
+export type ResponseType = "code" | "id_token" | "token";
 
 export class Auth<CustomPayload extends Record<string, unknown> = Record<string, unknown>, Scope extends string = string> {
   /** The base URL of the Unidy authentication server, example: https://your-domain.unidy.de */
@@ -155,7 +162,13 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       await this.show();
     }
 
-    return this.component.auth({ trySilentAuth: silent });
+    const result = await this.component.auth({ trySilentAuth: silent });
+
+    if (result.success) {
+      return { success: true, token: result.token, userTokenData: this.userTokenData() };
+    }
+
+    return result;
   }
 
   /**

@@ -1,12 +1,7 @@
 import { Component, h, Prop, State, Element, Method, Event, type EventEmitter } from "@stencil/core";
 import { Utils } from "../../utils";
 import { Logger } from "../../logger";
-
-export type PromptOption = "none" | "login" | "consent" | "select_account" | null;
-export type ResponseType = "code" | "id_token" | "token";
-
-export type AuthResult = { success: true; token: string } | { success: false; error: string };
-export type LogoutResult = { success: boolean };
+import type { AuthResult, LogoutResult, PromptOption, ResponseType } from "../../auth";
 
 @Component({
   tag: "unidy-login",
@@ -261,7 +256,7 @@ export class UnidyLogin {
   private handleSuccessfulAuth(token: string) {
     this.authEvent.emit({ token });
 
-    this.authPromise?.resolve({ success: true, token });
+    this.authPromise?.resolve({ success: true, token, userTokenData: null });
     this.authPromise = null;
   }
 

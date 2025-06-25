@@ -5,8 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AuthResult, LogoutResult, PromptOption, ResponseType } from "./components/unidy-login/unidy-login";
-export { AuthResult, LogoutResult, PromptOption, ResponseType } from "./components/unidy-login/unidy-login";
+import { AuthResult, LogoutResult, PromptOption, ResponseType } from "./auth";
+export { AuthResult, LogoutResult, PromptOption, ResponseType } from "./auth";
 export namespace Components {
     interface UnidyLogin {
         /**

@@ -277,8 +277,8 @@
         const res = await unidyAuth.auth({ silent: true })
 
         if (res.success) {
-          console.log("Token", res.token);
-          updateUI(true);
+          console.log("Token", res.userTokenData);
+          updateUI(true, res.userTokenData);
         } else {
           console.log("Error:", res.error);
         }
@@ -289,8 +289,8 @@
       const res = await unidyAuth.auth()
 
       if (res.success) {
-        console.log("Token", res.token);
-        updateUI(true);
+        console.log("Token", res.token, res.userTokenData);
+        updateUI(true, res.userTokenData);
       } else {
         console.log("Error:", res.error);
       }
@@ -306,12 +306,12 @@
       }
     });
 
-    function updateUI(isAuthenticated) {
+    function updateUI(isAuthenticated, userData = {}) {
       if (isAuthenticated) {
         loginButton.style.display = 'none';
         logoutButton.style.display = 'inline-block';
         try {
-          const userData = unidyAuth.userTokenData();
+
           const userName = userData.name || userData.email || 'Dinamo Fan';
           status.textContent = `Welcome back, ${userName}!`;
         } catch (error) {
@@ -321,7 +321,7 @@
         fanContent.classList.add('visible');
         tokenInfo.style.display = 'block';
 
-        displayToken();
+        displayToken(userData);
       } else {
         loginButton.style.display = 'inline-block';
         logoutButton.style.display = 'none';
@@ -332,9 +332,8 @@
       }
     }
 
-    function displayToken() {
+    function displayToken(userData) {
       try {
-        const userData = unidyAuth.userTokenData();
         tokenInfo.textContent = JSON.stringify(userData, null, 2);
       } catch (error) {
         tokenInfo.textContent = 'Error parsing token';
