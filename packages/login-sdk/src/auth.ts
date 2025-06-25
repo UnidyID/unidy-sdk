@@ -166,7 +166,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
 
     if (result.success) {
       if (this.validateToken(result.token)) {
-        return { success: true, token: result.token, userTokenData: this.parseToken(result.token) };
+        return { ...result, userTokenData: this.parseToken(result.token) };
       }
 
       return { success: false, error: "Invalid token" };
