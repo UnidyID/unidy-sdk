@@ -252,9 +252,12 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    */
   userTokenData(): (BasePayload<Scope> & CustomPayload) | null {
     if (!this.idToken) return null;
-    if (!this.validateToken(this.idToken)) return null;
 
-    return this.parseToken(this.idToken);
+    const decoded_token = this.parseToken(this.idToken);
+
+    if (!this.validateToken(decoded_token)) return null;
+
+    return decoded_token;
   }
 
   /**
@@ -275,12 +278,19 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   /**
    * Validates a JWT token by decoding it and checking its expiration time.
    *
-   * @param token - The JWT token to validate
+   * @param token - The JWT token to validate (can be string or decoded token)
    * @returns True if the token is valid and not expired, false otherwise
    */
-  validateToken(token: string): boolean {
+  validateToken(token: string | (BasePayload<Scope> & CustomPayload) | null): boolean {
     try {
-      const decoded = this.parseToken(token);
+      let decoded: (BasePayload<Scope> & CustomPayload) | null;
+
+      if (typeof token === "string") {
+        decoded = this.parseToken(token);
+      } else {
+        decoded = token;
+      }
+
       if (!decoded) return false;
 
       const now = Math.floor(Date.now() / 1000);
