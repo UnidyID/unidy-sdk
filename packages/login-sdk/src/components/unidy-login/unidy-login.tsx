@@ -188,7 +188,7 @@ export class UnidyLogin {
         this.dialog?.close();
         this.handleSuccessfulAuth(token);
       } else {
-        const error_msg = Utils.extractHashUrlParam(href, "error") ?? "No token received";
+        const error_msg = Utils.extractHashUrlParam(href, "error") || "No token received";
         this.authPromise?.resolve({ success: false, error: error_msg });
         this.authPromise = null;
       }
