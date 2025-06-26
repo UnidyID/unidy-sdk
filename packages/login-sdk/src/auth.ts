@@ -80,7 +80,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   /** Configuration options for the authentication process */
   public readonly config: UnidyAuthConfig<Scope>;
   /** The web component instance which contains the authentication UI and handles the authentication process */
-  public readonly component: HTMLUnidyLoginElement;
+  public readonly component: HTMLUnidyLoginElement | null = null;
   /** The state of the initialization process */
   private initState: "loading" | "done" | null = null;
   /** Whether to store the token in session storage, defaults to true */
@@ -98,12 +98,14 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   constructor(baseUrl: string, config: UnidyAuthConfig<Scope>) {
     this.baseUrl = baseUrl;
     this.config = config;
-    this.component = document.createElement("unidy-login");
     this.storeTokenInSession = config.storeTokenInSession ?? true;
     this.fallbackToSilentAuthRequest = config.fallbackToSilentAuthRequest ?? false;
     this.logger = new Logger(config.enableLogging ?? false);
 
-    this.mountComponent();
+    if (typeof window !== "undefined") {
+      this.component = document.createElement("unidy-login");
+      this.mountComponent();
+    }
   }
 
   /**
@@ -111,6 +113,11 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * This method should be called once to initialize the component.
    */
   mountComponent() {
+    if (typeof window === "undefined" || !this.component) {
+      this.logger.error("Cannot mount component in SSR environment");
+      return;
+    }
+
     if (this.initState) return;
 
     this.initState = "loading";
@@ -154,7 +161,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns {Promise<AuthResult>} Promise resolving to authentication result containing success status and token/error
    */
   async auth({ silent = false }: { silent?: boolean } = {}): Promise<AuthResult> {
-    if (this.initState !== "done") {
+    if (this.initState !== "done" || !this.component) {
       throw new UnidyNotMounted();
     }
 
@@ -180,7 +187,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves with the logout result.
    */
   async logout(): Promise<LogoutResult> {
-    if (this.initState !== "done") {
+    if (this.initState !== "done" || !this.component) {
       throw new UnidyNotMounted();
     }
 
@@ -196,7 +203,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves when the dialog is shown.
    */
   async show(): Promise<void> {
-    if (this.initState !== "done") {
+    if (this.initState !== "done" || !this.component) {
       throw new UnidyNotMounted();
     }
 
@@ -208,7 +215,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves when the dialog is hidden.
    */
   async hide(): Promise<void> {
-    if (this.initState !== "done") {
+    if (this.initState !== "done" || !this.component) {
       throw new UnidyNotMounted();
     }
 
@@ -246,7 +253,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves to true if the user is authenticated, false otherwise.
    */
   async isAuthenticated(): Promise<boolean> {
-    if (!this.idToken && this.fallbackToSilentAuthRequest) {
+    if (!this.idToken && this.fallbackToSilentAuthRequest && this.component) {
       const res = await this.component.auth({ trySilentAuth: true });
 
       if (!res.success) {
