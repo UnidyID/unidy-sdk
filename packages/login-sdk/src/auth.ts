@@ -223,24 +223,26 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   }
 
   /**
+   * Checks if the authentication component has been initialized.
+   * @returns True if the component is initialized (mounted with `mountComponent` to the DOM), false otherwise.
+   */
+  get isInitialized(): boolean {
+    return !!this.initState;
+  }
+
+  /**
    * Retrieves the ID token from session storage.
    *
    * @returns The ID token, or null if not found or if `storeTokenInSession` is disabled (false).
    */
   get idToken(): string | null {
     if (!this.storeTokenInSession) {
+      this.logger.log("storeTokenInSession is disabled, this method will always return null");
+
       return null;
     }
 
     return sessionStorage.getItem(UNIDY_ID_TOKEN_SESSION_KEY);
-  }
-
-  /**
-   * Checks if the authentication component has been initialized.
-   * @returns True if the component is initialized (mounted with `mountComponent` to the DOM), false otherwise.
-   */
-  get isInitialized(): boolean {
-    return !!this.initState;
   }
 
   /**
@@ -253,6 +255,12 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns A promise that resolves to true if the user is authenticated, false otherwise.
    */
   async isAuthenticated(): Promise<boolean> {
+    if (!this.storeTokenInSession) {
+      this.logger.log("storeTokenInSession is set to false, this method will always return false");
+
+      return false;
+    }
+
     if (!this.idToken && this.fallbackToSilentAuthRequest && this.component) {
       const res = await this.component.auth({ trySilentAuth: true });
 
@@ -275,6 +283,12 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    * @returns The decoded token payload, or null if the token is invalid or not present.
    */
   userTokenData(): (BasePayload<Scope> & CustomPayload) | null {
+    if (!this.storeTokenInSession) {
+      this.logger.log("storeTokenInSession is disabled, this method will always return null");
+
+      return null;
+    }
+
     if (!this.idToken) return null;
 
     const decoded_token = this.parseToken(this.idToken);
