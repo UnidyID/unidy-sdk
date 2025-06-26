@@ -67,7 +67,7 @@ export type BasePayload<Scope extends string> = {
       {});
 
 export type AuthResult<CustomPayload extends Record<string, unknown> = Record<string, unknown>, Scope extends string = string> =
-  | { success: true; token: string; userTokenData: (BasePayload<Scope> & CustomPayload) | null }
+  | { success: true; token: string; userTokenData: BasePayload<Scope> & CustomPayload }
   | { success: false; error: string };
 export type LogoutResult = { success: boolean };
 
@@ -172,8 +172,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     const result = await this.component.auth({ trySilentAuth: silent });
 
     if (result.success) {
-      if (this.validateToken(result.token)) {
-        return { ...result, userTokenData: this.parseToken(result.token) };
+      const parsedToken = this.parseToken(result.token);
+
+      if (parsedToken && this.validateToken(parsedToken)) {
+        return { ...result, userTokenData: parsedToken };
       }
 
       return { success: false, error: "Invalid token" };
