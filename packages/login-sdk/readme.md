@@ -46,7 +46,7 @@ loginButton.addEventListener('click', async () => {
   const result = await unidyAuth.auth();  // `auth` method handles the oidc flow (and returns with token when it finishes if succefull)
 
   if (result.success) {
-    console.log('Welcome back,', result.userTokenData?.name || result.userTokenData?.email);
+    console.log('Welcome back,', result.userTokenData.name || result.userTokenData.email);
   } else {
     console.error('Login failed:', result.error);
   }
@@ -109,7 +109,7 @@ loginButton.addEventListener('click', async () => {
     storeToken(result.token);
 
     // User data is already available in the result
-    const userName = result.userTokenData?.name || result.userTokenData?.email || 'User';
+    const userName = result.userTokenData.name || result.userTokenData.email || 'User';
     console.log('Welcome back,', userName);
   } else {
     console.error('Login failed:', result.error);
