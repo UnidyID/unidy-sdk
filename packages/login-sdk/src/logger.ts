@@ -18,4 +18,10 @@ export class Logger {
       console.error(`%c${this.prefix}`, "color: red; font-weight: bold", ...args);
     }
   }
+
+  warn(...args: unknown[]) {
+    if (this.enabled) {
+      console.warn(`%c${this.prefix}`, "color: orange; font-weight: bold", ...args);
+    }
+  }
 }

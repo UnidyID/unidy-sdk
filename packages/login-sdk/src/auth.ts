@@ -114,7 +114,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
    */
   mountComponent() {
     if (typeof window === "undefined" || !this.component) {
-      this.logger.error("Cannot mount component in SSR environment");
+      this.logger.warn("Cannot mount component in SSR environment");
       return;
     }
 
