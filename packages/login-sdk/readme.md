@@ -118,13 +118,9 @@ loginButton.addEventListener('click', async () => {
 
 // Check if user is authenticated
 const token = getToken();
-if (token && unidyAuth.validateToken(token)) {
-    try {
-        const userData = unidyAuth.parseToken(token);
-        console.log('User is authenticated. User data:', userData);
-    } catch (error) {
-        console.log('Error getting user data:', error);
-    }
+const userData = token ? unidyAuth.parseToken(token) : null;
+if (userData) {
+    console.log('User is authenticated. User data:', userData);
 } else {
     // Token is invalid or expired
     removeToken();
@@ -147,6 +143,8 @@ logoutButton.addEventListener('click', async () => {
 ## Silent Authentication
 
 You can attempt to authenticate a user silently (without user interaction) when your application loads. This is useful for checking if a user has an active session with the authentication server. However you should first check if there is existing valid token with `isAuthenticated()` method so you don't ping Unidy authentication server unnecessarily
+
+**Note:** Silent authentication happens in the background without showing any UI to the user.
 
 ```typescript
 const result = await unidyAuth.auth({ silent: true })
