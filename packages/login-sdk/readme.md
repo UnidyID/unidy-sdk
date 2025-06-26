@@ -98,6 +98,17 @@ const removeToken = () => {
   localStorage.removeItem('auth_token');
 };
 
+// Check if user is authenticated
+const token = getToken();
+const userData = token ? unidyAuth.parseToken(token) : null;
+if (userData) {
+    console.log('User is authenticated. User data:', userData);
+} else {
+    // Token is invalid or expired
+    removeToken();
+    console.log('User is not authenticated.');
+}
+
 // Init login on button click
 const loginButton = document.getElementById('login-button');
 loginButton.addEventListener('click', async () => {
@@ -115,18 +126,6 @@ loginButton.addEventListener('click', async () => {
     console.error('Login failed:', result.error);
   }
 });
-
-// Check if user is authenticated
-const token = getToken();
-const userData = token ? unidyAuth.parseToken(token) : null;
-if (userData) {
-    console.log('User is authenticated. User data:', userData);
-} else {
-    // Token is invalid or expired
-    removeToken();
-    console.log('User is not authenticated.');
-}
-
 
 // Handle logout
 const logoutButton = document.getElementById('logout-button');
