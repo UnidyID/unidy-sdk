@@ -43,7 +43,7 @@ if (await unidyAuth.isAuthenticated()) {
 // Handle login button click
 const loginButton = document.getElementById('login-button');
 loginButton.addEventListener('click', async () => {
-  const result = await unidyAuth.auth();  // `auth` method initiates the oidc flow
+  const result = await unidyAuth.auth();  // `auth` method handles the oidc flow (and returns with token when it finishes if succefull)
 
   if (result.success) {
     console.log('Welcome back,', result.userTokenData?.name || result.userTokenData?.email);
