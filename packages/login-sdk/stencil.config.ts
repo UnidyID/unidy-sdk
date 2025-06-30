@@ -18,6 +18,10 @@ export const config: Config = {
     {
       type: "www",
       serviceWorker: null, // disable service workers
+      copy: [
+        { src: "shop.html", dest: "shop.html" },
+        { src: "index.html", dest: "index.html" },
+      ],
     },
   ],
   plugins: [tailwind()],
