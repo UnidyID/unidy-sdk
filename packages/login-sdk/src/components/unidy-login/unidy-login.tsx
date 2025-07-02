@@ -51,8 +51,9 @@ export class UnidyLogin {
   }
 
   componentDidLoad() {
-    window.addEventListener('click', this.handleDialogBackdropClick.bind(this), true);
+    window.addEventListener("click", this.handleDialogBackdropClick.bind(this), true);
   }
+
   /**
    * Initiates the authentication process
    *
@@ -353,7 +354,6 @@ export class UnidyLogin {
       );
     }
 
-    // Inline mode - render directly in the page
     return content;
   }
 }
