@@ -48,6 +48,10 @@ export class UnidyLogin {
     this.logger = new Logger(this.enableLogging);
   }
 
+  componentDidLoad() {
+    this.boundHandleDialogBackdropClick = this.handleDialogBackdropClick.bind(this);
+    window.addEventListener('click', this.boundHandleDialogBackdropClick, true);
+  }
   /**
    * Initiates the authentication process
    *
@@ -141,6 +145,13 @@ export class UnidyLogin {
   @Method()
   async hide() {
     this.dialog?.close();
+  }
+
+  private boundHandleDialogBackdropClick!: (event: MouseEvent) => void;
+  async handleDialogBackdropClick(event: MouseEvent) {
+    if (this.dialog && !this.dialog.contains(event.target as Node)) {
+      await this.hide();
+    }
   }
 
   private setAuthorizeUrl(prompt: PromptOption = null) {
