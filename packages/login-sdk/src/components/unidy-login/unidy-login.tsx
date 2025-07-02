@@ -146,7 +146,7 @@ export class UnidyLogin {
     this.dialog?.close();
   }
 
-  async handleDialogBackdropClick(event: MouseEvent) {
+  private async handleDialogBackdropClick(event: MouseEvent) {
     if (this.dialog && !this.dialog.contains(event.target as Node)) {
       await this.hide();
     }
