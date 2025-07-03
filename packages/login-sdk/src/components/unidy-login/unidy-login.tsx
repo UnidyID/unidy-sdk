@@ -191,6 +191,7 @@ export class UnidyLogin {
 
       return;
     }
+
     try {
       const href = iframe.contentWindow?.location.href;
       if (!href) {
@@ -282,7 +283,7 @@ export class UnidyLogin {
 
   render() {
     const content = (
-      <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden">
+      <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden min-h-[400px]">
         {this.mode === "dialog" && (
           <button
             type="button"
@@ -334,9 +335,8 @@ export class UnidyLogin {
           src={this.iframeUrl}
           onLoad={(e) => this.handleIframeLoad(e)}
           id="unidy-login-iframe"
-          class="w-full h-full border-none rounded-lg bg-white overflow-hidden block"
+          class="w-full h-full border-none rounded-lg bg-white overflow-hidden block min-h-[400px]"
           title="Unidy Login"
-          part="iframe"
         />
       </div>
     );
