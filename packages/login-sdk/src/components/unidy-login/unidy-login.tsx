@@ -166,7 +166,7 @@ export class UnidyLogin {
       scope: this.scope,
       response_type: this.responseType,
       redirect_uri: this.redirectUrl,
-      mode: this.mode,
+      sdk_render_mode: this.mode,
     });
 
     if (prompt) {
