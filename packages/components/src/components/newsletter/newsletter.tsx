@@ -11,8 +11,8 @@ export class Newsletter {
   @Prop() newslettersConfig: { internal_name: string; label: string; checked?: boolean }[] = [];
   @Prop() defaultNewsletterInternalName: string;
   @Prop() submitButtonText = "Subscribe";
-  @Prop() emailLabel = "E-mail";
-  @Prop() emailPlaceholder = "E-mail";
+  @Prop() emailLabel = "Email";
+  @Prop() emailPlaceholder = "Email";
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
 
