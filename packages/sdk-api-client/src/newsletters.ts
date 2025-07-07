@@ -59,8 +59,7 @@ export class NewsletterService extends EventEmitter {
     const response = await this.client.post<CreateSubscriptionsResponse>(
       "/api/sdk/v1/newsletter_subscriptions",
       payload,
-      { headers: { referer: window.location.href } },
-      ""
+      { headers: { referer: window.location.href } }
     );
 
     switch (response.status) {
