@@ -14,7 +14,7 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body: object, referer: any, href: string): Promise<ApiResponse<T>> {
     let res: Response | null = null;
 
     try {
