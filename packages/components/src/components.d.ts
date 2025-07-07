@@ -21,6 +21,7 @@ export namespace Components {
         "header": string;
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
         "renderErrorMessages": boolean;
+        "status"?: string;
         "submitButtonText": string;
     }
 }
@@ -67,6 +68,7 @@ declare namespace LocalJSX {
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "renderErrorMessages"?: boolean;
+        "status"?: string;
         "submitButtonText"?: string;
     }
     interface IntrinsicElements {

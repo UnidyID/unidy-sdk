@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
+import { Component, Event, type EventEmitter, Prop, State, Watch, h } from "@stencil/core";
 import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
 
 @Component({
@@ -21,11 +21,14 @@ export class Newsletter {
   @Prop() errorAlreadySubscribedText = "Already subscribed";
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
+  @Prop({ reflect: true }) status?: string;
+
 
   @State() email = "";
   @State() checkedNewsletters: string[] = [];
   @State() messages: { color: string; text: string; error_identifier: string }[] = [];
   @State() showSuccessSlot = false;
+  @State() showConfirmSuccessSlot = false;
 
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
@@ -33,12 +36,24 @@ export class Newsletter {
   @Event({ eventName: "on:error" })
   errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
 
+  @Watch('status')
+    statusChanged(newValue: string) {
+      if (newValue === 'success') {
+      this.showConfirmSuccessSlot = true;
+      }
+    }
+
   private client: UnidyClient;
 
   componentWillLoad() {
     this.client = new UnidyClient(this.apiUrl, this.apiKey);
 
     this.checkedNewsletters = (this.newslettersConfig || []).filter((n) => n.checked).map((n) => n.internal_name);
+
+    if (this.status === 'success') {
+      this.showConfirmSuccessSlot = true;
+      this.showSuccessSlot = false;
+    }
   }
 
   private handleSubmit = async (e: Event) => {
@@ -148,6 +163,7 @@ export class Newsletter {
           )}
 
           {this.showSuccessSlot && <slot name="success-container" />}
+          {this.showConfirmSuccessSlot && <slot name="confirm-success-container" />}
         </form>
         <slot name="footer" />
       </div>

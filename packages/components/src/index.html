@@ -174,10 +174,24 @@
         </svg>
       </div>
     </div>
+
+    <div slot="confirm-success-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; background: #e6f9ed; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-top: 1.5rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" style="color: #22c55e; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <title>Success</title>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p style="color: #166534; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0;">You have successfully confirmed your newsletter subscription.</p>
+    </div>
   </unidy-newsletter>
 
   <script>
     const newsletterComponent = document.querySelector('unidy-newsletter');
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("newsletter_status") === "confirmed") {
+      newsletterComponent.setAttribute("status", "success");
+    };
 
     newsletterComponent.addEventListener('on:success', (event) => {
       console.log("Successfully subscribed", event.detail);
