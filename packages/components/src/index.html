@@ -133,32 +133,36 @@
 </head>
 
 <body>
-  <unidy-newsletter api-url="https://vfl1848.staging.unidy.de"
-    api-key="bc6fab7214fed6a56389b48692a31d017a10f5d58f5e8eae5d8996708dc3d2f6" email-placeholder=""
-    submit-button-text="Abonnieren" default-newsletter-internal-name="default_newsletter" render-error-messages="true"
-    error-unconfirmed-text="Bitte bestätige deine E-Mail-Adresse"
-    error-already-subscribed-text="Du bist bereits für den Newsletter angemeldet"
-    error-invalid-email-text="Bitte gib eine gültige E-Mail-Adresse ein"
-    error-unknown-text="Ein unbekannter Fehler ist aufgetreten">
+  <unidy-newsletter
+    api-key="public-newsletter-api-key"
+    api-url="http://localhost:3000"
+    default-newsletter-internal-name="main"
+    email-placeholder="your@email.com"
+    error-already-subscribed-text="You are already subscribed to the newsletter"
+    error-invalid-email-text="Please enter a valid email address"
+    error-unconfirmed-text="Please confirm your email address"
+    error-unknown-text="An unknown error occurred"
+    render-error-messages="true"
+    submit-button-text="Subscribe"
+  >
 
     <div slot="header" class="header">
       <div class="b-heading">
-        VfL-NEWSLETTTER &nbsp;⸺
+        Unidy Newsletter
       </div>
-      <h1>Castroper Fanpost</h1>
+      <h1>Important Updates</h1>
     </div>
 
     <h2 slot="description" class="description">
-      Immer die neuesten Infos vom VfL Bochum 1848 in deinem Postfach
+      Always stay up to date with the latest news and updates from Unidy. Subscribe to our newsletter and be the first
     </h2>
 
     <div slot="footer" class="footer">
-      <p>Ich möchte den Newsletter des VfL mit Informationen zu deren Angeboten und Specials
-        aus dem Bereich Entertainment per E-Mail erhalten. Meine Daten werden keinesfalls an Dritte weitergegeben. Meine
-        Einwilligung kann ich jederzeit per E-Mail unter service@vfl-bochum.de widerrrufen.</p>
+      <p>I would like to newest important updates from Unidy per email. My data will not be shared with third parties.
+        I can revoke my consent at any time by visiting the Unidy preference center.</p>
       </p>
-      <p>Ich akzeptiere die <a href="https://www.vfl-bochum.de/de/nutzungsbedingungen" target="_blank">AGB</a> und <a
-          href="https://www.vfl-bochum.de/de/datenschutz" target="_blank">Datenschutzbestimmungen</a>.
+      <p>I accept the <a href="https://www.unidy.io/terms-and-conditions" target="_blank">terms and conditions</a> and <a
+          href="https://www.unidy.io/privacy-policy" target="_blank">privacy policy</a>.
       </p>
     </div>
 
