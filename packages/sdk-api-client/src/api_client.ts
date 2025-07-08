@@ -18,6 +18,9 @@ export class ApiClient {
     let res: Response | null = null;
 
     try {
+      if (referer) {
+        endpoint += (endpoint.includes('?') ? '&' : '?') + `referer=${encodeURIComponent(referer)}`;
+      }
       res = await fetch(`${this.baseUrl}${endpoint}`, {
         method: "POST",
         mode: "cors",
