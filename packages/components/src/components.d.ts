@@ -20,7 +20,7 @@ export namespace Components {
         "errorUnknownText": string;
         "header": string;
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
-        "referer"?: string;
+        "redirect_to"?: string;
         "renderErrorMessages": boolean;
         "status"?: string;
         "submitButtonText": string;
@@ -68,7 +68,7 @@ declare namespace LocalJSX {
         "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
-        "referer"?: string;
+        "redirect_to"?: string;
         "renderErrorMessages"?: boolean;
         "status"?: string;
         "submitButtonText"?: string;

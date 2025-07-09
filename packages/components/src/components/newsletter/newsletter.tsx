@@ -22,7 +22,7 @@ export class Newsletter {
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
   @Prop({ reflect: true }) status?: string;
-  @Prop() referer?: string;
+  @Prop() redirect_to?: string;
 
 
   @State() email = "";
@@ -70,7 +70,7 @@ export class Newsletter {
           : [{ newsletter_internal_name: this.defaultNewsletterInternalName }],
     };
 
-    const [error, response] = await this.client.newsletters.createSubscriptions(payload, this.referer);
+    const [error, response] = await this.client.newsletters.createSubscriptions(payload, this.redirect_to);
 
     if (error) {
       if (error === "newsletter_error") {

@@ -14,12 +14,12 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T>(endpoint: string, body: object, referer: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body: object, redirect_to: any): Promise<ApiResponse<T>> {
     let res: Response | null = null;
 
     try {
-      if (referer) {
-        endpoint += (endpoint.includes('?') ? '&' : '?') + `referer=${encodeURIComponent(referer)}`;
+      if (redirect_to) {
+        endpoint += (endpoint.includes('?') ? '&' : '?') + `redirect_to=${encodeURIComponent(redirect_to)}`;
       }
       res = await fetch(`${this.baseUrl}${endpoint}`, {
         method: "POST",

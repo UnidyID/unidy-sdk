@@ -53,16 +53,16 @@ export class NewsletterService extends EventEmitter {
     this.client = client;
   }
 
-  async createSubscriptions(payload: CreateSubscriptionsPayload, referer?: string): Promise<CreateSubscriptionsResult> {
+  async createSubscriptions(payload: CreateSubscriptionsPayload, redirect_to?: string): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const currentReferer = referer || window.location.href;
-    console.log("currentReferer:", currentReferer);
+    const currentredirect_to = redirect_to || window.location.href;
+    console.log("currentredirect_to:", currentredirect_to);
 
     const response = await this.client.post<CreateSubscriptionsResponse>(
       "/api/sdk/v1/newsletter_subscriptions",
       payload,
-      currentReferer
+      currentredirect_to
     );
 
     switch (response.status) {
