@@ -27,6 +27,8 @@ export class UnidyLogin {
   @Prop() redirectUrl = window.location.origin;
   /** Whether to enable logging, defaults to true */
   @Prop() enableLogging = true;
+  /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
+  @Prop() mode: "dialog" | "inline" = "dialog";
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -49,8 +51,9 @@ export class UnidyLogin {
   }
 
   componentDidLoad() {
-    window.addEventListener('click', this.handleDialogBackdropClick.bind(this), true);
+    window.addEventListener("click", this.handleDialogBackdropClick.bind(this), true);
   }
+
   /**
    * Initiates the authentication process
    *
@@ -128,7 +131,10 @@ export class UnidyLogin {
    */
   @Method()
   async show() {
-    this.dialog?.showModal();
+    // In inline mode, the component is always visible
+    if (this.mode === "dialog") {
+      this.dialog?.showModal();
+    }
   }
 
   /**
@@ -143,7 +149,9 @@ export class UnidyLogin {
    */
   @Method()
   async hide() {
-    this.dialog?.close();
+    if (this.mode === "dialog") {
+      this.dialog?.close();
+    }
   }
 
   private async handleDialogBackdropClick(event: MouseEvent) {
@@ -158,6 +166,7 @@ export class UnidyLogin {
       scope: this.scope,
       response_type: this.responseType,
       redirect_uri: this.redirectUrl,
+      sdk_render_mode: this.mode,
     });
 
     if (prompt) {
@@ -182,6 +191,7 @@ export class UnidyLogin {
 
       return;
     }
+
     try {
       const href = iframe.contentWindow?.location.href;
       if (!href) {
@@ -272,17 +282,12 @@ export class UnidyLogin {
   }
 
   render() {
-    return (
-      <dialog
-        class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden max-w-[90vw] max-h-[90vh] w-[400px] h-[720px] [&::backdrop]:bg-black/60"
-        ref={(el) => {
-          this.dialog = el;
-        }}
-      >
-        <div class="relative w-full h-full min-w-[320px] overflow-hidden">
+    const content = (
+      <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden min-h-[400px]">
+        {this.mode === "dialog" && (
           <button
             type="button"
-            class="absolute top-2 right-2 w-7 h-7 border-none rounded-full bg-black/5 text-gray-600 cursor-pointer flex items-center justify-center transition-colors hover:bg-black/20"
+            class="absolute top-2 right-2 w-7 h-7 border-none rounded-full bg-black/5 text-gray-600 cursor-pointer flex items-center justify-center transition-colors hover:bg-black/20 z-10"
             onClick={() => this.hide()}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Close">
@@ -290,50 +295,65 @@ export class UnidyLogin {
               <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
+        )}
 
-          {this.isLoading && (
-            <div class="absolute inset-0 bg-white z-[2]">
-              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] flex items-center justify-center">
-                <svg class="w-9 h-9 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Loading">
-                  <title>Loading</title>
-                  <circle
-                    class="opacity-25"
-                    stroke="currentColor"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                    fill="none"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                  />
-                  <path
-                    class="opacity-75"
-                    stroke="currentColor"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                    fill="none"
-                    d="M12 2a10 10 0 0 1 10 10"
-                  />
-                </svg>
-              </div>
+        {this.isLoading && (
+          <div class="absolute inset-0 bg-white z-[2]">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[2] flex items-center justify-center">
+              <svg class="w-9 h-9 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Loading">
+                <title>Loading</title>
+                <circle
+                  class="opacity-25"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  fill="none"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <path
+                  class="opacity-75"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  fill="none"
+                  d="M12 2a10 10 0 0 1 10 10"
+                />
+              </svg>
             </div>
-          )}
+          </div>
+        )}
 
-          {this.popupWindow && (
-            <div class="absolute inset-0 bg-black/85 z-10 flex items-center justify-center rounded-lg">
-              <h2 class="text-white font-semibold text-xl m-0 text-center px-5">Continue in popup window</h2>
-            </div>
-          )}
+        {this.popupWindow && (
+          <div class="absolute inset-0 bg-black/85 z-10 flex items-center justify-center rounded-lg">
+            <h2 class="text-white font-semibold text-xl m-0 text-center px-5">Continue in popup window</h2>
+          </div>
+        )}
 
-          <iframe
-            src={this.iframeUrl}
-            onLoad={(e) => this.handleIframeLoad(e)}
-            id="unidy-login-iframe"
-            class="w-full h-full border-none rounded-lg bg-white overflow-hidden block"
-            title="Unidy Login"
-          />
-        </div>
-      </dialog>
+        <iframe
+          src={this.iframeUrl}
+          onLoad={(e) => this.handleIframeLoad(e)}
+          id="unidy-login-iframe"
+          class="w-full h-full border-none rounded-lg bg-white overflow-hidden block min-h-[400px]"
+          title="Unidy Login"
+        />
+      </div>
     );
+
+    if (this.mode === "dialog") {
+      return (
+        <dialog
+          class="m-auto p-0 border-none rounded-lg bg-transparent overflow-hidden max-w-[90vw] max-h-[90vh] w-[400px] h-[720px] [&::backdrop]:bg-black/60"
+          ref={(el) => {
+            this.dialog = el;
+          }}
+        >
+          {content}
+        </dialog>
+      );
+    }
+
+    return content;
   }
 }

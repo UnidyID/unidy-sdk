@@ -139,6 +139,33 @@ logoutButton.addEventListener('click', async () => {
 });
 ```
 
+### Example: Inline Mode (embedded in page)
+
+You can embed the login component directly in your page instead of using a modal dialog by setting the `mode` property to `'inline'`:
+
+```typescript
+import { UnidyAuth } from '@unidy.io/auth';
+
+const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
+  clientId: "your-client-id",
+  scope: "openid profile email",
+  redirectUrl: "https://your-app.com",
+  mode: 'inline', // This embeds the login form directly in the page
+  mountTarget: '#login-container' // Optional: specify where to mount the component
+});
+
+// The component will be rendered inline instead of in a modal
+// You can style the container div to control the size and appearance
+```
+
+**Note:** In inline mode, the `show()` and `hide()` methods have no effect since the component is always visible.
+
+**Mount Target Options:**
+- **Element ID**: `mountTarget: 'login-container'` - mounts to element with ID "login-container"
+- **CSS Selector**: `mountTarget: '.auth-section .login-form'` - mounts to element matching the selector
+- **HTMLElement**: `mountTarget: document.querySelector('#login')` - mounts to the specified element
+- **Default**: If not specified, mounts to `document.body`
+
 ## Silent Authentication
 
 You can attempt to authenticate a user silently (without user interaction) when your application loads. This is useful for checking if a user has an active session with the authentication server. However you should first check if there is existing valid token with `isAuthenticated()` method so you don't ping Unidy authentication server unnecessarily
@@ -186,6 +213,12 @@ interface UnidyAuthConfig {
   fallbackToSilentAuthRequest?: boolean;
   // Optional: Callback function called when authentication is successful
   onAuth?: (token: string) => void;
+  // Optional: Whether to enable logging (default: true)
+  enableLogging?: boolean;
+  // Optional: Rendering mode - 'dialog' for modal popup, 'inline' for embedded in page (default: 'dialog')
+  mode?: 'dialog' | 'inline';
+  // Optional: Mount target for inline mode - element ID, CSS selector, or HTMLElement (default: document.body)
+  mountTarget?: string | HTMLElement;
 }
 ```
 
