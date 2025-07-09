@@ -51,8 +51,9 @@ export class UnidyLogin {
   }
 
   componentDidLoad() {
-    window.addEventListener('click', this.handleDialogBackdropClick.bind(this), true);
+    window.addEventListener("click", this.handleDialogBackdropClick.bind(this), true);
   }
+
   /**
    * Initiates the authentication process
    *
@@ -165,7 +166,7 @@ export class UnidyLogin {
       scope: this.scope,
       response_type: this.responseType,
       redirect_uri: this.redirectUrl,
-      mode: this.mode,
+      sdk_render_mode: this.mode,
     });
 
     if (prompt) {
@@ -190,6 +191,7 @@ export class UnidyLogin {
 
       return;
     }
+
     try {
       const href = iframe.contentWindow?.location.href;
       if (!href) {
@@ -281,7 +283,7 @@ export class UnidyLogin {
 
   render() {
     const content = (
-      <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden">
+      <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden min-h-[400px]">
         {this.mode === "dialog" && (
           <button
             type="button"
@@ -333,9 +335,8 @@ export class UnidyLogin {
           src={this.iframeUrl}
           onLoad={(e) => this.handleIframeLoad(e)}
           id="unidy-login-iframe"
-          class="w-full h-full border-none rounded-lg bg-white overflow-hidden block"
+          class="w-full h-full border-none rounded-lg bg-white overflow-hidden block min-h-[400px]"
           title="Unidy Login"
-          part="iframe"
         />
       </div>
     );
@@ -353,7 +354,6 @@ export class UnidyLogin {
       );
     }
 
-    // Inline mode - render directly in the page
     return content;
   }
 }
