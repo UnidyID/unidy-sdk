@@ -22,7 +22,8 @@ export class Newsletter {
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
   @Prop({ reflect: true }) status?: string;
-  @Prop() redirect_to?: string;@Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
+  @Prop() redirect_to?: string;
+  @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
 
 
   @State() email = "";
