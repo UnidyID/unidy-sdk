@@ -239,11 +239,7 @@ export class Newsletter {
             this.newslettersConfig.length === 0 &&
             this.defaultNewsletterInternalName &&
             this.messages[this.defaultNewsletterInternalName] && (
-              <div
-                key={`error-${this.defaultNewsletterInternalName}-${this.messages[this.defaultNewsletterInternalName].error_identifier}`}
-                part={`error-message ${this.messages[this.defaultNewsletterInternalName].error_identifier}`}
-                class={`!mt-1 ${this.messages[this.defaultNewsletterInternalName].error_identifier}`}
-              >
+              <div part={`error-message ${this.messages[this.defaultNewsletterInternalName].error_identifier}`} class={"!mt-1"}>
                 {this.messages[this.defaultNewsletterInternalName].text}
               </div>
             )}
