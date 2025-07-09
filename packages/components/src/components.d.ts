@@ -21,7 +21,7 @@ export namespace Components {
         "errorUnconfirmedText": string;
         "errorUnknownText": string;
         "header": string;
-        "newslettersConfig": NewsletterConfig[];
+        "newslettersConfig": newsletterConfig[];
         "renderErrorMessages": boolean;
         "submitButtonText": string;
     }
@@ -67,7 +67,7 @@ declare namespace LocalJSX {
         "errorUnconfirmedText"?: string;
         "errorUnknownText"?: string;
         "header"?: string;
-        "newslettersConfig"?: NewsletterConfig[];
+        "newslettersConfig"?: newsletterConfig[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "renderErrorMessages"?: boolean;
