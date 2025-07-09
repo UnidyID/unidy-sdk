@@ -24,6 +24,7 @@ export namespace Components {
         "renderErrorMessages": boolean;
         "status"?: string;
         "submitButtonText": string;
+        "successConfirmationText": string;
     }
 }
 export interface UnidyNewsletterCustomEvent<T> extends CustomEvent<T> {
@@ -72,6 +73,7 @@ declare namespace LocalJSX {
         "renderErrorMessages"?: boolean;
         "status"?: string;
         "submitButtonText"?: string;
+        "successConfirmationText"?: string;
     }
     interface IntrinsicElements {
         "unidy-newsletter": UnidyNewsletter;

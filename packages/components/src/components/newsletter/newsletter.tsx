@@ -22,7 +22,7 @@ export class Newsletter {
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
   @Prop({ reflect: true }) status?: string;
-  @Prop() redirect_to?: string;
+  @Prop() redirect_to?: string;@Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
 
 
   @State() email = "";
@@ -164,7 +164,56 @@ export class Newsletter {
           )}
 
           {this.showSuccessSlot && <slot name="success-container" />}
-          {this.showConfirmSuccessSlot && <slot name="confirm-success-container" />}
+          {this.showConfirmSuccessSlot && (
+            <slot name="confirm-success-container">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "2rem 1rem",
+                  background: "#e6f9ed",
+                  borderRadius: "1rem",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  marginTop: "1.5rem"
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{
+                    color: "#22c55e",
+                    width: "2.5rem",
+                    height: "2.5rem",
+                    marginBottom: "1rem"
+                  }}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <title>Success</title>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <p
+                  style={{
+                    color: "#166534",
+                    fontSize: "1.2rem",
+                    fontWeight: "600",
+                    textAlign: "center",
+                    margin: "0"
+                  }}
+                >
+                  {this.successConfirmationText}
+                </p>
+              </div>
+            </slot>
+          )}
+
         </form>
         <slot name="footer" />
       </div>
