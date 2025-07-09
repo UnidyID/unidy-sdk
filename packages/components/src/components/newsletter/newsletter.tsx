@@ -123,7 +123,6 @@ export class Newsletter {
         }
 
         this.messages = { ...this.messages, ...errorMessages };
-        console.log("Error messages", this.messages);
         return;
       }
       if (error === "rate_limit_exceeded") {
@@ -141,8 +140,6 @@ export class Newsletter {
     this.checkedNewsletters = this.checkedNewsletters.some((n) => n.internal_name === value)
       ? this.checkedNewsletters.filter((n) => n.internal_name !== value)
       : [...this.checkedNewsletters, { internal_name: value, preferences: [] }];
-
-    console.log(this.checkedNewsletters);
   }
 
   private togglePreference(newsletterName: string, preferenceName: string) {
@@ -161,8 +158,6 @@ export class Newsletter {
         },
       ];
     }
-
-    console.log(this.checkedNewsletters);
   }
 
   render() {
