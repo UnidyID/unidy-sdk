@@ -5,7 +5,9 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { NewsletterConfig } from "./components/newsletter/newsletter";
 import { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
+export { NewsletterConfig } from "./components/newsletter/newsletter";
 export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
@@ -21,7 +23,7 @@ export namespace Components {
         "errorUnconfirmedText": string;
         "errorUnknownText": string;
         "header": string;
-        "newslettersConfig": newsletterConfig[];
+        "newslettersConfig": NewsletterConfig[];
         "renderErrorMessages": boolean;
         "submitButtonText": string;
     }
@@ -67,7 +69,7 @@ declare namespace LocalJSX {
         "errorUnconfirmedText"?: string;
         "errorUnknownText"?: string;
         "header"?: string;
-        "newslettersConfig"?: newsletterConfig[];
+        "newslettersConfig"?: NewsletterConfig[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "renderErrorMessages"?: boolean;

@@ -1,7 +1,7 @@
 import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
 import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
 
-type newsletterConfig = {
+export type NewsletterConfig = {
   internal_name: string;
   label: string;
   checked?: boolean;
@@ -19,7 +19,7 @@ type newsletterConfig = {
 })
 export class Newsletter {
   @Prop() header: string;
-  @Prop() newslettersConfig: newsletterConfig[] = [];
+  @Prop() newslettersConfig: NewsletterConfig[] = [];
   @Prop() defaultNewsletterInternalName: string;
   @Prop() submitButtonText = "Subscribe";
   @Prop() emailLabel = "Email";
