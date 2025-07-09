@@ -61,7 +61,7 @@ export class Newsletter {
 
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
-    this.messages = this.messages = {};
+    this.messages = {};
 
     this.showSuccessSlot = false;
 
