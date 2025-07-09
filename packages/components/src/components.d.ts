@@ -16,10 +16,12 @@ export namespace Components {
         "emailPlaceholder": string;
         "errorAlreadySubscribedText": string;
         "errorInvalidEmailText": string;
+        "errorNewsletterNotFoundText": string;
+        "errorPreferenceNotFoundText": string;
         "errorUnconfirmedText": string;
         "errorUnknownText": string;
         "header": string;
-        "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
+        "newslettersConfig": NewsletterConfig[];
         "renderErrorMessages": boolean;
         "submitButtonText": string;
     }
@@ -60,10 +62,12 @@ declare namespace LocalJSX {
         "emailPlaceholder"?: string;
         "errorAlreadySubscribedText"?: string;
         "errorInvalidEmailText"?: string;
+        "errorNewsletterNotFoundText"?: string;
+        "errorPreferenceNotFoundText"?: string;
         "errorUnconfirmedText"?: string;
         "errorUnknownText"?: string;
         "header"?: string;
-        "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
+        "newslettersConfig"?: NewsletterConfig[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "renderErrorMessages"?: boolean;
