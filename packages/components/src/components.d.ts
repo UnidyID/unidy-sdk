@@ -23,6 +23,7 @@ export namespace Components {
         "errorUnknownText": string;
         "header": string;
         "newslettersConfig": NewsletterConfig[];
+        "newslettersConfigJson": string;
         "renderErrorMessages": boolean;
         "submitButtonText": string;
     }
@@ -68,6 +69,7 @@ declare namespace LocalJSX {
         "errorUnknownText"?: string;
         "header"?: string;
         "newslettersConfig"?: NewsletterConfig[];
+        "newslettersConfigJson"?: string;
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "renderErrorMessages"?: boolean;

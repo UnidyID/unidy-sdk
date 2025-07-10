@@ -20,6 +20,7 @@ export type NewsletterConfig = {
 export class Newsletter {
   @Prop() header: string;
   @Prop() newslettersConfig: NewsletterConfig[] = [];
+  @Prop() newslettersConfigJson: string;
   @Prop() submitButtonText = "Subscribe";
   @Prop() emailLabel = "Email";
   @Prop() emailPlaceholder = "Email";
@@ -49,6 +50,14 @@ export class Newsletter {
 
   componentWillLoad() {
     this.client = new UnidyClient(this.apiUrl, this.apiKey);
+
+    if (this.newslettersConfigJson) {
+      try {
+        this.newslettersConfig = JSON.parse(this.newslettersConfigJson);
+      } catch (error) {
+        console.error("Failed to parse newslettersConfigJson:", error);
+      }
+    }
 
     this.checkedNewsletters = (this.newslettersConfig || [])
       .filter((n) => n.checked)
