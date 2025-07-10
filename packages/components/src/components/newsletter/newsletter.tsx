@@ -37,7 +37,7 @@ export class Newsletter {
 
   @State() email = "";
   @State() checkedNewsletters: { internal_name: string; preferences: string[] }[] = [];
-  @State() messages: { [newsletterInternalName: string]: { color: string; text: string; error_identifier: string } } = {};
+  @State() messages: Record<string, { color: string; text: string; error_identifier: string }> = {};
   @State() showSuccessSlot = false;
 
   @Event({ eventName: "on:success" })
@@ -89,7 +89,7 @@ export class Newsletter {
         const errors = response.data?.errors || [];
         this.errorEvent.emit(errors);
 
-        const errorMessages: { [newsletterInternalName: string]: { color: string; text: string; error_identifier: string } } = {};
+        const errorMessages: Record<string, { color: string; text: string; error_identifier: string }> = {};
 
         for (const error of errors) {
           const baseError = {
