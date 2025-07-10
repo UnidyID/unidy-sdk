@@ -22,7 +22,7 @@ export class Newsletter {
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
   @Prop({ reflect: true }) status?: string;
-  @Prop() redirect_to?: string;
+  @Prop() returnToAfterConfirmation?: string;
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
 
 
@@ -38,12 +38,15 @@ export class Newsletter {
   @Event({ eventName: "on:error" })
   errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
 
+  @Event()
+  resetStatus: EventEmitter<void>;
+
   @Watch('status')
     statusChanged(newValue: string) {
       if (newValue === 'success') {
-      this.showConfirmSuccessSlot = true;
-      }
+      this.handleSuccessStatus();
     }
+  }
 
   private client: UnidyClient;
 
@@ -53,9 +56,22 @@ export class Newsletter {
     this.checkedNewsletters = (this.newslettersConfig || []).filter((n) => n.checked).map((n) => n.internal_name);
 
     if (this.status === 'success') {
-      this.showConfirmSuccessSlot = true;
-      this.showSuccessSlot = false;
+      this.handleSuccessStatus();
     }
+  }
+
+  private handleSuccessStatus() {
+    this.showConfirmSuccessSlot = true;
+    this.showSuccessSlot = false;
+
+    setTimeout(() => {
+      this.showConfirmSuccessSlot = false;
+      this.resetStatus.emit();
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("newsletter_status");
+      window.history.replaceState({}, document.title,  url.pathname + url.search);
+    }, 5000);
   }
 
   private handleSubmit = async (e: Event) => {
@@ -69,9 +85,10 @@ export class Newsletter {
         this.checkedNewsletters.length > 0
           ? this.checkedNewsletters.map((newsletter) => ({ newsletter_internal_name: newsletter }))
           : [{ newsletter_internal_name: this.defaultNewsletterInternalName }],
+      return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
     };
 
-    const [error, response] = await this.client.newsletters.createSubscriptions(payload, this.redirect_to);
+    const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
     if (error) {
       if (error === "newsletter_error") {
@@ -167,51 +184,7 @@ export class Newsletter {
           {this.showSuccessSlot && <slot name="success-container" />}
           {this.showConfirmSuccessSlot && (
             <slot name="confirm-success-container">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "2rem 1rem",
-                  background: "#e6f9ed",
-                  borderRadius: "1rem",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                  marginTop: "1.5rem"
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  style={{
-                    color: "#22c55e",
-                    width: "2.5rem",
-                    height: "2.5rem",
-                    marginBottom: "1rem"
-                  }}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <title>Success</title>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <p
-                  style={{
-                    color: "#166534",
-                    fontSize: "1.2rem",
-                    fontWeight: "600",
-                    textAlign: "center",
-                    margin: "0"
-                  }}
-                >
-                  {this.successConfirmationText}
-                </p>
-              </div>
+              <p part="confirm-success-text">{this.successConfirmationText}</p>
             </slot>
           )}
 

@@ -14,15 +14,11 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T>(endpoint: string, body: object, redirect_to: string): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
     let res: Response | null = null;
-    let url = endpoint;
 
     try {
-      if (redirect_to) {
-        url += `${endpoint.includes('?')?'&':'?'}redirect_to=${encodeURIComponent(redirect_to)}`;
-      }
-      res = await fetch(`${this.baseUrl}${url}`, {
+      res = await fetch(`${this.baseUrl}${endpoint}`, {
         method: "POST",
         mode: "cors",
         headers: {

@@ -20,8 +20,8 @@ export namespace Components {
         "errorUnknownText": string;
         "header": string;
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
-        "redirect_to"?: string;
         "renderErrorMessages": boolean;
+        "returnToAfterConfirmation"?: string;
         "status"?: string;
         "submitButtonText": string;
         "successConfirmationText": string;
@@ -35,6 +35,7 @@ declare global {
     interface HTMLUnidyNewsletterElementEventMap {
         "on:success": NewsletterSubscription[];
         "on:error": NewsletterSubscriptionError[];
+        "resetStatus": void;
     }
     interface HTMLUnidyNewsletterElement extends Components.UnidyNewsletter, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyNewsletterElementEventMap>(type: K, listener: (this: HTMLUnidyNewsletterElement, ev: UnidyNewsletterCustomEvent<HTMLUnidyNewsletterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -69,8 +70,9 @@ declare namespace LocalJSX {
         "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
-        "redirect_to"?: string;
+        "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
         "renderErrorMessages"?: boolean;
+        "returnToAfterConfirmation"?: string;
         "status"?: string;
         "submitButtonText"?: string;
         "successConfirmationText"?: string;

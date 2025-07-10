@@ -29,6 +29,7 @@ const CreateSubscriptionsPayloadSchema = z.object({
       preference_identifiers: z.optional(z.array(z.string())),
     }),
   ),
+  return_to_after_confirmation: z.optional(z.string()),
 });
 
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
@@ -53,16 +54,12 @@ export class NewsletterService extends EventEmitter {
     this.client = client;
   }
 
-  async createSubscriptions(payload: CreateSubscriptionsPayload, redirect_to?: string): Promise<CreateSubscriptionsResult> {
+  async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
-
-    const currentredirect_to = redirect_to || window.location.href;
-    console.log("currentredirect_to:", currentredirect_to);
 
     const response = await this.client.post<CreateSubscriptionsResponse>(
       "/api/sdk/v1/newsletter_subscriptions",
-      payload,
-      currentredirect_to
+      payload
     );
 
     switch (response.status) {
