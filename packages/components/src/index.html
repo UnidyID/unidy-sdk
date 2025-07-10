@@ -84,7 +84,7 @@
     }
 
     unidy-newsletter::part(error-message) {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0;
       border-radius: 0.5rem;
       font-size: 0.8rem;
     }
@@ -156,8 +156,7 @@
 
 <body>
   <unidy-newsletter api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-    default-newsletter-internal-name="main" email-placeholder="your@email.com"
-    error-already-subscribed-text="You are already subscribed to the newsletter"
+    email-placeholder="your@email.com" error-already-subscribed-text="You are already subscribed to the newsletter"
     error-invalid-email-text="Please enter a valid email address" error-newsletter-not-found-text="Newsletter not found"
     error-unconfirmed-text="Please confirm your email address" error-unknown-text="An unknown error occurred"
     error-preference-not-found-text="Preference not found" render-error-messages="true" submit-button-text="Subscribe">
@@ -212,7 +211,7 @@
         preferences: [
           { internal_name: 'club_news', label: 'Club News', checked: true },
           { internal_name: 'player_news', label: 'Player News', checked: true },
-          { internal_name: 'Random_news', label: 'Random News', checked: false },
+          { internal_name: 'random_news', label: 'Random News', checked: false },
         ]
       }
     ]

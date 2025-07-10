@@ -20,7 +20,6 @@ export type NewsletterConfig = {
 export class Newsletter {
   @Prop() header: string;
   @Prop() newslettersConfig: NewsletterConfig[] = [];
-  @Prop() defaultNewsletterInternalName: string;
   @Prop() submitButtonText = "Subscribe";
   @Prop() emailLabel = "Email";
   @Prop() emailPlaceholder = "Email";
@@ -70,17 +69,15 @@ export class Newsletter {
       newsletter_subscriptions: [],
     };
 
-    if (this.checkedNewsletters.length > 0) {
-      payload.newsletter_subscriptions = this.checkedNewsletters.map((newsletter) => ({
-        newsletter_internal_name: newsletter.internal_name,
-        preference_identifiers: newsletter.preferences,
-      }));
-    } else if (this.defaultNewsletterInternalName) {
-      payload.newsletter_subscriptions = [{ newsletter_internal_name: this.defaultNewsletterInternalName }];
-    } else {
-      console.error("No newsletter configured: provide either newslettersConfig or defaultNewsletterInternalName");
+    if (this.checkedNewsletters.length === 0) {
+      console.error("No newsletters selected: please select at least one newsletter");
       return;
     }
+
+    payload.newsletter_subscriptions = this.checkedNewsletters.map((newsletter) => ({
+      newsletter_internal_name: newsletter.internal_name,
+      preference_identifiers: newsletter.preferences,
+    }));
 
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
@@ -184,65 +181,58 @@ export class Newsletter {
               class="w-full border"
             />
           </div>
-
-          {this.newslettersConfig.map((newsletter) => (
-            <div key={newsletter.internal_name} class="space-y-2" part="newsletter-container">
-              {this.newslettersConfig.length !== 1 && (
-                <div class="flex items-center gap-2">
-                  <label class="font-bold text-lg" htmlFor={newsletter.internal_name} part="newsletter-label">
-                    {newsletter.label}
-                  </label>
-                  <input
-                    type="checkbox"
-                    id={newsletter.internal_name}
-                    value={newsletter.internal_name}
-                    checked={this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name)}
-                    onChange={() => this.toggleNewsletter(newsletter.internal_name)}
-                    part="newsletter-checkbox"
-                  />
-                </div>
-              )}
-              {newsletter.preferences && this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name) && (
-                <div class="ml-2 space-y-1" part="newsletter-preferences-container">
-                  {newsletter.preferences.map((preference) => (
-                    <label key={preference.internal_name} class="flex items-center" part="newsletter-preference-label">
-                      <input
-                        type="checkbox"
-                        id={`${newsletter.internal_name}-${preference.internal_name}`}
-                        value={preference.internal_name}
-                        checked={this.checkedNewsletters
-                          .find((n) => n.internal_name === newsletter.internal_name)
-                          ?.preferences.includes(preference.internal_name)}
-                        onChange={() => this.togglePreference(newsletter.internal_name, preference.internal_name)}
-                        class="mr-2"
-                        part="newsletter-preference-checkbox"
-                      />
-                      <span class="font-medium">{preference.label}</span>
+          {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes. */}
+          {(this.newslettersConfig.length > 1 || this.newslettersConfig[0].preferences?.length > 0) &&
+            this.newslettersConfig.map((newsletter) => (
+              <div key={newsletter.internal_name} class="space-y-2" part="newsletter-container">
+                {/* For single newsletter there is no need to show the checkbox, only for preferences if they are defined */}
+                {this.newslettersConfig.length > 1 && (
+                  <div class="flex items-center gap-2">
+                    <label class="font-bold text-lg" htmlFor={newsletter.internal_name} part="newsletter-label">
+                      {newsletter.label}
                     </label>
-                  ))}
-                </div>
-              )}
+                    <input
+                      type="checkbox"
+                      id={newsletter.internal_name}
+                      value={newsletter.internal_name}
+                      checked={this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name)}
+                      onChange={() => this.toggleNewsletter(newsletter.internal_name)}
+                      part="newsletter-checkbox"
+                    />
+                  </div>
+                )}
+                {newsletter.preferences && this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name) && (
+                  <div class="ml-2 space-y-1" part="newsletter-preferences-container">
+                    {newsletter.preferences.map((preference) => (
+                      <label key={preference.internal_name} class="flex items-center" part="newsletter-preference-label">
+                        <input
+                          type="checkbox"
+                          id={`${newsletter.internal_name}-${preference.internal_name}`}
+                          value={preference.internal_name}
+                          checked={this.checkedNewsletters
+                            .find((n) => n.internal_name === newsletter.internal_name)
+                            ?.preferences.includes(preference.internal_name)}
+                          onChange={() => this.togglePreference(newsletter.internal_name, preference.internal_name)}
+                          class="mr-2"
+                          part="newsletter-preference-checkbox"
+                        />
+                        <span class="font-medium">{preference.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
 
-              {this.renderErrorMessages && this.messages[newsletter.internal_name] && (
-                <div
-                  key={`error-${newsletter.internal_name}-${this.messages[newsletter.internal_name].error_identifier}`}
-                  part={`error-message ${this.messages[newsletter.internal_name].error_identifier}`}
-                  class={`!mt-1 ${this.messages[newsletter.internal_name].error_identifier}`}
-                >
-                  {this.messages[newsletter.internal_name].text}
-                </div>
-              )}
-            </div>
-          ))}
-
-          {this.renderErrorMessages &&
-            this.newslettersConfig.length === 0 &&
-            this.defaultNewsletterInternalName &&
-            this.messages[this.defaultNewsletterInternalName] && (
-              <div part={`error-message ${this.messages[this.defaultNewsletterInternalName].error_identifier}`} class={"!mt-1"}>
-                {this.messages[this.defaultNewsletterInternalName].text}
+                {this.renderErrorMessages && this.messages[newsletter.internal_name] && (
+                  <div
+                    key={`error-${newsletter.internal_name}-${this.messages[newsletter.internal_name].error_identifier}`}
+                    part={`error-message ${this.messages[newsletter.internal_name].error_identifier}`}
+                    class={`!mt-1 ${this.messages[newsletter.internal_name].error_identifier}`}
+                  >
+                    {this.messages[newsletter.internal_name].text}
+                  </div>
+                )}
               </div>
-            )}
+            ))}
 
           <button part="submit-button" type="submit" class="w-full border">
             {this.submitButtonText}
