@@ -103,34 +103,11 @@ export class Newsletter {
         const errorMessages: Record<string, { color: string; text: string; error_identifier: string }> = {};
 
         for (const error of errors) {
-          const baseError = {
+          errorMessages[error.newsletter_internal_name] = {
             color: "red",
             error_identifier: error.error_identifier,
+            text: this.getErrorText(error.error_identifier),
           };
-
-          let errorText: string;
-          switch (error.error_identifier) {
-            case "unconfirmed":
-              errorText = this.errorUnconfirmedText;
-              break;
-            case "already_subscribed":
-              errorText = this.errorAlreadySubscribedText;
-              break;
-            case "invalid_email":
-              errorText = this.errorInvalidEmailText;
-              break;
-            case "newsletter_not_found":
-              errorText = this.errorNewsletterNotFoundText;
-              break;
-            case "preferences_not_found":
-              errorText = this.errorPreferenceNotFoundText;
-              break;
-            default:
-              errorText = this.errorUnknownText;
-              break;
-          }
-
-          errorMessages[error.newsletter_internal_name] = { ...baseError, text: errorText };
         }
 
         this.messages = { ...this.messages, ...errorMessages };
@@ -146,6 +123,25 @@ export class Newsletter {
 
     this.email = "";
   };
+
+  private getErrorText(
+    error_identifier: "unconfirmed" | "already_subscribed" | "invalid_email" | "newsletter_not_found" | "preferences_not_found" | "unknown",
+  ): string {
+    switch (error_identifier) {
+      case "unconfirmed":
+        return this.errorUnconfirmedText;
+      case "already_subscribed":
+        return this.errorAlreadySubscribedText;
+      case "invalid_email":
+        return this.errorInvalidEmailText;
+      case "newsletter_not_found":
+        return this.errorNewsletterNotFoundText;
+      case "preferences_not_found":
+        return this.errorPreferenceNotFoundText;
+      default:
+        return this.errorUnknownText;
+    }
+  }
 
   private toggleNewsletter(newsletterName: string) {
     const newsletter = this.checkedNewsletters[newsletterName];
