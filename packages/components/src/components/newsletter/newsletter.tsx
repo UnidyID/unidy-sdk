@@ -1,6 +1,25 @@
 import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
 import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
 
+export type NewsletterConfig = {
+  internalName: string;
+  label: string;
+  checked?: boolean;
+  preferences?: {
+    internalName: string;
+    label: string;
+    checked?: boolean;
+  }[];
+};
+
+export type NewsletteerErrorIdentifier =
+  | "unconfirmed"
+  | "already_subscribed"
+  | "invalid_email"
+  | "newsletter_not_found"
+  | "preferences_not_found"
+  | "unknown";
+
 @Component({
   tag: "unidy-newsletter",
   styleUrl: "newsletter.css",
@@ -8,8 +27,8 @@ import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyCli
 })
 export class Newsletter {
   @Prop() header: string;
-  @Prop() newslettersConfig: { internal_name: string; label: string; checked?: boolean }[] = [];
-  @Prop() defaultNewsletterInternalName: string;
+  @Prop() newslettersConfig: NewsletterConfig[] = [];
+  @Prop() newslettersConfigJson: string;
   @Prop() submitButtonText = "Subscribe";
   @Prop() emailLabel = "Email";
   @Prop() emailPlaceholder = "Email";
@@ -20,11 +39,13 @@ export class Newsletter {
   @Prop() errorUnconfirmedText = "Email not confirmed";
   @Prop() errorAlreadySubscribedText = "Already subscribed";
   @Prop() errorInvalidEmailText = "Invalid email address";
+  @Prop() errorNewsletterNotFoundText = "Newsletter not found";
+  @Prop() errorPreferenceNotFoundText = "Preference not found";
   @Prop() errorUnknownText = "Unknown error occured";
 
   @State() email = "";
-  @State() checkedNewsletters: string[] = [];
-  @State() messages: { color: string; text: string; error_identifier: string }[] = [];
+  @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
+  @State() errors: Record<string, { error_identifier: string }> = {};
   @State() showSuccessSlot = false;
 
   @Event({ eventName: "on:success" })
@@ -38,21 +59,47 @@ export class Newsletter {
   componentWillLoad() {
     this.client = new UnidyClient(this.apiUrl, this.apiKey);
 
-    this.checkedNewsletters = (this.newslettersConfig || []).filter((n) => n.checked).map((n) => n.internal_name);
+    if (this.newslettersConfigJson) {
+      try {
+        this.newslettersConfig = JSON.parse(this.newslettersConfigJson);
+      } catch (error) {
+        console.error("Failed to parse newslettersConfigJson:", error);
+      }
+    }
+
+    this.checkedNewsletters = this.newslettersConfig.reduce((acc, n) => {
+      acc[n.internalName] = {
+        preferences: n.preferences?.filter((p) => p.checked).map((p) => p.internalName) || [],
+        checked: n.checked,
+      };
+      return acc;
+    }, {});
   }
 
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
-    this.messages = [];
+    this.errors = {};
+
     this.showSuccessSlot = false;
 
     const payload = {
       email: this.email,
-      newsletter_subscriptions:
-        this.checkedNewsletters.length > 0
-          ? this.checkedNewsletters.map((newsletter) => ({ newsletter_internal_name: newsletter }))
-          : [{ newsletter_internal_name: this.defaultNewsletterInternalName }],
+      newsletter_subscriptions: [],
     };
+
+    const selectedNewsletters = Object.entries(this.checkedNewsletters)
+      .filter(([_, data]) => data.checked)
+      .map(([newsletterName, data]) => ({
+        newsletter_internal_name: newsletterName,
+        preference_identifiers: data.preferences,
+      }));
+
+    if (selectedNewsletters.length === 0) {
+      console.error("No newsletters selected: please select at least one newsletter");
+      return;
+    }
+
+    payload.newsletter_subscriptions = selectedNewsletters;
 
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
@@ -61,20 +108,15 @@ export class Newsletter {
         const errors = response.data?.errors || [];
         this.errorEvent.emit(errors);
 
-        const errorMessages = errors.map((error: { error_identifier: string; newsletter_internal_name: string }) => {
-          switch (error.error_identifier) {
-            case "unconfirmed":
-              return { color: "red", text: this.errorUnconfirmedText, error_identifier: error.error_identifier };
-            case "already_subscribed":
-              return { color: "red", text: this.errorAlreadySubscribedText, error_identifier: error.error_identifier };
-            case "invalid_email":
-              return { color: "red", text: this.errorInvalidEmailText, error_identifier: error.error_identifier };
-            default:
-              return { color: "red", text: this.errorUnknownText, error_identifier: error.error_identifier };
-          }
-        });
+        const errorMessages: Record<string, { error_identifier: string }> = {};
 
-        this.messages = [...this.messages, ...errorMessages];
+        for (const error of errors) {
+          errorMessages[error.newsletter_internal_name] = {
+            error_identifier: error.error_identifier,
+          };
+        }
+
+        this.errors = { ...this.errors, ...errorMessages };
         return;
       }
       if (error === "rate_limit_exceeded") {
@@ -88,10 +130,70 @@ export class Newsletter {
     this.email = "";
   };
 
-  private toggleNewsletter(value: string) {
-    this.checkedNewsletters = this.checkedNewsletters.includes(value)
-      ? this.checkedNewsletters.filter((v) => v !== value)
-      : [...this.checkedNewsletters, value];
+  private getErrorText(error_identifier: NewsletteerErrorIdentifier): string {
+    switch (error_identifier) {
+      case "unconfirmed":
+        return this.errorUnconfirmedText;
+      case "already_subscribed":
+        return this.errorAlreadySubscribedText;
+      case "invalid_email":
+        return this.errorInvalidEmailText;
+      case "newsletter_not_found":
+        return this.errorNewsletterNotFoundText;
+      case "preferences_not_found":
+        return this.errorPreferenceNotFoundText;
+      default:
+        return this.errorUnknownText;
+    }
+  }
+
+  private toggleNewsletter(newsletterName: string) {
+    const newsletter = this.checkedNewsletters[newsletterName];
+    const checked = !newsletter.checked;
+
+    this.checkedNewsletters = {
+      ...this.checkedNewsletters,
+      [newsletterName]: {
+        ...newsletter,
+        checked: checked,
+        preferences: checked ? newsletter.preferences : [],
+      },
+    };
+  }
+
+  private togglePreference(newsletterName: string, preferenceName: string) {
+    const newsletter = this.checkedNewsletters[newsletterName];
+    if (!newsletter || !newsletter.checked) return;
+
+    const preferences = newsletter.preferences || [];
+    const hasPreference = preferences.includes(preferenceName);
+
+    const newPreferences = hasPreference ? preferences.filter((p) => p !== preferenceName) : [...preferences, preferenceName];
+
+    this.checkedNewsletters = {
+      ...this.checkedNewsletters,
+      [newsletterName]: {
+        ...newsletter,
+        preferences: newPreferences,
+      },
+    };
+  }
+
+  private renderErrorMessage(newsletterName: string) {
+    if (!this.renderErrorMessages || !this.errors[newsletterName]) {
+      return null;
+    }
+
+    const message = this.errors[newsletterName];
+    return (
+      <div
+        key={`error-${newsletterName}-${message.error_identifier}`}
+        part={`error-message ${message.error_identifier}`}
+        class={`${message.error_identifier}`}
+      >
+        {this.getErrorText(message.error_identifier as NewsletteerErrorIdentifier)}
+      </div>
+    );
   }
 
   render() {
@@ -100,7 +202,7 @@ export class Newsletter {
         <slot name="header" />
         {this.header && <h1 part="heading">{this.header}</h1>}
         <slot name="description" />
-        <form onSubmit={this.handleSubmit} class="space-y-4">
+        <form onSubmit={this.handleSubmit} class="flex flex-col gap-2">
           <div part="email-input-group">
             <label part="email-input-label" htmlFor="email-input">
               {this.emailLabel}
@@ -118,34 +220,58 @@ export class Newsletter {
               class="w-full border"
             />
           </div>
+          {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes in containers */}
+          {(this.newslettersConfig.length > 1 || this.newslettersConfig[0].preferences?.length > 0) &&
+            this.newslettersConfig.map((newsletter) => (
+              <div key={newsletter.internalName} class="flex flex-col gap-2" part="newsletter-container">
+                {/* For single newsletter there is no need to show the checkbox, only for preferences if they are defined */}
+                {this.newslettersConfig.length > 1 && (
+                  <div class="flex items-center gap-2">
+                    <label class="font-bold text-lg" htmlFor={newsletter.internalName} part="newsletter-label">
+                      {newsletter.label}
+                    </label>
+                    <input
+                      type="checkbox"
+                      id={newsletter.internalName}
+                      value={newsletter.internalName}
+                      checked={this.checkedNewsletters[newsletter.internalName].checked}
+                      onChange={() => this.toggleNewsletter(newsletter.internalName)}
+                      part="newsletter-checkbox"
+                    />
+                  </div>
+                )}
 
-          {this.newslettersConfig.map((newsletter) => (
-            <label key={newsletter.internal_name} class="flex items-center">
-              <input
-                type="checkbox"
-                id={newsletter.internal_name}
-                value={newsletter.internal_name}
-                checked={this.checkedNewsletters.includes(newsletter.internal_name)}
-                onChange={() => this.toggleNewsletter(newsletter.internal_name)}
-                class="mr-2"
-              />
-              {newsletter.label}
-            </label>
-          ))}
+                {newsletter.preferences && this.checkedNewsletters[newsletter.internalName].checked && (
+                  <div class={`${this.newslettersConfig.length > 1 ? "ml-2" : ""}`} part="newsletter-preferences-container">
+                    {newsletter.preferences.map((preference) => (
+                      <label key={preference.internalName} class="flex items-center" part="newsletter-preference-label">
+                        <input
+                          type="checkbox"
+                          id={`${newsletter.internalName}-${preference.internalName}`}
+                          value={preference.internalName}
+                          checked={this.checkedNewsletters[newsletter.internalName]?.preferences.includes(preference.internalName)}
+                          onChange={() => this.togglePreference(newsletter.internalName, preference.internalName)}
+                          class="mr-2"
+                          part="newsletter-preference-checkbox"
+                        />
+                        <span class="font-medium">{preference.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {this.renderErrorMessage(newsletter.internalName)}
+              </div>
+            ))}
+
+          {/* Show error messages for single newsletters without preferences outside of the newsletter container */}
+          {this.newslettersConfig.length === 1 &&
+            !this.newslettersConfig[0].preferences?.length &&
+            this.renderErrorMessage(this.newslettersConfig[0].internalName)}
 
           <button part="submit-button" type="submit" class="w-full border">
             {this.submitButtonText}
           </button>
-
-          {this.renderErrorMessages && (
-            <div part="error-messages-container" class="text-sm">
-              {this.messages.map((message, index) => (
-                <div key={`error-${index}-${message.error_identifier}`} part={`error-${message.error_identifier}`} class="!mt-1">
-                  {message.text}
-                </div>
-              ))}
-            </div>
-          )}
 
           {this.showSuccessSlot && <slot name="success-container" />}
         </form>

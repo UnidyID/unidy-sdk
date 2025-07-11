@@ -11,7 +11,8 @@
 
   <style>
     :root {
-      --vfl-blue: #003e74;
+      --demo-blue: #003e74;
+      --demo-orange: #ff9100;
     }
 
     body {
@@ -64,7 +65,7 @@
     }
 
     unidy-newsletter::part(submit-button) {
-      background-color: var(--vfl-blue);
+      background-color: var(--demo-blue);
       color: white;
       border: none;
       padding: 0.75rem 2rem;
@@ -75,20 +76,41 @@
       margin-top: 1rem;
     }
 
-    unidy-newsletter::part(error-unconfirmed) {
-      color: orange !important
+    unidy-newsletter::part(newsletter-container) {
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      background-color: rgb(245, 245, 245);
     }
 
-    unidy-newsletter::part(error-already_subscribed) {
-      color: orange !important
+    unidy-newsletter::part(error-message) {
+      padding: 0.5rem 0;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
     }
 
-    unidy-newsletter::part(error-invalid_email) {
+    unidy-newsletter::part(error-message unconfirmed) {
+      color: var(--demo-orange) !important
+    }
+
+    unidy-newsletter::part(error-message already_subscribed) {
+      color: var(--demo-orange) !important
+    }
+
+    unidy-newsletter::part(error-message invalid_email) {
+      color: red !important
+    }
+
+    unidy-newsletter::part(error-message newsletter_not_found) {
+      color: red !important
+    }
+
+    unidy-newsletter::part(error-message preferences_not_found) {
       color: red !important
     }
 
     .header {
-      color: var(--vfl-blue);
+      color: var(--demo-blue);
       margin-bottom: 1.5rem;
     }
 
@@ -105,11 +127,11 @@
       font-weight: 700;
       line-height: 1.2;
       margin-bottom: 0.5rem;
-      color: var(--vfl-blue);
+      color: var(--demo-blue);
     }
 
     .description {
-      color: var(--vfl-blue);
+      color: var(--demo-blue);
       padding-bottom: 1rem;
     }
 
@@ -119,7 +141,7 @@
     }
 
     .footer a {
-      color: var(--vfl-blue);
+      color: var(--demo-blue);
       text-decoration: underline;
     }
 
@@ -133,18 +155,32 @@
 </head>
 
 <body>
-  <unidy-newsletter
-    api-key="public-newsletter-api-key"
-    api-url="http://localhost:3000"
-    default-newsletter-internal-name="main"
-    email-placeholder="your@email.com"
-    error-already-subscribed-text="You are already subscribed to the newsletter"
-    error-invalid-email-text="Please enter a valid email address"
-    error-unconfirmed-text="Please confirm your email address"
-    error-unknown-text="An unknown error occurred"
-    render-error-messages="true"
-    submit-button-text="Subscribe"
-  >
+  <unidy-newsletter api-key="public-newsletter-api-key" api-url="http://localhost:3000"
+    email-placeholder="your@email.com" error-already-subscribed-text="You are already subscribed to the newsletter"
+    error-invalid-email-text="Please enter a valid email address" error-newsletter-not-found-text="Newsletter not found"
+    error-unconfirmed-text="Please confirm your email address" error-unknown-text="An unknown error occurred"
+    error-preference-not-found-text="Preference not found" render-error-messages="true" submit-button-text="Subscribe"
+    newsletters-config-json='[
+      {
+        "internal_name": "main",
+        "label": "Main Newsletter",
+        "checked": true,
+        "preferences": [
+          { "internal_name": "first", "label": "First Preference", "checked": true },
+          { "internal_name": "second", "label": "Second Preference", "checked": false }
+        ]
+      },
+      {
+        "internal_name": "test",
+        "label": "Test Newsletter",
+        "checked": false,
+        "preferences": [
+          { "internal_name": "club_news", "label": "Club News", "checked": true },
+          { "internal_name": "player_news", "label": "Player News", "checked": true },
+          { "internal_name": "random_news", "label": "Random News", "checked": false }
+        ]
+      }
+    ]'>
 
     <div slot="header" class="header">
       <div class="b-heading">
@@ -161,8 +197,8 @@
       <p>I would like to newest important updates from Unidy per email. My data will not be shared with third parties.
         I can revoke my consent at any time by visiting the Unidy preference center.</p>
       </p>
-      <p>I accept the <a href="https://www.unidy.io/terms-and-conditions" target="_blank">terms and conditions</a> and <a
-          href="https://www.unidy.io/privacy-policy" target="_blank">privacy policy</a>.
+      <p>I accept the <a href="https://www.unidy.io/terms-and-conditions" target="_blank">terms and conditions</a> and
+        <a href="https://www.unidy.io/privacy-policy" target="_blank">privacy policy</a>.
       </p>
     </div>
 
@@ -178,6 +214,28 @@
 
   <script>
     const newsletterComponent = document.querySelector('unidy-newsletter');
+
+    // newsletterComponent.newslettersConfig = [
+    //   {
+    //     internal_name: 'main',
+    //     label: 'Main Newsletter',
+    //     checked: true,
+    //     preferences: [
+    //       { internal_name: 'first', label: 'First Preference', checked: true },
+    //       { internal_name: 'second', label: 'Second Preference', checked: false },
+    //     ]
+    //   },
+    //   {
+    //     internal_name: 'test',
+    //     label: 'Test Newsletter',
+    //     checked: false,
+    //     preferences: [
+    //       { internal_name: 'club_news', label: 'Club News', checked: true },
+    //       { internal_name: 'player_news', label: 'Player News', checked: true },
+    //       { internal_name: 'random_news', label: 'Random News', checked: false },
+    //     ]
+    //   }
+    // ]
 
     newsletterComponent.addEventListener('on:success', (event) => {
       console.log("Successfully subscribed", event.detail);
