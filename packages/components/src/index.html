@@ -224,7 +224,7 @@
       </div>
     </div>
 
-    <!-- Customized success message example -->
+    <!-- Customized confirmation success message example -->
     <div slot="confirm-success-container" class="confirm-success-container">
       <div class="confirm-success-icon">
         <svg xmlns="http://www.w3.org/2000/svg" style="color: #fff; width: 2.5rem; height: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,6 +242,25 @@
         </p>
       </div>
     </div>
+
+    <!-- Customized confirmation error message example -->
+    <div slot="confirmation-error-container" class="confirm-success-container" style="background: #fdeaea; border: 1px solid #f5bcbc; box-shadow: 0 2px 8px rgba(200,0,0,0.06);">
+      <div class="confirm-success-icon" style="background: #e53935;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="color: #fff; width: 2.5rem; height: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <title>Error</title>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+      <div class="confirm-success-content">
+        <h3 class="confirm-success-title" style="color: #e53935;">
+          Confirmation Error
+        </h3>
+        <p class="confirm-success-text" style="color: #b71c1c;">
+          There was a problem confirming your newsletter subscription.<br />
+          Your preference token could not be assigned. Enter your e-mail address to receive a new link.
+        </p>
+      </div>
+    </div>
   </unidy-newsletter>
 
   <script>
@@ -251,6 +270,10 @@
 
     if (params.get("newsletter_status") === "confirmed") {
       newsletterComponent.setAttribute("status", "success");
+    };
+
+    if (params.get("newsletter_status") === "invalid_preference_token") {
+      newsletterComponent.setAttribute("status", "error");
     };
 
     newsletterComponent.addEventListener('on:success', (event) => {

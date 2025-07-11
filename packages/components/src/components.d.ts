@@ -11,6 +11,7 @@ export namespace Components {
     interface UnidyNewsletter {
         "apiKey": string;
         "apiUrl": string;
+        "confirmationErrorText": string;
         "defaultNewsletterInternalName": string;
         "emailLabel": string;
         "emailPlaceholder": string;
@@ -59,6 +60,7 @@ declare namespace LocalJSX {
     interface UnidyNewsletter {
         "apiKey"?: string;
         "apiUrl"?: string;
+        "confirmationErrorText"?: string;
         "defaultNewsletterInternalName"?: string;
         "emailLabel"?: string;
         "emailPlaceholder"?: string;

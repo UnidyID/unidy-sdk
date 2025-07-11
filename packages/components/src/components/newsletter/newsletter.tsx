@@ -24,6 +24,7 @@ export class Newsletter {
   @Prop({ reflect: true }) status?: string;
   @Prop() returnToAfterConfirmation?: string;
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
+  @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
 
 
   @State() email = "";
@@ -31,6 +32,7 @@ export class Newsletter {
   @State() messages: { color: string; text: string; error_identifier: string }[] = [];
   @State() showSuccessSlot = false;
   @State() showConfirmSuccessSlot = false;
+  @State() showConfirmationErrorSlot = false;
 
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
@@ -58,6 +60,24 @@ export class Newsletter {
     if (this.status === 'success') {
       this.handleSuccessStatus();
     }
+    if (this.status === 'error') {
+      this.handleErrorStatus();
+    }
+  }
+
+  private handleErrorStatus() {
+    this.showConfirmSuccessSlot = false;
+    this.showSuccessSlot = false;
+    this.showConfirmationErrorSlot = true;
+
+    setTimeout(() => {
+      this.showConfirmationErrorSlot  = false;
+      this.resetStatus.emit();
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete("newsletter_status");
+      window.history.replaceState({}, document.title,  url.pathname + url.search);
+    }, 5000);
   }
 
   private handleSuccessStatus() {
@@ -185,6 +205,12 @@ export class Newsletter {
           {this.showConfirmSuccessSlot && (
             <slot name="confirm-success-container">
               <p part="confirm-success-text">{this.successConfirmationText}</p>
+            </slot>
+          )}
+
+          {this.showConfirmationErrorSlot && (
+            <slot name="confirmation-error-container">
+              <p part="confirmaton-error-text">{this.confirmationErrorText}</p>
             </slot>
           )}
 
