@@ -44,6 +44,10 @@ export namespace Components {
          */
         "logout": () => Promise<LogoutResult>;
         /**
+          * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
+         */
+        "mode": "dialog" | "inline";
+        /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
          */
         "prompt": PromptOption;
@@ -107,6 +111,10 @@ declare namespace LocalJSX {
           * Whether to enable logging, defaults to true
          */
         "enableLogging"?: boolean;
+        /**
+          * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
+         */
+        "mode"?: "dialog" | "inline";
         "onAuthEvent"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null

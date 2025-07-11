@@ -31,6 +31,10 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   onAuth?: (token: string) => void;
   /** Whether to enable logging, defaults to true */
   enableLogging?: boolean;
+  /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page, defaults to 'dialog' */
+  mode?: "dialog" | "inline";
+  /** The target element where the component should be mounted in inline mode - can be element ID, CSS selector, or HTMLElement, defaults to document.body */
+  mountTarget?: string | HTMLElement;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
@@ -130,6 +134,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       prompt: this.config.prompt,
       redirectUrl: this.config.redirectUrl,
       enableLogging: this.logger.enabled,
+      mode: this.config.mode,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
@@ -141,7 +146,28 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       }
     });
 
-    document.body.appendChild(this.component);
+    // Determine where to mount the component, defaults to document.body
+    let mountElement: HTMLElement = document.body;
+
+    if (this.config.mode === "inline" && this.config.mountTarget) {
+      if (typeof this.config.mountTarget === "string") {
+        const elementById = document.getElementById(this.config.mountTarget);
+        const elementBySelector = document.querySelector(this.config.mountTarget);
+
+        if (elementById) {
+          mountElement = elementById;
+        } else if (elementBySelector && elementBySelector instanceof HTMLElement) {
+          mountElement = elementBySelector;
+        } else {
+          this.logger.error(`Mount target not found: ${this.config.mountTarget}`);
+          return;
+        }
+      } else if (this.config.mountTarget instanceof HTMLElement) {
+        mountElement = this.config.mountTarget;
+      }
+    }
+
+    mountElement.appendChild(this.component);
 
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
     const token = Utils.extractHashUrlParam(window.location.href, "id_token");
