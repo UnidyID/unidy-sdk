@@ -23,7 +23,6 @@ export namespace Components {
         "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
         "renderErrorMessages": boolean;
         "returnToAfterConfirmation"?: string;
-        "status"?: string;
         "submitButtonText": string;
         "successConfirmationText": string;
     }
@@ -75,7 +74,6 @@ declare namespace LocalJSX {
         "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
         "renderErrorMessages"?: boolean;
         "returnToAfterConfirmation"?: string;
-        "status"?: string;
         "submitButtonText"?: string;
         "successConfirmationText"?: string;
     }

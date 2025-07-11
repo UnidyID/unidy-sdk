@@ -266,16 +266,6 @@
   <script>
     const newsletterComponent = document.querySelector('unidy-newsletter');
 
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("newsletter_status") === "confirmed") {
-      newsletterComponent.setAttribute("status", "success");
-    };
-
-    if (params.get("newsletter_status") === "invalid_preference_token") {
-      newsletterComponent.setAttribute("status", "error");
-    };
-
     newsletterComponent.addEventListener('on:success', (event) => {
       console.log("Successfully subscribed", event.detail);
     });

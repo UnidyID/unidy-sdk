@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, Prop, State, Watch, h } from "@stencil/core";
+import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
 import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
 
 @Component({
@@ -21,7 +21,6 @@ export class Newsletter {
   @Prop() errorAlreadySubscribedText = "Already subscribed";
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorUnknownText = "Unknown error occured";
-  @Prop({ reflect: true }) status?: string;
   @Prop() returnToAfterConfirmation?: string;
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
   @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
@@ -43,13 +42,6 @@ export class Newsletter {
   @Event()
   resetStatus: EventEmitter<void>;
 
-  @Watch('status')
-    statusChanged(newValue: string) {
-      if (newValue === 'success') {
-      this.handleSuccessStatus();
-    }
-  }
-
   private client: UnidyClient;
 
   componentWillLoad() {
@@ -57,10 +49,12 @@ export class Newsletter {
 
     this.checkedNewsletters = (this.newslettersConfig || []).filter((n) => n.checked).map((n) => n.internal_name);
 
-    if (this.status === 'success') {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("newsletter_status");
+
+    if (status === 'confirmed') {
       this.handleSuccessStatus();
-    }
-    if (this.status === 'error') {
+    } else if (status === 'invalid_preference_token') {
       this.handleErrorStatus();
     }
   }
@@ -71,7 +65,6 @@ export class Newsletter {
     this.showConfirmationErrorSlot = true;
 
     setTimeout(() => {
-      this.showConfirmationErrorSlot  = false;
       this.resetStatus.emit();
 
       const url = new URL(window.location.href);
