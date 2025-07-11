@@ -2,11 +2,11 @@ import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/co
 import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
 
 export type NewsletterConfig = {
-  internal_name: string;
+  internalName: string;
   label: string;
   checked?: boolean;
   preferences?: {
-    internal_name: string;
+    internalName: string;
     label: string;
     checked?: boolean;
   }[];
@@ -60,8 +60,8 @@ export class Newsletter {
     }
 
     this.checkedNewsletters = this.newslettersConfig.reduce((acc, n) => {
-      acc[n.internal_name] = {
-        preferences: n.preferences?.filter((p) => p.checked).map((p) => p.internal_name) || [],
+      acc[n.internalName] = {
+        preferences: n.preferences?.filter((p) => p.checked).map((p) => p.internalName) || [],
         checked: n.checked,
       };
       return acc;
@@ -206,34 +206,34 @@ export class Newsletter {
           {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes. */}
           {(this.newslettersConfig.length > 1 || this.newslettersConfig[0].preferences?.length > 0) &&
             this.newslettersConfig.map((newsletter) => (
-              <div key={newsletter.internal_name} class="space-y-2" part="newsletter-container">
+              <div key={newsletter.internalName} class="space-y-2" part="newsletter-container">
                 {/* For single newsletter there is no need to show the checkbox, only for preferences if they are defined */}
                 {this.newslettersConfig.length > 1 && (
                   <div class="flex items-center gap-2">
-                    <label class="font-bold text-lg" htmlFor={newsletter.internal_name} part="newsletter-label">
+                    <label class="font-bold text-lg" htmlFor={newsletter.internalName} part="newsletter-label">
                       {newsletter.label}
                     </label>
                     <input
                       type="checkbox"
-                      id={newsletter.internal_name}
-                      value={newsletter.internal_name}
-                      checked={this.checkedNewsletters[newsletter.internal_name].checked}
-                      onChange={() => this.toggleNewsletter(newsletter.internal_name)}
+                      id={newsletter.internalName}
+                      value={newsletter.internalName}
+                      checked={this.checkedNewsletters[newsletter.internalName].checked}
+                      onChange={() => this.toggleNewsletter(newsletter.internalName)}
                       part="newsletter-checkbox"
                     />
                   </div>
                 )}
 
-                {newsletter.preferences && this.checkedNewsletters[newsletter.internal_name].checked && (
+                {newsletter.preferences && this.checkedNewsletters[newsletter.internalName].checked && (
                   <div class="ml-2 space-y-1" part="newsletter-preferences-container">
                     {newsletter.preferences.map((preference) => (
-                      <label key={preference.internal_name} class="flex items-center" part="newsletter-preference-label">
+                      <label key={preference.internalName} class="flex items-center" part="newsletter-preference-label">
                         <input
                           type="checkbox"
-                          id={`${newsletter.internal_name}-${preference.internal_name}`}
-                          value={preference.internal_name}
-                          checked={this.checkedNewsletters[newsletter.internal_name]?.preferences.includes(preference.internal_name)}
-                          onChange={() => this.togglePreference(newsletter.internal_name, preference.internal_name)}
+                          id={`${newsletter.internalName}-${preference.internalName}`}
+                          value={preference.internalName}
+                          checked={this.checkedNewsletters[newsletter.internalName]?.preferences.includes(preference.internalName)}
+                          onChange={() => this.togglePreference(newsletter.internalName, preference.internalName)}
                           class="mr-2"
                           part="newsletter-preference-checkbox"
                         />
@@ -243,13 +243,13 @@ export class Newsletter {
                   </div>
                 )}
 
-                {this.renderErrorMessages && this.messages[newsletter.internal_name] && (
+                {this.renderErrorMessages && this.messages[newsletter.internalName] && (
                   <div
-                    key={`error-${newsletter.internal_name}-${this.messages[newsletter.internal_name].error_identifier}`}
-                    part={`error-message ${this.messages[newsletter.internal_name].error_identifier}`}
-                    class={`!mt-1 ${this.messages[newsletter.internal_name].error_identifier}`}
+                    key={`error-${newsletter.internalName}-${this.messages[newsletter.internalName].error_identifier}`}
+                    part={`error-message ${this.messages[newsletter.internalName].error_identifier}`}
+                    class={`!mt-1 ${this.messages[newsletter.internalName].error_identifier}`}
                   >
-                    {this.messages[newsletter.internal_name].text}
+                    {this.messages[newsletter.internalName].text}
                   </div>
                 )}
               </div>
