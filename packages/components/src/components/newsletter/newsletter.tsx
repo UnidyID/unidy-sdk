@@ -12,6 +12,14 @@ export type NewsletterConfig = {
   }[];
 };
 
+export type NewsletteerErrorIdentifier =
+  | "unconfirmed"
+  | "already_subscribed"
+  | "invalid_email"
+  | "newsletter_not_found"
+  | "preferences_not_found"
+  | "unknown";
+
 @Component({
   tag: "unidy-newsletter",
   styleUrl: "newsletter.css",
@@ -37,7 +45,7 @@ export class Newsletter {
 
   @State() email = "";
   @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
-  @State() messages: Record<string, { color: string; text: string; error_identifier: string }> = {};
+  @State() errors: Record<string, { error_identifier: string }> = {};
   @State() showSuccessSlot = false;
 
   @Event({ eventName: "on:success" })
@@ -70,7 +78,7 @@ export class Newsletter {
 
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
-    this.messages = {};
+    this.errors = {};
 
     this.showSuccessSlot = false;
 
@@ -100,17 +108,15 @@ export class Newsletter {
         const errors = response.data?.errors || [];
         this.errorEvent.emit(errors);
 
-        const errorMessages: Record<string, { color: string; text: string; error_identifier: string }> = {};
+        const errorMessages: Record<string, { error_identifier: string }> = {};
 
         for (const error of errors) {
           errorMessages[error.newsletter_internal_name] = {
-            color: "red",
             error_identifier: error.error_identifier,
-            text: this.getErrorText(error.error_identifier),
           };
         }
 
-        this.messages = { ...this.messages, ...errorMessages };
+        this.errors = { ...this.errors, ...errorMessages };
         return;
       }
       if (error === "rate_limit_exceeded") {
@@ -124,9 +130,7 @@ export class Newsletter {
     this.email = "";
   };
 
-  private getErrorText(
-    error_identifier: "unconfirmed" | "already_subscribed" | "invalid_email" | "newsletter_not_found" | "preferences_not_found" | "unknown",
-  ): string {
+  private getErrorText(error_identifier: NewsletteerErrorIdentifier): string {
     switch (error_identifier) {
       case "unconfirmed":
         return this.errorUnconfirmedText;
@@ -175,13 +179,30 @@ export class Newsletter {
     };
   }
 
+  private renderErrorMessage(newsletterName: string) {
+    if (!this.renderErrorMessages || !this.errors[newsletterName]) {
+      return null;
+    }
+
+    const message = this.errors[newsletterName];
+    return (
+      <div
+        key={`error-${newsletterName}-${message.error_identifier}`}
+        part={`error-message ${message.error_identifier}`}
+        class={`${message.error_identifier}`}
+      >
+        {this.getErrorText(message.error_identifier as NewsletteerErrorIdentifier)}
+      </div>
+    );
+  }
+
   render() {
     return (
       <div part="container" class="max-w-lg">
         <slot name="header" />
         {this.header && <h1 part="heading">{this.header}</h1>}
         <slot name="description" />
-        <form onSubmit={this.handleSubmit} class="space-y-4">
+        <form onSubmit={this.handleSubmit} class="flex flex-col gap-2">
           <div part="email-input-group">
             <label part="email-input-label" htmlFor="email-input">
               {this.emailLabel}
@@ -199,10 +220,10 @@ export class Newsletter {
               class="w-full border"
             />
           </div>
-          {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes. */}
+          {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes in containers */}
           {(this.newslettersConfig.length > 1 || this.newslettersConfig[0].preferences?.length > 0) &&
             this.newslettersConfig.map((newsletter) => (
-              <div key={newsletter.internalName} class="space-y-2" part="newsletter-container">
+              <div key={newsletter.internalName} class="flex flex-col gap-2" part="newsletter-container">
                 {/* For single newsletter there is no need to show the checkbox, only for preferences if they are defined */}
                 {this.newslettersConfig.length > 1 && (
                   <div class="flex items-center gap-2">
@@ -221,7 +242,7 @@ export class Newsletter {
                 )}
 
                 {newsletter.preferences && this.checkedNewsletters[newsletter.internalName].checked && (
-                  <div class="ml-2 space-y-1" part="newsletter-preferences-container">
+                  <div class={`${this.newslettersConfig.length > 1 ? "ml-2" : ""}`} part="newsletter-preferences-container">
                     {newsletter.preferences.map((preference) => (
                       <label key={preference.internalName} class="flex items-center" part="newsletter-preference-label">
                         <input
@@ -239,17 +260,14 @@ export class Newsletter {
                   </div>
                 )}
 
-                {this.renderErrorMessages && this.messages[newsletter.internalName] && (
-                  <div
-                    key={`error-${newsletter.internalName}-${this.messages[newsletter.internalName].error_identifier}`}
-                    part={`error-message ${this.messages[newsletter.internalName].error_identifier}`}
-                    class={`!mt-1 ${this.messages[newsletter.internalName].error_identifier}`}
-                  >
-                    {this.messages[newsletter.internalName].text}
-                  </div>
-                )}
+                {this.renderErrorMessage(newsletter.internalName)}
               </div>
             ))}
+
+          {/* Show error messages for single newsletters without preferences outside of the newsletter container */}
+          {this.newslettersConfig.length === 1 &&
+            !this.newslettersConfig[0].preferences?.length &&
+            this.renderErrorMessage(this.newslettersConfig[0].internalName)}
 
           <button part="submit-button" type="submit" class="w-full border">
             {this.submitButtonText}
