@@ -36,7 +36,7 @@ export class Newsletter {
   @Prop() errorUnknownText = "Unknown error occured";
 
   @State() email = "";
-  @State() checkedNewsletters: { internal_name: string; preferences: string[] }[] = [];
+  @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
   @State() messages: Record<string, { color: string; text: string; error_identifier: string }> = {};
   @State() showSuccessSlot = false;
 
@@ -59,12 +59,13 @@ export class Newsletter {
       }
     }
 
-    this.checkedNewsletters = (this.newslettersConfig || [])
-      .filter((n) => n.checked)
-      .map((n) => ({
-        internal_name: n.internal_name,
+    this.checkedNewsletters = this.newslettersConfig.reduce((acc, n) => {
+      acc[n.internal_name] = {
         preferences: n.preferences?.filter((p) => p.checked).map((p) => p.internal_name) || [],
-      }));
+        checked: n.checked,
+      };
+      return acc;
+    }, {});
   }
 
   private handleSubmit = async (e: Event) => {
@@ -78,15 +79,19 @@ export class Newsletter {
       newsletter_subscriptions: [],
     };
 
-    if (this.checkedNewsletters.length === 0) {
+    const selectedNewsletters = Object.entries(this.checkedNewsletters)
+      .filter(([_, data]) => data.checked)
+      .map(([newsletterName, data]) => ({
+        newsletter_internal_name: newsletterName,
+        preference_identifiers: data.preferences,
+      }));
+
+    if (selectedNewsletters.length === 0) {
       console.error("No newsletters selected: please select at least one newsletter");
       return;
     }
 
-    payload.newsletter_subscriptions = this.checkedNewsletters.map((newsletter) => ({
-      newsletter_internal_name: newsletter.internal_name,
-      preference_identifiers: newsletter.preferences,
-    }));
+    payload.newsletter_subscriptions = selectedNewsletters;
 
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
@@ -142,28 +147,36 @@ export class Newsletter {
     this.email = "";
   };
 
-  private toggleNewsletter(value: string) {
-    this.checkedNewsletters = this.checkedNewsletters.some((n) => n.internal_name === value)
-      ? this.checkedNewsletters.filter((n) => n.internal_name !== value)
-      : [...this.checkedNewsletters, { internal_name: value, preferences: [] }];
+  private toggleNewsletter(newsletterName: string) {
+    const newsletter = this.checkedNewsletters[newsletterName];
+    const checked = !newsletter.checked;
+
+    this.checkedNewsletters = {
+      ...this.checkedNewsletters,
+      [newsletterName]: {
+        ...newsletter,
+        checked: checked,
+        preferences: checked ? newsletter.preferences : [],
+      },
+    };
   }
 
   private togglePreference(newsletterName: string, preferenceName: string) {
-    const isNewsletterChecked = this.checkedNewsletters.find((n) => n.internal_name === newsletterName);
+    const newsletter = this.checkedNewsletters[newsletterName];
+    if (!newsletter || !newsletter.checked) return;
 
-    if (isNewsletterChecked) {
-      this.checkedNewsletters = this.checkedNewsletters.map((n) =>
-        n.internal_name === newsletterName ? { ...n, preferences: [...n.preferences, preferenceName] } : n,
-      );
-    } else {
-      this.checkedNewsletters = [
-        ...this.checkedNewsletters,
-        {
-          internal_name: newsletterName,
-          preferences: [preferenceName],
-        },
-      ];
-    }
+    const preferences = newsletter.preferences || [];
+    const hasPreference = preferences.includes(preferenceName);
+
+    const newPreferences = hasPreference ? preferences.filter((p) => p !== preferenceName) : [...preferences, preferenceName];
+
+    this.checkedNewsletters = {
+      ...this.checkedNewsletters,
+      [newsletterName]: {
+        ...newsletter,
+        preferences: newPreferences,
+      },
+    };
   }
 
   render() {
@@ -204,13 +217,14 @@ export class Newsletter {
                       type="checkbox"
                       id={newsletter.internal_name}
                       value={newsletter.internal_name}
-                      checked={this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name)}
+                      checked={this.checkedNewsletters[newsletter.internal_name].checked}
                       onChange={() => this.toggleNewsletter(newsletter.internal_name)}
                       part="newsletter-checkbox"
                     />
                   </div>
                 )}
-                {newsletter.preferences && this.checkedNewsletters.some((n) => n.internal_name === newsletter.internal_name) && (
+
+                {newsletter.preferences && this.checkedNewsletters[newsletter.internal_name].checked && (
                   <div class="ml-2 space-y-1" part="newsletter-preferences-container">
                     {newsletter.preferences.map((preference) => (
                       <label key={preference.internal_name} class="flex items-center" part="newsletter-preference-label">
@@ -218,9 +232,7 @@ export class Newsletter {
                           type="checkbox"
                           id={`${newsletter.internal_name}-${preference.internal_name}`}
                           value={preference.internal_name}
-                          checked={this.checkedNewsletters
-                            .find((n) => n.internal_name === newsletter.internal_name)
-                            ?.preferences.includes(preference.internal_name)}
+                          checked={this.checkedNewsletters[newsletter.internal_name]?.preferences.includes(preference.internal_name)}
                           onChange={() => this.togglePreference(newsletter.internal_name, preference.internal_name)}
                           class="mr-2"
                           part="newsletter-preference-checkbox"
