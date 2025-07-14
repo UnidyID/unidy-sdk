@@ -130,14 +130,14 @@ private handleSubmit = async (e: Event) => {
   const payload = {
     email: this.email,
     newsletter_subscriptions: [],
+    return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
   };
 
   const selectedNewsletters = Object.entries(this.checkedNewsletters)
     .filter(([_, data]) => data.checked)
     .map(([newsletterName, data]) => ({
       newsletter_internal_name: newsletterName,
-      preference_identifiers: data.preferences,
-      return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
+      preference_identifiers: data.preferences
     }));
 
   if (selectedNewsletters.length === 0) {
