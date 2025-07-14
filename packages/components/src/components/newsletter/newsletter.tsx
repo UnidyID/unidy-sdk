@@ -86,6 +86,12 @@ export class Newsletter {
 
     const params = new URLSearchParams(window.location.search);
     const status = params.get("newsletter_status");
+    const selectedParam = params.get("selected");
+    if (selectedParam) {
+      const selected = JSON.parse(selectedParam);
+      // console.log("Selected newsletter from URL:", selected);
+      this.applySelectedFromQuery(selected);
+    }
 
     if (status === 'confirmed') {
       this.handleSuccessStatus();
@@ -94,7 +100,36 @@ export class Newsletter {
     }
   }
 
-    private handleErrorStatus() {
+  private applySelectedFromQuery(selected: { newsletter_internal_name: string, preference_identifiers: string[] }[]) {
+    const newState: Record<string, { checked: boolean, preferences: string[] }> = {};
+
+    for (const newsletter of this.newslettersConfig) {
+      const found = selected.find(s => s.newsletter_internal_name === newsletter.internalName);
+
+      if (found) {
+        newState[newsletter.internalName] = {
+          checked: true,
+          preferences: found.preference_identifiers || [],
+        };
+      } else {
+        newState[newsletter.internalName] = {
+          checked: false,
+          preferences: [],
+        };
+      }
+    }
+
+    this.checkedNewsletters = newState;
+
+    setTimeout(() => {
+      const url = new URL(window.location.href);
+      ['newsletter_status', 'email', 'selected'].forEach(param => url.searchParams.delete(param));
+      window.history.replaceState({}, document.title, url.pathname + url.search);
+    }, 5000);
+  }
+
+
+  private handleErrorStatus() {
     this.showConfirmSuccessSlot = false;
     this.showSuccessSlot = false;
     this.showConfirmationErrorSlot = true;
@@ -104,7 +139,7 @@ export class Newsletter {
 
       const url = new URL(window.location.href);
       url.searchParams.delete("newsletter_status");
-      window.history.replaceState({}, document.title,  url.pathname + url.search);
+      window.history.replaceState({}, document.title, url.pathname + url.search);
     }, 5000);
   }
 
@@ -118,63 +153,63 @@ export class Newsletter {
 
       const url = new URL(window.location.href);
       url.searchParams.delete("newsletter_status");
-      window.history.replaceState({}, document.title,  url.pathname + url.search);
+      window.history.replaceState({}, document.title, url.pathname + url.search);
     }, 5000);
   }
 
-private handleSubmit = async (e: Event) => {
-  e.preventDefault();
-  this.errors = {};
-  this.showSuccessSlot = false;
+  private handleSubmit = async (e: Event) => {
+    e.preventDefault();
+    this.errors = {};
+    this.showSuccessSlot = false;
 
-  const payload = {
-    email: this.email,
-    newsletter_subscriptions: [],
-    return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
-  };
+    const payload = {
+      email: this.email,
+      newsletter_subscriptions: [],
+      return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
+    };
 
-  const selectedNewsletters = Object.entries(this.checkedNewsletters)
-    .filter(([_, data]) => data.checked)
-    .map(([newsletterName, data]) => ({
-      newsletter_internal_name: newsletterName,
-      preference_identifiers: data.preferences
-    }));
+    const selectedNewsletters = Object.entries(this.checkedNewsletters)
+      .filter(([_, data]) => data.checked)
+      .map(([newsletterName, data]) => ({
+        newsletter_internal_name: newsletterName,
+        preference_identifiers: data.preferences
+      }));
 
-  if (selectedNewsletters.length === 0) {
-    console.error("No newsletters selected: please select at least one newsletter");
-    return;
-  }
-
-  payload.newsletter_subscriptions = selectedNewsletters;
-
-
-  const [error, response] = await this.client.newsletters.createSubscriptions(payload);
-
-  if (error) {
-    if (error === "newsletter_error") {
-      const errors = response.data?.errors || [];
-      this.errorEvent.emit(errors);
-
-      const errorMessages: Record<string, { error_identifier: string }> = {};
-      for (const error of errors) {
-        errorMessages[error.newsletter_internal_name] = {
-          error_identifier: error.error_identifier,
-        };
-      }
-
-      this.errors = { ...this.errors, ...errorMessages };
+    if (selectedNewsletters.length === 0) {
+      console.error("No newsletters selected: please select at least one newsletter");
       return;
     }
-    if (error === "rate_limit_exceeded") {
-      alert("Rate limit exceeded. Please try again later.");
-    }
-  } else {
-    this.showSuccessSlot = true;
-    this.successEvent.emit(response.data.results);
-  }
 
-  this.email = "";
-};
+    payload.newsletter_subscriptions = selectedNewsletters;
+
+
+    const [error, response] = await this.client.newsletters.createSubscriptions(payload);
+
+    if (error) {
+      if (error === "newsletter_error") {
+        const errors = response.data?.errors || [];
+        this.errorEvent.emit(errors);
+
+        const errorMessages: Record<string, { error_identifier: string }> = {};
+        for (const error of errors) {
+          errorMessages[error.newsletter_internal_name] = {
+            error_identifier: error.error_identifier,
+          };
+        }
+
+        this.errors = { ...this.errors, ...errorMessages };
+        return;
+      }
+      if (error === "rate_limit_exceeded") {
+        alert("Rate limit exceeded. Please try again later.");
+      }
+    } else {
+      this.showSuccessSlot = true;
+      this.successEvent.emit(response.data.results);
+    }
+
+    this.email = "";
+  };
 
 
   private getErrorText(error_identifier: NewsletteerErrorIdentifier): string {
