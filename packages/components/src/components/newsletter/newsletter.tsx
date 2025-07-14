@@ -123,7 +123,9 @@ export class Newsletter {
 
     setTimeout(() => {
       const url = new URL(window.location.href);
-      ['newsletter_status', 'email', 'selected'].forEach(param => url.searchParams.delete(param));
+      for (const param of ['newsletter_status', 'email', 'selected']) {
+        url.searchParams.delete(param);
+      }
       window.history.replaceState({}, document.title, url.pathname + url.search);
     }, 5000);
   }
