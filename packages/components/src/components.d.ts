@@ -5,22 +5,26 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { NewsletterConfig } from "./components/newsletter/newsletter";
 import { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
+export { NewsletterConfig } from "./components/newsletter/newsletter";
 export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
         "apiKey": string;
         "apiUrl": string;
         "confirmationErrorText": string;
-        "defaultNewsletterInternalName": string;
         "emailLabel": string;
         "emailPlaceholder": string;
         "errorAlreadySubscribedText": string;
         "errorInvalidEmailText": string;
+        "errorNewsletterNotFoundText": string;
+        "errorPreferenceNotFoundText": string;
         "errorUnconfirmedText": string;
         "errorUnknownText": string;
         "header": string;
-        "newslettersConfig": { internal_name: string; label: string; checked?: boolean }[];
+        "newslettersConfig": NewsletterConfig[];
+        "newslettersConfigJson": string;
         "renderErrorMessages": boolean;
         "returnToAfterConfirmation"?: string;
         "submitButtonText": string;
@@ -60,15 +64,17 @@ declare namespace LocalJSX {
         "apiKey"?: string;
         "apiUrl"?: string;
         "confirmationErrorText"?: string;
-        "defaultNewsletterInternalName"?: string;
         "emailLabel"?: string;
         "emailPlaceholder"?: string;
         "errorAlreadySubscribedText"?: string;
         "errorInvalidEmailText"?: string;
+        "errorNewsletterNotFoundText"?: string;
+        "errorPreferenceNotFoundText"?: string;
         "errorUnconfirmedText"?: string;
         "errorUnknownText"?: string;
         "header"?: string;
-        "newslettersConfig"?: { internal_name: string; label: string; checked?: boolean }[];
+        "newslettersConfig"?: NewsletterConfig[];
+        "newslettersConfigJson"?: string;
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
