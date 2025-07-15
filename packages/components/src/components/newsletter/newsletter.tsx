@@ -34,6 +34,7 @@ export class Newsletter {
   @Prop() emailPlaceholder = "Email";
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
+  @Prop() returnToAfterConfirmation?: string;
 
   @Prop() renderErrorMessages = false;
   @Prop() errorUnconfirmedText = "Email not confirmed";
@@ -42,7 +43,6 @@ export class Newsletter {
   @Prop() errorNewsletterNotFoundText = "Newsletter not found";
   @Prop() errorPreferenceNotFoundText = "Preference not found";
   @Prop() errorUnknownText = "Unknown error occured";
-  @Prop() returnToAfterConfirmation?: string;
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
   @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
 
@@ -94,9 +94,9 @@ export class Newsletter {
     }
 
     if (status === 'confirmed') {
-      this.handleSuccessStatus();
+      this.handleConfirmationSuccess();
     } else if (status === 'invalid_preference_token') {
-      this.handleErrorStatus();
+      this.handleConfirmationError();
     }
   }
 
@@ -131,7 +131,7 @@ export class Newsletter {
   }
 
 
-  private handleErrorStatus() {
+  private handleConfirmationError() {
     this.showConfirmSuccessSlot = false;
     this.showSuccessSlot = false;
     this.showConfirmationErrorSlot = true;
@@ -145,7 +145,7 @@ export class Newsletter {
     }, 5000);
   }
 
-  private handleSuccessStatus() {
+  private handleConfirmationSuccess() {
     this.showConfirmSuccessSlot = true;
     this.showSuccessSlot = false;
 
@@ -174,7 +174,7 @@ export class Newsletter {
       .filter(([_, data]) => data.checked)
       .map(([newsletterName, data]) => ({
         newsletter_internal_name: newsletterName,
-        preference_identifiers: data.preferences
+        preference_identifiers: data.preferences,
       }));
 
     if (selectedNewsletters.length === 0) {
@@ -183,7 +183,6 @@ export class Newsletter {
     }
 
     payload.newsletter_subscriptions = selectedNewsletters;
-
 
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
@@ -212,7 +211,6 @@ export class Newsletter {
 
     this.email = "";
   };
-
 
   private getErrorText(error_identifier: NewsletteerErrorIdentifier): string {
     switch (error_identifier) {
