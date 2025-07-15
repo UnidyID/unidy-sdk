@@ -86,12 +86,17 @@ export class Newsletter {
 
     const params = new URLSearchParams(window.location.search);
     const status = params.get("newsletter_status");
-    const selectedParam = params.get("selected");
-    if (selectedParam) {
-      const selected = JSON.parse(selectedParam);
-      // console.log("Selected newsletter from URL:", selected);
-      this.applySelectedFromQuery(selected);
+    // const selectedParam = params.get("selected");
+    const email = params.get("email");
+
+    if (email) {
+      this.loadSubscriptionsFromApi(email);
     }
+    // if (selectedParam) {
+    //   const selected = JSON.parse(selectedParam);
+    //   // console.log("Selected newsletter from URL:", selected);
+    //   this.applySelectedFromQuery(selected);
+    // }
 
     if (status === 'confirmed') {
       this.handleConfirmationSuccess();
@@ -100,11 +105,22 @@ export class Newsletter {
     }
   }
 
-  private applySelectedFromQuery(selected: { newsletter_internal_name: string, preference_identifiers: string[] }[]) {
-    const newState: Record<string, { checked: boolean, preferences: string[] }> = {};
+  private async loadSubscriptionsFromApi(email: string) {
+    const [error, subscriptions] = await this.client.newsletters.getSubscriptionsByEmail(email);
+
+    if (error) {
+      console.error("Error loading subscriptions:", error);
+      return;
+    }
+
+    console.log("Loaded subscriptions:", subscriptions);
+
+    const newState: Record<string, { checked: boolean; preferences: string[] }> = {};
 
     for (const newsletter of this.newslettersConfig) {
-      const found = selected.find(s => s.newsletter_internal_name === newsletter.internalName);
+      const found = subscriptions.find(
+        s => s.newsletter_internal_name === newsletter.internalName
+      );
 
       if (found) {
         newState[newsletter.internalName] = {
@@ -120,15 +136,37 @@ export class Newsletter {
     }
 
     this.checkedNewsletters = newState;
-
-    setTimeout(() => {
-      const url = new URL(window.location.href);
-      for (const param of ['newsletter_status', 'email', 'selected']) {
-        url.searchParams.delete(param);
-      }
-      window.history.replaceState({}, document.title, url.pathname + url.search);
-    }, 5000);
   }
+
+  // private applySelectedFromQuery(selected: { newsletter_internal_name: string, preference_identifiers: string[] }[]) {
+  //   const newState: Record<string, { checked: boolean, preferences: string[] }> = {};
+
+  //   for (const newsletter of this.newslettersConfig) {
+  //     const found = selected.find(s => s.newsletter_internal_name === newsletter.internalName);
+
+  //     if (found) {
+  //       newState[newsletter.internalName] = {
+  //         checked: true,
+  //         preferences: found.preference_identifiers || [],
+  //       };
+  //     } else {
+  //       newState[newsletter.internalName] = {
+  //         checked: false,
+  //         preferences: [],
+  //       };
+  //     }
+  //   }
+
+  //   this.checkedNewsletters = newState;
+
+  //   setTimeout(() => {
+  //     const url = new URL(window.location.href);
+  //     for (const param of ['newsletter_status', 'email', 'selected']) {
+  //       url.searchParams.delete(param);
+  //     }
+  //     window.history.replaceState({}, document.title, url.pathname + url.search);
+  //   }, 5000);
+  // }
 
 
   private handleConfirmationError() {

@@ -55,4 +55,44 @@ export class ApiClient {
       return response;
     }
   }
+
+  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+    let res: Response | null = null;
+
+    try {
+      res = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${this.api_key}`,
+        },
+      });
+
+      let data: T | null;
+      try {
+        data = await res.json();
+      } catch (e) {
+        data = null;
+      }
+
+      const response: ApiResponse<T> = {
+        data,
+        status: res.status,
+        headers: res.headers,
+        success: res.ok,
+      };
+
+      return response;
+    } catch (error) {
+      const response: ApiResponse = {
+        status: res ? res.status : error instanceof TypeError ? 0 : 500,
+        error: error instanceof Error ? error.message : String(error),
+        headers: res ? res.headers : new Headers(),
+        success: false,
+      };
+
+      return response;
+    }
+  }
 }

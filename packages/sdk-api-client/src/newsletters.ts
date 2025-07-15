@@ -117,4 +117,24 @@ export class NewsletterService extends EventEmitter {
       }
     });
   }
+
+  async getSubscriptionsByEmail(email: string): Promise<[string | null, NewsletterSubscription[]]> {
+
+    const response = await this.client.get<{ results: NewsletterSubscription[] }>(
+      `/api/sdk/v1/newsletter_subscriptions?email=${encodeURIComponent(email)}`
+    );
+
+    if (!response.success || !response.data) {
+      return ['network_error', []];
+    }
+
+    try {
+      const results = z.array(NewsletterSubscriptionSchema).parse(response.data.results);
+      return [null, results];
+    } catch (validationError) {
+      console.error("Schema validation error:", validationError);
+      return ['schema_validation_error', []];
+    }
+  }
+
 }
