@@ -89,7 +89,6 @@ export class Newsletter {
     const selectedParam = params.get("selected");
     if (selectedParam) {
       const selected = JSON.parse(selectedParam);
-      console.log("Selected newsletter from URL:", selected);
     }
 
     if (confirmationError) {
