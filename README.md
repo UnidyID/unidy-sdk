@@ -12,3 +12,21 @@ bun install
 
 ## Structure
 This is a bun monorepo using bun. The `node_module` on the root folder structure are shared between all packages/SDK libraries that can be found in the `packages` folder. Refer to the individual package README files on how to develop and release them.
+
+## Releasing
+Each package is released independently. First go to the package folder. Update the version in the `package.json`.
+Run the build command, which will also update the generated `README.md` files in the package folder:
+
+```bash
+bun run build
+```
+
+Make a release commit with the updated `README.md` and `package.json` files and push it to the main branch.
+
+Publish the package to npm:
+
+```bash
+bun publish --access public
+```
+
+**_IMPORTANT:_** Use the latest version of the released SDK on the Unidy SDK Demo page, showcasing the new features and improvements.

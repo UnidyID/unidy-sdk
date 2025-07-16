@@ -22,8 +22,7 @@ import { UnidyAuth } from '@unidy.io/auth';
 
 const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
-  scope: "openid profile email",
-  redirectUrl: "https://your-app.com"
+  scope: "openid profile email"
 });
 
 // Example of how to handle login, logout, and check authentication status
@@ -149,7 +148,6 @@ import { UnidyAuth } from '@unidy.io/auth';
 const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
   scope: "openid profile email",
-  redirectUrl: "https://your-app.com",
   mode: 'inline', // This embeds the login form directly in the page
   mountTarget: '#login-container' // Optional: specify where to mount the component
 });
@@ -205,8 +203,6 @@ interface UnidyAuthConfig {
   responseType?: "id_token" | "token" | "code";
   // Optional: Prompt parameter for auth, 'none' | 'login' | 'consent' | 'select_account' | null
   prompt?: 'none' | 'login' | 'consent' | 'select_account' | null;
-  // Optional: Redirect URL after authentication (default: window.location.origin)
-  redirectUrl?: string;
   // Optional: Whether to store token in session storage (default: true)
   storeTokenInSession?: boolean;
   // Optional: Fallback to silent auth request in 'isAuthenticated' if no token is found (default: false)
