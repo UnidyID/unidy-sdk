@@ -5,6 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.io/sdk-api-client";
+export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface EmailField {
         "placeholder": string;
@@ -17,8 +19,11 @@ export namespace Components {
     interface SubmitButton {
         "apiKey": string;
         "apiUrl": string;
-        "title": string;
     }
+}
+export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLSubmitButtonElement;
 }
 declare global {
     interface HTMLEmailFieldElement extends Components.EmailField, HTMLStencilElement {
@@ -33,7 +38,19 @@ declare global {
         prototype: HTMLNewsletterCheckboxElement;
         new (): HTMLNewsletterCheckboxElement;
     };
+    interface HTMLSubmitButtonElementEventMap {
+        "success": CreateSubscriptionsResponse;
+        "error": CreateSubscriptionsResult[1];
+    }
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLSubmitButtonElementEventMap>(type: K, listener: (this: HTMLSubmitButtonElement, ev: SubmitButtonCustomEvent<HTMLSubmitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLSubmitButtonElementEventMap>(type: K, listener: (this: HTMLSubmitButtonElement, ev: SubmitButtonCustomEvent<HTMLSubmitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLSubmitButtonElement: {
         prototype: HTMLSubmitButtonElement;
@@ -57,7 +74,8 @@ declare namespace LocalJSX {
     interface SubmitButton {
         "apiKey"?: string;
         "apiUrl"?: string;
-        "title"?: string;
+        "onError"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
+        "onSuccess"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
     }
     interface IntrinsicElements {
         "email-field": EmailField;

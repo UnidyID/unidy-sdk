@@ -1,15 +1,18 @@
-import { Component, Prop, h } from "@stencil/core";
+import { Component, Prop, h, Event, type EventEmitter } from "@stencil/core";
 import newsletterStore from "../../store";
-import { UnidyClient, NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
+import { UnidyClient } from "@unidy.io/sdk-api-client";
+import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.io/sdk-api-client";
 
 @Component({
   tag: "submit-button",
   shadow: true,
 })
 export class SubmitButton {
-  @Prop() title: string;
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
+
+  @Event() success: EventEmitter<CreateSubscriptionsResponse>;
+  @Event() error: EventEmitter<CreateSubscriptionsResult[1]>;
 
   private client: UnidyClient;
 
@@ -18,10 +21,9 @@ export class SubmitButton {
   }
 
   private submit = async () => {
-    console.log("submit");
-
-    console.log(newsletterStore.get("email"));
-    console.log(newsletterStore.get("checkedNewsletters"));
+    if (!newsletterStore.get("email")) {
+      return;
+    }
 
     const payload = {
       email: newsletterStore.get("email"),
@@ -34,16 +36,16 @@ export class SubmitButton {
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
     if (error) {
-      console.error(error);
+      this.error.emit(response);
     } else {
-      console.log(response);
+      this.success.emit(response.data);
     }
   };
 
   render() {
     return (
       <button type="button" onClick={this.submit}>
-        {this.title}
+        <slot />
       </button>
     );
   }

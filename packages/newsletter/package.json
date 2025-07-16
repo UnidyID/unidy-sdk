@@ -48,7 +48,6 @@
   "license": "MIT",
   "dependencies": {
     "@stencil/store": "^2.1.3",
-    "@unidy.io/sdk-api-client": "workspace:*",
-    "@zod/mini": "^4.0.0-beta.0"
+    "@unidy.io/sdk-api-client": "workspace:*"
   }
 }
