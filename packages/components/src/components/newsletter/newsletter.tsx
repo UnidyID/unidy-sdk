@@ -122,6 +122,16 @@ export class Newsletter {
     }, 5000);
   }
 
+  private buildReturnUrlWithoutConfirmedParams() {
+    const baseUrl = `${location.origin}${location.pathname}`;
+    const params = new URLSearchParams(location.search);
+    for (const key of ['email', 'selected']) {
+      params.delete(key);
+    }
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+  }
+
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.errors = {};
@@ -130,7 +140,7 @@ export class Newsletter {
     const payload = {
       email: this.email,
       newsletter_subscriptions: [],
-      return_to_after_confirmation: this.returnToAfterConfirmation || `${location.origin}${location.pathname}${(() => { const p = new URLSearchParams(location.search);['email', 'selected'].forEach(k => p.delete(k)); const s = p.toString(); return s ? '?' + s : '' })()}`,
+      return_to_after_confirmation: this.returnToAfterConfirmation || this.buildReturnUrlWithoutConfirmedParams(),
     };
 
     const selectedNewsletters = Object.entries(this.checkedNewsletters)
