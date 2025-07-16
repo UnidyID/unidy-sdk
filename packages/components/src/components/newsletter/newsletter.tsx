@@ -50,7 +50,7 @@ export class Newsletter {
   @State() email = "";
   @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
   @State() errors: Record<string, { error_identifier: string }> = {};
-  @State() showSuccessSlot = false;
+  @State() showSubscribeSuccessSlot = false;
   @State() showConfirmSuccessSlot = false;
   @State() showConfirmationErrorSlot = false;
 
@@ -89,7 +89,7 @@ export class Newsletter {
     const selectedParam = params.get("selected");
     if (selectedParam) {
       const selected = JSON.parse(selectedParam);
-      // console.log("Selected newsletter from URL:", selected);
+      console.log("Selected newsletter from URL:", selected);
     }
 
     if (confirmationError) {
@@ -101,7 +101,7 @@ export class Newsletter {
 
   private handleConfirmationError() {
     this.showConfirmSuccessSlot = false;
-    this.showSuccessSlot = false;
+    this.showSubscribeSuccessSlot = false;
     this.showConfirmationErrorSlot = true;
 
     setTimeout(() => {
@@ -114,7 +114,7 @@ export class Newsletter {
 
   private handleConfirmationSuccess() {
     this.showConfirmSuccessSlot = true;
-    this.showSuccessSlot = false;
+    this.showSubscribeSuccessSlot = false;
 
     setTimeout(() => {
       this.showConfirmSuccessSlot = false;
@@ -125,7 +125,7 @@ export class Newsletter {
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.errors = {};
-    this.showSuccessSlot = false;
+    this.showSubscribeSuccessSlot = false;
 
     const payload = {
       email: this.email,
@@ -168,7 +168,7 @@ export class Newsletter {
         alert("Rate limit exceeded. Please try again later.");
       }
     } else {
-      this.showSuccessSlot = true;
+      this.showSubscribeSuccessSlot = true;
       this.successEvent.emit(response.data.results);
     }
 
@@ -318,7 +318,7 @@ export class Newsletter {
             {this.submitButtonText}
           </button>
 
-          {this.showSuccessSlot && <slot name="success-container" />}
+          {this.showSubscribeSuccessSlot && <slot name="success-container" />}
           {this.showConfirmSuccessSlot && (
             <slot name="confirm-success-container">
               <p part="confirm-success-text">{this.successConfirmationText}</p>
