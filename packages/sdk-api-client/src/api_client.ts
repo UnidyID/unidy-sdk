@@ -29,11 +29,11 @@ export class ApiClient {
         body: JSON.stringify(body),
       });
 
-      let data: T | null;
+      let data: T | undefined;
       try {
         data = await res.json();
       } catch (e) {
-        data = null;
+        data = undefined;
       }
 
       const response: ApiResponse<T> = {
@@ -45,7 +45,7 @@ export class ApiClient {
 
       return response;
     } catch (error) {
-      const response: ApiResponse = {
+      const response: ApiResponse<T> = {
         status: res ? res.status : error instanceof TypeError ? 0 : 500,
         error: error instanceof Error ? error.message : String(error),
         headers: res ? res.headers : new Headers(),
