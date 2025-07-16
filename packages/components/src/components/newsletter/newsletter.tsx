@@ -85,51 +85,19 @@ export class Newsletter {
     }, {});
 
     const params = new URLSearchParams(window.location.search);
-    const status = params.get("newsletter_status");
+    const confirmationError = params.get("newsletter_error");
     const selectedParam = params.get("selected");
     if (selectedParam) {
       const selected = JSON.parse(selectedParam);
       // console.log("Selected newsletter from URL:", selected);
-      this.applySelectedFromQuery(selected);
     }
 
-    if (status === 'confirmed') {
-      this.handleConfirmationSuccess();
-    } else if (status === 'invalid_preference_token') {
+    if (confirmationError) {
       this.handleConfirmationError();
+    } else if (selectedParam) {
+      this.handleConfirmationSuccess();
     }
   }
-
-  private applySelectedFromQuery(selected: { newsletter_internal_name: string, preference_identifiers: string[] }[]) {
-    const newState: Record<string, { checked: boolean, preferences: string[] }> = {};
-
-    for (const newsletter of this.newslettersConfig) {
-      const found = selected.find(s => s.newsletter_internal_name === newsletter.internalName);
-
-      if (found) {
-        newState[newsletter.internalName] = {
-          checked: true,
-          preferences: found.preference_identifiers || [],
-        };
-      } else {
-        newState[newsletter.internalName] = {
-          checked: false,
-          preferences: [],
-        };
-      }
-    }
-
-    this.checkedNewsletters = newState;
-
-    setTimeout(() => {
-      const url = new URL(window.location.href);
-      for (const param of ['newsletter_status', 'email', 'selected']) {
-        url.searchParams.delete(param);
-      }
-      window.history.replaceState({}, document.title, url.pathname + url.search);
-    }, 5000);
-  }
-
 
   private handleConfirmationError() {
     this.showConfirmSuccessSlot = false;
@@ -138,9 +106,8 @@ export class Newsletter {
 
     setTimeout(() => {
       this.resetStatus.emit();
-
       const url = new URL(window.location.href);
-      url.searchParams.delete("newsletter_status");
+      url.searchParams.delete("newsletter_error");
       window.history.replaceState({}, document.title, url.pathname + url.search);
     }, 5000);
   }
@@ -152,10 +119,6 @@ export class Newsletter {
     setTimeout(() => {
       this.showConfirmSuccessSlot = false;
       this.resetStatus.emit();
-
-      const url = new URL(window.location.href);
-      url.searchParams.delete("newsletter_status");
-      window.history.replaceState({}, document.title, url.pathname + url.search);
     }, 5000);
   }
 
@@ -167,7 +130,7 @@ export class Newsletter {
     const payload = {
       email: this.email,
       newsletter_subscriptions: [],
-      return_to_after_confirmation: this.returnToAfterConfirmation || window.location.href,
+      return_to_after_confirmation: this.returnToAfterConfirmation || `${location.origin}${location.pathname}${(() => { const p = new URLSearchParams(location.search);['email', 'selected'].forEach(k => p.delete(k)); const s = p.toString(); return s ? '?' + s : '' })()}`,
     };
 
     const selectedNewsletters = Object.entries(this.checkedNewsletters)
