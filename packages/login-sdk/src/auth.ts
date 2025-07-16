@@ -21,8 +21,6 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   responseType?: ResponseType;
   /** The prompt option for authentication, can be "none", "login", "consent", "select_account" or null */
   prompt?: PromptOption;
-  /** The URL to redirect to after authentication, defaults to current origin */
-  redirectUrl?: string;
   /** Whether to store the token in session storage, defaults to true */
   storeTokenInSession?: boolean;
   /** Whether to fallback to silent auth request when checking authentication status, defaults to false */
@@ -132,7 +130,6 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       scope: this.config.scope,
       responseType: this.config.responseType,
       prompt: this.config.prompt,
-      redirectUrl: this.config.redirectUrl,
       enableLogging: this.logger.enabled,
       mode: this.config.mode,
     });

@@ -23,8 +23,6 @@ export class UnidyLogin {
   @Prop() responseType: ResponseType = "id_token";
   /** The prompt option for authentication, can be "none", "login", "consent", "select_account" or null */
   @Prop() prompt: PromptOption = null;
-  /** The URL to redirect to after authentication, defaults to current origin */
-  @Prop() redirectUrl = window.location.origin;
   /** Whether to enable logging, defaults to true */
   @Prop() enableLogging = true;
   /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
@@ -165,7 +163,7 @@ export class UnidyLogin {
       client_id: this.clientId,
       scope: this.scope,
       response_type: this.responseType,
-      redirect_uri: this.redirectUrl,
+      redirect_uri: window.location.origin,
       sdk_render_mode: this.mode,
     });
 
