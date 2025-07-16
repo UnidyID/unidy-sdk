@@ -87,9 +87,10 @@ export class Newsletter {
     const params = new URLSearchParams(window.location.search);
     const confirmationError = params.get("newsletter_error");
     const selectedParam = params.get("selected");
-    if (selectedParam) {
-      const selected = JSON.parse(selectedParam);
-    }
+    // For future preference center
+    // if (selectedParam) {
+    //   const selected = JSON.parse(selectedParam);
+    // }
 
     if (confirmationError) {
       this.handleConfirmationError();
