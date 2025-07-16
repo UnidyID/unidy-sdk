@@ -34,6 +34,7 @@ export class Newsletter {
   @Prop() emailPlaceholder = "Email";
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
+  @Prop() returnToAfterConfirmation?: string;
 
   @Prop() renderErrorMessages = false;
   @Prop() errorUnconfirmedText = "Email not confirmed";
@@ -42,17 +43,25 @@ export class Newsletter {
   @Prop() errorNewsletterNotFoundText = "Newsletter not found";
   @Prop() errorPreferenceNotFoundText = "Preference not found";
   @Prop() errorUnknownText = "Unknown error occured";
+  @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
+  @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
+
 
   @State() email = "";
   @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
   @State() errors: Record<string, { error_identifier: string }> = {};
-  @State() showSuccessSlot = false;
+  @State() showSubscribeSuccessSlot = false;
+  @State() showConfirmSuccessSlot = false;
+  @State() showConfirmationErrorSlot = false;
 
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
 
   @Event({ eventName: "on:error" })
   errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
+
+  @Event()
+  resetStatus: EventEmitter<void>;
 
   private client: UnidyClient;
 
@@ -74,17 +83,63 @@ export class Newsletter {
       };
       return acc;
     }, {});
+
+    const params = new URLSearchParams(window.location.search);
+    const confirmationError = params.get("newsletter_error");
+    const selectedParam = params.get("selected");
+    if (selectedParam) {
+      const selected = JSON.parse(selectedParam);
+    }
+
+    if (confirmationError) {
+      this.handleConfirmationError();
+    } else if (selectedParam) {
+      this.handleConfirmationSuccess();
+    }
+  }
+
+  private handleConfirmationError() {
+    this.showConfirmSuccessSlot = false;
+    this.showSubscribeSuccessSlot = false;
+    this.showConfirmationErrorSlot = true;
+
+    setTimeout(() => {
+      this.resetStatus.emit();
+      const url = new URL(window.location.href);
+      url.searchParams.delete("newsletter_error");
+      window.history.replaceState({}, document.title, url.pathname + url.search);
+    }, 5000);
+  }
+
+  private handleConfirmationSuccess() {
+    this.showConfirmSuccessSlot = true;
+    this.showSubscribeSuccessSlot = false;
+
+    setTimeout(() => {
+      this.showConfirmSuccessSlot = false;
+      this.resetStatus.emit();
+    }, 5000);
+  }
+
+  private buildReturnUrlWithoutConfirmedParams() {
+    const baseUrl = `${location.origin}${location.pathname}`;
+    const params = new URLSearchParams(location.search);
+    for (const key of ['email', 'selected']) {
+      params.delete(key);
+    }
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }
 
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.errors = {};
-
-    this.showSuccessSlot = false;
+    this.showSubscribeSuccessSlot = false;
 
     const payload = {
       email: this.email,
       newsletter_subscriptions: [],
+      return_to_after_confirmation: this.returnToAfterConfirmation || this.buildReturnUrlWithoutConfirmedParams(),
     };
 
     const selectedNewsletters = Object.entries(this.checkedNewsletters)
@@ -109,7 +164,6 @@ export class Newsletter {
         this.errorEvent.emit(errors);
 
         const errorMessages: Record<string, { error_identifier: string }> = {};
-
         for (const error of errors) {
           errorMessages[error.newsletter_internal_name] = {
             error_identifier: error.error_identifier,
@@ -123,7 +177,7 @@ export class Newsletter {
         alert("Rate limit exceeded. Please try again later.");
       }
     } else {
-      this.showSuccessSlot = true;
+      this.showSubscribeSuccessSlot = true;
       this.successEvent.emit(response.data.results);
     }
 
@@ -273,7 +327,19 @@ export class Newsletter {
             {this.submitButtonText}
           </button>
 
-          {this.showSuccessSlot && <slot name="success-container" />}
+          {this.showSubscribeSuccessSlot && <slot name="success-container" />}
+          {this.showConfirmSuccessSlot && (
+            <slot name="confirm-success-container">
+              <p part="confirm-success-text">{this.successConfirmationText}</p>
+            </slot>
+          )}
+
+          {this.showConfirmationErrorSlot && (
+            <slot name="confirmation-error-container">
+              <p part="confirmaton-error-text">{this.confirmationErrorText}</p>
+            </slot>
+          )}
+
         </form>
         <slot name="footer" />
       </div>

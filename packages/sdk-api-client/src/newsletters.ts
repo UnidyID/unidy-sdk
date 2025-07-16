@@ -29,6 +29,7 @@ const CreateSubscriptionsPayloadSchema = z.object({
       preference_identifiers: z.optional(z.array(z.string())),
     }),
   ),
+  return_to_after_confirmation: z.optional(z.string()),
 });
 
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
@@ -56,7 +57,10 @@ export class NewsletterService extends EventEmitter {
   async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletter_subscriptions", payload);
+    const response = await this.client.post<CreateSubscriptionsResponse>(
+      "/api/sdk/v1/newsletter_subscriptions",
+      payload
+    );
 
     switch (response.status) {
       case 429:

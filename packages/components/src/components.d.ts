@@ -13,6 +13,7 @@ export namespace Components {
     interface UnidyNewsletter {
         "apiKey": string;
         "apiUrl": string;
+        "confirmationErrorText": string;
         "emailLabel": string;
         "emailPlaceholder": string;
         "errorAlreadySubscribedText": string;
@@ -25,7 +26,9 @@ export namespace Components {
         "newslettersConfig": NewsletterConfig[];
         "newslettersConfigJson": string;
         "renderErrorMessages": boolean;
+        "returnToAfterConfirmation"?: string;
         "submitButtonText": string;
+        "successConfirmationText": string;
     }
 }
 export interface UnidyNewsletterCustomEvent<T> extends CustomEvent<T> {
@@ -36,6 +39,7 @@ declare global {
     interface HTMLUnidyNewsletterElementEventMap {
         "on:success": NewsletterSubscription[];
         "on:error": NewsletterSubscriptionError[];
+        "resetStatus": void;
     }
     interface HTMLUnidyNewsletterElement extends Components.UnidyNewsletter, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUnidyNewsletterElementEventMap>(type: K, listener: (this: HTMLUnidyNewsletterElement, ev: UnidyNewsletterCustomEvent<HTMLUnidyNewsletterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -59,6 +63,7 @@ declare namespace LocalJSX {
     interface UnidyNewsletter {
         "apiKey"?: string;
         "apiUrl"?: string;
+        "confirmationErrorText"?: string;
         "emailLabel"?: string;
         "emailPlaceholder"?: string;
         "errorAlreadySubscribedText"?: string;
@@ -72,8 +77,11 @@ declare namespace LocalJSX {
         "newslettersConfigJson"?: string;
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
+        "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
         "renderErrorMessages"?: boolean;
+        "returnToAfterConfirmation"?: string;
         "submitButtonText"?: string;
+        "successConfirmationText"?: string;
     }
     interface IntrinsicElements {
         "unidy-newsletter": UnidyNewsletter;

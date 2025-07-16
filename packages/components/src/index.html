@@ -149,37 +149,93 @@
       width: 2rem;
       margin: auto;
     }
+
+    .confirm-success-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: #f0f7fd;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,62,116,0.06);
+      border: 1px solid #b3d4fc;
+      margin-top: 1.5rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .confirm-success-icon {
+      background: var(--demo-blue);
+      border-radius: 50%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,62,116,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirm-success-content {
+      text-align: center;
+    }
+
+    .confirm-success-title {
+      color: var(--demo-blue);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 0.01em;
+    }
+
+    .confirm-success-text {
+      color: var(--demo-blue);
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin: 0;
+      line-height: 1.5;
+    }
   </style>
 
 </head>
 
 <body>
-  <unidy-newsletter api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-    email-placeholder="your@email.com" error-already-subscribed-text="You are already subscribed to this newsletter"
-    error-invalid-email-text="Please enter a valid email address" error-newsletter-not-found-text="Newsletter not found"
-    error-unconfirmed-text="Please confirm your email address" error-unknown-text="An unknown error occurred"
-    error-preference-not-found-text="Preference not found" render-error-messages="true" submit-button-text="Subscribe"
-    newsletters-config-json='[
-      {
-        "internalName": "main",
-        "label": "Main Newsletter",
-        "checked": true,
-        "preferences": [
-          { "internalName": "first", "label": "First Preference", "checked": true },
-          { "internalName": "second", "label": "Second Preference", "checked": false }
-        ]
-      },
-      {
-        "internalName": "test",
-        "label": "Test Newsletter",
-        "checked": false,
-        "preferences": [
-          { "internalName": "club_news", "label": "Club News", "checked": true },
-          { "internalName": "player_news", "label": "Player News", "checked": true },
-          { "internalName": "random_news", "label": "Random News", "checked": false }
-        ]
-      }
-    ]'>
+<unidy-newsletter
+  api-key="public-newsletter-api-key"
+  api-url="http://localhost:3000"
+  email-placeholder="your@email.com"
+  error-already-subscribed-text="You are already subscribed to this newsletter"
+  error-invalid-email-text="Please enter a valid email address"
+  error-newsletter-not-found-text="Newsletter not found"
+  error-unconfirmed-text="Please confirm your email address"
+  error-unknown-text="An unknown error occurred"
+  error-preference-not-found-text="Preference not found"
+  render-error-messages="true"
+  submit-button-text="Subscribe"
+  success-confirmation-text="You have successfully subscribed to the newsletter. Thank you for joining us!"
+  newsletters-config-json='[
+    {
+      "internalName": "main",
+      "label": "Main Newsletter",
+      "checked": true,
+      "preferences": [
+        { "internalName": "first", "label": "First Preference", "checked": true },
+        { "internalName": "second", "label": "Second Preference", "checked": false }
+      ]
+    },
+    {
+      "internalName": "test",
+      "label": "Test Newsletter",
+      "checked": false,
+      "preferences": [
+        { "internalName": "club_news", "label": "Club News", "checked": true },
+        { "internalName": "player_news", "label": "Player News", "checked": true },
+        { "internalName": "random_news", "label": "Random News", "checked": false }
+      ]
+    }
+  ]'
+>
 
     <div slot="header" class="header">
       <div class="b-heading">
@@ -207,6 +263,44 @@
           <title>Success</title>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
+      </div>
+    </div>
+
+    <!-- Customized confirmation success message example -->
+    <div slot="confirm-success-container" class="confirm-success-container">
+      <div class="confirm-success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" style="color: #fff; width: 2.5rem; height: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <title>Success</title>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <div class="confirm-success-content">
+        <h3 class="confirm-success-title">
+          Subscription Confirmed!
+        </h3>
+        <p class="confirm-success-text">
+          Thank you for confirming your newsletter subscription.<br />
+          We are excited to keep you updated!
+        </p>
+      </div>
+    </div>
+
+    <!-- Customized confirmation error message example -->
+    <div slot="confirmation-error-container" class="confirm-success-container" style="background: #fdeaea; border: 1px solid #f5bcbc; box-shadow: 0 2px 8px rgba(200,0,0,0.06);">
+      <div class="confirm-success-icon" style="background: #e53935;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="color: #fff; width: 2.5rem; height: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <title>Error</title>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+      <div class="confirm-success-content">
+        <h3 class="confirm-success-title" style="color: #e53935;">
+          Confirmation Error
+        </h3>
+        <p class="confirm-success-text" style="color: #b71c1c;">
+          There was a problem confirming your newsletter subscription.<br />
+          Your preference token could not be assigned. Enter your e-mail address to receive a new link.
+        </p>
       </div>
     </div>
   </unidy-newsletter>
