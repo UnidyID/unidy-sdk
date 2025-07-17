@@ -33,6 +33,8 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   mode?: "dialog" | "inline";
   /** The target element where the component should be mounted in inline mode - can be element ID, CSS selector, or HTMLElement, defaults to document.body */
   mountTarget?: string | HTMLElement;
+  /** Whether to disable the Safari redirect behavior, defaults to false */
+  disableSafariRedirect?: boolean;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
@@ -132,6 +134,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       prompt: this.config.prompt,
       enableLogging: this.logger.enabled,
       mode: this.config.mode,
+      disableSafariRedirect: this.config.disableSafariRedirect,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
@@ -189,7 +192,12 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     }
 
     if (!silent) {
-      await this.show();
+      const isSafari = Utils.isSafari();
+      const useRedirect = isSafari && !this.config.disableSafariRedirect;
+
+      if (!useRedirect) {
+        await this.show();
+      }
     }
 
     const result = await this.component.auth({ trySilentAuth: silent });

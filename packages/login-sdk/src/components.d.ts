@@ -28,6 +28,10 @@ export namespace Components {
          */
         "clientId": string;
         /**
+          * Whether to disable the Safari redirect behavior, defaults to false
+         */
+        "disableSafariRedirect": boolean;
+        /**
           * Whether to enable logging, defaults to true
          */
         "enableLogging": boolean;
@@ -103,6 +107,10 @@ declare namespace LocalJSX {
           * The client ID for the application
          */
         "clientId": string;
+        /**
+          * Whether to disable the Safari redirect behavior, defaults to false
+         */
+        "disableSafariRedirect"?: boolean;
         /**
           * Whether to enable logging, defaults to true
          */

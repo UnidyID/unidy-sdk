@@ -27,31 +27,26 @@ export class UnidyLogin {
   @Prop() enableLogging = true;
   /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
   @Prop() mode: "dialog" | "inline" = "dialog";
+  /** Whether to disable the Safari redirect behavior, defaults to false */
+  @Prop() disableSafariRedirect = false;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
   @State() popupWindow: Window | null = null;
-
   @Event() authEvent!: EventEmitter<{ token: string }>;
-
   private dialog: HTMLDialogElement | undefined;
   private popupCheckInterval?: number;
   private authPromise: PromiseWithResolvers<AuthResult> | null = null;
   private logoutPromise: PromiseWithResolvers<LogoutResult> | null = null;
-
   // The reason we're initializing it here is that IT MIGHT not be available and break our code if it's not there
   private logger: Logger = new Logger(false);
-
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
-
     this.logger = new Logger(this.enableLogging);
   }
-
   componentDidLoad() {
     window.addEventListener("click", this.handleDialogBackdropClick.bind(this), true);
   }
-
   /**
    * Initiates the authentication process
    *
@@ -83,6 +78,14 @@ export class UnidyLogin {
     this.authPromise = Promise.withResolvers<AuthResult>();
 
     const prompt = trySilentAuth ? "none" : this.prompt;
+
+    if (Utils.isSafari() && !this.disableSafariRedirect) {
+      const url = this.getAuthorizeUrl(prompt);
+      window.location.href = url;
+      // This will not resolve as the page is redirecting
+      return this.authPromise.promise;
+    }
+
     this.setAuthorizeUrl(prompt);
 
     return this.authPromise.promise;
@@ -106,7 +109,6 @@ export class UnidyLogin {
   async logout(): Promise<LogoutResult> {
     if (this.logoutPromise) {
       this.logger.log("Logout already in progress");
-
       return this.logoutPromise.promise;
     }
 
@@ -159,6 +161,15 @@ export class UnidyLogin {
   }
 
   private setAuthorizeUrl(prompt: PromptOption = null) {
+    const url = this.getAuthorizeUrl(prompt);
+
+    if (url !== this.iframeUrl) {
+      this.iframeUrl = url;
+      this.isLoading = true;
+    }
+  }
+
+  private getAuthorizeUrl(prompt: PromptOption = null): string {
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
@@ -171,12 +182,7 @@ export class UnidyLogin {
       params.append("prompt", prompt);
     }
 
-    const url = `${this.baseUrl}/oauth/authorize?${params.toString()}`;
-
-    if (url !== this.iframeUrl) {
-      this.iframeUrl = url;
-      this.isLoading = true;
-    }
+    return `${this.baseUrl}/oauth/authorize?${params.toString()}`;
   }
 
   private handleIframeLoad(event: Event) {
