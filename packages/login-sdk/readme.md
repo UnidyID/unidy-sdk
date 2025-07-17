@@ -228,7 +228,7 @@ interface UnidyAuthConfig {
 
   // Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
   // This should be disabled, when the Unidy instance runs on the same second level domain as the application using the SDK.
-  specialFlowForLimitedThirdPartyCookieAccess?: boolean;
+  redirectFlowForLimitedThirdPartyCookieAccess?: boolean;
 }
 ```
 

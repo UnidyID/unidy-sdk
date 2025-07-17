@@ -29,7 +29,7 @@ export class UnidyLogin {
   @Prop() mode: "dialog" | "inline" = "dialog";
   /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
    * This should be disabled, when the Unidy instance runs on the same second level domain */
-  @Prop() specialFlowForLimitedThirdPartyCookieAccess = true;
+  @Prop() redirectFlowForLimitedThirdPartyCookieAccess = true;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -80,7 +80,7 @@ export class UnidyLogin {
 
     const prompt = trySilentAuth ? "none" : this.prompt;
 
-    if (Utils.browserLimitsThirdPartyCookies() && this.specialFlowForLimitedThirdPartyCookieAccess) {
+    if (Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess) {
       const url = this.getAuthorizeUrl(prompt);
       window.location.href = url;
       // This will not resolve as the page is redirecting

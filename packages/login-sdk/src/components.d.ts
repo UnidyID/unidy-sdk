@@ -52,6 +52,10 @@ export namespace Components {
          */
         "prompt": PromptOption;
         /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "redirectFlowForLimitedThirdPartyCookieAccess": boolean;
+        /**
           * The OAuth response type, defaults to "id_token"
          */
         "responseType": ResponseType;
@@ -65,10 +69,6 @@ export namespace Components {
           * @example ```typescript await component.show(); ```
          */
         "show": () => Promise<void>;
-        /**
-          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
-         */
-        "specialFlowForLimitedThirdPartyCookieAccess": boolean;
     }
 }
 export interface UnidyLoginCustomEvent<T> extends CustomEvent<T> {
@@ -121,6 +121,10 @@ declare namespace LocalJSX {
          */
         "prompt"?: PromptOption;
         /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "redirectFlowForLimitedThirdPartyCookieAccess"?: boolean;
+        /**
           * The OAuth response type, defaults to "id_token"
          */
         "responseType"?: ResponseType;
@@ -128,10 +132,6 @@ declare namespace LocalJSX {
           * The OAuth scopes to request, defaults to "openid email"
          */
         "scope"?: string;
-        /**
-          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
-         */
-        "specialFlowForLimitedThirdPartyCookieAccess"?: boolean;
     }
     interface IntrinsicElements {
         "unidy-login": UnidyLogin;
