@@ -82,11 +82,17 @@ export class UnidyLogin {
       return this.authPromise.promise;
     }
 
+    const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
+
+    if (trySilentAuth && useRedirectFlow) {
+      return { success: false, error: "Silent auth is not supported in browsers with limited third-party cookie access." };
+    }
+
     this.authPromise = Promise.withResolvers<AuthResult>();
 
     const prompt = trySilentAuth ? "none" : this.prompt;
 
-    if (Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess) {
+    if (useRedirectFlow) {
       const url = this.getAuthorizeUrl(prompt);
       window.location.href = url;
       // code execution will stop here because of the redirect
