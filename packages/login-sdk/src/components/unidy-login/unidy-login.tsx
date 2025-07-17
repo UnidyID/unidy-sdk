@@ -34,20 +34,26 @@ export class UnidyLogin {
   @State() iframeUrl = "";
   @State() isLoading = false;
   @State() popupWindow: Window | null = null;
+
   @Event() authEvent!: EventEmitter<{ token: string }>;
+
   private dialog: HTMLDialogElement | undefined;
   private popupCheckInterval?: number;
   private authPromise: PromiseWithResolvers<AuthResult> | null = null;
   private logoutPromise: PromiseWithResolvers<LogoutResult> | null = null;
+
   // The reason we're initializing it here is that IT MIGHT not be available and break our code if it's not there
   private logger: Logger = new Logger(false);
+
   connectedCallback() {
     window.addEventListener("message", this.handleIframeMessage.bind(this));
     this.logger = new Logger(this.enableLogging);
   }
+
   componentDidLoad() {
     window.addEventListener("click", this.handleDialogBackdropClick.bind(this), true);
   }
+
   /**
    * Initiates the authentication process
    *
@@ -110,6 +116,7 @@ export class UnidyLogin {
   async logout(): Promise<LogoutResult> {
     if (this.logoutPromise) {
       this.logger.log("Logout already in progress");
+
       return this.logoutPromise.promise;
     }
 
