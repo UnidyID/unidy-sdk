@@ -52,6 +52,10 @@ export namespace Components {
          */
         "prompt": PromptOption;
         /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "redirectFlowForLimitedThirdPartyCookieAccess": boolean;
+        /**
           * The OAuth response type, defaults to "id_token"
          */
         "responseType": ResponseType;
@@ -116,6 +120,10 @@ declare namespace LocalJSX {
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
          */
         "prompt"?: PromptOption;
+        /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "redirectFlowForLimitedThirdPartyCookieAccess"?: boolean;
         /**
           * The OAuth response type, defaults to "id_token"
          */
