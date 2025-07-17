@@ -1,4 +1,4 @@
-import * as z from "@zod/mini";
+import * as z from "zod/mini";
 import type { ApiClient, ApiResponse } from "./api_client";
 import { EventEmitter } from "node:events";
 
@@ -38,12 +38,12 @@ export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResp
 export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPayloadSchema>;
 
 export type CreateSubscriptionsResult =
-  | ["schema_validation_error", ApiResponse]
-  | ["rate_limit_exceeded", ApiResponse]
-  | ["newsletter_error", ApiResponse]
-  | ["network_error", ApiResponse]
-  | ["server_error", ApiResponse]
-  | ["error", ApiResponse]
+  | ["schema_validation_error", ApiResponse<CreateSubscriptionsResponse>]
+  | ["rate_limit_exceeded", ApiResponse<CreateSubscriptionsResponse>]
+  | ["newsletter_error", ApiResponse<CreateSubscriptionsResponse>]
+  | ["network_error", ApiResponse<CreateSubscriptionsResponse>]
+  | ["server_error", ApiResponse<CreateSubscriptionsResponse>]
+  | ["error", ApiResponse<CreateSubscriptionsResponse>]
   | [null, ApiResponse<CreateSubscriptionsResponse>];
 
 export class NewsletterService extends EventEmitter {
@@ -95,8 +95,8 @@ export class NewsletterService extends EventEmitter {
     callback: (errors: z.infer<typeof NewsletterSubscriptionErrorSchema>[]) => void,
     errorIdentifier?: "unconfirmed" | "already_subscribed" | "invalid_email",
   ): void {
-    this.on("newsletter_error", (response: ApiResponse) => {
-      if (!response.data.errors) {
+    this.on("newsletter_error", (response: ApiResponse<CreateSubscriptionsResponse>) => {
+      if (!response.data?.errors) {
         return;
       }
 
@@ -111,7 +111,7 @@ export class NewsletterService extends EventEmitter {
   }
 
   onRateLimitError(callback: () => void): void {
-    this.on("rate_limit_exceeded", (response: ApiResponse) => {
+    this.on("rate_limit_exceeded", (response: ApiResponse<CreateSubscriptionsResponse>) => {
       if (response.status === 429) {
         callback();
       }
