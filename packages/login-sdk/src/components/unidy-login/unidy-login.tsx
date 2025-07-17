@@ -83,7 +83,7 @@ export class UnidyLogin {
     if (Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess) {
       const url = this.getAuthorizeUrl(prompt);
       window.location.href = url;
-      // This will not resolve as the page is redirecting
+      // code execution will stop here because of the redirect
       return this.authPromise.promise;
     }
 
