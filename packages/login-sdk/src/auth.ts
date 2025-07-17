@@ -33,8 +33,9 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   mode?: "dialog" | "inline";
   /** The target element where the component should be mounted in inline mode - can be element ID, CSS selector, or HTMLElement, defaults to document.body */
   mountTarget?: string | HTMLElement;
-  /** Whether to disable the Safari redirect behavior, defaults to false */
-  disableSafariRedirect?: boolean;
+  /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
+   * This should be disabled, when the Unidy instance runs on the same second level domain */
+  specialFlowForLimitedThirdPartyCookieAccess?: boolean;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
@@ -134,7 +135,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       prompt: this.config.prompt,
       enableLogging: this.logger.enabled,
       mode: this.config.mode,
-      disableSafariRedirect: this.config.disableSafariRedirect,
+      specialFlowForLimitedThirdPartyCookieAccess: this.config.specialFlowForLimitedThirdPartyCookieAccess,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
@@ -192,8 +193,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     }
 
     if (!silent) {
-      const isSafari = Utils.isSafari();
-      const useRedirect = isSafari && !this.config.disableSafariRedirect;
+      const useRedirect = Utils.browserLimitsThirdPartyCookies() && this.config.specialFlowForLimitedThirdPartyCookieAccess;
 
       if (!useRedirect) {
         await this.show();

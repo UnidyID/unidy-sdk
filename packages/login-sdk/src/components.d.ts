@@ -28,10 +28,6 @@ export namespace Components {
          */
         "clientId": string;
         /**
-          * Whether to disable the Safari redirect behavior, defaults to false
-         */
-        "disableSafariRedirect": boolean;
-        /**
           * Whether to enable logging, defaults to true
          */
         "enableLogging": boolean;
@@ -69,6 +65,10 @@ export namespace Components {
           * @example ```typescript await component.show(); ```
          */
         "show": () => Promise<void>;
+        /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "specialFlowForLimitedThirdPartyCookieAccess": boolean;
     }
 }
 export interface UnidyLoginCustomEvent<T> extends CustomEvent<T> {
@@ -108,10 +108,6 @@ declare namespace LocalJSX {
          */
         "clientId": string;
         /**
-          * Whether to disable the Safari redirect behavior, defaults to false
-         */
-        "disableSafariRedirect"?: boolean;
-        /**
           * Whether to enable logging, defaults to true
          */
         "enableLogging"?: boolean;
@@ -132,6 +128,10 @@ declare namespace LocalJSX {
           * The OAuth scopes to request, defaults to "openid email"
          */
         "scope"?: string;
+        /**
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+         */
+        "specialFlowForLimitedThirdPartyCookieAccess"?: boolean;
     }
     interface IntrinsicElements {
         "unidy-login": UnidyLogin;

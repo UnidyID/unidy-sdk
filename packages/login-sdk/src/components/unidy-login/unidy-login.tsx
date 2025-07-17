@@ -27,8 +27,9 @@ export class UnidyLogin {
   @Prop() enableLogging = true;
   /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
   @Prop() mode: "dialog" | "inline" = "dialog";
-  /** Whether to disable the Safari redirect behavior, defaults to false */
-  @Prop() disableSafariRedirect = false;
+  /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
+   * This should be disabled, when the Unidy instance runs on the same second level domain */
+  @Prop() specialFlowForLimitedThirdPartyCookieAccess = true;
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -79,7 +80,7 @@ export class UnidyLogin {
 
     const prompt = trySilentAuth ? "none" : this.prompt;
 
-    if (Utils.isSafari() && !this.disableSafariRedirect) {
+    if (Utils.browserLimitsThirdPartyCookies() && this.specialFlowForLimitedThirdPartyCookieAccess) {
       const url = this.getAuthorizeUrl(prompt);
       window.location.href = url;
       // This will not resolve as the page is redirecting
