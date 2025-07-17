@@ -52,10 +52,6 @@ export namespace Components {
          */
         "prompt": PromptOption;
         /**
-          * The URL to redirect to after authentication, defaults to current origin
-         */
-        "redirectUrl": string;
-        /**
           * The OAuth response type, defaults to "id_token"
          */
         "responseType": ResponseType;
@@ -120,10 +116,6 @@ declare namespace LocalJSX {
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
          */
         "prompt"?: PromptOption;
-        /**
-          * The URL to redirect to after authentication, defaults to current origin
-         */
-        "redirectUrl"?: string;
         /**
           * The OAuth response type, defaults to "id_token"
          */
