@@ -195,26 +195,40 @@ if (result.success) {
 interface UnidyAuthConfig {
   // Required: The base URL of the Unidy authentication server
   baseUrl: string;
+
   // Required: Your application's client ID
   clientId: string;
+
   // Optional: OAuth scopes (default: "openid email")
   scope?: string;
+
   // Optional: Response type, 'id_token' | 'token' | 'code' (default: "id_token")
   responseType?: "id_token" | "token" | "code";
+
   // Optional: Prompt parameter for auth, 'none' | 'login' | 'consent' | 'select_account' | null
   prompt?: 'none' | 'login' | 'consent' | 'select_account' | null;
+
   // Optional: Whether to store token in session storage (default: true)
   storeTokenInSession?: boolean;
+
   // Optional: Fallback to silent auth request in 'isAuthenticated' if no token is found (default: false)
   fallbackToSilentAuthRequest?: boolean;
+
   // Optional: Callback function called when authentication is successful
   onAuth?: (token: string) => void;
+
   // Optional: Whether to enable logging (default: true)
   enableLogging?: boolean;
+
   // Optional: Rendering mode - 'dialog' for modal popup, 'inline' for embedded in page (default: 'dialog')
   mode?: 'dialog' | 'inline';
+
   // Optional: Mount target for inline mode - element ID, CSS selector, or HTMLElement (default: document.body)
   mountTarget?: string | HTMLElement;
+
+  // Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
+  // This should be disabled, when the Unidy instance runs on the same second level domain as the application using the SDK.
+  specialFlowForLimitedThirdPartyCookieAccess?: boolean;
 }
 ```
 
