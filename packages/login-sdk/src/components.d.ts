@@ -38,6 +38,10 @@ export namespace Components {
          */
         "hide": () => Promise<void>;
         /**
+          * The label for the login button in inline mode, defaults to "Login"
+         */
+        "loginButtonLabel": string;
+        /**
           * Logs out the current user and clears any stored session data.
           * @returns Promise that resolves with logout result indicating success status
           * @example ```typescript const result = await component.logout();  if (result.success) {   console.log('Successfully logged out'); } ```
@@ -111,6 +115,10 @@ declare namespace LocalJSX {
           * Whether to enable logging, defaults to true
          */
         "enableLogging"?: boolean;
+        /**
+          * The label for the login button in inline mode, defaults to "Login"
+         */
+        "loginButtonLabel"?: string;
         /**
           * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
          */
