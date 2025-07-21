@@ -28,8 +28,11 @@ export class UnidyLogin {
   /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
   @Prop() mode: "dialog" | "inline" = "dialog";
   /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
-   * This should be disabled, when the Unidy instance runs on the same second level domain */
+   * This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true */
   @Prop() redirectFlowForLimitedThirdPartyCookieAccess = true;
+  /** When in inline mode and the browser has no access to third-party cookies,
+   * a login button is rendered with this label. Defaults to "Login" */
+  @Prop() redirectFlowLoginButtonLabel = "Login";
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -83,6 +86,10 @@ export class UnidyLogin {
     }
 
     const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
+
+    if (useRedirectFlow && this.mode === "inline") {
+      return { success: false, error: "The user has to trigger the authentication process via button click." };
+    }
 
     if (trySilentAuth && useRedirectFlow) {
       return { success: false, error: "Silent auth is not supported in browsers with limited third-party cookie access." };
@@ -184,13 +191,19 @@ export class UnidyLogin {
   }
 
   private getAuthorizeUrl(prompt: PromptOption = null): string {
+    const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
+    const sdk_render_mode = useRedirectFlow && this.mode === "inline" ? undefined : this.mode;
+
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
       response_type: this.responseType,
       redirect_uri: window.location.origin,
-      sdk_render_mode: this.mode,
     });
+
+    if (sdk_render_mode) {
+      params.append("sdk_render_mode", sdk_render_mode);
+    }
 
     if (prompt) {
       params.append("prompt", prompt);
@@ -300,6 +313,16 @@ export class UnidyLogin {
   }
 
   render() {
+    const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
+
+    if (this.mode === "inline" && useRedirectFlow) {
+      return (
+        <a part="login-button" href={this.getAuthorizeUrl()}>
+          {this.redirectFlowLoginButtonLabel}
+        </a>
+      );
+    }
+
     const content = (
       <div class="relative w-full h-full min-w-[320px] max-w-[640px] overflow-hidden min-h-[400px]">
         {this.mode === "dialog" && (

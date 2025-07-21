@@ -164,6 +164,32 @@ const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
 - **HTMLElement**: `mountTarget: document.querySelector('#login')` - mounts to the specified element
 - **Default**: If not specified, mounts to `document.body`
 
+### Special handling for third-party cookies
+
+When using the Unidy SDK in a browser environment, you may encounter limitations with third-party cookies, especially in Safari and other browsers with strict privacy settings. In that case, the SDK will redirect the user to the Unidy authentication server for login, which is necessary when third-party cookies are blocked. In **inline mode**, a login button is rendered that allows the user to initiate the login process. You can customize the button label using the `redirectFlowLoginButtonLabel` configuration and CSS pseudo-classes to style the button.
+
+```css
+unidy-login::part(login-button) {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #0a2463;
+  color: #ffffff;
+  font-family: sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+unidy-login::part(login-button):hover {
+  background-color: #1e3a8a;
+  transform: translateY(-1px);
+}
+```
+
 ## Silent Authentication
 
 You can attempt to authenticate a user silently (without user interaction) when your application loads. This is useful for checking if a user has an active session with the authentication server. However you should first check if there is existing valid token with `isAuthenticated()` method so you don't ping Unidy authentication server unnecessarily
@@ -229,6 +255,10 @@ interface UnidyAuthConfig {
   // Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
   // This should be disabled, when the Unidy instance runs on the same second level domain as the application using the SDK.
   redirectFlowForLimitedThirdPartyCookieAccess?: boolean;
+
+  // When in inline mode and the browser has no access to third-party cookies,
+  // a login button is rendered with this label. Defaults to "Login"
+  redirectFlowLoginButtonLabel?: string;
 }
 ```
 
@@ -259,5 +289,6 @@ interface UnidyAuthConfig {
 - `userTokenData()`: Returns the decoded user data from the token stored in session storage. Returns `null` if the token is not present or invalid. Always returns false if storeTokenInSession is disabled.
 
 ## Properties
+
 - `idToken`: Retrieves the ID token from session storage. Returns `null` if not found or if `storeTokenInSession` is disabled.
 - `isInitialized`: Returns `true` if the component is initialized (mounted with `mountComponent` to the DOM), `false` otherwise.
