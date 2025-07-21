@@ -9,16 +9,19 @@ import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.i
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface EmailField {
+        "className": string;
         "placeholder": string;
     }
     interface NewsletterCheckbox {
         "checked": boolean;
+        "className": string;
         "internalName": string;
         "label": string;
     }
     interface SubmitButton {
         "apiKey": string;
         "apiUrl": string;
+        "className": string;
     }
 }
 export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
@@ -64,16 +67,19 @@ declare global {
 }
 declare namespace LocalJSX {
     interface EmailField {
+        "className"?: string;
         "placeholder"?: string;
     }
     interface NewsletterCheckbox {
         "checked"?: boolean;
+        "className"?: string;
         "internalName"?: string;
         "label"?: string;
     }
     interface SubmitButton {
         "apiKey"?: string;
         "apiUrl"?: string;
+        "className"?: string;
         "onError"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
         "onSuccess"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
     }

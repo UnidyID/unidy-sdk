@@ -10,6 +10,7 @@ import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@un
 export class SubmitButton {
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
+  @Prop() className: string;
 
   @Event() success: EventEmitter<CreateSubscriptionsResponse>;
   @Event() error: EventEmitter<CreateSubscriptionsResult[1]>;
@@ -44,7 +45,7 @@ export class SubmitButton {
 
   render() {
     return (
-      <button type="button" onClick={this.submit}>
+      <button type="button" onClick={this.submit} class={this.className} part="button">
         <slot />
       </button>
     );

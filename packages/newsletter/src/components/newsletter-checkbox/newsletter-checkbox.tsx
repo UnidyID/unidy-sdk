@@ -9,6 +9,7 @@ export class NewsletterCheckbox {
   @Prop() label: string;
   @Prop() internalName: string;
   @Prop() checked: boolean;
+  @Prop() className: string;
 
   private handleChange = (e: Event) => {
     const isChecked = (e.target as HTMLInputElement).checked;
@@ -25,8 +26,8 @@ export class NewsletterCheckbox {
 
   render() {
     return (
-      <label>
-        <input type="checkbox" checked={this.checked} onChange={this.handleChange} />
+      <label part="label">
+        <input type="checkbox" checked={this.checked} onChange={this.handleChange} class={this.className} part="input" />
         {this.label}
       </label>
     );
