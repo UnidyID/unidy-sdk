@@ -191,15 +191,15 @@ export class UnidyLogin {
   }
 
   private getAuthorizeUrl(prompt: PromptOption = null): string {
-    const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
-    const sdk_render_mode = useRedirectFlow && this.mode === "inline" ? undefined : this.mode;
-
+    const redirectUri = `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({
       client_id: this.clientId,
       scope: this.scope,
       response_type: this.responseType,
-      redirect_uri: window.location.origin,
+      redirect_uri: redirectUri,
     });
+    const useRedirectFlow = Utils.browserLimitsThirdPartyCookies() && this.redirectFlowForLimitedThirdPartyCookieAccess;
+    const sdk_render_mode = useRedirectFlow && this.mode === "inline" ? undefined : this.mode;
 
     if (sdk_render_mode) {
       params.append("sdk_render_mode", sdk_render_mode);
