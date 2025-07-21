@@ -292,6 +292,3 @@ interface UnidyAuthConfig {
 
 - `idToken`: Retrieves the ID token from session storage. Returns `null` if not found or if `storeTokenInSession` is disabled.
 - `isInitialized`: Returns `true` if the component is initialized (mounted with `mountComponent` to the DOM), `false` otherwise.
-
-## Styling
-
