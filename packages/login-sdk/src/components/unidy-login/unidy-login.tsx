@@ -316,7 +316,7 @@ export class UnidyLogin {
 
     if (this.mode === "inline" && useRedirectFlow) {
       return (
-        <a class="login-button" href={this.getAuthorizeUrl()}>
+        <a part="login-button" href={this.getAuthorizeUrl()}>
           {this.loginButtonLabel}
         </a>
       );

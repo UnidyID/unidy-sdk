@@ -313,6 +313,26 @@
         padding: 1rem;
       }
     }
+
+    unidy-login::part(login-button) {
+      display: inline-block;
+      padding: var(--unidy-login-button-padding, 0.75rem 1.5rem);
+      border: var(--unidy-login-button-border, none);
+      border-radius: var(--unidy-login-button-border-radius, 8px);
+      background-color: var(--unidy-login-button-background, #0a2463);
+      color: var(--unidy-login-button-color, #ffffff);
+      font-family: var(--unidy-login-button-font-family, sans-serif);
+      font-size: var(--unidy-login-button-font-size, 1rem);
+      font-weight: var(--unidy-login-button-font-weight, 600);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    unidy-login::part(login-button):hover {
+      background-color: var(--unidy-login-button-background-hover, #1e3a8a);
+      transform: var(--unidy-login-button-transform-hover, translateY(-1px));
+    }
   </style>
 </head>
 
@@ -481,20 +501,20 @@
     const loginContainer = document.getElementById('login-container');
 
     // Initialize Unidy Auth
-    let unidyAuth = new UnidyAuth().init("http://localhost:3000", {
-      clientId: "public-oauth-client-for-login-sdk",
-      scope: "openid profile email",
+    let unidyAuth = new UnidyAuth().init('http://localhost:3000', {
+      clientId: 'public-oauth-client-for-login-sdk',
+      scope: 'openid profile email',
       mode: 'inline',
       mountTarget: loginContainer,
       fallbackToSilentAuthRequest: true
     });
 
     if (await unidyAuth.isAuthenticated()) {
-      loginContainer.innerHTML = `<p class="welcome-message">Welcome back!</p>`;
+      loginContainer.innerHTML = '<p class="welcome-message">Welcome back!</p>';
     } else {
       const result = await unidyAuth.auth()
       if (result.success) {
-        loginContainer.innerHTML = `<p class="welcome-message">Welcome back!</p>`;
+        loginContainer.innerHTML = '<p class="welcome-message">Welcome back!</p>';
       }
     }
   </script>
