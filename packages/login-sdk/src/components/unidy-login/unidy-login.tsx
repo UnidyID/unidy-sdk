@@ -191,6 +191,8 @@ export class UnidyLogin {
   }
 
   private getAuthorizeUrl(prompt: PromptOption = null): string {
+    // TODO: we want to use the full href here, but unidy cuts it out anyway and
+    // the redirect url white list breaks with not whitelisted query params
     const redirectUri = `${window.location.origin}${window.location.pathname}`;
     const params = new URLSearchParams({
       client_id: this.clientId,
