@@ -11,6 +11,8 @@ export { NewsletterConfig } from "./components/newsletter/newsletter";
 export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
+        "additionalFields": { name: string; label: string; type: string; required?: boolean }[];
+        "additionalFieldsConfigJson": string;
         "apiKey": string;
         "apiUrl": string;
         "confirmationErrorText": string;
@@ -61,6 +63,8 @@ declare global {
 }
 declare namespace LocalJSX {
     interface UnidyNewsletter {
+        "additionalFields"?: { name: string; label: string; type: string; required?: boolean }[];
+        "additionalFieldsConfigJson"?: string;
         "apiKey"?: string;
         "apiUrl"?: string;
         "confirmationErrorText"?: string;

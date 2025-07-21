@@ -29,6 +29,8 @@ export class Newsletter {
   @Prop() header: string;
   @Prop() newslettersConfig: NewsletterConfig[] = [];
   @Prop() newslettersConfigJson: string;
+  @Prop() additionalFields: { name: string; label: string; type: string; required?: boolean }[] = [];
+  @Prop() additionalFieldsConfigJson: string;
   @Prop() submitButtonText = "Subscribe";
   @Prop() emailLabel = "Email";
   @Prop() emailPlaceholder = "Email";
@@ -46,9 +48,10 @@ export class Newsletter {
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
   @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
 
-
   @State() email = "";
   @State() checkedNewsletters: Record<string, { preferences: string[]; checked: boolean }> = {};
+  @State() additionalFieldValues: Record<string, string> = {};
+
   @State() errors: Record<string, { error_identifier: string }> = {};
   @State() showSubscribeSuccessSlot = false;
   @State() showConfirmSuccessSlot = false;
@@ -73,6 +76,14 @@ export class Newsletter {
         this.newslettersConfig = JSON.parse(this.newslettersConfigJson);
       } catch (error) {
         console.error("Failed to parse newslettersConfigJson:", error);
+      }
+    }
+
+    if (this.additionalFieldsConfigJson) {
+      try {
+        this.additionalFields = JSON.parse(this.additionalFieldsConfigJson);
+      } catch (error) {
+        console.error("Failed to parse additionalFieldsConfigJson:", error);
       }
     }
 
@@ -125,7 +136,7 @@ export class Newsletter {
   private buildReturnUrlWithoutConfirmedParams() {
     const baseUrl = `${location.origin}${location.pathname}`;
     const params = new URLSearchParams(location.search);
-    for (const key of ['email', 'selected']) {
+    for (const key of ["email", "selected"]) {
       params.delete(key);
     }
     const queryString = params.toString();
@@ -137,10 +148,37 @@ export class Newsletter {
     this.errors = {};
     this.showSubscribeSuccessSlot = false;
 
+    const customAttributes = Object.entries(this.additionalFieldValues)
+      .filter(([key]) => key.startsWith("custom_attribute:"))
+      .reduce(
+        (acc, [key, value]) => {
+          // Remove the 'custom_attribute:' prefix from the key
+          const cleanKey = key.replace("custom_attribute:", "");
+          acc[cleanKey] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
+    // Remove custom_attribute fields from additionalFieldValues
+    const nonCustomFields = Object.entries(this.additionalFieldValues)
+      .filter(([key]) => !key.startsWith("custom_attribute:"))
+      .reduce(
+        (acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
     const payload = {
       email: this.email,
       newsletter_subscriptions: [],
       return_to_after_confirmation: this.returnToAfterConfirmation || this.buildReturnUrlWithoutConfirmedParams(),
+      additional_fields: {
+        ...nonCustomFields,
+        custom_attributes: customAttributes,
+      },
     };
 
     const selectedNewsletters = Object.entries(this.checkedNewsletters)
@@ -275,6 +313,29 @@ export class Newsletter {
               class="w-full border"
             />
           </div>
+
+          {this.additionalFields.length > 0 &&
+            this.additionalFields.map((field) => (
+              <div key={field.name} class="flex flex-col gap-2" part="additional-field-input-group">
+                <label htmlFor={field.name} part="additional-field-label">
+                  {field.label}
+                </label>
+                <input
+                  name={field.name}
+                  type={field.type}
+                  part="additional-field-input"
+                  required={field.required}
+                  value={this.additionalFieldValues[field.name] || ""}
+                  onInput={(e) => {
+                    this.additionalFieldValues = {
+                      ...this.additionalFieldValues,
+                      [field.name]: (e.target as HTMLInputElement).value,
+                    };
+                  }}
+                />
+              </div>
+            ))}
+
           {/* If there is more than one newsletter or the first newsletter has preferences, show the checkboxes in containers */}
           {(this.newslettersConfig.length > 1 || this.newslettersConfig[0].preferences?.length > 0) &&
             this.newslettersConfig.map((newsletter) => (
@@ -340,7 +401,6 @@ export class Newsletter {
               <p part="confirmaton-error-text">{this.confirmationErrorText}</p>
             </slot>
           )}
-
         </form>
         <slot name="footer" />
       </div>
