@@ -28,10 +28,11 @@ export class UnidyLogin {
   /** The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page */
   @Prop() mode: "dialog" | "inline" = "dialog";
   /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
-   * This should be disabled, when the Unidy instance runs on the same second level domain */
+   * This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true */
   @Prop() redirectFlowForLimitedThirdPartyCookieAccess = true;
-  /** The label for the login button in inline mode, defaults to "Login" */
-  @Prop() loginButtonLabel = "Login";
+  /** When in inline mode and the browser has no access to third-party cookies,
+   * a login button is rendered with this label. Defaults to "Login" */
+  @Prop() redirectFlowLoginButtonLabel = "Login";
 
   @State() iframeUrl = "";
   @State() isLoading = false;
@@ -317,7 +318,7 @@ export class UnidyLogin {
     if (this.mode === "inline" && useRedirectFlow) {
       return (
         <a part="login-button" href={this.getAuthorizeUrl()}>
-          {this.loginButtonLabel}
+          {this.redirectFlowLoginButtonLabel}
         </a>
       );
     }

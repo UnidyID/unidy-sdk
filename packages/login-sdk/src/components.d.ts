@@ -38,10 +38,6 @@ export namespace Components {
          */
         "hide": () => Promise<void>;
         /**
-          * The label for the login button in inline mode, defaults to "Login"
-         */
-        "loginButtonLabel": string;
-        /**
           * Logs out the current user and clears any stored session data.
           * @returns Promise that resolves with logout result indicating success status
           * @example ```typescript const result = await component.logout();  if (result.success) {   console.log('Successfully logged out'); } ```
@@ -56,9 +52,13 @@ export namespace Components {
          */
         "prompt": PromptOption;
         /**
-          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true
          */
         "redirectFlowForLimitedThirdPartyCookieAccess": boolean;
+        /**
+          * When in inline mode and the browser has no access to third-party cookies, a login button is rendered with this label. Defaults to "Login"
+         */
+        "redirectFlowLoginButtonLabel": string;
         /**
           * The OAuth response type, defaults to "id_token"
          */
@@ -116,10 +116,6 @@ declare namespace LocalJSX {
          */
         "enableLogging"?: boolean;
         /**
-          * The label for the login button in inline mode, defaults to "Login"
-         */
-        "loginButtonLabel"?: string;
-        /**
           * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
          */
         "mode"?: "dialog" | "inline";
@@ -129,9 +125,13 @@ declare namespace LocalJSX {
          */
         "prompt"?: PromptOption;
         /**
-          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain
+          * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true
          */
         "redirectFlowForLimitedThirdPartyCookieAccess"?: boolean;
+        /**
+          * When in inline mode and the browser has no access to third-party cookies, a login button is rendered with this label. Defaults to "Login"
+         */
+        "redirectFlowLoginButtonLabel"?: string;
         /**
           * The OAuth response type, defaults to "id_token"
          */

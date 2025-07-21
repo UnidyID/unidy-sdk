@@ -36,8 +36,9 @@ export interface UnidyAuthConfig<Scope extends string = string> {
   /** Whether to use the special redirect behavior, for browsers limitation access to third party cookies.
    * This should be disabled, when the Unidy instance runs on the same second level domain */
   redirectFlowForLimitedThirdPartyCookieAccess?: boolean;
-  /** The label for the login button in inline mode, defaults to "Login" */
-  loginButtonLabel?: string;
+  /** When in inline mode and the browser has no access to third-party cookies,
+   * a login button is rendered with this label. Defaults to "Login" */
+  redirectFlowLoginButtonLabel?: string;
 }
 
 export const UNIDY_ID_TOKEN_SESSION_KEY = "unidy_id_token";
@@ -138,7 +139,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       enableLogging: this.logger.enabled,
       mode: this.config.mode,
       redirectFlowForLimitedThirdPartyCookieAccess: this.config.redirectFlowForLimitedThirdPartyCookieAccess,
-      loginButtonLabel: this.config.loginButtonLabel,
+      redirectFlowLoginButtonLabel: this.config.redirectFlowLoginButtonLabel,
     });
 
     this.component.addEventListener("authEvent", (event: CustomEvent) => {
