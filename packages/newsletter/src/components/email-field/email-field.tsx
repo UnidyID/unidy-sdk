@@ -8,11 +8,6 @@ import { newsletterStore } from "../../store";
 export class EmailField {
   @Prop() placeholder = "Email";
   @Prop() className: string;
-  @Element() host: HTMLElement;
-
-  componentDidLoad() {
-    console.log(this.host.className);
-  }
 
   render() {
     return (

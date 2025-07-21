@@ -5,7 +5,7 @@ import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@un
 
 @Component({
   tag: "submit-button",
-  shadow: true,
+  shadow: false,
 })
 export class SubmitButton {
   @Prop() apiUrl: string;

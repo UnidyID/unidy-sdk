@@ -3,13 +3,19 @@ import { newsletterStore } from "../../store";
 
 @Component({
   tag: "newsletter-checkbox",
-  shadow: true,
+  shadow: false,
 })
 export class NewsletterCheckbox {
   @Prop() label: string;
   @Prop() internalName: string;
   @Prop() checked: boolean;
   @Prop() className: string;
+
+  componentWillLoad() {
+    if (this.checked) {
+      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
+    }
+  }
 
   private handleChange = (e: Event) => {
     const isChecked = (e.target as HTMLInputElement).checked;
@@ -26,8 +32,8 @@ export class NewsletterCheckbox {
 
   render() {
     return (
-      <label part="label">
-        <input type="checkbox" checked={this.checked} onChange={this.handleChange} class={this.className} part="input" />
+      <label part="label" class={this.className}>
+        <input type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
         {this.label}
       </label>
     );

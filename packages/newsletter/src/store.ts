@@ -5,8 +5,4 @@ export const newsletterStore = createStore({
   checkedNewsletters: [],
 });
 
-newsletterStore.onChange("email", (email) => {
-  console.log("email changed", email);
-});
-
 export default newsletterStore;
