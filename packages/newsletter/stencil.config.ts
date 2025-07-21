@@ -1,22 +1,22 @@
-import { Config } from '@stencil/core';
+import type { Config } from "@stencil/core";
 
 export const config: Config = {
-  namespace: 'newsletter',
+  namespace: "newsletter",
   outputTargets: [
     {
-      type: 'dist',
-      esmLoaderPath: '../loader',
+      type: "dist",
+      esmLoaderPath: "../loader",
     },
     {
-      type: 'dist-custom-elements',
-      customElementsExportBehavior: 'auto-define-custom-elements',
+      type: "dist-custom-elements",
+      customElementsExportBehavior: "auto-define-custom-elements",
       externalRuntime: false,
     },
     {
-      type: 'docs-readme',
+      type: "docs-readme",
     },
     {
-      type: 'www',
+      type: "www",
       serviceWorker: null, // disable service workers
     },
   ],
