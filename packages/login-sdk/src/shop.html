@@ -345,7 +345,7 @@
       </div>
     </div>
     <div class="header-right">
-      <a href="index.html" class="button secondary" style="text-decoration: none;">
+      <a href="/" class="button secondary" style="text-decoration: none;">
         Back to Home
       </a>
       <button id="logout-button" class="button" style="display: none;">Logout</button>
@@ -357,10 +357,11 @@
     <div class="checkout-layout">
       <div class="login-section">
         <h2 id="login-title">Sign In to Continue</h2>
-        <p id="login-description">Please sign in with your Unidy account to complete your purchase and access exclusive
-          fan benefits.</p>
 
-        <div id="login-container"></div> <!-- render login component INLINE HERE -->
+        <div id="login-container">
+          Please sign in with your Unidy account to complete your purchase and access exclusive
+          fan benefits.
+        </div> <!-- render login component INLINE HERE -->
       </div>
 
       <div class="checkout-section">
@@ -485,8 +486,9 @@
             <textarea id="notes" name="notes" rows="3" placeholder="Any special instructions or requests..."></textarea>
           </div>
 
-          <button type="submit" class="button" style="width: 100%; font-size: 1.1rem; padding: 1rem;">
-            Complete Purchase - €539.40
+          <button type="submit" class="button" style="width: 100%; font-size: 1.1rem; padding: 1rem;"
+            onclick="alert('Thank you for your purchase! Your order has been received.');">
+            Complete Purchase
           </button>
         </form>
       </div>
@@ -497,7 +499,8 @@
     import { UnidyAuth } from './build/index.esm.js';
 
     const loginContainer = document.getElementById('login-container');
-
+    const checkoutForm = document.getElementById('checkout-form');
+    const loginTitle = document.getElementById('login-title');
     // Initialize Unidy Auth
     let unidyAuth = new UnidyAuth().init('http://localhost:3000', {
       clientId: 'public-oauth-client-for-login-sdk',
@@ -507,12 +510,41 @@
       fallbackToSilentAuthRequest: true
     });
 
+    // Check if user is authenticated, will also perform silent auth if needed
     if (await unidyAuth.isAuthenticated()) {
-      loginContainer.innerHTML = '<p class="welcome-message">Welcome back!</p>';
+      updateUI(true, unidyAuth.userTokenData());
     } else {
       const result = await unidyAuth.auth()
       if (result.success) {
-        loginContainer.innerHTML = '<p class="welcome-message">Welcome back!</p>';
+        updateUI(true, result.userTokenData);
+      }
+    }
+
+    function updateUI(isAuthenticated, userTokenData) {
+      if (isAuthenticated) {
+        loginTitle.innerHTML = `Welcome back ${userTokenData.email}!`;
+        loginContainer.innerHTML = `<p class="welcome-message">You can now complete your purchase.</p>`;
+        checkoutForm.style.display = 'block';
+
+        fillFormWithUserData(userTokenData);
+
+      } else {
+        loginContainer.innerHTML = '<p class="welcome-message">Please sign in with your Unidy account to complete your purchase and access exclusive fan benefits.</p>';
+      }
+    }
+
+    function fillFormWithUserData(userData) {
+      const emailField = document.getElementById('email');
+      if (emailField && userData.email) {
+        emailField.value = userData.email;
+      }
+      const firstNameField = document.getElementById('firstName');
+      if (firstNameField && userData.given_name) {
+        firstNameField.value = userData.given_name;
+      }
+      const lastNameField = document.getElementById('lastName');
+      if (lastNameField && userData.family_name) {
+        lastNameField.value = userData.family_name;
       }
     }
   </script>

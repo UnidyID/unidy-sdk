@@ -266,7 +266,7 @@
       clientId: "public-oauth-client-for-login-sdk",
       scope: "openid profile email",
       onAuth: (token) => {
-        // console.log("We can still use onAuth callback: ", token)
+        console.log("We can also use onAuth callback: ", token)
       }
     });
 
@@ -278,7 +278,7 @@
         const res = await unidyAuth.auth({ silent: true })
 
         if (res.success) {
-          console.log("Token", res.userTokenData);
+          console.log("Token after silent auth:", res.userTokenData);
           updateUI(true, res.userTokenData);
         } else {
           console.log("Error:", res.error);
@@ -290,7 +290,7 @@
       const res = await unidyAuth.auth()
 
       if (res.success) {
-        console.log("Token", res.token, res.userTokenData);
+        console.log("Token after button click", res.token, res.userTokenData);
         updateUI(true, res.userTokenData);
       } else {
         console.log("Error:", res.error);
