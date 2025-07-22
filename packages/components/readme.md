@@ -13,6 +13,8 @@ npm install @unidy.io/components
 To use the component, you need to add the `unidy-newsletter` element to your HTML and configure it with the necessary properties.
 
 ```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@x.x.x/dist/unidy-login/unidy-login.esm.js"></script>
+
 <unidy-newsletter
   api-url="https://your-unidy-instance-url.com"
   api-key="your-api-key"
@@ -20,8 +22,6 @@ To use the component, you need to add the `unidy-newsletter` element to your HTM
   submit-button-text="Subscribe"
   newsletters-config-json='[{"internalName": "default", "label": "General Updates"}]'
 ></unidy-newsletter>
-
-<script type="module" src="node_modules/@unidy.io/components/dist/unidy-components/unidy-components.esm.js"></script>
 ```
 
 ### Example with multiple newsletters and preferences
