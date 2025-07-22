@@ -313,6 +313,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       }
 
       this.storeToken(res.token);
+      return true;
     }
 
     return !!this.idToken && this.validateToken(this.idToken);
