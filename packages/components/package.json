@@ -32,21 +32,25 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "unpkg": "dist/unidy-components/index.esm.js",
+  "jsdelivr": "dist/unidy-components/index.esm.js",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "unpkg": "./dist/unidy-components/index.esm.js"
+      "unpkg": "./dist/unidy-components/index.esm.js",
+      "jsdelivr": "./dist/unidy-components/index.esm.js"
     },
     "./lazy": {
       "import": "./dist/esm/unidy-components.js",
       "require": "./dist/cjs/unidy-components.js",
-      "unpkg": "./dist/unidy-components/unidy-components.esm.js"
+      "unpkg": "./dist/unidy-components/unidy-components.esm.js",
+      "jsdelivr": "./dist/unidy-components/unidy-components.esm.js"
     },
     "./newsletter": {
       "import": "./dist/esm/unidy-newsletter.js",
       "require": "./dist/cjs/unidy-newsletter.js",
-      "unpkg": "./dist/per-component/unidy-newsletter.js"
+      "unpkg": "./dist/per-component/unidy-newsletter.js",
+      "jsdelivr": "./dist/per-component/unidy-newsletter.js"
     },
     "./loader": {
       "import": "./loader/index.js",
