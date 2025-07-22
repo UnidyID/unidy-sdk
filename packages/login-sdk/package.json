@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/auth",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -33,16 +33,19 @@
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
   "unpkg": "dist/unidy-login/index.esm.js",
+  "jsdelivr": "dist/unidy-login/index.esm.js",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "unpkg": "./dist/unidy-login/index.esm.js"
+      "unpkg": "./dist/unidy-login/index.esm.js",
+      "jsdelivr": "./dist/unidy-login/index.esm.js"
     },
     "./lazy": {
       "import": "./dist/esm/unidy-login.js",
       "require": "./dist/cjs/unidy-login.js",
-      "unpkg": "./dist/unidy-login/unidy-login.esm.js"
+      "unpkg": "./dist/unidy-login/unidy-login.esm.js",
+      "jsdelivr": "./dist/unidy-login/unidy-login.esm.js"
     }
   },
   "repository": {
