@@ -126,6 +126,14 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       return;
     }
 
+    // When the authorization flow redirects back, the iframe wrapped in unidy-login component will load the initial page and attempt to mount
+    // the component and extract the token from the URL. This results in mounting the component twice, as well as storing the token and calling the onAuth callback twice.
+    // To prevent this we check if we are in an iframe and if so, we don't mount the component.
+    const isInIframe = window.self !== window.top;
+    if (isInIframe) {
+      return;
+    }
+
     if (this.initState) return;
 
     this.initState = "loading";
