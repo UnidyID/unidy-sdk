@@ -31,11 +31,11 @@ foobar
 
 ## Events
 
-| Event         | Description | Type                                                                                                                                                                      |
-| ------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `on:error`    |             | `CustomEvent<{ newsletter_internal_name?: string; error_identifier?: string; }[]>`                                                                                        |
-| `on:success`  |             | `CustomEvent<{ email?: string; id?: number; newsletter_internal_name?: string; preference_identifiers?: string[]; preference_token?: string; confirmed_at?: string; }[]>` |
-| `resetStatus` |             | `CustomEvent<void>`                                                                                                                                                       |
+| Event         | Description | Type                                                                                                                                                                 |
+| ------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `on:error`    |             | `CustomEvent<{ newsletter_internal_name: string; error_identifier: string; }[]>`                                                                                     |
+| `on:success`  |             | `CustomEvent<{ id: number; email: string; newsletter_internal_name: string; preference_identifiers: string[]; preference_token: string; confirmed_at?: string; }[]>` |
+| `resetStatus` |             | `CustomEvent<void>`                                                                                                                                                  |
 
 
 ## Shadow Parts
