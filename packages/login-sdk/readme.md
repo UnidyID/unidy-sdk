@@ -75,44 +75,6 @@ document.getElementById('logout-button').addEventListener('click', async () => {
 
 ## Advanced Usage
 
-### Custom Token Storage
-
-If you need to manage the token yourself, set `storeTokenInSession` to `false`.
-
-**Note:** When `storeTokenInSession` is `false`, the methods `isAuthenticated()` and `userTokenData()` will not work as expected, as they rely on session storage.
-
-```typescript
-import { UnidyAuth } from '@unidy.io/auth';
-
-const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
-  clientId: "your-client-id",
-  scope: "openid profile email",
-  storeTokenInSession: false // Disable automatic token storage
-});
-
-// Implement your own token storage
-const myAppTokenStore = {
-  set: (token) => localStorage.setItem('auth_token', token),
-  get: () => localStorage.getItem('auth_token'),
-  remove: () => localStorage.removeItem('auth_token')
-};
-
-// Handle login
-document.getElementById('login-button').addEventListener('click', async () => {
-  const result = await unidyAuth.auth();
-  if (result.success) {
-    myAppTokenStore.set(result.token); // Store the token
-    console.log('Welcome back,', result.userTokenData.name);
-  }
-});
-
-// Handle logout
-document.getElementById('logout-button').addEventListener('click', async () => {
-  await unidyAuth.logout();
-  myAppTokenStore.remove(); // Remove the token
-});
-```
-
 ### Inline Mode
 
 To embed the login form directly into your page instead of a modal, set `mode` to `'inline'`.
@@ -157,6 +119,44 @@ unidy-login::part(login-button) {
   color: #ffffff;
   /* ... other styles */
 }
+```
+
+### Custom Token Storage
+
+If you need to manage the token yourself, set `storeTokenInSession` to `false`.
+
+**Note:** When `storeTokenInSession` is `false`, the methods `isAuthenticated()` and `userTokenData()` will not work as expected, as they rely on session storage.
+
+```typescript
+import { UnidyAuth } from '@unidy.io/auth';
+
+const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
+  clientId: "your-client-id",
+  scope: "openid profile email",
+  storeTokenInSession: false // Disable automatic token storage
+});
+
+// Implement your own token storage
+const myAppTokenStore = {
+  set: (token) => localStorage.setItem('auth_token', token),
+  get: () => localStorage.getItem('auth_token'),
+  remove: () => localStorage.removeItem('auth_token')
+};
+
+// Handle login
+document.getElementById('login-button').addEventListener('click', async () => {
+  const result = await unidyAuth.auth();
+  if (result.success) {
+    myAppTokenStore.set(result.token); // Store the token
+    console.log('Welcome back,', result.userTokenData.name);
+  }
+});
+
+// Handle logout
+document.getElementById('logout-button').addEventListener('click', async () => {
+  await unidyAuth.logout();
+  myAppTokenStore.remove(); // Remove the token
+});
 ```
 
 ## Configuration
