@@ -183,11 +183,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     mountElement.appendChild(this.component);
 
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
-    const token = Utils.extractHashUrlParam(window.location.href, "id_token");
-
-    if (token && this.validateToken(token)) {
-      this.storeToken(token);
-      this.config.onAuth?.(token);
+    const tokenFromRedirect = Utils.extractHashUrlParam(window.location.href, "id_token");
+    if (tokenFromRedirect && this.validateToken(tokenFromRedirect)) {
+      this.config.onAuth?.(tokenFromRedirect);
+      this.storeToken(tokenFromRedirect);
     }
 
     this.initState = "done";
