@@ -69,6 +69,8 @@ export class Newsletter {
   private client: UnidyClient;
 
   componentWillLoad() {
+    this.handleAuthEvent();
+
     this.client = new UnidyClient(this.apiUrl, this.apiKey);
 
     if (this.newslettersConfigJson) {
@@ -107,6 +109,35 @@ export class Newsletter {
       this.handleConfirmationError();
     } else if (selectedParam) {
       this.handleConfirmationSuccess();
+    }
+  }
+
+  private handleAuthEvent() {
+    window.addEventListener("unidy:auth", (event: CustomEvent) => {
+      const { userData } = event.detail;
+
+      if (userData) {
+        this.prefillForm(userData);
+      }
+    });
+  }
+
+  private prefillForm(userData: Record<string, unknown>) {
+    if (userData?.email && typeof userData.email === "string" && !this.email) {
+      this.email = userData.email;
+    }
+
+    if (this.additionalFields.length > 0) {
+      const updatedFields: Record<string, string> = {};
+
+      for (const field of this.additionalFields) {
+        const value = userData[field.name];
+        if (value) {
+          updatedFields[field.name] = value as string;
+        }
+      }
+
+      this.additionalFieldValues = updatedFields;
     }
   }
 
