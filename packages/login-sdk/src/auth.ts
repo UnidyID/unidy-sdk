@@ -402,14 +402,13 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
 
   private dispatchAuthEvent(token: string): void {
     if (typeof window !== "undefined") {
-      // delay to make sure listeners are mounted/loaded
+      // small delay to make sure listeners are mounted/loaded before dispatching the event
       setTimeout(() => {
         window.dispatchEvent(
           new CustomEvent("unidy:auth", {
             detail: {
               token,
               userData: this.parseToken(token),
-              timestamp: Date.now(),
             },
           }),
         );
