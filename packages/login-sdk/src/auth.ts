@@ -111,6 +111,10 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     this.logger = new Logger(config.enableLogging ?? false);
 
     if (typeof window !== "undefined") {
+      if (!window.customElements.get("unidy-login")) {
+        this.logger.error("<unidy-login> component not registered");
+      }
+
       this.component = document.createElement("unidy-login");
       this.mountComponent();
     }
