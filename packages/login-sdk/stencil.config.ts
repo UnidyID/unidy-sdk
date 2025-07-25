@@ -21,10 +21,11 @@ export const config: Config = {
       copy: [
         { src: "shop.html", dest: "shop.html" },
         { src: "index.html", dest: "index.html" },
+
         // Only for development purposes: we are copying the newsletter component to the www directory so it can be used together with the login SDK.
         // Build the components package to ensure the component is available or run build script in the root directory
-        { src: "../../components/dist/per-component/unidy-newsletter.js", dest: "unidy-newsletter.js" },
-        { src: "../../components/dist/per-component/index.js", dest: "index.js" },
+        { src: "../../components/dist/per-component/unidy-newsletter.js", dest: "newsletter/unidy-newsletter.js" },
+        { src: "../../components/dist/per-component/index.js", dest: "newsletter/index.js" },
       ],
     },
   ],

@@ -3,8 +3,9 @@
   "version": "0.0.17",
   "license": "MIT",
   "private": false,
+  "type": "module",
   "scripts": {
-    "build": "stencil build",
+    "build": "stencil build && node scripts/post-build.js",
     "clean": "rm -rf dist www loader .stencil",
     "dev": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
