@@ -57,6 +57,11 @@ export class Newsletter {
   @State() showConfirmSuccessSlot = false;
   @State() showConfirmationErrorSlot = false;
 
+  // New state to track which newsletters are currently resending the DOI email.
+  @State() resendingDoi: string[] = [];
+  // New state to track for which newsletters the DOI email has been successfully resent.
+  @State() doiResent: string[] = [];
+
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
 
@@ -143,10 +148,44 @@ export class Newsletter {
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }
 
+  // New handler for resending the DOI confirmation email.
+  private handleResendDoi = async (newsletterInternalName: string) => {
+    // Set loading state for this specific newsletter
+    this.resendingDoi = [...this.resendingDoi, newsletterInternalName];
+
+    try {
+      // The SDK client does not seem to have a dedicated method for this,
+      // so we use fetch directly with the configured apiUrl.
+      // This assumes a specific endpoint for resending the DOI email.
+      const response = await this.client.newsletters.resendDoi(this.email, newsletterInternalName);
+      if (!response) {
+        throw new Error("No response from the server.");
+      }
+
+      if (!response.ok) {
+        // If the API returns an error, we throw an error to be caught by the catch block.
+        const errorData = await response.json();
+        throw new Error(errorData.message || "An unknown error occurred.");
+      }
+
+      // On success, add the newsletter to the doiResent array to update the UI.
+      this.doiResent = [...this.doiResent, newsletterInternalName];
+    } catch (error) {
+      // For simplicity, we'll alert the error. A more robust implementation
+      // could use a dedicated error state for the resend action.
+      alert(`Could not resend confirmation: ${error.message}`);
+    } finally {
+      // Remove the newsletter from the loading state.
+      this.resendingDoi = this.resendingDoi.filter((name) => name !== newsletterInternalName);
+    }
+  };
+
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.errors = {};
     this.showSubscribeSuccessSlot = false;
+    // Reset the DOI resent status on each new submission.
+    this.doiResent = [];
 
     const customAttributes = Object.entries(this.additionalFieldValues)
       .filter(([key]) => key.startsWith("custom_attribute:"))
@@ -278,13 +317,26 @@ export class Newsletter {
     }
 
     const message = this.errors[newsletterName];
+    const errorIdentifier = message.error_identifier as NewsletteerErrorIdentifier;
+    const isUnconfirmed = errorIdentifier === "unconfirmed";
+    const isResending = this.resendingDoi.includes(newsletterName);
+    const hasResent = this.doiResent.includes(newsletterName);
+
     return (
-      <div
-        key={`error-${newsletterName}-${message.error_identifier}`}
-        part={`error-message ${message.error_identifier}`}
-        class={`${message.error_identifier}`}
-      >
-        {this.getErrorText(message.error_identifier as NewsletteerErrorIdentifier)}
+      <div key={`error-${newsletterName}-${errorIdentifier}`} part={`error-message ${errorIdentifier}`} class={`${errorIdentifier}`}>
+        {this.getErrorText(errorIdentifier)}
+        {/* If the error is 'unconfirmed', render a button to allow the user to resend the DOI email. */}
+        {isUnconfirmed && (
+          <button
+            type="button" // Important to prevent form submission
+            onClick={() => this.handleResendDoi(newsletterName)}
+            disabled={isResending || hasResent}
+            part="resend-doi-button"
+            class="ml-2 underline"
+          >
+            {isResending ? "Sending..." : hasResent ? "Confirmation Sent" : "Resend confirmation"}
+          </button>
+        )}
       </div>
     );
   }
