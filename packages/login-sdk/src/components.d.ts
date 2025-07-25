@@ -29,6 +29,7 @@ export namespace Components {
         "clientId": string;
         /**
           * Whether to enable logging, defaults to true
+          * @default true
          */
         "enableLogging": boolean;
         /**
@@ -45,26 +46,32 @@ export namespace Components {
         "logout": () => Promise<LogoutResult>;
         /**
           * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
+          * @default "dialog"
          */
         "mode": "dialog" | "inline";
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
+          * @default null
          */
         "prompt": PromptOption;
         /**
           * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true
+          * @default true
          */
         "redirectFlowForLimitedThirdPartyCookieAccess": boolean;
         /**
           * When in inline mode and the browser has no access to third-party cookies, a login button is rendered with this label. Defaults to "Login"
+          * @default "Login"
          */
         "redirectFlowLoginButtonLabel": string;
         /**
           * The OAuth response type, defaults to "id_token"
+          * @default "id_token"
          */
         "responseType": ResponseType;
         /**
           * The OAuth scopes to request, defaults to "openid email"
+          * @default "openid email"
          */
         "scope": string;
         /**
@@ -113,31 +120,38 @@ declare namespace LocalJSX {
         "clientId": string;
         /**
           * Whether to enable logging, defaults to true
+          * @default true
          */
         "enableLogging"?: boolean;
         /**
           * The rendering mode - 'dialog' for modal popup, 'inline' for embedded in page
+          * @default "dialog"
          */
         "mode"?: "dialog" | "inline";
         "onAuthEvent"?: (event: UnidyLoginCustomEvent<{ token: string }>) => void;
         /**
           * The prompt option for authentication, can be "none", "login", "consent", "select_account" or null
+          * @default null
          */
         "prompt"?: PromptOption;
         /**
           * Whether to use the special redirect behavior, for browsers limitation access to third party cookies. This should be disabled, when the Unidy instance runs on the same second level domain. Defaults to true
+          * @default true
          */
         "redirectFlowForLimitedThirdPartyCookieAccess"?: boolean;
         /**
           * When in inline mode and the browser has no access to third-party cookies, a login button is rendered with this label. Defaults to "Login"
+          * @default "Login"
          */
         "redirectFlowLoginButtonLabel"?: string;
         /**
           * The OAuth response type, defaults to "id_token"
+          * @default "id_token"
          */
         "responseType"?: ResponseType;
         /**
           * The OAuth scopes to request, defaults to "openid email"
+          * @default "openid email"
          */
         "scope"?: string;
     }

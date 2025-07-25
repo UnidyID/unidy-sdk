@@ -154,8 +154,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       const { token } = event.detail;
 
       if (token && this.validateToken(token)) {
-        this.storeToken(token);
-        this.config.onAuth?.(token);
+        this.storeTokenAndDispatchEvent(token);
       }
     });
 
@@ -185,8 +184,7 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
     // Try to authenticate after redirect (after confirmation for example) if there is a token in the URL
     const tokenFromRedirect = Utils.extractHashUrlParam(window.location.href, "id_token");
     if (tokenFromRedirect && this.validateToken(tokenFromRedirect)) {
-      this.config.onAuth?.(tokenFromRedirect);
-      this.storeToken(tokenFromRedirect);
+      this.storeTokenAndDispatchEvent(tokenFromRedirect);
     }
 
     this.initState = "done";
@@ -313,10 +311,15 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
       }
 
       this.storeToken(res.token);
-      return true;
     }
 
-    return !!this.idToken && this.validateToken(this.idToken);
+    const isAuthenticated = !!this.idToken && this.validateToken(this.idToken);
+
+    if (isAuthenticated) {
+      this.dispatchAuthEvent(this.idToken);
+    }
+
+    return isAuthenticated;
   }
 
   /**
@@ -387,6 +390,29 @@ export class Auth<CustomPayload extends Record<string, unknown> = Record<string,
   private storeToken(token: string): void {
     if (this.storeTokenInSession) {
       sessionStorage.setItem(UNIDY_ID_TOKEN_SESSION_KEY, token);
+    }
+  }
+
+  private storeTokenAndDispatchEvent(token: string): void {
+    this.storeToken(token);
+    this.config.onAuth?.(token);
+
+    this.dispatchAuthEvent(token);
+  }
+
+  private dispatchAuthEvent(token: string): void {
+    if (typeof window !== "undefined") {
+      // small delay to make sure listeners are mounted/loaded before dispatching the event
+      setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent("unidy:auth", {
+            detail: {
+              token,
+              userData: this.parseToken(token),
+            },
+          }),
+        );
+      }, 20);
     }
   }
 }

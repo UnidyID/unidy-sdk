@@ -4,10 +4,12 @@
   "packageManager": "bun@1.2.13",
   "workspaces": ["packages/*"],
   "scripts": {
-    "clean": "rm -rf ./node_modules",
+    "clean": "rm -rf ./node_modules && rm -rf ./packages/*/dist && rm -rf ./packages/*/www && rm -rf ./packages/*/.stencil && rm -rf ./packages/*/loader",
     "format": "biome format --write .",
     "lint": "biome lint .",
-    "lint:fix": "biome lint --write ."
+    "lint:fix": "biome lint --write .",
+    "install": "bun install --filter './packages/*'",
+    "build": "bun --filter './packages/*' build"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"
