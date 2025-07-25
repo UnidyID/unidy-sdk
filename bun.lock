@@ -9,7 +9,7 @@
     },
     "packages/components": {
       "name": "@unidy.io/components",
-      "version": "0.2.0",
+      "version": "0.2.4",
       "dependencies": {
         "@unidy.io/sdk-api-client": "workspace:*",
       },
@@ -27,7 +27,7 @@
     },
     "packages/login-sdk": {
       "name": "@unidy.io/auth",
-      "version": "0.0.12",
+      "version": "0.0.17",
       "dependencies": {
         "jwt-decode": "4.0.0",
       },
@@ -46,7 +46,7 @@
     },
     "packages/sdk-api-client": {
       "name": "@unidy.io/sdk-api-client",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "dependencies": {
         "zod": "^4.0.0",
       },
