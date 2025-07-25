@@ -5,11 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="/build/unidy-login.esm.js"></script>
-
-  <!--
-    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.10-alpha/dist/unidy-login/index.esm.js"></script>
-    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.10-alpha/dist/unidy-login/unidy-login.esm.js"></script>
-  -->
+  <script type="module" src="/unidy-newsletter.js"></script>
 
   <title>Dinamo Zagreb Fan Page</title>
   <style>
@@ -185,6 +181,115 @@
       max-width: 4rem;
       height: 20px
     }
+
+    .newsletter-section {
+      background: var(--dinamo-white);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .newsletter-section h2 {
+      margin: 0 0 0.5rem;
+      color: var(--dinamo-blue);
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+
+    .newsletter-section p {
+      margin: 0 0 1.5rem;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    unidy-newsletter::part(container) {
+      background-color: transparent;
+      padding: 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    unidy-newsletter::part(email-input-group) {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    unidy-newsletter::part(email-input) {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    unidy-newsletter::part(email-input):focus {
+      outline: none;
+      border-color: var(--dinamo-blue);
+      box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+    }
+
+    unidy-newsletter::part(email-input-label) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-50%);
+      background: white;
+      padding: 0 0.5rem;
+      color: #666;
+      font-size: 1rem;
+      margin-left: 1rem;
+      z-index: 2;
+    }
+
+    unidy-newsletter::part(submit-button) {
+      background-color: var(--dinamo-blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: all 0.2s;
+    }
+
+    unidy-newsletter::part(submit-button):hover {
+      background-color: var(--dinamo-light-blue);
+      transform: translateY(-1px);
+    }
+
+    unidy-newsletter::part(additional-field-input-group) {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    unidy-newsletter::part(additional-field-input) {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    unidy-newsletter::part(additional-field-label) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-50%);
+      background: white;
+      padding: 0 0.5rem;
+      color: #666;
+      font-size: 1rem;
+      margin-left: 1rem;
+      z-index: 2;
+    }
   </style>
 </head>
 
@@ -250,6 +355,36 @@
       </div>
     </div>
 
+    <div class="newsletter-section">
+      <h2>Stay Updated with Dinamo News</h2>
+      <p>Subscribe to our newsletter for the latest updates</p>
+
+      <unidy-newsletter api-key="public-newsletter-api-key" api-url="http://localhost:3000"
+        email-placeholder="your@email.com" error-already-subscribed-text="You are already subscribed to this newsletter"
+        error-invalid-email-text="Please enter a valid email address"
+        error-newsletter-not-found-text="Newsletter not found"
+        error-unconfirmed-text="Please confirm your email address" error-unknown-text="An unknown error occurred"
+        error-preference-not-found-text="Preference not found" render-error-messages="true"
+        submit-button-text="Subscribe"
+        success-confirmation-text="You have successfully subscribed to the newsletter. Thank you for joining us!"
+        newsletters-config-json='[
+        {
+          "internalName": "main",
+          "label": "Dinamo News",
+          "checked": true,
+          "preferences": [
+            { "internalName": "club_news", "label": "Club news", "checked": true },
+            { "internalName": "player_news", "label": "Player news", "checked": false }
+          ]
+        }
+      ]' additional-fields-config-json='[
+        { "name": "given_name", "label": "First Name", "type": "text" },
+        { "name": "family_name", "label": "Last Name", "type": "text" }
+      ]'>
+      </unidy-newsletter>
+
+    </div>
+
     <div id="token-info" class="token-info"></div>
   </div>
 
@@ -273,7 +408,7 @@
     if (await unidyAuth.isAuthenticated()) {
       updateUI(true, unidyAuth.userTokenData()); // using token stored in session storage to get user data
     } else {
-      // silent auth attemot on 'homepage'
+      // silent auth attempt on 'homepage'
       if (window.location.href === `${window.location.origin}/`) {
         const res = await unidyAuth.auth({ silent: true })
 
