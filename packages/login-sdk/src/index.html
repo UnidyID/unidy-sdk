@@ -5,12 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script type="module" src="/build/unidy-login.esm.js"></script>
-
   <script type="module" src="/unidy-newsletter.js"></script>
-  <!--
-    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.10-alpha/dist/unidy-login/index.esm.js"></script>
-    <script type="module" src="https://unpkg.com/@unidy.io/auth@0.0.10-alpha/dist/unidy-login/unidy-login.esm.js"></script>
-  -->
 
   <title>Dinamo Zagreb Fan Page</title>
   <style>
@@ -413,7 +408,7 @@
     if (await unidyAuth.isAuthenticated()) {
       updateUI(true, unidyAuth.userTokenData()); // using token stored in session storage to get user data
     } else {
-      // silent auth attemot on 'homepage'
+      // silent auth attempt on 'homepage'
       if (window.location.href === `${window.location.origin}/`) {
         const res = await unidyAuth.auth({ silent: true })
 
