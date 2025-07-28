@@ -11,25 +11,67 @@ export { NewsletterConfig } from "./components/newsletter/newsletter";
 export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
+        /**
+          * @default []
+         */
         "additionalFields": { name: string; label: string; type: string; required?: boolean }[];
         "additionalFieldsConfigJson": string;
         "apiKey": string;
         "apiUrl": string;
+        /**
+          * @default "Your preference token could not be assigned. Enter your e-mail address to receive a new link."
+         */
         "confirmationErrorText": string;
+        /**
+          * @default "Email"
+         */
         "emailLabel": string;
+        /**
+          * @default "Email"
+         */
         "emailPlaceholder": string;
+        /**
+          * @default "Already subscribed"
+         */
         "errorAlreadySubscribedText": string;
+        /**
+          * @default "Invalid email address"
+         */
         "errorInvalidEmailText": string;
+        /**
+          * @default "Newsletter not found"
+         */
         "errorNewsletterNotFoundText": string;
+        /**
+          * @default "Preference not found"
+         */
         "errorPreferenceNotFoundText": string;
+        /**
+          * @default "Email not confirmed"
+         */
         "errorUnconfirmedText": string;
+        /**
+          * @default "Unknown error occured"
+         */
         "errorUnknownText": string;
         "header": string;
+        /**
+          * @default []
+         */
         "newslettersConfig": NewsletterConfig[];
         "newslettersConfigJson": string;
+        /**
+          * @default false
+         */
         "renderErrorMessages": boolean;
         "returnToAfterConfirmation"?: string;
+        /**
+          * @default "Subscribe"
+         */
         "submitButtonText": string;
+        /**
+          * @default "You have successfully confirmed your newsletter subscription."
+         */
         "successConfirmationText": string;
     }
 }
@@ -63,28 +105,70 @@ declare global {
 }
 declare namespace LocalJSX {
     interface UnidyNewsletter {
+        /**
+          * @default []
+         */
         "additionalFields"?: { name: string; label: string; type: string; required?: boolean }[];
         "additionalFieldsConfigJson"?: string;
         "apiKey"?: string;
         "apiUrl"?: string;
+        /**
+          * @default "Your preference token could not be assigned. Enter your e-mail address to receive a new link."
+         */
         "confirmationErrorText"?: string;
+        /**
+          * @default "Email"
+         */
         "emailLabel"?: string;
+        /**
+          * @default "Email"
+         */
         "emailPlaceholder"?: string;
+        /**
+          * @default "Already subscribed"
+         */
         "errorAlreadySubscribedText"?: string;
+        /**
+          * @default "Invalid email address"
+         */
         "errorInvalidEmailText"?: string;
+        /**
+          * @default "Newsletter not found"
+         */
         "errorNewsletterNotFoundText"?: string;
+        /**
+          * @default "Preference not found"
+         */
         "errorPreferenceNotFoundText"?: string;
+        /**
+          * @default "Email not confirmed"
+         */
         "errorUnconfirmedText"?: string;
+        /**
+          * @default "Unknown error occured"
+         */
         "errorUnknownText"?: string;
         "header"?: string;
+        /**
+          * @default []
+         */
         "newslettersConfig"?: NewsletterConfig[];
         "newslettersConfigJson"?: string;
         "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
+        /**
+          * @default false
+         */
         "renderErrorMessages"?: boolean;
         "returnToAfterConfirmation"?: string;
+        /**
+          * @default "Subscribe"
+         */
         "submitButtonText"?: string;
+        /**
+          * @default "You have successfully confirmed your newsletter subscription."
+         */
         "successConfirmationText"?: string;
     }
     interface IntrinsicElements {
