@@ -57,10 +57,7 @@ export class NewsletterService extends EventEmitter {
   async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<CreateSubscriptionsResponse>(
-      "/api/sdk/v1/newsletter_subscriptions",
-      payload
-    );
+    const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletter_subscriptions", payload);
 
     switch (response.status) {
       case 429:
@@ -89,6 +86,12 @@ export class NewsletterService extends EventEmitter {
 
         return ["error", response];
     }
+  }
+
+  async resendDoi(newsletterName: string, email: string): Promise<boolean> {
+    const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, { email });
+
+    return response.status === 204;
   }
 
   onError(

@@ -12,7 +12,7 @@ export type NewsletterConfig = {
   }[];
 };
 
-export type NewsletteerErrorIdentifier =
+export type NewsletterErrorIdentifier =
   | "unconfirmed"
   | "already_subscribed"
   | "invalid_email"
@@ -39,12 +39,14 @@ export class Newsletter {
   @Prop() returnToAfterConfirmation?: string;
 
   @Prop() renderErrorMessages = false;
-  @Prop() errorUnconfirmedText = "Email not confirmed";
+  @Prop() errorUnconfirmedText = "Your email is not confirmed.";
   @Prop() errorAlreadySubscribedText = "Already subscribed";
   @Prop() errorInvalidEmailText = "Invalid email address";
   @Prop() errorNewsletterNotFoundText = "Newsletter not found";
   @Prop() errorPreferenceNotFoundText = "Preference not found";
   @Prop() errorUnknownText = "Unknown error occured";
+  @Prop() errorResendConfirmationActionText = "Resend confirmation email";
+  @Prop() errorResendConfirmationSuccessText = "Please check your inbox for the confirmation email.";
   @Prop() successConfirmationText = "You have successfully confirmed your newsletter subscription.";
   @Prop() confirmationErrorText = "Your preference token could not be assigned. Enter your e-mail address to receive a new link.";
 
@@ -56,6 +58,9 @@ export class Newsletter {
   @State() showSubscribeSuccessSlot = false;
   @State() showConfirmSuccessSlot = false;
   @State() showConfirmationErrorSlot = false;
+
+  // New state to track which newsletters are currently resending the DOI email.
+  @State() resendingDoi: string[] = [];
 
   @Event({ eventName: "on:success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
@@ -170,6 +175,11 @@ export class Newsletter {
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }
 
+  private handleResendDoi = async (preferenceToken: string, email: string) => {
+    this.client.newsletters.resendDoi(preferenceToken, email);
+    this.resendingDoi = [...this.resendingDoi, preferenceToken];
+  };
+
   private handleSubmit = async (e: Event) => {
     e.preventDefault();
     this.errors = {};
@@ -250,7 +260,7 @@ export class Newsletter {
     this.email = "";
   };
 
-  private getErrorText(error_identifier: NewsletteerErrorIdentifier): string {
+  private getErrorText(error_identifier: NewsletterErrorIdentifier): string {
     switch (error_identifier) {
       case "unconfirmed":
         return this.errorUnconfirmedText;
@@ -305,13 +315,31 @@ export class Newsletter {
     }
 
     const message = this.errors[newsletterName];
+    const errorIdentifier = message.error_identifier as NewsletterErrorIdentifier;
+    const isUnconfirmed = errorIdentifier === "unconfirmed";
+    const isResending = this.resendingDoi.includes(newsletterName);
+
     return (
-      <div
-        key={`error-${newsletterName}-${message.error_identifier}`}
-        part={`error-message ${message.error_identifier}`}
-        class={`${message.error_identifier}`}
-      >
-        {this.getErrorText(message.error_identifier as NewsletteerErrorIdentifier)}
+      <div key={`error-${newsletterName}-${errorIdentifier}`} part={`error-message ${errorIdentifier}`} class={`${errorIdentifier}`}>
+        {!isUnconfirmed && this.getErrorText(errorIdentifier)}
+
+        {isUnconfirmed && !isResending && (
+          <>
+            { this.errorUnconfirmedText }
+            <button
+              type="button"
+              onClick={() => this.handleResendDoi(newsletterName, this.email)}
+              part="resend-doi-button"
+              class="ml-2 underline cursor-pointer"
+            >
+              { this.errorResendConfirmationActionText }
+            </button>
+          </>
+        )}
+
+        {isUnconfirmed && isResending && (
+          <span part="resending-doi-text" class="ml-2">{ this.errorResendConfirmationSuccessText }</span>
+        )}
       </div>
     );
   }

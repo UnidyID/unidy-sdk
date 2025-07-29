@@ -47,7 +47,15 @@ export namespace Components {
          */
         "errorPreferenceNotFoundText": string;
         /**
-          * @default "Email not confirmed"
+          * @default "Resend confirmation email"
+         */
+        "errorResendConfirmationActionText": string;
+        /**
+          * @default "Please check your inbox for the confirmation email."
+         */
+        "errorResendConfirmationSuccessText": string;
+        /**
+          * @default "Your email is not confirmed."
          */
         "errorUnconfirmedText": string;
         /**
@@ -141,7 +149,15 @@ declare namespace LocalJSX {
          */
         "errorPreferenceNotFoundText"?: string;
         /**
-          * @default "Email not confirmed"
+          * @default "Resend confirmation email"
+         */
+        "errorResendConfirmationActionText"?: string;
+        /**
+          * @default "Please check your inbox for the confirmation email."
+         */
+        "errorResendConfirmationSuccessText"?: string;
+        /**
+          * @default "Your email is not confirmed."
          */
         "errorUnconfirmedText"?: string;
         /**
