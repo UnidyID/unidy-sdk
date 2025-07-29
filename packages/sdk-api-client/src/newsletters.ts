@@ -91,11 +91,7 @@ export class NewsletterService extends EventEmitter {
   async resendDoi(newsletterName: string, email: string): Promise<boolean> {
     const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, { email });
 
-    if (response.status === 204) {
-      return true;
-    }
-
-    return false;
+    return response.status === 204;
   }
 
   onError(
