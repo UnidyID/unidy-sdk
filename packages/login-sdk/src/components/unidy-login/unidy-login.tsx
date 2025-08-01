@@ -3,6 +3,21 @@ import { Utils } from "../../utils";
 import { Logger } from "../../logger";
 import type { LogoutResult, PromptOption, ResponseType } from "../../auth";
 
+// Polyfill for Promise.withResolvers (not supported on older iOS versions)
+if (!Promise.withResolvers) {
+  Promise.withResolvers = <T,>(): PromiseWithResolvers<T> => {
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: unknown) => void;
+
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+
+    return { promise, resolve, reject };
+  };
+}
+
 export type AuthResult = { success: true; token: string } | { success: false; error: string };
 
 @Component({
