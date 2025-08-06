@@ -22,6 +22,7 @@ export const Utils = {
       // will match chrome and chromium browsers
       !userAgent.includes("chrom") &&
       !userAgent.includes("android");
-    return isSafari;
+    const isSamsungBrowser = userAgent.includes("samsungbrowser");
+    return isSafari || isSamsungBrowser;
   },
 };
