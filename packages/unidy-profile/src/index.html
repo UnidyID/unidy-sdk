@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Stencil Component Starter</title>
+
+    <script type="module" src="/build/unidy-profile.esm.js"></script>
+    <script nomodule src="/build/unidy-profile.js"></script>
+  </head>
+  <body>
+    <!-- <unidy-newsletter api-key="asdasdsa" api-url="https://vfl1848.staging.unidy.de">
+      <newsletter-login-button></newsletter-email>
+      <newsletter-pref id="main-ns"></newsletter-pref>
+      <newsletter-email-field></newsletter-email>
+      <newsletter-additional-field field="first_name"></newsletter-additional-field>
+      <newsletter-pref id="another-ns"></newsletter-pref>
+
+      <div style="border: 1px solid #ccc; padding: 10px; background-color: #f0f0f0">
+        <newsletter-additional-field field="last_name"></newsletter-additional-field>
+      </div>
+
+      <div style="border: 1px solid #ccc; padding: 10px; background-color: #f0f0f0">SOME BIG CARD</div>
+      <newsletter-pref id="last"></newsletter-pref>
+      <newsletter-submit api-key="asdasdsa" api-url="https://vfl1848.staging.unidy.de"></newsletter-submit>
+    </unidy-newsletter>
+
+    <unidy-field field="first_name" locked>Vorname</unidy-field>
+    <unidy-field field="last_name" locked>Vorname</unidy-field>
+    <unidy-field field="address_1" locked>Vorname</unidy-field>
+    <unidy-field field="company_name" locked>Vorname</unidy-field>
+    <unidy-field field="zip" locked>Vorname</unidy-field>
+    <submit-button api-key="asdasdsa" api-url="https://vfl1848.staging.unidy.de"></submit-button>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; border: 1px solid #ccc; padding: 10px">
+      <unidy-field field="first_name"></unidy-field>
+      <p>This is some text</p>
+
+      <unidy-field field="last_name"></unidy-field>
+
+      <div style="border: 1px solid #ccc; padding: 10px; background-color: #f0f0f0">SOME BIG CARD</div>
+    </div>
+
+    <submit-button style="margin-top: 10px"> Submit </submit-button>
+
+    <script>
+      const submitButton = document.querySelector('submit-button');
+      submitButton.initialize({
+        userToken: 'asdasd',
+        lang: 'de',
+      });
+    </script> -->
+
+    <unidy-profile initial-data='{"first_name": "John", "last_name": "Doe"}'>
+      <unidy-field field="first_name"></unidy-field>
+      <unidy-field field="last_name"></unidy-field>
+      <submit-button>Submit botun</submit-button>
+    </unidy-profile>
+
+    <unidy-field field="first_name"></unidy-field>
+
+    <unidy-profile use-unidy-auth-enabled>
+      <unidy-field field="first_name"></unidy-field>
+      <unidy-field field="last_name"></unidy-field>
+      <submit-button></submit-button>
+    </unidy-profile>
+  </body>
+</html>
