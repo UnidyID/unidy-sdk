@@ -13,6 +13,7 @@
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
+    "@stencil/react-output-target": "^1.2.0",
     "@unidy.io/sdk-api-client": "workspace:*"
   },
   "devDependencies": {
@@ -51,6 +52,10 @@
       "require": "./dist/cjs/unidy-newsletter.js",
       "unpkg": "./dist/per-component/unidy-newsletter.js",
       "default": "./dist/per-component/unidy-newsletter.js"
+    },
+    "./dist/*": {
+      "import": "./dist/*",
+      "types": "./dist/*"
     },
     "./loader": {
       "import": "./loader/index.js",

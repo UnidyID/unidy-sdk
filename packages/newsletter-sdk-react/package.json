@@ -1,0 +1,24 @@
+{
+  "name": "newsletter-sdk-react",
+  "version": "0.0.1",
+  "description": "React wrapper for the Unidy newsletter SDK",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "npm run tsc",
+    "tsc": "tsc -p . --outDir ./dist"
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stencil/react-output-target": "^1.2.0",
+    "@types/react": "^19.1.10",
+    "@unidy.io/components": "*",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "5"
+  }
+}
