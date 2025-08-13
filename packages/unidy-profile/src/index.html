@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Stencil Component Starter</title>
+
+    <script type="module" src="/build/unidy-profile.esm.js"></script>
+    <script nomodule src="/build/unidy-profile.js"></script>
+  </head>
+  <body>
+    <unidy-profile initial-data='{"first_name": "John", "last_name": "Doe"}'>
+      <unidy-field field="first_name"></unidy-field>
+      <unidy-field field="last_name"></unidy-field>
+      <submit-button>Submit botun</submit-button>
+    </unidy-profile>
+
+    <unidy-profile use-unidy-auth-enabled api-key="public-newsletter-api-key" api-url="http://localhost:3000">
+      <unidy-field field="first_name"></unidy-field>
+      <unidy-field field="last_name"></unidy-field>
+      <submit-button></submit-button>
+      <div id="profile-output"></div>
+    </unidy-profile>
+  </body>
+</html>

@@ -6,6 +6,8 @@ export interface ApiResponse<T> {
   error?: Error | string;
 }
 
+export type RequestOptions = { headers?: Record<string, string> };
+
 export class ApiClient {
   constructor(
     public baseUrl: string,
@@ -14,18 +16,23 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
+  private buildHeaders(extra?: Record<string, string>): HeadersInit {
+    const base: Record<string, string> = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${this.api_key}`,
+    };
+    return { ...base, ...(extra ?? {}) };
+  }
+
+  async post<T>(endpoint: string, body: object, options?: RequestOptions): Promise<ApiResponse<T>> {
     let res: Response | null = null;
 
     try {
       res = await fetch(`${this.baseUrl}${endpoint}`, {
         method: "POST",
         mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${this.api_key}`,
-        },
+        headers: this.buildHeaders(options?.headers),
         body: JSON.stringify(body),
       });
 
