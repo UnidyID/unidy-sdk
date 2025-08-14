@@ -28,7 +28,7 @@ export type NewsletterErrorIdentifier =
 export class Newsletter {
   @Prop() header: string;
   @Prop() newslettersConfig: NewsletterConfig[] = [];
-  @Prop() newslettersConfigJson: string;
+  @Prop() newslettersConfigJson: string | NewsletterConfig[];
   @Prop() additionalFields: { name: string; label: string; type: string; required?: boolean }[] = [];
   @Prop() additionalFieldsConfigJson: string;
   @Prop() submitButtonText = "Subscribe";
@@ -86,7 +86,13 @@ export class Newsletter {
 
     if (this.newslettersConfigJson) {
       try {
-        this.newslettersConfig = JSON.parse(this.newslettersConfigJson);
+        if (typeof this.newslettersConfigJson === "string") {
+          this.newslettersConfig = JSON.parse(this.newslettersConfigJson);
+        } else if (Array.isArray(this.newslettersConfigJson)) {
+          this.newslettersConfig = this.newslettersConfigJson;
+        } else {
+          console.warn("newslettersConfigJson provided in unsupported format; expected string or array");
+        }
       } catch (error) {
         console.error("Failed to parse newslettersConfigJson:", error);
       }

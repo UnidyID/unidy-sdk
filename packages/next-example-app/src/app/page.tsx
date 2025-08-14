@@ -1,9 +1,8 @@
-import "./App.css";
 import { UnidyNewsletter } from "newsletter-sdk-react";
 
-function App() {
+export default function Home() {
   return (
-    <div className="App">
+    <div>
       <UnidyNewsletter
         api-key="public-newsletter-api-key"
         api-url="http://localhost:3000"
@@ -30,5 +29,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

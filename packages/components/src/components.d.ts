@@ -67,7 +67,7 @@ export namespace Components {
           * @default []
          */
         "newslettersConfig": NewsletterConfig[];
-        "newslettersConfigJson": string;
+        "newslettersConfigJson": string | NewsletterConfig[];
         /**
           * @default false
          */
@@ -169,7 +169,7 @@ declare namespace LocalJSX {
           * @default []
          */
         "newslettersConfig"?: NewsletterConfig[];
-        "newslettersConfigJson"?: string;
+        "newslettersConfigJson"?: string | NewsletterConfig[];
         "onError"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
         "onSuccess"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
