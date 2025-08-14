@@ -89,8 +89,8 @@ export interface UnidyNewsletterCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     interface HTMLUnidyNewsletterElementEventMap {
-        "on:success": NewsletterSubscription[];
-        "on:error": NewsletterSubscriptionError[];
+        "success": NewsletterSubscription[];
+        "error": NewsletterSubscriptionError[];
         "resetStatus": void;
     }
     interface HTMLUnidyNewsletterElement extends Components.UnidyNewsletter, HTMLStencilElement {
@@ -170,9 +170,9 @@ declare namespace LocalJSX {
          */
         "newslettersConfig"?: NewsletterConfig[];
         "newslettersConfigJson"?: string;
-        "onOn:error"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
-        "onOn:success"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
+        "onError"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscriptionError[]>) => void;
         "onResetStatus"?: (event: UnidyNewsletterCustomEvent<void>) => void;
+        "onSuccess"?: (event: UnidyNewsletterCustomEvent<NewsletterSubscription[]>) => void;
         /**
           * @default false
          */

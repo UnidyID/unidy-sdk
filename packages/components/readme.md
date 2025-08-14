@@ -93,10 +93,10 @@ type NewsletterConfig = {
 
 The component emits custom events to notify your application of success or failure.
 
--   **`on:success`**: Fired when a subscription request is successfully submitted.
+-   **`success`**: Fired when a subscription request is successfully submitted.
     -   `event.detail`: `NewsletterSubscription[]` - An array of the successful subscriptions.
 
--   **`on:error`**: Fired when there is an error with the subscription.
+-   **`error`**: Fired when there is an error with the subscription.
     -   `event.detail`: `NewsletterSubscriptionError[]` - An array of errors.
 
 ### Listening to Events
@@ -104,12 +104,12 @@ The component emits custom events to notify your application of success or failu
 ```javascript
 const newsletterElement = document.querySelector('unidy-newsletter');
 
-newsletterElement.addEventListener('on:success', (event) => {
+newsletterElement.addEventListener('success', (event) => {
   console.log('Successfully subscribed:', event.detail);
   // Show a success message to the user
 });
 
-newsletterElement.addEventListener('on:error', (event) => {
+newsletterElement.addEventListener('error', (event) => {
   console.error('Subscription error:', event.detail);
   // Handle errors, e.g., display a generic error message
 });

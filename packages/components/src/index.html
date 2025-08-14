@@ -359,10 +359,10 @@
     //   },...
     // ]
 
-    newsletterComponent.addEventListener('on:success', (event) => {
+    newsletterComponent.addEventListener('success', (event) => {
       console.log("Successfully subscribed", event.detail);
     });
-    newsletterComponent.addEventListener('on:error', (event) => {
+    newsletterComponent.addEventListener('error', (event) => {
       console.log("Error subscribing", event.detail);
     });
   </script>

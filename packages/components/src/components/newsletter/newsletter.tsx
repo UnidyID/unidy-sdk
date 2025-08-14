@@ -62,10 +62,10 @@ export class Newsletter {
   // New state to track which newsletters are currently resending the DOI email.
   @State() resendingDoi: string[] = [];
 
-  @Event({ eventName: "on:success" })
+  @Event({ eventName: "success" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
 
-  @Event({ eventName: "on:error" })
+  @Event({ eventName: "error" })
   errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
 
   @Event()
@@ -325,20 +325,22 @@ export class Newsletter {
 
         {isUnconfirmed && !isResending && (
           <>
-            { this.errorUnconfirmedText }
+            {this.errorUnconfirmedText}
             <button
               type="button"
               onClick={() => this.handleResendDoi(newsletterName, this.email)}
               part="resend-doi-button"
               class="ml-2 underline cursor-pointer"
             >
-              { this.errorResendConfirmationActionText }
+              {this.errorResendConfirmationActionText}
             </button>
           </>
         )}
 
         {isUnconfirmed && isResending && (
-          <span part="resending-doi-text" class="ml-2">{ this.errorResendConfirmationSuccessText }</span>
+          <span part="resending-doi-text" class="ml-2">
+            {this.errorResendConfirmationSuccessText}
+          </span>
         )}
       </div>
     );

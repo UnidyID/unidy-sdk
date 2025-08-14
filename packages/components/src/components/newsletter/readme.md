@@ -37,9 +37,9 @@ foobar
 
 | Event         | Description | Type                                                                                                                                                                 |
 | ------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `on:error`    |             | `CustomEvent<{ newsletter_internal_name: string; error_identifier: string; }[]>`                                                                                     |
-| `on:success`  |             | `CustomEvent<{ id: number; email: string; newsletter_internal_name: string; preference_identifiers: string[]; preference_token: string; confirmed_at?: string; }[]>` |
+| `error`       |             | `CustomEvent<{ newsletter_internal_name: string; error_identifier: string; }[]>`                                                                                     |
 | `resetStatus` |             | `CustomEvent<void>`                                                                                                                                                  |
+| `success`     |             | `CustomEvent<{ id: number; email: string; newsletter_internal_name: string; preference_identifiers: string[]; preference_token: string; confirmed_at?: string; }[]>` |
 
 
 ## Shadow Parts
