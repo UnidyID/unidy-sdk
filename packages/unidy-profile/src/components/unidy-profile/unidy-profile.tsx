@@ -5,12 +5,14 @@ import { UnidyClient } from "@unidy.io/sdk-api-client";
 type ProfileRaw = Record<string, unknown>;
 
 type Option = { value: string; label: string };
+type RadioOption = { value: string; label: string; checked: boolean };
 
 type FieldValue = {
   value: string;
   type: string;
   label: string;
   options?: Option[];
+  radioOptions?: RadioOption[];
 };
 
 export type ProfileStore = {
@@ -75,8 +77,16 @@ export class UnidyProfile {
             label: String(o.label),
           }));
         }
-      
-        return { value, type, label, options };
+        let radioOptions: RadioOption[] | undefined;
+        if (Array.isArray(node?.radio_options)) {
+          radioOptions = node.radio_options.map((o: any) => ({
+            value: String(o.value),
+            label: String(o.label),
+            checked: o.checked === true,
+          }));
+        }
+
+        return { value, type, label, options, radioOptions };
       };
 
       const data: Record<string, FieldValue> = {};

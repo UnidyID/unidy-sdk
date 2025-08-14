@@ -19,6 +19,7 @@
 | `"input"`  |             |
 | `"label"`  |             |
 | `"option"` |             |
+| `"radio"`  |             |
 | `"select"` |             |
 
 

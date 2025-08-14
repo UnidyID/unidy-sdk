@@ -36,6 +36,21 @@ export class UnidyField {
             <option value={opt.value} selected={opt.value === fieldData.value} part="option">{opt.label}</option>
           ))}
         </select>
+      ) : fieldData.radioOptions ? (
+        <div>
+          {fieldData.radioOptions.map((opt) => (
+            <label key={opt.value}>
+              <input
+                type={fieldData.type}
+                name={this.field}
+                value={opt.value}
+                checked={opt.checked}
+                part="radio"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
       ) : (
         <input
           id={this.field}
