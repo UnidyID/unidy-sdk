@@ -27,7 +27,7 @@ export class SubmitButton {
 
   render() {
     return (
-      <button onClick={this.onSubmit} type="button" style={{ backgroundColor: "red", color: "white" }}>
+      <button onClick={this.onSubmit} type="button" part="unidy-button">
         {this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
       </button>
     );

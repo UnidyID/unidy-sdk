@@ -6,40 +6,139 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
-    <title>Stencil Component Starter</title>
+    <title>Unidy Profile SDK</title>
     <script type="module" src="/build/unidy-profile.esm.js"></script>
     <script nomodule src="/build/unidy-profile.js"></script>
+    <style>
+      body {
+        background: #f6f8fa;
+        font-family: 'Inter', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 480px;
+        margin: 48px auto;
+        padding: 32px 24px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+      }
+      h1 {
+        text-align: center;
+        color: #1a202c;
+        margin-bottom: 32px;
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+      unidy-profile {
+        display: block;
+        margin-bottom: 36px;
+      }
+      unidy-field {
+        display: block;
+        margin: 18px 0;
+      }
+      unidy-field::part(label) {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 6px;
+        display: block;
+        font-size: 1.05rem;
+      }
+      unidy-field::part(input), unidy-field::part(select) {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+      }
+      unidy-field::part(input):focus, unidy-field::part(select):focus {
+        border-color: #0055fe;
+        outline: none;
+      }
+
+      submit-button::part(unidy-button) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(90deg, #0055fec4 0%, #0055fe 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 16px 0;
+        font-size: 1.0rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 12px rgba(49,130,206,0.10);
+        margin-top: 24px;
+        margin-bottom: 12px;
+        width: 100%;
+        min-width: 180px;
+        letter-spacing: 0.5px;
+      }
+      submit-button::part(unidy-button):hover {
+        background:  #0055fe;
+      }
+      #profile-output {
+        margin-top: 28px;
+        font-size: 1rem;
+        background: #f1f5f9;
+        border-radius: 10px;
+        padding: 18px;
+        color: #2d3748;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      }
+    </style>
   </head>
   <body>
-    <unidy-profile
-      initial-data='{
-        "first_name": {
-          "value": "John",
-          "type": "text",
-          "label": "First Name"
-        },
-        "last_name": {
-          "value": "Doe",
-          "type": "text",
-          "label": "Last Name"
-        }
-      }'
-    >
-      <unidy-field field="first_name"></unidy-field>
-      <unidy-field field="last_name"></unidy-field>
-      <submit-button>Submit botun</submit-button>
-    </unidy-profile>
+    <div class="container">
+      <h1>Unidy Profile SDK</h1>
+      <unidy-profile
+        initial-data='{
+          "first_name": {
+            "value": "John",
+            "type": "text",
+            "label": "First Name"
+          },
+          "last_name": {
+            "value": "Doe",
+            "type": "text",
+            "label": "Last Name"
+          },
+          "favorite_nut": {
+            "value": "erdnuss",
+            "type": "select",
+            "label": "Lieblingsnuss",
+            "options": [
+              { "value": "erdnuss", "label": "Erdnuss" },
+              { "value": "haselnuss", "label": "Haselnuss" },
+              { "value": "walnuss", "label": "Walnuss" }
+            ]
+          }
+        }'
+      >
+        <unidy-field field="first_name"></unidy-field>
+        <unidy-field field="last_name"></unidy-field>
+        <unidy-field field="favorite_nut"></unidy-field>
+        <submit-button>Submit</submit-button>
+      </unidy-profile>
 
-    <unidy-profile
-      use-unidy-auth-enabled
-      api-key="public-newsletter-api-key"
-      api-url="http://localhost:3000"
-    >
-      <unidy-field field="first_name"></unidy-field>
-      <unidy-field field="last_name"></unidy-field>
-      <unidy-field field="favorite_nut"></unidy-field>
-      <submit-button></submit-button>
-      <div id="profile-output"></div>
-    </unidy-profile>
+      <unidy-profile
+        use-unidy-auth-enabled
+        api-key="public-newsletter-api-key"
+        api-url="http://localhost:3000"
+      >
+        <unidy-field field="first_name"></unidy-field>
+        <unidy-field field="last_name"></unidy-field>
+        <unidy-field field="favorite_nut"></unidy-field>
+        <submit-button></submit-button>
+        <div id="profile-output"></div>
+      </unidy-profile>
+    </div>
   </body>
 </html>

@@ -12,6 +12,16 @@
 | `field` _(required)_ | `field`   |             | `string` | `undefined` |
 
 
+## Shadow Parts
+
+| Part       | Description |
+| ---------- | ----------- |
+| `"input"`  |             |
+| `"label"`  |             |
+| `"option"` |             |
+| `"select"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

@@ -29,11 +29,11 @@ export class UnidyField {
 
     return (
       <div>
-        <label htmlFor={this.field}>{fieldData?.label}</label>
+        <label htmlFor={this.field} part="label">{fieldData?.label}</label>
       {fieldData.type === "select" && fieldData.options ? (
-        <select id={this.field}>
+        <select id={this.field} part="select">
           {fieldData.options.map((opt) => (
-            <option value={opt.value} selected={opt.value === fieldData.value}>{opt.label}</option>
+            <option value={opt.value} selected={opt.value === fieldData.value} part="option">{opt.label}</option>
           ))}
         </select>
       ) : (
@@ -41,6 +41,7 @@ export class UnidyField {
           id={this.field}
           type={fieldData.type}
           value={fieldData.value}
+          part="input"
         />
       )}
 
