@@ -24,7 +24,7 @@ export namespace Components {
          */
         "initialData": string | Record<string, string>;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     errors: {},   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},   })
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
@@ -70,7 +70,7 @@ declare namespace LocalJSX {
          */
         "initialData"?: string | Record<string, string>;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     errors: {},   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},   })
          */
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;

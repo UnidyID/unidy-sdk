@@ -24,16 +24,25 @@ export class UnidyField {
       return <p>Loading...</p>;
     }
 
+     const fieldData = this.store.state.data[this.field];
+     // TODO: handle errors, other types (e.g. radio, ...)
+
     return (
       <div>
-        <label htmlFor={this.field}>{this.field}</label>
+        <label htmlFor={this.field}>{fieldData?.label}</label>
+      {fieldData.type === "select" && fieldData.options ? (
+        <select id={this.field}>
+          {fieldData.options.map((opt) => (
+            <option value={opt.value} selected={opt.value === fieldData.value}>{opt.label}</option>
+          ))}
+        </select>
+      ) : (
         <input
           id={this.field}
-          value={this.store.state.data[this.field]}
-          onChange={(e) => {
-            this.store.state.data[this.field] = (e.target as HTMLInputElement).value;
-          }}
+          type={fieldData.type}
+          value={fieldData.value}
         />
+      )}
 
         {this.store.state.errors[this.field] && <p style={{ color: "red" }}>ERROR: {this.store.state.errors[this.field]}</p>}
       </div>

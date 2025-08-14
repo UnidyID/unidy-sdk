@@ -2,9 +2,21 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 
+type ProfileRaw = Record<string, unknown>;
+
+type Option = { value: string; label: string };
+
+type FieldValue = {
+  value: string;
+  type: string;
+  label: string;
+  options?: Option[];
+};
+
 export type ProfileStore = {
   loading: boolean;
-  data: Record<string, string>;
+  data: Record<string, FieldValue>;
+  configuration: ProfileRaw | undefined;
   errors: Record<string, string | null>;
 };
 
@@ -17,6 +29,7 @@ export class UnidyProfile {
   @Prop() store: ObservableMap<ProfileStore> = createStore<ProfileStore>({
     loading: true,
     data: {},
+    configuration: {},
     errors: {},
   });
 
@@ -48,10 +61,51 @@ export class UnidyProfile {
       }
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       const resp = await client.profile.fetchProfile(idToken);
-      // TODO: Replace output with unidy-field components
+      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+
+      const toFieldValue = (node: any): FieldValue => {
+        const value = node?.value == null ? "" : String(node.value);
+        const type = node?.type ? String(node.type) : "text";
+        const label = node?.label ? String(node.label) : "";
+      
+        let options: Option[] | undefined;
+        if (Array.isArray(node?.options)) {
+          options = node.options.map((o: any) => ({
+            value: String(o.value),
+            label: String(o.label),
+          }));
+        }
+      
+        return { value, type, label, options };
+      };
+
+      const data: Record<string, FieldValue> = {};
+      Object.entries(this.store.state.configuration || {})
+        .filter(([k]) => k !== "custom_attributes")
+        .forEach(([key, node]) => {
+          data[key] = toFieldValue(node);
+        });
+
+      const cad = this.store.state.configuration?.custom_attributes ?? {};
+      Object.entries(cad).forEach(([key, node]) => {
+        data[key] = toFieldValue(node);
+      });
+
+      this.store.state.data = data as Record<string, FieldValue>;
+
+      // For testing
       let output = document.getElementById("profile-output");
       if (output) {
-        output.innerHTML = `<pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px;">${JSON.stringify(resp, null, 2)}</pre>`;
+        output.innerHTML = `<pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px;">${JSON.stringify(
+          this.store.state.configuration,
+          null,
+          2
+        )}</pre>`;
+        output.innerHTML += `<pre style="white-space: pre-wrap; background: #f7b7b7; padding: 10px; border-radius: 4px;">${JSON.stringify(
+          this.store.state.data,
+          null,
+          2
+        )}</pre>`;
       }
       this.store.state.loading = false;
     } else {
