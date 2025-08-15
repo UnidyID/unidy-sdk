@@ -47,6 +47,9 @@
         display: block;
         font-size: 1.05rem;
       }
+      unidy-field::part(required-indicator) {
+        color: red;
+      }
       unidy-field::part(input), unidy-field::part(select) {
         width: 100%;
         padding: 10px 14px;
@@ -134,9 +137,10 @@
         api-url="http://localhost:3000"
       >
         <unidy-field field="salutation"></unidy-field>
-        <unidy-field field="first_name"></unidy-field>
+        <unidy-field field="first_name" required="true"></unidy-field>
         <unidy-field field="last_name"></unidy-field>
         <unidy-field field="favorite_nut"></unidy-field>
+        <unidy-field field="active_membership"></unidy-field>
         <submit-button></submit-button>
         <div id="profile-output"></div>
       </unidy-profile>

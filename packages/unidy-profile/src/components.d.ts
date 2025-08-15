@@ -14,6 +14,10 @@ export namespace Components {
     }
     interface UnidyField {
         "field": string;
+        /**
+          * @default false
+         */
+        "required": boolean;
     }
     interface UnidyProfile {
         "apiKey"?: string;
@@ -60,6 +64,10 @@ declare namespace LocalJSX {
     }
     interface UnidyField {
         "field": string;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
     }
     interface UnidyProfile {
         "apiKey"?: string;
