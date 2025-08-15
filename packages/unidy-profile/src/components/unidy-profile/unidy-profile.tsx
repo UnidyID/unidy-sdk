@@ -7,6 +7,14 @@ type ProfileRaw = Record<string, unknown>;
 type Option = { value: string; label: string };
 type RadioOption = { value: string; label: string; checked: boolean };
 
+interface ProfileNode {
+  value?: unknown;
+  type?: string;
+  label?: string;
+  options?: Array<{ value?: unknown; label?: string }>;
+  radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
+}
+
 type FieldValue = {
   value: string;
   type: string;
@@ -65,21 +73,21 @@ export class UnidyProfile {
       const resp = await client.profile.fetchProfile(idToken);
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
 
-      const toFieldValue = (node: any): FieldValue => {
+      const toFieldValue = (node: ProfileNode): FieldValue => {
         const value = node?.value == null ? "" : String(node.value);
         const type = node?.type ? String(node.type) : "text";
         const label = node?.label ? String(node.label) : "";
       
         let options: Option[] | undefined;
         if (Array.isArray(node?.options)) {
-          options = node.options.map((o: any) => ({
+          options = node.options.map((o) => ({
             value: String(o.value),
             label: String(o.label),
           }));
         }
         let radioOptions: RadioOption[] | undefined;
         if (Array.isArray(node?.radio_options)) {
-          radioOptions = node.radio_options.map((o: any) => ({
+          radioOptions = node.radio_options.map((o) => ({
             value: String(o.value),
             label: String(o.label),
             checked: o.checked === true,
@@ -90,21 +98,21 @@ export class UnidyProfile {
       };
 
       const data: Record<string, FieldValue> = {};
-      Object.entries(this.store.state.configuration || {})
-        .filter(([k]) => k !== "custom_attributes")
-        .forEach(([key, node]) => {
-          data[key] = toFieldValue(node);
-        });
+        for (const [key, node] of Object.entries(this.store.state.configuration || {})) {
+          if (key !== "custom_attributes") {
+            data[key] = toFieldValue(node as ProfileNode);
+          }
+        }
 
       const cad = this.store.state.configuration?.custom_attributes ?? {};
-      Object.entries(cad).forEach(([key, node]) => {
-        data[key] = toFieldValue(node);
-      });
+      for (const [key, node] of Object.entries(cad)) {
+        data[key] = toFieldValue(node as ProfileNode);
+      }
 
       this.store.state.data = data as Record<string, FieldValue>;
 
       // For testing
-      let output = document.getElementById("profile-output");
+      const output = document.getElementById("profile-output");
       if (output) {
         output.innerHTML = `<pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px;">${JSON.stringify(
           this.store.state.configuration,
