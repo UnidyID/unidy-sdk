@@ -21,6 +21,7 @@
 | `"label"`              |             |
 | `"option"`             |             |
 | `"radio"`              |             |
+| `"radio-group"`        |             |
 | `"required-indicator"` |             |
 | `"select"`             |             |
 

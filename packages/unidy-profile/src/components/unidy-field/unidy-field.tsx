@@ -1,4 +1,4 @@
-import { Component, Element, Prop, h } from "@stencil/core";
+import { Component, Element, Prop, State, h } from "@stencil/core";
 
 @Component({
   tag: "unidy-field",
@@ -11,6 +11,8 @@ export class UnidyField {
 
   @Element() el!: HTMLElement;
 
+  @State() selected?: string;
+
   private get store() {
     const container = this.el.closest("unidy-profile");
     if (!container) {
@@ -19,13 +21,47 @@ export class UnidyField {
     return container.store;
   }
 
+  componentWillLoad() {
+    const fieldData = this.store.state.data[this.field];
+    if (fieldData?.radioOptions?.length) {
+      const checkedOption = fieldData.radioOptions.find(option => option.checked);
+      this.selected = checkedOption?.value ?? fieldData.value ?? "";
+    } else {
+      this.selected = fieldData?.value ?? "";
+    }
+  }
+
+  private onRadioChange = (value: string) => {
+    this.selected = value;
+
+    const storeState = this.store.state;
+    const fieldData = storeState.data[this.field];
+    if (!fieldData?.radioOptions) return;
+
+    const updatedRadioOptions = fieldData.radioOptions.map(option => ({
+      ...option,
+      checked: option.value === value,
+    }));
+
+    const updatedField = {
+      ...fieldData,
+      value,
+      radioOptions: updatedRadioOptions,
+    };
+
+    this.store.state.data = {
+      ...storeState.data,
+      [this.field]: updatedField,
+    };
+  };
+
   render() {
     if (this.store.state.loading) {
       return <p>Loading...</p>;
     }
 
     const fieldData = this.store.state.data[this.field];
-    // TODO: handle errors, other types (e.g. radio, ...)
+    // TODO: handle errors, other types (e.g. multi-select, ...)
 
     return (
       <div>
@@ -47,14 +83,19 @@ export class UnidyField {
             ))}
           </select>
         ) : fieldData.radioOptions ? (
-          <div>
+          <div part="radio-group">
             {fieldData.radioOptions.map((opt) => (
-              <label key={opt.value}>
+              <label
+                key={opt.value}
+                part={`radio-label ${opt.checked ? "radio-checked" : ""}`}
+                data-checked={opt.checked ? "true" : "false"}
+              >
                 <input
                   type={fieldData.type}
                   name={this.field}
                   value={opt.value}
                   checked={opt.checked}
+                  onChange={() => this.onRadioChange(opt.value)}
                   part="radio"
                 />
                 {opt.label}

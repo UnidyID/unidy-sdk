@@ -64,7 +64,40 @@
         border-color: #0055fe;
         outline: none;
       }
-
+      unidy-field::part(radio-group) {
+        display: inline-flex;
+        border: 1px solid #5a6677;
+        border-radius: 12px;
+        overflow: hidden;
+        font-family: system-ui, sans-serif;
+      }
+      unidy-field::part(radio) {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      unidy-field::part(radio-label) {
+        padding: 6px 18px;
+        cursor: pointer;
+        background: #fff;
+        color: #222;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+      }
+      unidy-field::part(radio-label):hover {
+        background: #f5f5f5;
+      }
+      unidy-field::part(radio-checked) {
+        background: linear-gradient(90deg, #0055fec4 0%, #0055fe 100%);
+        color: #fff;
+      }
+      unidy-field::part(radio-checked):hover {
+        background: #0055fe;
+        color: #fff;
+      }
       submit-button::part(unidy-button) {
         display: flex;
         justify-content: center;
@@ -85,7 +118,7 @@
         letter-spacing: 0.5px;
       }
       submit-button::part(unidy-button):hover {
-        background:  #0055fe;
+        background: #0055fe;
       }
       #profile-output {
         margin-top: 28px;
@@ -139,6 +172,7 @@
         <unidy-field field="salutation"></unidy-field>
         <unidy-field field="first_name" required="true"></unidy-field>
         <unidy-field field="last_name"></unidy-field>
+        <unidy-field field="date_of_birth"></unidy-field>
         <unidy-field field="favorite_nut"></unidy-field>
         <unidy-field field="active_membership"></unidy-field>
         <submit-button></submit-button>
