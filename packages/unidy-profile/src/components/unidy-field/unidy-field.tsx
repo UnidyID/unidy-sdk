@@ -26,6 +26,9 @@ export class UnidyField {
     if (fieldData?.radioOptions?.length) {
       const checkedOption = fieldData.radioOptions.find(option => option.checked);
       this.selected = checkedOption?.value ?? fieldData.value ?? "";
+    } else if (fieldData?.options?.length) {
+      const selectedOption = fieldData.options.find(option => option.value === fieldData.value);
+      this.selected = selectedOption?.value ?? fieldData.value ?? "";
     } else {
       this.selected = fieldData?.value ?? "";
     }
@@ -55,6 +58,30 @@ export class UnidyField {
     };
   };
 
+  private onSelectChange = (value: string) => {
+    this.selected = value;
+
+    const storeState = this.store.state;
+    const fieldData = storeState.data[this.field];
+    if (!fieldData?.options) return;
+
+    const updatedOptions = fieldData.options.map(option => ({
+      ...option,
+      selected: option.value === value,
+    }));
+
+    const updatedField = {
+      ...fieldData,
+      value,
+      options: updatedOptions,
+    };
+
+    this.store.state.data = {
+      ...storeState.data,
+      [this.field]: updatedField,
+    };
+  };
+
   render() {
     if (this.store.state.loading) {
       return <p>Loading...</p>;
@@ -70,12 +97,17 @@ export class UnidyField {
           {this.required ? <span part="required-indicator"> *</span> : null}
         </label>
         {fieldData.type === "select" && fieldData.options ? (
-          <select id={this.field} part="select">
+          <select
+            id={this.field}
+            data-value={fieldData.value}
+            part="select"
+            onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
+          >
             {fieldData.options.map((opt) => (
               <option
                 key={opt.value}
                 value={opt.value}
-                selected={opt.value === fieldData.value}
+                data-selected={opt.value === fieldData.value ? "true" : "false"}
                 part="option"
               >
                 {opt.label}
@@ -109,6 +141,12 @@ export class UnidyField {
             value={fieldData.value}
             required={this.required}
             part="input"
+            onChange={(e) => {
+              this.store.state.data[this.field] = {
+                ...this.store.state.data[this.field],
+                value: (e.target as HTMLInputElement).value,
+              };
+            }}
           />
         )}
         {this.store.state.errors[this.field] && (
