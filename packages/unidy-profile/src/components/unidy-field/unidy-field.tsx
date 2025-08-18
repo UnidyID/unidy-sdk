@@ -7,7 +7,7 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 })
 export class UnidyField {
   @Prop() field!: string;
-  @Prop() required: boolean = false;
+  @Prop() required = false;
 
   @Element() el!: HTMLElement;
 
