@@ -17,11 +17,18 @@ export class SubmitButton {
     return container.store;
   }
 
-  private onSubmit = () => {
+  private async onSubmit () {
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
     const idToken = this.store.state.idToken;
-    this.store.state.client?.profile.updateProfile(idToken, stateWithoutConfig.data);
+    const resp = await this.store.state.client?.profile.updateProfile(idToken, stateWithoutConfig.data);
+    console.log("Update response:", resp);
+
+    if (resp?.success) {
+      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+    } else {
+      this.store.state.errors = { "status": String(resp?.status) };
+    }
   };
 
   private hasSlotContent(): boolean {
@@ -30,9 +37,11 @@ export class SubmitButton {
 
   render() {
     return (
-      <button onClick={this.onSubmit} type="button" part="unidy-button">
-        {this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
-      </button>
+      <div>
+        <button onClick={() => this.onSubmit()} type="button" part="unidy-button">
+          {this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+        </button>
+      </div>
     );
   }
 }

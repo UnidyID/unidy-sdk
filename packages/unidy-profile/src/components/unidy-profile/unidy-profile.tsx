@@ -79,63 +79,96 @@ export class UnidyProfile {
       const resp = await client.profile.fetchProfile(idToken);
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
 
-      const toFieldValue = (node: ProfileNode): FieldValue => {
-        const value = node?.value == null ? "" : String(node.value);
-        const type = node?.type ? String(node.type) : "text";
-        const label = node?.label ? String(node.label) : "";
-      
-        let options: Option[] | undefined;
-        if (Array.isArray(node?.options)) {
-          options = node.options.map((o) => ({
-            value: String(o.value),
-            label: String(o.label),
-          }));
-        }
-        let radioOptions: RadioOption[] | undefined;
-        if (Array.isArray(node?.radio_options)) {
-          radioOptions = node.radio_options.map((o) => ({
-            value: String(o.value),
-            label: String(o.label),
-            checked: o.checked === true,
-          }));
-        }
-
-        return { value, type, label, options, radioOptions };
-      };
-
-      const data: Record<string, FieldValue> = {};
-        for (const [key, node] of Object.entries(this.store.state.configuration || {})) {
-          if (key !== "custom_attributes") {
-            data[key] = toFieldValue(node as ProfileNode);
-          }
-        }
-
-      const cad = this.store.state.configuration?.custom_attributes ?? {};
-      for (const [key, node] of Object.entries(cad)) {
-        data[key] = toFieldValue(node as ProfileNode);
-      }
-
-      this.store.state.data = data as Record<string, FieldValue>;
-
-      // For testing
-      const output = document.getElementById("profile-output");
-      if (output) {
-        output.innerHTML = `<pre style="white-space: pre-wrap; background: #f5f5f5; padding: 10px; border-radius: 4px;">${JSON.stringify(
-          this.store.state.configuration,
-          null,
-          2
-        )}</pre>`;
-        output.innerHTML += `<pre style="white-space: pre-wrap; background: #f7b7b7; padding: 10px; border-radius: 4px;">${JSON.stringify(
-          this.store.state.data,
-          null,
-          2
-        )}</pre>`;
-      }
+      this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
       this.store.state.loading = false;
     } else {
       this.store.state.loading = false;
     }
   }
+
+  componentDidLoad() {
+    this.store.onChange("configuration", () => {
+      this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+
+      const output = document.getElementById("profile-update-message");
+      if (output) {
+        output.innerHTML = `<div style="
+          background: #38d39f;
+          color: #fff;
+          padding: 14px 18px;
+          border-radius: 8px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-top: 12px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(56,211,159,0.12);
+        ">
+          &#10003; Profile is updated
+        </div>`;
+      }
+    });
+
+    this.store.onChange("errors", () => {
+      const output = document.getElementById("profile-update-message");
+      if (output) {
+        output.innerHTML = `<div style="
+          background: #f7b7b7;
+          color: #721c24;
+          padding: 14px 18px;
+          border-radius: 8px;
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-top: 12px;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(247,183,183,0.12);
+        ">
+          &#10008; Profile update failed - ${Object.entries(this.store.state.errors)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(", ")}
+        </div>`;
+      }
+    });
+  }
+
+parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
+  const toFieldValue = (node: ProfileNode): FieldValue => {
+    const value = node?.value == null ? "" : String(node.value);
+    const type = node?.type ? String(node.type) : "text";
+    const label = node?.label ? String(node.label) : "";
+
+    let options: Option[] | undefined;
+    if (Array.isArray(node?.options)) {
+      options = node.options.map((o) => ({
+        value: String(o.value),
+        label: String(o.label),
+      }));
+    }
+    let radioOptions: RadioOption[] | undefined;
+    if (Array.isArray(node?.radio_options)) {
+      radioOptions = node.radio_options.map((o) => ({
+        value: String(o.value),
+        label: String(o.label),
+        checked: o.checked === true,
+      }));
+    }
+
+    return { value, type, label, options, radioOptions };
+  };
+
+  const data: Record<string, FieldValue> = {};
+  for (const [key, node] of Object.entries(config || {})) {
+    if (key !== "custom_attributes") {
+      data[key] = toFieldValue(node as ProfileNode);
+    }
+  }
+
+  const cad = config?.custom_attributes ?? {};
+  for (const [key, node] of Object.entries(cad)) {
+    data[key] = toFieldValue(node as ProfileNode);
+  }
+
+  return data as Record<string, FieldValue>;
+}
 
   render() {
     return (
