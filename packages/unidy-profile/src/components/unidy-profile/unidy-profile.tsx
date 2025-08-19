@@ -28,6 +28,8 @@ export type ProfileStore = {
   data: Record<string, FieldValue>;
   configuration: ProfileRaw | undefined;
   errors: Record<string, string | null>;
+  idToken: string;
+  client?: UnidyClient;
 };
 
 @Component({
@@ -41,9 +43,11 @@ export class UnidyProfile {
     data: {},
     configuration: {},
     errors: {},
+    idToken: "",
+    client: undefined,
   });
 
-  @Prop() id?: string;
+  @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
   @Prop() useUnidyAuthEnabled?: boolean;
   @Prop() apiUrl?: string;
@@ -63,6 +67,7 @@ export class UnidyProfile {
         const params = new URLSearchParams(hash);
         if (params.has("id_token")) {
           idToken = params.get("id_token") || idToken;
+          this.store.state.idToken = String(idToken);
         }
       }
       if (!idToken) {
@@ -70,6 +75,7 @@ export class UnidyProfile {
         return;
       }
       const client = new UnidyClient(this.apiUrl, this.apiKey);
+      this.store.state.client = client;
       const resp = await client.profile.fetchProfile(idToken);
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
 

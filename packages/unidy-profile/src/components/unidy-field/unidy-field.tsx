@@ -108,6 +108,7 @@ export class UnidyField {
                 key={opt.value}
                 value={opt.value}
                 data-selected={opt.value === fieldData.value ? "true" : "false"}
+                selected={opt.value === fieldData.value}
                 part="option"
               >
                 {opt.label}

@@ -24,4 +24,21 @@ export class ProfileService {
       };
     }
   }
+
+  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<unknown>> {
+    const token = idToken;
+    if (!token) {
+      return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
+    }
+    try {
+  return await this.client.patch<unknown>("/api/sdk/v1/profile", { id_token: token, ...data as object });
+    } catch (e) {
+      return {
+        status: e instanceof TypeError ? 0 : 500,
+        success: false,
+        headers: new Headers(),
+        error: e instanceof Error ? e.message : String(e),
+      };
+    }
+  }
 }

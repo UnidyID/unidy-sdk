@@ -22,13 +22,13 @@ export namespace Components {
     interface UnidyProfile {
         "apiKey"?: string;
         "apiUrl"?: string;
-        "id"?: string;
         /**
           * @default ""
          */
         "initialData": string | Record<string, string>;
+        "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,   })
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
@@ -72,13 +72,13 @@ declare namespace LocalJSX {
     interface UnidyProfile {
         "apiKey"?: string;
         "apiUrl"?: string;
-        "id"?: string;
         /**
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,   })
          */
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;

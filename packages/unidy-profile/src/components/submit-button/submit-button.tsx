@@ -18,7 +18,10 @@ export class SubmitButton {
   }
 
   private onSubmit = () => {
-    alert(JSON.stringify(this.store.state));
+    const { configuration, ...stateWithoutConfig } = this.store.state;
+
+    const idToken = this.store.state.idToken;
+    this.store.state.client?.profile.updateProfile(idToken, stateWithoutConfig.data);
   };
 
   private hasSlotContent(): boolean {
