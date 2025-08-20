@@ -1,0 +1,27 @@
+{
+  "name": "newsletter-react",
+  "version": "0.0.1",
+  "description": "React wrapper for the Unidy Newsletter SDK",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "biome lint --write . & bun run tsc",
+    "tsc": "tsc -p . --outDir ./dist"
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stencil/react-output-target": "^1.2.0",
+    "@types/react": "^19.1.10",
+    "@unidy.io/newsletter": "*",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "typescript": "5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  }
+}

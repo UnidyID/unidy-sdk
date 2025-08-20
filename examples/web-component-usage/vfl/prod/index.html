@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
   <title>VfL-Newsletter</title>
-  <script type="module" src="https://unpkg.com/@unidy.io/components@0.0.13/newsletter"></script>
+  <script type="module" src="https://unpkg.com/@unidy.io/newsletter@0.0.13/newsletter"></script>
 
   <style>
     :root {
@@ -173,10 +173,10 @@
   <script>
     const newsletterComponent = document.querySelector('unidy-newsletter');
 
-    newsletterComponent.addEventListener('on:success', (event) => {
+    newsletterComponent.addEventListener('success', (event) => {
       console.log("Successfully subscribed", event.detail);
     });
-    newsletterComponent.addEventListener('on:error', (event) => {
+    newsletterComponent.addEventListener('error', (event) => {
       console.log("Error subscribing", event.detail);
     });
   </script>
