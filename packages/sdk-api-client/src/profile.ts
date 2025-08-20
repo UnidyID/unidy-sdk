@@ -48,6 +48,8 @@ const UserProfileSchema = z.object({
   custom_attributes: z.record(z.string(), FieldSchema)
 })
 
+export type UserProfileData = z.infer<typeof UserProfileSchema>;
+
 declare global {
   interface Window {
     UNIDY?: { auth?: { id_token?: string } };
@@ -56,13 +58,13 @@ declare global {
 
 export class ProfileService {
   constructor(private client: ApiClient) {}
-  async fetchProfile(idToken?: string): Promise<ApiResponse<unknown>> {
+  async fetchProfile(idToken?: string): Promise<ApiResponse<UserProfileData>> {
     const token = idToken ?? window.UNIDY?.auth?.id_token;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
-      const resp = await this.client.post<unknown>("/api/sdk/v1/profile", { id_token: token });
+      const resp = await this.client.post<UserProfileData>("/api/sdk/v1/profile", { id_token: token });
       const validatedData = UserProfileSchema.parse(resp.data);
 
       return { ...resp, data: validatedData };
@@ -85,13 +87,13 @@ export class ProfileService {
     }
   }
 
-  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<unknown>> {
+  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<UserProfileData>> {
     const token = idToken;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
-      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile", { id_token: token, ...data as object });
+      const resp = await this.client.patch<UserProfileData>("/api/sdk/v1/profile", { id_token: token, ...data as object });
       const validatedData = UserProfileSchema.parse(resp.data);
       return { ...resp, data: validatedData };
     } catch (e) {
