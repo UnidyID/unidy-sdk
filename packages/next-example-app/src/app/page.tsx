@@ -1,3 +1,5 @@
+"use client";
+
 import { UnidyNewsletter } from "newsletter-react";
 
 export default function Home() {
@@ -36,6 +38,12 @@ export default function Home() {
             type: "text",
           },
         ])}
+        onSuccess={(event) => {
+          console.log("success", event);
+        }}
+        onError={(event) => {
+          console.log("error", event);
+        }}
       >
         <div slot="header">
           <h1>Newsletter header</h1>
