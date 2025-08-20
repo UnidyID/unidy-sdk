@@ -52,4 +52,4 @@ import { UnidyNewsletter } from "@unidy.io/newsletter-react";
 >
 ```
 
-- For configuration details, styling, custom content that can be injected into the component and other details take a look into the [README] of web-component (https://www.npmjs.com/package/@unidy.io/newsletter)
+For configuration details, styling, custom content that can be injected into the component and other details take a look into the [README](https://www.npmjs.com/package/@unidy.io/newsletter) of web-component repository
