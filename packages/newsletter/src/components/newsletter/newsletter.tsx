@@ -91,7 +91,7 @@ export class Newsletter {
         } else if (Array.isArray(this.newslettersConfigJson)) {
           this.newslettersConfig = this.newslettersConfigJson;
         } else {
-          console.warn("newslettersConfigJson provided in unsupported format; expected string or array");
+          console.warn("newslettersConfigJson provided in unsupported format; expected json string or array");
         }
       } catch (error) {
         console.error("Failed to parse newslettersConfigJson:", error);
@@ -100,7 +100,13 @@ export class Newsletter {
 
     if (this.additionalFieldsConfigJson) {
       try {
-        this.additionalFields = JSON.parse(this.additionalFieldsConfigJson);
+        if (typeof this.additionalFieldsConfigJson === "string") {
+          this.additionalFields = JSON.parse(this.additionalFieldsConfigJson);
+        } else if (Array.isArray(this.additionalFieldsConfigJson)) {
+          this.additionalFields = this.additionalFieldsConfigJson;
+        } else {
+          console.warn("additionalFieldsConfigJson provided in unsupported format; expected string or array");
+        }
       } catch (error) {
         console.error("Failed to parse additionalFieldsConfigJson:", error);
       }

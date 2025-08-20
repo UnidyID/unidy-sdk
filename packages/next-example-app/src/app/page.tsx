@@ -24,6 +24,18 @@ export default function Home() {
             preferences: [],
           },
         ])}
+        additional-fields-config-json={JSON.stringify([
+          {
+            name: "first_name",
+            label: "First Name",
+            type: "text",
+          },
+          {
+            name: "last_name",
+            label: "Last Name",
+            type: "text",
+          },
+        ])}
       >
         <div slot="header">
           <h1>Newsletter header</h1>
