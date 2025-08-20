@@ -1,7 +1,7 @@
 {
-  "name": "newsletter-react",
+  "name": "@unidy.io/newsletter-react",
   "version": "0.0.1",
-  "description": "React wrapper for the Unidy Newsletter SDK",
+  "description": "React/Next wrapper for @unidy.io/newsletter",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -23,5 +23,16 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"
-  }
+  },
+  "keywords": [
+    "web-components",
+    "unidy",
+    "unidy-sdk",
+    "unidy-web-components",
+    "newsletter",
+    "unidy-newsletter",
+    "newsletter-sdk",
+    "react",
+    "next"
+  ]
 }
