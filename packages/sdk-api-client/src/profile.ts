@@ -91,8 +91,18 @@ export class ProfileService {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
-  return await this.client.patch<unknown>("/api/sdk/v1/profile", { id_token: token, ...data as object });
+      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile", { id_token: token, ...data as object });
+      const validatedData = UserProfileSchema.parse(resp.data);
+      return { ...resp, data: validatedData };
     } catch (e) {
+      if (e instanceof z.ZodError) {
+        return {
+          status: 400,
+          success: false,
+          headers: new Headers(),
+          error: "invalid profile data",
+        };
+      }
       return {
         status: e instanceof TypeError ? 0 : 500,
         success: false,
