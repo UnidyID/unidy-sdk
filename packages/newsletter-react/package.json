@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/newsletter-react",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "description": "React/Next wrapper for @unidy.io/newsletter",
   "main": "dist/index.js",
   "module": "dist/index.js",
