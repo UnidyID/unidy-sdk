@@ -73,7 +73,7 @@ export class ProfileService {
           status: 400,
           success: false,
           headers: new Headers(),
-          error: `invalid profile data`,
+          error: "invalid profile data",
         };
       }
       return {
