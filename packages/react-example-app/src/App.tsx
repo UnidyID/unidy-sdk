@@ -1,5 +1,5 @@
 import "./App.css";
-import { UnidyNewsletter } from "newsletter-sdk-react";
+import { UnidyNewsletter } from "newsletter-react";
 
 function App() {
   return (
@@ -26,7 +26,11 @@ function App() {
             preferences: [],
           },
         ])}
-      />
+      >
+        <div slot="header">
+          <h1>Newsletter header</h1>
+        </div>
+      </UnidyNewsletter>
     </div>
   );
 }

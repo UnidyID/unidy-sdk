@@ -9,8 +9,8 @@
 
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
-import type { NewsletterSubscription, NewsletterSubscriptionError, UnidyNewsletterCustomEvent } from "@unidy.io/components";
-import { UnidyNewsletter as UnidyNewsletterElement, defineCustomElement as defineUnidyNewsletter } from "@unidy.io/components/dist/per-component/unidy-newsletter.js";
+import type { NewsletterSubscription, NewsletterSubscriptionError, UnidyNewsletterCustomEvent } from "@unidy.io/newsletter";
+import { UnidyNewsletter as UnidyNewsletterElement, defineCustomElement as defineUnidyNewsletter } from "@unidy.io/newsletter/dist/per-component/unidy-newsletter.js";
 import React from 'react';
 
 export type UnidyNewsletterEvents = {

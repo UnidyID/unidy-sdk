@@ -3,7 +3,7 @@ import tailwind from "stencil-tailwind-plugin";
 import { reactOutputTarget } from "@stencil/react-output-target";
 
 export const config: Config = {
-  namespace: "unidy-components",
+  namespace: "unidy-newsletter",
   outputTargets: [
     {
       type: "dist",
@@ -25,9 +25,9 @@ export const config: Config = {
     },
     reactOutputTarget({
       // Relative path to where the React components will be generated
-      outDir: "../newsletter-sdk-react/lib/components/stencil-generated/",
-      hydrateModule: "../../../../components/hydrate",
-      clientModule: "../newsletter-sdk-react/lib/index",
+      outDir: "../newsletter-react/lib/components/stencil-generated/",
+      hydrateModule: "../../../../newsletter/hydrate",
+      clientModule: "../newsletter-react/lib/index",
     }),
     {
       type: "dist-hydrate-script",

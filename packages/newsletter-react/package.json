@@ -1,7 +1,7 @@
 {
-  "name": "newsletter-sdk-react",
+  "name": "newsletter-react",
   "version": "0.0.1",
-  "description": "React wrapper for the Unidy newsletter SDK",
+  "description": "React wrapper for the Unidy Newsletter SDK",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -16,7 +16,7 @@
   "dependencies": {
     "@stencil/react-output-target": "^1.2.0",
     "@types/react": "^19.1.10",
-    "@unidy.io/components": "*",
+    "@unidy.io/newsletter": "*",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "typescript": "5"

@@ -1,4 +1,4 @@
-import { UnidyNewsletter } from "newsletter-sdk-react";
+import { UnidyNewsletter } from "newsletter-react";
 
 export default function Home() {
   return (
@@ -15,7 +15,6 @@ export default function Home() {
             preferences: [
               { internalName: "club_news", label: "Club News", checked: true },
               { internalName: "player_news", label: "Player News", checked: true },
-              { internalName: "random_news", label: "Random News", checked: false },
             ],
           },
           {
@@ -25,7 +24,11 @@ export default function Home() {
             preferences: [],
           },
         ])}
-      />
+      >
+        <div slot="header">
+          <h1>Newsletter header</h1>
+        </div>
+      </UnidyNewsletter>
     </div>
   );
 }

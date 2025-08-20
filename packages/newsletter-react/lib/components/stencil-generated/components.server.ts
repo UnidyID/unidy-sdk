@@ -6,12 +6,12 @@
 /* eslint-disable */
 
 // @ts-ignore - ignore potential type issues as the project is importing itself
-import * as clientComponents from '../newsletter-sdk-react/lib/index';
+import * as clientComponents from '../newsletter-react/lib/index';
 
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent, type HydrateModule, type ReactWebComponent, type SerializeShadowRootOptions } from '@stencil/react-output-target/ssr';
-import type { NewsletterSubscription, NewsletterSubscriptionError, UnidyNewsletterCustomEvent } from "@unidy.io/components";
-import type { UnidyNewsletter as UnidyNewsletterElement } from "@unidy.io/components/dist/per-component/unidy-newsletter.js";
+import type { NewsletterSubscription, NewsletterSubscriptionError, UnidyNewsletterCustomEvent } from "@unidy.io/newsletter";
+import type { UnidyNewsletter as UnidyNewsletterElement } from "@unidy.io/newsletter/dist/per-component/unidy-newsletter.js";
 
 export const serializeShadowRoot: SerializeShadowRootOptions = { default: "declarative-shadow-dom" };
 
@@ -47,7 +47,7 @@ export const UnidyNewsletter: StencilReactComponent<UnidyNewsletterElement, Unid
         successConfirmationText: 'success-confirmation-text',
         confirmationErrorText: 'confirmation-error-text'
     },
-    hydrateModule: import('../../../../components/hydrate') as Promise<HydrateModule>,
+    hydrateModule: import('../../../../newsletter/hydrate') as Promise<HydrateModule>,
     clientModule: clientComponents.UnidyNewsletter as ReactWebComponent<UnidyNewsletterElement, UnidyNewsletterEvents>,
     serializeShadowRoot,
 });

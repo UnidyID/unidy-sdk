@@ -5,7 +5,7 @@ The Unidy Newsletter component provides a web component to easily embed newslett
 ## Installation
 
 ```bash
-npm install @unidy.io/components
+npm install @unidy.io/newsletter
 ```
 
 ## Basic Usage

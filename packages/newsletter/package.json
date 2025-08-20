@@ -1,6 +1,6 @@
 {
-  "name": "@unidy.io/components",
-  "version": "0.2.7",
+  "name": "@unidy.io/newsletter",
+  "version": "0.2.8",
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -32,20 +32,20 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/unidy-components/index.esm.js",
-  "jsdelivr": "dist/unidy-components/index.esm.js",
+  "unpkg": "dist/unidy-newsletter/index.esm.js",
+  "jsdelivr": "dist/unidy-newsletter/index.esm.js",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "unpkg": "./dist/unidy-components/index.esm.js",
-      "default": "./dist/unidy-components/index.esm.js"
+      "unpkg": "./dist/unidy-newsletter/index.esm.js",
+      "default": "./dist/unidy-newsletter/index.esm.js"
     },
     "./lazy": {
-      "import": "./dist/esm/unidy-components.js",
-      "require": "./dist/cjs/unidy-components.js",
-      "unpkg": "./dist/unidy-components/unidy-components.esm.js",
-      "default": "./dist/unidy-components/unidy-components.esm.js"
+      "import": "./dist/esm/unidy-newsletter.js",
+      "require": "./dist/cjs/unidy-newsletter.js",
+      "unpkg": "./dist/unidy-newsletter/unidy-newsletter.esm.js",
+      "default": "./dist/unidy-newsletter/unidy-newsletter.esm.js"
     },
     "./newsletter": {
       "import": "./dist/esm/unidy-newsletter.js",
@@ -68,6 +68,6 @@
     "url": "https://github.com/UnidyID/unidy-sdk.git"
   },
   "files": ["dist/", "loader/"],
-  "description": "Unidy SDK Components",
-  "keywords": ["web-components", "unidy", "unidy-sdk", "unidy-web-components"]
+  "description": "Unidy Newsletter SDK",
+  "keywords": ["web-components", "unidy", "unidy-sdk", "unidy-web-components", "newsletter", "unidy-newsletter", "newsletter-sdk"]
 }
