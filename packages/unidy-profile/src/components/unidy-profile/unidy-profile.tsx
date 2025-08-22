@@ -11,6 +11,7 @@ interface ProfileNode {
   value?: unknown;
   type?: string;
   label?: string;
+  required?: boolean;
   options?: Array<{ value?: unknown; label?: string }>;
   radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
 }
@@ -19,6 +20,7 @@ type FieldValue = {
   value: string;
   type: string;
   label: string;
+  required: boolean;
   options?: Option[];
   radioOptions?: RadioOption[];
 };
@@ -135,6 +137,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     const value = node?.value == null ? "" : String(node.value);
     const type = node?.type ? String(node.type) : "text";
     const label = node?.label ? String(node.label) : "";
+    const required = node?.required ? true : false;
 
     let options: Option[] | undefined;
     if (Array.isArray(node?.options)) {
@@ -152,7 +155,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-    return { value, type, label, options, radioOptions };
+    return { value, type, label, required, options, radioOptions };
   };
 
   const data: Record<string, FieldValue> = {};

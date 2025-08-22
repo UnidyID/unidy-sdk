@@ -94,7 +94,7 @@ export class UnidyField {
       <div>
         <label htmlFor={this.field} part="label">
           {fieldData?.label}
-          {this.required ? <span part="required-indicator"> *</span> : null}
+          {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
         </label>
         {fieldData.type === "select" && fieldData.options ? (
           <select
