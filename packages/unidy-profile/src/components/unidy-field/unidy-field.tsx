@@ -84,7 +84,7 @@ export class UnidyField {
 
   render() {
     if (this.store.state.loading) {
-      return <p>Loading...</p>;
+      return <div class="spinner"></div>;
     }
 
     const fieldData = this.store.state.data[this.field];

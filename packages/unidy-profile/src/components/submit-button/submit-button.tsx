@@ -18,6 +18,7 @@ export class SubmitButton {
   }
 
   private async onSubmit () {
+    this.store.state.loading = true;
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
     const idToken = this.store.state.idToken;
@@ -26,6 +27,7 @@ export class SubmitButton {
     const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData);
 
     if (resp?.success) {
+      this.store.state.loading = false;
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
     } else {
       this.store.state.errors = { "status": String(resp?.status) };
@@ -93,7 +95,9 @@ export class SubmitButton {
     return (
       <div>
         <button onClick={() => this.onSubmit()} type="button" part="unidy-button">
-          {this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+          {this.store.state.loading
+            ? <span class="spinner"></span>
+            : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
         </button>
       </div>
     );
