@@ -64,7 +64,7 @@ export class ProfileService {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
-      const resp = await this.client.post<UserProfileData>("/api/sdk/v1/profile", { id_token: token });
+      const resp = await this.client.get<UserProfileData>("/api/sdk/v1/profile", { "X-ID-Token": token });
       const validatedData = UserProfileSchema.parse(resp.data);
 
       return { ...resp, data: validatedData };
@@ -93,7 +93,7 @@ export class ProfileService {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
-      const resp = await this.client.patch<UserProfileData>("/api/sdk/v1/profile", { id_token: token, ...data as object });
+      const resp = await this.client.patch<UserProfileData>("/api/sdk/v1/profile", { ...data as object }, { "X-ID-Token": token });
       const validatedData = UserProfileSchema.parse(resp.data);
       return { ...resp, data: validatedData };
     } catch (e) {
