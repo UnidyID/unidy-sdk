@@ -137,7 +137,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     const value = node?.value == null ? "" : String(node.value);
     const type = node?.type ? String(node.type) : "text";
     const label = node?.label ? String(node.label) : "";
-    const required = node?.required ? true : false;
+    const required = !!node?.required;
 
     let options: Option[] | undefined;
     if (Array.isArray(node?.options)) {

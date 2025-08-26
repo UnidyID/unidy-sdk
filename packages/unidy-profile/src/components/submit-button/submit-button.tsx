@@ -1,5 +1,13 @@
 import { Component, Element, h } from "@stencil/core";
 
+type ProfileFieldValue = string | boolean | number | Date | null;
+type ProfileField = { value: ProfileFieldValue; [key: string]: unknown };
+type CustomAttributes = Record<string, ProfileField>;
+type Configuration = Record<string, unknown> & {
+  custom_attributes?: CustomAttributes;
+};
+type ProfileData = Record<string, { value: ProfileFieldValue } | unknown>;
+
 @Component({
   tag: "submit-button",
   styleUrl: "submit-button.css",
@@ -35,9 +43,9 @@ export class SubmitButton {
   };
 
   private buildUpdatedConfigurationPayload(
-    configuration: Record<string, any> | undefined,
-    stateData: Record<string, any> | undefined
-  ): Record<string, any> | undefined {
+    configuration: Configuration | undefined,
+    stateData: ProfileData | undefined
+  ): Record<string, ProfileFieldValue | Record<string, ProfileFieldValue>> | undefined {
     if (!configuration) return undefined;
 
     const updated =
@@ -45,12 +53,20 @@ export class SubmitButton {
         ? structuredClone(configuration)
         : JSON.parse(JSON.stringify(configuration));
 
-    const hasValueProp = (obj: any): obj is { value: any } =>
-      obj && typeof obj === "object" && "value" in obj;
+    const hasValueProp = (obj: unknown): obj is ProfileField => {
+      if (typeof obj !== "object" || obj === null || !("value" in obj)) return false;
+      const value = (obj as { value: unknown }).value;
+      return (
+        typeof value === "string" ||
+        typeof value === "boolean" ||
+        typeof value === "number" ||
+        value instanceof Date ||
+        value === null
+      );
+    };
 
-    const tryUpdate = (container: Record<string, any>, key: string, value: any) => {
+    const tryUpdate = (container: Record<string, unknown>, key: string, value: ProfileFieldValue) => {
       if (container && hasValueProp(container[key])) {
-
         container[key] = { ...container[key], value };
         return true;
       }
@@ -59,22 +75,26 @@ export class SubmitButton {
 
     if (stateData) {
       for (const key of Object.keys(stateData)) {
-        const newVal = stateData[key]?.value;
+        const field = stateData[key];
+        const newVal = hasValueProp(field) ? field.value : undefined;
+        if (newVal === undefined) continue;
 
         if (tryUpdate(updated, key, newVal)) continue;
 
         if (updated.custom_attributes && tryUpdate(updated.custom_attributes, key, newVal)) continue;
-
       }
     }
 
-    const toValue = (field: any) => (hasValueProp(field) ? field.value : field);
+    const toValue = (field: unknown): ProfileFieldValue => {
+      if (hasValueProp(field)) return field.value;
+      return field as ProfileFieldValue;
+    };
 
-    const flattenedConfig: Record<string, any> = {};
+    const flattenedConfig: Record<string, ProfileFieldValue | Record<string, ProfileFieldValue>> = {};
     for (const key of Object.keys(updated)) {
       if (key === "custom_attributes") {
         const customAttrs = updated.custom_attributes || {};
-        const flattenedAttrs: Record<string, any> = {};
+        const flattenedAttrs: Record<string, ProfileFieldValue> = {};
         for (const cKey of Object.keys(customAttrs)) {
           flattenedAttrs[cKey] = toValue(customAttrs[cKey]);
         }
@@ -96,7 +116,7 @@ export class SubmitButton {
       <div>
         <button onClick={() => this.onSubmit()} type="button" part="unidy-button">
           {this.store.state.loading
-            ? <span class="spinner"></span>
+            ? <span class="spinner"/>
             : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
         </button>
       </div>
