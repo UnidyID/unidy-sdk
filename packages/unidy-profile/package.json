@@ -1,5 +1,5 @@
 {
-  "name": "@unidy.io/profile",
+  "name": "unidy-profile",
   "version": "0.0.1",
   "description": "Stencil Component Starter",
   "main": "dist/index.cjs.js",
