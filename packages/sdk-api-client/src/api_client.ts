@@ -14,19 +14,35 @@ export class ApiClient {
     this.api_key = api_key;
   }
 
-  async post<T>(endpoint: string, body: object): Promise<ApiResponse<T>> {
-    let res: Response | null = null;
+  private baseHeaders(): Headers {
+    const h = new Headers();
+    h.set("Content-Type", "application/json");
+    h.set("Accept", "application/json");
+    h.set("Authorization", `Bearer ${this.api_key}`);
+    return h;
+  }
 
+  private mergeHeaders(base: Headers, extra?: HeadersInit): Headers {
+    const out = new Headers(base);
+    if (extra) {
+      new Headers(extra).forEach((v, k) => out.set(k, v));
+    }
+    return out;
+  }
+
+  private async request<T>(
+    method: string,
+    endpoint: string,
+    body?: object,
+    headers?: HeadersInit
+  ): Promise<ApiResponse<T>> {
+    let res: Response | null = null;
     try {
       res = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: "POST",
+        method,
         mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${this.api_key}`,
-        },
-        body: JSON.stringify(body),
+        headers: this.mergeHeaders(this.baseHeaders(), headers),
+        body: JSON.stringify(body) || undefined,
       });
 
       let data: T | undefined;
@@ -50,9 +66,22 @@ export class ApiClient {
         error: error instanceof Error ? error.message : String(error),
         headers: res ? res.headers : new Headers(),
         success: false,
+        data: undefined,
       };
 
       return response;
     }
+  }
+
+  async get<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
+    return this.request<T>("GET", endpoint, undefined, headers);
+  }
+
+  async post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
+    return this.request<T>("POST", endpoint, body, headers);
+  }
+
+  async patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
+    return this.request<T>("PATCH", endpoint, body, headers);
   }
 }
