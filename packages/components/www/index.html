@@ -1,0 +1,272 @@
+<!doctype html><html dir="ltr" lang="en"><head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"> <title>Unidy Components Demo</title> <link rel="modulepreload" href="/build/p-6e7618a3.js"><link rel="modulepreload" href="/build/p-DEEfufMc.js"><script type="module" src="/build/p-6e7618a3.js" data-stencil data-resources-url="/build/" data-stencil-namespace="unidy-components"></script> <script nomodule="" src="/build/unidy-components.js" data-stencil></script> <style>:root {
+      --demo-blue: #003e74;
+      --demo-orange: #ff9100;
+    }
+
+    body {
+      background-color: #f5f5f5;
+
+      display: flex;
+      justify-content: center;
+      height: 100vh;
+      margin: 1rem;
+    }
+
+    unidy-newsletter {
+      font-family: VisbyCF, system-ui, -apple-system, "system-ui", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+    }
+
+    unidy-newsletter::part(container) {
+      background-color: #ffffff;
+      padding: 2rem;
+      max-width: 600px;
+      min-width: 300px;
+      margin: auto;
+    }
+
+    unidy-newsletter::part(email-input-group) {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    unidy-newsletter::part(email-input) {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    unidy-newsletter::part(email-input-label) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-50%);
+      background: white;
+      padding: 0 0.5rem;
+      color: #666;
+      font-size: 1rem;
+      margin-left: 1rem;
+      z-index: 2;
+    }
+
+    unidy-newsletter::part(submit-button) {
+      background-color: var(--demo-blue);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    unidy-newsletter::part(newsletter-container) {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      background-color: rgb(245, 245, 245);
+    }
+
+    unidy-newsletter::part(error-message) {
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    unidy-newsletter::part(error-message unconfirmed) {
+      color: var(--demo-orange) !important
+    }
+
+    unidy-newsletter::part(error-message already_subscribed) {
+      color: var(--demo-orange) !important
+    }
+
+    unidy-newsletter::part(error-message invalid_email) {
+      color: red !important
+    }
+
+    unidy-newsletter::part(error-message newsletter_not_found) {
+      color: red !important
+    }
+
+    unidy-newsletter::part(error-message preferences_not_found) {
+      color: red !important
+    }
+
+    .header {
+      color: var(--demo-blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      margin-top: 0;
+    }
+
+    .b-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      color: var(--demo-blue);
+    }
+
+    .description {
+      color: var(--demo-blue);
+      padding-bottom: 1rem;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .footer a {
+      color: var(--demo-blue);
+      text-decoration: underline;
+    }
+
+    #success-checkmark {
+      color: green;
+      width: 2rem;
+      margin: auto;
+    }
+
+    .confirm-success-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: #f0f7fd;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 62, 116, 0.06);
+      border: 1px solid #b3d4fc;
+      margin-top: 1.5rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .confirm-success-icon {
+      background: var(--demo-blue);
+      border-radius: 50%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 62, 116, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .confirm-success-content {
+      text-align: center;
+    }
+
+    .confirm-success-title {
+      color: var(--demo-blue);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 0.01em;
+    }
+
+    .confirm-success-text {
+      color: var(--demo-blue);
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    unidy-newsletter::part(additional-field-input-group) {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    unidy-newsletter::part(additional-field-input) {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    unidy-newsletter::part(additional-field-label) {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateY(-50%);
+      background: white;
+      padding: 0 0.5rem;
+      color: #666;
+      font-size: 1rem;
+      margin-left: 1rem;
+      z-index: 2;
+    }</style> </head> <body> <unidy-newsletter api-key="public-newsletter-api-key" api-url="http://localhost:3000" email-placeholder="your@email.com" error-already-subscribed-text="You are already subscribed to this newsletter" error-invalid-email-text="Please enter a valid email address" error-newsletter-not-found-text="Newsletter not found" error-unconfirmed-text="Please confirm your email address" error-unknown-text="An unknown error occurred" error-preference-not-found-text="Preference not found" render-error-messages="true" submit-button-text="Subscribe" success-confirmation-text="You have successfully subscribed to the newsletter. Thank you for joining us!" newsletters-config-json="[
+    {
+      &quot;internalName&quot;: &quot;main&quot;,
+      &quot;label&quot;: &quot;Main Newsletter&quot;,
+      &quot;checked&quot;: true,
+      &quot;preferences&quot;: [
+        { &quot;internalName&quot;: &quot;club_news&quot;, &quot;label&quot;: &quot;Club News&quot;, &quot;checked&quot;: true },
+        { &quot;internalName&quot;: &quot;player_news&quot;, &quot;label&quot;: &quot;Player News&quot;, &quot;checked&quot;: true },
+        { &quot;internalName&quot;: &quot;random_news&quot;, &quot;label&quot;: &quot;Random News&quot;, &quot;checked&quot;: false }
+      ]
+    },
+    {
+      &quot;internalName&quot;: &quot;yet-another&quot;,
+      &quot;label&quot;: &quot;Another Newsletter&quot;,
+      &quot;checked&quot;: false,
+      &quot;preferences&quot;: [ ]
+    }
+  ]" additional-fields-config-json="[
+    {
+      &quot;name&quot;: &quot;first_name&quot;,
+      &quot;label&quot;: &quot;First Name&quot;,
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;last_name&quot;,
+      &quot;label&quot;: &quot;Last Name&quot;,
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;required&quot;: false
+    },
+    {
+      &quot;name&quot;: &quot;custom_attribute:member_number&quot;,
+      &quot;label&quot;: &quot;Membership ID&quot;,
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;required&quot;: true
+    }
+  ]"> <div slot="header" class="header"> <div class="b-heading"> Unidy Newsletter </div> <h1>Important Updates</h1> </div> <h2 slot="description" class="description"> Always stay up to date with the latest news and updates from Unidy. Subscribe to our newsletter and be the first </h2> <div slot="footer" class="footer"> <p>I would like to newest important updates from Unidy per email. My data will not be shared with third parties.
+        I can revoke my consent at any time by visiting the Unidy preference center.</p> <p></p> <p>I accept the <a href="https://www.unidy.io/terms-and-conditions" target="_blank">terms and conditions</a> and <a href="https://www.unidy.io/privacy-policy" target="_blank">privacy policy</a>. </p> </div> <div slot="success-container"> <div id="success-checkmark" class="flex items-center justify-center mt-4 text-green-500"> <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <title>Success</title> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path> </svg> </div> </div> <!-- Customized confirmation success message example --> <div slot="confirm-success-container" class="confirm-success-container"> <div class="confirm-success-icon"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #fff; width: 2.5rem; height: 2.5rem;"> <title>Success</title> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path> </svg> </div> <div class="confirm-success-content"> <h3 class="confirm-success-title"> Subscription Confirmed! </h3> <p class="confirm-success-text"> Thank you for confirming your newsletter subscription.<br> We are excited to keep you updated! </p> </div> </div> <!-- Customized confirmation error message example --> <div slot="confirmation-error-container" class="confirm-success-container" style="background: #fdeaea; border: 1px solid #f5bcbc; box-shadow: 0 2px 8px rgba(200,0,0,0.06);"> <div class="confirm-success-icon" style="background: #e53935;"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #fff; width: 2.5rem; height: 2.5rem;"> <title>Error</title> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path> </svg> </div> <div class="confirm-success-content"> <h3 class="confirm-success-title" style="color: #e53935;"> Confirmation Error </h3> <p class="confirm-success-text" style="color: #b71c1c;"> There was a problem confirming your newsletter subscription.<br> Your preference token could not be assigned. Enter your e-mail address to receive a new link. </p> </div> </div> </unidy-newsletter> <script>
+    const newsletterComponent = document.querySelector('unidy-newsletter');
+
+    // newsletterComponent.newslettersConfig = [
+    //   {
+    //     internal_name: 'main',
+    //     label: 'Main Newsletter',
+    //     checked: true,
+    //     preferences: [
+    //       { internal_name: 'first', label: 'First Preference', checked: true },
+    //       { internal_name: 'second', label: 'Second Preference', checked: false },
+    //     ]
+    //   },...
+    // ]
+
+    newsletterComponent.addEventListener('on:success', (event) => {
+      console.log("Successfully subscribed", event.detail);
+    });
+    newsletterComponent.addEventListener('on:error', (event) => {
+      console.log("Error subscribing", event.detail);
+    });
+  </script> </body></html>
