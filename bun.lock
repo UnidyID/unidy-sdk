@@ -115,6 +115,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@stencil/store": "^2.1.3",
+        "@unidy.io/sdk-api-client": "workspace:*",
       },
       "devDependencies": {
         "@stencil/core": "^4.27.1",
