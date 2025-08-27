@@ -40,6 +40,9 @@ This example shows the recommended approach where the SDK manages the authentica
 ```typescript
 import { UnidyAuth } from '@unidy.io/auth';
 
+// side effect import to avoid tree shaking
+import "../node_modules/@unidy.io/auth/dist/esm/unidy-login";
+
 // 1. Initialize the SDK
 const unidyAuth = new UnidyAuth().init("https://your-unidy-instance-url.com", {
   clientId: "your-client-id",
