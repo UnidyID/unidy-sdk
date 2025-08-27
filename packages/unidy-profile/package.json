@@ -13,10 +13,6 @@
       "import": "./dist/unidy-profile/unidy-profile.esm.js",
       "require": "./dist/unidy-profile/unidy-profile.cjs.js"
     },
-    "./my-component": {
-      "import": "./dist/components/my-component.js",
-      "types": "./dist/components/my-component.d.ts"
-    },
     "./loader": {
       "import": "./loader/index.js",
       "require": "./loader/index.cjs",
