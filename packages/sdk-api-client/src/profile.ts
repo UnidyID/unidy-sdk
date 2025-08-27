@@ -23,7 +23,7 @@ const RadioOptionSchema = z.object({
 
 
 const FieldSchema = z.object({
-  value: z.union([z.string(), z.null(), z.boolean(), z.number()]),
+  value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
   type: FieldType,
   required: z.boolean(),
   label: z.string(),
