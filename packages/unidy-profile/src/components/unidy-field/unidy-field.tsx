@@ -107,6 +107,7 @@ export class UnidyField {
             title={isLocked ? lockedText : undefined}
             onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
           >
+            <option value="" selected={fieldData.value === null}></option>
             {fieldData.options.map((opt) => (
               <option
                 key={opt.value}
