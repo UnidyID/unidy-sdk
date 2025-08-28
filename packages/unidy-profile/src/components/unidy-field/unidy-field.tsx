@@ -89,7 +89,7 @@ export class UnidyField {
 
     const fieldData = this.store.state.data[this.field];
     const isLocked = fieldData?.locked?.locked === true;
-    const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "This field is locked and cannot be edited.";
+    const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "";
     // TODO: handle errors, other types (e.g. multi-select, ...)
 
     return (

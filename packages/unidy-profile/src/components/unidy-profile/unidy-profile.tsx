@@ -152,6 +152,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
         label: String(o.label),
       }));
     }
+
     let radioOptions: RadioOption[] | undefined;
     if (Array.isArray(node?.radio_options)) {
       radioOptions = node.radio_options.map((o) => ({
@@ -161,7 +162,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-  const locked: LockedField | undefined = node?.locked
+    const locked: LockedField | undefined = node?.locked
       ? {
           locked: node.locked.locked === true,
           locked_text:
