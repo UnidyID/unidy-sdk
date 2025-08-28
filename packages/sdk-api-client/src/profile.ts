@@ -5,8 +5,8 @@ const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "ra
 
 const LockedSchema = z.object({
   locked: z.boolean(),
-  locked_text: z.string(),
-}).strict();
+  locked_text: z.union([z.string(), z.null()]).optional()
+})
 
 const SelectOptionSchema = z.object({
   value: z.string(),
