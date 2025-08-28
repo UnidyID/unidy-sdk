@@ -6,12 +6,17 @@ type ProfileRaw = Record<string, unknown>;
 
 type Option = { value: string; label: string };
 type RadioOption = { value: string; label: string; checked: boolean };
+type LockedField = {
+  locked: boolean;
+  locked_text: string;
+};
 
 interface ProfileNode {
   value?: unknown;
   type?: string;
   label?: string;
   required?: boolean;
+  locked?: LockedField;
   options?: Array<{ value?: unknown; label?: string }>;
   radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
 }
@@ -21,6 +26,7 @@ type FieldValue = {
   type: string;
   label: string;
   required: boolean;
+  locked: LockedField | undefined;
   options?: Option[];
   radioOptions?: RadioOption[];
 };
@@ -146,6 +152,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
         label: String(o.label),
       }));
     }
+
     let radioOptions: RadioOption[] | undefined;
     if (Array.isArray(node?.radio_options)) {
       radioOptions = node.radio_options.map((o) => ({
@@ -155,7 +162,17 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-    return { value, type, label, required, options, radioOptions };
+    const locked: LockedField | undefined = node?.locked
+      ? {
+          locked: node.locked.locked === true,
+          locked_text:
+            typeof node.locked.locked_text === "string"
+              ? node.locked.locked_text
+              : "",
+        }
+      : undefined;
+
+    return { value, type, label, required, locked, options, radioOptions };
   };
 
   const data: Record<string, FieldValue> = {};

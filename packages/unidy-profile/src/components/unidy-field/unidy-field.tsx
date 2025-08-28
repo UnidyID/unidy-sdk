@@ -88,6 +88,8 @@ export class UnidyField {
     }
 
     const fieldData = this.store.state.data[this.field];
+    const isLocked = fieldData?.locked?.locked === true;
+    const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "";
     // TODO: handle errors, other types (e.g. multi-select, ...)
 
     return (
@@ -101,6 +103,8 @@ export class UnidyField {
             id={this.field}
             data-value={fieldData.value}
             part="select"
+            disabled={isLocked}
+            title={isLocked ? lockedText : undefined}
             onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
           >
             {fieldData.options.map((opt) => (
@@ -116,7 +120,7 @@ export class UnidyField {
             ))}
           </select>
         ) : fieldData.radioOptions ? (
-          <div part="radio-group">
+          <div part="radio-group" title={isLocked ? lockedText : undefined}>
             {fieldData.radioOptions.map((opt) => (
               <label
                 key={opt.value}
@@ -128,6 +132,7 @@ export class UnidyField {
                   name={this.field}
                   value={opt.value}
                   checked={opt.checked}
+                  disabled={isLocked}
                   onChange={() => this.onRadioChange(opt.value)}
                   part="radio"
                 />
@@ -142,6 +147,8 @@ export class UnidyField {
             value={fieldData.value}
             required={this.required}
             part="input"
+            disabled={isLocked}
+            title={isLocked ? lockedText : undefined}
             onChange={(e) => {
               this.store.state.data[this.field] = {
                 ...this.store.state.data[this.field],

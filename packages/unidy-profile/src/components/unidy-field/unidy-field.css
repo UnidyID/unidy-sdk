@@ -13,6 +13,11 @@
   vertical-align: middle;
 }
 
+[part="input"]:disabled,
+[part="select"]:disabled {
+  cursor: not-allowed;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
