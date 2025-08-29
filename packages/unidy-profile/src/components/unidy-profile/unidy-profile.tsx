@@ -117,6 +117,7 @@ export class UnidyProfile {
     });
 
     this.store.onChange("errors", () => {
+      // use error-message component
       const output = document.getElementById("profile-update-message");
       if (output) {
         output.innerHTML = `<div style="
@@ -191,8 +192,10 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
 }
 
   render() {
+    const errorMsg = Object.values(this.store.state.errors).filter(Boolean).join(", ");
     return (
       <Host>
+        {errorMsg && <error-message message={errorMsg}></error-message>}
         <slot />
       </Host>
     );

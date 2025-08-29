@@ -10,6 +10,12 @@ import { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
+    interface ErrorMessage {
+        /**
+          * @default ""
+         */
+        "message": string;
+    }
     interface SubmitButton {
     }
     interface UnidyField {
@@ -35,6 +41,12 @@ export namespace Components {
     }
 }
 declare global {
+    interface HTMLErrorMessageElement extends Components.ErrorMessage, HTMLStencilElement {
+    }
+    var HTMLErrorMessageElement: {
+        prototype: HTMLErrorMessageElement;
+        new (): HTMLErrorMessageElement;
+    };
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
     }
     var HTMLSubmitButtonElement: {
@@ -54,12 +66,19 @@ declare global {
         new (): HTMLUnidyProfileElement;
     };
     interface HTMLElementTagNameMap {
+        "error-message": HTMLErrorMessageElement;
         "submit-button": HTMLSubmitButtonElement;
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
     }
 }
 declare namespace LocalJSX {
+    interface ErrorMessage {
+        /**
+          * @default ""
+         */
+        "message"?: string;
+    }
     interface SubmitButton {
     }
     interface UnidyField {
@@ -84,6 +103,7 @@ declare namespace LocalJSX {
         "useUnidyAuthEnabled"?: boolean;
     }
     interface IntrinsicElements {
+        "error-message": ErrorMessage;
         "submit-button": SubmitButton;
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
@@ -93,6 +113,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;

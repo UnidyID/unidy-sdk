@@ -17,6 +17,19 @@
 | `useUnidyAuthEnabled` | `use-unidy-auth-enabled` |             | `boolean \| undefined`               | `undefined`                                                                                                                                        |
 
 
+## Dependencies
+
+### Depends on
+
+- [error-message](../errors)
+
+### Graph
+```mermaid
+graph TD;
+  unidy-profile --> error-message
+  style unidy-profile fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

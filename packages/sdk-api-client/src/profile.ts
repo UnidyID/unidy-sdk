@@ -48,7 +48,16 @@ const UserProfileSchema = z.object({
   custom_attributes: z.record(z.string(), FieldSchema)
 })
 
+const UserProfileErrorSchema = z.object({
+  error_identifier: z.string()
+});
+
+
+const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema]);
+
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
+export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
+export type ProfileResult = z.infer<typeof ProfileResultSchema>;
 
 declare global {
   interface Window {
@@ -58,17 +67,20 @@ declare global {
 
 export class ProfileService {
   constructor(private client: ApiClient) {}
-  async fetchProfile(idToken?: string): Promise<ApiResponse<UserProfileData>> {
+  async fetchProfile(idToken?: string): Promise<ApiResponse<ProfileResult>> {
     const token = idToken ?? window.UNIDY?.auth?.id_token;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
       const resp = await this.client.get<UserProfileData>("/api/sdk/v1/profile", { "X-ID-Token": token });
-      const validatedData = UserProfileSchema.parse(resp.data);
-
-      return { ...resp, data: validatedData };
-
+      if (resp.status === 200) {
+        const validatedData = UserProfileSchema.parse(resp.data);
+        return { ...resp, data: validatedData };
+      }else {
+        const validatedError = UserProfileErrorSchema.parse(resp.data);
+        return { ...resp, data: validatedError } as ApiResponse<ProfileResult>;
+      }
     } catch (e) {
       if (e instanceof z.ZodError) {
         return {
@@ -87,15 +99,20 @@ export class ProfileService {
     }
   }
 
-  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<UserProfileData>> {
+  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<ProfileResult>> {
     const token = idToken;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
     try {
       const resp = await this.client.patch<UserProfileData>("/api/sdk/v1/profile", { ...data as object }, { "X-ID-Token": token });
-      const validatedData = UserProfileSchema.parse(resp.data);
-      return { ...resp, data: validatedData };
+      if (resp.status === 200) {
+        const validatedData = UserProfileSchema.parse(resp.data);
+        return { ...resp, data: validatedData };
+      }else {
+        const validatedError = UserProfileErrorSchema.parse(resp.data);
+        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
+      }
     } catch (e) {
       if (e instanceof z.ZodError) {
         return {

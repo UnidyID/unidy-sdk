@@ -38,7 +38,8 @@ export class SubmitButton {
       this.store.state.loading = false;
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
     } else {
-      this.store.state.errors = { "status": String(resp?.status) };
+      this.store.state.loading = false;
+      this.store.state.errors = { [String(resp?.status)]: String(resp?.error) };
     }
   };
 
