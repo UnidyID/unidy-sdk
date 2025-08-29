@@ -120,6 +120,23 @@
       submit-button::part(unidy-button):hover {
         background: #0055fe;
       }
+      unidy-field::part(checkbox-group) {
+        display: flex;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        background: #f8f9fa;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      }
+      unidy-field::part(checkbox-label) {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #222;
+        transition: color 0.2s;
+      }
       #profile-output {
         margin-top: 28px;
         font-size: 1rem;
@@ -176,6 +193,7 @@
         <unidy-field field="last_name"></unidy-field>
         <unidy-field field="date_of_birth" required="true"></unidy-field>
         <unidy-field field="favorite_nut"></unidy-field>
+        <unidy-field field="multi"></unidy-field>
         <unidy-field field="active_membership"></unidy-field>
         <submit-button></submit-button>
         <div id="profile-output"></div>

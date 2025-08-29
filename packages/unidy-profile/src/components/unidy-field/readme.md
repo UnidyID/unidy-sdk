@@ -17,6 +17,9 @@
 
 | Part                   | Description |
 | ---------------------- | ----------- |
+| `"checkbox"`           |             |
+| `"checkbox-group"`     |             |
+| `"checkbox-label"`     |             |
 | `"input"`              |             |
 | `"label"`              |             |
 | `"option"`             |             |
