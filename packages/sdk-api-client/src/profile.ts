@@ -1,7 +1,7 @@
 import type { ApiClient, ApiResponse } from "./api_client";
 import * as z from "zod";
 
-const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local"]);
+const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox"]);
 
 const LockedSchema = z.object({
   locked: z.boolean(),

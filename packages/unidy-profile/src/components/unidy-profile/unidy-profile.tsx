@@ -22,7 +22,7 @@ interface ProfileNode {
 }
 
 type FieldValue = {
-  value: string;
+  value: string | string[];
   type: string;
   label: string;
   required: boolean;
@@ -69,7 +69,7 @@ export class UnidyProfile {
           : this.initialData;
       this.store.state.loading = false;
     } else if (this.useUnidyAuthEnabled && this.apiUrl && this.apiKey) {
-      let idToken = window.UNIDY?.auth?.id_token;
+      let idToken = "";
       if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -141,7 +141,14 @@ export class UnidyProfile {
 
 parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
   const toFieldValue = (node: ProfileNode): FieldValue => {
-    const value = node?.value == null ? "" : String(node.value);
+    let value: string | string[];
+      if (node?.value == null) {
+        value = "";
+      } else if (Array.isArray(node.value)) {
+        value = node.value.map(String);
+      } else {
+        value = String(node.value);
+      }
     const type = node?.type ? String(node.type) : "text";
     const label = node?.label ? String(node.label) : "";
     const required = !!node?.required;
