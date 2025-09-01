@@ -69,7 +69,7 @@ export class UnidyProfile {
           : this.initialData;
       this.store.state.loading = false;
     } else if (this.useUnidyAuthEnabled && this.apiUrl && this.apiKey) {
-      let idToken = window.UNIDY?.auth?.id_token;
+      let idToken = "";
       if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
