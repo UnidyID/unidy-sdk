@@ -21,12 +21,12 @@
 
 ### Depends on
 
-- [error-message](../errors)
+- [flash-message](../unidy-flash)
 
 ### Graph
 ```mermaid
 graph TD;
-  unidy-profile --> error-message
+  unidy-profile --> flash-message
   style unidy-profile fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

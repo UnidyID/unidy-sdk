@@ -38,6 +38,7 @@ export type ProfileStore = {
   errors: Record<string, string | null>;
   idToken: string;
   client?: UnidyClient;
+  configUpdateSource?: "fetch" | "submit";
 };
 
 @Component({
@@ -79,15 +80,23 @@ export class UnidyProfile {
         }
       }
       if (!idToken) {
+        this.store.state.errors = { auth: "Missing id_token" };
         this.store.state.loading = false;
         return;
       }
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       this.store.state.client = client;
       const resp = await client.profile.fetchProfile(idToken);
-      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
 
-      this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+      if (resp?.success) {
+        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+        this.store.state.configUpdateSource = "fetch";
+        this.store.state.errors = {};
+
+        this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+      } else {
+        this.store.state.errors = { [String(resp?.status)]: String(resp?.error) };
+      }
       this.store.state.loading = false;
     } else {
       this.store.state.loading = false;
@@ -97,45 +106,6 @@ export class UnidyProfile {
   componentDidLoad() {
     this.store.onChange("configuration", () => {
       this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
-
-      const output = document.getElementById("profile-update-message");
-      if (output) {
-        output.innerHTML = `<div style="
-          background: #38d39f;
-          color: #fff;
-          padding: 14px 18px;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-top: 12px;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(56,211,159,0.12);
-        ">
-          &#10003; Profile is updated
-        </div>`;
-      }
-    });
-
-    this.store.onChange("errors", () => {
-      // use error-message component
-      const output = document.getElementById("profile-update-message");
-      if (output) {
-        output.innerHTML = `<div style="
-          background: #f7b7b7;
-          color: #721c24;
-          padding: 14px 18px;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-top: 12px;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(247,183,183,0.12);
-        ">
-          &#10008; Profile update failed - ${Object.entries(this.store.state.errors)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(", ")}
-        </div>`;
-      }
     });
   }
 
@@ -200,10 +170,12 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
 
   render() {
     const errorMsg = Object.values(this.store.state.errors).filter(Boolean).join(", ");
+    const wasSubmit = this.store.state.configUpdateSource === "submit";
     return (
       <Host>
-        {errorMsg && <error-message message={errorMsg}></error-message>}
         <slot />
+        {errorMsg && <flash-message variant="error" message={errorMsg}></flash-message>}
+        {wasSubmit && !errorMsg && <flash-message variant="success" message="Profile is updated"></flash-message>}
       </Host>
     );
   }

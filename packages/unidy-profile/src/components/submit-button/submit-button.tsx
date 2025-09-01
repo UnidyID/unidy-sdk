@@ -37,6 +37,8 @@ export class SubmitButton {
     if (resp?.success) {
       this.store.state.loading = false;
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+      this.store.state.configUpdateSource = "submit";
+      this.store.state.errors = {};
     } else {
       this.store.state.loading = false;
       this.store.state.errors = { [String(resp?.status)]: String(resp?.error) };

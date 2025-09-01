@@ -1,14 +1,15 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
 
 @Component({
-  tag: "error-message",
-  styleUrl: "error-message.css",
+  tag: "flash-message",
+  styleUrl: "flash-message.css",
   shadow: true,
 })
-export class ErrorMessage {
+export class FlashMessage {
   @Element() el!: HTMLElement;
 
   @Prop() message: string = "";
+  @Prop() variant: "error" | "success" | "info" = "info";
   @State() isVisible: boolean = true;
 
   private closeError() {
@@ -20,8 +21,8 @@ export class ErrorMessage {
       return null;
     }
     return (
-      <div class="error-message">
-        <span>{this.message}</span>
+      <div class={`${this.variant}-message`}>
+        <span>{this.variant === "error" ? "✘" : "✓"} {this.message}</span>
         <button onClick={() => this.closeError()}>Close</button>
       </div>
     );

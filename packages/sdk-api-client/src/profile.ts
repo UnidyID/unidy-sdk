@@ -79,7 +79,7 @@ export class ProfileService {
         return { ...resp, data: validatedData };
       }else {
         const validatedError = UserProfileErrorSchema.parse(resp.data);
-        return { ...resp, data: validatedError } as ApiResponse<ProfileResult>;
+        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
       }
     } catch (e) {
       if (e instanceof z.ZodError) {

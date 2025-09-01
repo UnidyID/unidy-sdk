@@ -10,11 +10,15 @@ import { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
-    interface ErrorMessage {
+    interface FlashMessage {
         /**
           * @default ""
          */
         "message": string;
+        /**
+          * @default "info"
+         */
+        "variant": "error" | "success" | "info";
     }
     interface SubmitButton {
     }
@@ -41,11 +45,11 @@ export namespace Components {
     }
 }
 declare global {
-    interface HTMLErrorMessageElement extends Components.ErrorMessage, HTMLStencilElement {
+    interface HTMLFlashMessageElement extends Components.FlashMessage, HTMLStencilElement {
     }
-    var HTMLErrorMessageElement: {
-        prototype: HTMLErrorMessageElement;
-        new (): HTMLErrorMessageElement;
+    var HTMLFlashMessageElement: {
+        prototype: HTMLFlashMessageElement;
+        new (): HTMLFlashMessageElement;
     };
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
     }
@@ -66,18 +70,22 @@ declare global {
         new (): HTMLUnidyProfileElement;
     };
     interface HTMLElementTagNameMap {
-        "error-message": HTMLErrorMessageElement;
+        "flash-message": HTMLFlashMessageElement;
         "submit-button": HTMLSubmitButtonElement;
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
     }
 }
 declare namespace LocalJSX {
-    interface ErrorMessage {
+    interface FlashMessage {
         /**
           * @default ""
          */
         "message"?: string;
+        /**
+          * @default "info"
+         */
+        "variant"?: "error" | "success" | "info";
     }
     interface SubmitButton {
     }
@@ -103,7 +111,7 @@ declare namespace LocalJSX {
         "useUnidyAuthEnabled"?: boolean;
     }
     interface IntrinsicElements {
-        "error-message": ErrorMessage;
+        "flash-message": FlashMessage;
         "submit-button": SubmitButton;
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
@@ -113,7 +121,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
+            "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
