@@ -148,8 +148,7 @@ export class UnidyField {
                 <input
                   id={opt.value}
                   type={fieldData.type}
-                  data-selected={opt.value ? "true" : "false"}
-                  checked={fieldData.value.includes(opt.value)}
+                  checked={Array.isArray(fieldData.value) && fieldData.value.includes(opt.value)}
                   disabled={isLocked}
                   title={isLocked ? lockedText : undefined}
                   onChange={(e) => {
