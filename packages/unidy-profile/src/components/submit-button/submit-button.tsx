@@ -1,6 +1,6 @@
 import { Component, Element, h } from "@stencil/core";
 
-type ProfileFieldValue = string | boolean | number | Date | null;
+type ProfileFieldValue = string | boolean | number | Date | null | string[];
 type ProfileField = { value: ProfileFieldValue; [key: string]: unknown };
 type CustomAttributes = Record<string, ProfileField>;
 type Configuration = Record<string, unknown> & {
@@ -61,6 +61,7 @@ export class SubmitButton {
         typeof value === "boolean" ||
         typeof value === "number" ||
         value instanceof Date ||
+        (Array.isArray(value) && value.every(v => typeof v === "string")) ||
         value === null
       );
     };

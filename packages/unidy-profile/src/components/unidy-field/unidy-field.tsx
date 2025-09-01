@@ -11,7 +11,7 @@ export class UnidyField {
 
   @Element() el!: HTMLElement;
 
-  @State() selected?: string;
+  @State() selected?: string | string[];
 
   private get store() {
     const container = this.el.closest("unidy-profile");
@@ -136,6 +136,33 @@ export class UnidyField {
                   disabled={isLocked}
                   onChange={() => this.onRadioChange(opt.value)}
                   part="radio"
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
+        ) : fieldData.type === "checkbox" && fieldData.options ? (
+          <div part="checkbox-group" title={isLocked ? lockedText : undefined}>
+            {fieldData.options.map((opt) => (
+              <label key={opt.value} part="checkbox-label">
+                <input
+                  id={opt.value}
+                  type={fieldData.type}
+                  checked={Array.isArray(fieldData.value) && fieldData.value.includes(opt.value)}
+                  disabled={isLocked}
+                  title={isLocked ? lockedText : undefined}
+                  onChange={(e) => {
+                    const prev = (this.store.state.data[this.field]?.value as string[]) ?? [];
+                    const value = (e.target as HTMLInputElement).checked
+                      ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
+                      : prev.filter(v => v !== opt.value);
+
+                    this.store.state.data[this.field] = {
+                      ...this.store.state.data[this.field],
+                      value,
+                    };
+                  }}
+                  part="checkbox"
                 />
                 {opt.label}
               </label>
