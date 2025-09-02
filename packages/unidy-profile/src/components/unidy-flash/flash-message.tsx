@@ -8,9 +8,9 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 export class FlashMessage {
   @Element() el!: HTMLElement;
 
-  @Prop() message: string = "";
+  @Prop() message = "";
   @Prop() variant: "error" | "success" | "info" = "info";
-  @State() isVisible: boolean = true;
+  @State() isVisible = true;
 
   private closeError() {
     this.isVisible = false;

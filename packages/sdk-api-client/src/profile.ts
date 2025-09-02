@@ -87,10 +87,9 @@ export class ProfileService {
       if (resp.status === 200) {
         const validatedData = UserProfileSchema.parse(resp.data);
         return { ...resp, data: validatedData };
-      }else {
+      }
         const validatedError = UserProfileErrorSchema.parse(resp.data);
         return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
-      }
     } catch (e) {
       if (e instanceof z.ZodError) {
         return {
@@ -119,24 +118,21 @@ export class ProfileService {
       if (resp.status === 200) {
         const validatedData = UserProfileSchema.parse(resp.data);
         return { ...resp, data: validatedData };
-      }else {
-        try {
-          const validatedError = UserProfileErrorSchema.parse(resp.data);
-          return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
-        }catch{
-          const validatedFormError = UserProfileFormErrorSchema.parse(resp.data);
-          const flat: Record<string, string> = Object.fromEntries(
-            Object.entries(validatedFormError.errors).map(([field, errors]) => {
-              if (Array.isArray(errors) && errors.length > 0 && typeof errors[0] === "string") {
-                return [field, (errors as string[]).join(" | ")];
-              } else {
-                const tuples = errors as Array<[number, string[]]>;
-              return [field, tuples.flatMap(([, msgs]) => msgs).join(" | ")];
-            }
-          })
-        );
-        return { ...resp, data: validatedFormError, flatErrors: flat }  as ApiResponse<UserProfileFormError> & { flatErrors: Record<string, string> };
       }
+      try {
+        const validatedError = UserProfileErrorSchema.parse(resp.data);
+        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
+      }catch{
+        const validatedFormError = UserProfileFormErrorSchema.parse(resp.data);
+        const flat: Record<string, string> = Object.fromEntries(
+          Object.entries(validatedFormError.errors).map(([field, errors]) => {
+            if (Array.isArray(errors) && errors.length > 0 && typeof errors[0] === "string") {
+              return [field, (errors as string[]).join(" | ")];
+            }
+              const tuples = errors as Array<[number, string[]]>;
+            return [field, tuples.flatMap(([, msgs]) => msgs).join(" | ")];
+        }));
+        return { ...resp, data: validatedFormError, flatErrors: flat }  as ApiResponse<UserProfileFormError> & { flatErrors: Record<string, string> };
       }
     } catch (e) {
       if (e instanceof z.ZodError) {

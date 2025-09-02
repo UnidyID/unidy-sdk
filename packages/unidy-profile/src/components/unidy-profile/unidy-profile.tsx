@@ -178,8 +178,8 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     return (
       <Host>
         <slot />
-        {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg}></flash-message>}
-        {wasSubmit && !errorMsg && <flash-message variant="success" message="Profile is updated"></flash-message>}
+        {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg}/>}
+        {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated"/>}
       </Host>
     );
   }
