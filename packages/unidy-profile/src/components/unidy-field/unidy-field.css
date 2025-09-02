@@ -1,6 +1,10 @@
 :host {
   display: block;
 }
+.field-error:focus {
+  border-color: red !important;
+  outline-color: red;
+}
 
 .spinner {
   display: inline-block;

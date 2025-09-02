@@ -39,6 +39,7 @@ export type ProfileStore = {
   idToken: string;
   client?: UnidyClient;
   configUpdateSource?: "fetch" | "submit";
+  flashErrors: Record<string, string | null>;
 };
 
 @Component({
@@ -54,6 +55,7 @@ export class UnidyProfile {
     errors: {},
     idToken: "",
     client: undefined,
+    flashErrors: {},
   });
 
   @Prop() profileId?: string;
@@ -92,10 +94,11 @@ export class UnidyProfile {
         this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
         this.store.state.configUpdateSource = "fetch";
         this.store.state.errors = {};
+        this.store.state.flashErrors = {};
 
         this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
       } else {
-        this.store.state.errors = { [String(resp?.status)]: String(resp?.error) };
+        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
       this.store.state.loading = false;
     } else {
@@ -169,12 +172,13 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
 }
 
   render() {
-    const errorMsg = Object.values(this.store.state.errors).filter(Boolean).join(", ");
+    const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
+    const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
     const wasSubmit = this.store.state.configUpdateSource === "submit";
     return (
       <Host>
         <slot />
-        {errorMsg && <flash-message variant="error" message={errorMsg}></flash-message>}
+        {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg}></flash-message>}
         {wasSubmit && !errorMsg && <flash-message variant="success" message="Profile is updated"></flash-message>}
       </Host>
     );

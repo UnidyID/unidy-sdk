@@ -15,18 +15,19 @@
 
 ## Shadow Parts
 
-| Part                   | Description |
-| ---------------------- | ----------- |
-| `"checkbox"`           |             |
-| `"checkbox-group"`     |             |
-| `"checkbox-label"`     |             |
-| `"input"`              |             |
-| `"label"`              |             |
-| `"option"`             |             |
-| `"radio"`              |             |
-| `"radio-group"`        |             |
-| `"required-indicator"` |             |
-| `"select"`             |             |
+| Part                    | Description |
+| ----------------------- | ----------- |
+| `"checkbox"`            |             |
+| `"checkbox-group"`      |             |
+| `"checkbox-label"`      |             |
+| `"field-error-message"` |             |
+| `"input"`               |             |
+| `"label"`               |             |
+| `"option"`              |             |
+| `"radio"`               |             |
+| `"radio-group"`         |             |
+| `"required-indicator"`  |             |
+| `"select"`              |             |
 
 
 ----------------------------------------------

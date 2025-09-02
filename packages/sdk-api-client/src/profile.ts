@@ -52,11 +52,21 @@ const UserProfileErrorSchema = z.object({
   error_identifier: z.string()
 });
 
+const UserProfileFormErrorSchema = z.object({
+  errors: z.record(
+    z.string(),
+    z.union([
+      z.array(z.string()),
+      z.array(z.tuple([z.number(), z.array(z.string())]))
+    ])
+  )
+});
 
-const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema]);
+const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
 
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
+export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
 export type ProfileResult = z.infer<typeof ProfileResultSchema>;
 
 declare global {
@@ -110,8 +120,23 @@ export class ProfileService {
         const validatedData = UserProfileSchema.parse(resp.data);
         return { ...resp, data: validatedData };
       }else {
-        const validatedError = UserProfileErrorSchema.parse(resp.data);
-        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
+        try {
+          const validatedError = UserProfileErrorSchema.parse(resp.data);
+          return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
+        }catch{
+          const validatedFormError = UserProfileFormErrorSchema.parse(resp.data);
+          const flat: Record<string, string> = Object.fromEntries(
+            Object.entries(validatedFormError.errors).map(([field, errors]) => {
+              if (Array.isArray(errors) && errors.length > 0 && typeof errors[0] === "string") {
+                return [field, (errors as string[]).join(" | ")];
+              } else {
+                const tuples = errors as Array<[number, string[]]>;
+              return [field, tuples.flatMap(([, msgs]) => msgs).join(" | ")];
+            }
+          })
+        );
+        return { ...resp, data: validatedFormError, flatErrors: flat }  as ApiResponse<UserProfileFormError> & { flatErrors: Record<string, string> };
+      }
       }
     } catch (e) {
       if (e instanceof z.ZodError) {

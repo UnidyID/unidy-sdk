@@ -30,6 +30,16 @@ export class SubmitButton {
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
     const idToken = this.store.state.idToken;
+
+    for (const key of Object.keys(stateWithoutConfig.data)) {
+      const field = stateWithoutConfig.data[key];
+      if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+        this.store.state.errors = { [key]: "This field is required." };
+        this.store.state.loading = false;
+        return;
+      }
+    }
+
     const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration, stateWithoutConfig.data);
 
     const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData);
@@ -40,9 +50,13 @@ export class SubmitButton {
       this.store.state.configUpdateSource = "submit";
       this.store.state.errors = {};
     } else {
-      this.store.state.loading = false;
-      this.store.state.errors = { [String(resp?.status)]: String(resp?.error) };
-    }
+        if (resp && typeof resp === "object" && "flatErrors" in resp) {
+          this.store.state.errors = (resp as { flatErrors: Record<string, string> }).flatErrors;
+        } else {
+          this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        }
+        this.store.state.loading = false;
+      }
   };
 
   private buildUpdatedConfigurationPayload(
