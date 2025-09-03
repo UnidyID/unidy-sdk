@@ -15,6 +15,10 @@ export namespace Components {
     interface UnidyField {
         "field": string;
         /**
+          * @default ""
+         */
+        "readonlyPlaceholder": string;
+        /**
           * @default false
          */
         "required": boolean;
@@ -64,6 +68,10 @@ declare namespace LocalJSX {
     }
     interface UnidyField {
         "field": string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder"?: string;
         /**
           * @default false
          */

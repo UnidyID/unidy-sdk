@@ -28,6 +28,7 @@ const FieldSchema = z.object({
   required: z.boolean(),
   label: z.string(),
   locked: LockedSchema.optional(),
+  readonly: z.boolean().optional(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional()
 }).strict();

@@ -137,6 +137,10 @@
         color: #222;
         transition: color 0.2s;
       }
+      unidy-field::part(readonly-indicator) {
+        font-weight: 400;
+        color: #6b7280;
+      }
       #profile-output {
         margin-top: 28px;
         font-size: 1rem;
@@ -195,8 +199,9 @@
         <unidy-field field="favorite_nut"></unidy-field>
         <unidy-field field="multi"></unidy-field>
         <unidy-field field="active_membership"></unidy-field>
+        <unidy-field field="back_number" readonly-placeholder="No back number provided"></unidy-field>
+        <unidy-field field="football_fan" readonly-placeholder="No information"></unidy-field>
         <submit-button></submit-button>
-        <div id="profile-output"></div>
         <div id="profile-update-message"></div>
       </unidy-profile>
     </div>

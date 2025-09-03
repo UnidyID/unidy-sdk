@@ -7,10 +7,11 @@
 
 ## Properties
 
-| Property             | Attribute  | Description | Type      | Default     |
-| -------------------- | ---------- | ----------- | --------- | ----------- |
-| `field` _(required)_ | `field`    |             | `string`  | `undefined` |
-| `required`           | `required` |             | `boolean` | `false`     |
+| Property              | Attribute              | Description | Type      | Default     |
+| --------------------- | ---------------------- | ----------- | --------- | ----------- |
+| `field` _(required)_  | `field`                |             | `string`  | `undefined` |
+| `readonlyPlaceholder` | `readonly-placeholder` |             | `string`  | `""`        |
+| `required`            | `required`             |             | `boolean` | `false`     |
 
 
 ## Shadow Parts
@@ -25,6 +26,7 @@
 | `"option"`             |             |
 | `"radio"`              |             |
 | `"radio-group"`        |             |
+| `"readonly-indicator"` |             |
 | `"required-indicator"` |             |
 | `"select"`             |             |
 

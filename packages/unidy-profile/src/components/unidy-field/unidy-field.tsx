@@ -8,6 +8,7 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 export class UnidyField {
   @Prop() field!: string;
   @Prop() required = false;
+  @Prop() readonlyPlaceholder = "";
 
   @Element() el!: HTMLElement;
 
@@ -90,6 +91,7 @@ export class UnidyField {
     const fieldData = this.store.state.data[this.field];
     const isLocked = fieldData?.locked?.locked === true;
     const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "";
+    const isReadonly = fieldData?.readonly === true;
     // TODO: handle errors, other types (e.g. multi-select, ...)
 
     return (
@@ -98,98 +100,100 @@ export class UnidyField {
           {fieldData?.label}
           {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
         </label>
-        {fieldData.type === "select" && fieldData.options ? (
-          <select
-            id={this.field}
-            data-value={fieldData.value}
-            part="select"
-            disabled={isLocked}
-            title={isLocked ? lockedText : undefined}
-            onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
-          >
-            <option value="" selected={fieldData.value === null || fieldData.value === ""}/>
-            {fieldData.options.map((opt) => (
-              <option
-                key={opt.value}
-                value={opt.value}
-                data-selected={opt.value === fieldData.value ? "true" : "false"}
-                selected={opt.value === fieldData.value}
-                part="option"
-              >
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        ) : fieldData.radioOptions ? (
-          <div part="radio-group" title={isLocked ? lockedText : undefined}>
-            {fieldData.radioOptions.map((opt) => (
-              <label
-                key={opt.value}
-                part={`radio-label ${opt.checked ? "radio-checked" : ""}`}
-                data-checked={opt.checked ? "true" : "false"}
-              >
-                <input
-                  type={fieldData.type}
-                  name={this.field}
+        {isReadonly ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
+        {!isReadonly && (
+          fieldData.type === "select" && fieldData.options ? (
+            <select
+              id={this.field}
+              data-value={fieldData.value}
+              part="select"
+              disabled={isLocked}
+              title={isLocked ? lockedText : undefined}
+              onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
+            >
+              <option value="" selected={fieldData.value === null || fieldData.value === ""}/>
+              {fieldData.options.map((opt) => (
+                <option
+                  key={opt.value}
                   value={opt.value}
-                  checked={opt.checked}
-                  disabled={isLocked}
-                  onChange={() => this.onRadioChange(opt.value)}
-                  part="radio"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-        ) : fieldData.type === "checkbox" && fieldData.options ? (
-          <div part="checkbox-group" title={isLocked ? lockedText : undefined}>
-            {fieldData.options.map((opt) => (
-              <label key={opt.value} part="checkbox-label">
-                <input
-                  id={opt.value}
-                  type={fieldData.type}
-                  checked={Array.isArray(fieldData.value) && fieldData.value.includes(opt.value)}
-                  disabled={isLocked}
-                  title={isLocked ? lockedText : undefined}
-                  onChange={(e) => {
-                    const prev = (this.store.state.data[this.field]?.value as string[]) ?? [];
-                    const value = (e.target as HTMLInputElement).checked
-                      ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
-                      : prev.filter(v => v !== opt.value);
+                  data-selected={opt.value === fieldData.value ? "true" : "false"}
+                  selected={opt.value === fieldData.value}
+                  part="option"
+                >
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ) : fieldData.radioOptions ? (
+            <div part="radio-group" title={isLocked ? lockedText : undefined}>
+              {fieldData.radioOptions.map((opt) => (
+                <label
+                  key={opt.value}
+                  part={`radio-label ${opt.checked ? "radio-checked" : ""}`}
+                  data-checked={opt.checked ? "true" : "false"}
+                >
+                  <input
+                    type={fieldData.type}
+                    name={this.field}
+                    value={opt.value}
+                    checked={opt.checked}
+                    disabled={isLocked}
+                    onChange={() => this.onRadioChange(opt.value)}
+                    part="radio"
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          ) : fieldData.type === "checkbox" && fieldData.options ? (
+            <div part="checkbox-group" title={isLocked ? lockedText : undefined}>
+              {fieldData.options.map((opt) => (
+                <label key={opt.value} part="checkbox-label">
+                  <input
+                    id={opt.value}
+                    type={fieldData.type}
+                    checked={Array.isArray(fieldData.value) && fieldData.value.includes(opt.value)}
+                    disabled={isLocked}
+                    title={isLocked ? lockedText : undefined}
+                    onChange={(e) => {
+                      const prev = (this.store.state.data[this.field]?.value as string[]) ?? [];
+                      const value = (e.target as HTMLInputElement).checked
+                        ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
+                        : prev.filter(v => v !== opt.value);
 
-                    this.store.state.data[this.field] = {
-                      ...this.store.state.data[this.field],
-                      value,
-                    };
-                  }}
-                  part="checkbox"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-        ) : (
-          <input
-            id={this.field}
-            type={fieldData.type}
-            value={fieldData.value}
-            required={this.required}
-            part="input"
-            disabled={isLocked}
-            title={isLocked ? lockedText : undefined}
-            onChange={(e) => {
-              this.store.state.data[this.field] = {
-                ...this.store.state.data[this.field],
-                value: (e.target as HTMLInputElement).value,
-              };
-            }}
-          />
-        )}
-        {this.store.state.errors[this.field] && (
-          <p style={{ color: "red" }}>
-            ERROR: {this.store.state.errors[this.field]}
-          </p>
-        )}
+                      this.store.state.data[this.field] = {
+                        ...this.store.state.data[this.field],
+                        value,
+                      };
+                    }}
+                    part="checkbox"
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          ) : (
+            <input
+              id={this.field}
+              type={fieldData.type}
+              value={fieldData.value}
+              required={this.required}
+              part="input"
+              disabled={isLocked}
+              title={isLocked ? lockedText : undefined}
+              onChange={(e) => {
+                this.store.state.data[this.field] = {
+                  ...this.store.state.data[this.field],
+                  value: (e.target as HTMLInputElement).value,
+                };
+              }}
+            />
+          ))}
+          {this.store.state.errors[this.field] && (
+            <p style={{ color: "red" }}>
+              ERROR: {this.store.state.errors[this.field]}
+            </p>
+          )}
       </div>
     );
   }
