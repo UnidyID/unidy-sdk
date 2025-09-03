@@ -172,6 +172,21 @@ export class UnidyField {
                 </label>
               ))}
             </div>
+          ) : fieldData.type === "textarea" ? (
+            <textarea
+              id={this.field}
+              value={fieldData.value}
+              required={this.required}
+              part="textarea"
+              disabled={isLocked}
+              title={isLocked ? lockedText : undefined}
+              onChange={(e) => {
+                this.store.state.data[this.field] = {
+                  ...this.store.state.data[this.field],
+                  value: (e.target as HTMLTextAreaElement).value,
+                };
+              }}
+            />
           ) : (
             <input
               id={this.field}

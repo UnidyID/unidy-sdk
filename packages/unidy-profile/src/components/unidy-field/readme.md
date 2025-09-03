@@ -29,6 +29,7 @@
 | `"readonly-indicator"` |             |
 | `"required-indicator"` |             |
 | `"select"`             |             |
+| `"textarea"`           |             |
 
 
 ----------------------------------------------

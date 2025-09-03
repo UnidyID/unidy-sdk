@@ -141,14 +141,17 @@
         font-weight: 400;
         color: #6b7280;
       }
-      #profile-output {
-        margin-top: 28px;
-        font-size: 1rem;
-        background: #f1f5f9;
-        border-radius: 10px;
-        padding: 18px;
-        color: #2d3748;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      unidy-field::part(textarea) {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+        resize: vertical;
       }
     </style>
   </head>
@@ -201,6 +204,7 @@
         <unidy-field field="active_membership"></unidy-field>
         <unidy-field field="back_number" readonly-placeholder="No back number provided"></unidy-field>
         <unidy-field field="football_fan" readonly-placeholder="No information"></unidy-field>
+        <unidy-field field="self_description"></unidy-field>
         <submit-button></submit-button>
         <div id="profile-update-message"></div>
       </unidy-profile>
