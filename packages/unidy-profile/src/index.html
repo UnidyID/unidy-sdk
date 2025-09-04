@@ -137,6 +137,10 @@
         color: #222;
         transition: color 0.2s;
       }
+      unidy-field::part(field-error-message) {
+        color: red;
+        font-size: 1rem;
+      }
       #profile-output {
         margin-top: 28px;
         font-size: 1rem;
@@ -196,7 +200,6 @@
         <unidy-field field="multi"></unidy-field>
         <unidy-field field="active_membership"></unidy-field>
         <submit-button></submit-button>
-        <div id="profile-output"></div>
         <div id="profile-update-message"></div>
       </unidy-profile>
     </div>

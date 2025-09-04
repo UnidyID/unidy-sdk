@@ -34,6 +34,13 @@ export class UnidyField {
     }
   }
 
+  componentDidRender() {
+    const fieldErrors = this.store.state.errors;
+    if (fieldErrors?.[this.field]) {
+      this.el.shadowRoot?.getElementById(this.field)?.focus();
+    }
+  }
+
   private onRadioChange = (value: string) => {
     this.selected = value;
 
@@ -88,9 +95,12 @@ export class UnidyField {
     }
 
     const fieldData = this.store.state.data[this.field];
-    const isLocked = fieldData?.locked?.locked === true;
-    const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "";
-    // TODO: handle errors, other types (e.g. multi-select, ...)
+    if (!fieldData) {
+      return null;
+    }
+    const isLocked = !!fieldData?.locked;
+    const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
+    // TODO: Add other types
 
     return (
       <div>
@@ -173,7 +183,8 @@ export class UnidyField {
             id={this.field}
             type={fieldData.type}
             value={fieldData.value}
-            required={this.required}
+            class={this.store.state.errors[this.field] ? 'field-error' : ''}
+            required={fieldData?.required || this.required}
             part="input"
             disabled={isLocked}
             title={isLocked ? lockedText : undefined}
@@ -186,9 +197,9 @@ export class UnidyField {
           />
         )}
         {this.store.state.errors[this.field] && (
-          <p style={{ color: "red" }}>
+          <span part="field-error-message">
             ERROR: {this.store.state.errors[this.field]}
-          </p>
+          </span>
         )}
       </div>
     );

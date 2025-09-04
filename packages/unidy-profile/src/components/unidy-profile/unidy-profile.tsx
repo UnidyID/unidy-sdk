@@ -6,17 +6,14 @@ type ProfileRaw = Record<string, unknown>;
 
 type Option = { value: string; label: string };
 type RadioOption = { value: string; label: string; checked: boolean };
-type LockedField = {
-  locked: boolean;
-  locked_text: string;
-};
 
 interface ProfileNode {
   value?: unknown;
   type?: string;
   label?: string;
   required?: boolean;
-  locked?: LockedField;
+  locked?: boolean;
+  locked_text?: string;
   options?: Array<{ value?: unknown; label?: string }>;
   radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
 }
@@ -26,7 +23,8 @@ type FieldValue = {
   type: string;
   label: string;
   required: boolean;
-  locked: LockedField | undefined;
+  locked: boolean | undefined;
+  locked_text: string | undefined;
   options?: Option[];
   radioOptions?: RadioOption[];
 };
@@ -38,6 +36,8 @@ export type ProfileStore = {
   errors: Record<string, string | null>;
   idToken: string;
   client?: UnidyClient;
+  configUpdateSource?: "fetch" | "submit";
+  flashErrors: Record<string, string | null>;
 };
 
 @Component({
@@ -53,6 +53,7 @@ export class UnidyProfile {
     errors: {},
     idToken: "",
     client: undefined,
+    flashErrors: {},
   });
 
   @Prop() profileId?: string;
@@ -78,16 +79,21 @@ export class UnidyProfile {
           this.store.state.idToken = String(idToken);
         }
       }
-      if (!idToken) {
-        this.store.state.loading = false;
-        return;
-      }
+
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       this.store.state.client = client;
       const resp = await client.profile.fetchProfile(idToken);
-      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
 
-      this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+      if (resp?.success) {
+        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+        this.store.state.configUpdateSource = "fetch";
+        this.store.state.errors = {};
+        this.store.state.flashErrors = {};
+
+        this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+      } else {
+        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+      }
       this.store.state.loading = false;
     } else {
       this.store.state.loading = false;
@@ -97,44 +103,6 @@ export class UnidyProfile {
   componentDidLoad() {
     this.store.onChange("configuration", () => {
       this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
-
-      const output = document.getElementById("profile-update-message");
-      if (output) {
-        output.innerHTML = `<div style="
-          background: #38d39f;
-          color: #fff;
-          padding: 14px 18px;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-top: 12px;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(56,211,159,0.12);
-        ">
-          &#10003; Profile is updated
-        </div>`;
-      }
-    });
-
-    this.store.onChange("errors", () => {
-      const output = document.getElementById("profile-update-message");
-      if (output) {
-        output.innerHTML = `<div style="
-          background: #f7b7b7;
-          color: #721c24;
-          padding: 14px 18px;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-top: 12px;
-          text-align: center;
-          box-shadow: 0 2px 8px rgba(247,183,183,0.12);
-        ">
-          &#10008; Profile update failed - ${Object.entries(this.store.state.errors)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(", ")}
-        </div>`;
-      }
     });
   }
 
@@ -151,6 +119,8 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     const type = node?.type ? String(node.type) : "text";
     const label = node?.label ? String(node.label) : "";
     const required = !!node?.required;
+    const locked = !!node?.locked;
+    const locked_text = node?.locked_text ? String(node.locked_text) : "";
 
     let options: Option[] | undefined;
     if (Array.isArray(node?.options)) {
@@ -169,17 +139,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-    const locked: LockedField | undefined = node?.locked
-      ? {
-          locked: node.locked.locked === true,
-          locked_text:
-            typeof node.locked.locked_text === "string"
-              ? node.locked.locked_text
-              : "",
-        }
-      : undefined;
-
-    return { value, type, label, required, locked, options, radioOptions };
+    return { value, type, label, required, locked, locked_text, options, radioOptions };
   };
 
   const data: Record<string, FieldValue> = {};
@@ -198,9 +158,14 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
 }
 
   render() {
+    const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
+    const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
+    const wasSubmit = this.store.state.configUpdateSource === "submit";
     return (
       <Host>
         <slot />
+        {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg}/>}
+        {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated"/>}
       </Host>
     );
   }

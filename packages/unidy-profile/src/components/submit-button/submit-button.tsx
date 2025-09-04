@@ -30,6 +30,16 @@ export class SubmitButton {
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
     const idToken = this.store.state.idToken;
+
+    for (const key of Object.keys(stateWithoutConfig.data)) {
+      const field = stateWithoutConfig.data[key];
+      if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+        this.store.state.errors = { [key]: "This field is required." };
+        this.store.state.loading = false;
+        return;
+      }
+    }
+
     const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration, stateWithoutConfig.data);
 
     const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData);
@@ -37,9 +47,16 @@ export class SubmitButton {
     if (resp?.success) {
       this.store.state.loading = false;
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+      this.store.state.configUpdateSource = "submit";
+      this.store.state.errors = {};
     } else {
-      this.store.state.errors = { "status": String(resp?.status) };
-    }
+        if (resp?.data && "flatErrors" in resp.data) {
+          this.store.state.errors = resp.data.flatErrors as Record<string, string>;
+        } else {
+          this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        }
+        this.store.state.loading = false;
+      }
   };
 
   private buildUpdatedConfigurationPayload(
@@ -115,7 +132,7 @@ export class SubmitButton {
   render() {
     return (
       <div>
-        <button onClick={() => this.onSubmit()} type="button" part="unidy-button">
+        <button type="button" onClick={() => this.onSubmit()} part="unidy-button">
           {this.store.state.loading
             ? <span class="spinner"/>
             : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
