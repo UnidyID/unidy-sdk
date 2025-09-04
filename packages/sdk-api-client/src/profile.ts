@@ -3,11 +3,6 @@ import * as z from "zod";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox"]);
 
-const LockedSchema = z.object({
-  locked: z.boolean(),
-  locked_text: z.union([z.string(), z.null()]).optional()
-})
-
 const SelectOptionSchema = z.object({
   value: z.string(),
   label: z.string()
@@ -27,7 +22,9 @@ const FieldSchema = z.object({
   type: FieldType,
   required: z.boolean(),
   label: z.string(),
-  locked: LockedSchema.optional(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional()
 }).strict();
