@@ -1,4 +1,4 @@
-import { Component, Element, Prop, State, h } from "@stencil/core";
+import { Component, Prop, State, h } from "@stencil/core";
 
 @Component({
   tag: "flash-message",
@@ -6,8 +6,6 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
   shadow: true,
 })
 export class FlashMessage {
-  @Element() el!: HTMLElement;
-
   @Prop() message = "";
   @Prop() variant: "error" | "success" | "info" = "info";
   @State() isVisible = true;
