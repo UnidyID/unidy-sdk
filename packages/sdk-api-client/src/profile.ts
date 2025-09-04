@@ -42,29 +42,51 @@ const UserProfileSchema = z.object({
   postal_code: FieldSchema,
   country_code: FieldSchema,
   date_of_birth: FieldSchema,
+  preferred_language: FieldSchema.optional(),
   custom_attributes: z.record(z.string(), FieldSchema)
 })
 
 const UserProfileErrorSchema = z.object({
   error_identifier: z.string()
-});
+}).strict();
+
+const FormErrorsValue = z.union([
+  z.array(z.string()),
+  z.array(z.tuple([z.number(), z.array(z.string())])),
+]);
+
+const FormErrorsRawSchema = z.record(z.string(), FormErrorsValue);
 
 const UserProfileFormErrorSchema = z.object({
-  errors: z.record(
-    z.string(),
-    z.union([
-      z.array(z.string()),
-      z.array(z.tuple([z.number(), z.array(z.string())]))
-    ])
-  )
+  errors: FormErrorsRawSchema,
+}).strict().transform(({ errors }) => {
+  const flatErrors = Object.fromEntries(
+    Object.entries(errors).map(([field, value]) => {
+      const errorMessages =
+        Array.isArray(value) && value.length > 0 && typeof value[0] === "string"
+          ? (value as string[])
+          : (value as Array<[number, string[]]>).flatMap(([, arr]) => arr);
+      return [field, errorMessages.join(" | ")];
+    })
+  );
+  return { errors, flatErrors };
 });
-
-const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
 
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
 export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
-export type ProfileResult = z.infer<typeof ProfileResultSchema>;
+
+const ProfileResultSchema = z.union([
+  UserProfileSchema,
+  UserProfileErrorSchema,
+  UserProfileFormErrorSchema,
+]);
+
+export type ProfileResult =
+  | UserProfileData
+  | UserProfileError
+  | UserProfileFormError
+  | Record<string, string>;
 
 declare global {
   interface Window {
@@ -74,28 +96,29 @@ declare global {
 
 export class ProfileService {
   constructor(private client: ApiClient) {}
+
   async fetchProfile(idToken?: string): Promise<ApiResponse<ProfileResult>> {
     const token = idToken ?? window.UNIDY?.auth?.id_token;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
+
     try {
-      const resp = await this.client.get<UserProfileData>("/api/sdk/v1/profile", { "X-ID-Token": token });
-      if (resp.status === 200) {
-        const validatedData = UserProfileSchema.parse(resp.data);
-        return { ...resp, data: validatedData };
+      const resp = await this.client.get<unknown>("/api/sdk/v1/profile", { "X-ID-Token": token });
+
+      const parsed = ProfileResultSchema.safeParse(resp.data);
+      if (!parsed.success) {
+        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
       }
-        const validatedError = UserProfileErrorSchema.parse(resp.data);
-        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
+
+      const data = parsed.data;
+
+      if ("error_identifier" in data) {
+        return { ...resp, data, error: data.error_identifier };
+      }
+
+      return { ...resp, data };
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        return {
-          status: 400,
-          success: false,
-          headers: new Headers(),
-          error: "invalid profile data",
-        };
-      }
       return {
         status: e instanceof TypeError ? 0 : 500,
         success: false,
@@ -106,40 +129,32 @@ export class ProfileService {
   }
 
   async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<ProfileResult>> {
-    const token = idToken;
-    if (!token) {
+    if (!idToken) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
+
+    const payload = data as object;
+
     try {
-      const resp = await this.client.patch<UserProfileData>("/api/sdk/v1/profile", { ...data as object }, { "X-ID-Token": token });
-      if (resp.status === 200) {
-        const validatedData = UserProfileSchema.parse(resp.data);
-        return { ...resp, data: validatedData };
+      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile", { ...payload }, { "X-ID-Token": idToken });
+
+      const parsed = ProfileResultSchema.safeParse(resp.data);
+      if (!parsed.success) {
+        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
       }
-      try {
-        const validatedError = UserProfileErrorSchema.parse(resp.data);
-        return { ...resp, data: validatedError, error: validatedError.error_identifier } as ApiResponse<UserProfileError>;
-      }catch{
-        const validatedFormError = UserProfileFormErrorSchema.parse(resp.data);
-        const flat: Record<string, string> = Object.fromEntries(
-          Object.entries(validatedFormError.errors).map(([field, errors]) => {
-            if (Array.isArray(errors) && errors.length > 0 && typeof errors[0] === "string") {
-              return [field, (errors as string[]).join(" | ")];
-            }
-              const tuples = errors as Array<[number, string[]]>;
-            return [field, tuples.flatMap(([, msgs]) => msgs).join(" | ")];
-        }));
-        return { ...resp, data: validatedFormError, flatErrors: flat }  as ApiResponse<UserProfileFormError> & { flatErrors: Record<string, string> };
+
+      const result = parsed.data;
+
+      if ("errors" in result) {
+        return { ...resp, data: result };
       }
+
+      if ("error_identifier" in result) {
+        return { ...resp, data: result, error: result.error_identifier };
+      }
+
+      return { ...resp, data: result };
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        return {
-          status: 400,
-          success: false,
-          headers: new Headers(),
-          error: "invalid profile data",
-        };
-      }
       return {
         status: e instanceof TypeError ? 0 : 500,
         success: false,

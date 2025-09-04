@@ -95,8 +95,11 @@ export class UnidyField {
     }
 
     const fieldData = this.store.state.data[this.field];
-    const isLocked = fieldData?.locked?.locked === true;
-    const lockedText = fieldData?.locked?.locked_text ? fieldData.locked.locked_text : "";
+    if (!fieldData) {
+      return null;
+    }
+    const isLocked = fieldData?.locked ? true : false;
+    const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
     // TODO: Add other types
 
     return (

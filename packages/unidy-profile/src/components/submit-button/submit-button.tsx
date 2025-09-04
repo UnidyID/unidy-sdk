@@ -50,8 +50,8 @@ export class SubmitButton {
       this.store.state.configUpdateSource = "submit";
       this.store.state.errors = {};
     } else {
-        if (resp && typeof resp === "object" && "flatErrors" in resp) {
-          this.store.state.errors = (resp as { flatErrors: Record<string, string> }).flatErrors;
+        if (resp?.data && "flatErrors" in resp.data) {
+          this.store.state.errors = resp.data.flatErrors as Record<string, string>;
         } else {
           this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
         }

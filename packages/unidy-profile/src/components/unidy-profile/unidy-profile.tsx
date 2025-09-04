@@ -6,17 +6,14 @@ type ProfileRaw = Record<string, unknown>;
 
 type Option = { value: string; label: string };
 type RadioOption = { value: string; label: string; checked: boolean };
-type LockedField = {
-  locked: boolean;
-  locked_text: string;
-};
 
 interface ProfileNode {
   value?: unknown;
   type?: string;
   label?: string;
   required?: boolean;
-  locked?: LockedField;
+  locked?: boolean;
+  locked_text?: string;
   options?: Array<{ value?: unknown; label?: string }>;
   radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
 }
@@ -26,7 +23,8 @@ type FieldValue = {
   type: string;
   label: string;
   required: boolean;
-  locked: LockedField | undefined;
+  locked: boolean | undefined;
+  locked_text: string | undefined;
   options?: Option[];
   radioOptions?: RadioOption[];
 };
@@ -81,11 +79,7 @@ export class UnidyProfile {
           this.store.state.idToken = String(idToken);
         }
       }
-      if (!idToken) {
-        this.store.state.errors = { auth: "Missing id_token" };
-        this.store.state.loading = false;
-        return;
-      }
+
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       this.store.state.client = client;
       const resp = await client.profile.fetchProfile(idToken);
@@ -125,6 +119,8 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     const type = node?.type ? String(node.type) : "text";
     const label = node?.label ? String(node.label) : "";
     const required = !!node?.required;
+    const locked = !!node?.locked;
+    const locked_text = node?.locked_text ? String(node.locked_text) : "";
 
     let options: Option[] | undefined;
     if (Array.isArray(node?.options)) {
@@ -143,17 +139,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-    const locked: LockedField | undefined = node?.locked
-      ? {
-          locked: node.locked.locked === true,
-          locked_text:
-            typeof node.locked.locked_text === "string"
-              ? node.locked.locked_text
-              : "",
-        }
-      : undefined;
-
-    return { value, type, label, required, locked, options, radioOptions };
+    return { value, type, label, required, locked, locked_text, options, radioOptions };
   };
 
   const data: Record<string, FieldValue> = {};
