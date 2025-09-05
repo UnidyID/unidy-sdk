@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Stencil Component Starter</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script type="module" src="/build/auth.esm.js"></script>
+  <script nomodule src="/build/auth.js"></script>
+
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
+
+    <div id="authFormContainer" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
+      <h3 class="mb-4 text-gray-600">Sign in to your account</h3>
+
+      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
+        class="flex flex-col gap-2">
+        <email-field placeholder="Enter your email"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+        <password-field placeholder="Enter your password"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
+        <submit-button text="Sign In" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+      </signin-root>
+    </div>
+
+    <div id="tokenSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
+      <div class="text-center mb-6">
+        <h3 id="message" class="text-2xl font-semibold mb-4"></h3>
+        <div id="payloadOutput"
+          class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono text-gray-700 max-h-48 text-left overflow-y-auto">
+        </div>
+        <div id="lastRefreshed" class="text-xs text-gray-500 mt-2"></div>
+        <div class="mt-6 space-y-3">
+          <button id="logoutBtn"
+            class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Auth } from "/build/index.esm.js";
+
+    const authFormContainer = document.getElementById("authFormContainer");
+    const tokenSection = document.getElementById("tokenSection");
+    const payloadOutput = document.getElementById("payloadOutput");
+    const message = document.getElementById("message");
+    const signinRoot = document.getElementById("sign-in-root");
+
+    const auth = await Auth.getInstance();
+
+    signinRoot.addEventListener("authEvent", async (event) => {
+      console.log("Auth event:", event.detail);
+
+      showTokenData(await auth.userData());
+    });
+
+    signinRoot.addEventListener("errorEvent", (event) => {
+      if (event.detail === 'account_not_found') {
+        // Redirect to unidy for registration
+        window.location = "http://localhost:3000/logins?email=" + auth.getEmail();
+      }
+      else {
+        window.alert(event.detail);
+      }
+    });
+
+    function showForm() {
+      authFormContainer.style.display = "block";
+      tokenSection.style.display = "none";
+    }
+
+    function showTokenData(payload) {
+      authFormContainer.style.display = "none";
+      tokenSection.style.display = "block";
+      payloadOutput.textContent = JSON.stringify(payload, null, 2);
+      message.textContent = `Welcome back ${payload.name || payload.email}!`;
+    }
+
+
+    if (await auth.isAuthenticated()) {
+      const payload = await auth.userData();
+      showTokenData(payload);
+    } else {
+      showForm();
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    logoutBtn?.addEventListener("click", () => {
+      auth.logout();
+      window.location.reload();
+    });
+
+  </script>
+</body>
+
+</html>
