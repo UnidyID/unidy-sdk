@@ -38,6 +38,7 @@ export type ProfileStore = {
   client?: UnidyClient;
   configUpdateSource?: "fetch" | "submit";
   flashErrors: Record<string, string | null>;
+  language?: string;
 };
 
 @Component({
@@ -54,6 +55,7 @@ export class UnidyProfile {
     idToken: "",
     client: undefined,
     flashErrors: {},
+    language: "",
   });
 
   @Prop() profileId?: string;
@@ -61,6 +63,7 @@ export class UnidyProfile {
   @Prop() useUnidyAuthEnabled?: boolean;
   @Prop() apiUrl?: string;
   @Prop() apiKey?: string;
+  @Prop() language?: string;
 
   async componentWillLoad() {
     if (this.initialData !== "") {
@@ -77,12 +80,13 @@ export class UnidyProfile {
         if (params.has("id_token")) {
           idToken = params.get("id_token") || idToken;
           this.store.state.idToken = String(idToken);
+          this.store.state.language = this.language;
         }
       }
 
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       this.store.state.client = client;
-      const resp = await client.profile.fetchProfile(idToken);
+      const resp = await client.profile.fetchProfile(idToken, this.language);
 
       if (resp?.success) {
         this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));

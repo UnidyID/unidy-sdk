@@ -42,7 +42,7 @@ export class SubmitButton {
 
     const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration, stateWithoutConfig.data);
 
-    const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData);
+    const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData, this.store.state.language);
 
     if (resp?.success) {
       this.store.state.loading = false;

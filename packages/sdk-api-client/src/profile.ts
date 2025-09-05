@@ -97,14 +97,15 @@ declare global {
 export class ProfileService {
   constructor(private client: ApiClient) {}
 
-  async fetchProfile(idToken?: string): Promise<ApiResponse<ProfileResult>> {
+  async fetchProfile(idToken?: string, lang?: string): Promise<ApiResponse<ProfileResult>> {
     const token = idToken ?? window.UNIDY?.auth?.id_token;
+    const preferred_language = lang;
     if (!token) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
 
     try {
-      const resp = await this.client.get<unknown>("/api/sdk/v1/profile", { "X-ID-Token": token });
+      const resp = await this.client.get<unknown>("/api/sdk/v1/profile" + (preferred_language ? `?lang=${preferred_language}` : ""), { "X-ID-Token": token });
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {
@@ -128,7 +129,8 @@ export class ProfileService {
     }
   }
 
-  async updateProfile(idToken: string, data: unknown): Promise<ApiResponse<ProfileResult>> {
+  async updateProfile(idToken: string, data: unknown, lang?: string): Promise<ApiResponse<ProfileResult>> {
+    const preferred_language = lang;
     if (!idToken) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
@@ -136,7 +138,7 @@ export class ProfileService {
     const payload = data as object;
 
     try {
-      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile", { ...payload }, { "X-ID-Token": idToken });
+      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile" + (preferred_language ? `?lang=${preferred_language}` : ""), { ...payload }, { "X-ID-Token": idToken });
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {
