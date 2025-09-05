@@ -13,7 +13,7 @@ export class SigninRoot {
   @Prop() className = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
-  @Event() errorEvent!: EventEmitter<string>;
+  @Event() errorEvent!: EventEmitter<{ error: string }>;
 
   componentWillLoad() {
     if (this.baseUrl && this.apiKey) {
@@ -31,7 +31,7 @@ export class SigninRoot {
   }
 
   onError(error: string) {
-    this.errorEvent.emit(error);
+    this.errorEvent.emit({ error: error });
   }
 
   render() {

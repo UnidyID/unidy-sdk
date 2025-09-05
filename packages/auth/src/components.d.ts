@@ -72,7 +72,7 @@ declare global {
     };
     interface HTMLSigninRootElementEventMap {
         "authEvent": TokenResponse;
-        "errorEvent": string;
+        "errorEvent": { error: string };
     }
     interface HTMLSigninRootElement extends Components.SigninRoot, HTMLStencilElement {
         addEventListener<K extends keyof HTMLSigninRootElementEventMap>(type: K, listener: (this: HTMLSigninRootElement, ev: SigninRootCustomEvent<HTMLSigninRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -136,7 +136,7 @@ declare namespace LocalJSX {
          */
         "className"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
-        "onErrorEvent"?: (event: SigninRootCustomEvent<string>) => void;
+        "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
     interface SubmitButton {
         /**

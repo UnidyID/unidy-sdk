@@ -19,11 +19,11 @@ const SESSION_KEYS = {
   REFRESH_TOKEN: "unidy_refresh_token",
 } as const;
 
-const saveToLocalStorage = (key: string, value: string | null) => {
+const saveToStorage = (storage: Storage, key: string, value: string | null) => {
   if (value) {
-    localStorage.setItem(key, value);
+    storage.setItem(key, value);
   } else {
-    localStorage.removeItem(key);
+    storage.removeItem(key);
   }
 };
 
@@ -81,7 +81,17 @@ class AuthStore {
 
   setSignInId(signInId: string | null) {
     state.sid = signInId;
-    saveToLocalStorage(SESSION_KEYS.SID, signInId);
+    saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
+  }
+
+  setToken(token: string | null) {
+    state.token = token;
+    saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, token);
+  }
+
+  setRefreshToken(refreshToken: string | null) {
+    state.refreshToken = refreshToken;
+    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
   }
 
   setAuthenticated(authenticated: boolean) {
@@ -94,21 +104,11 @@ class AuthStore {
     }
   }
 
-  setToken(token: string | null) {
-    state.token = token;
-    saveToLocalStorage(SESSION_KEYS.TOKEN, token);
-  }
-
-  setRefreshToken(refreshToken: string | null) {
-    state.refreshToken = refreshToken;
-    saveToLocalStorage(SESSION_KEYS.REFRESH_TOKEN, refreshToken);
-  }
-
   reset() {
     reset();
-    localStorage.removeItem(SESSION_KEYS.SID);
-    localStorage.removeItem(SESSION_KEYS.TOKEN);
-    localStorage.removeItem(SESSION_KEYS.REFRESH_TOKEN);
+    saveToStorage(localStorage, SESSION_KEYS.SID, null);
+    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
+    saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
   }
 }
 

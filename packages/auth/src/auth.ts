@@ -26,6 +26,11 @@ export class Auth {
 
   private constructor(private client: UnidyClient) {}
 
+  static Errors = {
+    INVALID_PASSWORD: "invalid_password",
+    ACCOUNT_NOT_FOUND: "account_not_found",
+  } as const;
+
   static async getInstance(): Promise<Auth> {
     while (!Auth.isInitialized()) {
       await new Promise((r) => setTimeout(r, 10));
@@ -137,11 +142,7 @@ export class Auth {
   async getToken(): Promise<string | AuthError> {
     const currentToken = authState.token;
 
-    if (!currentToken) {
-      return this.createAuthError("No authentication token available. Please sign in.", "NO_TOKEN", true);
-    }
-
-    if (this.isTokenValid(currentToken)) {
+    if (currentToken && this.isTokenValid(currentToken)) {
       return currentToken;
     }
 
