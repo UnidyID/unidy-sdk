@@ -39,7 +39,7 @@ export namespace Components {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
@@ -107,7 +107,7 @@ declare namespace LocalJSX {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
          */
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;

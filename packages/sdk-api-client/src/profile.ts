@@ -105,7 +105,7 @@ export class ProfileService {
     }
 
     try {
-      const resp = await this.client.get<unknown>("/api/sdk/v1/profile" + (preferred_language ? `?lang=${preferred_language}` : ""), { "X-ID-Token": token });
+      const resp = await this.client.get<unknown>( `/api/sdk/v1/profile${preferred_language ? `?lang=${preferred_language}` : ""}`, { "X-ID-Token": token });
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {
@@ -138,7 +138,7 @@ export class ProfileService {
     const payload = data as object;
 
     try {
-      const resp = await this.client.patch<unknown>("/api/sdk/v1/profile" + (preferred_language ? `?lang=${preferred_language}` : ""), { ...payload }, { "X-ID-Token": idToken });
+      const resp = await this.client.patch<unknown>( `/api/sdk/v1/profile${preferred_language ? `?lang=${preferred_language}` : ""}`, { ...payload }, { "X-ID-Token": idToken });
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {

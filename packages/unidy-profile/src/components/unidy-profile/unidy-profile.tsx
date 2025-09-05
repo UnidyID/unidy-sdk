@@ -55,7 +55,7 @@ export class UnidyProfile {
     idToken: "",
     client: undefined,
     flashErrors: {},
-    language: "",
+    language: ""
   });
 
   @Prop() profileId?: string;
