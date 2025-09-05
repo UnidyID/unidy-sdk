@@ -66,6 +66,7 @@ export class UnidyProfile {
   @Prop() language?: string;
 
   async componentWillLoad() {
+    this.store.state.language = this.language;
     if (this.initialData !== "") {
       this.store.state.data =
         typeof this.initialData === "string"
@@ -80,13 +81,12 @@ export class UnidyProfile {
         if (params.has("id_token")) {
           idToken = params.get("id_token") || idToken;
           this.store.state.idToken = String(idToken);
-          this.store.state.language = this.language;
         }
       }
 
       const client = new UnidyClient(this.apiUrl, this.apiKey);
       this.store.state.client = client;
-      const resp = await client.profile.fetchProfile(idToken, this.language);
+      const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
 
       if (resp?.success) {
         this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
