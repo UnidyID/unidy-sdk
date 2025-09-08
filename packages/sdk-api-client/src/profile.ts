@@ -16,8 +16,39 @@ const RadioOptionSchema = z.object({
   checked: z.boolean()
 }).strict();
 
+const TextFieldSchema = z.object({
+  value: z.union([z.string(), z.null()]),
+  type: z.enum(["text", "textarea"]),
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional()
+}).strict();
 
-const FieldSchema = z.object({
+const RadioFieldSchema = z.object({
+  value: RadioValue,
+  type: z.enum(["radio"]),
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional(),
+  radio_options: z.array(RadioOptionSchema)
+}).strict();
+
+const DateFieldSchema = z.object({
+  value: z.union([z.string(), z.null()]),
+  type: z.enum(["date", "datetime-local"]),
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional()
+}).strict();
+
+
+const CustomFieldSchema = z.object({
   value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
   type: FieldType,
   required: z.boolean(),
@@ -25,26 +56,26 @@ const FieldSchema = z.object({
   attr_name: z.string(),
   locked: z.boolean().optional(),
   locked_text: z.string().optional(),
-  readonly: z.boolean().optional(),
+  readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional()
 }).strict();
 
 const UserProfileSchema = z.object({
-  salutation: FieldSchema,
-  first_name: FieldSchema,
-  last_name: FieldSchema,
-  email: FieldSchema,
-  phone_number: FieldSchema,
-  company_name: FieldSchema,
-  address_line_1: FieldSchema,
-  address_line_2: FieldSchema,
-  city: FieldSchema,
-  postal_code: FieldSchema,
-  country_code: FieldSchema,
-  date_of_birth: FieldSchema,
-  preferred_language: FieldSchema.optional(),
-  custom_attributes: z.record(z.string(), FieldSchema)
+  salutation: RadioFieldSchema,
+  first_name: TextFieldSchema,
+  last_name: TextFieldSchema,
+  email: TextFieldSchema,
+  phone_number: TextFieldSchema,
+  company_name: TextFieldSchema,
+  address_line_1: TextFieldSchema,
+  address_line_2: TextFieldSchema,
+  city: TextFieldSchema,
+  postal_code: TextFieldSchema,
+  country_code: TextFieldSchema,
+  date_of_birth: DateFieldSchema,
+  preferred_language: TextFieldSchema.optional(),
+  custom_attributes: z.record(z.string(), CustomFieldSchema)
 })
 
 const UserProfileErrorSchema = z.object({

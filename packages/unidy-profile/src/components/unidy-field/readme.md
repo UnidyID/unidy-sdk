@@ -27,10 +27,10 @@
 | `"option"`              |             |
 | `"radio"`               |             |
 | `"radio-group"`         |             |
-| `"readonly-indicator"` |             |
+| `"readonly-indicator"`  |             |
 | `"required-indicator"`  |             |
 | `"select"`              |             |
-| `"textarea"`           |             |
+| `"textarea"`            |             |
 
 
 ----------------------------------------------
