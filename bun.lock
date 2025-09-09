@@ -98,7 +98,7 @@
     },
     "packages/sdk-api-client": {
       "name": "@unidy.io/sdk-api-client",
-      "version": "0.1.13",
+      "version": "0.1.14",
       "dependencies": {
         "zod": "^4.0.0",
       },
