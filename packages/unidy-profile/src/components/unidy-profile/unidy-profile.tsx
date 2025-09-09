@@ -12,6 +12,7 @@ interface ProfileNode {
   type?: string;
   label?: string;
   required?: boolean;
+  readonly?: boolean;
   locked?: boolean;
   locked_text?: string;
   options?: Array<{ value?: unknown; label?: string }>;
@@ -23,6 +24,7 @@ type FieldValue = {
   type: string;
   label: string;
   required: boolean;
+  readonly: boolean | undefined;
   locked: boolean | undefined;
   locked_text: string | undefined;
   options?: Option[];
@@ -125,6 +127,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
     const required = !!node?.required;
     const locked = !!node?.locked;
     const locked_text = node?.locked_text ? String(node.locked_text) : "";
+    const readonly = node?.readonly !== undefined ? Boolean(node.readonly) : undefined;
 
     let options: Option[] | undefined;
     if (Array.isArray(node?.options)) {
@@ -143,7 +146,7 @@ parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
       }));
     }
 
-    return { value, type, label, required, locked, locked_text, options, radioOptions };
+    return { value, type, label, required, readonly, locked, locked_text, options, radioOptions };
   };
 
   const data: Record<string, FieldValue> = {};
