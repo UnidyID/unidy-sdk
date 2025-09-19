@@ -89,9 +89,9 @@ export class UnidyField {
       [this.field]: updatedField,
     };
   };
-
+  // @ts-ignore
   private multiSelectLabel = (fieldData: any): string[] => {
-    let multiselectMatches: string[] = [];
+    const multiselectMatches: string[] = [];
     Array.isArray(fieldData.value)
               ? fieldData.value.map((val: string) => {
                   const match = fieldData.options?.find((opt: any) => opt.value === val);
@@ -124,8 +124,8 @@ export class UnidyField {
         {isReadonly && fieldData?.type !== 'checkbox' ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
         {isReadonly && fieldData?.type === "checkbox" && (
           <div part="multi-select-readonly-container">
-            {multiSelectReadonlyLabels.map((label, index) => (
-              <span key={index} part="multi-select-readonly-field">
+            {multiSelectReadonlyLabels.map((label) => (
+              <span key={label} part="multi-select-readonly-field">
                 {label}
               </span>
             ))}
