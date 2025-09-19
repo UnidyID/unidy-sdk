@@ -94,6 +94,7 @@ export class UnidyField {
     const multiselectMatches: string[] = [];
     Array.isArray(fieldData.value)
               ? fieldData.value.map((val: string) => {
+                  // @ts-ignore
                   const match = fieldData.options?.find((opt: any) => opt.value === val);
                   multiselectMatches.push(match?.label ?? val);
                 })
