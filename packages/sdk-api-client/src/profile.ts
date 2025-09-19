@@ -8,7 +8,7 @@ const SelectOptionSchema = z.object({
   label: z.string()
 }).strict();
 
-const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]);
+const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
 
 const RadioOptionSchema = z.object({
   value: RadioValue,
