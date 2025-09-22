@@ -1,4 +1,4 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth.js";
 
@@ -7,8 +7,15 @@ import { Auth } from "../../auth.js";
   shadow: false,
 })
 export class SubmitButton {
+  @Element() el!: HTMLElement;
+
   @Prop() disabled = false;
   @Prop() className = "";
+  @Prop() text = "";
+
+  private getParentStepComponent(): HTMLSigninStepElement | null {
+    return this.el.closest("signin-step") as HTMLSigninStepElement;
+  }
 
   private handleClick = async () => {
     if (this.disabled || authState.loading) return;
@@ -26,8 +33,24 @@ export class SubmitButton {
     }
   };
 
+  private getButtonText() {
+    if (this.text) return this.text;
+
+    switch (authState.step) {
+      case "email":
+        return "Continue";
+      case "verification":
+        return "Sign In";
+      default:
+        return "Continue";
+    }
+  }
+
   render() {
-    const buttonText = authState.step === "email" ? "Continue" : "Sign In";
+    const parentStepComponent = this.getParentStepComponent();
+    if (parentStepComponent && authState.step !== parentStepComponent.name) {
+      return null;
+    }
 
     return (
       <button
@@ -37,7 +60,7 @@ export class SubmitButton {
         class={this.className}
         style={{ width: "100%" }}
       >
-        {authState.loading ? "Loading..." : buttonText}
+        {authState.loading ? "Loading..." : this.getButtonText()}
       </button>
     );
   }

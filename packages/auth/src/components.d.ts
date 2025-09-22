@@ -42,6 +42,14 @@ export namespace Components {
          */
         "className": string;
     }
+    interface SigninStep {
+        /**
+          * @default false
+         */
+        "alwaysRender": boolean;
+        "isActive": () => Promise<boolean>;
+        "name": "email" | "verification";
+    }
     interface SubmitButton {
         /**
           * @default ""
@@ -51,6 +59,10 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * @default ""
+         */
+        "text": string;
     }
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
@@ -88,6 +100,12 @@ declare global {
         prototype: HTMLSigninRootElement;
         new (): HTMLSigninRootElement;
     };
+    interface HTMLSigninStepElement extends Components.SigninStep, HTMLStencilElement {
+    }
+    var HTMLSigninStepElement: {
+        prototype: HTMLSigninStepElement;
+        new (): HTMLSigninStepElement;
+    };
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
     }
     var HTMLSubmitButtonElement: {
@@ -98,6 +116,7 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "password-field": HTMLPasswordFieldElement;
         "signin-root": HTMLSigninRootElement;
+        "signin-step": HTMLSigninStepElement;
         "submit-button": HTMLSubmitButtonElement;
     }
 }
@@ -138,6 +157,13 @@ declare namespace LocalJSX {
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
+    interface SigninStep {
+        /**
+          * @default false
+         */
+        "alwaysRender"?: boolean;
+        "name": "email" | "verification";
+    }
     interface SubmitButton {
         /**
           * @default ""
@@ -147,11 +173,16 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * @default ""
+         */
+        "text"?: string;
     }
     interface IntrinsicElements {
         "email-field": EmailField;
         "password-field": PasswordField;
         "signin-root": SigninRoot;
+        "signin-step": SigninStep;
         "submit-button": SubmitButton;
     }
 }
@@ -162,6 +193,7 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
             "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
+            "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
         }
     }

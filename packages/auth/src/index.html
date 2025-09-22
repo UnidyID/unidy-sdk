@@ -21,12 +21,31 @@
 
       <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
         class="flex flex-col gap-2">
+
+        <signin-step name="email">
+          <email-field placeholder="Enter your email"
+            class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+          <submit-button text="Continue"
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+        </signin-step>
+
+        <signin-step name="verification">
+          <password-field placeholder="Enter your password"
+            class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
+          <submit-button text="Sign In" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+        </signin-step>
+      </signin-root>
+
+      <!--
+      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
+        class="flex flex-col gap-2">
         <email-field placeholder="Enter your email"
           class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
         <password-field placeholder="Enter your password"
           class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
-        <submit-button text="Sign In" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+        <submit-button text="Continue" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
       </signin-root>
+    -->
     </div>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
