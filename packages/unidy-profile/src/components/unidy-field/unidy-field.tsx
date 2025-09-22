@@ -89,11 +89,12 @@ export class UnidyField {
       [this.field]: updatedField,
     };
   };
-
+  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
     Array.isArray(fieldData.value)
               ? fieldData.value.map((val: string) => {
+                  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
                   const match = fieldData.options?.find((opt: any) => opt.value === val);
                   multiselectMatches.push(match?.label ?? val);
                 })
