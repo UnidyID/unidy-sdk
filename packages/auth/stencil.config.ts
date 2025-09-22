@@ -1,5 +1,4 @@
 import type { Config } from "@stencil/core";
-import tailwind from "stencil-tailwind-plugin";
 
 export const config: Config = {
   namespace: "auth",
@@ -21,7 +20,6 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  plugins: [tailwind()],
   testing: {
     browserHeadless: "shell",
   },
