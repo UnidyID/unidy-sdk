@@ -89,6 +89,18 @@ export class UnidyField {
       [this.field]: updatedField,
     };
   };
+  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
+  private multiSelectLabel = (fieldData: any): string[] => {
+    const multiselectMatches: string[] = [];
+    Array.isArray(fieldData.value)
+              ? fieldData.value.map((val: string) => {
+                  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
+                  const match = fieldData.options?.find((opt: any) => opt.value === val);
+                  multiselectMatches.push(match?.label ?? val);
+                })
+              : [];
+    return multiselectMatches;
+  };
 
   render() {
     if (this.store.state.loading) {
@@ -102,15 +114,24 @@ export class UnidyField {
     const isLocked = !!fieldData?.locked;
     const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
     const isReadonly = fieldData?.readonly === true;
+    const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
     // TODO: Add other types
-
     return (
       <div>
         <label htmlFor={this.field} part="label">
           {fieldData?.label}
           {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
         </label>
-        {isReadonly ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
+        {isReadonly && fieldData?.type !== 'checkbox' ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
+        {isReadonly && fieldData?.type === "checkbox" && (
+          <div part="multi-select-readonly-container">
+            {multiSelectReadonlyLabels.map((label) => (
+              <span key={label} part="multi-select-readonly-field">
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
         {!isReadonly && (
           fieldData.type === "select" && fieldData.options ? (
             <select
