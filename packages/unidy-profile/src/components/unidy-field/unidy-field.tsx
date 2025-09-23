@@ -75,7 +75,7 @@ export class UnidyField {
 
     const updatedField = {
       ...fieldData,
-      value,
+      value: String(value),
       radio_options: updatedRadioOptions,
     };
 
@@ -200,16 +200,23 @@ export class UnidyField {
                     disabled={isLocked}
                     title={isLocked ? lockedText : undefined}
                     onChange={(e) => {
-                      // TODO: Refactor and fix
-                      const prev = (this.store.state.data[this.field]?.value as string[]) ?? [];
+                      const isCustomAttribute = this.field.startsWith("custom_attribute.");
+
+                      const prev = isCustomAttribute
+                        ? (this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")]?.value as string[]) ?? []
+                        : (this.store.state.data[this.field]?.value as string[]) ?? [];
                       const value = (e.target as HTMLInputElement).checked
                         ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
                         : prev.filter(v => v !== opt.value);
 
-                      this.store.state.data[this.field] = {
-                        ...this.store.state.data[this.field],
+                      const updatedField = {
+                        ...(isCustomAttribute
+                          ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")]
+                          : this.store.state.data[this.field]),
                         value,
                       };
+
+                      this.updateField(updatedField);
                     }}
                     part="checkbox"
                   />
@@ -226,11 +233,22 @@ export class UnidyField {
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
-                // TODO: Refactor and fix
-                this.store.state.data[this.field] = {
-                  ...this.store.state.data[this.field],
-                  value: (e.target as HTMLTextAreaElement).value,
-                };
+                const isCustomAttribute = this.field.startsWith("custom_attribute.");
+
+                this.store.state.data = isCustomAttribute ? {
+                  ...this.store.state.data,
+                  custom_attributes: {
+                    ...this.store.state.data.custom_attributes,
+                    [this.field.replace("custom_attribute.", "")]: {
+                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")],
+                      value: (e.target as HTMLTextAreaElement).value,
+                    },
+                  }
+                } : { ...this.store.state.data,
+                      [this.field]: {
+                        ...this.store.state.data[this.field],
+                        value: (e.target as HTMLTextAreaElement).value },
+                    };
               }}
             />
           ) : (
