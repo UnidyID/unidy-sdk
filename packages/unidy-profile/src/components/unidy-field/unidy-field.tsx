@@ -23,7 +23,7 @@ export class UnidyField {
   }
 
   private getFieldData() {
-    return this.field.startsWith("custom_attribute.") ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")] : this.store.state.data[this.field];
+    return this.field.startsWith("custom_attributes.") ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")] : this.store.state.data[this.field];
   }
 
   componentWillLoad() {
@@ -47,7 +47,7 @@ export class UnidyField {
   }
 
   private updateField(updatedField: object) {
-    const isCustomAttribute = this.field.startsWith("custom_attribute.");
+    const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
     this.store.state.data = {
       ...this.store.state.data,
@@ -55,7 +55,7 @@ export class UnidyField {
         ? {
             custom_attributes: {
               ...this.store.state.data.custom_attributes,
-              [this.field.replace("custom_attribute.", "")]: updatedField,
+              [this.field.replace("custom_attributes.", "")]: updatedField,
             },
           }
         : { [this.field]: updatedField }),
@@ -200,10 +200,10 @@ export class UnidyField {
                     disabled={isLocked}
                     title={isLocked ? lockedText : undefined}
                     onChange={(e) => {
-                      const isCustomAttribute = this.field.startsWith("custom_attribute.");
+                      const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
                       const prev = isCustomAttribute
-                        ? (this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")]?.value as string[]) ?? []
+                        ? (this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]?.value as string[]) ?? []
                         : (this.store.state.data[this.field]?.value as string[]) ?? [];
                       const value = (e.target as HTMLInputElement).checked
                         ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
@@ -211,7 +211,7 @@ export class UnidyField {
 
                       const updatedField = {
                         ...(isCustomAttribute
-                          ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")]
+                          ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
                           : this.store.state.data[this.field]),
                         value,
                       };
@@ -233,14 +233,14 @@ export class UnidyField {
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
-                const isCustomAttribute = this.field.startsWith("custom_attribute.");
+                const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
                 this.store.state.data = isCustomAttribute ? {
                   ...this.store.state.data,
                   custom_attributes: {
                     ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attribute.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")],
+                    [this.field.replace("custom_attributes.", "")]: {
+                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
                       value: (e.target as HTMLTextAreaElement).value,
                     },
                   }
@@ -262,14 +262,14 @@ export class UnidyField {
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
-                const isCustomAttribute = this.field.startsWith("custom_attribute.");
+                const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
                 this.store.state.data = isCustomAttribute ? {
                   ...this.store.state.data,
                   custom_attributes: {
                     ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attribute.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")],
+                    [this.field.replace("custom_attributes.", "")]: {
+                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
                       value: (e.target as HTMLInputElement).value,
                     },
                   }
@@ -282,7 +282,6 @@ export class UnidyField {
             />
           ))}
           {this.store.state.errors[this.field] && (
-            // TODO: Refactor and fix
             <span part="field-error-message">
               ERROR: {this.store.state.errors[this.field]}
             </span>

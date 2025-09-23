@@ -37,7 +37,7 @@ export class SubmitButton {
 
     for (const key of Object.keys(stateWithoutConfig.data.custom_attributes ?? {})) {
       const field = stateWithoutConfig.data.custom_attributes?.[key];
-      const fieldDisplayName = `custom_attribute.${key}`;
+      const fieldDisplayName = `custom_attributes.${key}`;
       if (field?.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
         this.store.state.errors = { [fieldDisplayName]: "This field is required." };
         this.store.state.loading = false;
