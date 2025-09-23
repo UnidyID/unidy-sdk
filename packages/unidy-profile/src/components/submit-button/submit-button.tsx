@@ -1,11 +1,12 @@
 import { Component, Element, h } from "@stencil/core";
-import { ProfileRaw } from "../unidy-profile/unidy-profile";
+import type { ProfileRaw } from "../unidy-profile/unidy-profile";
 
 @Component({
   tag: "submit-button",
   styleUrl: "submit-button.css",
   shadow: true,
 })
+
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
@@ -68,10 +69,10 @@ export class SubmitButton {
       ...Object.fromEntries(
         Object.entries(stateData)
           .filter(([k]) => k !== "custom_attributes")
-          .map(([k, v]: [string, any]) => [k, v.value])
+          .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
       ),
       custom_attributes: Object.fromEntries(
-        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, any]) => [k, v.value])
+        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
       )
     };
   }

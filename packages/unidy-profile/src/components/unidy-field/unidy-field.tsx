@@ -12,7 +12,7 @@ export class UnidyField {
 
   @Element() el!: HTMLElement;
 
-  @State() selected?: string | string[] | {};
+  @State() selected?: string | string[];
 
   private get store() {
     const container = this.el.closest("unidy-profile");
