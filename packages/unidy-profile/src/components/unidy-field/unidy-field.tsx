@@ -12,7 +12,7 @@ export class UnidyField {
 
   @Element() el!: HTMLElement;
 
-  @State() selected?: string | string[];
+  @State() selected?: string | string[] | {};
 
   private get store() {
     const container = this.el.closest("unidy-profile");
@@ -22,10 +22,14 @@ export class UnidyField {
     return container.store;
   }
 
+  private getFieldData() {
+    return this.field.startsWith("custom_attribute.") ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")] : this.store.state.data[this.field];
+  }
+
   componentWillLoad() {
-    const fieldData = this.store.state.data[this.field];
-    if (fieldData?.radioOptions?.length) {
-      const checkedOption = fieldData.radioOptions.find(option => option.checked);
+    const fieldData = this.getFieldData();
+    if (fieldData?.radio_options?.length) {
+      const checkedOption = fieldData.radio_options.find(option => option.checked);
       this.selected = checkedOption?.value ?? fieldData.value ?? "";
     } else if (fieldData?.options?.length) {
       const selectedOption = fieldData.options.find(option => option.value === fieldData.value);
@@ -42,14 +46,29 @@ export class UnidyField {
     }
   }
 
+  private updateField(updatedField: object) {
+    const isCustomAttribute = this.field.startsWith("custom_attribute.");
+
+    this.store.state.data = {
+      ...this.store.state.data,
+      ...(isCustomAttribute
+        ? {
+            custom_attributes: {
+              ...this.store.state.data.custom_attributes,
+              [this.field.replace("custom_attribute.", "")]: updatedField,
+            },
+          }
+        : { [this.field]: updatedField }),
+    };
+  }
+
   private onRadioChange = (value: string) => {
     this.selected = value;
 
-    const storeState = this.store.state;
-    const fieldData = storeState.data[this.field];
-    if (!fieldData?.radioOptions) return;
+    const fieldData = this.getFieldData();
+    if (!fieldData?.radio_options) return;
 
-    const updatedRadioOptions = fieldData.radioOptions.map(option => ({
+    const updatedRadioOptions = fieldData.radio_options.map(option => ({
       ...option,
       checked: option.value === value,
     }));
@@ -57,20 +76,16 @@ export class UnidyField {
     const updatedField = {
       ...fieldData,
       value,
-      radioOptions: updatedRadioOptions,
+      radio_options: updatedRadioOptions,
     };
 
-    this.store.state.data = {
-      ...storeState.data,
-      [this.field]: updatedField,
-    };
+    this.updateField(updatedField);
   };
 
   private onSelectChange = (value: string) => {
     this.selected = value;
 
-    const storeState = this.store.state;
-    const fieldData = storeState.data[this.field];
+    const fieldData = this.getFieldData();
     if (!fieldData?.options) return;
 
     const updatedOptions = fieldData.options.map(option => ({
@@ -84,11 +99,9 @@ export class UnidyField {
       options: updatedOptions,
     };
 
-    this.store.state.data = {
-      ...storeState.data,
-      [this.field]: updatedField,
-    };
-  };
+    this.updateField(updatedField);
+  }
+
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
@@ -107,7 +120,7 @@ export class UnidyField {
       return <div class="spinner"/>;
     }
 
-    const fieldData = this.store.state.data[this.field];
+    const fieldData = this.getFieldData();
     if (!fieldData) {
       return null;
     }
@@ -155,9 +168,9 @@ export class UnidyField {
                 </option>
               ))}
             </select>
-          ) : fieldData.radioOptions ? (
+          ) : fieldData.radio_options ? (
             <div part="radio-group" title={isLocked ? lockedText : undefined}>
-              {fieldData.radioOptions.map((opt) => (
+              {fieldData.radio_options.map((opt) => (
                 <label
                   key={opt.value}
                   part={`radio-label ${opt.checked ? "radio-checked" : ""}`}
@@ -187,6 +200,7 @@ export class UnidyField {
                     disabled={isLocked}
                     title={isLocked ? lockedText : undefined}
                     onChange={(e) => {
+                      // TODO: Refactor and fix
                       const prev = (this.store.state.data[this.field]?.value as string[]) ?? [];
                       const value = (e.target as HTMLInputElement).checked
                         ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
@@ -212,6 +226,7 @@ export class UnidyField {
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
+                // TODO: Refactor and fix
                 this.store.state.data[this.field] = {
                   ...this.store.state.data[this.field],
                   value: (e.target as HTMLTextAreaElement).value,
@@ -229,14 +244,27 @@ export class UnidyField {
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
-                this.store.state.data[this.field] = {
-                  ...this.store.state.data[this.field],
-                  value: (e.target as HTMLInputElement).value,
-                };
+                const isCustomAttribute = this.field.startsWith("custom_attribute.");
+
+                this.store.state.data = isCustomAttribute ? {
+                  ...this.store.state.data,
+                  custom_attributes: {
+                    ...this.store.state.data.custom_attributes,
+                    [this.field.replace("custom_attribute.", "")]: {
+                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attribute.", "")],
+                      value: (e.target as HTMLInputElement).value,
+                    },
+                  }
+                } : { ...this.store.state.data,
+                      [this.field]: {
+                        ...this.store.state.data[this.field],
+                        value: (e.target as HTMLInputElement).value },
+                    };
               }}
             />
           ))}
           {this.store.state.errors[this.field] && (
+            // TODO: Refactor and fix
             <span part="field-error-message">
               ERROR: {this.store.state.errors[this.field]}
             </span>

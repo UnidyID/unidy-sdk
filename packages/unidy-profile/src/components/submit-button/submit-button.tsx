@@ -1,11 +1,8 @@
 import { Component, Element, h } from "@stencil/core";
+import { ProfileRaw } from "../unidy-profile/unidy-profile";
 
 type ProfileFieldValue = string | boolean | number | Date | null | string[];
 type ProfileField = { value: ProfileFieldValue; [key: string]: unknown };
-type CustomAttributes = Record<string, ProfileField>;
-type Configuration = Record<string, unknown> & {
-  custom_attributes?: CustomAttributes;
-};
 type ProfileData = Record<string, { value: ProfileFieldValue } | unknown>;
 
 @Component({
@@ -32,15 +29,15 @@ export class SubmitButton {
     const idToken = this.store.state.idToken;
 
     for (const key of Object.keys(stateWithoutConfig.data)) {
-      const field = stateWithoutConfig.data[key];
+      const field = stateWithoutConfig.data[key] || stateWithoutConfig.data.custom_attributes?.[key];
       if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
         this.store.state.errors = { [key]: "This field is required." };
         this.store.state.loading = false;
         return;
       }
     }
-
-    const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration, stateWithoutConfig.data);
+    // TODO: Refactor and fix
+    const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration as ProfileRaw, stateWithoutConfig.data);
 
     const resp = await this.store.state.client?.profile.updateProfile({ idToken, data: updatedProfileData, lang: this.store.state.language });
 
@@ -59,8 +56,9 @@ export class SubmitButton {
       }
   };
 
+  // TODO: Remove after refactor
   private buildUpdatedConfigurationPayload(
-    configuration: Configuration | undefined,
+    configuration: ProfileRaw | undefined,
     stateData: ProfileData | undefined
   ): Record<string, ProfileFieldValue | Record<string, ProfileFieldValue>> | undefined {
     if (!configuration) return undefined;
