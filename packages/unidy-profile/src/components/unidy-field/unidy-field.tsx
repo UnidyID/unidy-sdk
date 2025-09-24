@@ -47,19 +47,11 @@ export class UnidyField {
   }
 
   private updateField(updatedField: object) {
-    const isCustomAttribute = this.field.startsWith("custom_attributes.");
-
-    this.store.state.data = {
-      ...this.store.state.data,
-      ...(isCustomAttribute
-        ? {
-            custom_attributes: {
-              ...this.store.state.data.custom_attributes,
-              [this.field.replace("custom_attributes.", "")]: updatedField,
-            },
-          }
-        : { [this.field]: updatedField }),
-    };
+    if (this.field.startsWith("custom_attributes.") && this.store.state.data.custom_attributes) {
+      this.store.state.data.custom_attributes[this.field.replace("custom_attributes.", "")] = updatedField;
+    } else {
+      this.store.state.data[this.field] = updatedField;
+    }
   }
 
   private onRadioChange = (value: string) => {
