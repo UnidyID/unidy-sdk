@@ -1,6 +1,7 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
 import { Select } from "./components/Select";
 import { RadioGroup } from "./components/RadioGroup";
+import { MultiSelect } from "./components/MultiSelect";
 /**
  * @part select
  * @part option
@@ -8,6 +9,9 @@ import { RadioGroup } from "./components/RadioGroup";
  * @part radio-group
  * @part radio-label
  * @part radio-checked
+ * @part checkbox
+ * @part checkbox-group
+ * @part checkbox-label
  */
 @Component({
   tag: "unidy-field",
@@ -103,6 +107,26 @@ export class UnidyField {
     this.updateField(updatedField);
   }
 
+  private onMultiSelectToggle = (optValue: string, checked: boolean) => {
+    const isCustomAttribute = this.field.startsWith("custom_attributes.");
+    const key = this.field.replace("custom_attributes.", "");
+
+    const prev: string[] = isCustomAttribute
+      ? (this.store.state.data.custom_attributes?.[key]?.value as string[]) ?? []
+      : (this.store.state.data[this.field]?.value as string[]) ?? [];
+
+    const updatedValues = checked
+      ? (prev.includes(optValue) ? prev : [...prev, optValue])
+      : prev.filter(v => v !== optValue);
+
+    const baseField = isCustomAttribute
+      ? this.store.state.data.custom_attributes?.[key]
+      : this.store.state.data[this.field];
+
+    const updatedField = { ...baseField, value: updatedValues };
+    this.updateField(updatedField);
+  };
+
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
@@ -166,40 +190,14 @@ export class UnidyField {
               onChange={this.onRadioChange}
             />
           ) : fieldData.type === "checkbox" && fieldData.options ? (
-            <div part="checkbox-group" title={isLocked ? lockedText : undefined}>
-              {fieldData.options.map((opt) => (
-                <label key={opt.value} part="checkbox-label">
-                  <input
-                    id={opt.value}
-                    type={fieldData.type}
-                    checked={Array.isArray(fieldData.value) && fieldData.value.includes(opt.value)}
-                    disabled={isLocked}
-                    title={isLocked ? lockedText : undefined}
-                    onChange={(e) => {
-                      const isCustomAttribute = this.field.startsWith("custom_attributes.");
-
-                      const prev = isCustomAttribute
-                        ? (this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]?.value as string[]) ?? []
-                        : (this.store.state.data[this.field]?.value as string[]) ?? [];
-                      const value = (e.target as HTMLInputElement).checked
-                        ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
-                        : prev.filter(v => v !== opt.value);
-
-                      const updatedField = {
-                        ...(isCustomAttribute
-                          ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
-                          : this.store.state.data[this.field]),
-                        value,
-                      };
-
-                      this.updateField(updatedField);
-                    }}
-                    part="checkbox"
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+            <MultiSelect
+              value={Array.isArray(fieldData.value) ? fieldData.value : []}
+              options={fieldData.options}
+              disabled={isLocked}
+              title={isLocked ? lockedText : undefined}
+              type={fieldData.type}
+              onToggle={this.onMultiSelectToggle}
+            />
           ) : fieldData.type === "textarea" ? (
             <textarea
               id={this.field}
