@@ -1,8 +1,13 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
 import { Select } from "./components/Select";
+import { RadioGroup } from "./components/RadioGroup";
 /**
  * @part select
  * @part option
+ * @part radio
+ * @part radio-group
+ * @part radio-label
+ * @part radio-checked
  */
 @Component({
   tag: "unidy-field",
@@ -152,26 +157,14 @@ export class UnidyField {
               onChange={this.onSelectChange}
             />
           ) : fieldData.radio_options ? (
-            <div part="radio-group" title={isLocked ? lockedText : undefined}>
-              {fieldData.radio_options.map((opt) => (
-                <label
-                  key={opt.value}
-                  part={`radio-label ${opt.checked ? "radio-checked" : ""}`}
-                  data-checked={opt.checked ? "true" : "false"}
-                >
-                  <input
-                    type={fieldData.type}
-                    name={this.field}
-                    value={opt.value}
-                    checked={opt.checked}
-                    disabled={isLocked}
-                    onChange={() => this.onRadioChange(opt.value)}
-                    part="radio"
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+            <RadioGroup
+              options={fieldData.radio_options}
+              disabled={isLocked}
+              type={fieldData.type}
+              name={this.field}
+              title={isLocked ? lockedText : undefined}
+              onChange={this.onRadioChange}
+            />
           ) : fieldData.type === "checkbox" && fieldData.options ? (
             <div part="checkbox-group" title={isLocked ? lockedText : undefined}>
               {fieldData.options.map((opt) => (
