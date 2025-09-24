@@ -1,5 +1,9 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
-
+import { Select } from "./components/Select";
+/**
+ * @part select
+ * @part option
+ */
 @Component({
   tag: "unidy-field",
   styleUrl: "unidy-field.css",
@@ -139,27 +143,14 @@ export class UnidyField {
         )}
         {!isReadonly && (
           fieldData.type === "select" && fieldData.options ? (
-            <select
+            <Select
               id={this.field}
-              data-value={fieldData.value}
-              part="select"
+              value={fieldData.value}
+              options={fieldData.options}
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
-              onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
-            >
-              <option value="" selected={fieldData.value === null || fieldData.value === ""}/>
-              {fieldData.options.map((opt) => (
-                <option
-                  key={opt.value}
-                  value={opt.value}
-                  data-selected={opt.value === fieldData.value ? "true" : "false"}
-                  selected={opt.value === fieldData.value}
-                  part="option"
-                >
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              onChange={this.onSelectChange}
+            />
           ) : fieldData.radio_options ? (
             <div part="radio-group" title={isLocked ? lockedText : undefined}>
               {fieldData.radio_options.map((opt) => (
