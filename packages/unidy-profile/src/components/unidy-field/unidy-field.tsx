@@ -3,6 +3,7 @@ import { Select } from "./components/Select";
 import { RadioGroup } from "./components/RadioGroup";
 import { MultiSelect } from "./components/MultiSelect";
 import { Textarea } from "./components/Textarea";
+import { Input } from "./components/Input";
 /**
  * @part select
  * @part option
@@ -14,6 +15,7 @@ import { Textarea } from "./components/Textarea";
  * @part checkbox-group
  * @part checkbox-label
  * @part textarea
+ * @part input
  */
 @Component({
   tag: "unidy-field",
@@ -69,7 +71,7 @@ export class UnidyField {
     }
   }
 
-  private onTextareaChange = (value: string) => {
+  private onTextValueChange = (value: string) => {
     const isCustomAttribute = this.field.startsWith("custom_attributes.");
     const key = this.field.replace("custom_attributes.", "");
 
@@ -237,44 +239,18 @@ export class UnidyField {
               required={fieldData?.required || this.required}
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
-              onChange={this.onTextareaChange}
+              onChange={this.onTextValueChange}
             />
           ) : (
-            <input
+            <Input
               id={this.field}
-              type={fieldData.type}
-              value={fieldData.value}
+              type={fieldData.type as string}
+              value={fieldData.value as string | undefined}
               class={this.store.state.errors[this.field] ? 'field-error' : ''}
               required={fieldData?.required || this.required}
-              part="input"
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
-              onChange={(e) => {
-                const isCustomAttribute = this.field.startsWith(
-                  "custom_attributes."
-                );
-
-                this.store.state.data = isCustomAttribute
-                  ? {
-                      ...this.store.state.data,
-                      custom_attributes: {
-                        ...this.store.state.data.custom_attributes,
-                        [this.field.replace("custom_attributes.", "")]: {
-                          ...this.store.state.data.custom_attributes?.[
-                            this.field.replace("custom_attributes.", "")
-                          ],
-                          value: (e.target as HTMLInputElement).value,
-                        },
-                      },
-                    }
-                  : {
-                      ...this.store.state.data,
-                      [this.field]: {
-                        ...this.store.state.data[this.field],
-                        value: (e.target as HTMLInputElement).value,
-                      },
-                    };
-              }}
+              onChange={this.onTextValueChange}
             />
           ))}
         {this.store.state.errors[this.field] && (
