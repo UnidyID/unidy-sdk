@@ -2,39 +2,30 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 
-type ProfileRaw = Record<string, unknown>;
-
 type Option = { value: string; label: string };
 type RadioOption = { value: string; label: string; checked: boolean };
 
 interface ProfileNode {
-  value?: unknown;
+  value?: string | undefined | string[];
   type?: string;
   label?: string;
   required?: boolean;
   readonly?: boolean;
   locked?: boolean;
   locked_text?: string;
-  options?: Array<{ value?: unknown; label?: string }>;
-  radio_options?: Array<{ value?: unknown; label?: string; checked?: unknown }>;
+  options?: Option[];
+  radio_options?: RadioOption[];
+  attr_name?: string;
 }
 
-type FieldValue = {
-  value: string | string[];
-  type: string;
-  label: string;
-  required: boolean;
-  readonly: boolean | undefined;
-  locked: boolean | undefined;
-  locked_text: string | undefined;
-  options?: Option[];
-  radioOptions?: RadioOption[];
-};
+export type ProfileRaw = {
+  custom_attributes?: Record<string, ProfileNode>;
+} & Record<string, ProfileNode>;
 
 export type ProfileStore = {
   loading: boolean;
-  data: Record<string, FieldValue>;
-  configuration: ProfileRaw | undefined;
+  data: ProfileRaw;
+  configuration: ProfileRaw;
   errors: Record<string, string | null>;
   idToken: string;
   client?: UnidyClient;
@@ -91,12 +82,12 @@ export class UnidyProfile {
       const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
 
       if (resp?.success) {
-        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
         this.store.state.configUpdateSource = "fetch";
         this.store.state.errors = {};
         this.store.state.flashErrors = {};
 
-        this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+        this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
       } else {
         this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
@@ -107,62 +98,10 @@ export class UnidyProfile {
   }
 
   componentDidLoad() {
-    this.store.onChange("configuration", () => {
-      this.store.state.data = this.parseProfileConfig(this.store.state.configuration || {});
+    this.store.onChange("configuration", (cfg) => {
+      this.store.state.data = cfg as ProfileRaw;
     });
   }
-
-parseProfileConfig(config: ProfileRaw): Record<string, FieldValue> {
-  const toFieldValue = (node: ProfileNode): FieldValue => {
-    let value: string | string[];
-      if (node?.value == null) {
-        value = "";
-      } else if (Array.isArray(node.value)) {
-        value = node.value.map(String);
-      } else {
-        value = String(node.value);
-      }
-    const type = node?.type ? String(node.type) : "text";
-    const label = node?.label ? String(node.label) : "";
-    const required = !!node?.required;
-    const locked = !!node?.locked;
-    const locked_text = node?.locked_text ? String(node.locked_text) : "";
-    const readonly = node?.readonly !== undefined ? Boolean(node.readonly) : undefined;
-
-    let options: Option[] | undefined;
-    if (Array.isArray(node?.options)) {
-      options = node.options.map((o) => ({
-        value: String(o.value),
-        label: String(o.label),
-      }));
-    }
-
-    let radioOptions: RadioOption[] | undefined;
-    if (Array.isArray(node?.radio_options)) {
-      radioOptions = node.radio_options.map((o) => ({
-        value: String(o.value),
-        label: String(o.label),
-        checked: o.checked === true,
-      }));
-    }
-
-    return { value, type, label, required, readonly, locked, locked_text, options, radioOptions };
-  };
-
-  const data: Record<string, FieldValue> = {};
-  for (const [key, node] of Object.entries(config || {})) {
-    if (key !== "custom_attributes") {
-      data[key] = toFieldValue(node as ProfileNode);
-    }
-  }
-
-  const cad = config?.custom_attributes ?? {};
-  for (const [key, node] of Object.entries(cad)) {
-    data[key] = toFieldValue(node as ProfileNode);
-  }
-
-  return data as Record<string, FieldValue>;
-}
 
   render() {
     const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
