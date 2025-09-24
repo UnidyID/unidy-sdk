@@ -2,6 +2,7 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 import { Select } from "./components/Select";
 import { RadioGroup } from "./components/RadioGroup";
 import { MultiSelect } from "./components/MultiSelect";
+import { Textarea } from "./components/Textarea";
 /**
  * @part select
  * @part option
@@ -12,6 +13,7 @@ import { MultiSelect } from "./components/MultiSelect";
  * @part checkbox
  * @part checkbox-group
  * @part checkbox-label
+ * @part textarea
  */
 @Component({
   tag: "unidy-field",
@@ -67,6 +69,30 @@ export class UnidyField {
     }
   }
 
+  private onTextareaChange = (value: string) => {
+    const isCustomAttribute = this.field.startsWith("custom_attributes.");
+    const key = this.field.replace("custom_attributes.", "");
+
+    this.store.state.data = isCustomAttribute
+      ? {
+          ...this.store.state.data,
+          custom_attributes: {
+            ...this.store.state.data.custom_attributes,
+            [key]: {
+              ...this.store.state.data.custom_attributes?.[key],
+              value,
+            },
+          },
+        }
+      : {
+          ...this.store.state.data,
+          [this.field]: {
+            ...this.store.state.data[this.field],
+            value,
+          },
+        };
+  };
+
   private onRadioChange = (value: string) => {
     this.selected = value;
 
@@ -105,7 +131,7 @@ export class UnidyField {
     };
 
     this.updateField(updatedField);
-  }
+  };
 
   private onMultiSelectToggle = (optValue: string, checked: boolean) => {
     const isCustomAttribute = this.field.startsWith("custom_attributes.");
@@ -158,9 +184,15 @@ export class UnidyField {
       <div>
         <label htmlFor={this.field} part="label">
           {fieldData?.label}
-          {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
+          {fieldData?.required || this.required ? (
+            <span part="required-indicator"> *</span>
+          ) : null}
         </label>
-        {isReadonly && fieldData?.type !== 'checkbox' ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
+        {isReadonly && fieldData?.type !== "checkbox" ? (
+          <span part="readonly-indicator">
+            {fieldData?.value || this.readonlyPlaceholder}
+          </span>
+        ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
           <div part="multi-select-readonly-container">
             {multiSelectReadonlyLabels.map((label) => (
@@ -170,8 +202,8 @@ export class UnidyField {
             ))}
           </div>
         )}
-        {!isReadonly && (
-          fieldData.type === "select" && fieldData.options ? (
+        {!isReadonly &&
+          (fieldData.type === "select" && fieldData.options ? (
             <Select
               id={this.field}
               value={fieldData.value}
@@ -199,67 +231,57 @@ export class UnidyField {
               onToggle={this.onMultiSelectToggle}
             />
           ) : fieldData.type === "textarea" ? (
-            <textarea
+            <Textarea
               id={this.field}
-              value={fieldData.value}
-              required={this.required}
-              part="textarea"
+              value={(fieldData.value as string) || ""}
+              required={fieldData?.required || this.required}
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
-              onChange={(e) => {
-                const isCustomAttribute = this.field.startsWith("custom_attributes.");
-
-                this.store.state.data = isCustomAttribute ? {
-                  ...this.store.state.data,
-                  custom_attributes: {
-                    ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attributes.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
-                      value: (e.target as HTMLTextAreaElement).value,
-                    },
-                  }
-                } : { ...this.store.state.data,
-                      [this.field]: {
-                        ...this.store.state.data[this.field],
-                        value: (e.target as HTMLTextAreaElement).value },
-                    };
-              }}
+              onChange={this.onTextareaChange}
             />
           ) : (
             <input
               id={this.field}
               type={fieldData.type}
               value={fieldData.value}
-            class={this.store.state.errors[this.field] ? 'field-error' : ''}
+              class={this.store.state.errors[this.field] ? 'field-error' : ''}
               required={fieldData?.required || this.required}
               part="input"
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
               onChange={(e) => {
-                const isCustomAttribute = this.field.startsWith("custom_attributes.");
+                const isCustomAttribute = this.field.startsWith(
+                  "custom_attributes."
+                );
 
-                this.store.state.data = isCustomAttribute ? {
-                  ...this.store.state.data,
-                  custom_attributes: {
-                    ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attributes.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
-                      value: (e.target as HTMLInputElement).value,
-                    },
-                  }
-                } : { ...this.store.state.data,
+                this.store.state.data = isCustomAttribute
+                  ? {
+                      ...this.store.state.data,
+                      custom_attributes: {
+                        ...this.store.state.data.custom_attributes,
+                        [this.field.replace("custom_attributes.", "")]: {
+                          ...this.store.state.data.custom_attributes?.[
+                            this.field.replace("custom_attributes.", "")
+                          ],
+                          value: (e.target as HTMLInputElement).value,
+                        },
+                      },
+                    }
+                  : {
+                      ...this.store.state.data,
                       [this.field]: {
                         ...this.store.state.data[this.field],
-                        value: (e.target as HTMLInputElement).value },
+                        value: (e.target as HTMLInputElement).value,
+                      },
                     };
               }}
             />
           ))}
-          {this.store.state.errors[this.field] && (
-            <span part="field-error-message">
-              ERROR: {this.store.state.errors[this.field]}
-            </span>
-          )}
+        {this.store.state.errors[this.field] && (
+          <span part="field-error-message">
+            ERROR: {this.store.state.errors[this.field]}
+          </span>
+        )}
       </div>
     );
   }
