@@ -98,6 +98,16 @@
         background: #0055fe;
         color: #fff;
       }
+      unidy-field::part(multi-select-readonly-field) {
+        display: inline-block;
+        padding: 6px 18px;
+        background: #e2e8f0;
+        color: #222;
+        font-size: 16px;
+        border-radius: 12px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
       submit-button::part(unidy-button) {
         display: flex;
         justify-content: center;
@@ -120,14 +130,42 @@
       submit-button::part(unidy-button):hover {
         background: #0055fe;
       }
-      #profile-output {
-        margin-top: 28px;
+      unidy-field::part(checkbox-group) {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, max-content));
+        gap: 8px 12px;
+        padding: 15px;
+        border-radius: 0.5rem;
+        background: #f8f9fa;
+      }
+      unidy-field::part(checkbox-label) {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         font-size: 1rem;
-        background: #f1f5f9;
-        border-radius: 10px;
-        padding: 18px;
-        color: #2d3748;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        cursor: pointer;
+        color: #222;
+        transition: color 0.2s;
+      }
+      unidy-field::part(field-error-message) {
+        color: red;
+        font-size: 1rem;
+      }
+      unidy-field::part(readonly-indicator) {
+        font-weight: 400;
+        color: #6b7280;
+      }
+      unidy-field::part(textarea) {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+        resize: vertical;
       }
     </style>
   </head>
@@ -164,19 +202,26 @@
         <submit-button>Submit</submit-button>
       </unidy-profile>
 
+      <a href="http://localhost:3000/oauth/authorize?client_id=public-oauth-client-for-login-sdk&scope=openid+profile+email&response_type=id_token&redirect_uri=http%3A%2F%2Flocalhost%3A3333%2F&sdk_render_mode=dialog">Show Profile</a>
+
       <unidy-profile
         use-unidy-auth-enabled
         api-key="public-newsletter-api-key"
         api-url="http://localhost:3000"
+        language="de"
       >
         <unidy-field field="salutation"></unidy-field>
         <unidy-field field="first_name"></unidy-field>
         <unidy-field field="last_name"></unidy-field>
         <unidy-field field="date_of_birth" required="true"></unidy-field>
-        <unidy-field field="favorite_nut"></unidy-field>
-        <unidy-field field="active_membership"></unidy-field>
+        <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
+        <unidy-field field="custom_attributes.multi"></unidy-field>
+        <unidy-field field="custom_attributes.active_membership"></unidy-field>
+        <unidy-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"></unidy-field>
+        <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"></unidy-field>
+        <unidy-field field="custom_attributes.first_name"></unidy-field>
+        <unidy-field field="custom_attributes.self_description"></unidy-field>
         <submit-button></submit-button>
-        <div id="profile-output"></div>
         <div id="profile-update-message"></div>
       </unidy-profile>
     </div>

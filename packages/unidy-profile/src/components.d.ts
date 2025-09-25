@@ -10,10 +10,24 @@ import { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
+    interface FlashMessage {
+        /**
+          * @default ""
+         */
+        "message": string;
+        /**
+          * @default "info"
+         */
+        "variant": "error" | "success" | "info";
+    }
     interface SubmitButton {
     }
     interface UnidyField {
         "field": string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder": string;
         /**
           * @default false
          */
@@ -26,15 +40,22 @@ export namespace Components {
           * @default ""
          */
         "initialData": string | Record<string, string>;
+        "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
     }
 }
 declare global {
+    interface HTMLFlashMessageElement extends Components.FlashMessage, HTMLStencilElement {
+    }
+    var HTMLFlashMessageElement: {
+        prototype: HTMLFlashMessageElement;
+        new (): HTMLFlashMessageElement;
+    };
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
     }
     var HTMLSubmitButtonElement: {
@@ -54,16 +75,31 @@ declare global {
         new (): HTMLUnidyProfileElement;
     };
     interface HTMLElementTagNameMap {
+        "flash-message": HTMLFlashMessageElement;
         "submit-button": HTMLSubmitButtonElement;
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
     }
 }
 declare namespace LocalJSX {
+    interface FlashMessage {
+        /**
+          * @default ""
+         */
+        "message"?: string;
+        /**
+          * @default "info"
+         */
+        "variant"?: "error" | "success" | "info";
+    }
     interface SubmitButton {
     }
     interface UnidyField {
         "field": string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder"?: string;
         /**
           * @default false
          */
@@ -76,14 +112,16 @@ declare namespace LocalJSX {
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
          */
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
     }
     interface IntrinsicElements {
+        "flash-message": FlashMessage;
         "submit-button": SubmitButton;
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
@@ -93,6 +131,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;

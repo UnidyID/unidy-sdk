@@ -1,18 +1,12 @@
 import { Component, Element, h } from "@stencil/core";
-
-type ProfileFieldValue = string | boolean | number | Date | null;
-type ProfileField = { value: ProfileFieldValue; [key: string]: unknown };
-type CustomAttributes = Record<string, ProfileField>;
-type Configuration = Record<string, unknown> & {
-  custom_attributes?: CustomAttributes;
-};
-type ProfileData = Record<string, { value: ProfileFieldValue } | unknown>;
+import type { ProfileRaw } from "../unidy-profile/unidy-profile";
 
 @Component({
   tag: "submit-button",
   styleUrl: "submit-button.css",
   shadow: true,
 })
+
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
@@ -30,81 +24,57 @@ export class SubmitButton {
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
     const idToken = this.store.state.idToken;
-    const updatedProfileData = this.buildUpdatedConfigurationPayload(configuration, stateWithoutConfig.data);
 
-    const resp = await this.store.state.client?.profile.updateProfile(idToken, updatedProfileData);
+    for (const key of Object.keys(stateWithoutConfig.data)) {
+      if (key === "custom_attributes") continue;
+      const field = stateWithoutConfig.data[key];
+      if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+        this.store.state.errors = { [key]: "This field is required." };
+        this.store.state.loading = false;
+        return;
+      }
+    }
+
+    for (const key of Object.keys(stateWithoutConfig.data.custom_attributes ?? {})) {
+      const field = stateWithoutConfig.data.custom_attributes?.[key];
+      const fieldDisplayName = `custom_attributes.${key}`;
+      if (field?.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+        this.store.state.errors = { [fieldDisplayName]: "This field is required." };
+        this.store.state.loading = false;
+        return;
+      }
+    }
+
+    const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
+
+    const resp = await this.store.state.client?.profile.updateProfile({ idToken, data: updatedProfileData, lang: this.store.state.language });
 
     if (resp?.success) {
       this.store.state.loading = false;
       this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
+      this.store.state.configUpdateSource = "submit";
+      this.store.state.errors = {};
     } else {
-      this.store.state.errors = { "status": String(resp?.status) };
-    }
+        if (resp?.data && "flatErrors" in resp.data) {
+          this.store.state.errors = resp.data.flatErrors as Record<string, string>;
+        } else {
+          this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        }
+        this.store.state.loading = false;
+      }
   };
 
-  private buildUpdatedConfigurationPayload(
-    configuration: Configuration | undefined,
-    stateData: ProfileData | undefined
-  ): Record<string, ProfileFieldValue | Record<string, ProfileFieldValue>> | undefined {
-    if (!configuration) return undefined;
-
-    const updated =
-      typeof structuredClone === "function"
-        ? structuredClone(configuration)
-        : JSON.parse(JSON.stringify(configuration));
-
-    const hasValueProp = (obj: unknown): obj is ProfileField => {
-      if (typeof obj !== "object" || obj === null || !("value" in obj)) return false;
-      const value = (obj as { value: unknown }).value;
-      return (
-        typeof value === "string" ||
-        typeof value === "boolean" ||
-        typeof value === "number" ||
-        value instanceof Date ||
-        value === null
-      );
+  private buildPayload(stateData: ProfileRaw) {
+    return {
+      ...Object.fromEntries(
+        Object.entries(stateData)
+          .filter(([k]) => k !== "custom_attributes")
+          .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
+      ),
+      custom_attributes: Object.fromEntries(
+        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
+      )
     };
-
-    const tryUpdate = (container: Record<string, unknown>, key: string, value: ProfileFieldValue) => {
-      if (container && hasValueProp(container[key])) {
-        container[key] = { ...container[key], value };
-        return true;
-      }
-      return false;
-    };
-
-    if (stateData) {
-      for (const key of Object.keys(stateData)) {
-        const field = stateData[key];
-        const newVal = hasValueProp(field) ? field.value : undefined;
-        if (newVal === undefined) continue;
-
-        if (tryUpdate(updated, key, newVal)) continue;
-
-        if (updated.custom_attributes && tryUpdate(updated.custom_attributes, key, newVal)) continue;
-      }
-    }
-
-    const toValue = (field: unknown): ProfileFieldValue => {
-      if (hasValueProp(field)) return field.value;
-      return field as ProfileFieldValue;
-    };
-
-    const flattenedConfig: Record<string, ProfileFieldValue | Record<string, ProfileFieldValue>> = {};
-    for (const key of Object.keys(updated)) {
-      if (key === "custom_attributes") {
-        const customAttrs = updated.custom_attributes || {};
-        const flattenedAttrs: Record<string, ProfileFieldValue> = {};
-        for (const cKey of Object.keys(customAttrs)) {
-          flattenedAttrs[cKey] = toValue(customAttrs[cKey]);
-        }
-        flattenedConfig.custom_attributes = flattenedAttrs;
-      } else {
-        flattenedConfig[key] = toValue(updated[key]);
-      }
-    }
-
-    return flattenedConfig;
   }
 
   private hasSlotContent(): boolean {
@@ -114,7 +84,7 @@ export class SubmitButton {
   render() {
     return (
       <div>
-        <button onClick={() => this.onSubmit()} type="button" part="unidy-button">
+        <button type="button" onClick={() => this.onSubmit()} part="unidy-button">
           {this.store.state.loading
             ? <span class="spinner"/>
             : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
