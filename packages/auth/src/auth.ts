@@ -29,6 +29,7 @@ export class Auth {
   static Errors = {
     INVALID_PASSWORD: "invalid_password",
     ACCOUNT_NOT_FOUND: "account_not_found",
+    ACCOUNT_LOCKED: "account_locked",
   } as const;
 
   static async getInstance(): Promise<Auth> {

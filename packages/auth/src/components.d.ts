@@ -18,6 +18,16 @@ export namespace Components {
          */
         "placeholder": string;
     }
+    interface ErrorMessage {
+        /**
+          * @default ""
+         */
+        "className": string;
+        /**
+          * @default true
+         */
+        "showIcon": boolean;
+    }
     interface PasswordField {
         /**
           * @default ""
@@ -64,6 +74,12 @@ export namespace Components {
          */
         "text": string;
     }
+    interface UnidyAuthErrorMessage {
+        /**
+          * @default "text-red-500"
+         */
+        "className": string;
+    }
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -75,6 +91,12 @@ declare global {
     var HTMLEmailFieldElement: {
         prototype: HTMLEmailFieldElement;
         new (): HTMLEmailFieldElement;
+    };
+    interface HTMLErrorMessageElement extends Components.ErrorMessage, HTMLStencilElement {
+    }
+    var HTMLErrorMessageElement: {
+        prototype: HTMLErrorMessageElement;
+        new (): HTMLErrorMessageElement;
     };
     interface HTMLPasswordFieldElement extends Components.PasswordField, HTMLStencilElement {
     }
@@ -112,12 +134,20 @@ declare global {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
     };
+    interface HTMLUnidyAuthErrorMessageElement extends Components.UnidyAuthErrorMessage, HTMLStencilElement {
+    }
+    var HTMLUnidyAuthErrorMessageElement: {
+        prototype: HTMLUnidyAuthErrorMessageElement;
+        new (): HTMLUnidyAuthErrorMessageElement;
+    };
     interface HTMLElementTagNameMap {
         "email-field": HTMLEmailFieldElement;
+        "error-message": HTMLErrorMessageElement;
         "password-field": HTMLPasswordFieldElement;
         "signin-root": HTMLSigninRootElement;
         "signin-step": HTMLSigninStepElement;
         "submit-button": HTMLSubmitButtonElement;
+        "unidy-auth-error-message": HTMLUnidyAuthErrorMessageElement;
     }
 }
 declare namespace LocalJSX {
@@ -130,6 +160,16 @@ declare namespace LocalJSX {
           * @default "Enter your email"
          */
         "placeholder"?: string;
+    }
+    interface ErrorMessage {
+        /**
+          * @default ""
+         */
+        "className"?: string;
+        /**
+          * @default true
+         */
+        "showIcon"?: boolean;
     }
     interface PasswordField {
         /**
@@ -178,12 +218,20 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    interface UnidyAuthErrorMessage {
+        /**
+          * @default "text-red-500"
+         */
+        "className"?: string;
+    }
     interface IntrinsicElements {
         "email-field": EmailField;
+        "error-message": ErrorMessage;
         "password-field": PasswordField;
         "signin-root": SigninRoot;
         "signin-step": SigninStep;
         "submit-button": SubmitButton;
+        "unidy-auth-error-message": UnidyAuthErrorMessage;
     }
 }
 export { LocalJSX as JSX };
@@ -191,10 +239,12 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
+            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
             "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
+            "unidy-auth-error-message": LocalJSX.UnidyAuthErrorMessage & JSXBase.HTMLAttributes<HTMLUnidyAuthErrorMessageElement>;
         }
     }
 }

@@ -24,19 +24,23 @@
 
         <signin-step name="email">
           <email-field placeholder="Enter your email"
-            class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
           <submit-button text="Continue"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
         </signin-step>
 
         <signin-step name="verification">
           <password-field placeholder="Enter your password"
-            class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
+            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
           <submit-button text="Sign In" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
         </signin-step>
+
+        <unidy-auth-error-message></unidy-auth-error-message>
+
       </signin-root>
 
-      <!--
+      <!-- example without step components
+
       <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
         class="flex flex-col gap-2">
         <email-field placeholder="Enter your email"
@@ -83,14 +87,16 @@
     });
 
     signinRoot.addEventListener("errorEvent", (event) => {
+      console.log("Authentication error:", event.detail.error);
+
       if (event.detail.error === Auth.Errors.ACCOUNT_NOT_FOUND) {
-        // Redirect to unidy for registration
-        window.location = "http://localhost:3000/logins?email=" + auth.getEmail();
-      }
-      else {
-        if (event.detail.error === Auth.Errors.INVALID_PASSWORD) {
-          // do something
-        }
+        setTimeout(() => {
+          const shouldRedirect = confirm("Would you like to register?");
+
+          if (shouldRedirect) {
+            window.location = "http://localhost:3000/logins?email=" + auth.getEmail();
+          }
+        }, 100);
       }
     });
 
