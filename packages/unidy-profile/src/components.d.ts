@@ -23,6 +23,10 @@ export namespace Components {
     interface SubmitButton {
     }
     interface UnidyField {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
         "field": string;
         /**
           * @default ""
@@ -95,6 +99,10 @@ declare namespace LocalJSX {
     interface SubmitButton {
     }
     interface UnidyField {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
         "field": string;
         /**
           * @default ""

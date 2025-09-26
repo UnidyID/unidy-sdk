@@ -2,7 +2,7 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 
-type Option = { value: string; label: string };
+type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
 
 interface ProfileNode {

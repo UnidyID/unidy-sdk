@@ -9,6 +9,7 @@ export class UnidyField {
   @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
+  @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
   @Element() el!: HTMLElement;
 
@@ -154,9 +155,10 @@ export class UnidyField {
                   value={opt.value}
                   data-selected={opt.value === fieldData.value ? "true" : "false"}
                   selected={opt.value === fieldData.value}
+                  disabled={opt.value === "--"? true : false}
                   part="option"
                 >
-                  {opt.label}
+                  {fieldData.attr_name === "country_code" && this.countryCodeDisplayOption === "icon" ? opt.icon : opt.label}
                 </option>
               ))}
             </select>

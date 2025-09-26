@@ -5,7 +5,8 @@ const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "ra
 
 const SelectOptionSchema = z.object({
   value: z.string(),
-  label: z.string()
+  label: z.string(),
+  icon: z.string().nullable().optional()
 }).strict();
 
 const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
