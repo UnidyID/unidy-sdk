@@ -3,30 +3,52 @@ import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
 
 @Component({
-  tag: "unidy-auth-error-message",
+  tag: "error-message",
   shadow: false,
 })
 export class ErrorMessage {
-  @Prop() className = "text-red-500";
+  @Prop() className = "";
+  @Prop() for!: "email" | "magicCode" | "password";
 
-  private getErrorMessage(error: string): string {
+  private defaultErrorMessage(error: string): string {
     switch (error) {
-      case Auth.Errors.INVALID_PASSWORD:
-        return "Invalid password";
-      case Auth.Errors.ACCOUNT_NOT_FOUND:
+      case Auth.Errors.email.NOT_FOUND:
         return "Account not found";
-      case Auth.Errors.ACCOUNT_LOCKED:
-        return "Account locked. Try again later";
+      case Auth.Errors.password.INVALID:
+        return "Invalid password";
+      case Auth.Errors.magicCode.RECENTLY_CREATED:
+        return "Magic code already sent - We don't have resend option here yet, sorry :(";
+      case Auth.Errors.magicCode.EXPIRED:
+        return "Magic code expired";
+      case Auth.Errors.magicCode.USED:
+        return "Magic code used";
+      case Auth.Errors.magicCode.NOT_VALID:
+        return "Magic code not valid";
+      case Auth.Errors.general.ACCOUNT_LOCKED:
+        return "Account locked beacuse of too many failed attempts. Try again later";
       default:
         return error || "An error occurred";
     }
   }
 
+  private shouldShowError(error: string): boolean {
+    switch (this.for) {
+      case "magicCode":
+        return (Object.values(Auth.Errors.magicCode) as string[]).includes(error);
+      case "email":
+        return (Object.values(Auth.Errors.email) as string[]).includes(error);
+      case "password":
+        return (Object.values(Auth.Errors.password) as string[]).includes(error);
+      default:
+        return true;
+    }
+  }
+
   render() {
-    if (!authState.error) {
+    if (!authState.error || !this.shouldShowError(authState.error)) {
       return null;
     }
 
-    return <span class={this.className}>{this.getErrorMessage(authState.error)}</span>;
+    return <div class={this.className}>{this.defaultErrorMessage(authState.error)}</div>;
   }
 }
