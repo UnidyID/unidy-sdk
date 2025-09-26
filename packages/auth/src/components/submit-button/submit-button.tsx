@@ -76,7 +76,7 @@ export class SubmitButton {
 
     return (
       <button type="button" disabled={this.isDisabled()} onClick={this.handleClick} class={this.className} style={{ width: "100%" }}>
-        {authState.loading ? "Loading..." : this.getButtonText()}
+        {authState.loading && !authState.magicCodeRequested ? "Loading..." : this.getButtonText()}
       </button>
     );
   }

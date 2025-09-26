@@ -125,6 +125,8 @@ export class Auth {
 
     const [error] = await this.client.auth.sendMagicCode(authState.sid);
 
+    authStore.setMagicCodeRequested(false);
+
     if (error) {
       if (error === "recently_created") {
         authStore.setMagicCodeSent(true);

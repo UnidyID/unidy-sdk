@@ -1,5 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
-import { authState } from "../../store/auth-store";
+import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth.js";
 
 @Component({
@@ -20,7 +20,7 @@ export class SendMagicCodeButton {
       console.error("Auth service not initialized");
       return;
     }
-
+    authStore.setMagicCodeRequested(true);
     await authService.sendMagicCode();
   };
 
@@ -32,12 +32,12 @@ export class SendMagicCodeButton {
     return (
       <button
         type="button"
-        disabled={this.disabled || authState.loading || authState.magicCodeSent}
+        disabled={this.disabled || authState.loading || authState.magicCodeRequested}
         onClick={this.handleClick}
         class={this.className}
         style={{ width: "100%" }}
       >
-        {authState.loading && !authState.magicCodeSent ? "Sending..." : this.text}
+        {authState.loading && authState.magicCodeRequested ? "Sending..." : this.text}
       </button>
     );
   }

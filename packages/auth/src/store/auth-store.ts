@@ -6,9 +6,10 @@ export interface AuthState {
   email: string;
   password: string;
   magicCode: string;
+  magicCodeRequested: boolean;
   magicCodeSent: boolean;
   sid: string | null;
-  loading: boolean;
+  loading: boolean; // TODO refactor this or maybe remove loading state completely
   error: string | null;
   authenticated: boolean;
   token: string | null;
@@ -34,6 +35,7 @@ const initialState: AuthState = {
   email: "",
   password: "",
   magicCode: "",
+  magicCodeRequested: false,
   magicCodeSent: false,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
@@ -70,6 +72,10 @@ class AuthStore {
 
   setMagicCode(magicCode: string) {
     state.magicCode = magicCode;
+  }
+
+  setMagicCodeRequested(requested: boolean) {
+    state.magicCodeRequested = requested;
   }
 
   setMagicCodeSent(sent: boolean) {
