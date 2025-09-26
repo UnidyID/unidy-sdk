@@ -37,6 +37,17 @@ const RadioFieldSchema = z.object({
   radio_options: z.array(RadioOptionSchema)
 }).strict();
 
+const SelectFieldSchema = z.object({
+  value: z.string().nullable(),
+  type: z.enum(["select"]),
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional(),
+  options: z.array(SelectOptionSchema)
+}).strict();
+
 const DateFieldSchema = z.object({
   value: z.union([z.string(), z.null()]),
   type: z.enum(["date", "datetime-local"]),
@@ -72,7 +83,7 @@ const UserProfileSchema = z.object({
   address_line_2: TextFieldSchema,
   city: TextFieldSchema,
   postal_code: TextFieldSchema,
-  country_code: TextFieldSchema,
+  country_code: SelectFieldSchema,
   date_of_birth: DateFieldSchema,
   preferred_language: TextFieldSchema.optional(),
   custom_attributes: z.record(z.string(), CustomFieldSchema)
