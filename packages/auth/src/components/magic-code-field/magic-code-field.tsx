@@ -9,7 +9,6 @@ import { Auth } from "../../auth.js";
 export class MagicCodeField {
   @Element() el!: HTMLElement;
 
-  @Prop() placeholder = "Enter your magic code";
   @Prop() className = "";
 
   @State() codeDigits: string[] = ["", "", "", ""];

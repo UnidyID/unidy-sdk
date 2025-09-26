@@ -34,10 +34,6 @@ export namespace Components {
           * @default ""
          */
         "className": string;
-        /**
-          * @default "Enter your magic code"
-         */
-        "placeholder": string;
     }
     interface PasswordField {
         /**
@@ -238,10 +234,6 @@ declare namespace LocalJSX {
           * @default ""
          */
         "className"?: string;
-        /**
-          * @default "Enter your magic code"
-         */
-        "placeholder"?: string;
     }
     interface PasswordField {
         /**
