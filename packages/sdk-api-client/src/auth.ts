@@ -29,13 +29,22 @@ export type CreateSignInResult =
   | ["schema_validation_error", SchemaValidationError]
   | [null, CreateSignInResponse];
 
-export type AuthenticateResult =
+export type AuthenticateResultShared =
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
-  | ["invalid_password", ErrorResponse]
   | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
+
+export type SendMagicCodeResult = ["recently_created", ErrorResponse] | AuthenticateResultShared | [null, { status: "created" }];
+
+export type AuthenticateWithPasswordResult = ["invalid_password", ErrorResponse] | AuthenticateResultShared;
+
+export type AuthenticateWithMagicCodeResult =
+  | ["not_valid", ErrorResponse]
+  | ["used", ErrorResponse]
+  | ["expired", ErrorResponse]
+  | AuthenticateResultShared;
 
 export type RefreshTokenResult =
   | ["invalid_refresh_token", ErrorResponse]
@@ -66,7 +75,22 @@ export class AuthService {
     }
   }
 
-  async authenticateWithPassword(signInId: string, password: string): Promise<AuthenticateResult> {
+  async sendMagicCode(signInId: string): Promise<SendMagicCodeResult> {
+    const response = await this.client.get<void>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`);
+
+    try {
+      if (!response.success) {
+        const error_response = ErrorSchema.parse(response.data);
+        return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "recently_created", error_response];
+      }
+
+      return [null, { status: "created" }];
+    } catch (error) {
+      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+    }
+  }
+
+  async authenticateWithPassword(signInId: string, password: string): Promise<AuthenticateWithPasswordResult> {
     const response = await this.client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       password,
     });
@@ -77,6 +101,25 @@ export class AuthService {
         return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password", error_response];
       }
 
+      return [null, TokenResponseSchema.parse(response.data)];
+    } catch (error) {
+      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+    }
+  }
+
+  async authenticateWithMagicCode(signInId: string, code: string): Promise<AuthenticateWithMagicCodeResult> {
+    const response = await this.client.post<{ code: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
+      code,
+    });
+
+    try {
+      if (!response.success) {
+        const error_response = ErrorSchema.parse(response.data);
+        return [
+          error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "not_valid" | "used" | "expired",
+          error_response,
+        ];
+      }
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];

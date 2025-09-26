@@ -19,7 +19,7 @@
 | Event        | Description | Type                                                   |
 | ------------ | ----------- | ------------------------------------------------------ |
 | `authEvent`  |             | `CustomEvent<{ jwt: string; refresh_token: string; }>` |
-| `errorEvent` |             | `CustomEvent<string>`                                  |
+| `errorEvent` |             | `CustomEvent<{ error: string; }>`                      |
 
 
 ----------------------------------------------

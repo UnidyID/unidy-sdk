@@ -8,6 +8,10 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
 export namespace Components {
+    interface ConditionalRender {
+        "is": "true" | "false";
+        "when": string;
+    }
     interface EmailField {
         /**
           * @default ""
@@ -23,10 +27,17 @@ export namespace Components {
           * @default ""
          */
         "className": string;
+        "for": "email" | "magicCode" | "password";
+    }
+    interface MagicCodeField {
         /**
-          * @default true
+          * @default ""
          */
-        "showIcon": boolean;
+        "className": string;
+        /**
+          * @default "Enter your magic code"
+         */
+        "placeholder": string;
     }
     interface PasswordField {
         /**
@@ -37,6 +48,20 @@ export namespace Components {
           * @default "Enter your password"
          */
         "placeholder": string;
+    }
+    interface SendMagicCodeButton {
+        /**
+          * @default ""
+         */
+        "className": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Send Magic Code"
+         */
+        "text": string;
     }
     interface SigninRoot {
         /**
@@ -60,6 +85,13 @@ export namespace Components {
         "isActive": () => Promise<boolean>;
         "name": "email" | "verification";
     }
+    interface SigninStrategy {
+        /**
+          * @default ""
+         */
+        "className": string;
+        "type": "password" | "magic-code";
+    }
     interface SubmitButton {
         /**
           * @default ""
@@ -76,9 +108,10 @@ export namespace Components {
     }
     interface UnidyAuthErrorMessage {
         /**
-          * @default "text-red-500"
+          * @default ""
          */
         "className": string;
+        "for": "email" | "magicCode" | "password";
     }
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
@@ -86,6 +119,12 @@ export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLSigninRootElement;
 }
 declare global {
+    interface HTMLConditionalRenderElement extends Components.ConditionalRender, HTMLStencilElement {
+    }
+    var HTMLConditionalRenderElement: {
+        prototype: HTMLConditionalRenderElement;
+        new (): HTMLConditionalRenderElement;
+    };
     interface HTMLEmailFieldElement extends Components.EmailField, HTMLStencilElement {
     }
     var HTMLEmailFieldElement: {
@@ -98,11 +137,23 @@ declare global {
         prototype: HTMLErrorMessageElement;
         new (): HTMLErrorMessageElement;
     };
+    interface HTMLMagicCodeFieldElement extends Components.MagicCodeField, HTMLStencilElement {
+    }
+    var HTMLMagicCodeFieldElement: {
+        prototype: HTMLMagicCodeFieldElement;
+        new (): HTMLMagicCodeFieldElement;
+    };
     interface HTMLPasswordFieldElement extends Components.PasswordField, HTMLStencilElement {
     }
     var HTMLPasswordFieldElement: {
         prototype: HTMLPasswordFieldElement;
         new (): HTMLPasswordFieldElement;
+    };
+    interface HTMLSendMagicCodeButtonElement extends Components.SendMagicCodeButton, HTMLStencilElement {
+    }
+    var HTMLSendMagicCodeButtonElement: {
+        prototype: HTMLSendMagicCodeButtonElement;
+        new (): HTMLSendMagicCodeButtonElement;
     };
     interface HTMLSigninRootElementEventMap {
         "authEvent": TokenResponse;
@@ -128,6 +179,12 @@ declare global {
         prototype: HTMLSigninStepElement;
         new (): HTMLSigninStepElement;
     };
+    interface HTMLSigninStrategyElement extends Components.SigninStrategy, HTMLStencilElement {
+    }
+    var HTMLSigninStrategyElement: {
+        prototype: HTMLSigninStrategyElement;
+        new (): HTMLSigninStrategyElement;
+    };
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
     }
     var HTMLSubmitButtonElement: {
@@ -141,16 +198,24 @@ declare global {
         new (): HTMLUnidyAuthErrorMessageElement;
     };
     interface HTMLElementTagNameMap {
+        "conditional-render": HTMLConditionalRenderElement;
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
+        "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
+        "send-magic-code-button": HTMLSendMagicCodeButtonElement;
         "signin-root": HTMLSigninRootElement;
         "signin-step": HTMLSigninStepElement;
+        "signin-strategy": HTMLSigninStrategyElement;
         "submit-button": HTMLSubmitButtonElement;
         "unidy-auth-error-message": HTMLUnidyAuthErrorMessageElement;
     }
 }
 declare namespace LocalJSX {
+    interface ConditionalRender {
+        "is": "true" | "false";
+        "when": string;
+    }
     interface EmailField {
         /**
           * @default ""
@@ -166,10 +231,17 @@ declare namespace LocalJSX {
           * @default ""
          */
         "className"?: string;
+        "for": "email" | "magicCode" | "password";
+    }
+    interface MagicCodeField {
         /**
-          * @default true
+          * @default ""
          */
-        "showIcon"?: boolean;
+        "className"?: string;
+        /**
+          * @default "Enter your magic code"
+         */
+        "placeholder"?: string;
     }
     interface PasswordField {
         /**
@@ -180,6 +252,20 @@ declare namespace LocalJSX {
           * @default "Enter your password"
          */
         "placeholder"?: string;
+    }
+    interface SendMagicCodeButton {
+        /**
+          * @default ""
+         */
+        "className"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Send Magic Code"
+         */
+        "text"?: string;
     }
     interface SigninRoot {
         /**
@@ -204,6 +290,13 @@ declare namespace LocalJSX {
         "alwaysRender"?: boolean;
         "name": "email" | "verification";
     }
+    interface SigninStrategy {
+        /**
+          * @default ""
+         */
+        "className"?: string;
+        "type": "password" | "magic-code";
+    }
     interface SubmitButton {
         /**
           * @default ""
@@ -220,16 +313,21 @@ declare namespace LocalJSX {
     }
     interface UnidyAuthErrorMessage {
         /**
-          * @default "text-red-500"
+          * @default ""
          */
         "className"?: string;
+        "for": "email" | "magicCode" | "password";
     }
     interface IntrinsicElements {
+        "conditional-render": ConditionalRender;
         "email-field": EmailField;
         "error-message": ErrorMessage;
+        "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
+        "send-magic-code-button": SendMagicCodeButton;
         "signin-root": SigninRoot;
         "signin-step": SigninStep;
+        "signin-strategy": SigninStrategy;
         "submit-button": SubmitButton;
         "unidy-auth-error-message": UnidyAuthErrorMessage;
     }
@@ -238,11 +336,15 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "conditional-render": LocalJSX.ConditionalRender & JSXBase.HTMLAttributes<HTMLConditionalRenderElement>;
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
+            "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
+            "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
             "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
+            "signin-strategy": LocalJSX.SigninStrategy & JSXBase.HTMLAttributes<HTMLSigninStrategyElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "unidy-auth-error-message": LocalJSX.UnidyAuthErrorMessage & JSXBase.HTMLAttributes<HTMLUnidyAuthErrorMessageElement>;
         }

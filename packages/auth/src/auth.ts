@@ -27,9 +27,21 @@ export class Auth {
   private constructor(private client: UnidyClient) {}
 
   static Errors = {
-    INVALID_PASSWORD: "invalid_password",
-    ACCOUNT_NOT_FOUND: "account_not_found",
-    ACCOUNT_LOCKED: "account_locked",
+    email: {
+      NOT_FOUND: "account_not_found",
+    },
+    magicCode: {
+      RECENTLY_CREATED: "magic_code_recently_created",
+      NOT_VALID: "magic_code_not_valid",
+      EXPIRED: "magic_code_expired",
+      USED: "magic_code_used",
+    },
+    password: {
+      INVALID: "invalid_password",
+    },
+    general: {
+      ACCOUNT_LOCKED: "account_locked",
+    },
   } as const;
 
   static async getInstance(): Promise<Auth> {
@@ -70,6 +82,8 @@ export class Auth {
       authStore.setStep("verification");
       authStore.setEmail(email);
       authStore.setSignInId(response.sid);
+      authStore.setMagicCodeSent(false);
+      authStore.setMagicCode("");
       authStore.setLoading(false);
     }
   }
@@ -87,6 +101,60 @@ export class Auth {
     authStore.setError(null);
 
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
+
+    if (error) {
+      authStore.setError(error);
+      authStore.setLoading(false);
+    } else {
+      authStore.setToken(response.jwt);
+      authStore.setRefreshToken(response.refresh_token);
+      authStore.setLoading(false);
+      authStore.setAuthenticated(true);
+
+      authStore.getRootComponentRef()?.onAuth(response);
+    }
+  }
+
+  async sendMagicCode() {
+    if (!authState.sid) {
+      throw new Error("No sign in ID available");
+    }
+
+    authStore.setLoading(true);
+    authStore.setError(null);
+
+    const [error] = await this.client.auth.sendMagicCode(authState.sid);
+
+    if (error) {
+      if (error === "recently_created") {
+        authStore.setMagicCodeSent(true);
+        authStore.setLoading(false);
+        authStore.setError(error);
+
+        return;
+      }
+
+      authStore.setError(error);
+      authStore.setLoading(false);
+    } else {
+      authStore.setMagicCodeSent(true);
+      authStore.setLoading(false);
+    }
+  }
+
+  async authenticateWithMagicCode(code: string) {
+    if (!authState.sid) {
+      throw new Error("No sign in ID available");
+    }
+
+    if (!code) {
+      throw new Error("Magic code is missing");
+    }
+
+    authStore.setLoading(true);
+    authStore.setError(null);
+
+    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
     if (error) {
       authStore.setError(error);

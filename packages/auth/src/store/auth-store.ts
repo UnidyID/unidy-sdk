@@ -5,6 +5,8 @@ export interface AuthState {
   step: "email" | "verification";
   email: string;
   password: string;
+  magicCode: string;
+  magicCodeSent: boolean;
   sid: string | null;
   loading: boolean;
   error: string | null;
@@ -31,6 +33,8 @@ const initialState: AuthState = {
   step: "email",
   email: "",
   password: "",
+  magicCode: "",
+  magicCodeSent: false,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   error: null,
@@ -62,6 +66,14 @@ class AuthStore {
 
   setPassword(password: string) {
     state.password = password;
+  }
+
+  setMagicCode(magicCode: string) {
+    state.magicCode = magicCode;
+  }
+
+  setMagicCodeSent(sent: boolean) {
+    state.magicCodeSent = sent;
   }
 
   setLoading(loading: boolean) {

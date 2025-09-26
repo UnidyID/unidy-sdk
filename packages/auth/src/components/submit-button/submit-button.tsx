@@ -28,7 +28,7 @@ export class SubmitButton {
 
     if (authState.step === "email") {
       authService.createSignIn(authState.email);
-    } else if (authState.step === "verification") {
+    } else if (authState.step === "verification" && this.isPasswordStrategy()) {
       await authService.authenticateWithPassword(authState.password);
     }
   };
@@ -46,20 +46,49 @@ export class SubmitButton {
     }
   }
 
-  render() {
+  private shouldRender(): boolean {
     const parentStepComponent = this.getParentStepComponent();
     if (parentStepComponent && authState.step !== parentStepComponent.name) {
+      return false;
+    }
+
+    if (authState.step === "email") {
+      return true;
+    }
+
+    if (authState.step === "verification") {
+      return this.isPasswordStrategy() && !authState.magicCodeSent;
+    }
+
+    return false;
+  }
+
+  private isPasswordStrategy(): boolean {
+    const parentStrategy = this.el.closest("signin-strategy") as HTMLSigninStrategyElement;
+    return parentStrategy?.type === "password";
+  }
+
+  private isDisabled(): boolean {
+    if (this.disabled || authState.loading) return true;
+
+    if (authState.step === "email") {
+      return authState.email === "";
+    }
+
+    if (authState.step === "verification" && this.isPasswordStrategy()) {
+      return authState.password === "";
+    }
+
+    return false;
+  }
+
+  render() {
+    if (!this.shouldRender()) {
       return null;
     }
 
     return (
-      <button
-        type="button"
-        disabled={this.disabled || authState.loading}
-        onClick={this.handleClick}
-        class={this.className}
-        style={{ width: "100%" }}
-      >
+      <button type="button" disabled={this.isDisabled()} onClick={this.handleClick} class={this.className} style={{ width: "100%" }}>
         {authState.loading ? "Loading..." : this.getButtonText()}
       </button>
     );
