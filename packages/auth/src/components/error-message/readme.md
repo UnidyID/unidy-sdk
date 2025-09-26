@@ -7,9 +7,10 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type     | Default          |
-| ----------- | ------------ | ----------- | -------- | ---------------- |
-| `className` | `class-name` |             | `string` | `"text-red-500"` |
+| Property           | Attribute    | Description | Type                                   | Default     |
+| ------------------ | ------------ | ----------- | -------------------------------------- | ----------- |
+| `className`        | `class-name` |             | `string`                               | `""`        |
+| `for` _(required)_ | `for`        |             | `"email" \| "magicCode" \| "password"` | `undefined` |
 
 
 ----------------------------------------------

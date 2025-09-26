@@ -97,17 +97,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        "for": "email" | "password";
         /**
           * @default ""
          */
         "text": string;
-    }
-    interface UnidyAuthErrorMessage {
-        /**
-          * @default ""
-         */
-        "className": string;
-        "for": "email" | "magicCode" | "password";
     }
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
@@ -187,12 +181,6 @@ declare global {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
     };
-    interface HTMLUnidyAuthErrorMessageElement extends Components.UnidyAuthErrorMessage, HTMLStencilElement {
-    }
-    var HTMLUnidyAuthErrorMessageElement: {
-        prototype: HTMLUnidyAuthErrorMessageElement;
-        new (): HTMLUnidyAuthErrorMessageElement;
-    };
     interface HTMLElementTagNameMap {
         "conditional-render": HTMLConditionalRenderElement;
         "email-field": HTMLEmailFieldElement;
@@ -204,7 +192,6 @@ declare global {
         "signin-step": HTMLSigninStepElement;
         "signin-strategy": HTMLSigninStrategyElement;
         "submit-button": HTMLSubmitButtonElement;
-        "unidy-auth-error-message": HTMLUnidyAuthErrorMessageElement;
     }
 }
 declare namespace LocalJSX {
@@ -298,17 +285,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        "for": "email" | "password";
         /**
           * @default ""
          */
         "text"?: string;
-    }
-    interface UnidyAuthErrorMessage {
-        /**
-          * @default ""
-         */
-        "className"?: string;
-        "for": "email" | "magicCode" | "password";
     }
     interface IntrinsicElements {
         "conditional-render": ConditionalRender;
@@ -321,7 +302,6 @@ declare namespace LocalJSX {
         "signin-step": SigninStep;
         "signin-strategy": SigninStrategy;
         "submit-button": SubmitButton;
-        "unidy-auth-error-message": UnidyAuthErrorMessage;
     }
 }
 export { LocalJSX as JSX };
@@ -338,7 +318,6 @@ declare module "@stencil/core" {
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
             "signin-strategy": LocalJSX.SigninStrategy & JSXBase.HTMLAttributes<HTMLSigninStrategyElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
-            "unidy-auth-error-message": LocalJSX.UnidyAuthErrorMessage & JSXBase.HTMLAttributes<HTMLUnidyAuthErrorMessageElement>;
         }
     }
 }

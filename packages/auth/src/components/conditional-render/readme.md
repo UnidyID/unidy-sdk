@@ -126,7 +126,7 @@ A simple component for conditional rendering based on auth state properties.
 
 | Property            | Attribute | Description | Type                | Default     |
 | ------------------- | --------- | ----------- | ------------------- | ----------- |
-| `is`                | `is`      |             | `boolean \| string` | `"true"`    |
+| `is` _(required)_   | `is`      |             | `"false" \| "true"` | `undefined` |
 | `when` _(required)_ | `when`    |             | `string`            | `undefined` |
 
 

@@ -12,10 +12,8 @@
       "version": "0.0.1",
       "dependencies": {
         "@stencil/store": "^2.0.0",
-        "@tailwindcss/postcss": "^4.1.7",
         "@unidy.io/sdk-api-client": "workspace:*",
         "jwt-decode": "^4.0.0",
-        "tailwindcss": "^4.1.7",
       },
       "devDependencies": {
         "@stencil/core": "^4.27.1",
@@ -117,7 +115,7 @@
     },
     "packages/sdk-api-client": {
       "name": "@unidy.io/sdk-api-client",
-      "version": "0.1.14",
+      "version": "0.1.15",
       "dependencies": {
         "zod": "^4.0.0",
       },
@@ -131,7 +129,7 @@
     },
     "packages/unidy-profile": {
       "name": "@unidy.io/profile",
-      "version": "0.0.8",
+      "version": "0.0.10",
       "dependencies": {
         "@stencil/store": "^2.1.3",
         "@unidy.io/sdk-api-client": "workspace:*",

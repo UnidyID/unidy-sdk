@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Element } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth.js";
 
@@ -7,8 +7,6 @@ import { Auth } from "../../auth.js";
   shadow: false,
 })
 export class MagicCodeField {
-  @Element() el!: HTMLElement;
-
   @Prop() className = "";
 
   @State() codeDigits: string[] = ["", "", "", ""];
@@ -106,6 +104,7 @@ export class MagicCodeField {
             onKeyDown={(event) => this.handleKeyDown(event, index)}
             onPaste={index === 0 ? this.handlePaste : undefined}
             style={{
+              // TODO refactor this
               width: "50px",
               height: "50px",
               textAlign: "center",
@@ -116,6 +115,7 @@ export class MagicCodeField {
               transition: "border-color 0.2s",
             }}
             class="magic-code-input"
+            part="digit-input"
           />
         ))}
       </div>

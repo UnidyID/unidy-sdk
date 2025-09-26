@@ -9,13 +9,10 @@ import { Auth } from "../../auth.js";
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
+  @Prop() for!: "email" | "password";
+  @Prop() text = "";
   @Prop() disabled = false;
   @Prop() className = "";
-  @Prop() text = "";
-
-  private getParentStepComponent(): HTMLSigninStepElement | null {
-    return this.el.closest("signin-step") as HTMLSigninStepElement;
-  }
 
   private handleClick = async () => {
     if (this.disabled || authState.loading) return;
@@ -28,7 +25,7 @@ export class SubmitButton {
 
     if (authState.step === "email") {
       authService.createSignIn(authState.email);
-    } else if (authState.step === "verification" && this.isPasswordStrategy()) {
+    } else if (authState.step === "verification" && this.for === "password") {
       await authService.authenticateWithPassword(authState.password);
     }
   };
@@ -47,35 +44,25 @@ export class SubmitButton {
   }
 
   private shouldRender(): boolean {
-    const parentStepComponent = this.getParentStepComponent();
-    if (parentStepComponent && authState.step !== parentStepComponent.name) {
-      return false;
-    }
-
     if (authState.step === "email") {
-      return true;
+      return this.for === "email";
     }
 
     if (authState.step === "verification") {
-      return this.isPasswordStrategy() && !authState.magicCodeSent;
+      return this.for === "password" && !authState.magicCodeSent;
     }
 
     return false;
   }
 
-  private isPasswordStrategy(): boolean {
-    const parentStrategy = this.el.closest("signin-strategy") as HTMLSigninStrategyElement;
-    return parentStrategy?.type === "password";
-  }
-
   private isDisabled(): boolean {
     if (this.disabled || authState.loading) return true;
 
-    if (authState.step === "email") {
+    if (authState.step === "email" && this.for === "email") {
       return authState.email === "";
     }
 
-    if (authState.step === "verification" && this.isPasswordStrategy()) {
+    if (authState.step === "verification" && this.for === "password") {
       return authState.password === "";
     }
 
