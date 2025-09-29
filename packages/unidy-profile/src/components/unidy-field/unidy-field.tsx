@@ -108,6 +108,18 @@ export class UnidyField {
     return multiselectMatches;
   };
 
+  private countryIcon(countryCode: string, placeholder = "➖"): string {
+    if (!/^[A-Z]{2}$/.test(countryCode)) {
+      return placeholder;
+    }
+
+    return Array.from(countryCode)
+      .map(char =>
+        String.fromCodePoint(0x1f1e6 + (char.charCodeAt(0) - "A".charCodeAt(0)))
+      )
+      .join("");
+  }
+
   render() {
     if (this.store.state.loading) {
       return <div class="spinner"/>;
@@ -158,7 +170,7 @@ export class UnidyField {
                   disabled={opt.value === "--"}
                   part="option"
                 >
-                  {fieldData.attr_name === "country_code" && this.countryCodeDisplayOption === "icon" ? opt.icon : opt.label}
+                  {fieldData.attr_name === "country_code" && this.countryCodeDisplayOption === "icon" ? this.countryIcon(opt.value) : opt.label}
                 </option>
               ))}
             </select>
