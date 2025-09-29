@@ -5,7 +5,7 @@ const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "ra
 
 const SelectOptionSchema = z.object({
   value: z.string(),
-  label: z.string()
+  label: z.string(),
 }).strict();
 
 const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
@@ -35,6 +35,17 @@ const RadioFieldSchema = z.object({
   locked: z.boolean().optional(),
   locked_text: z.string().optional(),
   radio_options: z.array(RadioOptionSchema)
+}).strict();
+
+const SelectFieldSchema = z.object({
+  value: z.string().nullable(),
+  type: z.enum(["select"]),
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional(),
+  options: z.array(SelectOptionSchema)
 }).strict();
 
 const DateFieldSchema = z.object({
@@ -72,7 +83,7 @@ const UserProfileSchema = z.object({
   address_line_2: TextFieldSchema,
   city: TextFieldSchema,
   postal_code: TextFieldSchema,
-  country_code: TextFieldSchema,
+  country_code: SelectFieldSchema,
   date_of_birth: DateFieldSchema,
   preferred_language: TextFieldSchema.optional(),
   custom_attributes: z.record(z.string(), CustomFieldSchema)
