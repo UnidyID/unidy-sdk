@@ -41,6 +41,7 @@ export class Auth {
     },
     general: {
       ACCOUNT_LOCKED: "account_locked",
+      SIGN_IN_EXPIRED: "sign_in_expired",
     },
   } as const;
 

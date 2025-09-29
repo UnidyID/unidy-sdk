@@ -26,6 +26,8 @@ export class ErrorMessage {
         return "Magic code not valid";
       case Auth.Errors.general.ACCOUNT_LOCKED:
         return "Account locked beacuse of too many failed attempts. Try again later";
+      case Auth.Errors.general.SIGN_IN_EXPIRED:
+        return "Sign in expired. Please go back and enter your email again";
       default:
         return error || "An error occurred";
     }
