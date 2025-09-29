@@ -35,11 +35,11 @@ foobar
 
 ## Events
 
-| Event         | Description | Type                                                                                                                                                                 |
-| ------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `error`       |             | `CustomEvent<{ newsletter_internal_name: string; error_identifier: string; }[]>`                                                                                     |
-| `resetStatus` |             | `CustomEvent<void>`                                                                                                                                                  |
-| `success`     |             | `CustomEvent<{ id: number; email: string; newsletter_internal_name: string; preference_identifiers: string[]; preference_token: string; confirmed_at?: string; }[]>` |
+| Event         | Description | Type                                         |
+| ------------- | ----------- | -------------------------------------------- |
+| `error`       |             | `CustomEvent<NewsletterSubscriptionError[]>` |
+| `resetStatus` |             | `CustomEvent<void>`                          |
+| `success`     |             | `CustomEvent<NewsletterSubscription[]>`      |
 
 
 ## Shadow Parts
