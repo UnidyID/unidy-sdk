@@ -10,7 +10,7 @@ export class UnidyField {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
-  @Prop() invalidPhoneMessage: string = "Please enter a valid phone number.";
+  @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
 
   @Element() el!: HTMLElement;
 
@@ -98,8 +98,8 @@ export class UnidyField {
 
   private phoneFieldValidation = (e: Event) => {
     const input = e.target as HTMLInputElement;
-    const pattern = new RegExp("^(?=.{4,13}$)(\\+\\d+|\\d+)$");
-    if (input.value !== '' &&!pattern.test(input.value)) {
+    const pattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
+    if (input.value !== '' && !pattern.test(input.value)) {
       input.setCustomValidity(this.invalidPhoneMessage);
       input.reportValidity();
       this.store.state.phoneValid = false;
