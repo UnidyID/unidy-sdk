@@ -1,7 +1,16 @@
 import type { ApiClient, ApiResponse } from "./api_client";
 import * as z from "zod";
 
-const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox"]);
+const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
+
+const BaseFieldDataSchema = z.object({
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().optional()
+}).strict();
+
 
 const SelectOptionSchema = z.object({
   value: z.string(),
@@ -16,57 +25,38 @@ const RadioOptionSchema = z.object({
   checked: z.boolean()
 }).strict();
 
-const TextFieldSchema = z.object({
+const TextFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null()]),
   type: z.enum(["text", "textarea"]),
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional()
 }).strict();
 
-const RadioFieldSchema = z.object({
+
+const PhoneFieldSchema = BaseFieldDataSchema.extend({
+  value: z.union([z.string().nullable()]),
+  type: z.enum(["tel"])
+}).strict();
+
+const RadioFieldSchema = BaseFieldDataSchema.extend({
   value: RadioValue,
   type: z.enum(["radio"]),
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional(),
   radio_options: z.array(RadioOptionSchema)
 }).strict();
 
-const SelectFieldSchema = z.object({
+const SelectFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: z.enum(["select"]),
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional(),
   options: z.array(SelectOptionSchema)
 }).strict();
 
-const DateFieldSchema = z.object({
+const DateFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null()]),
-  type: z.enum(["date", "datetime-local"]),
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional()
+  type: z.enum(["date", "datetime-local"])
 }).strict();
 
 
-const CustomFieldSchema = z.object({
+const CustomFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
   type: FieldType,
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional(),
   readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional()
@@ -77,7 +67,7 @@ const UserProfileSchema = z.object({
   first_name: TextFieldSchema,
   last_name: TextFieldSchema,
   email: TextFieldSchema,
-  phone_number: TextFieldSchema,
+  phone_number: PhoneFieldSchema,
   company_name: TextFieldSchema,
   address_line_1: TextFieldSchema,
   address_line_2: TextFieldSchema,

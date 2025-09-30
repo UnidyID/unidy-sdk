@@ -84,7 +84,7 @@ export class SubmitButton {
   render() {
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="unidy-button">
+        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={this.store.state.phoneValid === false}>
           {this.store.state.loading
             ? <span class="spinner"/>
             : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
