@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type      | Default |
-| ----------- | ------------ | ----------- | --------- | ------- |
-| `className` | `class-name` |             | `string`  | `""`    |
-| `disabled`  | `disabled`   |             | `boolean` | `false` |
-| `text`      | `text`       |             | `string`  | `""`    |
+| Property           | Attribute    | Description | Type                    | Default     |
+| ------------------ | ------------ | ----------- | ----------------------- | ----------- |
+| `className`        | `class-name` |             | `string`                | `""`        |
+| `disabled`         | `disabled`   |             | `boolean`               | `false`     |
+| `for` _(required)_ | `for`        |             | `"email" \| "password"` | `undefined` |
+| `text`             | `text`       |             | `string`                | `""`        |
 
 
 ----------------------------------------------

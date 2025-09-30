@@ -5,8 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { TokenResponse } from "@unidy.io/sdk-api-client";
-export { TokenResponse } from "@unidy.io/sdk-api-client";
+import { ObservableMap } from "@stencil/store";
+import { ProfileStore } from "./components/unidy-profile/unidy-profile";
+export { ObservableMap } from "@stencil/store";
+export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
     interface ConditionalRender {
         "is": "true" | "false";
@@ -28,6 +30,16 @@ export namespace Components {
          */
         "className": string;
         "for": "email" | "magicCode" | "password";
+    }
+    interface FlashMessage {
+        /**
+          * @default ""
+         */
+        "message": string;
+        /**
+          * @default "info"
+         */
+        "variant": "error" | "success" | "info";
     }
     interface MagicCodeField {
         /**
@@ -103,6 +115,42 @@ export namespace Components {
          */
         "text": string;
     }
+    interface UnidyField {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "field": string;
+        /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage": string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder": string;
+        /**
+          * @default false
+         */
+        "required": boolean;
+    }
+    interface UnidyProfile {
+        "apiKey"?: string;
+        "apiUrl"?: string;
+        /**
+          * @default ""
+         */
+        "initialData": string | Record<string, string>;
+        "language"?: string;
+        "profileId"?: string;
+        /**
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
+         */
+        "store": ObservableMap<ProfileStore>;
+        "useUnidyAuthEnabled"?: boolean;
+    }
+    interface UnidySubmitButton {
+    }
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -126,6 +174,12 @@ declare global {
     var HTMLErrorMessageElement: {
         prototype: HTMLErrorMessageElement;
         new (): HTMLErrorMessageElement;
+    };
+    interface HTMLFlashMessageElement extends Components.FlashMessage, HTMLStencilElement {
+    }
+    var HTMLFlashMessageElement: {
+        prototype: HTMLFlashMessageElement;
+        new (): HTMLFlashMessageElement;
     };
     interface HTMLMagicCodeFieldElement extends Components.MagicCodeField, HTMLStencilElement {
     }
@@ -181,10 +235,29 @@ declare global {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
     };
+    interface HTMLUnidyFieldElement extends Components.UnidyField, HTMLStencilElement {
+    }
+    var HTMLUnidyFieldElement: {
+        prototype: HTMLUnidyFieldElement;
+        new (): HTMLUnidyFieldElement;
+    };
+    interface HTMLUnidyProfileElement extends Components.UnidyProfile, HTMLStencilElement {
+    }
+    var HTMLUnidyProfileElement: {
+        prototype: HTMLUnidyProfileElement;
+        new (): HTMLUnidyProfileElement;
+    };
+    interface HTMLUnidySubmitButtonElement extends Components.UnidySubmitButton, HTMLStencilElement {
+    }
+    var HTMLUnidySubmitButtonElement: {
+        prototype: HTMLUnidySubmitButtonElement;
+        new (): HTMLUnidySubmitButtonElement;
+    };
     interface HTMLElementTagNameMap {
         "conditional-render": HTMLConditionalRenderElement;
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
+        "flash-message": HTMLFlashMessageElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
         "send-magic-code-button": HTMLSendMagicCodeButtonElement;
@@ -192,6 +265,9 @@ declare global {
         "signin-step": HTMLSigninStepElement;
         "signin-strategy": HTMLSigninStrategyElement;
         "submit-button": HTMLSubmitButtonElement;
+        "unidy-field": HTMLUnidyFieldElement;
+        "unidy-profile": HTMLUnidyProfileElement;
+        "unidy-submit-button": HTMLUnidySubmitButtonElement;
     }
 }
 declare namespace LocalJSX {
@@ -215,6 +291,16 @@ declare namespace LocalJSX {
          */
         "className"?: string;
         "for": "email" | "magicCode" | "password";
+    }
+    interface FlashMessage {
+        /**
+          * @default ""
+         */
+        "message"?: string;
+        /**
+          * @default "info"
+         */
+        "variant"?: "error" | "success" | "info";
     }
     interface MagicCodeField {
         /**
@@ -291,10 +377,47 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    interface UnidyField {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "field": string;
+        /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage"?: string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder"?: string;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+    }
+    interface UnidyProfile {
+        "apiKey"?: string;
+        "apiUrl"?: string;
+        /**
+          * @default ""
+         */
+        "initialData"?: string | Record<string, string>;
+        "language"?: string;
+        "profileId"?: string;
+        /**
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
+         */
+        "store"?: ObservableMap<ProfileStore>;
+        "useUnidyAuthEnabled"?: boolean;
+    }
+    interface UnidySubmitButton {
+    }
     interface IntrinsicElements {
         "conditional-render": ConditionalRender;
         "email-field": EmailField;
         "error-message": ErrorMessage;
+        "flash-message": FlashMessage;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
         "send-magic-code-button": SendMagicCodeButton;
@@ -302,6 +425,9 @@ declare namespace LocalJSX {
         "signin-step": SigninStep;
         "signin-strategy": SigninStrategy;
         "submit-button": SubmitButton;
+        "unidy-field": UnidyField;
+        "unidy-profile": UnidyProfile;
+        "unidy-submit-button": UnidySubmitButton;
     }
 }
 export { LocalJSX as JSX };
@@ -311,6 +437,7 @@ declare module "@stencil/core" {
             "conditional-render": LocalJSX.ConditionalRender & JSXBase.HTMLAttributes<HTMLConditionalRenderElement>;
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
+            "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
             "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
@@ -318,6 +445,9 @@ declare module "@stencil/core" {
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
             "signin-strategy": LocalJSX.SigninStrategy & JSXBase.HTMLAttributes<HTMLSigninStrategyElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
+            "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
+            "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
+            "unidy-submit-button": LocalJSX.UnidySubmitButton & JSXBase.HTMLAttributes<HTMLUnidySubmitButtonElement>;
         }
     }
 }

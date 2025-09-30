@@ -12,6 +12,13 @@
 | `className` | `class-name` |             | `string` | `""`    |
 
 
+## Shadow Parts
+
+| Part            | Description |
+| --------------- | ----------- |
+| `"digit-input"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

@@ -2,12 +2,11 @@ import { Component, Element, h } from "@stencil/core";
 import type { ProfileRaw } from "../unidy-profile/unidy-profile";
 
 @Component({
-  tag: "submit-button",
-  styleUrl: "submit-button.css",
+  tag: "unidy-submit-button",
+  styleUrl: "unidy-submit-button.css",
   shadow: true,
 })
-
-export class SubmitButton {
+export class UnidySubmitButton {
   @Element() el!: HTMLElement;
 
   private get store() {
@@ -19,7 +18,7 @@ export class SubmitButton {
     return container.store;
   }
 
-  private async onSubmit () {
+  private async onSubmit() {
     this.store.state.loading = true;
     const { configuration, ...stateWithoutConfig } = this.store.state;
 
@@ -47,7 +46,11 @@ export class SubmitButton {
 
     const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
 
-    const resp = await this.store.state.client?.profile.updateProfile({ idToken, data: updatedProfileData, lang: this.store.state.language });
+    const resp = await this.store.state.client?.profile.updateProfile({
+      idToken,
+      data: updatedProfileData,
+      lang: this.store.state.language,
+    });
 
     if (resp?.success) {
       this.store.state.loading = false;
@@ -55,25 +58,25 @@ export class SubmitButton {
       this.store.state.configUpdateSource = "submit";
       this.store.state.errors = {};
     } else {
-        if (resp?.data && "flatErrors" in resp.data) {
-          this.store.state.errors = resp.data.flatErrors as Record<string, string>;
-        } else {
-          this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
-        }
-        this.store.state.loading = false;
+      if (resp?.data && "flatErrors" in resp.data) {
+        this.store.state.errors = resp.data.flatErrors as Record<string, string>;
+      } else {
+        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
-  };
+      this.store.state.loading = false;
+    }
+  }
 
   private buildPayload(stateData: ProfileRaw) {
     return {
       ...Object.fromEntries(
         Object.entries(stateData)
           .filter(([k]) => k !== "custom_attributes")
-          .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
+          .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
       ),
       custom_attributes: Object.fromEntries(
-        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value])
-      )
+        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
+      ),
     };
   }
 
@@ -85,9 +88,7 @@ export class SubmitButton {
     return (
       <div>
         <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={this.store.state.phoneValid === false}>
-          {this.store.state.loading
-            ? <span class="spinner"/>
-            : (this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT")}
+          {this.store.state.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
     );
