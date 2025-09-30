@@ -1,6 +1,7 @@
 import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
+import { Auth } from "../../auth";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
@@ -60,13 +61,12 @@ export class UnidyProfile {
   @Prop() apiKey?: string;
   @Prop() language?: string;
 
+  private authInstance?: Auth;
+
   async componentWillLoad() {
     this.store.state.language = this.language;
     if (this.initialData !== "") {
-      this.store.state.data =
-        typeof this.initialData === "string"
-          ? JSON.parse(this.initialData)
-          : this.initialData;
+      this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
       this.store.state.loading = false;
     } else if (this.useUnidyAuthEnabled && this.apiUrl && this.apiKey) {
       let idToken = "";
@@ -77,6 +77,29 @@ export class UnidyProfile {
           idToken = params.get("id_token") || idToken;
           this.store.state.idToken = String(idToken);
         }
+      }
+
+      while (!Auth.isInitialized()) {
+        await new Promise((r) => setTimeout(r, 10));
+      }
+      this.authInstance = await Auth.getInstance();
+
+      const res = await this.authInstance.getToken();
+
+      if (res instanceof Error) {
+        console.error(res.message, res.code);
+        this.store.state.loading = false;
+        return;
+      }
+
+      idToken = res;
+      this.store.state.idToken = String(idToken);
+      console.log("idToken", idToken);
+
+      if (!idToken) {
+        console.error("idToken not found");
+        this.store.state.loading = false;
+        return;
       }
 
       const client = new UnidyClient(this.apiUrl, this.apiKey);
@@ -105,16 +128,21 @@ export class UnidyProfile {
     });
   }
 
-  render() {
+  async render() {
     const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
     const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
     const wasSubmit = this.store.state.configUpdateSource === "submit";
-    return (
-      <Host>
-        <slot />
-        {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg}/>}
-        {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated"/>}
-      </Host>
-    );
+    console.log("is auth", await this.authInstance?.isAuthenticated());
+    if (await this.authInstance?.isAuthenticated()) {
+      return (
+        <Host>
+          <slot />
+          {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
+          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated" />}
+        </Host>
+      );
+    }
+    console.log("not auth");
+    return <h2>Please sign in to view your profile</h2>;
   }
 }
