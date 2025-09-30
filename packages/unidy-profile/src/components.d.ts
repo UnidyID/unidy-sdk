@@ -29,6 +29,10 @@ export namespace Components {
         "countryCodeDisplayOption"?: "icon" | "label";
         "field": string;
         /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage": string;
+        /**
           * @default ""
          */
         "readonlyPlaceholder": string;
@@ -47,7 +51,7 @@ export namespace Components {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
@@ -105,6 +109,10 @@ declare namespace LocalJSX {
         "countryCodeDisplayOption"?: "icon" | "label";
         "field": string;
         /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage"?: string;
+        /**
           * @default ""
          */
         "readonlyPlaceholder"?: string;
@@ -123,7 +131,7 @@ declare namespace LocalJSX {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: ""   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;

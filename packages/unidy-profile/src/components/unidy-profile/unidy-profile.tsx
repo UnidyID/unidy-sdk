@@ -32,6 +32,7 @@ export type ProfileStore = {
   configUpdateSource?: "fetch" | "submit";
   flashErrors: Record<string, string | null>;
   language?: string;
+  phoneValid: boolean;
 };
 
 @Component({
@@ -48,7 +49,8 @@ export class UnidyProfile {
     idToken: "",
     client: undefined,
     flashErrors: {},
-    language: ""
+    language: "",
+    phoneValid: true,
   });
 
   @Prop() profileId?: string;

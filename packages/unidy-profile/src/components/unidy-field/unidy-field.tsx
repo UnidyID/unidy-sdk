@@ -10,6 +10,7 @@ export class UnidyField {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
+  @Prop() invalidPhoneMessage: string = "Please enter a valid phone number.";
 
   @Element() el!: HTMLElement;
 
@@ -93,6 +94,19 @@ export class UnidyField {
     };
 
     this.updateField(updatedField);
+  }
+
+  private phoneFieldValidation = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const pattern = new RegExp("^(?=.{4,13}$)(\\+\\d+|\\d+)$");
+    if (input.value !== '' &&!pattern.test(input.value)) {
+      input.setCustomValidity(this.invalidPhoneMessage);
+      input.reportValidity();
+      this.store.state.phoneValid = false;
+    } else {
+      input.setCustomValidity("");
+      this.store.state.phoneValid = true;
+    }
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
@@ -262,11 +276,12 @@ export class UnidyField {
               id={this.field}
               type={fieldData.type}
               value={fieldData.value}
-            class={this.store.state.errors[this.field] ? 'field-error' : ''}
+              class={this.store.state.errors[this.field] ? 'field-error' : ''}
               required={fieldData?.required || this.required}
               part="input"
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
+              onInput={fieldData.type === 'tel' ? (e) => this.phoneFieldValidation(e) : undefined}
               onChange={(e) => {
                 const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
