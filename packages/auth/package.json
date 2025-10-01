@@ -13,10 +13,6 @@
       "import": "./dist/auth/auth.esm.js",
       "require": "./dist/auth/auth.cjs.js"
     },
-    "./my-component": {
-      "import": "./dist/components/my-component.js",
-      "types": "./dist/components/my-component.d.ts"
-    },
     "./loader": {
       "import": "./loader/index.js",
       "require": "./loader/index.cjs",
@@ -37,7 +33,7 @@
   },
   "dependencies": {
     "@unidy.io/sdk-api-client": "workspace:*",
-    "@stencil/store": "^2.0.0",
+    "@stencil/store": "^2.1.3",
     "jwt-decode": "^4.0.0"
   },
   "devDependencies": {
