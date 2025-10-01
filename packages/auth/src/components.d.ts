@@ -5,10 +5,12 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { TokenResponse } from "@unidy.io/sdk-api-client";
 import { ObservableMap } from "@stencil/store";
-import { ProfileStore } from "./components/unidy-profile/unidy-profile";
+import { ProfileStore } from "./components/profile/smart-components/unidy-profile/unidy-profile";
+export { TokenResponse } from "@unidy.io/sdk-api-client";
 export { ObservableMap } from "@stencil/store";
-export { ProfileStore } from "./components/unidy-profile/unidy-profile";
+export { ProfileStore } from "./components/profile/smart-components/unidy-profile/unidy-profile";
 export namespace Components {
     interface ConditionalRender {
         "is": "true" | "false";
@@ -116,6 +118,7 @@ export namespace Components {
         "text": string;
     }
     interface UnidyField {
+        "className"?: string;
         /**
           * @default "label"
          */
@@ -148,6 +151,26 @@ export namespace Components {
          */
         "store": ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
+    }
+    interface UnidyRawField {
+        "className"?: string;
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "field": string;
+        /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage": string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder": string;
+        /**
+          * @default false
+         */
+        "required": boolean;
     }
     interface UnidySubmitButton {
     }
@@ -247,6 +270,12 @@ declare global {
         prototype: HTMLUnidyProfileElement;
         new (): HTMLUnidyProfileElement;
     };
+    interface HTMLUnidyRawFieldElement extends Components.UnidyRawField, HTMLStencilElement {
+    }
+    var HTMLUnidyRawFieldElement: {
+        prototype: HTMLUnidyRawFieldElement;
+        new (): HTMLUnidyRawFieldElement;
+    };
     interface HTMLUnidySubmitButtonElement extends Components.UnidySubmitButton, HTMLStencilElement {
     }
     var HTMLUnidySubmitButtonElement: {
@@ -267,6 +296,7 @@ declare global {
         "submit-button": HTMLSubmitButtonElement;
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
+        "unidy-raw-field": HTMLUnidyRawFieldElement;
         "unidy-submit-button": HTMLUnidySubmitButtonElement;
     }
 }
@@ -378,6 +408,7 @@ declare namespace LocalJSX {
         "text"?: string;
     }
     interface UnidyField {
+        "className"?: string;
         /**
           * @default "label"
          */
@@ -411,6 +442,26 @@ declare namespace LocalJSX {
         "store"?: ObservableMap<ProfileStore>;
         "useUnidyAuthEnabled"?: boolean;
     }
+    interface UnidyRawField {
+        "className"?: string;
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "field": string;
+        /**
+          * @default "Please enter a valid phone number."
+         */
+        "invalidPhoneMessage"?: string;
+        /**
+          * @default ""
+         */
+        "readonlyPlaceholder"?: string;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+    }
     interface UnidySubmitButton {
     }
     interface IntrinsicElements {
@@ -427,6 +478,7 @@ declare namespace LocalJSX {
         "submit-button": SubmitButton;
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
+        "unidy-raw-field": UnidyRawField;
         "unidy-submit-button": UnidySubmitButton;
     }
 }
@@ -447,6 +499,7 @@ declare module "@stencil/core" {
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
+            "unidy-raw-field": LocalJSX.UnidyRawField & JSXBase.HTMLAttributes<HTMLUnidyRawFieldElement>;
             "unidy-submit-button": LocalJSX.UnidySubmitButton & JSXBase.HTMLAttributes<HTMLUnidySubmitButtonElement>;
         }
     }

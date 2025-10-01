@@ -9,6 +9,7 @@
 
 | Property                   | Attribute                     | Description | Type                             | Default                                |
 | -------------------------- | ----------------------------- | ----------- | -------------------------------- | -------------------------------------- |
+| `className`                | `class-name`                  |             | `string \| undefined`            | `undefined`                            |
 | `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label" \| undefined` | `"label"`                              |
 | `field` _(required)_       | `field`                       |             | `string`                         | `undefined`                            |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                         | `"Please enter a valid phone number."` |
@@ -20,21 +21,12 @@
 
 | Part                                | Description |
 | ----------------------------------- | ----------- |
-| `"checkbox"`                        |             |
-| `"checkbox-group"`                  |             |
-| `"checkbox-label"`                  |             |
 | `"field-error-message"`             |             |
-| `"input"`                           |             |
 | `"label"`                           |             |
 | `"multi-select-readonly-container"` |             |
 | `"multi-select-readonly-field"`     |             |
-| `"option"`                          |             |
-| `"radio"`                           |             |
-| `"radio-group"`                     |             |
 | `"readonly-indicator"`              |             |
 | `"required-indicator"`              |             |
-| `"select"`                          |             |
-| `"textarea"`                        |             |
 
 
 ----------------------------------------------

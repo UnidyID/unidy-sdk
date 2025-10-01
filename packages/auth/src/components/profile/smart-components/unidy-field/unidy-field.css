@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+.field-error:focus {
+  border-color: red !important;
+  outline-color: red;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #333;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+input-div {
+  display: inline-block;
+  background-color: red;
+  width: 80%;
+}
+
+[part="input"]:disabled,
+[part="select"]:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

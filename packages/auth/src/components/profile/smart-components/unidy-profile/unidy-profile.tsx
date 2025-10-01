@@ -1,7 +1,7 @@
 import { Component, Host, Prop, State, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
-import { Auth } from "../../auth";
+import { Auth } from "../../../../auth";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
