@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h } from "@stencil/core";
+import { Component, Host, Prop, State, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 import { Auth } from "../../auth";
@@ -61,6 +61,8 @@ export class UnidyProfile {
   @Prop() apiKey?: string;
   @Prop() language?: string;
 
+  @State() isAuthenticated = false;
+
   private authInstance?: Auth;
 
   async componentWillLoad() {
@@ -95,6 +97,7 @@ export class UnidyProfile {
       idToken = res;
       this.store.state.idToken = String(idToken);
       console.log("idToken", idToken);
+      this.isAuthenticated = await this.authInstance?.isAuthenticated();
 
       if (!idToken) {
         console.error("idToken not found");
@@ -128,12 +131,12 @@ export class UnidyProfile {
     });
   }
 
-  async render() {
+  render() {
     const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
     const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
     const wasSubmit = this.store.state.configUpdateSource === "submit";
-    console.log("is auth", await this.authInstance?.isAuthenticated());
-    if (await this.authInstance?.isAuthenticated()) {
+    console.log("is auth", this.isAuthenticated);
+    if (this.isAuthenticated) {
       return (
         <Host>
           <slot />
