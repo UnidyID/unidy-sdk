@@ -56,7 +56,6 @@ export class UnidyProfile {
 
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-  @Prop() useUnidyAuthEnabled?: boolean;
   @Prop() apiUrl?: string;
   @Prop() apiKey?: string;
   @Prop() language?: string;
@@ -67,61 +66,60 @@ export class UnidyProfile {
 
   async componentWillLoad() {
     this.store.state.language = this.language;
+
     if (this.initialData !== "") {
       this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
+    } else if (this.apiUrl && this.apiKey) {
+      await this.authenticate();
+      await this.fetchProfileData(this.store.state.idToken);
+    }
+
+    this.store.state.loading = false;
+  }
+
+  async authenticate() {
+    while (!Auth.isInitialized()) {
+      await new Promise((r) => setTimeout(r, 10));
+    }
+
+    this.authInstance = await Auth.getInstance();
+
+    const res = await this.authInstance.getToken();
+
+    if (res instanceof Error) {
       this.store.state.loading = false;
-    } else if (this.useUnidyAuthEnabled && this.apiUrl && this.apiKey) {
-      let idToken = "";
-      if (window.location.hash) {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        if (params.has("id_token")) {
-          idToken = params.get("id_token") || idToken;
-          this.store.state.idToken = String(idToken);
-        }
-      }
+      return;
+    }
 
-      while (!Auth.isInitialized()) {
-        await new Promise((r) => setTimeout(r, 10));
-      }
-      this.authInstance = await Auth.getInstance();
+    const idToken = res;
+    this.store.state.idToken = String(idToken);
+    this.isAuthenticated = true;
 
-      const res = await this.authInstance.getToken();
-
-      if (res instanceof Error) {
-        console.error(res.message, res.code);
-        this.store.state.loading = false;
-        return;
-      }
-
-      idToken = res;
-      this.store.state.idToken = String(idToken);
-      console.log("idToken", idToken);
-      this.isAuthenticated = await this.authInstance?.isAuthenticated();
-
-      if (!idToken) {
-        console.error("idToken not found");
-        this.store.state.loading = false;
-        return;
-      }
-
-      const client = new UnidyClient(this.apiUrl, this.apiKey);
-      this.store.state.client = client;
-      const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
-
-      if (resp?.success) {
-        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-        this.store.state.configUpdateSource = "fetch";
-        this.store.state.errors = {};
-        this.store.state.flashErrors = {};
-
-        this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-      } else {
-        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
-      }
+    if (!idToken) {
+      console.error("idToken not found");
       this.store.state.loading = false;
+      return;
+    }
+  }
+
+  async fetchProfileData(idToken: string) {
+    if (!this.apiUrl || !this.apiKey) {
+      return;
+    }
+
+    const client = new UnidyClient(this.apiUrl, this.apiKey);
+    this.store.state.client = client;
+    const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
+
+    if (resp.success) {
+      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+      this.store.state.configUpdateSource = "fetch";
+      this.store.state.errors = {};
+      this.store.state.flashErrors = {};
+
+      this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
     } else {
-      this.store.state.loading = false;
+      this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
     }
   }
 
@@ -135,7 +133,7 @@ export class UnidyProfile {
     const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
     const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
     const wasSubmit = this.store.state.configUpdateSource === "submit";
-    console.log("is auth", this.isAuthenticated);
+
     if (this.isAuthenticated) {
       return (
         <Host>
@@ -145,7 +143,7 @@ export class UnidyProfile {
         </Host>
       );
     }
-    console.log("not auth");
+
     return <h2>Please sign in to view your profile</h2>;
   }
 }

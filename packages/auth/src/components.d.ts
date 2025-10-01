@@ -5,8 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { TokenResponse } from "@unidy.io/sdk-api-client";
 import { ObservableMap } from "@stencil/store";
 import { ProfileStore } from "./components/unidy-profile/unidy-profile";
+export { TokenResponse } from "@unidy.io/sdk-api-client";
 export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
@@ -147,7 +149,6 @@ export namespace Components {
           * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store": ObservableMap<ProfileStore>;
-        "useUnidyAuthEnabled"?: boolean;
     }
     interface UnidySubmitButton {
     }
@@ -409,7 +410,6 @@ declare namespace LocalJSX {
           * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store"?: ObservableMap<ProfileStore>;
-        "useUnidyAuthEnabled"?: boolean;
     }
     interface UnidySubmitButton {
     }
