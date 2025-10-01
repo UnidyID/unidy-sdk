@@ -1,5 +1,5 @@
 import { Component, h, Prop, Host } from "@stencil/core";
-import { authState } from "../../store/auth-store";
+import { authState } from "../../../store/auth-store";
 
 @Component({
   tag: "conditional-render",

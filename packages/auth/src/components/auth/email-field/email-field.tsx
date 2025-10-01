@@ -1,28 +1,30 @@
 import { Component, h, Prop } from "@stencil/core";
-import { authState, authStore } from "../../store/auth-store";
+import { authStore, authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "password-field",
+  tag: "email-field",
   shadow: false,
 })
-export class PasswordField {
-  @Prop() placeholder = "Enter your password";
+export class EmailField {
+  @Prop() placeholder = "Enter your email";
   @Prop() className = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    authStore.setPassword(target.value);
+    authStore.setEmail(target.value);
   };
 
   render() {
-    if (authState.step !== "verification" || authState.magicCodeSent) {
-      return null;
+    if (authState.step === "verification") {
+      return (
+        <input type="email" value={authState.email} placeholder="Email" disabled={true} class={this.className} style={{ width: "100%" }} />
+      );
     }
 
     return (
       <input
-        type="password"
-        value={authState.password}
+        type="email"
+        value={authState.email}
         placeholder={this.placeholder}
         disabled={authState.loading}
         onInput={this.handleInput}

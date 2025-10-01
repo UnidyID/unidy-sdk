@@ -1,6 +1,6 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { authState, authStore } from "../../store/auth-store";
-import { Auth } from "../../auth.js";
+import { authState, authStore } from "../../../store/auth-store";
+import { Auth } from "../../../auth.js";
 
 @Component({
   tag: "magic-code-field",

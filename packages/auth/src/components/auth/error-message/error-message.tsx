@@ -1,6 +1,6 @@
 import { Component, h, Prop } from "@stencil/core";
-import { authState } from "../../store/auth-store";
-import { Auth } from "../../auth";
+import { authState } from "../../../store/auth-store";
+import { Auth } from "../../../auth";
 
 @Component({
   tag: "error-message",

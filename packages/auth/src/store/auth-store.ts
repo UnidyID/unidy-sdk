@@ -1,5 +1,5 @@
 import { createStore } from "@stencil/store";
-import type { SigninRoot } from "../components/signin-root/signin-root";
+import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
   step: "email" | "verification";
