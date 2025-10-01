@@ -55,6 +55,11 @@ export class Auth {
 
   static initialize(client: UnidyClient): Auth {
     Auth.instance = new Auth(client);
+
+    if (Auth.instance.isTokenValid(authState.token)) {
+      authStore.setAuthenticated(true);
+    }
+
     return Auth.instance;
   }
 
@@ -183,6 +188,7 @@ export class Auth {
       authStore.setError(error);
     } else {
       authStore.setToken(response.jwt);
+      authStore.setAuthenticated(true);
       authStore.setRefreshToken(response.refresh_token);
     }
   }

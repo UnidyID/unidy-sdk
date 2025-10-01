@@ -5,7 +5,7 @@ import { Auth } from "../../../auth.js";
 
 @Component({
   tag: "signin-root",
-  shadow: false,
+  shadow: true,
 })
 export class SigninRoot {
   @Prop() baseUrl = "";
@@ -35,6 +35,10 @@ export class SigninRoot {
   }
 
   render() {
+    if (authStore.state.authenticated) {
+      return null;
+    }
+
     return (
       <Host class={this.className} style={{ width: "100%" }}>
         <slot />

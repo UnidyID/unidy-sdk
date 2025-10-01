@@ -114,6 +114,7 @@ class AuthStore {
 
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
+    console.log("setAuthenticated", authenticated);
 
     if (!authenticated) {
       this.setToken(null);

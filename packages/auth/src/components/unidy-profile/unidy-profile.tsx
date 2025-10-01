@@ -2,6 +2,7 @@ import { Component, Host, Prop, State, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 import { Auth } from "../../auth";
+import { authStore } from "../../store/auth-store";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
@@ -60,8 +61,6 @@ export class UnidyProfile {
   @Prop() apiKey?: string;
   @Prop() language?: string;
 
-  @State() isAuthenticated = false;
-
   private authInstance?: Auth;
 
   async componentWillLoad() {
@@ -93,7 +92,6 @@ export class UnidyProfile {
 
     const idToken = res;
     this.store.state.idToken = String(idToken);
-    this.isAuthenticated = true;
 
     if (!idToken) {
       console.error("idToken not found");
@@ -129,12 +127,24 @@ export class UnidyProfile {
     });
   }
 
+  componentWillRender() {
+    // TODO refactor this
+    console.log("componentWillRender", authStore.state.authenticated, authStore.state.token);
+    this.store.state.idToken = authStore.state.token ?? "";
+
+    if (this.store.state.idToken) {
+      this.fetchProfileData(this.store.state.idToken);
+    }
+
+    this.store.state.loading = false;
+  }
+
   render() {
     const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
     const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
     const wasSubmit = this.store.state.configUpdateSource === "submit";
 
-    if (this.isAuthenticated) {
+    if (authStore.state.authenticated) {
       return (
         <Host>
           <slot />

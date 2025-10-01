@@ -156,64 +156,50 @@
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <div id="authFormContainer" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
-      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
-        class="flex flex-col gap-2">
+    <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key" class-name="
+      bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
-        <signin-step name="email">
-          <email-field placeholder="Enter your email"
-            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
-          <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+      <signin-step name="email">
+        <email-field placeholder="Enter your email"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
+        <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
 
-          <submit-button for="email" text="Continue with Email"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
-        </signin-step>
+        <submit-button for="email" text="Continue with Email"
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
+      </signin-step>
 
-        <signin-step name="verification">
-          <signin-strategy type="password">
-            <password-field placeholder="Enter your password"
-              class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
-            <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
-            <submit-button for="password" text="Sign In"
-              class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
-          </signin-strategy>
+      <signin-step name="verification">
+        <signin-strategy type="password">
+          <password-field placeholder="Enter your password"
+            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
+          <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+          <submit-button for="password" text="Sign In"
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+        </signin-strategy>
 
-          <conditional-render when="magicCodeSent" is="false">
-            <div class="flex items-center my-4">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
+        <conditional-render when="magicCodeSent" is="false">
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+        </conditional-render>
+
+        <signin-strategy type="magic-code">
+          <send-magic-code-button text="Send Magic Code To Your Email"
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+
+          <conditional-render when="magicCodeSent" is="true">
+            <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </conditional-render>
 
-          <signin-strategy type="magic-code">
-            <send-magic-code-button text="Send Magic Code To Your Email"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+          <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
 
-            <conditional-render when="magicCodeSent" is="true">
-              <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-            </conditional-render>
+          <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
+        </signin-strategy>
+      </signin-step>
 
-            <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
-
-            <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
-          </signin-strategy>
-        </signin-step>
-
-      </signin-root>
-
-      <!-- example without step components
-
-      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
-        class="flex flex-col gap-2">
-        <email-field placeholder="Enter your email"
-          class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
-        <password-field placeholder="Enter your password"
-          class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
-        <submit-button text="Continue" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
-      </signin-root>
-    -->
-    </div>
+    </signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
       <div class="text-center mb-6">
@@ -256,7 +242,6 @@
   <script type="module">
     import { Auth } from "/build/index.esm.js";
 
-    const authFormContainer = document.getElementById("authFormContainer");
     const userSection = document.getElementById("userSection");
     const payloadOutput = document.getElementById("payloadOutput");
     const message = document.getElementById("message");
@@ -266,8 +251,6 @@
 
     signinRoot.addEventListener("authEvent", async (event) => {
       console.log("Auth event:", event.detail);
-
-      showTokenData(await auth.userData());
     });
 
     signinRoot.addEventListener("errorEvent", (event) => {
@@ -284,24 +267,6 @@
       }
     });
 
-    function showForm() {
-      authFormContainer.style.display = "block";
-      userSection.style.display = "none";
-    }
-
-    function showTokenData(payload) {
-      authFormContainer.style.display = "none";
-      userSection.style.display = "block";
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
-      message.textContent = `Welcome back ${payload.name || payload.email}!`;
-    }
-
-    if (await auth.isAuthenticated()) {
-      const payload = await auth.userData();
-      showTokenData(payload);
-    } else {
-      showForm();
-    }
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn?.addEventListener("click", () => {
