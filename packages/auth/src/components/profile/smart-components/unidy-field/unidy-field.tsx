@@ -4,6 +4,19 @@ import { Textarea } from "../../raw-components/input-field/Textarea";
 import { RadioGroup } from "../../raw-components/input-field/RadioGroup";
 import { MultiSelect } from "../../raw-components/input-field/MultiSelect";
 import { Select } from "../../raw-components/input-field/Select";
+/**
+ * @part select
+ * @part option
+ * @part radio
+ * @part radio-group
+ * @part radio-label
+ * @part radio-checked
+ * @part checkbox
+ * @part checkbox-group
+ * @part checkbox-label
+ * @part textarea
+ * @part input
+ */
 
 @Component({
   tag: "unidy-field",
@@ -265,7 +278,7 @@ export class UnidyField {
               id={this.field}
               type={fieldData.type as string}
               value={fieldData.value as string | undefined}
-              class={this.store.state.errors[this.field] ? 'field-error' : ''}
+              className={this.store.state.errors[this.field] ? 'field-error' : ''}
               required={fieldData?.required || this.required}
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}

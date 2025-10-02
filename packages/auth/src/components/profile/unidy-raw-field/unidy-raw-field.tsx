@@ -1,7 +1,5 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
-import { Select } from "./../raw-components/input-field/Select";
 import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
-import { MultiSelect } from "./../raw-components/input-field/MultiSelect";
 import { Textarea } from "./../raw-components/input-field/Textarea";
 import { Input } from "./../raw-components/input-field/Input";
 
@@ -11,12 +9,19 @@ import { Input } from "./../raw-components/input-field/Input";
   shadow: false,
 })
 export class UnidyRawField {
-  @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
   @Prop() className?: string;
+
+  @Prop() name!: string;
+  @Prop() value?: string | string[];
+  @Prop() checked?: boolean;
+  @Prop() disabled?: boolean;
+  @Prop() title!: string;
+  @Prop() type!: string;
+  @Prop() placeholder?: string;
 
   @Element() el!: HTMLElement;
 
@@ -30,106 +35,89 @@ export class UnidyRawField {
     return container.store;
   }
 
-  private getFieldData() {
-    return this.field.startsWith("custom_attributes.") ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")] : this.store.state.data[this.field];
+  private readStore(name: string): any {
+    if (!name) return;
+    const data: any = this.store.state.data;
+
+    if (!data) return;
+
+    if (name.startsWith("custom_attributes.")) {
+      const key = name.replace("custom_attributes.", "");
+      const field = data.custom_attributes?.[key];
+      if (Array.isArray(field.radio_options)) {
+        const checkedOption = field.radio_options.find((option: any) => option.checked);
+        return checkedOption?.value ?? field.value ?? "";
+      } else {
+        return field?.value;
+      }
+    } else {
+      return data[name].value;
+    }
   }
 
-  componentWillLoad() {
-    const fieldData = this.getFieldData();
-    if (fieldData?.radio_options?.length) {
-      const checkedOption = fieldData.radio_options.find(option => option.checked);
-      this.selected = checkedOption?.value ?? fieldData.value ?? "";
-    } else if (fieldData?.options?.length) {
-      const selectedOption = fieldData.options.find(option => option.value === fieldData.value);
-      this.selected = selectedOption?.value ?? fieldData.value ?? "";
+  private writeStore(field: string, value: any) {
+    if (!field) return;
+    const data: any = this.store.state.data;
+    if (!data) return;
+
+    if (field.startsWith("custom_attributes.")) {
+      field = field.replace("custom_attributes.", "");
+      const prev = data?.custom_attributes?.[field];
+      const val = (prev && typeof prev === "object" && "value" in prev) ? { ...prev, value } : value;
+      this.store.state.data = {
+        ...data,
+        custom_attributes: { ...data.custom_attributes, [field]: val },
+      };
+      console.log("unidy-raw-field: writeStore", field, value, this.store.state.data);
+      return;
     } else {
-      this.selected = fieldData?.value ?? "";
+      field = field;
+      const prev = data?.[field];
+      const val = (prev && typeof prev === "object" && "value" in prev) ? { ...prev, value } : value;
+      this.store.state.data = { ...data, [field]: val };
+      console.log("unidy-raw-field: writeStore", field, value, this.store.state.data);
+   }
+ }
+
+  private onRadioChange = (val: string) => this.writeStore(this.name, val);
+  private onTextChange = (val: string) => this.writeStore(this.name, val);
+
+
+
+  componentWillLoad() {
+    if (!this.name) throw new Error('unidy-raw-field: "name" is required.');
+    if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
+
+    const allowed: Set<string> = new Set([
+      'text','email','tel','password','number','date','radio','textarea'
+    ]);
+    if (!allowed.has(this.type)) {
+      this.type = 'text';
+    }
+
+    const current = this.readStore(this.name);
+    const isType =
+      this.type === 'text' || this.type === 'email' || this.type === 'tel' ||
+      this.type === 'password' || this.type === 'number' || this.type === 'date' ||
+      this.type === 'textarea' || this.type === 'radio';
+
+    if (isType && (current === undefined || current === null) && typeof this.value === 'string') {
+      this.writeStore(this.name, this.value);
     }
   }
 
   componentDidRender() {
-    const fieldErrors = this.store.state.errors;
-    if (fieldErrors?.[this.field]) {
-      this.el.shadowRoot?.getElementById(this.field)?.focus();
+    const errs = this.store.state.errors;
+    if (errs?.[this.name]) {
+      this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.name)}`)?.focus();
     }
-  }
-
-  private updateField(updatedField: object) {
-    if (this.field.startsWith("custom_attributes.") && this.store.state.data.custom_attributes) {
-      this.store.state.data.custom_attributes[this.field.replace("custom_attributes.", "")] = updatedField;
-    } else {
-      this.store.state.data[this.field] = updatedField;
-    }
-  }
-
-  private onTextValueChange = (value: string) => {
-    const isCustomAttribute = this.field.startsWith("custom_attributes.");
-    const key = this.field.replace("custom_attributes.", "");
-
-    this.store.state.data = isCustomAttribute
-      ? {
-          ...this.store.state.data,
-          custom_attributes: {
-            ...this.store.state.data.custom_attributes,
-            [key]: {
-              ...this.store.state.data.custom_attributes?.[key],
-              value,
-            },
-          },
-        }
-      : {
-          ...this.store.state.data,
-          [this.field]: {
-            ...this.store.state.data[this.field],
-            value,
-          },
-        };
-  };
-
-  private onRadioChange = (value: string) => {
-    this.selected = value;
-
-    const fieldData = this.getFieldData();
-    if (!fieldData?.radio_options) return;
-
-    const updatedRadioOptions = fieldData.radio_options.map(option => ({
-      ...option,
-      checked: option.value === value,
-    }));
-
-    const updatedField = {
-      ...fieldData,
-      value: String(value),
-      radio_options: updatedRadioOptions,
-    };
-
-    this.updateField(updatedField);
-  };
-
-  private onSelectChange = (value: string) => {
-    this.selected = value;
-
-    const fieldData = this.getFieldData();
-    if (!fieldData?.options) return;
-
-    const updatedOptions = fieldData.options.map(option => ({
-      ...option,
-      selected: option.value === value,
-    }));
-
-    const updatedField = {
-      ...fieldData,
-      value,
-      options: updatedOptions,
-    };
-
-    this.updateField(updatedField);
   }
 
   private phoneFieldValidation = (e: Event) => {
+    if (this.type !== "tel") return;
     const input = e.target as HTMLInputElement;
     const pattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
-    if (input.value !== '' && !pattern.test(input.value)) {
+    if (input.value !== "" && !pattern.test(input.value)) {
       input.setCustomValidity(this.invalidPhoneMessage);
       input.reportValidity();
       this.store.state.phoneValid = false;
@@ -137,127 +125,55 @@ export class UnidyRawField {
       input.setCustomValidity("");
       this.store.state.phoneValid = true;
     }
-  }
-
-  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
-  private multiSelectLabel = (fieldData: any): string[] => {
-    const multiselectMatches: string[] = [];
-    Array.isArray(fieldData.value)
-              ? fieldData.value.map((val: string) => {
-                  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
-                  const match = fieldData.options?.find((opt: any) => opt.value === val);
-                  multiselectMatches.push(match?.label ?? val);
-                })
-              : [];
-    return multiselectMatches;
   };
-
-  private onMultiSelectToggle = (optValue: string, checked: boolean) => {
-    const isCustomAttribute = this.field.startsWith("custom_attributes.");
-    const key = this.field.replace("custom_attributes.", "");
-
-    const prev: string[] = isCustomAttribute
-      ? (this.store.state.data.custom_attributes?.[key]?.value as string[]) ?? []
-      : (this.store.state.data[this.field]?.value as string[]) ?? [];
-
-    const updatedValues = checked
-      ? (prev.includes(optValue) ? prev : [...prev, optValue])
-      : prev.filter(v => v !== optValue);
-
-    const baseField = isCustomAttribute
-      ? this.store.state.data.custom_attributes?.[key]
-      : this.store.state.data[this.field];
-
-    const updatedField = { ...baseField, value: updatedValues };
-    this.updateField(updatedField);
-  };
-
-  private countryIcon(countryCode: string, placeholder = "➖"): string {
-    if (!/^[A-Z]{2}$/.test(countryCode)) {
-      return placeholder;
-    }
-
-    return Array.from(countryCode)
-      .map(char =>
-        String.fromCodePoint(0x1f1e6 + (char.charCodeAt(0) - "A".charCodeAt(0)))
-      )
-      .join("");
-  }
 
   render() {
-    if (this.store.state.loading) {
-      return <div class="spinner"/>;
+    if (this.type === "radio" && typeof this.value === "string") {
+      const currentValue = this.readStore(this.name);
+      const isChecked = String(currentValue) === this.value;
+      return (
+        <RadioGroup
+          name={this.name}
+          value={this.value}
+          checked={isChecked}
+          disabled={this.disabled}
+          title={this.title}
+          className={this.className}
+          type="radio"
+          onChange={this.onRadioChange}
+        />
+      );
     }
 
-    const fieldData = this.getFieldData();
-    if (!fieldData) {
-      return null;
+    if (this.type === "textarea") {
+      const currentValue = this.readStore(this.name) as string || "";
+      return (
+        <Textarea
+          id={this.name}
+          value={currentValue}
+          required={this.required}
+          disabled={this.disabled}
+          title={this.title}
+          className={this.className}
+          onChange={this.onTextChange}
+        />
+      );
     }
-    const isLocked = !!fieldData?.locked;
-    const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
-    const isReadonly = fieldData?.readonly === true;
-    //const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
-    // TODO: Add other types
+
+    const currentValue = this.readStore(this.name) as string || "";
     return (
-      <div>
-        {!isReadonly &&
-          (fieldData.type === "select" && fieldData.options ? (
-            <Select
-              id={this.field}
-              value={fieldData.value}
-              options={fieldData.options}
-              disabled={isLocked}
-              title={isLocked ? lockedText : undefined}
-              onChange={this.onSelectChange}
-              countryCodeDisplayOption={this.countryCodeDisplayOption}
-              attr_name={fieldData.attr_name}
-              countryIcon={this.countryIcon}
-            />
-          ) : fieldData.radio_options ? (
-            <RadioGroup
-              options={fieldData.radio_options}
-              disabled={isLocked}
-              type={fieldData.type}
-              name={this.field}
-              title={isLocked ? lockedText : undefined}
-              onChange={this.onRadioChange}
-            />
-          ) : fieldData.type === "checkbox" && fieldData.options ? (
-            <MultiSelect
-              value={Array.isArray(fieldData.value) ? fieldData.value : []}
-              options={fieldData.options}
-              disabled={isLocked}
-              title={isLocked ? lockedText : undefined}
-              type={fieldData.type}
-              onToggle={this.onMultiSelectToggle}
-            />
-          ) : fieldData.type === "textarea" ? (
-            <Textarea
-              id={this.field}
-              value={(fieldData.value as string) || ""}
-              required={fieldData?.required || this.required}
-              disabled={isLocked}
-              title={isLocked ? lockedText : undefined}
-              onChange={this.onTextValueChange}
-            />
-          ) : (
-            <Input
-              id={this.field}
-              type={fieldData.type as string}
-              value={fieldData.value as string | undefined}
-              class={this.store.state.errors[this.field] ? 'field-error' : ''}
-              required={fieldData?.required || this.required}
-              disabled={isLocked}
-              title={isLocked ? lockedText : undefined}
-              onChange={this.onTextValueChange}
-              onInput={(e) => {
-                if (fieldData.type === 'tel') {
-                  this.phoneFieldValidation(e);
-                }
-              }}
-            />
-          ))}
-      </div>
+      <Input
+        id={this.name}
+        value={currentValue}
+        required={this.required}
+        disabled={this.disabled}
+        title={this.title}
+        type={this.type}
+        className={this.className}
+        placeholder={this.placeholder}
+        onChange={this.onTextChange}
+        onInput={this.phoneFieldValidation}
+      />
     );
   }
 }

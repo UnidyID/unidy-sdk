@@ -21,12 +21,23 @@
 
 | Part                                | Description |
 | ----------------------------------- | ----------- |
+| `"checkbox"`                        |             |
+| `"checkbox-group"`                  |             |
+| `"checkbox-label"`                  |             |
 | `"field-error-message"`             |             |
+| `"input"`                           |             |
 | `"label"`                           |             |
 | `"multi-select-readonly-container"` |             |
 | `"multi-select-readonly-field"`     |             |
+| `"option"`                          |             |
+| `"radio"`                           |             |
+| `"radio-checked"`                   |             |
+| `"radio-group"`                     |             |
+| `"radio-label"`                     |             |
 | `"readonly-indicator"`              |             |
 | `"required-indicator"`              |             |
+| `"select"`                          |             |
+| `"textarea"`                        |             |
 
 
 ----------------------------------------------

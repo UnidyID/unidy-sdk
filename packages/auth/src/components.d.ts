@@ -153,16 +153,19 @@ export namespace Components {
         "useUnidyAuthEnabled"?: boolean;
     }
     interface UnidyRawField {
+        "checked"?: boolean;
         "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "field": string;
+        "disabled"?: boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "name": string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -171,6 +174,9 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
+        "title": string;
+        "type": string;
+        "value"?: string | string[];
     }
     interface UnidySubmitButton {
     }
@@ -443,16 +449,19 @@ declare namespace LocalJSX {
         "useUnidyAuthEnabled"?: boolean;
     }
     interface UnidyRawField {
+        "checked"?: boolean;
         "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "field": string;
+        "disabled"?: boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "name": string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -461,6 +470,9 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
+        "title": string;
+        "type": string;
+        "value"?: string | string[];
     }
     interface UnidySubmitButton {
     }

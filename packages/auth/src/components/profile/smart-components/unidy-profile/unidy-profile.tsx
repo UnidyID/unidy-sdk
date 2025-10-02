@@ -39,7 +39,7 @@ export type ProfileStore = {
 @Component({
   tag: "unidy-profile",
   styleUrl: "unidy-profile.css",
-  shadow: true,
+  shadow: false,
 })
 export class UnidyProfile {
   @Prop() store: ObservableMap<ProfileStore> = createStore<ProfileStore>({
