@@ -153,10 +153,12 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+
+  <unidy-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></unidy-config>
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key" class-name="
+    <signin-root id="sign-in-root" class-name="
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
       <signin-step name="email">
@@ -220,8 +222,7 @@
 
     <auth-provider>
       <div class="container">
-        <unidy-profile use-unidy-auth-enabled api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-          language="de">
+        <unidy-profile language="de">
           <unidy-field field="salutation"></unidy-field>
           <unidy-field field="first_name"></unidy-field>
           <unidy-field field="last_name"></unidy-field>

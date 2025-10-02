@@ -2,24 +2,26 @@ import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/cor
 import { type TokenResponse, UnidyClient } from "@unidy.io/sdk-api-client";
 import { authStore } from "../../../store/auth-store.js";
 import { Auth } from "../../../auth.js";
+import { unidyState } from "../../../store/unidy-store";
 
 @Component({
   tag: "signin-root",
   shadow: true,
 })
 export class SigninRoot {
-  @Prop() baseUrl = "";
-  @Prop() apiKey = "";
   @Prop() className = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
   componentWillLoad() {
-    if (this.baseUrl && this.apiKey) {
-      const client = new UnidyClient(this.baseUrl, this.apiKey);
-      Auth.initialize(client);
+    if (!unidyState.apiKey || !unidyState.baseUrl) {
+      console.error("apiKey and baseUrl are required on config component");
+      return;
     }
+
+    const client = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
+    Auth.initialize(client);
   }
 
   componentDidLoad() {

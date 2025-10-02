@@ -7,10 +7,10 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
 import { ObservableMap } from "@stencil/store";
-import { ProfileStore } from "./components/unidy-profile/unidy-profile";
+import { ProfileStore } from "./components/profile/unidy-profile/unidy-profile";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
 export { ObservableMap } from "@stencil/store";
-export { ProfileStore } from "./components/unidy-profile/unidy-profile";
+export { ProfileStore } from "./components/profile/unidy-profile/unidy-profile";
 export namespace Components {
     interface AuthProvider {
     }
@@ -79,14 +79,6 @@ export namespace Components {
         /**
           * @default ""
          */
-        "apiKey": string;
-        /**
-          * @default ""
-         */
-        "baseUrl": string;
-        /**
-          * @default ""
-         */
         "className": string;
     }
     interface SigninStep {
@@ -119,6 +111,16 @@ export namespace Components {
          */
         "text": string;
     }
+    interface UnidyConfig {
+        /**
+          * @default ""
+         */
+        "apiKey": string;
+        /**
+          * @default ""
+         */
+        "baseUrl": string;
+    }
     interface UnidyField {
         /**
           * @default "label"
@@ -148,7 +150,7 @@ export namespace Components {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store": ObservableMap<ProfileStore>;
     }
@@ -244,6 +246,12 @@ declare global {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
     };
+    interface HTMLUnidyConfigElement extends Components.UnidyConfig, HTMLStencilElement {
+    }
+    var HTMLUnidyConfigElement: {
+        prototype: HTMLUnidyConfigElement;
+        new (): HTMLUnidyConfigElement;
+    };
     interface HTMLUnidyFieldElement extends Components.UnidyField, HTMLStencilElement {
     }
     var HTMLUnidyFieldElement: {
@@ -275,6 +283,7 @@ declare global {
         "signin-step": HTMLSigninStepElement;
         "signin-strategy": HTMLSigninStrategyElement;
         "submit-button": HTMLSubmitButtonElement;
+        "unidy-config": HTMLUnidyConfigElement;
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
         "unidy-submit-button": HTMLUnidySubmitButtonElement;
@@ -348,14 +357,6 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "apiKey"?: string;
-        /**
-          * @default ""
-         */
-        "baseUrl"?: string;
-        /**
-          * @default ""
-         */
         "className"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
@@ -389,6 +390,16 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    interface UnidyConfig {
+        /**
+          * @default ""
+         */
+        "apiKey"?: string;
+        /**
+          * @default ""
+         */
+        "baseUrl"?: string;
+    }
     interface UnidyField {
         /**
           * @default "label"
@@ -418,7 +429,7 @@ declare namespace LocalJSX {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     client: undefined,     flashErrors: {},     language: "",     phoneValid: true,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store"?: ObservableMap<ProfileStore>;
     }
@@ -437,6 +448,7 @@ declare namespace LocalJSX {
         "signin-step": SigninStep;
         "signin-strategy": SigninStrategy;
         "submit-button": SubmitButton;
+        "unidy-config": UnidyConfig;
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
         "unidy-submit-button": UnidySubmitButton;
@@ -458,6 +470,7 @@ declare module "@stencil/core" {
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
             "signin-strategy": LocalJSX.SigninStrategy & JSXBase.HTMLAttributes<HTMLSigninStrategyElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
+            "unidy-config": LocalJSX.UnidyConfig & JSXBase.HTMLAttributes<HTMLUnidyConfigElement>;
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
             "unidy-submit-button": LocalJSX.UnidySubmitButton & JSXBase.HTMLAttributes<HTMLUnidySubmitButtonElement>;

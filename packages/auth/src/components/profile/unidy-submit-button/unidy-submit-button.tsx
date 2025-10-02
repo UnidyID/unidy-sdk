@@ -1,5 +1,7 @@
 import { Component, Element, h } from "@stencil/core";
 import type { ProfileRaw } from "../unidy-profile/unidy-profile";
+import { unidyState } from "../../../store/unidy-store";
+import { UnidyClient } from "@unidy.io/sdk-api-client";
 
 @Component({
   tag: "unidy-submit-button",
@@ -46,7 +48,7 @@ export class UnidySubmitButton {
 
     const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
 
-    const resp = await this.store.state.client?.profile.updateProfile({
+    const resp = await new UnidyClient(unidyState.baseUrl, unidyState.apiKey).profile.updateProfile({
       idToken,
       data: updatedProfileData,
       lang: this.store.state.language,

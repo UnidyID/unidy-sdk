@@ -1,8 +1,9 @@
 import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
+import { Auth } from "../../../auth";
+import { authStore, onChange as authOnChange } from "../../../store/auth-store";
+import { unidyState } from "../../../store/unidy-store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
-import { Auth } from "../../auth";
-import { authStore, onChange as authOnChange } from "../../store/auth-store";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
@@ -30,7 +31,6 @@ export type ProfileStore = {
   configuration: ProfileRaw;
   errors: Record<string, string | null>;
   idToken: string;
-  client?: UnidyClient;
   configUpdateSource?: "fetch" | "submit";
   flashErrors: Record<string, string | null>;
   language?: string;
@@ -49,7 +49,6 @@ export class UnidyProfile {
     configuration: {},
     errors: {},
     idToken: "",
-    client: undefined,
     flashErrors: {},
     language: "",
     phoneValid: true,
@@ -104,13 +103,12 @@ export class UnidyProfile {
   }
 
   async fetchProfileData(idToken: string) {
-    if (!this.apiUrl || !this.apiKey) {
+    if (!unidyState.baseUrl || !unidyState.apiKey) {
       console.error("apiUrl and/or apiKey is not set");
       return;
     }
 
-    const client = new UnidyClient(this.apiUrl, this.apiKey);
-    this.store.state.client = client;
+    const client = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
     const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
 
     if (resp.success) {
