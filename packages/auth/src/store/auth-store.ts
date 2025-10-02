@@ -45,8 +45,7 @@ const initialState: AuthState = {
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
 };
 
-const { state, reset } = createStore<AuthState>(initialState);
-
+const { state, reset, onChange } = createStore<AuthState>(initialState);
 
 class AuthStore {
   private rootComponentRef: SigninRoot | null = null;
@@ -133,4 +132,4 @@ class AuthStore {
 }
 
 export const authStore = new AuthStore();
-export { state as authState };
+export { state as authState, onChange };

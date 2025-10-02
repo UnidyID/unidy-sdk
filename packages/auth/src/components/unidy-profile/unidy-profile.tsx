@@ -2,7 +2,7 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 import { Auth } from "../../auth";
-import { authStore } from "../../store/auth-store";
+import { authStore, onChange as authOnChange } from "../../store/auth-store";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
@@ -62,17 +62,16 @@ export class UnidyProfile {
   @Prop() language?: string;
 
   private authInstance?: Auth;
-  private lastFetchedToken?: string;
 
   async componentWillLoad() {
     this.store.state.language = this.language;
 
     if (this.initialData !== "") {
       this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
-    } else if (this.apiUrl && this.apiKey) {
+    } else {
       await this.authenticate();
+
       if (this.store.state.idToken) {
-        this.lastFetchedToken = this.store.state.idToken;
         await this.fetchProfileData(this.store.state.idToken);
       }
     }
@@ -106,6 +105,7 @@ export class UnidyProfile {
 
   async fetchProfileData(idToken: string) {
     if (!this.apiUrl || !this.apiKey) {
+      console.error("apiUrl and/or apiKey is not set");
       return;
     }
 
@@ -129,20 +129,17 @@ export class UnidyProfile {
     this.store.onChange("configuration", (cfg) => {
       this.store.state.data = cfg as ProfileRaw;
     });
-  }
 
-  componentWillRender() {
-    const currentToken = authStore.state.token ?? "";
-    this.store.state.idToken = currentToken;
+    authOnChange("token", (newToken: string | null) => {
+      const token = newToken ?? "";
+      this.store.state.idToken = token;
 
-    // Only fetch profile data if the token has changed and we have a valid token
-    if (currentToken && currentToken !== this.lastFetchedToken) {
-      this.lastFetchedToken = currentToken;
-      this.fetchProfileData(currentToken);
-      console.log("fetch profile for new token");
-    }
+      if (token) {
+        this.fetchProfileData(token);
+      }
+    });
 
-    this.store.state.loading = false;
+    this.store.state.idToken = authStore.state.token ?? "";
   }
 
   render() {
