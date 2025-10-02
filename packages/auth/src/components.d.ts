@@ -12,6 +12,8 @@ export { TokenResponse } from "@unidy.io/sdk-api-client";
 export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/unidy-profile/unidy-profile";
 export namespace Components {
+    interface AuthProvider {
+    }
     interface ConditionalRender {
         "is": "true" | "false";
         "when": string;
@@ -158,6 +160,12 @@ export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLSigninRootElement;
 }
 declare global {
+    interface HTMLAuthProviderElement extends Components.AuthProvider, HTMLStencilElement {
+    }
+    var HTMLAuthProviderElement: {
+        prototype: HTMLAuthProviderElement;
+        new (): HTMLAuthProviderElement;
+    };
     interface HTMLConditionalRenderElement extends Components.ConditionalRender, HTMLStencilElement {
     }
     var HTMLConditionalRenderElement: {
@@ -255,6 +263,7 @@ declare global {
         new (): HTMLUnidySubmitButtonElement;
     };
     interface HTMLElementTagNameMap {
+        "auth-provider": HTMLAuthProviderElement;
         "conditional-render": HTMLConditionalRenderElement;
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
@@ -272,6 +281,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface AuthProvider {
+    }
     interface ConditionalRender {
         "is": "true" | "false";
         "when": string;
@@ -414,6 +425,7 @@ declare namespace LocalJSX {
     interface UnidySubmitButton {
     }
     interface IntrinsicElements {
+        "auth-provider": AuthProvider;
         "conditional-render": ConditionalRender;
         "email-field": EmailField;
         "error-message": ErrorMessage;
@@ -434,6 +446,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "auth-provider": LocalJSX.AuthProvider & JSXBase.HTMLAttributes<HTMLAuthProviderElement>;
             "conditional-render": LocalJSX.ConditionalRender & JSXBase.HTMLAttributes<HTMLConditionalRenderElement>;
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;

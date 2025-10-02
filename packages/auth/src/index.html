@@ -217,26 +217,31 @@
       </div>
     </div>
 
-    <div class="container">
-      <unidy-profile use-unidy-auth-enabled api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-        language="de">
-        <unidy-field field="salutation"></unidy-field>
-        <unidy-field field="first_name"></unidy-field>
-        <unidy-field field="last_name"></unidy-field>
-        <unidy-field field="date_of_birth" required="true"></unidy-field>
-        <!-- <unidy-field field="phone_number"></unidy-field> -->
-        <unidy-field field="country_code" country-code-display-option="icon"></unidy-field>
-        <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
-        <unidy-field field="custom_attributes.multi"></unidy-field>
-        <unidy-field field="custom_attributes.active_membership"></unidy-field>
-        <unidy-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"></unidy-field>
-        <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"></unidy-field>
-        <unidy-field field="custom_attributes.first_name"></unidy-field>
-        <unidy-field field="custom_attributes.self_description"></unidy-field>
-        <unidy-submit-button>Submit</unidy-submit-button>
-        <div id="profile-update-message"></div>
-      </unidy-profile>
-    </div>
+
+    <auth-provider>
+      <div class="container">
+        <unidy-profile use-unidy-auth-enabled api-key="public-newsletter-api-key" api-url="http://localhost:3000"
+          language="de">
+          <unidy-field field="salutation"></unidy-field>
+          <unidy-field field="first_name"></unidy-field>
+          <unidy-field field="last_name"></unidy-field>
+          <unidy-field field="date_of_birth" required="true"></unidy-field>
+          <!-- <unidy-field field="phone_number"></unidy-field> -->
+          <unidy-field field="country_code" country-code-display-option="icon"></unidy-field>
+          <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
+          <unidy-field field="custom_attributes.multi"></unidy-field>
+          <unidy-field field="custom_attributes.active_membership"></unidy-field>
+          <unidy-field field="custom_attributes.back_number"
+            readonly-placeholder="No back number provided"></unidy-field>
+          <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"></unidy-field>
+          <unidy-field field="custom_attributes.first_name"></unidy-field>
+          <unidy-field field="custom_attributes.self_description"></unidy-field>
+          <unidy-submit-button>Submit</unidy-submit-button>
+          <div id="profile-update-message"></div>
+        </unidy-profile>
+      </div>
+
+    </auth-provider>
   </div>
 
   <script type="module">

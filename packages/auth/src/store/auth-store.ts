@@ -47,6 +47,7 @@ const initialState: AuthState = {
 
 const { state, reset } = createStore<AuthState>(initialState);
 
+
 class AuthStore {
   private rootComponentRef: SigninRoot | null = null;
 

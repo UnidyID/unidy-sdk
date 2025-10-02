@@ -1,4 +1,4 @@
-import { Component, Host, Prop, State, h } from "@stencil/core";
+import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { UnidyClient } from "@unidy.io/sdk-api-client";
 import { Auth } from "../../auth";
@@ -62,6 +62,7 @@ export class UnidyProfile {
   @Prop() language?: string;
 
   private authInstance?: Auth;
+  private lastFetchedToken?: string;
 
   async componentWillLoad() {
     this.store.state.language = this.language;
@@ -70,7 +71,10 @@ export class UnidyProfile {
       this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else if (this.apiUrl && this.apiKey) {
       await this.authenticate();
-      await this.fetchProfileData(this.store.state.idToken);
+      if (this.store.state.idToken) {
+        this.lastFetchedToken = this.store.state.idToken;
+        await this.fetchProfileData(this.store.state.idToken);
+      }
     }
 
     this.store.state.loading = false;
@@ -128,12 +132,14 @@ export class UnidyProfile {
   }
 
   componentWillRender() {
-    // TODO refactor this
-    console.log("componentWillRender", authStore.state.authenticated, authStore.state.token);
-    this.store.state.idToken = authStore.state.token ?? "";
+    const currentToken = authStore.state.token ?? "";
+    this.store.state.idToken = currentToken;
 
-    if (this.store.state.idToken) {
-      this.fetchProfileData(this.store.state.idToken);
+    // Only fetch profile data if the token has changed and we have a valid token
+    if (currentToken && currentToken !== this.lastFetchedToken) {
+      this.lastFetchedToken = currentToken;
+      this.fetchProfileData(currentToken);
+      console.log("fetch profile for new token");
     }
 
     this.store.state.loading = false;
