@@ -3,7 +3,7 @@ import { authStore } from "../../../store/auth-store.js";
 
 @Component({
   tag: "auth-provider",
-  shadow: true,
+  shadow: false,
 })
 export class AuthProvider {
   render() {
