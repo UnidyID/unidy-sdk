@@ -1,8 +1,6 @@
 import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/core";
 import type { TokenResponse } from "@unidy.io/sdk-api-client";
 import { authStore } from "../../../store/auth-store.js";
-import { Auth } from "../../../auth.js";
-import { getUnidyClient } from "../../../api-client";
 
 @Component({
   tag: "signin-root",

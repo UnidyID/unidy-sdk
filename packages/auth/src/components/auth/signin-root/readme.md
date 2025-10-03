@@ -9,8 +9,6 @@
 
 | Property    | Attribute    | Description | Type     | Default |
 | ----------- | ------------ | ----------- | -------- | ------- |
-| `apiKey`    | `api-key`    |             | `string` | `""`    |
-| `baseUrl`   | `base-url`   |             | `string` | `""`    |
 | `className` | `class-name` |             | `string` | `""`    |
 
 
