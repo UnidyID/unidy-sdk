@@ -1,4 +1,4 @@
-import { Component, Host, Prop, h } from "@stencil/core";
+import { Component, Host, Prop, State, h } from "@stencil/core";
 import { Auth } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../store/auth-store";
 import { getUnidyClient } from "../../../api-client";
@@ -19,6 +19,8 @@ export class UnidyProfile {
 
   private authInstance?: Auth;
 
+  @State() fetchingProfileData = false;
+
   async componentWillLoad() {
     profileStore.state.language = this.language;
 
@@ -38,6 +40,7 @@ export class UnidyProfile {
   }
 
   async fetchProfileData(idToken: string) {
+    this.fetchingProfileData = true;
     try {
       const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: this.language });
 
@@ -55,6 +58,7 @@ export class UnidyProfile {
       console.error("Failed to fetch profile data:", error);
       profileStore.state.flashErrors = { error: "Failed to load profile data. Please check configuration." };
     }
+    this.fetchingProfileData = false;
   }
 
   componentDidLoad() {
@@ -77,7 +81,9 @@ export class UnidyProfile {
     const wasSubmit = profileStore.state.configUpdateSource === "submit";
 
     if (authStore.state.authenticated) {
-      return (
+      return this.fetchingProfileData ? (
+        <div>Loading...</div>
+      ) : (
         <Host>
           <slot />
           {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
