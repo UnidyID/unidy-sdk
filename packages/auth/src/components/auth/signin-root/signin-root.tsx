@@ -4,7 +4,7 @@ import { authStore } from "../../../store/auth-store.js";
 
 @Component({
   tag: "signin-root",
-  shadow: false,
+  shadow: true,
 })
 export class SigninRoot {
   @Prop() className = "";

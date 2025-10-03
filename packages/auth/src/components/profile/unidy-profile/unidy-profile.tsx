@@ -29,7 +29,6 @@ export type ProfileStore = {
   data: ProfileRaw;
   configuration: ProfileRaw;
   errors: Record<string, string | null>;
-  idToken: string;
   configUpdateSource?: "fetch" | "submit";
   flashErrors: Record<string, string | null>;
   language?: string;
@@ -47,7 +46,6 @@ export class UnidyProfile {
     data: {},
     configuration: {},
     errors: {},
-    idToken: "",
     flashErrors: {},
     language: "",
     phoneValid: true,
@@ -67,38 +65,16 @@ export class UnidyProfile {
     if (this.initialData !== "") {
       this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
-      await this.authenticate();
+      this.authInstance = await Auth.getInstance();
 
-      if (this.store.state.idToken) {
-        await this.fetchProfileData(this.store.state.idToken);
+      const idToken = await this.authInstance?.getToken();
+
+      if (idToken && typeof idToken === "string") {
+        await this.fetchProfileData(idToken as string);
       }
     }
 
     this.store.state.loading = false;
-  }
-
-  async authenticate() {
-    while (!Auth.isInitialized()) {
-      await new Promise((r) => setTimeout(r, 10));
-    }
-
-    this.authInstance = await Auth.getInstance();
-
-    const res = await this.authInstance.getToken();
-
-    if (res instanceof Error) {
-      this.store.state.loading = false;
-      return;
-    }
-
-    const idToken = res;
-    this.store.state.idToken = String(idToken);
-
-    if (!idToken) {
-      console.error("idToken not found");
-      this.store.state.loading = false;
-      return;
-    }
   }
 
   async fetchProfileData(idToken: string) {
@@ -128,14 +104,11 @@ export class UnidyProfile {
 
     authOnChange("token", (newToken: string | null) => {
       const token = newToken ?? "";
-      this.store.state.idToken = token;
 
       if (token) {
         this.fetchProfileData(token);
       }
     });
-
-    this.store.state.idToken = authStore.state.token ?? "";
   }
 
   render() {

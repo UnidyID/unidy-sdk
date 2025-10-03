@@ -154,7 +154,7 @@ export namespace Components {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     flashErrors: {},     language: "",     phoneValid: true,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store": ObservableMap<ProfileStore>;
     }
@@ -437,7 +437,7 @@ declare namespace LocalJSX {
         "language"?: string;
         "profileId"?: string;
         /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     idToken: "",     flashErrors: {},     language: "",     phoneValid: true,   })
+          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     flashErrors: {},     language: "",     phoneValid: true,   })
          */
         "store"?: ObservableMap<ProfileStore>;
     }

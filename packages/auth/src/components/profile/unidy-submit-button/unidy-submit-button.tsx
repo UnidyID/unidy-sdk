@@ -1,6 +1,7 @@
 import { Component, Element, h } from "@stencil/core";
 import type { ProfileRaw } from "../unidy-profile/unidy-profile";
 import { getUnidyClient } from "../../../api-client";
+import { Auth } from "../../../auth";
 @Component({
   tag: "unidy-submit-button",
   styleUrl: "unidy-submit-button.css",
@@ -18,11 +19,15 @@ export class UnidySubmitButton {
     return container.store;
   }
 
+  private authInstance?: Auth;
+
+  async componentWillLoad() {
+    this.authInstance = await Auth.getInstance();
+  }
+
   private async onSubmit() {
     this.store.state.loading = true;
     const { configuration, ...stateWithoutConfig } = this.store.state;
-
-    const idToken = this.store.state.idToken;
 
     for (const key of Object.keys(stateWithoutConfig.data)) {
       if (key === "custom_attributes") continue;
@@ -47,7 +52,7 @@ export class UnidySubmitButton {
     const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
 
     const resp = await getUnidyClient().profile.updateProfile({
-      idToken,
+      idToken: (await this.authInstance?.getToken()) as string,
       data: updatedProfileData,
       lang: this.store.state.language,
     });

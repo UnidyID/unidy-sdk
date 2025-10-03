@@ -115,7 +115,6 @@ export class Auth {
       authStore.setToken(response.jwt);
       authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
-      authStore.setAuthenticated(true);
 
       authStore.getRootComponentRef()?.onAuth(response);
     }
@@ -171,7 +170,6 @@ export class Auth {
       authStore.setToken(response.jwt);
       authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
-      authStore.setAuthenticated(true);
 
       authStore.getRootComponentRef()?.onAuth(response);
     }
@@ -188,7 +186,6 @@ export class Auth {
       authStore.setError(error);
     } else {
       authStore.setToken(response.jwt);
-      authStore.setAuthenticated(true);
       authStore.setRefreshToken(response.refresh_token);
     }
   }

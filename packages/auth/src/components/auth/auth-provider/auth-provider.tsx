@@ -3,7 +3,7 @@ import { authStore } from "../../../store/auth-store.js";
 
 @Component({
   tag: "auth-provider",
-  shadow: false,
+  shadow: true,
 })
 export class AuthProvider {
   @Prop() className = "";

@@ -97,29 +97,29 @@ class AuthStore {
     state.step = step;
   }
 
-  setSignInId(signInId: string | null) {
+  setSignInId(signInId: string) {
     state.sid = signInId;
     saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
   }
 
-  setToken(token: string | null) {
+  setToken(token: string) {
     state.token = token;
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, token);
+    this.setAuthenticated(!!token);
   }
 
-  setRefreshToken(refreshToken: string | null) {
+  setRefreshToken(refreshToken: string) {
     state.refreshToken = refreshToken;
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
   }
 
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
-    console.log("setAuthenticated", authenticated);
 
     if (!authenticated) {
-      this.setToken(null);
-      this.setRefreshToken(null);
-      this.setSignInId(null);
+      state.token = null;
+      state.refreshToken = null;
+      state.sid = null;
     }
   }
 
