@@ -13,6 +13,10 @@ export { ObservableMap } from "@stencil/store";
 export { ProfileStore } from "./components/profile/unidy-profile/unidy-profile";
 export namespace Components {
     interface AuthProvider {
+        /**
+          * @default ""
+         */
+        "className": string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -291,6 +295,10 @@ declare global {
 }
 declare namespace LocalJSX {
     interface AuthProvider {
+        /**
+          * @default ""
+         */
+        "className"?: string;
     }
     interface ConditionalRender {
         "is": "true" | "false";

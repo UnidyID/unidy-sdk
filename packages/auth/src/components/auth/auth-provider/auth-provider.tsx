@@ -1,4 +1,4 @@
-import { Component, Host, h } from "@stencil/core";
+import { Component, Host, Prop, h } from "@stencil/core";
 import { authStore } from "../../../store/auth-store.js";
 
 @Component({
@@ -6,13 +6,15 @@ import { authStore } from "../../../store/auth-store.js";
   shadow: false,
 })
 export class AuthProvider {
+  @Prop() className = "";
+
   render() {
     if (!authStore.state.authenticated) {
       return null;
     }
 
     return (
-      <Host style={{ width: "100%" }}>
+      <Host class={this.className} style={{ width: "100%" }}>
         <slot />
       </Host>
     );
