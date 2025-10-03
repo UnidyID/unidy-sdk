@@ -2,8 +2,7 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { createStore, type ObservableMap } from "@stencil/store";
 import { Auth } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../store/auth-store";
-import { unidyState } from "../../../store/unidy-store";
-import { UnidyClient } from "@unidy.io/sdk-api-client";
+import { getUnidyClient } from "../../../api-client";
 
 type Option = { value: string; label: string; icon?: string | null };
 type RadioOption = { value: string; label: string; checked: boolean };
@@ -103,23 +102,22 @@ export class UnidyProfile {
   }
 
   async fetchProfileData(idToken: string) {
-    if (!unidyState.baseUrl || !unidyState.apiKey) {
-      console.error("apiUrl and/or apiKey is not set");
-      return;
-    }
+    try {
+      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: this.language });
 
-    const client = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
-    const resp = await client.profile.fetchProfile({ idToken, lang: this.language });
+      if (resp.success) {
+        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+        this.store.state.configUpdateSource = "fetch";
+        this.store.state.errors = {};
+        this.store.state.flashErrors = {};
 
-    if (resp.success) {
-      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-      this.store.state.configUpdateSource = "fetch";
-      this.store.state.errors = {};
-      this.store.state.flashErrors = {};
-
-      this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-    } else {
-      this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+      } else {
+        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile data:", error);
+      this.store.state.flashErrors = { error: "Failed to load profile data. Please check configuration." };
     }
   }
 

@@ -1,8 +1,8 @@
 import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/core";
-import { type TokenResponse, UnidyClient } from "@unidy.io/sdk-api-client";
+import type { TokenResponse } from "@unidy.io/sdk-api-client";
 import { authStore } from "../../../store/auth-store.js";
 import { Auth } from "../../../auth.js";
-import { unidyState } from "../../../store/unidy-store";
+import { getUnidyClient } from "../../../api-client";
 
 @Component({
   tag: "signin-root",
@@ -15,13 +15,11 @@ export class SigninRoot {
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
   componentWillLoad() {
-    if (!unidyState.apiKey || !unidyState.baseUrl) {
-      console.error("apiKey and baseUrl are required on config component");
-      return;
+    try {
+      Auth.initialize(getUnidyClient());
+    } catch (error) {
+      console.error("Failed to initialize Auth:", error);
     }
-
-    const client = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
-    Auth.initialize(client);
   }
 
   componentDidLoad() {
