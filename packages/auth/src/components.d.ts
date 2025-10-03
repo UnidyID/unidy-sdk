@@ -6,11 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
-import { ObservableMap } from "@stencil/store";
-import { ProfileStore } from "./components/profile/unidy-profile/unidy-profile";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
-export { ObservableMap } from "@stencil/store";
-export { ProfileStore } from "./components/profile/unidy-profile/unidy-profile";
 export namespace Components {
     interface AuthProvider {
         /**
@@ -153,10 +149,6 @@ export namespace Components {
         "initialData": string | Record<string, string>;
         "language"?: string;
         "profileId"?: string;
-        /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     flashErrors: {},     language: "",     phoneValid: true,   })
-         */
-        "store": ObservableMap<ProfileStore>;
     }
     interface UnidySubmitButton {
     }
@@ -436,10 +428,6 @@ declare namespace LocalJSX {
         "initialData"?: string | Record<string, string>;
         "language"?: string;
         "profileId"?: string;
-        /**
-          * @default createStore<ProfileStore>({     loading: true,     data: {},     configuration: {},     errors: {},     flashErrors: {},     language: "",     phoneValid: true,   })
-         */
-        "store"?: ObservableMap<ProfileStore>;
     }
     interface UnidySubmitButton {
     }

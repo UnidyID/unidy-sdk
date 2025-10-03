@@ -1,4 +1,5 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
+import { state as profileState } from "../../../store/profile-store";
 
 @Component({
   tag: "unidy-field",
@@ -16,25 +17,19 @@ export class UnidyField {
 
   @State() selected?: string | string[];
 
-  private get store() {
-    const container = this.el.closest("unidy-profile");
-    if (!container) {
-      throw new Error("unidy-field must be inside an unidy-profile");
-    }
-    return container.store;
-  }
-
   private getFieldData() {
-    return this.field.startsWith("custom_attributes.") ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")] : this.store.state.data[this.field];
+    return this.field.startsWith("custom_attributes.")
+      ? profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
+      : profileState.data[this.field];
   }
 
   componentWillLoad() {
     const fieldData = this.getFieldData();
     if (fieldData?.radio_options?.length) {
-      const checkedOption = fieldData.radio_options.find(option => option.checked);
+      const checkedOption = fieldData.radio_options.find((option) => option.checked);
       this.selected = checkedOption?.value ?? fieldData.value ?? "";
     } else if (fieldData?.options?.length) {
-      const selectedOption = fieldData.options.find(option => option.value === fieldData.value);
+      const selectedOption = fieldData.options.find((option) => option.value === fieldData.value);
       this.selected = selectedOption?.value ?? fieldData.value ?? "";
     } else {
       this.selected = fieldData?.value ?? "";
@@ -42,17 +37,17 @@ export class UnidyField {
   }
 
   componentDidRender() {
-    const fieldErrors = this.store.state.errors;
+    const fieldErrors = profileState.errors;
     if (fieldErrors?.[this.field]) {
       this.el.shadowRoot?.getElementById(this.field)?.focus();
     }
   }
 
   private updateField(updatedField: object) {
-    if (this.field.startsWith("custom_attributes.") && this.store.state.data.custom_attributes) {
-      this.store.state.data.custom_attributes[this.field.replace("custom_attributes.", "")] = updatedField;
+    if (this.field.startsWith("custom_attributes.") && profileState.data.custom_attributes) {
+      profileState.data.custom_attributes[this.field.replace("custom_attributes.", "")] = updatedField;
     } else {
-      this.store.state.data[this.field] = updatedField;
+      profileState.data[this.field] = updatedField;
     }
   }
 
@@ -62,7 +57,7 @@ export class UnidyField {
     const fieldData = this.getFieldData();
     if (!fieldData?.radio_options) return;
 
-    const updatedRadioOptions = fieldData.radio_options.map(option => ({
+    const updatedRadioOptions = fieldData.radio_options.map((option) => ({
       ...option,
       checked: option.value === value,
     }));
@@ -82,7 +77,7 @@ export class UnidyField {
     const fieldData = this.getFieldData();
     if (!fieldData?.options) return;
 
-    const updatedOptions = fieldData.options.map(option => ({
+    const updatedOptions = fieldData.options.map((option) => ({
       ...option,
       selected: option.value === value,
     }));
@@ -94,31 +89,31 @@ export class UnidyField {
     };
 
     this.updateField(updatedField);
-  }
+  };
 
   private phoneFieldValidation = (e: Event) => {
     const input = e.target as HTMLInputElement;
     const pattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
-    if (input.value !== '' && !pattern.test(input.value)) {
+    if (input.value !== "" && !pattern.test(input.value)) {
       input.setCustomValidity(this.invalidPhoneMessage);
       input.reportValidity();
-      this.store.state.phoneValid = false;
+      profileState.phoneValid = false;
     } else {
       input.setCustomValidity("");
-      this.store.state.phoneValid = true;
+      profileState.phoneValid = true;
     }
-  }
+  };
 
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
     Array.isArray(fieldData.value)
-              ? fieldData.value.map((val: string) => {
-                  // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
-                  const match = fieldData.options?.find((opt: any) => opt.value === val);
-                  multiselectMatches.push(match?.label ?? val);
-                })
-              : [];
+      ? fieldData.value.map((val: string) => {
+          // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
+          const match = fieldData.options?.find((opt: any) => opt.value === val);
+          multiselectMatches.push(match?.label ?? val);
+        })
+      : [];
     return multiselectMatches;
   };
 
@@ -128,15 +123,13 @@ export class UnidyField {
     }
 
     return Array.from(countryCode)
-      .map(char =>
-        String.fromCodePoint(0x1f1e6 + (char.charCodeAt(0) - "A".charCodeAt(0)))
-      )
+      .map((char) => String.fromCodePoint(0x1f1e6 + (char.charCodeAt(0) - "A".charCodeAt(0))))
       .join("");
   }
 
   render() {
-    if (this.store.state.loading) {
-      return <div class="spinner"/>;
+    if (profileState.loading) {
+      return <div class="spinner" />;
     }
 
     const fieldData = this.getFieldData();
@@ -154,7 +147,9 @@ export class UnidyField {
           {fieldData?.label}
           {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
         </label>
-        {isReadonly && fieldData?.type !== 'checkbox' ? <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span> : null}
+        {isReadonly && fieldData?.type !== "checkbox" ? (
+          <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
+        ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
           <div part="multi-select-readonly-container">
             {multiSelectReadonlyLabels.map((label) => (
@@ -164,8 +159,8 @@ export class UnidyField {
             ))}
           </div>
         )}
-        {!isReadonly && (
-          fieldData.type === "select" && fieldData.options ? (
+        {!isReadonly &&
+          (fieldData.type === "select" && fieldData.options ? (
             <select
               id={this.field}
               data-value={fieldData.value}
@@ -174,7 +169,7 @@ export class UnidyField {
               title={isLocked ? lockedText : undefined}
               onChange={(e) => this.onSelectChange((e.target as HTMLSelectElement).value)}
             >
-              <option value="" selected={fieldData.value === null || fieldData.value === ""}/>
+              <option value="" selected={fieldData.value === null || fieldData.value === ""} />
               {fieldData.options.map((opt) => (
                 <option
                   key={opt.value}
@@ -184,7 +179,9 @@ export class UnidyField {
                   disabled={opt.value === "--"}
                   part="option"
                 >
-                  {fieldData.attr_name === "country_code" && this.countryCodeDisplayOption === "icon" ? this.countryIcon(opt.value) : opt.label}
+                  {fieldData.attr_name === "country_code" && this.countryCodeDisplayOption === "icon"
+                    ? this.countryIcon(opt.value)
+                    : opt.label}
                 </option>
               ))}
             </select>
@@ -223,16 +220,18 @@ export class UnidyField {
                       const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
                       const prev = isCustomAttribute
-                        ? (this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]?.value as string[]) ?? []
-                        : (this.store.state.data[this.field]?.value as string[]) ?? [];
+                        ? ((profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]?.value as string[]) ?? [])
+                        : ((profileState.data[this.field]?.value as string[]) ?? []);
                       const value = (e.target as HTMLInputElement).checked
-                        ? (prev.includes(opt.value) ? prev : [...prev, opt.value])
-                        : prev.filter(v => v !== opt.value);
+                        ? prev.includes(opt.value)
+                          ? prev
+                          : [...prev, opt.value]
+                        : prev.filter((v) => v !== opt.value);
 
                       const updatedField = {
                         ...(isCustomAttribute
-                          ? this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
-                          : this.store.state.data[this.field]),
+                          ? profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
+                          : profileState.data[this.field]),
                         value,
                       };
 
@@ -255,19 +254,23 @@ export class UnidyField {
               onChange={(e) => {
                 const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
-                this.store.state.data = isCustomAttribute ? {
-                  ...this.store.state.data,
-                  custom_attributes: {
-                    ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attributes.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
-                      value: (e.target as HTMLTextAreaElement).value,
-                    },
-                  }
-                } : { ...this.store.state.data,
+                profileState.data = isCustomAttribute
+                  ? {
+                      ...profileState.data,
+                      custom_attributes: {
+                        ...profileState.data.custom_attributes,
+                        [this.field.replace("custom_attributes.", "")]: {
+                          ...profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
+                          value: (e.target as HTMLTextAreaElement).value,
+                        },
+                      },
+                    }
+                  : {
+                      ...profileState.data,
                       [this.field]: {
-                        ...this.store.state.data[this.field],
-                        value: (e.target as HTMLTextAreaElement).value },
+                        ...profileState.data[this.field],
+                        value: (e.target as HTMLTextAreaElement).value,
+                      },
                     };
               }}
             />
@@ -276,37 +279,37 @@ export class UnidyField {
               id={this.field}
               type={fieldData.type}
               value={fieldData.value}
-              class={this.store.state.errors[this.field] ? 'field-error' : ''}
+              class={profileState.errors[this.field] ? "field-error" : ""}
               required={fieldData?.required || this.required}
               part="input"
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
-              onInput={fieldData.type === 'tel' ? (e) => this.phoneFieldValidation(e) : undefined}
+              onInput={fieldData.type === "tel" ? (e) => this.phoneFieldValidation(e) : undefined}
               onChange={(e) => {
                 const isCustomAttribute = this.field.startsWith("custom_attributes.");
 
-                this.store.state.data = isCustomAttribute ? {
-                  ...this.store.state.data,
-                  custom_attributes: {
-                    ...this.store.state.data.custom_attributes,
-                    [this.field.replace("custom_attributes.", "")]: {
-                      ...this.store.state.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
-                      value: (e.target as HTMLInputElement).value,
-                    },
-                  }
-                } : { ...this.store.state.data,
+                profileState.data = isCustomAttribute
+                  ? {
+                      ...profileState.data,
+                      custom_attributes: {
+                        ...profileState.data.custom_attributes,
+                        [this.field.replace("custom_attributes.", "")]: {
+                          ...profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")],
+                          value: (e.target as HTMLInputElement).value,
+                        },
+                      },
+                    }
+                  : {
+                      ...profileState.data,
                       [this.field]: {
-                        ...this.store.state.data[this.field],
-                        value: (e.target as HTMLInputElement).value },
+                        ...profileState.data[this.field],
+                        value: (e.target as HTMLInputElement).value,
+                      },
                     };
               }}
             />
           ))}
-          {this.store.state.errors[this.field] && (
-            <span part="field-error-message">
-              ERROR: {this.store.state.errors[this.field]}
-            </span>
-          )}
+        {profileState.errors[this.field] && <span part="field-error-message">ERROR: {profileState.errors[this.field]}</span>}
       </div>
     );
   }

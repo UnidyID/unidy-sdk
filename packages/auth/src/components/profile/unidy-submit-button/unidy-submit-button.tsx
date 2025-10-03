@@ -1,7 +1,7 @@
 import { Component, Element, h } from "@stencil/core";
-import type { ProfileRaw } from "../unidy-profile/unidy-profile";
 import { getUnidyClient } from "../../../api-client";
 import { Auth } from "../../../auth";
+import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
 @Component({
   tag: "unidy-submit-button",
   styleUrl: "unidy-submit-button.css",
@@ -10,15 +10,6 @@ import { Auth } from "../../../auth";
 export class UnidySubmitButton {
   @Element() el!: HTMLElement;
 
-  private get store() {
-    const container = this.el.closest("unidy-profile");
-    if (!container) {
-      throw new Error("submit-button must be inside an unidy-profile");
-    }
-
-    return container.store;
-  }
-
   private authInstance?: Auth;
 
   async componentWillLoad() {
@@ -26,15 +17,16 @@ export class UnidySubmitButton {
   }
 
   private async onSubmit() {
-    this.store.state.loading = true;
-    const { configuration, ...stateWithoutConfig } = this.store.state;
+    profileState.loading = true;
+
+    const { configuration, ...stateWithoutConfig } = profileState;
 
     for (const key of Object.keys(stateWithoutConfig.data)) {
       if (key === "custom_attributes") continue;
       const field = stateWithoutConfig.data[key];
       if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
-        this.store.state.errors = { [key]: "This field is required." };
-        this.store.state.loading = false;
+        profileState.errors = { [key]: "This field is required." };
+        profileState.loading = false;
         return;
       }
     }
@@ -43,8 +35,8 @@ export class UnidySubmitButton {
       const field = stateWithoutConfig.data.custom_attributes?.[key];
       const fieldDisplayName = `custom_attributes.${key}`;
       if (field?.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
-        this.store.state.errors = { [fieldDisplayName]: "This field is required." };
-        this.store.state.loading = false;
+        profileState.errors = { [fieldDisplayName]: "This field is required." };
+        profileState.loading = false;
         return;
       }
     }
@@ -54,21 +46,21 @@ export class UnidySubmitButton {
     const resp = await getUnidyClient().profile.updateProfile({
       idToken: (await this.authInstance?.getToken()) as string,
       data: updatedProfileData,
-      lang: this.store.state.language,
+      lang: profileState.language,
     });
 
     if (resp?.success) {
-      this.store.state.loading = false;
-      this.store.state.configuration = JSON.parse(JSON.stringify(resp.data));
-      this.store.state.configUpdateSource = "submit";
-      this.store.state.errors = {};
+      profileState.loading = false;
+      profileState.configuration = JSON.parse(JSON.stringify(resp.data));
+      profileState.configUpdateSource = "submit";
+      profileState.errors = {};
     } else {
       if (resp?.data && "flatErrors" in resp.data) {
-        this.store.state.errors = resp.data.flatErrors as Record<string, string>;
+        profileState.errors = resp.data.flatErrors as Record<string, string>;
       } else {
-        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
-      this.store.state.loading = false;
+      profileState.loading = false;
     }
   }
 
@@ -92,8 +84,8 @@ export class UnidySubmitButton {
   render() {
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={this.store.state.phoneValid === false}>
-          {this.store.state.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={profileState.phoneValid === false}>
+          {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
     );

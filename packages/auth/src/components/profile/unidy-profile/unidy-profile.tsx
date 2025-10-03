@@ -1,39 +1,9 @@
 import { Component, Host, Prop, h } from "@stencil/core";
-import { createStore, type ObservableMap } from "@stencil/store";
 import { Auth } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../store/auth-store";
 import { getUnidyClient } from "../../../api-client";
-
-type Option = { value: string; label: string; icon?: string | null };
-type RadioOption = { value: string; label: string; checked: boolean };
-
-interface ProfileNode {
-  value?: string | undefined | string[];
-  type?: string;
-  label?: string;
-  required?: boolean;
-  readonly?: boolean;
-  locked?: boolean;
-  locked_text?: string;
-  options?: Option[];
-  radio_options?: RadioOption[];
-  attr_name?: string;
-}
-
-export type ProfileRaw = {
-  custom_attributes?: Record<string, ProfileNode>;
-} & Record<string, ProfileNode>;
-
-export type ProfileStore = {
-  loading: boolean;
-  data: ProfileRaw;
-  configuration: ProfileRaw;
-  errors: Record<string, string | null>;
-  configUpdateSource?: "fetch" | "submit";
-  flashErrors: Record<string, string | null>;
-  language?: string;
-  phoneValid: boolean;
-};
+import { profileStore, onChange as profileOnChange } from "../../../store/profile-store";
+import type { ProfileRaw } from "../../../store/profile-store";
 
 @Component({
   tag: "unidy-profile",
@@ -41,16 +11,6 @@ export type ProfileStore = {
   shadow: true,
 })
 export class UnidyProfile {
-  @Prop() store: ObservableMap<ProfileStore> = createStore<ProfileStore>({
-    loading: true,
-    data: {},
-    configuration: {},
-    errors: {},
-    flashErrors: {},
-    language: "",
-    phoneValid: true,
-  });
-
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
   @Prop() apiUrl?: string;
@@ -60,10 +20,10 @@ export class UnidyProfile {
   private authInstance?: Auth;
 
   async componentWillLoad() {
-    this.store.state.language = this.language;
+    profileStore.state.language = this.language;
 
     if (this.initialData !== "") {
-      this.store.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
+      profileStore.state.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
       this.authInstance = await Auth.getInstance();
 
@@ -74,7 +34,7 @@ export class UnidyProfile {
       }
     }
 
-    this.store.state.loading = false;
+    profileStore.state.loading = false;
   }
 
   async fetchProfileData(idToken: string) {
@@ -82,24 +42,24 @@ export class UnidyProfile {
       const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: this.language });
 
       if (resp.success) {
-        this.store.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-        this.store.state.configUpdateSource = "fetch";
-        this.store.state.errors = {};
-        this.store.state.flashErrors = {};
+        profileStore.state.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+        profileStore.state.configUpdateSource = "fetch";
+        profileStore.state.errors = {};
+        profileStore.state.flashErrors = {};
 
-        this.store.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+        profileStore.state.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
       } else {
-        this.store.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        profileStore.state.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
     } catch (error) {
       console.error("Failed to fetch profile data:", error);
-      this.store.state.flashErrors = { error: "Failed to load profile data. Please check configuration." };
+      profileStore.state.flashErrors = { error: "Failed to load profile data. Please check configuration." };
     }
   }
 
   componentDidLoad() {
-    this.store.onChange("configuration", (cfg) => {
-      this.store.state.data = cfg as ProfileRaw;
+    profileOnChange("configuration", (cfg) => {
+      profileStore.state.data = cfg as ProfileRaw;
     });
 
     authOnChange("token", (newToken: string | null) => {
@@ -112,9 +72,9 @@ export class UnidyProfile {
   }
 
   render() {
-    const hasFieldErrors = Object.values(this.store.state.errors).some(Boolean);
-    const errorMsg = Object.values(this.store.state.flashErrors).filter(Boolean).join(", ");
-    const wasSubmit = this.store.state.configUpdateSource === "submit";
+    const hasFieldErrors = Object.values(profileStore.state.errors).some(Boolean);
+    const errorMsg = Object.values(profileStore.state.flashErrors).filter(Boolean).join(", ");
+    const wasSubmit = profileStore.state.configUpdateSource === "submit";
 
     if (authStore.state.authenticated) {
       return (
