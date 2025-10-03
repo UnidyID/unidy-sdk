@@ -1,5 +1,7 @@
 import { Component, Prop, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
+import { Auth } from "../../auth";
+import { getUnidyClient } from "../../api-client";
 
 @Component({
   tag: "unidy-config",
@@ -17,6 +19,8 @@ export class UnidyConfig {
 
     unidyState.apiKey = this.apiKey;
     unidyState.baseUrl = this.baseUrl;
+
+    Auth.initialize(getUnidyClient());
   }
 
   render() {

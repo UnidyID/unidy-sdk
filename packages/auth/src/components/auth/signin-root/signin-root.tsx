@@ -14,14 +14,6 @@ export class SigninRoot {
   @Event() authEvent!: EventEmitter<TokenResponse>;
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
-  componentWillLoad() {
-    try {
-      Auth.initialize(getUnidyClient());
-    } catch (error) {
-      console.error("Failed to initialize Auth:", error);
-    }
-  }
-
   componentDidLoad() {
     authStore.setRootComponentRef(this);
   }
