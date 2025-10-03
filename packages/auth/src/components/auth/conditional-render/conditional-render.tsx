@@ -3,7 +3,7 @@ import { authState } from "../../../store/auth-store";
 
 @Component({
   tag: "conditional-render",
-  shadow: false,
+  shadow: true,
 })
 export class ConditionalRender {
   @Prop() when!: string;
