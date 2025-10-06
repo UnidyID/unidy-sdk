@@ -44,12 +44,9 @@ export class UnidyRawField {
         return checkedOption?.value ?? field.value ?? "";
       }
       return field.value;
+    } else {
+      return data[name].value;
     }
-    if (data[name] === undefined) {
-      console.log("Field not found in profile data:", name);
-      console.log("Available fields:", Object.keys(data));
-    }
-    return data[name].value;
   }
 
   private writeStore(field: string, value: string | string[]) {
