@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from '@stencil/core';
 
 export type Option = { value: string; label: string; selected?: boolean };
 
@@ -11,7 +11,7 @@ type SelectProps = {
   countryCodeDisplayOption?: string;
   attr_name?: string;
   onChange: (value: string) => void;
-  countryIcon?: (code: string) => any;
+  countryIcon?: (code: string) => string;
 };
 
 export const Select: FunctionalComponent<SelectProps> = (props) => {
@@ -28,7 +28,7 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
  return (   
     <select
       id={props.id}
-      data-value={props.value as any}
+      data-value={props.value as string | undefined}
       part="select"
       disabled={props.disabled}
       title={props.title}

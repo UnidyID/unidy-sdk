@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from '@stencil/core';
 
 export type RadioOption = { value: string; label: string; checked: boolean };
 
