@@ -2,6 +2,7 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
 import { Textarea } from "./../raw-components/input-field/Textarea";
 import { Input } from "./../raw-components/input-field/Input";
+import { type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
 
 @Component({
   tag: "unidy-raw-field",
@@ -27,87 +28,82 @@ export class UnidyRawField {
 
   @State() selected?: string | string[];
 
-  private get store() {
-    const container = this.el.closest("unidy-profile");
-    if (!container) {
-      throw new Error("unidy-field must be inside an unidy-profile");
-    }
-    return container.store;
-  }
-
-  private readStore(name: string): any {
+  private readStore(name: string): string | undefined | string[] {
     if (!name) return;
-    const data: any = this.store.state.data;
+    const data: ProfileRaw = profileState.data;
 
     if (!data) return;
 
     if (name.startsWith("custom_attributes.")) {
       const key = name.replace("custom_attributes.", "");
       const field = data.custom_attributes?.[key];
+      if (!field) return;
+
       if (Array.isArray(field.radio_options)) {
-        const checkedOption = field.radio_options.find((option: any) => option.checked);
+        const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
         return checkedOption?.value ?? field.value ?? "";
-      } else {
-        return field?.value;
       }
-    } else {
-      return data[name].value;
+      return field.value;
     }
+    if (data[name] === undefined) {
+      console.log("Field not found in profile data:", name);
+      console.log("Available fields:", Object.keys(data));
+    }
+    return data[name].value;
   }
 
-  private writeStore(field: string, value: any) {
+  private writeStore(field: string, value: string | string[]) {
     if (!field) return;
-    const data: any = this.store.state.data;
+    const data: ProfileRaw = profileState.data;
     if (!data) return;
 
     if (field.startsWith("custom_attributes.")) {
-      field = field.replace("custom_attributes.", "");
-      const prev = data?.custom_attributes?.[field];
-      const val = (prev && typeof prev === "object" && "value" in prev) ? { ...prev, value } : value;
-      this.store.state.data = {
+      const customAttributeFieldName = field.replace("custom_attributes.", "");
+      const prev = data?.custom_attributes?.[customAttributeFieldName];
+      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
+
+      profileState.data = {
         ...data,
-        custom_attributes: { ...data.custom_attributes, [field]: val },
+        custom_attributes: { ...data.custom_attributes, [customAttributeFieldName]: val },
       };
-      console.log("unidy-raw-field: writeStore", field, value, this.store.state.data);
-      return;
     } else {
-      field = field;
-      const prev = data?.[field];
-      const val = (prev && typeof prev === "object" && "value" in prev) ? { ...prev, value } : value;
-      this.store.state.data = { ...data, [field]: val };
-      console.log("unidy-raw-field: writeStore", field, value, this.store.state.data);
-   }
- }
+      const regularFieldName = field;
+      const prev = data?.[regularFieldName];
+      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
+      profileState.data = { ...data, [regularFieldName]: val };
+    }
+  }
 
   private onRadioChange = (val: string) => this.writeStore(this.name, val);
   private onTextChange = (val: string) => this.writeStore(this.name, val);
-
-
 
   componentWillLoad() {
     if (!this.name) throw new Error('unidy-raw-field: "name" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
-    const allowed: Set<string> = new Set([
-      'text','email','tel','password','number','date','radio','textarea'
-    ]);
+    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea"]);
     if (!allowed.has(this.type)) {
-      this.type = 'text';
+      this.type = "text";
     }
 
     const current = this.readStore(this.name);
     const isType =
-      this.type === 'text' || this.type === 'email' || this.type === 'tel' ||
-      this.type === 'password' || this.type === 'number' || this.type === 'date' ||
-      this.type === 'textarea' || this.type === 'radio';
+      this.type === "text" ||
+      this.type === "email" ||
+      this.type === "tel" ||
+      this.type === "password" ||
+      this.type === "number" ||
+      this.type === "date" ||
+      this.type === "textarea" ||
+      this.type === "radio";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === 'string') {
+    if (isType && (current === undefined || current === null) && typeof this.value === "string") {
       this.writeStore(this.name, this.value);
     }
   }
 
   componentDidRender() {
-    const errs = this.store.state.errors;
+    const errs = profileState.errors;
     if (errs?.[this.name]) {
       this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.name)}`)?.focus();
     }
@@ -120,10 +116,10 @@ export class UnidyRawField {
     if (input.value !== "" && !pattern.test(input.value)) {
       input.setCustomValidity(this.invalidPhoneMessage);
       input.reportValidity();
-      this.store.state.phoneValid = false;
+      profileState.phoneValid = false;
     } else {
       input.setCustomValidity("");
-      this.store.state.phoneValid = true;
+      profileState.phoneValid = true;
     }
   };
 
@@ -146,7 +142,7 @@ export class UnidyRawField {
     }
 
     if (this.type === "textarea") {
-      const currentValue = this.readStore(this.name) as string || "";
+      const currentValue = (this.readStore(this.name) as string) || "";
       return (
         <Textarea
           id={this.name}
@@ -160,7 +156,7 @@ export class UnidyRawField {
       );
     }
 
-    const currentValue = this.readStore(this.name) as string || "";
+    const currentValue = (this.readStore(this.name) as string) || "";
     return (
       <Input
         id={this.name}
