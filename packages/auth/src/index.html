@@ -153,67 +153,55 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+  <unidy-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></unidy-config>
+
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <div id="authFormContainer" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
-      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
-        class="flex flex-col gap-2">
+    <signin-root id="sign-in-root" class-name="
+      bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
-        <signin-step name="email">
-          <email-field placeholder="Enter your email"
-            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
-          <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+      <signin-step name="email">
+        <email-field placeholder="Enter your email"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
+        <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
 
-          <submit-button for="email" text="Continue with Email"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
-        </signin-step>
+        <submit-button for="email" text="Continue with Email"
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
+      </signin-step>
 
-        <signin-step name="verification">
-          <signin-strategy type="password">
-            <password-field placeholder="Enter your password"
-              class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
-            <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
-            <submit-button for="password" text="Sign In"
-              class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
-          </signin-strategy>
+      <signin-step name="verification">
+        <signin-strategy type="password">
+          <password-field placeholder="Enter your password"
+            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
+          <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+          <submit-button for="password" text="Sign In"
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+        </signin-strategy>
 
-          <conditional-render when="magicCodeSent" is="false">
-            <div class="flex items-center my-4">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
+        <conditional-render when="magicCodeSent" is="false">
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+        </conditional-render>
+
+        <signin-strategy type="magic-code">
+          <send-magic-code-button text="Send Magic Code To Your Email"
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+
+          <conditional-render when="magicCodeSent" is="true">
+            <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </conditional-render>
 
-          <signin-strategy type="magic-code">
-            <send-magic-code-button text="Send Magic Code To Your Email"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+          <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
 
-            <conditional-render when="magicCodeSent" is="true">
-              <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-            </conditional-render>
+          <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
+        </signin-strategy>
+      </signin-step>
 
-            <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
-
-            <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
-          </signin-strategy>
-        </signin-step>
-
-      </signin-root>
-
-      <!-- example without step components
-
-      <signin-root id="sign-in-root" base-url="http://localhost:3000" api-key="public-newsletter-api-key"
-        class="flex flex-col gap-2">
-        <email-field placeholder="Enter your email"
-          class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
-        <password-field placeholder="Enter your password"
-          class-name="px-4 py-2 border border-gray-300 rounded-lg"></password-field>
-        <submit-button text="Continue" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
-      </signin-root>
-    -->
-    </div>
+    </signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
       <div class="text-center mb-6">
@@ -231,153 +219,108 @@
       </div>
     </div>
 
-    <div class="container">
-      <unidy-profile use-unidy-auth-enabled api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-        language="de">
-        <unidy-field field="salutation"></unidy-field>
-        <unidy-field field="first_name"></unidy-field>
-        <unidy-field field="last_name"></unidy-field>
-        <unidy-field field="date_of_birth" required="true"></unidy-field>
-        <unidy-field field="phone_number"></unidy-field>
-        <unidy-field field="country_code" country-code-display-option="icon"></unidy-field>
-        <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
-        <unidy-field field="custom_attributes.multi"></unidy-field>
-        <unidy-field field="custom_attributes.active_membership"></unidy-field>
-        <unidy-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"></unidy-field>
-        <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"></unidy-field>
-        <unidy-field field="custom_attributes.first_name"></unidy-field>
-        <unidy-field field="custom_attributes.self_description"></unidy-field>
-        <unidy-submit-button>Submit</unidy-submit-button>
-        <div id="profile-update-message"></div>
+    <auth-provider>
+      <div class="container">
+        <unidy-profile language="de">
+          <unidy-field field="salutation"></unidy-field>
+          <unidy-field field="first_name"></unidy-field>
+          <unidy-field field="last_name"></unidy-field>
+          <unidy-field field="date_of_birth" required="true"></unidy-field>
+          <unidy-field field="phone_number"></unidy-field>
+          <unidy-field field="country_code" country-code-display-option="icon"></unidy-field>
+          <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
+          <unidy-field field="custom_attributes.multi"></unidy-field>
+          <unidy-field field="custom_attributes.active_membership"></unidy-field>
+          <unidy-field field="custom_attributes.back_number"
+            readonly-placeholder="No back number provided"></unidy-field>
+          <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"></unidy-field>
+          <unidy-field field="custom_attributes.first_name"></unidy-field>
+          <unidy-field field="custom_attributes.self_description"></unidy-field>
+          <unidy-submit-button>Submit</unidy-submit-button>
+          <div id="profile-update-message"></div>
 
+          <h2>Raw Field Examples</h2>
+          <div class="mb-4 mt-4">
+            <label for="first_name" class="block text-sm font-bold text-gray-700 mb-1">
+              First Name
+            </label>
 
-        <h2>Raw Field Examples</h2>
-        <div class="mb-4 mt-4">
-          <label for="first_name" class="block text-sm font-bold text-gray-700 mb-1">
-            First Name
-          </label>
+            <unidy-raw-field name="first_name" type="text" title="First Name raw" placeholder="Enter your first name"
+              required class-name="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
+                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
+                          focus:border-red-500 transition"></unidy-raw-field>
+          </div>
 
-          <unidy-raw-field
-            name="first_name"
-            type="text"
-            title="First Name raw"
-            placeholder="Enter your first name"
-            required
-            class-name="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
-                        placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
-                        focus:border-red-500 transition"
-          ></unidy-raw-field>
-        </div>
+          <h3 class="text-lg font-bold text-gray-700 mb-1">Salutation</h3>
+          <div class="flex gap-6">
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="salutation" type="radio" value="mr" title="Herr"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mr</span>
+            </label>
 
-        <h3 class="text-lg font-bold text-gray-700 mb-1">Salutation</h3>
-        <div class="flex gap-6">
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="salutation"
-              type="radio"
-              value="mr"
-              title="Herr"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">Mr</span>
-          </label>
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="salutation" type="radio" value="mrs" title="Frau"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mrs</span>
+            </label>
 
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="salutation"
-              type="radio"
-              value="mrs"
-              title="Frau"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">Mrs</span>
-          </label>
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="salutation" type="radio" value="mx" title="Divers"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mx</span>
+            </label>
+          </div>
 
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="salutation"
-              type="radio"
-              value="mx"
-              title="Divers"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">Mx</span>
-          </label>
-        </div>
+          <h3 class="text-lg font-bold text-gray-700 mb-1">Active Membership</h3>
+          <div class="flex gap-6">
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="custom_attributes.active_membership" type="radio" value="true" title="Yes"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Yes</span>
+            </label>
 
-        <h3 class="text-lg font-bold text-gray-700 mb-1">Active Membership</h3>
-        <div class="flex gap-6">
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="custom_attributes.active_membership"
-              type="radio"
-              value="true"
-              title="Yes"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">Yes</span>
-          </label>
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="custom_attributes.active_membership" type="radio" value="false" title="No"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">No</span>
+            </label>
 
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="custom_attributes.active_membership"
-              type="radio"
-              value="false"
-              title="No"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">No</span>
-          </label>
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field name="custom_attributes.active_membership" type="radio" value="_NOT_SET_" title="Not Set"
+                class-name="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Not Set</span>
+            </label>
+          </div>
 
-          <label class="inline-flex gap-2 cursor-pointer">
-            <unidy-raw-field
-              name="custom_attributes.active_membership"
-              type="radio"
-              value="_NOT_SET_"
-              title="Not Set"
-              class-name="h-4 w-4"
-            ></unidy-raw-field>
-            <span class="text-sm text-gray-800">Not Set</span>
-          </label>
-        </div>
+          <div class="mb-4 mt-4">
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
 
-        <div class="mb-4 mt-4">
-          <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number
-          </label>
+            <unidy-raw-field name="phone_number" type="tel" title="Telefonnummer" class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                          focus:border-blue-500 transition"></unidy-raw-field>
+          </div>
 
-          <unidy-raw-field
-            name="phone_number"
-            type="tel"
-            title="Telefonnummer"
-            class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
-                        placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                        focus:border-blue-500 transition"
-          ></unidy-raw-field>
-        </div>
+          <div class="mb-4">
+            <label for="custom_attributes.self_description" class="block text-sm font-medium text-gray-700 mb-1">
+              Self Description
+            </label>
 
-        <div class="mb-4">
-          <label for="custom_attributes.self_description" class="block text-sm font-medium text-gray-700 mb-1">
-            Self Description
-          </label>
-
-          <unidy-raw-field
-            name="custom_attributes.self_description"
-            type="textarea"
-            title="Self Description"
-            class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
-                        min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
-                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-          ></unidy-raw-field>
-        </div>
-      </unidy-profile>
-    </div>
+            <unidy-raw-field name="custom_attributes.self_description" type="textarea" title="Self Description"
+              class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+                          min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></unidy-raw-field>
+          </div>
+        </unidy-profile>
+      </div>
+    </auth-provider>
   </div>
 
   <script type="module">
     import { Auth } from "/build/index.esm.js";
 
-    const authFormContainer = document.getElementById("authFormContainer");
     const userSection = document.getElementById("userSection");
     const payloadOutput = document.getElementById("payloadOutput");
     const message = document.getElementById("message");
@@ -387,8 +330,6 @@
 
     signinRoot.addEventListener("authEvent", async (event) => {
       console.log("Auth event:", event.detail);
-
-      showTokenData(await auth.userData());
     });
 
     signinRoot.addEventListener("errorEvent", (event) => {
@@ -405,24 +346,6 @@
       }
     });
 
-    function showForm() {
-      authFormContainer.style.display = "block";
-      userSection.style.display = "none";
-    }
-
-    function showTokenData(payload) {
-      authFormContainer.style.display = "none";
-      userSection.style.display = "block";
-      payloadOutput.textContent = JSON.stringify(payload, null, 2);
-      message.textContent = `Welcome back ${payload.name || payload.email}!`;
-    }
-
-    if (await auth.isAuthenticated()) {
-      const payload = await auth.userData();
-      showTokenData(payload);
-    } else {
-      showForm();
-    }
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn?.addEventListener("click", () => {

@@ -1,5 +1,5 @@
 import { createStore } from "@stencil/store";
-import type { SigninRoot } from "../components/signin-root/signin-root";
+import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
   step: "email" | "verification";
@@ -45,7 +45,7 @@ const initialState: AuthState = {
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
 };
 
-const { state, reset } = createStore<AuthState>(initialState);
+const { state, reset, onChange } = createStore<AuthState>(initialState);
 
 class AuthStore {
   private rootComponentRef: SigninRoot | null = null;
@@ -97,17 +97,18 @@ class AuthStore {
     state.step = step;
   }
 
-  setSignInId(signInId: string | null) {
+  setSignInId(signInId: string) {
     state.sid = signInId;
     saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
   }
 
-  setToken(token: string | null) {
+  setToken(token: string) {
     state.token = token;
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, token);
+    this.setAuthenticated(!!token);
   }
 
-  setRefreshToken(refreshToken: string | null) {
+  setRefreshToken(refreshToken: string) {
     state.refreshToken = refreshToken;
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
   }
@@ -116,9 +117,9 @@ class AuthStore {
     state.authenticated = authenticated;
 
     if (!authenticated) {
-      this.setToken(null);
-      this.setRefreshToken(null);
-      this.setSignInId(null);
+      state.token = null;
+      state.refreshToken = null;
+      state.sid = null;
     }
   }
 
@@ -131,4 +132,4 @@ class AuthStore {
 }
 
 export const authStore = new AuthStore();
-export { state as authState };
+export { state as authState, onChange };

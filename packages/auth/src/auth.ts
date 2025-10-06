@@ -55,6 +55,11 @@ export class Auth {
 
   static initialize(client: UnidyClient): Auth {
     Auth.instance = new Auth(client);
+
+    if (Auth.instance.isTokenValid(authState.token)) {
+      authStore.setAuthenticated(true);
+    }
+
     return Auth.instance;
   }
 
@@ -110,7 +115,6 @@ export class Auth {
       authStore.setToken(response.jwt);
       authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
-      authStore.setAuthenticated(true);
 
       authStore.getRootComponentRef()?.onAuth(response);
     }
@@ -166,7 +170,6 @@ export class Auth {
       authStore.setToken(response.jwt);
       authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
-      authStore.setAuthenticated(true);
 
       authStore.getRootComponentRef()?.onAuth(response);
     }
