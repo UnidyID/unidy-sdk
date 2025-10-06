@@ -44,9 +44,8 @@ export class UnidyRawField {
         return checkedOption?.value ?? field.value ?? "";
       }
       return field.value;
-    } else {
-      return data[name].value;
     }
+    return data[name].value;
   }
 
   private writeStore(field: string, value: string | string[]) {
