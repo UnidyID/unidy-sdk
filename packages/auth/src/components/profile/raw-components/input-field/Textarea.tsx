@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from '@stencil/core';
 
 type TextareaProps = {
     id: string;
