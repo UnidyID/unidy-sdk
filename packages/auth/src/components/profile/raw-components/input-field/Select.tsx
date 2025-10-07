@@ -4,12 +4,15 @@ export type Option = { value: string; label: string; selected?: boolean };
 
 type SelectProps = {
   id: string;
+  name?: string;
   value: string | string[] | null | undefined;
   options: Option[];
   disabled?: boolean;
   title?: string;
   countryCodeDisplayOption?: string;
   attr_name?: string;
+  customStyle?: string;
+  emptyOption: boolean;
   onChange: (value: string) => void;
   countryIcon?: (code: string) => string;
 };
@@ -28,13 +31,17 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
  return (   
     <select
       id={props.id}
+      name={props.name}
+      class={props.customStyle}
       data-value={props.value as string | undefined}
       part="select"
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}
     >
-      <option value="" selected={props.value === null || props.value === ''} />
+      {props.emptyOption ? (
+        <option value="" selected={props.value === null || props.value === ''} />
+      ) : null}
       {props.options.map((opt) => (
         <option
           key={opt.value}
@@ -42,7 +49,6 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
           data-selected={opt.value === props.value ? 'true' : 'false'}
           selected={opt.value === props.value}
           disabled={opt.value === "--"}
-          part="option"
         >
           {renderOptionLabel(opt)}
         </option>

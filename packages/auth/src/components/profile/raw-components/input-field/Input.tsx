@@ -4,7 +4,7 @@ type InputProps = {
     id: string;
     type: string;
     value: string | undefined;
-    className?: string;
+    customStyle?: string;
     disabled?: boolean;
     required?: boolean;
     title?: string;
@@ -18,7 +18,7 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
       id={props.id}
       type={props.type}
       value={props.value}
-      class={props.className}
+      class={props.customStyle}
       disabled={props.disabled}
       required={props.required}
       part="input"

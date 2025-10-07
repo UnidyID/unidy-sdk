@@ -18,7 +18,7 @@ type RadioGroupProps =
       type?: string;
       name: string;
       title?: string;
-      className?: string;
+      customStyle?: string;
       onChange: (value: string) => void;
     };
 
@@ -32,7 +32,7 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
         checked={props.checked}
         disabled={props.disabled}
         title={props.title}
-        class={props.className}
+        class={props.customStyle}
         onChange={() => props.onChange(props.value)}
       />
     );

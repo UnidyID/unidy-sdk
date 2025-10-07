@@ -6,7 +6,9 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
+import { Option } from "./components/profile/unidy-raw-field/unidy-raw-field";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
+export { Option } from "./components/profile/unidy-raw-field/unidy-raw-field";
 export namespace Components {
     interface AuthProvider {
         /**
@@ -122,11 +124,15 @@ export namespace Components {
         "baseUrl": string;
     }
     interface UnidyField {
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
+        /**
+          * @default true
+         */
+        "emptyOption": boolean;
         "field": string;
         /**
           * @default "Please enter a valid phone number."
@@ -153,17 +159,22 @@ export namespace Components {
     }
     interface UnidyRawField {
         "checked"?: boolean;
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
         "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "emptyOption": boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
         "name": string;
+        "options"?: string | Option[];
         "placeholder"?: string;
         /**
           * @default ""
@@ -435,11 +446,15 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
     }
     interface UnidyField {
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
+        /**
+          * @default true
+         */
+        "emptyOption"?: boolean;
         "field": string;
         /**
           * @default "Please enter a valid phone number."
@@ -466,17 +481,22 @@ declare namespace LocalJSX {
     }
     interface UnidyRawField {
         "checked"?: boolean;
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
         "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "emptyOption"?: boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
         "name": string;
+        "options"?: string | Option[];
         "placeholder"?: string;
         /**
           * @default ""
