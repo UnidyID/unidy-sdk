@@ -2,8 +2,9 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
 import { Textarea } from "./../raw-components/input-field/Textarea";
 import { Input } from "./../raw-components/input-field/Input";
-import { type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
+import { ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
 import { Select } from "../raw-components/input-field/Select";
+import { MultiSelect } from "../raw-components/input-field/MultiSelect";
 
 export type Option = { value: string; label: string; selected?: boolean };
 
@@ -39,18 +40,27 @@ export class UnidyRawField {
 
     if (!data) return;
 
+    let field: ProfileNode | undefined;
+
     if (name.startsWith("custom_attributes.")) {
       const key = name.replace("custom_attributes.", "");
-      const field = data.custom_attributes?.[key];
-      if (!field) return;
-
-      if (Array.isArray(field.radio_options)) {
-        const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
-        return checkedOption?.value ?? field.value ?? "";
-      }
-      return field.value;
+      field = data.custom_attributes?.[key];
+    } else {
+      field = data[name];
     }
-    return data[name].value;
+
+    if (!field) return;
+
+    if (field.radio_options) {
+      const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
+      return checkedOption?.value ?? field.value ?? "";
+    }
+
+    if (field.type === "checkbox") {
+      return Array.isArray(field.value) ? field.value : [];
+    }
+
+    return field.value;
   }
 
   private writeStore(field: string, value: string | string[]) {
@@ -103,7 +113,7 @@ export class UnidyRawField {
     if (!this.name) throw new Error('unidy-raw-field: "name" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
-    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select"]);
+    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select", "checkbox"]);
     if (!allowed.has(this.type)) {
       this.type = "text";
     }
@@ -117,7 +127,6 @@ export class UnidyRawField {
       this.type === "number" ||
       this.type === "date" ||
       this.type === "textarea" ||
-      this.type === "radio" ||
       this.type === "select";
 
     if (isType && (current === undefined || current === null) && typeof this.value === "string") {
@@ -149,7 +158,7 @@ export class UnidyRawField {
   render() {
     if (this.type === "radio" && typeof this.value === "string") {
       const currentValue = this.readStore(this.name);
-      const isChecked = String(currentValue) === this.value;
+      const isChecked = currentValue != null && String(currentValue) === this.value;
       return (
         <RadioGroup
           name={this.name}
@@ -160,6 +169,28 @@ export class UnidyRawField {
           customStyle={this.customStyle}
           type="radio"
           onChange={this.onRadioChange}
+        />
+      );
+    }
+
+    if (this.type === "checkbox" && this.value) {
+      const currentValue = (this.readStore(this.name) as string[]) ?? [];
+      const isChecked = currentValue != null && currentValue.includes(this.value as string);
+      return (
+        <MultiSelect
+          id={`${this.name}-${this.value}`}
+          name={this.name}
+          value={this.value as string}
+          checked={isChecked}
+          disabled={this.disabled}
+          title={this.title}
+          customStyle={this.customStyle}
+          type="checkbox"
+          onToggle={(val, checked) => {
+            const current = this.readStore(this.name) as string[];
+            const updated = checked ? [...current, val] : current.filter((v) => v !== val);
+            this.writeStore(this.name, updated);
+          }}
         />
       );
     }
