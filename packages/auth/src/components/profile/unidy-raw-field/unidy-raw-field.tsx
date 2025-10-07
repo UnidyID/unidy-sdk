@@ -2,7 +2,7 @@ import { Component, Element, Prop, State, h } from "@stencil/core";
 import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
 import { Textarea } from "./../raw-components/input-field/Textarea";
 import { Input } from "./../raw-components/input-field/Input";
-import { ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
+import { type ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
 import { Select } from "../raw-components/input-field/Select";
 import { MultiSelect } from "../raw-components/input-field/MultiSelect";
 
@@ -175,7 +175,7 @@ export class UnidyRawField {
 
     if (this.type === "checkbox" && this.value) {
       const currentValue = (this.readStore(this.name) as string[]) ?? [];
-      const isChecked = currentValue != null && currentValue.includes(this.value as string);
+      const isChecked = currentValue?.includes(this.value as string);
       return (
         <MultiSelect
           id={`${this.name}-${this.value}`}
