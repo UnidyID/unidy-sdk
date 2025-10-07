@@ -1,5 +1,5 @@
 {
-  "name": "@unidy.io/auth",
+  "name": "@unidy.io/legacy_auth",
   "version": "0.0.20",
   "license": "MIT",
   "private": false,

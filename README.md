@@ -23,10 +23,16 @@ bun run build
 
 Make a release commit with the updated `README.md` and `package.json` files and push it to the main branch.
 
-Publish the package to npm:
+Publish the package to npm (if you release a development version add a tag to avoid setting the latest tag to the release `--tag next`):
 
 ```bash
 bun publish --access public
+```
+
+If you need to tag a previous package as latest use the `npm dist-tag` command:
+
+```bash
+npm dist-tag add @unidy.io/<package>@<version> latest
 ```
 
 **_IMPORTANT:_** Use the latest version of the released SDK on the Unidy SDK Demo page, showcasing the new features and improvements.
