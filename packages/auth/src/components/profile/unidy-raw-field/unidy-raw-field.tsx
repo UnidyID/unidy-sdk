@@ -3,6 +3,9 @@ import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
 import { Textarea } from "./../raw-components/input-field/Textarea";
 import { Input } from "./../raw-components/input-field/Input";
 import { type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
+import { Select } from "../raw-components/input-field/Select";
+
+export type Option = { value: string; label: string; selected?: boolean };
 
 @Component({
   tag: "unidy-raw-field",
@@ -14,7 +17,7 @@ export class UnidyRawField {
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
-  @Prop() className?: string;
+  @Prop() customStyle?: string;
 
   @Prop() name!: string;
   @Prop() value?: string | string[];
@@ -23,6 +26,8 @@ export class UnidyRawField {
   @Prop() title!: string;
   @Prop() type!: string;
   @Prop() placeholder?: string;
+  @Prop() options?: string | Option[];
+  @Prop() emptyOption = false;
 
   @Element() el!: HTMLElement;
 
@@ -70,14 +75,35 @@ export class UnidyRawField {
     }
   }
 
+  private getNormalizedOptions(): Option[] {
+    if (Array.isArray(this.options)) return this.options;
+
+    // unidy-raw-field select-options prop can be a JSON string
+    if (typeof this.options === 'string') return JSON.parse(this.options);
+
+    return [];
+  }
+
+  private countryIcon(countryCode: string, placeholder = "➖"): string {
+    if (!/^[A-Z]{2}$/.test(countryCode)) {
+      return placeholder;
+    }
+
+    return Array.from(countryCode)
+      .map((char) => String.fromCodePoint(0x1f1e6 + (char.charCodeAt(0) - "A".charCodeAt(0))))
+      .join("");
+  }
+
+
   private onRadioChange = (val: string) => this.writeStore(this.name, val);
+  private onSelectChange = (val: string) => this.writeStore(this.name, val);
   private onTextChange = (val: string) => this.writeStore(this.name, val);
 
   componentWillLoad() {
     if (!this.name) throw new Error('unidy-raw-field: "name" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
-    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea"]);
+    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select"]);
     if (!allowed.has(this.type)) {
       this.type = "text";
     }
@@ -91,7 +117,8 @@ export class UnidyRawField {
       this.type === "number" ||
       this.type === "date" ||
       this.type === "textarea" ||
-      this.type === "radio";
+      this.type === "radio" ||
+      this.type === "select";
 
     if (isType && (current === undefined || current === null) && typeof this.value === "string") {
       this.writeStore(this.name, this.value);
@@ -130,9 +157,29 @@ export class UnidyRawField {
           checked={isChecked}
           disabled={this.disabled}
           title={this.title}
-          className={this.className}
+          customStyle={this.customStyle}
           type="radio"
           onChange={this.onRadioChange}
+        />
+      );
+    }
+
+    if (this.type === "select") {
+      const currentValue = (this.readStore(this.name) as string) ?? "";
+      const option = this.getNormalizedOptions();
+      return (
+        <Select
+          id={this.name}
+          name={this.name}
+          value={currentValue}
+          options={option}
+          disabled={this.disabled}
+          title={this.title}
+          emptyOption={this.emptyOption}
+          onChange={this.onSelectChange}
+          customStyle={this.customStyle}
+          countryCodeDisplayOption={this.countryCodeDisplayOption}
+          countryIcon={this.countryIcon}
         />
       );
     }
@@ -146,7 +193,7 @@ export class UnidyRawField {
           required={this.required}
           disabled={this.disabled}
           title={this.title}
-          className={this.className}
+          customStyle={this.customStyle}
           onChange={this.onTextChange}
         />
       );
@@ -161,7 +208,7 @@ export class UnidyRawField {
         disabled={this.disabled}
         title={this.title}
         type={this.type}
-        className={this.className}
+        customStyle={this.customStyle}
         placeholder={this.placeholder}
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}

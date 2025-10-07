@@ -7,7 +7,7 @@ type TextareaProps = {
     required?: boolean;
     title?: string;
     name?: string;
-    className?: string;
+    customStyle?: string;
     placeholder?: string;
     onChange: (value: string) => void;
 };
@@ -17,7 +17,7 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     id={props.id}
     value={props.value}
     name={props.name}
-    class={props.className}
+    class={props.customStyle}
     required={props.required}
     part="textarea"
     disabled={props.disabled}

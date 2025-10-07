@@ -30,7 +30,8 @@ export class UnidyField {
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
-  @Prop() className?: string;
+  @Prop() customStyle?: string;
+  @Prop() emptyOption = true;
 
   @Element() el!: HTMLElement;
 
@@ -225,6 +226,7 @@ export class UnidyField {
               value={fieldData.value}
               options={fieldData.options}
               disabled={isLocked}
+              emptyOption={this.emptyOption}
               title={isLocked ? lockedText : undefined}
               onChange={this.onSelectChange}
               countryCodeDisplayOption={this.countryCodeDisplayOption}
@@ -263,7 +265,7 @@ export class UnidyField {
               id={this.field}
               type={fieldData.type as string}
               value={fieldData.value as string | undefined}
-              className={profileState.errors[this.field] ? "field-error" : ""}
+              customStyle={profileState.errors[this.field] ? "field-error" : ""}
               required={fieldData?.required || this.required}
               disabled={isLocked}
               title={isLocked ? lockedText : undefined}
