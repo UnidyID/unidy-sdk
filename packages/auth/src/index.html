@@ -229,7 +229,7 @@
           <unidy-field field="phone_number"></unidy-field>
           <unidy-field field="country_code" country-code-display-option="icon"></unidy-field>
           <unidy-field field="custom_attributes.favorite_nut"></unidy-field>
-          <unidy-field field="custom_attributes.multi"></unidy-field>
+          <unidy-field field="custom_attributes.sports_interests"></unidy-field>
           <unidy-field field="custom_attributes.active_membership"></unidy-field>
           <unidy-field field="custom_attributes.back_number"
             readonly-placeholder="No back number provided"></unidy-field>
@@ -328,6 +328,112 @@
                 { "value": "walnuss", "label": "Walnuss" }
               ]'
             />
+          </div>
+          <div class="mb-4">
+            <h3 class="block text-sm font-bold mb-1">Favorite sports</h3>
+            <div class="flex flex-wrap gap-2">
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="soccer"
+                  title="Soccer"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Soccer
+              </label>
+
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="basketball"
+                  title="Basketball"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Basketball
+              </label>
+
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="hockey"
+                  title="Hockey"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Hockey
+              </label>
+
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="golf"
+                  title="Golf"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Golf
+              </label>
+
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="handball"
+                  title="Handball"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Handball
+              </label>
+
+              <label
+                class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800"
+              >
+                <unidy-raw-field
+                  name="custom_attributes.sports_interests"
+                  type="checkbox"
+                  value="tennis"
+                  title="Tennis"
+                  custom-style="sr-only"
+                ></unidy-raw-field>
+                Tennis
+              </label>
+            </div>
           </div>
         </unidy-profile>
       </div>
