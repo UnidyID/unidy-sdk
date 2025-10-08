@@ -20,7 +20,7 @@
 | `placeholder`              | `placeholder`                 |             | `string \| undefined`             | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                          | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                         | `false`                                |
-| `title` _(required)_       | `title`                       |             | `string`                          | `undefined`                            |
+| `tooltip`                  | `tooltip`                     |             | `string \| undefined`             | `undefined`                            |
 | `type` _(required)_        | `type`                        |             | `string`                          | `undefined`                            |
 | `value`                    | `value`                       |             | `string \| string[] \| undefined` | `undefined`                            |
 

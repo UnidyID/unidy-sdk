@@ -1,9 +1,9 @@
 import { Component, Prop, State, h, Element } from "@stencil/core";
-import { Input } from "../raw-components/input-field/Input";
-import { Textarea } from "../raw-components/input-field/Textarea";
-import { RadioGroup } from "../raw-components/input-field/RadioGroup";
-import { MultiSelect } from "../raw-components/input-field/MultiSelect";
-import { Select } from "../raw-components/input-field/Select";
+import { Input } from "../raw-input-fields/Input";
+import { Textarea } from "../raw-input-fields/Textarea";
+import { RadioGroup } from "../raw-input-fields/RadioGroup";
+import { MultiSelect } from "../raw-input-fields/MultiSelect";
+import { Select } from "../raw-input-fields/Select";
 import { state as profileState } from "../../../store/profile-store";
 /**
  * @part select

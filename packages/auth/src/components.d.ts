@@ -184,7 +184,7 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
-        "title": string;
+        "tooltip"?: string;
         "type": string;
         "value"?: string | string[];
     }
@@ -506,7 +506,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
-        "title": string;
+        "tooltip"?: string;
         "type": string;
         "value"?: string | string[];
     }

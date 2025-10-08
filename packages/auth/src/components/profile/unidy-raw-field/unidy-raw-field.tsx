@@ -1,16 +1,15 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
-import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
-import { Textarea } from "./../raw-components/input-field/Textarea";
-import { Input } from "./../raw-components/input-field/Input";
+import { RadioGroup } from "../raw-input-fields/RadioGroup";
+import { Textarea } from "../raw-input-fields/Textarea";
+import { Input } from "../raw-input-fields/Input";
 import { type ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
-import { Select } from "../raw-components/input-field/Select";
-import { MultiSelect } from "../raw-components/input-field/MultiSelect";
+import { Select } from "../raw-input-fields/Select";
+import { MultiSelect } from "../raw-input-fields/MultiSelect";
 
 export type Option = { value: string; label: string; selected?: boolean };
 
 @Component({
   tag: "unidy-raw-field",
-  styleUrl: "unidy-raw-field.css",
   shadow: false,
 })
 export class UnidyRawField {
@@ -24,7 +23,7 @@ export class UnidyRawField {
   @Prop() value?: string | string[];
   @Prop() checked?: boolean;
   @Prop() disabled?: boolean;
-  @Prop() title!: string;
+  @Prop() tooltip?: string;
   @Prop() type!: string;
   @Prop() placeholder?: string;
   @Prop() options?: string | Option[];
@@ -63,25 +62,26 @@ export class UnidyRawField {
     return field.value;
   }
 
-  private writeStore(field: string, value: string | string[]) {
-    if (!field) return;
+  private writeStore(fieldName: string, value: string | string[] | undefined) {
+    if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
-    if (field.startsWith("custom_attributes.")) {
-      const customAttributeFieldName = field.replace("custom_attributes.", "");
-      const prev = data?.custom_attributes?.[customAttributeFieldName];
-      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
+    const isCustomAttribute = fieldName.startsWith("custom_attributes.");
+    const key = isCustomAttribute ? fieldName.replace("custom_attributes.", "") : fieldName;
 
+    if (isCustomAttribute) {
+      const field = data.custom_attributes?.[key];
       profileState.data = {
         ...data,
-        custom_attributes: { ...data.custom_attributes, [customAttributeFieldName]: val },
+        custom_attributes: {
+          ...data.custom_attributes,
+          [key]: { ...field, value },
+        },
       };
     } else {
-      const regularFieldName = field;
-      const prev = data?.[regularFieldName];
-      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
-      profileState.data = { ...data, [regularFieldName]: val };
+      const field = data[key];
+      profileState.data = { ...data, [key]: { ...field, value } };
     }
   }
 
@@ -165,7 +165,7 @@ export class UnidyRawField {
           value={this.value}
           checked={isChecked}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           customStyle={this.customStyle}
           type="radio"
           onChange={this.onRadioChange}
@@ -183,7 +183,7 @@ export class UnidyRawField {
           value={this.value as string}
           checked={isChecked}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           customStyle={this.customStyle}
           type="checkbox"
           onToggle={(val, checked) => {
@@ -205,7 +205,7 @@ export class UnidyRawField {
           value={currentValue}
           options={option}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           emptyOption={this.emptyOption}
           onChange={this.onSelectChange}
           customStyle={this.customStyle}
@@ -223,7 +223,7 @@ export class UnidyRawField {
           value={currentValue}
           required={this.required}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           customStyle={this.customStyle}
           onChange={this.onTextChange}
         />
@@ -237,7 +237,7 @@ export class UnidyRawField {
         value={currentValue}
         required={this.required}
         disabled={this.disabled}
-        title={this.title}
+        title={this.tooltip}
         type={this.type}
         customStyle={this.customStyle}
         placeholder={this.placeholder}
