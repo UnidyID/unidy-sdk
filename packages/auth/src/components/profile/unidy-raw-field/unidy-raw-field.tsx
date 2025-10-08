@@ -1,12 +1,10 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
-import { RadioGroup } from "../raw-input-fields/RadioGroup";
+import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
 import { Textarea } from "../raw-input-fields/Textarea";
 import { Input } from "../raw-input-fields/Input";
-import { type ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
-import { Select } from "../raw-input-fields/Select";
-import { MultiSelect } from "../raw-input-fields/MultiSelect";
-
-export type Option = { value: string; label: string; selected?: boolean };
+import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../store/profile-store";
+import { Select, type Option } from "../raw-input-fields/Select";
+import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
 
 @Component({
   tag: "unidy-raw-field",
@@ -28,6 +26,9 @@ export class UnidyRawField {
   @Prop() placeholder?: string;
   @Prop() options?: string | Option[];
   @Prop() emptyOption = false;
+  @Prop() attrName?: string;
+  @Prop() radioOptions?: RadioOption[];
+  @Prop() multiSelectOptions?: MultiSelectOption[];
 
   @Element() el!: HTMLElement;
 
@@ -104,8 +105,20 @@ export class UnidyRawField {
       .join("");
   }
 
+  // TODO: Fix this for value: true | false | _NOT_SET_
+  private onRadioChange = (newVal: string) => {
+    this.writeStore(this.name, String(newVal));
+    this.selected = newVal;
+  };
 
-  private onRadioChange = (val: string) => this.writeStore(this.name, val);
+  private onMultiToggle = (optValue: string, checked: boolean) => {
+    const currentValues = Array.isArray(this.selected) ? this.selected : [];
+    const updatedValues = checked ? (currentValues.includes(optValue) ? currentValues : [...currentValues, optValue]) : currentValues.filter(v => v !== optValue);
+
+    this.selected = updatedValues;
+    this.writeStore(this.name, updatedValues);
+  };
+
   private onSelectChange = (val: string) => this.writeStore(this.name, val);
   private onTextChange = (val: string) => this.writeStore(this.name, val);
 
@@ -132,6 +145,8 @@ export class UnidyRawField {
     if (isType && (current === undefined || current === null) && typeof this.value === "string") {
       this.writeStore(this.name, this.value);
     }
+
+    this.selected = current;
   }
 
   componentDidRender() {
@@ -156,43 +171,78 @@ export class UnidyRawField {
   };
 
   render() {
-    if (this.type === "radio" && typeof this.value === "string") {
-      const currentValue = this.readStore(this.name);
-      const isChecked = currentValue != null && String(currentValue) === this.value;
-      return (
-        <RadioGroup
-          name={this.name}
-          value={this.value}
-          checked={isChecked}
-          disabled={this.disabled}
-          title={this.tooltip}
-          customStyle={this.customStyle}
-          type="radio"
-          onChange={this.onRadioChange}
-        />
-      );
+    if (this.type === "radio") {
+      if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
+          const checkedOptions = this.radioOptions.map((opt) => ({
+            ...opt,
+            checked: opt.value === this.selected,
+          }));
+        return (
+          <RadioGroup
+            name={this.name}
+            disabled={this.disabled}
+            title={this.tooltip}
+            type="radio"
+            onChange={this.onRadioChange}
+            options={checkedOptions}
+          />
+        );
+      }
+
+      if (typeof this.value === "string") {
+        const currentValue = this.readStore(this.name);
+        const isChecked = currentValue != null && String(currentValue) === this.value;
+        return (
+          <RadioGroup
+            name={this.name}
+            value={this.value}
+            checked={isChecked}
+            disabled={this.disabled}
+            title={this.tooltip}
+            customStyle={this.customStyle}
+            type="radio"
+            onChange={this.onRadioChange}
+          />
+        );
+      }
     }
 
-    if (this.type === "checkbox" && this.value) {
-      const currentValue = (this.readStore(this.name) as string[]) ?? [];
-      const isChecked = currentValue?.includes(this.value as string);
-      return (
-        <MultiSelect
-          id={`${this.name}-${this.value}`}
-          name={this.name}
-          value={this.value as string}
-          checked={isChecked}
-          disabled={this.disabled}
-          title={this.tooltip}
-          customStyle={this.customStyle}
-          type="checkbox"
-          onToggle={(val, checked) => {
-            const current = this.readStore(this.name) as string[];
-            const updated = checked ? [...current, val] : current.filter((v) => v !== val);
-            this.writeStore(this.name, updated);
-          }}
-        />
-      );
+    if (this.type === "checkbox") {
+      if (Array.isArray(this.multiSelectOptions) && this.multiSelectOptions.length) {
+        const selected = Array.isArray(this.selected) ? this.selected : [];
+        return (
+          <MultiSelect
+            value={selected}
+            options={this.multiSelectOptions}
+            disabled={this.disabled}
+            title={this.tooltip}
+            type="checkbox"
+            onToggle={this.onMultiToggle}
+          />
+        );
+      }
+
+      if (this.value) {
+        const currentValue = (this.readStore(this.name) as string[]) ?? [];
+        const isChecked = currentValue?.includes(this.value as string);
+        return (
+          <MultiSelect
+            id={`${this.name}-${this.value}`}
+            name={this.name}
+            value={this.value as string}
+            checked={isChecked}
+            disabled={this.disabled}
+            title={this.tooltip}
+            customStyle={this.customStyle}
+            type="checkbox"
+            onToggle={(val, checked) => {
+              const current = this.readStore(this.name) as string[];
+              const updated = checked ? [...current, val] : current.filter((v) => v !== val);
+              this.writeStore(this.name, updated);
+            }}
+          />
+        );
+      }
     }
 
     if (this.type === "select") {
@@ -211,6 +261,7 @@ export class UnidyRawField {
           customStyle={this.customStyle}
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
+          attr_name={this.attrName}
         />
       );
     }

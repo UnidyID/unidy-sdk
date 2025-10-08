@@ -14,6 +14,7 @@
 | `emptyOption`              | `empty-option`                |             | `boolean`                        | `true`                                 |
 | `field` _(required)_       | `field`                       |             | `string`                         | `undefined`                            |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                         | `"Please enter a valid phone number."` |
+| `placeholder`              | `placeholder`                 |             | `string \| undefined`            | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                         | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                        | `false`                                |
 
@@ -40,6 +41,19 @@
 | `"select"`                          |             |
 | `"textarea"`                        |             |
 
+
+## Dependencies
+
+### Depends on
+
+- [unidy-raw-field](../unidy-raw-field)
+
+### Graph
+```mermaid
+graph TD;
+  unidy-field --> unidy-raw-field
+  style unidy-field fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

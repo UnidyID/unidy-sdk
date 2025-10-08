@@ -6,9 +6,13 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
-import { Option } from "./components/profile/unidy-raw-field/unidy-raw-field";
+import { Option } from "./components/profile/raw-input-fields/Select";
+import { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
+import { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
-export { Option } from "./components/profile/unidy-raw-field/unidy-raw-field";
+export { Option } from "./components/profile/raw-input-fields/Select";
+export { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
+export { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export namespace Components {
     interface AuthProvider {
         /**
@@ -138,6 +142,7 @@ export namespace Components {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -158,6 +163,7 @@ export namespace Components {
         "profileId"?: string;
     }
     interface UnidyRawField {
+        "attrName"?: string;
         "checked"?: boolean;
         /**
           * @default "label"
@@ -173,9 +179,11 @@ export namespace Components {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "multiSelectOptions"?: MultiSelectOption[];
         "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
+        "radioOptions"?: RadioOption[];
         /**
           * @default ""
          */
@@ -460,6 +468,7 @@ declare namespace LocalJSX {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -480,6 +489,7 @@ declare namespace LocalJSX {
         "profileId"?: string;
     }
     interface UnidyRawField {
+        "attrName"?: string;
         "checked"?: boolean;
         /**
           * @default "label"
@@ -495,9 +505,11 @@ declare namespace LocalJSX {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "multiSelectOptions"?: MultiSelectOption[];
         "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
+        "radioOptions"?: RadioOption[];
         /**
           * @default ""
          */

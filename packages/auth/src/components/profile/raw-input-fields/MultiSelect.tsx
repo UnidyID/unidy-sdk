@@ -1,11 +1,11 @@
 import { type FunctionalComponent, h } from '@stencil/core';
 
-export type Option = { value: string; label: string };
+export type MultiSelectOption = { value: string; label: string };
 
 type MultiSelectProps =
 | {
     value: string[];
-    options: Option[];
+    options: MultiSelectOption[];
     disabled?: boolean;
     title?: string;
     type?: string;
