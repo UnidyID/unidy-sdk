@@ -125,27 +125,25 @@ export class Auth {
       throw new Error("No sign in ID available");
     }
 
+    authStore.setMagicCodeRequested(true);
     authStore.setLoading(true);
     authStore.setError(null);
 
-    const [error] = await this.client.auth.sendMagicCode(authState.sid);
+    const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
     authStore.setMagicCodeRequested(false);
 
+    authStore.setLoading(false);
     if (error) {
-      if (error === "recently_created") {
+      if (error === "magic_code_recently_created") {
         authStore.setMagicCodeSent(true);
-        authStore.setLoading(false);
-        authStore.setError(error);
-
-        return;
+        authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
       }
 
       authStore.setError(error);
-      authStore.setLoading(false);
     } else {
       authStore.setMagicCodeSent(true);
-      authStore.setLoading(false);
+      authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
     }
   }
 

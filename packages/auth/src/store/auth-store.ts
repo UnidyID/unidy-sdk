@@ -8,6 +8,7 @@ export interface AuthState {
   magicCode: string;
   magicCodeRequested: boolean;
   magicCodeSent: boolean;
+  enableResendMagicCodeAfter: number | null;
   sid: string | null;
   loading: boolean; // TODO refactor this or maybe remove loading state completely
   error: string | null;
@@ -37,6 +38,7 @@ const initialState: AuthState = {
   magicCode: "",
   magicCodeRequested: false,
   magicCodeSent: false,
+  enableResendMagicCodeAfter: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   error: null,
@@ -80,6 +82,10 @@ class AuthStore {
 
   setMagicCodeSent(sent: boolean) {
     state.magicCodeSent = sent;
+  }
+
+  setEnableResendMagicCodeAfter(enableResendMagicCodeAfter: number | null) {
+    state.enableResendMagicCodeAfter = enableResendMagicCodeAfter;
   }
 
   setLoading(loading: boolean) {

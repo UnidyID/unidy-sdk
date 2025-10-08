@@ -8,7 +8,7 @@ import { Auth } from "../../../auth";
 })
 export class ErrorMessage {
   @Prop() className = "";
-  @Prop() for!: "email" | "magicCode" | "password";
+  @Prop() for!: "email" | "magicCode" | "password" | "general";
 
   private defaultErrorMessage(error: string): string {
     switch (error) {
@@ -17,7 +17,7 @@ export class ErrorMessage {
       case Auth.Errors.password.INVALID:
         return "Invalid password";
       case Auth.Errors.magicCode.RECENTLY_CREATED:
-        return "Magic code already sent - We don't have resend option here yet, sorry :(";
+        return "Magic code already sent. If you didn't receive one, please try again in a minute";
       case Auth.Errors.magicCode.EXPIRED:
         return "Magic code expired";
       case Auth.Errors.magicCode.USED:
@@ -41,6 +41,8 @@ export class ErrorMessage {
         return (Object.values(Auth.Errors.email) as string[]).includes(error);
       case "password":
         return (Object.values(Auth.Errors.password) as string[]).includes(error);
+      case "general":
+        return (Object.values(Auth.Errors.general) as string[]).includes(error);
       default:
         return true;
     }
