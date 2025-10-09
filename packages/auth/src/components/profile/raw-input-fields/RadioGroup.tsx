@@ -28,12 +28,12 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
       <input
         type={props.type}
         name={props.name}
-        value={props.value}
+        value={String(props.value)}
         checked={props.checked}
         disabled={props.disabled}
         title={props.title}
         class={props.customStyle}
-        onChange={() => props.onChange(props.value)}
+        onChange={() => props.onChange(String(props.value))}
       />
     );
   }
@@ -42,17 +42,17 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
     <div part="radio-group" title={props.title}>
       {props.options.map((opt) => (
         <label
-          key={opt.value}
+          key={String(opt.value)}
           part={`radio-label ${opt.checked ? 'radio-checked' : ''}`}
           data-checked={opt.checked ? 'true' : 'false'}
         >
           <input
             type={props.type}
             name={props.name}
-            value={opt.value}
+            value={String(opt.value)}
             checked={opt.checked}
             disabled={props.disabled}
-            onChange={() => props.onChange(opt.value)}
+            onChange={() => props.onChange(String(opt.value))}
             part="radio"
           />
           {opt.label}

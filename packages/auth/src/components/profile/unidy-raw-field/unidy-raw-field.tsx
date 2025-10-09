@@ -53,7 +53,10 @@ export class UnidyRawField {
 
     if (field.radio_options) {
       const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
-      return checkedOption?.value ?? field.value ?? "";
+
+      let checkedValue =  checkedOption?.value ?? field.value ?? "";
+
+       return String(checkedValue);
     }
 
     if (field.type === "checkbox") {
@@ -63,7 +66,7 @@ export class UnidyRawField {
     return field.value;
   }
 
-  private writeStore(fieldName: string, value: string | string[] | undefined) {
+  private writeStore(fieldName: string, value: string | string[]) {
     if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
     if (!data) return;
@@ -105,7 +108,6 @@ export class UnidyRawField {
       .join("");
   }
 
-  // TODO: Fix this for value: true | false | _NOT_SET_
   private onRadioChange = (newVal: string) => {
     this.writeStore(this.name, String(newVal));
     this.selected = newVal;
@@ -113,7 +115,12 @@ export class UnidyRawField {
 
   private onMultiToggle = (optValue: string, checked: boolean) => {
     const currentValues = Array.isArray(this.selected) ? this.selected : [];
-    const updatedValues = checked ? (currentValues.includes(optValue) ? currentValues : [...currentValues, optValue]) : currentValues.filter(v => v !== optValue);
+    let updatedValues: string[];
+    if (checked) {
+      updatedValues = currentValues.includes(optValue) ? currentValues : [...currentValues, optValue];
+    } else {
+      updatedValues = currentValues.filter((v) => v !== optValue);
+    }
 
     this.selected = updatedValues;
     this.writeStore(this.name, updatedValues);
@@ -175,7 +182,7 @@ export class UnidyRawField {
       if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
           const checkedOptions = this.radioOptions.map((opt) => ({
             ...opt,
-            checked: opt.value === this.selected,
+            checked: String(opt.value) === this.selected,
           }));
         return (
           <RadioGroup
