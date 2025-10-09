@@ -1,5 +1,4 @@
-import { Component, Host, h, Prop, State } from "@stencil/core";
-import { authState, onChange } from "../../../store/auth-store";
+import { Component, Host, h, Prop } from "@stencil/core";
 
 @Component({
   tag: "signin-strategy",

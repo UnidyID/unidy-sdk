@@ -164,6 +164,7 @@
       <signin-step name="email">
         <email-field placeholder="Enter your email"
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></email-field>
+
         <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
 
         <submit-button for="email" text="Continue with Email"
@@ -171,9 +172,11 @@
       </signin-step>
 
       <signin-step name="verification">
+
         <signin-strategy type="password">
           <password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg"></password-field>
+            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg"></password-field>
+          <reset-pass-button text="Reset Password" class-name="mb-4 text-sm text-blue-500"></reset-pass-button>
           <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
           <submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>

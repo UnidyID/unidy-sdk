@@ -9,13 +9,13 @@ export class SigninStep {
   @Prop() name!: "email" | "verification";
   @Prop() alwaysRender = false;
 
-  @Method()
-  async isActive(): Promise<boolean> {
-    return authState.step === this.name || this.alwaysRender;
-  }
-
   render() {
-    const isActive = authState.step === this.name || this.alwaysRender;
+    const isActive =
+      this.name === "email"
+        ? authState.step === "email"
+        : this.name === "verification"
+          ? authState.step === "verification" || authState.step === "magic-code"
+          : false;
 
     return (
       <Host style={{ display: isActive ? "block" : "none" }}>

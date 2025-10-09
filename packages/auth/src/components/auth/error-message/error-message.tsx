@@ -16,6 +16,10 @@ export class ErrorMessage {
         return "Account not found";
       case Auth.Errors.password.INVALID:
         return "Invalid password";
+      case Auth.Errors.password.NOT_SET:
+        return "Password not set";
+      case Auth.Errors.password.RESET_PASSWORD_ALREADY_SENT:
+        return "Reset password already sent";
       case Auth.Errors.magicCode.RECENTLY_CREATED:
         return "Magic code already sent. If you didn't receive one, please try again in a minute";
       case Auth.Errors.magicCode.EXPIRED:
@@ -28,6 +32,7 @@ export class ErrorMessage {
         return "Account locked beacuse of too many failed attempts. Try again later";
       case Auth.Errors.general.SIGN_IN_EXPIRED:
         return "Sign in expired. Please go back and enter your email again";
+
       default:
         return error || "An error occurred";
     }

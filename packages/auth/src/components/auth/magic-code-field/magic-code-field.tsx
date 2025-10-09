@@ -82,7 +82,7 @@ export class MagicCodeField {
     await authService.authenticateWithMagicCode(code);
   };
   render() {
-    if (authState.step !== "verification" || !authState.magicCodeSent) {
+    if (authState.step !== "magic-code" || !authState.magicCodeSent) {
       return null;
     }
 

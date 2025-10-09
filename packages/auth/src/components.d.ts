@@ -61,6 +61,16 @@ export namespace Components {
          */
         "placeholder": string;
     }
+    interface ResetPassButton {
+        /**
+          * @default ""
+         */
+        "className": string;
+        /**
+          * @default "Reset Password"
+         */
+        "text": string;
+    }
     interface SendMagicCodeButton {
         /**
           * @default "Magic code already sent to your email"
@@ -90,7 +100,6 @@ export namespace Components {
           * @default false
          */
         "alwaysRender": boolean;
-        "isActive": () => Promise<boolean>;
         "name": "email" | "verification";
     }
     interface SigninStrategy {
@@ -231,6 +240,12 @@ declare global {
         prototype: HTMLPasswordFieldElement;
         new (): HTMLPasswordFieldElement;
     };
+    interface HTMLResetPassButtonElement extends Components.ResetPassButton, HTMLStencilElement {
+    }
+    var HTMLResetPassButtonElement: {
+        prototype: HTMLResetPassButtonElement;
+        new (): HTMLResetPassButtonElement;
+    };
     interface HTMLSendMagicCodeButtonElement extends Components.SendMagicCodeButton, HTMLStencilElement {
     }
     var HTMLSendMagicCodeButtonElement: {
@@ -311,6 +326,7 @@ declare global {
         "flash-message": HTMLFlashMessageElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
+        "reset-pass-button": HTMLResetPassButtonElement;
         "send-magic-code-button": HTMLSendMagicCodeButtonElement;
         "signin-root": HTMLSigninRootElement;
         "signin-step": HTMLSigninStepElement;
@@ -376,6 +392,16 @@ declare namespace LocalJSX {
           * @default "Enter your password"
          */
         "placeholder"?: string;
+    }
+    interface ResetPassButton {
+        /**
+          * @default ""
+         */
+        "className"?: string;
+        /**
+          * @default "Reset Password"
+         */
+        "text"?: string;
     }
     interface SendMagicCodeButton {
         /**
@@ -508,6 +534,7 @@ declare namespace LocalJSX {
         "flash-message": FlashMessage;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
+        "reset-pass-button": ResetPassButton;
         "send-magic-code-button": SendMagicCodeButton;
         "signin-root": SigninRoot;
         "signin-step": SigninStep;
@@ -531,6 +558,7 @@ declare module "@stencil/core" {
             "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
+            "reset-pass-button": LocalJSX.ResetPassButton & JSXBase.HTMLAttributes<HTMLResetPassButtonElement>;
             "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
             "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
