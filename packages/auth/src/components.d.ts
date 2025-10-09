@@ -35,7 +35,7 @@ export namespace Components {
           * @default ""
          */
         "className": string;
-        "for": "email" | "magicCode" | "password";
+        "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
         /**
@@ -64,6 +64,10 @@ export namespace Components {
         "placeholder": string;
     }
     interface SendMagicCodeButton {
+        /**
+          * @default "Magic code already sent to your email"
+         */
+        "alreadySentText": string;
         /**
           * @default ""
          */
@@ -356,7 +360,7 @@ declare namespace LocalJSX {
           * @default ""
          */
         "className"?: string;
-        "for": "email" | "magicCode" | "password";
+        "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
         /**
@@ -385,6 +389,10 @@ declare namespace LocalJSX {
         "placeholder"?: string;
     }
     interface SendMagicCodeButton {
+        /**
+          * @default "Magic code already sent to your email"
+         */
+        "alreadySentText"?: string;
         /**
           * @default ""
          */

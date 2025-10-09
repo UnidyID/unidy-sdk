@@ -1,5 +1,5 @@
-import { Component, Host, h, Prop } from "@stencil/core";
-import { authState } from "../../../store/auth-store";
+import { Component, Host, h, Prop, State } from "@stencil/core";
+import { authState, onChange } from "../../../store/auth-store";
 
 @Component({
   tag: "signin-strategy",
@@ -10,10 +10,6 @@ export class SigninStrategy {
   @Prop() className = "";
 
   render() {
-    if (authState.step !== "verification") {
-      return null;
-    }
-
     return (
       <Host class={this.className}>
         <slot />

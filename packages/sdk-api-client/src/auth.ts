@@ -15,6 +15,15 @@ const ErrorSchema = z.object({
   error: z.string(),
 });
 
+const SendMagicCodeSuccessSchema = z.object({
+  enable_resend_after: z.number(),
+});
+
+const SendMagicCodeErrorSchema = z.object({
+  error: z.string(),
+  enable_resend_after: z.number(),
+});
+
 const TokenResponseSchema = z.object({
   jwt: z.string(),
   refresh_token: z.string(),
@@ -23,6 +32,8 @@ const TokenResponseSchema = z.object({
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
 export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
+export type SendMagicCodeSuccess = z.infer<typeof SendMagicCodeSuccessSchema>;
+export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
 export type CreateSignInResult =
   | ["account_not_found", ErrorResponse]
@@ -36,7 +47,13 @@ export type AuthenticateResultShared =
   | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
-export type SendMagicCodeResult = ["recently_created", ErrorResponse] | AuthenticateResultShared | [null, { status: "created" }];
+export type SendMagicCodeResult =
+  | ["magic_code_recently_created", SendMagicCodeError]
+  | ["sign_in_not_found", ErrorResponse]
+  | ["sign_in_expired", ErrorResponse]
+  | ["account_locked", ErrorResponse]
+  | ["schema_validation_error", SchemaValidationError]
+  | [null, SendMagicCodeSuccess];
 
 export type AuthenticateWithPasswordResult = ["invalid_password", ErrorResponse] | AuthenticateResultShared;
 
@@ -80,11 +97,16 @@ export class AuthService {
 
     try {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
-        return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "recently_created", error_response];
+        try {
+          const error_response = SendMagicCodeErrorSchema.parse(response.data);
+          return ["magic_code_recently_created", error_response];
+        } catch {
+          const error_response = ErrorSchema.parse(response.data);
+          return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
+        }
       }
 
-      return [null, { status: "created" }];
+      return [null, SendMagicCodeSuccessSchema.parse(response.data)];
     } catch (error) {
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
