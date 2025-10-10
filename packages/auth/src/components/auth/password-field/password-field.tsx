@@ -20,14 +20,14 @@ export class PasswordField {
     }
 
     return (
-      <input
+      <unidy-raw-field
+        name="password"
         type="password"
         value={authState.password}
         placeholder={this.placeholder}
         disabled={authState.loading}
+        customStyle={this.className}
         onInput={this.handleInput}
-        class={this.className}
-        style={{ width: "100%" }}
       />
     );
   }

@@ -33,11 +33,15 @@
 
 ### Used by
 
+ - [email-field](../../auth/email-field)
+ - [password-field](../../auth/password-field)
  - [unidy-field](../unidy-field)
 
 ### Graph
 ```mermaid
 graph TD;
+  email-field --> unidy-raw-field
+  password-field --> unidy-raw-field
   unidy-field --> unidy-raw-field
   style unidy-raw-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
