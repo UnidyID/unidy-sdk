@@ -9,6 +9,7 @@ type TextareaProps = {
     name?: string;
     customStyle?: string;
     placeholder?: string;
+    specificPartKey?: string;
     onChange: (value: string) => void;
 };
 
@@ -19,7 +20,7 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     name={props.name}
     class={props.customStyle}
     required={props.required}
-    part="textarea"
+    part={`textarea_field ${props.specificPartKey ? `textarea_field--${props.specificPartKey}` : ''}`}
     disabled={props.disabled}
     title={props.title}
     onChange={(e) => props.onChange((e.target as HTMLTextAreaElement).value)}

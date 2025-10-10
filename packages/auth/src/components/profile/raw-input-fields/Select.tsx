@@ -13,6 +13,7 @@ type SelectProps = {
   attr_name?: string;
   customStyle?: string;
   emptyOption: boolean;
+  specificPartKey?: string;
   onChange: (value: string) => void;
   countryIcon?: (code: string) => string;
 };
@@ -34,7 +35,7 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
       name={props.name}
       class={props.customStyle}
       data-value={props.value as string | undefined}
-      part="select"
+      part={`select_field ${props.specificPartKey ? `select_field--${props.specificPartKey}` : ''}`}
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}

@@ -1,16 +1,13 @@
 import { Component, Element, Prop, State, h } from "@stencil/core";
-import { RadioGroup } from "./../raw-components/input-field/RadioGroup";
-import { Textarea } from "./../raw-components/input-field/Textarea";
-import { Input } from "./../raw-components/input-field/Input";
-import { type ProfileNode, type ProfileRaw, state as profileState, type RadioOption } from "../../../store/profile-store";
-import { Select } from "../raw-components/input-field/Select";
-import { MultiSelect } from "../raw-components/input-field/MultiSelect";
-
-export type Option = { value: string; label: string; selected?: boolean };
+import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
+import { Textarea } from "../raw-input-fields/Textarea";
+import { Input } from "../raw-input-fields/Input";
+import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../store/profile-store";
+import { Select, type Option } from "../raw-input-fields/Select";
+import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
 
 @Component({
   tag: "unidy-raw-field",
-  styleUrl: "unidy-raw-field.css",
   shadow: false,
 })
 export class UnidyRawField {
@@ -24,11 +21,15 @@ export class UnidyRawField {
   @Prop() value?: string | string[];
   @Prop() checked?: boolean;
   @Prop() disabled?: boolean;
-  @Prop() title!: string;
+  @Prop() tooltip?: string;
   @Prop() type!: string;
   @Prop() placeholder?: string;
   @Prop() options?: string | Option[];
   @Prop() emptyOption = false;
+  @Prop() attrName?: string;
+  @Prop() radioOptions?: RadioOption[];
+  @Prop() multiSelectOptions?: MultiSelectOption[];
+  @Prop() specificPartKey?: string;
 
   @Element() el!: HTMLElement;
 
@@ -53,7 +54,10 @@ export class UnidyRawField {
 
     if (field.radio_options) {
       const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
-      return checkedOption?.value ?? field.value ?? "";
+
+      const checkedValue =  checkedOption?.value ?? field.value ?? "";
+
+       return String(checkedValue);
     }
 
     if (field.type === "checkbox") {
@@ -63,25 +67,26 @@ export class UnidyRawField {
     return field.value;
   }
 
-  private writeStore(field: string, value: string | string[]) {
-    if (!field) return;
+  private writeStore(fieldName: string, value: string | string[]) {
+    if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
-    if (field.startsWith("custom_attributes.")) {
-      const customAttributeFieldName = field.replace("custom_attributes.", "");
-      const prev = data?.custom_attributes?.[customAttributeFieldName];
-      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
+    const isCustomAttribute = fieldName.startsWith("custom_attributes.");
+    const key = isCustomAttribute ? fieldName.replace("custom_attributes.", "") : fieldName;
 
+    if (isCustomAttribute) {
+      const field = data.custom_attributes?.[key];
       profileState.data = {
         ...data,
-        custom_attributes: { ...data.custom_attributes, [customAttributeFieldName]: val },
+        custom_attributes: {
+          ...data.custom_attributes,
+          [key]: { ...field, value },
+        },
       };
     } else {
-      const regularFieldName = field;
-      const prev = data?.[regularFieldName];
-      const val = prev && typeof prev === "object" && "value" in prev ? { ...prev, value } : { value };
-      profileState.data = { ...data, [regularFieldName]: val };
+      const field = data[key];
+      profileState.data = { ...data, [key]: { ...field, value } };
     }
   }
 
@@ -104,8 +109,24 @@ export class UnidyRawField {
       .join("");
   }
 
+  private onRadioChange = (newVal: string) => {
+    this.writeStore(this.name, String(newVal));
+    this.selected = newVal;
+  };
 
-  private onRadioChange = (val: string) => this.writeStore(this.name, val);
+  private onMultiToggle = (optValue: string, checked: boolean) => {
+    const currentValues = Array.isArray(this.selected) ? this.selected : [];
+    let updatedValues: string[];
+    if (checked) {
+      updatedValues = currentValues.includes(optValue) ? currentValues : [...currentValues, optValue];
+    } else {
+      updatedValues = currentValues.filter((v) => v !== optValue);
+    }
+
+    this.selected = updatedValues;
+    this.writeStore(this.name, updatedValues);
+  };
+
   private onSelectChange = (val: string) => this.writeStore(this.name, val);
   private onTextChange = (val: string) => this.writeStore(this.name, val);
 
@@ -132,6 +153,8 @@ export class UnidyRawField {
     if (isType && (current === undefined || current === null) && typeof this.value === "string") {
       this.writeStore(this.name, this.value);
     }
+
+    this.selected = current;
   }
 
   componentDidRender() {
@@ -156,43 +179,81 @@ export class UnidyRawField {
   };
 
   render() {
-    if (this.type === "radio" && typeof this.value === "string") {
-      const currentValue = this.readStore(this.name);
-      const isChecked = currentValue != null && String(currentValue) === this.value;
-      return (
-        <RadioGroup
-          name={this.name}
-          value={this.value}
-          checked={isChecked}
-          disabled={this.disabled}
-          title={this.title}
-          customStyle={this.customStyle}
-          type="radio"
-          onChange={this.onRadioChange}
-        />
-      );
+    if (this.type === "radio") {
+      if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
+          const checkedOptions = this.radioOptions.map((opt) => ({
+            ...opt,
+            checked: String(opt.value) === this.selected,
+          }));
+        return (
+          <RadioGroup
+            name={this.name}
+            disabled={this.disabled}
+            title={this.tooltip}
+            type="radio"
+            onChange={this.onRadioChange}
+            options={checkedOptions}
+            specificPartKey={this.specificPartKey}
+          />
+        );
+      }
+
+      if (typeof this.value === "string") {
+        const currentValue = this.readStore(this.name);
+        const isChecked = currentValue != null && String(currentValue) === this.value;
+        return (
+          <RadioGroup
+            name={this.name}
+            value={this.value}
+            checked={isChecked}
+            disabled={this.disabled}
+            title={this.tooltip}
+            customStyle={this.customStyle}
+            type="radio"
+            specificPartKey={this.specificPartKey}
+            onChange={this.onRadioChange}
+          />
+        );
+      }
     }
 
-    if (this.type === "checkbox" && this.value) {
-      const currentValue = (this.readStore(this.name) as string[]) ?? [];
-      const isChecked = currentValue?.includes(this.value as string);
-      return (
-        <MultiSelect
-          id={`${this.name}-${this.value}`}
-          name={this.name}
-          value={this.value as string}
-          checked={isChecked}
-          disabled={this.disabled}
-          title={this.title}
-          customStyle={this.customStyle}
-          type="checkbox"
-          onToggle={(val, checked) => {
-            const current = this.readStore(this.name) as string[];
-            const updated = checked ? [...current, val] : current.filter((v) => v !== val);
-            this.writeStore(this.name, updated);
-          }}
-        />
-      );
+    if (this.type === "checkbox") {
+      if (Array.isArray(this.multiSelectOptions) && this.multiSelectOptions.length) {
+        const selected = Array.isArray(this.selected) ? this.selected : [];
+        return (
+          <MultiSelect
+            value={selected}
+            options={this.multiSelectOptions}
+            disabled={this.disabled}
+            title={this.tooltip}
+            type="checkbox"
+            specificPartKey={this.specificPartKey}
+            onToggle={this.onMultiToggle}
+          />
+        );
+      }
+
+      if (this.value) {
+        const currentValue = (this.readStore(this.name) as string[]) ?? [];
+        const isChecked = currentValue?.includes(this.value as string);
+        return (
+          <MultiSelect
+            id={`${this.name}-${this.value}`}
+            name={this.name}
+            value={this.value as string}
+            checked={isChecked}
+            disabled={this.disabled}
+            title={this.tooltip}
+            customStyle={this.customStyle}
+            type="checkbox"
+            onToggle={(val, checked) => {
+              const current = this.readStore(this.name) as string[];
+              const updated = checked ? [...current, val] : current.filter((v) => v !== val);
+              this.writeStore(this.name, updated);
+            }}
+          />
+        );
+      }
     }
 
     if (this.type === "select") {
@@ -205,12 +266,14 @@ export class UnidyRawField {
           value={currentValue}
           options={option}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           emptyOption={this.emptyOption}
           onChange={this.onSelectChange}
           customStyle={this.customStyle}
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
+          attr_name={this.attrName}
+          specificPartKey={this.specificPartKey}
         />
       );
     }
@@ -223,8 +286,9 @@ export class UnidyRawField {
           value={currentValue}
           required={this.required}
           disabled={this.disabled}
-          title={this.title}
+          title={this.tooltip}
           customStyle={this.customStyle}
+          specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
         />
       );
@@ -237,10 +301,11 @@ export class UnidyRawField {
         value={currentValue}
         required={this.required}
         disabled={this.disabled}
-        title={this.title}
+        title={this.tooltip}
         type={this.type}
         customStyle={this.customStyle}
         placeholder={this.placeholder}
+        specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}
       />

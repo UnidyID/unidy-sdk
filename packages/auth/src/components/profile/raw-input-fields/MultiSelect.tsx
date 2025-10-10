@@ -1,14 +1,15 @@
 import { type FunctionalComponent, h } from '@stencil/core';
 
-export type Option = { value: string; label: string };
+export type MultiSelectOption = { value: string; label: string };
 
 type MultiSelectProps =
 | {
     value: string[];
-    options: Option[];
+    options: MultiSelectOption[];
     disabled?: boolean;
     title?: string;
     type?: string;
+    specificPartKey?: string;
     onToggle: (optValue: string, checked: boolean) => void;
   }
 | {
@@ -41,9 +42,9 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
   }
 
   return (
-    <div part="checkbox-group" title={props.title}>
+    <div part={`multi-select-group_field ${props.specificPartKey ? `multi-select-group_field--${props.specificPartKey}` : ''}`} title={props.title}>
       {props.options.map((opt) => (
-        <label key={opt.value} part="checkbox-label">
+        <label key={opt.value} part={`multi-select-item_label ${props.specificPartKey ? `multi-select-item_label--${props.specificPartKey}` : ''}`}>
           <input
             id={opt.value}
             type={props.type}
@@ -51,7 +52,7 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
             disabled={props.disabled}
             title={props.title}
             onChange={(e) => props.onToggle(opt.value, (e.target as HTMLInputElement).checked)}
-            part="checkbox"
+            part={`multi-select-item_checkbox ${props.specificPartKey ? `multi-select-item_checkbox--${props.specificPartKey}` : ''}`}
           />
           {opt.label}
         </label>
