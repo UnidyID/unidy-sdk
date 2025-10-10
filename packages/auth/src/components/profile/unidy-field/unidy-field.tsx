@@ -53,9 +53,8 @@ export class UnidyField {
   private createSpecificPartKey(fieldName: string) {
     if (fieldName.startsWith("custom_attributes.")) {
       return fieldName.replace(/[^\w-]/g, "-") ;
-    } else {
-    return fieldName;
     }
+    return fieldName;
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData

@@ -55,7 +55,7 @@ export class UnidyRawField {
     if (field.radio_options) {
       const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
 
-      let checkedValue =  checkedOption?.value ?? field.value ?? "";
+      const checkedValue =  checkedOption?.value ?? field.value ?? "";
 
        return String(checkedValue);
     }
