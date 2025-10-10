@@ -9,6 +9,7 @@ type RadioGroupProps =
       type?: string;
       name?: string;
       title?: string;
+      specificPartKey?: string;
       onChange: (value: string) => void;
     }
   | {
@@ -39,11 +40,11 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
   }
 
   return (
-    <div part="radio-group" title={props.title}>
+    <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ''}`} title={props.title}>
       {props.options.map((opt) => (
         <label
           key={String(opt.value)}
-          part={`radio-label ${opt.checked ? 'radio-checked' : ''}`}
+          part={`radio-group-item_label ${props.specificPartKey ? `radio-group-item_label--${props.specificPartKey}` : ''} ${opt.checked ? 'radio_checked' : ''}`}
           data-checked={opt.checked ? 'true' : 'false'}
         >
           <input
@@ -53,7 +54,7 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
             checked={opt.checked}
             disabled={props.disabled}
             onChange={() => props.onChange(String(opt.value))}
-            part="radio"
+            part={`radio-group-item_radio ${props.specificPartKey ? `radio-group-item_radio--${props.specificPartKey}` : ''}`}
           />
           {opt.label}
         </label>

@@ -23,6 +23,7 @@
 | `radioOptions`             | `radio-options`               |             | `RadioOption[] \| undefined`       | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                           | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                          | `false`                                |
+| `specificPartKey`          | `specific-part-key`           |             | `string \| undefined`              | `undefined`                            |
 | `tooltip`                  | `tooltip`                     |             | `string \| undefined`              | `undefined`                            |
 | `type` _(required)_        | `type`                        |             | `string`                           | `undefined`                            |
 | `value`                    | `value`                       |             | `string \| string[] \| undefined`  | `undefined`                            |

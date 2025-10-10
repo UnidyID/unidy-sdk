@@ -29,6 +29,7 @@ export class UnidyRawField {
   @Prop() attrName?: string;
   @Prop() radioOptions?: RadioOption[];
   @Prop() multiSelectOptions?: MultiSelectOption[];
+  @Prop() specificPartKey?: string;
 
   @Element() el!: HTMLElement;
 
@@ -192,6 +193,7 @@ export class UnidyRawField {
             type="radio"
             onChange={this.onRadioChange}
             options={checkedOptions}
+            specificPartKey={this.specificPartKey}
           />
         );
       }
@@ -208,6 +210,7 @@ export class UnidyRawField {
             title={this.tooltip}
             customStyle={this.customStyle}
             type="radio"
+            specificPartKey={this.specificPartKey}
             onChange={this.onRadioChange}
           />
         );
@@ -224,6 +227,7 @@ export class UnidyRawField {
             disabled={this.disabled}
             title={this.tooltip}
             type="checkbox"
+            specificPartKey={this.specificPartKey}
             onToggle={this.onMultiToggle}
           />
         );
@@ -269,6 +273,7 @@ export class UnidyRawField {
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
           attr_name={this.attrName}
+          specificPartKey={this.specificPartKey}
         />
       );
     }
@@ -283,6 +288,7 @@ export class UnidyRawField {
           disabled={this.disabled}
           title={this.tooltip}
           customStyle={this.customStyle}
+          specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
         />
       );
@@ -299,6 +305,7 @@ export class UnidyRawField {
         type={this.type}
         customStyle={this.customStyle}
         placeholder={this.placeholder}
+        specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}
       />

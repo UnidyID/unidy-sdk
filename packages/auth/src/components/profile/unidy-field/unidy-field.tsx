@@ -1,17 +1,19 @@
 import { Component, Prop, State, h, Element } from "@stencil/core";
 import { state as profileState } from "../../../store/profile-store";
 /**
- * @part select
- * @part option
- * @part radio
- * @part radio-group
- * @part radio-label
- * @part radio-checked
- * @part checkbox
- * @part checkbox-group
- * @part checkbox-label
- * @part textarea
- * @part input
+ * @part select_field - Styles the base <select> element.
+ * @part select_field--example_field - Example of a field-specific selector.
+ *   Replace `example_field` with your field name.
+ *   e.g. `custom_attributes.favorite_nut` → `select_field--custom_attributes-favorite_nut`, `country_code` → `select_field--country-code`
+ * @part radio-group-item_radio
+ * @part radio-group_field
+ * @part radio-group-item_label
+ * @part radio_checked
+ * @part multi-select-item_checkbox
+ * @part multi-select-group_field
+ * @part multi-select-item_label
+ * @part textarea_field
+ * @part input_field
  */
 
 @Component({
@@ -48,6 +50,14 @@ export class UnidyField {
     }
   }
 
+  private createSpecificPartKey(fieldName: string) {
+    if (fieldName.startsWith("custom_attributes.")) {
+      return fieldName.replace(/[^\w-]/g, "-") ;
+    } else {
+    return fieldName;
+    }
+  }
+
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
@@ -77,7 +87,7 @@ export class UnidyField {
     // TODO: Add other types
     return (
       <div>
-        <label htmlFor={this.field} part="label">
+        <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
           {fieldData?.label}
           {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
         </label>
@@ -110,6 +120,7 @@ export class UnidyField {
               emptyOption={this.emptyOption}
               countryCodeDisplayOption={this.countryCodeDisplayOption}
               attrName={fieldData.attr_name}
+              specificPartKey={this.createSpecificPartKey(this.field)}
             />
           )}
 
