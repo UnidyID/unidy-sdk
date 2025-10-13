@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from '@stencil/core';
 
 export type RadioOption = { value: string; label: string; checked: boolean };
 
@@ -9,6 +9,7 @@ type RadioGroupProps =
       type?: string;
       name?: string;
       title?: string;
+      specificPartKey?: string;
       onChange: (value: string) => void;
     }
   | {
@@ -18,7 +19,7 @@ type RadioGroupProps =
       type?: string;
       name: string;
       title?: string;
-      className?: string;
+      customStyle?: string;
       onChange: (value: string) => void;
     };
 
@@ -28,32 +29,32 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
       <input
         type={props.type}
         name={props.name}
-        value={props.value}
+        value={String(props.value)}
         checked={props.checked}
         disabled={props.disabled}
         title={props.title}
-        class={props.className}
-        onChange={() => props.onChange(props.value)}
+        class={props.customStyle}
+        onChange={() => props.onChange(String(props.value))}
       />
     );
   }
 
   return (
-    <div part="radio-group" title={props.title}>
+    <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ''}`} title={props.title}>
       {props.options.map((opt) => (
         <label
-          key={opt.value}
-          part={`radio-label ${opt.checked ? 'radio-checked' : ''}`}
+          key={String(opt.value)}
+          part={`radio-group-item_label ${props.specificPartKey ? `radio-group-item_label--${props.specificPartKey}` : ''} ${opt.checked ? 'radio_checked' : ''}`}
           data-checked={opt.checked ? 'true' : 'false'}
         >
           <input
             type={props.type}
             name={props.name}
-            value={opt.value}
+            value={String(opt.value)}
             checked={opt.checked}
             disabled={props.disabled}
-            onChange={() => props.onChange(opt.value)}
-            part="radio"
+            onChange={() => props.onChange(String(opt.value))}
+            part={`radio-group-item_radio ${props.specificPartKey ? `radio-group-item_radio--${props.specificPartKey}` : ''}`}
           />
           {opt.label}
         </label>

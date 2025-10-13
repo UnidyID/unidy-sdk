@@ -7,7 +7,6 @@ import type { ProfileRaw } from "../../../store/profile-store";
 
 @Component({
   tag: "unidy-profile",
-  styleUrl: "unidy-profile.css",
   shadow: false,
 })
 export class UnidyProfile {

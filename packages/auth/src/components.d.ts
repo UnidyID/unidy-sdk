@@ -6,7 +6,13 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TokenResponse } from "@unidy.io/sdk-api-client";
+import { Option } from "./components/profile/raw-input-fields/Select";
+import { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
+import { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
+export { Option } from "./components/profile/raw-input-fields/Select";
+export { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
+export { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export namespace Components {
     interface AuthProvider {
         /**
@@ -135,16 +141,21 @@ export namespace Components {
         "baseUrl": string;
     }
     interface UnidyField {
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
+        /**
+          * @default true
+         */
+        "emptyOption": boolean;
         "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -165,19 +176,27 @@ export namespace Components {
         "profileId"?: string;
     }
     interface UnidyRawField {
+        "attrName"?: string;
         "checked"?: boolean;
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
         "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "emptyOption": boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "multiSelectOptions"?: MultiSelectOption[];
         "name": string;
+        "options"?: string | Option[];
         "placeholder"?: string;
+        "radioOptions"?: RadioOption[];
         /**
           * @default ""
          */
@@ -186,7 +205,8 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
-        "title": string;
+        "specificPartKey"?: string;
+        "tooltip"?: string;
         "type": string;
         "value"?: string | string[];
     }
@@ -469,16 +489,21 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
     }
     interface UnidyField {
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
+        /**
+          * @default true
+         */
+        "emptyOption"?: boolean;
         "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "placeholder"?: string;
         /**
           * @default ""
          */
@@ -499,19 +524,27 @@ declare namespace LocalJSX {
         "profileId"?: string;
     }
     interface UnidyRawField {
+        "attrName"?: string;
         "checked"?: boolean;
-        "className"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        "customStyle"?: string;
         "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "emptyOption"?: boolean;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "multiSelectOptions"?: MultiSelectOption[];
         "name": string;
+        "options"?: string | Option[];
         "placeholder"?: string;
+        "radioOptions"?: RadioOption[];
         /**
           * @default ""
          */
@@ -520,7 +553,8 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
-        "title": string;
+        "specificPartKey"?: string;
+        "tooltip"?: string;
         "type": string;
         "value"?: string | string[];
     }

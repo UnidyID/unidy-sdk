@@ -1,17 +1,21 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from '@stencil/core';
 
 export type Option = { value: string; label: string; selected?: boolean };
 
 type SelectProps = {
   id: string;
+  name?: string;
   value: string | string[] | null | undefined;
   options: Option[];
   disabled?: boolean;
   title?: string;
   countryCodeDisplayOption?: string;
   attr_name?: string;
+  customStyle?: string;
+  emptyOption: boolean;
+  specificPartKey?: string;
   onChange: (value: string) => void;
-  countryIcon?: (code: string) => any;
+  countryIcon?: (code: string) => string;
 };
 
 export const Select: FunctionalComponent<SelectProps> = (props) => {
@@ -28,13 +32,17 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
  return (   
     <select
       id={props.id}
-      data-value={props.value as any}
-      part="select"
+      name={props.name}
+      class={props.customStyle}
+      data-value={props.value as string | undefined}
+      part={`select_field ${props.specificPartKey ? `select_field--${props.specificPartKey}` : ''}`}
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}
     >
-      <option value="" selected={props.value === null || props.value === ''} />
+      {props.emptyOption ? (
+        <option value="" selected={props.value === null || props.value === ''} />
+      ) : null}
       {props.options.map((opt) => (
         <option
           key={opt.value}
@@ -42,7 +50,6 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
           data-selected={opt.value === props.value ? 'true' : 'false'}
           selected={opt.value === props.value}
           disabled={opt.value === "--"}
-          part="option"
         >
           {renderOptionLabel(opt)}
         </option>

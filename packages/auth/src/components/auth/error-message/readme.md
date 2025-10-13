@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property           | Attribute    | Description | Type                                   | Default     |
-| ------------------ | ------------ | ----------- | -------------------------------------- | ----------- |
-| `className`        | `class-name` |             | `string`                               | `""`        |
-| `for` _(required)_ | `for`        |             | `"email" \| "magicCode" \| "password"` | `undefined` |
+| Property           | Attribute    | Description | Type                                                | Default     |
+| ------------------ | ------------ | ----------- | --------------------------------------------------- | ----------- |
+| `className`        | `class-name` |             | `string`                                            | `""`        |
+| `for` _(required)_ | `for`        |             | `"email" \| "general" \| "magicCode" \| "password"` | `undefined` |
 
 
 ----------------------------------------------
