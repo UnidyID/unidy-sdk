@@ -7,7 +7,7 @@ import { Auth } from "../../../auth";
   shadow: false,
 })
 export class ErrorMessage {
-  @Prop() className = "";
+  @Prop() customStyle = "";
   @Prop() for!: "email" | "magicCode" | "password" | "general";
 
   private defaultErrorMessage(error: string): string {
@@ -53,6 +53,6 @@ export class ErrorMessage {
       return null;
     }
 
-    return <div class={this.className}>{this.defaultErrorMessage(authState.error)}</div>;
+    return <div class={this.customStyle}>{this.defaultErrorMessage(authState.error)}</div>;
   }
 }

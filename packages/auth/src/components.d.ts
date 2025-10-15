@@ -18,7 +18,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -28,7 +28,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default "Enter your email"
          */
@@ -38,7 +38,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
@@ -55,13 +55,13 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default "Enter your password"
          */
@@ -75,7 +75,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default false
          */
@@ -89,7 +89,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface SigninStep {
         /**
@@ -103,14 +103,14 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default false
          */
@@ -348,7 +348,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -358,7 +358,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default "Enter your email"
          */
@@ -368,7 +368,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
@@ -385,13 +385,13 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default "Enter your password"
          */
@@ -405,7 +405,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default false
          */
@@ -419,7 +419,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
@@ -434,14 +434,14 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default false
          */

@@ -12,7 +12,7 @@ export class SubmitButton {
   @Prop() for!: "email" | "password";
   @Prop() text = "";
   @Prop() disabled = false;
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   private handleClick = async () => {
     if (this.disabled || authState.loading) return;
@@ -75,7 +75,7 @@ export class SubmitButton {
     }
 
     return (
-      <button type="button" disabled={this.isDisabled()} onClick={this.handleClick} class={this.className} style={{ width: "100%" }}>
+      <button type="button" disabled={this.isDisabled()} onClick={this.handleClick} class={this.customStyle} style={{ width: "100%" }}>
         {authState.loading && !authState.magicCodeRequested ? "Loading..." : this.getButtonText()}
       </button>
     );

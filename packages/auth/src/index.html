@@ -204,25 +204,25 @@
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <signin-root id="sign-in-root" class-name="
+    <signin-root id="sign-in-root" custom-style="
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
       <signin-step name="email">
         <email-field placeholder="Enter your email"
-          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></email-field>
-        <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+          custom-style="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></email-field>
+        <error-message for="email" custom-style="mt-1 mb-4 text-sm text-red-500"></error-message>
 
         <submit-button for="email" text="Continue with Email"
-          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
+          custom-style="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
       </signin-step>
 
       <signin-step name="verification">
         <signin-strategy type="password">
           <password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></password-field>
-          <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+            custom-style="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></password-field>
+          <error-message for="password" custom-style="mt-1 mb-4 text-sm text-red-500"></error-message>
           <submit-button for="password" text="Sign In"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+            custom-style="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
         </signin-strategy>
 
         <conditional-render when="magicCodeSent" is="false">
@@ -233,7 +233,7 @@
           </div>
 
           <send-magic-code-button text="Send Magic Code To Your Email"
-            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+            custom-style="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
         </conditional-render>
 
         <signin-strategy type="magic-code">
@@ -241,17 +241,17 @@
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </conditional-render>
 
-          <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
+          <magic-code-field custom-style="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
 
-          <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
+          <error-message for="magicCode" custom-style="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
 
           <conditional-render when="magicCodeSent" is="true">
             <send-magic-code-button text="Resend Magic Code"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50"></send-magic-code-button>
+              custom-style="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50"></send-magic-code-button>
           </conditional-render>
         </signin-strategy>
 
-        <error-message for="general" class-name="my-2 text-sm text-center text-red-500"></error-message>
+        <error-message for="general" custom-style="my-2 text-sm text-center text-red-500"></error-message>
       </signin-step>
 
     </signin-root>

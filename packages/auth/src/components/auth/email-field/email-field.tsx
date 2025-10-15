@@ -7,7 +7,7 @@ import { authStore, authState } from "../../../store/auth-store";
 })
 export class EmailField {
   @Prop() placeholder = "Enter your email";
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -22,7 +22,7 @@ export class EmailField {
           type="email"
           value={authState.email}
           placeholder="Email"
-          customStyle={this.className}
+          customStyle={this.customStyle}
           disabled={true}
         />
       );
@@ -35,7 +35,7 @@ export class EmailField {
         value={authState.email}
         placeholder={this.placeholder}
         disabled={authState.loading}
-        customStyle={this.className}
+        customStyle={this.customStyle}
         onInput={this.handleInput}
       />
     );
