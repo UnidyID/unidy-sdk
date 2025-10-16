@@ -8,13 +8,18 @@ The Unidy Newsletter component provides a web component to easily embed newslett
 npm install @unidy.io/newsletter
 ```
 
+or using the cdn
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/newsletter@x.x.x/dist/unidy-newsletter/unidy-newsletter.esm.js"></script>
+```
+
+
 ## Basic Usage
 
 To use the component, you need to add the `unidy-newsletter` element to your HTML and configure it with the necessary properties.
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@x.x.x/dist/unidy-login/unidy-login.esm.js"></script>
-
 <unidy-newsletter
   api-url="https://your-unidy-instance-url.com"
   api-key="your-api-key"
@@ -53,26 +58,30 @@ To use the component, you need to add the `unidy-newsletter` element to your HTM
 
 The component is configured through properties on the `unidy-newsletter` element.
 
-| Property                      | Type                  | Description                                                                                             | Default                                |
-| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| `apiUrl`                      | `string`              | **Required.** The base URL of your Unidy instance.                                                      | `undefined`                            |
-| `apiKey`                      | `string`              | **Required.** Your Unidy API key.                                                                       | `undefined`                            |
-| `header`                      | `string`              | The header text displayed above the form.                                                               | `undefined`                            |
-| `newslettersConfig`           | `NewsletterConfig[]`  | An array of newsletter configurations. See the `NewsletterConfig` type below.                           | `[]`                                   |
-| `newslettersConfigJson`       | `string`              | A JSON string representation of the `newslettersConfig` array. Use this for declarative HTML usage.     | `undefined`                            |
-| `submitButtonText`            | `string`              | The text for the submit button.                                                                         | `"Subscribe"`                          |
-| `emailLabel`                  | `string`              | The label for the email input field.                                                                    | `"Email"`                              |
-| `emailPlaceholder`            | `string`              | The placeholder text for the email input field.                                                         | `"Email"`                              |
-| `returnToAfterConfirmation`   | `string`              | A URL to redirect the user to after they confirm their subscription via email.                          | Current page URL without query params. |
-| `renderErrorMessages`         | `boolean`             | Set to `true` to display inline error messages for each newsletter.                                     | `false`                                |
-| `errorUnconfirmedText`        | `string`              | Text for "unconfirmed" error.                                                                           | `"Email not confirmed"`                |
-| `errorAlreadySubscribedText`  | `string`              | Text for "already_subscribed" error.                                                                    | `"Already subscribed"`                 |
-| `errorInvalidEmailText`       | `string`              | Text for "invalid_email" error.                                                                         | `"Invalid email address"`              |
-| `errorNewsletterNotFoundText` | `string`              | Text for "newsletter_not_found" error.                                                                  | `"Newsletter not found"`               |
-| `errorPreferenceNotFoundText` | `string`              | Text for "preferences_not_found" error.                                                                 | `"Preference not found"`               |
-| `errorUnknownText`            | `string`              | Text for any other unknown error.                                                                       | `"Unknown error occured"`              |
-| `successConfirmationText`     | `string`              | Message shown after a user successfully confirms their subscription via the link in their email.        | `"You have successfully confirmed your newsletter subscription."` |
-| `confirmationErrorText`       | `string`              | Message shown if the confirmation link is invalid or expired.                                           | `"Your preference token could not be assigned. Enter your e-mail address to receive a new link."` |
+| Property                           | Type                  | Description                                                                                             | Default                                |
+| ---------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `apiUrl`                           | `string`              | **Required.** The base URL of your Unidy instance.                                                      | `undefined`                            |
+| `apiKey`                           | `string`              | **Required.** Your Unidy API key.                                                                       | `undefined`                            |
+| `header`                           | `string`              | The header text displayed above the form.                                                               | `undefined`                            |
+| `newslettersConfig`                | `NewsletterConfig[]`  | An array of newsletter configurations. See the `NewsletterConfig` type below.                           | `[]`                                   |
+| `newslettersConfigJson`            | `string \| NewsletterConfig[]` | A JSON string representation of the `newslettersConfig` array or the array itself. Use this for declarative HTML usage. | `undefined`                            |
+| `additionalFields`                 | `object[]`            | Array of additional form fields to collect. Each field has `name`, `label`, `type`, and optional `required` properties. | `[]`                                   |
+| `additionalFieldsConfigJson`       | `string`              | A JSON string representation of the `additionalFields` array.                                           | `undefined`                            |
+| `submitButtonText`                 | `string`              | The text for the submit button.                                                                         | `"Subscribe"`                          |
+| `emailLabel`                       | `string`              | The label for the email input field.                                                                    | `"Email"`                              |
+| `emailPlaceholder`                 | `string`              | The placeholder text for the email input field.                                                         | `"Email"`                              |
+| `returnToAfterConfirmation`        | `string`              | A URL to redirect the user to after they confirm their subscription via email.                          | Current page URL without query params. |
+| `renderErrorMessages`              | `boolean`             | Set to `true` to display inline error messages for each newsletter.                                     | `false`                                |
+| `errorUnconfirmedText`             | `string`              | Text for "unconfirmed" error.                                                                           | `"Your email is not confirmed."`       |
+| `errorAlreadySubscribedText`       | `string`              | Text for "already_subscribed" error.                                                                    | `"Already subscribed"`                 |
+| `errorInvalidEmailText`            | `string`              | Text for "invalid_email" error.                                                                         | `"Invalid email address"`              |
+| `errorNewsletterNotFoundText`      | `string`              | Text for "newsletter_not_found" error.                                                                  | `"Newsletter not found"`               |
+| `errorPreferenceNotFoundText`      | `string`              | Text for "preferences_not_found" error.                                                                 | `"Preference not found"`               |
+| `errorUnknownText`                 | `string`              | Text for any other unknown error.                                                                       | `"Unknown error occured"`              |
+| `errorResendConfirmationActionText`| `string`              | Text for the resend confirmation email button.                                                          | `"Resend confirmation email"`          |
+| `errorResendConfirmationSuccessText`| `string`             | Text shown after successfully resending confirmation email.                                             | `"Please check your inbox for the confirmation email."` |
+| `successConfirmationText`          | `string`              | Message shown after a user successfully confirms their subscription via the link in their email.        | `"You have successfully confirmed your newsletter subscription."` |
+| `confirmationErrorText`            | `string`              | Message shown if the confirmation link is invalid or expired.                                           | `"Your preference token could not be assigned. Enter your e-mail address to receive a new link."` |
 
 ### `NewsletterConfig` Type
 
@@ -152,6 +161,9 @@ You can customize the component's appearance using CSS Shadow Parts.
 | `email-input-group`                | The container for the email label and input.      |
 | `email-input-label`                | The `label` for the email input.                  |
 | `email-input`                      | The `input` field for the email address.          |
+| `additional-field-input-group`     | The container for additional field label and input. |
+| `additional-field-label`           | The `label` for additional field inputs.          |
+| `additional-field-input`           | The `input` field for additional fields.          |
 | `newsletter-container`             | The container for a single newsletter and its preferences. |
 | `newsletter-label`                 | The `label` for a newsletter checkbox.            |
 | `newsletter-checkbox`              | The `input[type=checkbox]` for a newsletter.      |
@@ -159,9 +171,11 @@ You can customize the component's appearance using CSS Shadow Parts.
 | `newsletter-preference-label`      | The `label` for a preference checkbox.            |
 | `newsletter-preference-checkbox`   | The `input[type=checkbox]` for a preference.      |
 | `submit-button`                    | The `button` to submit the form.                  |
-| `error-message`                    | A container for an error message.                 |
+| `error-message`                    | A container for an error message. Also includes specific error type classes like `unconfirmed`, `already_subscribed`, etc. |
+| `resend-doi-button`                | The button to resend confirmation email for unconfirmed subscriptions. |
+| `resending-doi-text`               | The text shown while resending confirmation email. |
 | `confirm-success-text`             | The paragraph for the success confirmation message. |
-| `confirmation-error-text`          | The paragraph for the confirmation error message. |
+| `confirmaton-error-text`           | The paragraph for the confirmation error message. |
 
 ### Styling Example
 
