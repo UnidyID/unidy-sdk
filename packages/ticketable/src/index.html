@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Stencil Component Starter</title>
+
+  <script type="module" src="/build/ticketable.esm.js"></script>
+  <script nomodule src="/build/ticketable.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <h1>My tickets</h1>
+
+  <ticketable-list filter="category=12838239;state=active" container-class="grid grid-cols-2 gap-2">
+    <template>
+      <div class="rounded border p-2 bg-blue-100">
+        <h1><ticketable-value name="title"></ticketable-value></h1>
+
+        <div class="flex gap-2">
+          <span><ticketable-value name="starts_at"></ticketable-value></span>
+          <span><ticketable-value name="ends_at"></ticketable-value></span>
+          <span><ticketable-value name="price"></ticketable-value></span>
+        </div>
+      </div>
+    </template>
+  </ticketable-list>
+</body>
+
+</html>
