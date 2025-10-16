@@ -1,7 +1,5 @@
 # unidy-newsletter
 
-foobar
-
 <!-- Auto Generated Below -->
 
 
