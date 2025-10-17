@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property      | Attribute     | Description | Type     | Default                 |
-| ------------- | ------------- | ----------- | -------- | ----------------------- |
-| `className`   | `class-name`  |             | `string` | `""`                    |
-| `placeholder` | `placeholder` |             | `string` | `"Enter your password"` |
+| Property      | Attribute      | Description | Type     | Default                 |
+| ------------- | -------------- | ----------- | -------- | ----------------------- |
+| `customStyle` | `custom-style` |             | `string` | `""`                    |
+| `placeholder` | `placeholder`  |             | `string` | `"Enter your password"` |
 
 
 ## Dependencies

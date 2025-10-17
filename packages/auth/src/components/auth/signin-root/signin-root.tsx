@@ -7,7 +7,7 @@ import { authStore } from "../../../store/auth-store.js";
   shadow: true,
 })
 export class SigninRoot {
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
   @Event() errorEvent!: EventEmitter<{ error: string }>;
@@ -30,7 +30,7 @@ export class SigninRoot {
     }
 
     return (
-      <Host class={this.className} style={{ width: "100%" }}>
+      <Host class={this.customStyle} style={{ width: "100%" }}>
         <slot />
       </Host>
     );
