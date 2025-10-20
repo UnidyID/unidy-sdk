@@ -16,11 +16,11 @@
 | `disabled`                 | `disabled`                    |             | `boolean \| undefined`             | `undefined`                            |
 | `emptyOption`              | `empty-option`                |             | `boolean`                          | `false`                                |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                           | `"Please enter a valid phone number."` |
-| `multiSelectOptions`       | `multi-select-options`        |             | `MultiSelectOption[] \| undefined` | `undefined`                            |
+| `multiSelectOptions`       | --                            |             | `MultiSelectOption[] \| undefined` | `undefined`                            |
 | `name` _(required)_        | `name`                        |             | `string`                           | `undefined`                            |
 | `options`                  | `options`                     |             | `Option[] \| string \| undefined`  | `undefined`                            |
 | `placeholder`              | `placeholder`                 |             | `string \| undefined`              | `undefined`                            |
-| `radioOptions`             | `radio-options`               |             | `RadioOption[] \| undefined`       | `undefined`                            |
+| `radioOptions`             | --                            |             | `RadioOption[] \| undefined`       | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                           | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                          | `false`                                |
 | `specificPartKey`          | `specific-part-key`           |             | `string \| undefined`              | `undefined`                            |
