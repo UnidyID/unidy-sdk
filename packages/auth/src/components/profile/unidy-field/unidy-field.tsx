@@ -87,7 +87,7 @@ export class UnidyField {
     // TODO: Add other types
     return (
       <div part={`field-container field-container--${this.createSpecificPartKey(this.field)}`}>
-        <slot name="label"></slot>
+        <slot name="label" />
 
         {this.renderDefaultLabel && (
           <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
