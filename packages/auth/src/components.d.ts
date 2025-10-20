@@ -154,6 +154,10 @@ export namespace Components {
         /**
           * @default false
          */
+        "renderDefaultLabel": boolean;
+        /**
+          * @default false
+         */
         "required": boolean;
     }
     interface UnidyProfile {
@@ -482,6 +486,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "readonlyPlaceholder"?: string;
+        /**
+          * @default false
+         */
+        "renderDefaultLabel"?: boolean;
         /**
           * @default false
          */
