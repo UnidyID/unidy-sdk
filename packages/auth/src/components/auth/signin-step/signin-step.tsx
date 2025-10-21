@@ -15,20 +15,21 @@ export class SigninStep {
     return authState.step === this.name || this.alwaysRender;
   }
 
-  private handleSubmit = async(event: Event) => {
+  private handleSubmit = async (event: Event) => {
     event.preventDefault();
     if (authState.loading) return;
+
     const authService = await Auth.getInstance();
-      if (!authService) {
-        console.error("Auth service not initialized");
-        return;
-      }
+    if (!authService) {
+      console.error("Auth service not initialized");
+      return;
+    }
+
     if (authState.step === "email") {
       authService.createSignIn(authState.email);
     } else if (authState.step === "verification" && this.name === "verification") {
       await authService.authenticateWithPassword(authState.password);
     }
-
   }
 
   render() {
