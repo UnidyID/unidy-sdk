@@ -51,6 +51,16 @@ export namespace Components {
          */
         "variant": "error" | "success" | "info";
     }
+    interface LogoutButton {
+        /**
+          * @default ""
+         */
+        "customStyle": string;
+        /**
+          * @default "Logout"
+         */
+        "text": string;
+    }
     interface MagicCodeField {
         /**
           * @default ""
@@ -243,6 +253,12 @@ declare global {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
     };
+    interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
+    }
+    var HTMLLogoutButtonElement: {
+        prototype: HTMLLogoutButtonElement;
+        new (): HTMLLogoutButtonElement;
+    };
     interface HTMLMagicCodeFieldElement extends Components.MagicCodeField, HTMLStencilElement {
     }
     var HTMLMagicCodeFieldElement: {
@@ -333,6 +349,7 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
         "flash-message": HTMLFlashMessageElement;
+        "logout-button": HTMLLogoutButtonElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
         "send-magic-code-button": HTMLSendMagicCodeButtonElement;
@@ -384,6 +401,16 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface LogoutButton {
+        /**
+          * @default ""
+         */
+        "customStyle"?: string;
+        /**
+          * @default "Logout"
+         */
+        "text"?: string;
     }
     interface MagicCodeField {
         /**
@@ -548,6 +575,7 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "error-message": ErrorMessage;
         "flash-message": FlashMessage;
+        "logout-button": LogoutButton;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
         "send-magic-code-button": SendMagicCodeButton;
@@ -571,6 +599,7 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
+            "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
             "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
