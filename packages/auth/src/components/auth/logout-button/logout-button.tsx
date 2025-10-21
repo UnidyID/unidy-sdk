@@ -6,7 +6,7 @@ import { Auth } from "../../../auth";
   shadow: false,
 })
 export class LogoutButton {
-  @Prop() text: string = "Logout";
+  @Prop() text = "Logout";
   @Prop() customStyle = "";
 
   private async handleLogout() {
