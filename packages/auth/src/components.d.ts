@@ -201,6 +201,10 @@ export namespace Components {
          */
         "required": boolean;
         "specificPartKey"?: string;
+        /**
+          * @default "profile"
+         */
+        "store": "none" | "profile";
         "tooltip"?: string;
         "type": string;
         "value"?: string | string[];
@@ -536,6 +540,10 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         "specificPartKey"?: string;
+        /**
+          * @default "profile"
+         */
+        "store"?: "none" | "profile";
         "tooltip"?: string;
         "type": string;
         "value"?: string | string[];

@@ -32,6 +32,7 @@ export class EmailField {
       <unidy-raw-field
         name="email"
         type="email"
+        store="none"
         value={authState.email}
         placeholder={this.placeholder}
         disabled={authState.loading}

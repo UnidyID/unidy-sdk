@@ -30,16 +30,19 @@ export class UnidyRawField {
   @Prop() radioOptions?: RadioOption[];
   @Prop() multiSelectOptions?: MultiSelectOption[];
   @Prop() specificPartKey?: string;
+  @Prop() store: "none" | "profile" = "profile";
 
   @Element() el!: HTMLElement;
 
   @State() selected?: string | string[];
 
-  private isNonWritableField(): boolean {
-    return this.name === "email" || this.name === "password";
+  private useProfileStore(): boolean {
+    return this.store === "profile";
   }
 
   private readStore(name: string): string | undefined | string[] {
+    if (!this.useProfileStore()) return;
+
     if (!name) return;
     const data: ProfileRaw = profileState.data;
 
@@ -72,9 +75,7 @@ export class UnidyRawField {
   }
 
   private writeStore(fieldName: string, value: string | string[]) {
-    if (fieldName === "email" || fieldName === "password") {
-      return;
-    }
+    if (!this.useProfileStore()) return;
 
     if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
@@ -158,7 +159,7 @@ export class UnidyRawField {
       this.type === "textarea" ||
       this.type === "select";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === "string" && !this.isNonWritableField()) {
+    if (isType && (current === undefined || current === null) && typeof this.value === "string" && this.useProfileStore()) {
         this.writeStore(this.name, this.value);
     }
 
@@ -307,6 +308,7 @@ export class UnidyRawField {
       <Input
         id={this.name}
         value={currentValue}
+        store={this.store}
         required={this.required}
         disabled={this.disabled}
         title={this.tooltip}

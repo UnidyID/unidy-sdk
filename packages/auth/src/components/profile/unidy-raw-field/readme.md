@@ -24,6 +24,7 @@
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                           | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                          | `false`                                |
 | `specificPartKey`          | `specific-part-key`           |             | `string \| undefined`              | `undefined`                            |
+| `store`                    | `store`                       |             | `"none" \| "profile"`              | `"profile"`                            |
 | `tooltip`                  | `tooltip`                     |             | `string \| undefined`              | `undefined`                            |
 | `type` _(required)_        | `type`                        |             | `string`                           | `undefined`                            |
 | `value`                    | `value`                       |             | `string \| string[] \| undefined`  | `undefined`                            |
