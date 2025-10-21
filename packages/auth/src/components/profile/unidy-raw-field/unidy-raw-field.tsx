@@ -35,6 +35,10 @@ export class UnidyRawField {
 
   @State() selected?: string | string[];
 
+  private isNonWritableField(): boolean {
+    return this.name === "email" || this.name === "password";
+  }
+
   private readStore(name: string): string | undefined | string[] {
     if (!name) return;
     const data: ProfileRaw = profileState.data;
@@ -68,6 +72,10 @@ export class UnidyRawField {
   }
 
   private writeStore(fieldName: string, value: string | string[]) {
+    if (fieldName === "email" || fieldName === "password") {
+      return;
+    }
+
     if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
     if (!data) return;
@@ -150,8 +158,8 @@ export class UnidyRawField {
       this.type === "textarea" ||
       this.type === "select";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === "string") {
-      this.writeStore(this.name, this.value);
+    if (isType && (current === undefined || current === null) && typeof this.value === "string" && !this.isNonWritableField()) {
+        this.writeStore(this.name, this.value);
     }
 
     this.selected = current;
