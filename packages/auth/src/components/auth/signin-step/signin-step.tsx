@@ -26,8 +26,8 @@ export class SigninStep {
     }
 
     if (authState.step === "email") {
-      authService.createSignIn(authState.email);
-    } else if (authState.step === "verification" && this.name === "verification") {
+      await authService.createSignIn(authState.email);
+    } else if (authState.step === "verification") {
       await authService.authenticateWithPassword(authState.password);
     }
   }
