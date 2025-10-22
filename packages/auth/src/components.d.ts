@@ -18,7 +18,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -28,7 +28,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default "Enter your email"
          */
@@ -38,7 +38,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
@@ -51,17 +51,27 @@ export namespace Components {
          */
         "variant": "error" | "success" | "info";
     }
+    interface LogoutButton {
+        /**
+          * @default ""
+         */
+        "customStyle": string;
+        /**
+          * @default "Logout"
+         */
+        "text": string;
+    }
     interface MagicCodeField {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default "Enter your password"
          */
@@ -75,7 +85,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default false
          */
@@ -89,7 +99,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
     }
     interface SigninStep {
         /**
@@ -103,14 +113,14 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "className": string;
+        "customStyle": string;
         /**
           * @default false
          */
@@ -154,6 +164,10 @@ export namespace Components {
         /**
           * @default false
          */
+        "renderDefaultLabel": boolean;
+        /**
+          * @default false
+         */
         "required": boolean;
     }
     interface UnidyProfile {
@@ -179,12 +193,12 @@ export namespace Components {
           * @default false
          */
         "emptyOption": boolean;
+        "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
         "multiSelectOptions"?: MultiSelectOption[];
-        "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];
@@ -238,6 +252,12 @@ declare global {
     var HTMLFlashMessageElement: {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
+    };
+    interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
+    }
+    var HTMLLogoutButtonElement: {
+        prototype: HTMLLogoutButtonElement;
+        new (): HTMLLogoutButtonElement;
     };
     interface HTMLMagicCodeFieldElement extends Components.MagicCodeField, HTMLStencilElement {
     }
@@ -329,6 +349,7 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
         "flash-message": HTMLFlashMessageElement;
+        "logout-button": HTMLLogoutButtonElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
         "send-magic-code-button": HTMLSendMagicCodeButtonElement;
@@ -348,7 +369,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -358,7 +379,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default "Enter your email"
          */
@@ -368,7 +389,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "for": "email" | "magicCode" | "password" | "general";
     }
     interface FlashMessage {
@@ -381,17 +402,27 @@ declare namespace LocalJSX {
          */
         "variant"?: "error" | "success" | "info";
     }
+    interface LogoutButton {
+        /**
+          * @default ""
+         */
+        "customStyle"?: string;
+        /**
+          * @default "Logout"
+         */
+        "text"?: string;
+    }
     interface MagicCodeField {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default "Enter your password"
          */
@@ -405,7 +436,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default false
          */
@@ -419,7 +450,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
@@ -434,14 +465,14 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "className"?: string;
+        "customStyle"?: string;
         /**
           * @default false
          */
@@ -485,6 +516,10 @@ declare namespace LocalJSX {
         /**
           * @default false
          */
+        "renderDefaultLabel"?: boolean;
+        /**
+          * @default false
+         */
         "required"?: boolean;
     }
     interface UnidyProfile {
@@ -510,12 +545,12 @@ declare namespace LocalJSX {
           * @default false
          */
         "emptyOption"?: boolean;
+        "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
-        "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];
@@ -540,6 +575,7 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "error-message": ErrorMessage;
         "flash-message": FlashMessage;
+        "logout-button": LogoutButton;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
         "send-magic-code-button": SendMagicCodeButton;
@@ -563,6 +599,7 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
+            "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
             "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;

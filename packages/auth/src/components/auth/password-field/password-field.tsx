@@ -7,7 +7,7 @@ import { authState, authStore } from "../../../store/auth-store";
 })
 export class PasswordField {
   @Prop() placeholder = "Enter your password";
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -20,13 +20,13 @@ export class PasswordField {
     }
 
     return (
-      <unidy-raw-field
+      <input
         name="password"
         type="password"
         value={authState.password}
         placeholder={this.placeholder}
         disabled={authState.loading}
-        customStyle={this.className}
+        class={this.customStyle}
         onInput={this.handleInput}
       />
     );

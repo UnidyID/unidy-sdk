@@ -1,5 +1,4 @@
-import { Component, Host, h, Prop, State } from "@stencil/core";
-import { authState, onChange } from "../../../store/auth-store";
+import { Component, Host, h, Prop } from "@stencil/core";
 
 @Component({
   tag: "signin-strategy",
@@ -7,11 +6,11 @@ import { authState, onChange } from "../../../store/auth-store";
 })
 export class SigninStrategy {
   @Prop() type!: "password" | "magic-code";
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   render() {
     return (
-      <Host class={this.className}>
+      <Host class={this.customStyle}>
         <slot />
       </Host>
     );

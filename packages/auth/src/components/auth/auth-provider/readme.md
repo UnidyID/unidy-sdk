@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type     | Default |
-| ----------- | ------------ | ----------- | -------- | ------- |
-| `className` | `class-name` |             | `string` | `""`    |
+| Property      | Attribute      | Description | Type     | Default |
+| ------------- | -------------- | ----------- | -------- | ------- |
+| `customStyle` | `custom-style` |             | `string` | `""`    |
 
 
 ----------------------------------------------
