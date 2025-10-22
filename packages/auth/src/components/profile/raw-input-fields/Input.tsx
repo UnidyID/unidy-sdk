@@ -4,7 +4,6 @@ type InputProps = {
     id: string;
     type: string;
     value: string | undefined;
-    store?: string;
     customStyle?: string;
     disabled?: boolean;
     required?: boolean;
@@ -20,7 +19,6 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
       id={props.id}
       type={props.type}
       value={props.value}
-      data-store={props.store}
       class={props.customStyle}
       disabled={props.disabled}
       required={props.required}
