@@ -17,7 +17,7 @@ export class UnidyRawField {
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
   @Prop() customStyle?: string;
 
-  @Prop() name!: string;
+  @Prop() field!: string;
   @Prop() value?: string | string[];
   @Prop() checked?: boolean;
   @Prop() disabled?: boolean;
@@ -40,21 +40,21 @@ export class UnidyRawField {
     return this.store === "profile";
   }
 
-  private readStore(name: string): string | undefined | string[] {
+  private readStore(fieldName: string): string | undefined | string[] {
     if (!this.useProfileStore()) return;
 
-    if (!name) return;
+    if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
 
     if (!data) return;
 
     let field: ProfileNode | undefined;
 
-    if (name.startsWith("custom_attributes.")) {
-      const key = name.replace("custom_attributes.", "");
+    if (fieldName.startsWith("custom_attributes.")) {
+      const key = fieldName.replace("custom_attributes.", "");
       field = data.custom_attributes?.[key];
     } else {
-      field = data[name];
+      field = data[fieldName];
     }
 
     if (!field) return;
@@ -119,7 +119,7 @@ export class UnidyRawField {
   }
 
   private onRadioChange = (newVal: string) => {
-    this.writeStore(this.name, String(newVal));
+    this.writeStore(this.field, String(newVal));
     this.selected = newVal;
   };
 
@@ -133,14 +133,14 @@ export class UnidyRawField {
     }
 
     this.selected = updatedValues;
-    this.writeStore(this.name, updatedValues);
+    this.writeStore(this.field, updatedValues);
   };
 
-  private onSelectChange = (val: string) => this.writeStore(this.name, val);
-  private onTextChange = (val: string) => this.writeStore(this.name, val);
+  private onSelectChange = (val: string) => this.writeStore(this.field, val);
+  private onTextChange = (val: string) => this.writeStore(this.field, val);
 
   componentWillLoad() {
-    if (!this.name) throw new Error('unidy-raw-field: "name" is required.');
+    if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
     const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select", "checkbox"]);
@@ -148,7 +148,7 @@ export class UnidyRawField {
       this.type = "text";
     }
 
-    const current = this.readStore(this.name);
+    const current = this.readStore(this.field);
     const isType =
       this.type === "text" ||
       this.type === "email" ||
@@ -160,7 +160,7 @@ export class UnidyRawField {
       this.type === "select";
 
     if (isType && (current === undefined || current === null) && typeof this.value === "string" && this.useProfileStore()) {
-        this.writeStore(this.name, this.value);
+        this.writeStore(this.field, this.value);
     }
 
     this.selected = current;
@@ -168,8 +168,8 @@ export class UnidyRawField {
 
   componentDidRender() {
     const errs = profileState.errors;
-    if (errs?.[this.name]) {
-      this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.name)}`)?.focus();
+    if (errs?.[this.field]) {
+      this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
     }
   }
 
@@ -196,7 +196,7 @@ export class UnidyRawField {
           }));
         return (
           <RadioGroup
-            name={this.name}
+            name={this.field}
             disabled={this.disabled}
             title={this.tooltip}
             type="radio"
@@ -208,11 +208,11 @@ export class UnidyRawField {
       }
 
       if (typeof this.value === "string") {
-        const currentValue = this.readStore(this.name);
+        const currentValue = this.readStore(this.field);
         const isChecked = currentValue != null && String(currentValue) === this.value;
         return (
           <RadioGroup
-            name={this.name}
+            name={this.field}
             value={this.value}
             checked={isChecked}
             disabled={this.disabled}
@@ -243,12 +243,12 @@ export class UnidyRawField {
       }
 
       if (this.value) {
-        const currentValue = (this.readStore(this.name) as string[]) ?? [];
+        const currentValue = (this.readStore(this.field) as string[]) ?? [];
         const isChecked = currentValue?.includes(this.value as string);
         return (
           <MultiSelect
-            id={`${this.name}-${this.value}`}
-            name={this.name}
+            id={`${this.field}-${this.value}`}
+            name={this.field}
             value={this.value as string}
             checked={isChecked}
             disabled={this.disabled}
@@ -256,9 +256,9 @@ export class UnidyRawField {
             customStyle={this.customStyle}
             type="checkbox"
             onToggle={(val, checked) => {
-              const current = this.readStore(this.name) as string[];
+              const current = this.readStore(this.field) as string[];
               const updated = checked ? [...current, val] : current.filter((v) => v !== val);
-              this.writeStore(this.name, updated);
+              this.writeStore(this.field, updated);
             }}
           />
         );
@@ -266,12 +266,12 @@ export class UnidyRawField {
     }
 
     if (this.type === "select") {
-      const currentValue = (this.readStore(this.name) as string) ?? "";
+      const currentValue = (this.readStore(this.field) as string) ?? "";
       const option = this.getNormalizedOptions();
       return (
         <Select
-          id={this.name}
-          name={this.name}
+          id={this.field}
+          name={this.field}
           value={currentValue}
           options={option}
           disabled={this.disabled}
@@ -288,10 +288,10 @@ export class UnidyRawField {
     }
 
     if (this.type === "textarea") {
-      const currentValue = (this.readStore(this.name) as string) || "";
+      const currentValue = (this.readStore(this.field) as string) || "";
       return (
         <Textarea
-          id={this.name}
+          id={this.field}
           value={currentValue}
           required={this.required}
           disabled={this.disabled}
@@ -303,10 +303,10 @@ export class UnidyRawField {
       );
     }
 
-    const currentValue = (this.readStore(this.name) as string) || "";
+    const currentValue = (this.readStore(this.field) as string) || "";
     return (
       <Input
-        id={this.name}
+        id={this.field}
         value={currentValue}
         store={this.store}
         required={this.required}

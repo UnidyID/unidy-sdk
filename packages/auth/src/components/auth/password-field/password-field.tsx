@@ -21,7 +21,7 @@ export class PasswordField {
 
     return (
       <unidy-raw-field
-        name="password"
+        field="password"
         type="password"
         store="none"
         value={authState.password}

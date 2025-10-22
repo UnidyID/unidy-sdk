@@ -15,9 +15,9 @@
 | `customStyle`              | `custom-style`                |             | `string \| undefined`              | `undefined`                            |
 | `disabled`                 | `disabled`                    |             | `boolean \| undefined`             | `undefined`                            |
 | `emptyOption`              | `empty-option`                |             | `boolean`                          | `false`                                |
+| `field` _(required)_       | `field`                       |             | `string`                           | `undefined`                            |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                           | `"Please enter a valid phone number."` |
 | `multiSelectOptions`       | --                            |             | `MultiSelectOption[] \| undefined` | `undefined`                            |
-| `name` _(required)_        | `name`                        |             | `string`                           | `undefined`                            |
 | `options`                  | `options`                     |             | `Option[] \| string \| undefined`  | `undefined`                            |
 | `placeholder`              | `placeholder`                 |             | `string \| undefined`              | `undefined`                            |
 | `radioOptions`             | --                            |             | `RadioOption[] \| undefined`       | `undefined`                            |

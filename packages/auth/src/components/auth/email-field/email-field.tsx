@@ -18,7 +18,7 @@ export class EmailField {
     if (authState.step === "verification") {
       return (
         <unidy-raw-field
-          name="email"
+          field="email"
           type="email"
           value={authState.email}
           placeholder="Email"
@@ -30,7 +30,7 @@ export class EmailField {
 
     return (
       <unidy-raw-field
-        name="email"
+        field="email"
         type="email"
         store="none"
         value={authState.email}
