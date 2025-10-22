@@ -193,12 +193,12 @@ export namespace Components {
           * @default false
          */
         "emptyOption": boolean;
+        "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
         "multiSelectOptions"?: MultiSelectOption[];
-        "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];
@@ -545,12 +545,12 @@ declare namespace LocalJSX {
           * @default false
          */
         "emptyOption"?: boolean;
+        "field": string;
         /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
-        "name": string;
         "options"?: string | Option[];
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];

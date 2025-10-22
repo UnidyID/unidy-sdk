@@ -17,25 +17,26 @@ export class EmailField {
   render() {
     if (authState.step === "verification") {
       return (
-        <unidy-raw-field
-          name="email"
+        <input
+          id="email"
           type="email"
           value={authState.email}
           placeholder="Email"
-          customStyle={this.customStyle}
+          class={this.customStyle}
           disabled={true}
         />
       );
     }
 
     return (
-      <unidy-raw-field
-        name="email"
+      <input
+        id="email"
         type="email"
         value={authState.email}
+        autocomplete="email"
         placeholder={this.placeholder}
         disabled={authState.loading}
-        customStyle={this.customStyle}
+        class={this.customStyle}
         onInput={this.handleInput}
       />
     );

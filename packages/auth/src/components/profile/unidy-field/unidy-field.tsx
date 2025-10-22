@@ -110,7 +110,7 @@ export class UnidyField {
         {!isReadonly && (
             <unidy-raw-field
               id={this.field}
-              name={this.field}
+              field={this.field}
               type={fieldData.type as string}
               value={fieldData.value}
               options={fieldData.type === "select" ? fieldData.options : undefined}
