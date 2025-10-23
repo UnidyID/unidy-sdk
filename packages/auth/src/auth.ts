@@ -184,7 +184,7 @@ export class Auth {
 
       urlParams.delete("refresh_token");
       urlParams.delete("sid");
-      const newUrl = window.location.pathname + (urlParams.toString() ? "?" + urlParams.toString() : "");
+      const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : "");
       window.history.replaceState({}, document.title, newUrl);
     }
 
