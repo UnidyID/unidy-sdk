@@ -30,10 +30,15 @@ export class SigninStep {
     } else if (authState.step === "verification") {
       await authService.authenticateWithPassword(authState.password);
     }
-  }
+  };
 
   render() {
-    const isActive = authState.step === this.name || this.alwaysRender;
+    const isActive =
+      this.name === "email"
+        ? authState.step === "email"
+        : this.name === "verification"
+          ? authState.step === "verification" || authState.step === "magic-code"
+          : false;
 
     return (
       <Host style={{ display: isActive ? "block" : "none" }}>

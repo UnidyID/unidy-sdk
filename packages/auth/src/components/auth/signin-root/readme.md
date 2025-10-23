@@ -14,10 +14,10 @@
 
 ## Events
 
-| Event        | Description | Type                                                   |
-| ------------ | ----------- | ------------------------------------------------------ |
-| `authEvent`  |             | `CustomEvent<{ jwt: string; refresh_token: string; }>` |
-| `errorEvent` |             | `CustomEvent<{ error: string; }>`                      |
+| Event        | Description | Type                              |
+| ------------ | ----------- | --------------------------------- |
+| `authEvent`  |             | `CustomEvent<TokenResponse>`      |
+| `errorEvent` |             | `CustomEvent<{ error: string; }>` |
 
 
 ----------------------------------------------
