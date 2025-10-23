@@ -9,6 +9,7 @@ import { authState } from "../../../store/auth-store";
 export class ResetPassButton {
   @Prop() className = "";
   @Prop() text = "Reset Password";
+  @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
   private handleClick = async () => {
     const authService = await Auth.getInstance();
@@ -27,9 +28,12 @@ export class ResetPassButton {
     }
 
     return (
-      <button type="button" onClick={this.handleClick} class={this.className}>
-        {this.text}
-      </button>
+      <div>
+        <button type="button" onClick={this.handleClick} class={this.className}>
+          {this.text}
+        </button>
+        {authState.resetPasswordSent && <flash-message variant="success" message={this.successMessage} />}
+      </div>
     );
   }
 }

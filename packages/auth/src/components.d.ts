@@ -83,6 +83,10 @@ export namespace Components {
          */
         "className": string;
         /**
+          * @default "Password reset email sent. Please check your inbox."
+         */
+        "successMessage": string;
+        /**
           * @default "Reset Password"
          */
         "text": string;
@@ -116,6 +120,7 @@ export namespace Components {
           * @default false
          */
         "alwaysRender": boolean;
+        "isActive": () => Promise<boolean>;
         "name": "email" | "verification";
     }
     interface SigninStrategy {
@@ -449,6 +454,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "className"?: string;
+        /**
+          * @default "Password reset email sent. Please check your inbox."
+         */
+        "successMessage"?: string;
         /**
           * @default "Reset Password"
          */
