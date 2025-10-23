@@ -173,7 +173,7 @@ export class Auth {
     }
   }
 
-  async refreshToken() {
+  extractRefreshTokenFromQuery() {
     const urlParams = new URLSearchParams(window.location.search);
     const refreshToken = urlParams.get("refresh_token") || null;
     const sid = urlParams.get("sid") || null;
@@ -187,6 +187,10 @@ export class Auth {
       const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : "");
       window.history.replaceState({}, document.title, newUrl);
     }
+  }
+
+  async refreshToken() {
+    this.extractRefreshTokenFromQuery();
 
     if (!authState.refreshToken) {
       return this.createAuthError("Token expired and no refresh token available. Please sign in again.", "TOKEN_EXPIRED", true);
