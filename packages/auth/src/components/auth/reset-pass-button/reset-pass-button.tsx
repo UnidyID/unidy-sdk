@@ -3,10 +3,10 @@ import { Auth } from "../../../auth";
 import { authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "reset-pass-button",
+  tag: "reset-password-button",
   shadow: false,
 })
-export class ResetPassButton {
+export class ResetPasswordButton {
   @Prop() className = "";
   @Prop() text = "Reset Password";
   @Prop() successMessage = "Password reset email sent. Please check your inbox.";

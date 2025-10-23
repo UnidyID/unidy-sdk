@@ -77,7 +77,7 @@ export namespace Components {
          */
         "placeholder": string;
     }
-    interface ResetPassButton {
+    interface ResetPasswordButton {
         /**
           * @default ""
          */
@@ -285,11 +285,11 @@ declare global {
         prototype: HTMLPasswordFieldElement;
         new (): HTMLPasswordFieldElement;
     };
-    interface HTMLResetPassButtonElement extends Components.ResetPassButton, HTMLStencilElement {
+    interface HTMLResetPasswordButtonElement extends Components.ResetPasswordButton, HTMLStencilElement {
     }
-    var HTMLResetPassButtonElement: {
-        prototype: HTMLResetPassButtonElement;
-        new (): HTMLResetPassButtonElement;
+    var HTMLResetPasswordButtonElement: {
+        prototype: HTMLResetPasswordButtonElement;
+        new (): HTMLResetPasswordButtonElement;
     };
     interface HTMLSendMagicCodeButtonElement extends Components.SendMagicCodeButton, HTMLStencilElement {
     }
@@ -372,7 +372,7 @@ declare global {
         "logout-button": HTMLLogoutButtonElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
-        "reset-pass-button": HTMLResetPassButtonElement;
+        "reset-password-button": HTMLResetPasswordButtonElement;
         "send-magic-code-button": HTMLSendMagicCodeButtonElement;
         "signin-root": HTMLSigninRootElement;
         "signin-step": HTMLSigninStepElement;
@@ -449,7 +449,7 @@ declare namespace LocalJSX {
          */
         "placeholder"?: string;
     }
-    interface ResetPassButton {
+    interface ResetPasswordButton {
         /**
           * @default ""
          */
@@ -613,7 +613,7 @@ declare namespace LocalJSX {
         "logout-button": LogoutButton;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
-        "reset-pass-button": ResetPassButton;
+        "reset-password-button": ResetPasswordButton;
         "send-magic-code-button": SendMagicCodeButton;
         "signin-root": SigninRoot;
         "signin-step": SigninStep;
@@ -638,7 +638,7 @@ declare module "@stencil/core" {
             "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
-            "reset-pass-button": LocalJSX.ResetPassButton & JSXBase.HTMLAttributes<HTMLResetPassButtonElement>;
+            "reset-password-button": LocalJSX.ResetPasswordButton & JSXBase.HTMLAttributes<HTMLResetPasswordButtonElement>;
             "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
             "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
             "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
