@@ -38,6 +38,8 @@ export class Auth {
     },
     password: {
       INVALID: "invalid_password",
+      NOT_SET: "password_not_set",
+      RESET_PASSWORD_ALREADY_SENT: "reset_password_already_sent",
     },
     general: {
       ACCOUNT_LOCKED: "account_locked",
@@ -141,9 +143,11 @@ export class Auth {
       }
 
       authStore.setError(error);
+      authStore.setStep("magic-code");
     } else {
       authStore.setMagicCodeSent(true);
       authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
+      authStore.setStep("magic-code");
     }
   }
 
@@ -170,6 +174,26 @@ export class Auth {
       authStore.setLoading(false);
 
       authStore.getRootComponentRef()?.onAuth(response);
+    }
+  }
+
+  async sendResetPasswordEmail() {
+    if (!authState.sid) {
+      throw new Error("No sign in ID available");
+    }
+
+    authStore.setLoading(true);
+    authStore.setResetPasswordSent(false);
+
+    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
+
+    if (error) {
+      authStore.setError(error);
+      authStore.setLoading(false);
+    } else {
+      authStore.setResetPasswordSent(true);
+      authStore.setLoading(false);
+      authStore.setError(null);
     }
   }
 
