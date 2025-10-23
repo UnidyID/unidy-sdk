@@ -100,7 +100,7 @@ export class AuthService {
   }
 
   async sendMagicCode(signInId: string): Promise<SendMagicCodeResult> {
-    const response = await this.client.get<SendMagicCodeResponse>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`);
+    const response = await this.client.post<SendMagicCodeResponse>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`, {});
 
     try {
       if (!response.success) {
@@ -174,7 +174,7 @@ export class AuthService {
   }
 
   async sendResetPasswordEmail(signInId: string): Promise<ResetPasswordResult> {
-    const response = await this.client.get<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`);
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`, {});
 
     try {
       if (!response.success) {
