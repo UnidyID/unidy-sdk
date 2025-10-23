@@ -276,7 +276,183 @@
 
     <auth-provider>
       <div class="container">
+        <unidy-profile language="de">
+          <div class="mt-6 space-y-3">
+            <logout-button text="Logout"
+              custom-style="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            </logout-button>
+          </div>
+          <unidy-field field="salutation" render-default-label="true"></unidy-field>
+          <unidy-field field="first_name">
+            <label slot="label" class="text-blue-500">First Name:</label>
+          </unidy-field>
+          <unidy-field field="last_name" render-default-label="true"></unidy-field>
+          <unidy-field field="date_of_birth" required="true" render-default-label="true"></unidy-field>
+          <unidy-field field="phone_number" render-default-label="true"></unidy-field>
+          <unidy-field field="country_code" country-code-display-option="icon"
+            render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.favorite_nut" render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.sports_interests" render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.active_membership" render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"
+            render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.weight" placeholder="0.00" render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"
+            render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.first_name" render-default-label="true"></unidy-field>
+          <unidy-field field="custom_attributes.self_description" render-default-label="true"></unidy-field>
+          <unidy-submit-button>Submit</unidy-submit-button>
+          <div id="profile-update-message"></div>
 
+          <h2>Raw Field Examples</h2>
+          <div class="mb-4 mt-4">
+            <label for="first_name" class="block text-sm font-bold text-gray-700 mb-1">
+              First Name
+            </label>
+
+            <unidy-raw-field field="first_name" type="text" tooltip="First Name raw" placeholder="Enter your first name"
+              required custom-style="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
+                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
+                          focus:border-red-500 transition"></unidy-raw-field>
+          </div>
+
+          <h3 class="text-lg font-bold text-gray-700 mb-1">Salutation</h3>
+          <div class="flex gap-6">
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="salutation" type="radio" value="mr" tooltip="Herr"
+                custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mr</span>
+            </label>
+
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="salutation" type="radio" value="mrs" tooltip="Frau"
+                custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mrs</span>
+            </label>
+
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="salutation" type="radio" value="mx" tooltip="Divers"
+                custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Mx</span>
+            </label>
+          </div>
+
+          <h3 class="text-lg font-bold text-gray-700 mb-1">Active Membership</h3>
+          <div class="flex gap-6">
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="true" tooltip="Yes"
+                custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Yes</span>
+            </label>
+
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="false" tooltip="No"
+                custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">No</span>
+            </label>
+
+            <label class="inline-flex gap-2 cursor-pointer">
+              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="_NOT_SET_"
+                tooltip="Not Set" custom-style="h-4 w-4"></unidy-raw-field>
+              <span class="text-sm text-gray-800">Not Set</span>
+            </label>
+          </div>
+
+          <div class="mb-4 mt-4">
+            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
+
+            <unidy-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" custom-style="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
+                          focus:border-blue-500 transition"></unidy-raw-field>
+          </div>
+
+          <div class="mb-4">
+            <label for="custom_attributes.self_description" class="block text-sm font-medium text-gray-700 mb-1">
+              Self Description
+            </label>
+
+            <unidy-raw-field field="custom_attributes.self_description" type="textarea" tooltip="Self Description"
+              custom-style="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+                          min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></unidy-raw-field>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-bold mb-1">Favorite Nut</label>
+            <unidy-raw-field field="custom_attributes.favorite_nut" type="select" custom-style="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
+                          bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
+                          focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
+                { "value": "erdnuss", "label": "Erdnuss" },
+                { "value": "haselnuss", "label": "Haselnuss" },
+                { "value": "walnuss", "label": "Walnuss" }
+              ]' />
+          </div>
+          <div class="mb-4">
+            <h3 class="block text-sm font-bold mb-1">Favorite sports</h3>
+            <div class="flex flex-wrap gap-2">
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="soccer"
+                  tooltip="Soccer" custom-style="sr-only"></unidy-raw-field>
+                Soccer
+              </label>
+
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="basketball"
+                  tooltip="Basketball" custom-style="sr-only"></unidy-raw-field>
+                Basketball
+              </label>
+
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="hockey"
+                  tooltip="Hockey" custom-style="sr-only"></unidy-raw-field>
+                Hockey
+              </label>
+
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="golf" tooltip="Golf"
+                  custom-style="sr-only"></unidy-raw-field>
+                Golf
+              </label>
+
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="handball"
+                  tooltip="Handball" custom-style="sr-only"></unidy-raw-field>
+                Handball
+              </label>
+
+              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
+                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
+                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
+                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
+                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="tennis"
+                  tooltip="Tennis" custom-style="sr-only"></unidy-raw-field>
+                Tennis
+              </label>
+            </div>
+          </div>
+        </unidy-profile>
       </div>
     </auth-provider>
   </div>
