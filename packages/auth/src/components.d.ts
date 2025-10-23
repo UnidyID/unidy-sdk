@@ -51,6 +51,20 @@ export namespace Components {
          */
         "variant": "error" | "success" | "info";
     }
+    interface GoogleLoginButton {
+        /**
+          * @default ""
+         */
+        "customStyle": string;
+        /**
+          * @default "google-icon.svg"
+         */
+        "googleIcon": string;
+        /**
+          * @default "Continue with Google"
+         */
+        "text": string;
+    }
     interface LogoutButton {
         /**
           * @default ""
@@ -253,6 +267,12 @@ declare global {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
     };
+    interface HTMLGoogleLoginButtonElement extends Components.GoogleLoginButton, HTMLStencilElement {
+    }
+    var HTMLGoogleLoginButtonElement: {
+        prototype: HTMLGoogleLoginButtonElement;
+        new (): HTMLGoogleLoginButtonElement;
+    };
     interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
     }
     var HTMLLogoutButtonElement: {
@@ -349,6 +369,7 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
         "flash-message": HTMLFlashMessageElement;
+        "google-login-button": HTMLGoogleLoginButtonElement;
         "logout-button": HTMLLogoutButtonElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
@@ -401,6 +422,20 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface GoogleLoginButton {
+        /**
+          * @default ""
+         */
+        "customStyle"?: string;
+        /**
+          * @default "google-icon.svg"
+         */
+        "googleIcon"?: string;
+        /**
+          * @default "Continue with Google"
+         */
+        "text"?: string;
     }
     interface LogoutButton {
         /**
@@ -575,6 +610,7 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "error-message": ErrorMessage;
         "flash-message": FlashMessage;
+        "google-login-button": GoogleLoginButton;
         "logout-button": LogoutButton;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
@@ -599,6 +635,7 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
+            "google-login-button": LocalJSX.GoogleLoginButton & JSXBase.HTMLAttributes<HTMLGoogleLoginButtonElement>;
             "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
