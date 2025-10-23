@@ -7,7 +7,7 @@ import { Auth } from "../../../auth.js";
   shadow: false,
 })
 export class MagicCodeField {
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   @State() codeDigits: string[] = ["", "", "", ""];
 
@@ -87,7 +87,7 @@ export class MagicCodeField {
     }
 
     return (
-      <div class={this.className} style={{ display: "flex", gap: "2px", width: "100%", justifyContent: "center" }}>
+      <div class={this.customStyle} style={{ display: "flex", gap: "2px", width: "100%", justifyContent: "center" }}>
         {this.codeDigits.map((digit, index) => (
           <input
             // biome-ignore lint/suspicious/noArrayIndexKey:

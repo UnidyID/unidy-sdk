@@ -7,7 +7,7 @@ import { authStore, authState } from "../../../store/auth-store";
 })
 export class EmailField {
   @Prop() placeholder = "Enter your email";
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -17,25 +17,26 @@ export class EmailField {
   render() {
     if (authState.step === "verification") {
       return (
-        <unidy-raw-field
-          name="email"
+        <input
+          id="email"
           type="email"
           value={authState.email}
           placeholder="Email"
-          customStyle={this.className}
+          class={this.customStyle}
           disabled={true}
         />
       );
     }
 
     return (
-      <unidy-raw-field
-        name="email"
+      <input
+        id="email"
         type="email"
         value={authState.email}
+        autocomplete="email"
         placeholder={this.placeholder}
         disabled={authState.loading}
-        customStyle={this.className}
+        class={this.customStyle}
         onInput={this.handleInput}
       />
     );

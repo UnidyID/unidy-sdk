@@ -6,7 +6,7 @@ import { authStore } from "../../../store/auth-store.js";
   shadow: true,
 })
 export class AuthProvider {
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   render() {
     if (!authStore.state.authenticated) {
@@ -14,7 +14,7 @@ export class AuthProvider {
     }
 
     return (
-      <Host class={this.className} style={{ width: "100%" }}>
+      <Host class={this.customStyle} style={{ width: "100%" }}>
         <slot />
       </Host>
     );

@@ -6,11 +6,11 @@ import { Component, Host, h, Prop } from "@stencil/core";
 })
 export class SigninStrategy {
   @Prop() type!: "password" | "magic-code";
-  @Prop() className = "";
+  @Prop() customStyle = "";
 
   render() {
     return (
-      <Host class={this.className}>
+      <Host class={this.customStyle}>
         <slot />
       </Host>
     );
