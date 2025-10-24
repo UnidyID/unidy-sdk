@@ -221,9 +221,19 @@
         <submit-button for="email" text="Continue with Email"
           custom-style="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
 
-          <google-login-button text="Continue with Google"
-            custom-style="w-full mt-4 px-4 py-2 border text-gray-700 bg-white rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-gray-50">
-          </google-login-button>
+          <div class="flex flex-col w-full space-y-4">
+            <div class="flex items-center my-4">
+              <div class="flex-1 border-t border-gray-300"></div>
+              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+              <div class="flex-1 border-t border-gray-300"></div>
+            </div>
+            <unidy-social-login-button text="Continue with Google" social-login-provider="google" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with LinkedIn" social-login-provider="linkedin" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Apple" social-login-provider="apple" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Facebook" social-login-provider="facebook" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Verimi" social-login-provider="verimi" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Discord" social-login-provider="discord" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+          </div>
       </signin-step>
 
       <signin-step name="verification">

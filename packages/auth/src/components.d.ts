@@ -51,20 +51,6 @@ export namespace Components {
          */
         "variant": "error" | "success" | "info";
     }
-    interface GoogleLoginButton {
-        /**
-          * @default ""
-         */
-        "customStyle": string;
-        /**
-          * @default "google-icon.svg"
-         */
-        "googleIcon": string;
-        /**
-          * @default "Continue with Google"
-         */
-        "text": string;
-    }
     interface LogoutButton {
         /**
           * @default ""
@@ -229,6 +215,20 @@ export namespace Components {
         "type": string;
         "value"?: string | string[];
     }
+    interface UnidySocialLoginButton {
+        /**
+          * @default "google"
+         */
+        "socialLoginProvider": "google" | "linkedin" | "apple" | "facebook" | "verimi" | "discord";
+        /**
+          * @default null
+         */
+        "socialLoginRedirectUri": string | null;
+        /**
+          * @default "Continue with Google"
+         */
+        "text": string;
+    }
     interface UnidySubmitButton {
     }
 }
@@ -266,12 +266,6 @@ declare global {
     var HTMLFlashMessageElement: {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
-    };
-    interface HTMLGoogleLoginButtonElement extends Components.GoogleLoginButton, HTMLStencilElement {
-    }
-    var HTMLGoogleLoginButtonElement: {
-        prototype: HTMLGoogleLoginButtonElement;
-        new (): HTMLGoogleLoginButtonElement;
     };
     interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
     }
@@ -357,6 +351,12 @@ declare global {
         prototype: HTMLUnidyRawFieldElement;
         new (): HTMLUnidyRawFieldElement;
     };
+    interface HTMLUnidySocialLoginButtonElement extends Components.UnidySocialLoginButton, HTMLStencilElement {
+    }
+    var HTMLUnidySocialLoginButtonElement: {
+        prototype: HTMLUnidySocialLoginButtonElement;
+        new (): HTMLUnidySocialLoginButtonElement;
+    };
     interface HTMLUnidySubmitButtonElement extends Components.UnidySubmitButton, HTMLStencilElement {
     }
     var HTMLUnidySubmitButtonElement: {
@@ -369,7 +369,6 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "error-message": HTMLErrorMessageElement;
         "flash-message": HTMLFlashMessageElement;
-        "google-login-button": HTMLGoogleLoginButtonElement;
         "logout-button": HTMLLogoutButtonElement;
         "magic-code-field": HTMLMagicCodeFieldElement;
         "password-field": HTMLPasswordFieldElement;
@@ -382,6 +381,7 @@ declare global {
         "unidy-field": HTMLUnidyFieldElement;
         "unidy-profile": HTMLUnidyProfileElement;
         "unidy-raw-field": HTMLUnidyRawFieldElement;
+        "unidy-social-login-button": HTMLUnidySocialLoginButtonElement;
         "unidy-submit-button": HTMLUnidySubmitButtonElement;
     }
 }
@@ -422,20 +422,6 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
-    }
-    interface GoogleLoginButton {
-        /**
-          * @default ""
-         */
-        "customStyle"?: string;
-        /**
-          * @default "google-icon.svg"
-         */
-        "googleIcon"?: string;
-        /**
-          * @default "Continue with Google"
-         */
-        "text"?: string;
     }
     interface LogoutButton {
         /**
@@ -602,6 +588,20 @@ declare namespace LocalJSX {
         "type": string;
         "value"?: string | string[];
     }
+    interface UnidySocialLoginButton {
+        /**
+          * @default "google"
+         */
+        "socialLoginProvider"?: "google" | "linkedin" | "apple" | "facebook" | "verimi" | "discord";
+        /**
+          * @default null
+         */
+        "socialLoginRedirectUri"?: string | null;
+        /**
+          * @default "Continue with Google"
+         */
+        "text"?: string;
+    }
     interface UnidySubmitButton {
     }
     interface IntrinsicElements {
@@ -610,7 +610,6 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "error-message": ErrorMessage;
         "flash-message": FlashMessage;
-        "google-login-button": GoogleLoginButton;
         "logout-button": LogoutButton;
         "magic-code-field": MagicCodeField;
         "password-field": PasswordField;
@@ -623,6 +622,7 @@ declare namespace LocalJSX {
         "unidy-field": UnidyField;
         "unidy-profile": UnidyProfile;
         "unidy-raw-field": UnidyRawField;
+        "unidy-social-login-button": UnidySocialLoginButton;
         "unidy-submit-button": UnidySubmitButton;
     }
 }
@@ -635,7 +635,6 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
             "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
-            "google-login-button": LocalJSX.GoogleLoginButton & JSXBase.HTMLAttributes<HTMLGoogleLoginButtonElement>;
             "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
             "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
             "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
@@ -648,6 +647,7 @@ declare module "@stencil/core" {
             "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
             "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
             "unidy-raw-field": LocalJSX.UnidyRawField & JSXBase.HTMLAttributes<HTMLUnidyRawFieldElement>;
+            "unidy-social-login-button": LocalJSX.UnidySocialLoginButton & JSXBase.HTMLAttributes<HTMLUnidySocialLoginButtonElement>;
             "unidy-submit-button": LocalJSX.UnidySubmitButton & JSXBase.HTMLAttributes<HTMLUnidySubmitButtonElement>;
         }
     }
