@@ -1,5 +1,5 @@
 import type { Config } from "@stencil/core";
-import tailwind from "stencil-tailwind-plugin";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
   namespace: "unidy-login",
@@ -28,5 +28,8 @@ export const config: Config = {
       ],
     },
   ],
-  plugins: [tailwind()],
+  plugins: [tailwind(), tailwindHMR()],
+  devServer: {
+    reloadStrategy: "pageReload",
+  },
 };
