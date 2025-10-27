@@ -1,5 +1,5 @@
 import type { Config } from "@stencil/core";
-import tailwind from "stencil-tailwind-plugin";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 import { reactOutputTarget } from "@stencil/react-output-target";
 
 export const config: Config = {
@@ -34,5 +34,8 @@ export const config: Config = {
       dir: "./hydrate",
     },
   ],
-  plugins: [tailwind()],
+  plugins: [tailwind(), tailwindHMR()],
+  devServer: {
+    reloadStrategy: "pageReload",
+  },
 };
