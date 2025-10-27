@@ -1,7 +1,7 @@
 import { type FunctionalComponent, h } from '@stencil/core';
 
 export const LinkedInLogo: FunctionalComponent = () => (
-    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20"
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" class="w-5 h-5 block"
     	 viewBox="0 0 382 382" style={{enableBackground: "new 0 0 382 382"}}>
         <path style={{fill: "#0077B7"}} d="M347.445,0H34.555C15.471,0,0,15.471,0,34.555v312.889C0,366.529,15.471,382,34.555,382h312.889
         	C366.529,382,382,366.529,382,347.444V34.555C382,15.471,366.529,0,347.445,0z M118.207,329.844c0,5.554-4.502,10.056-10.056,10.056

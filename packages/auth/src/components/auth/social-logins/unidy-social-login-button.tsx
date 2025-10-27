@@ -44,16 +44,14 @@ export class UnidySocialLoginButton {
 
     return (
       <button
-        class="relative box-border flex h-10 w-full min-w-min cursor-pointer items-center justify-center overflow-hidden rounded border border-[#747775] bg-white px-3 text-[14px] text-[#1f1f1f] outline-none transition-[background-color,border-color,box-shadow] duration-[218ms] ease-linear [letter-spacing:0.25px] [font-family:'Roboto',Arial,sans-serif] disabled:cursor-default disabled:border-[#1f1f1f1f] disabled:bg-[#ffffff61] hover:shadow-[0_1px_2px_0_rgba(60,64,67,0.30),0_1px_3px_1px_rgba(60,64,67,0.15)]"
+        class="relative grid grid-cols-6 content-center gap-3 w-full h-10 border border-[#747775] rounded-md bg-white text-[#1f1f1f] text-base font-medium hover:bg-gray-50 transition"
         style={{ width: "100%" }}
         onClick={this.onClick}
         part="social-login-button-width"
       >
-        <div class="relative flex h-full w-full flex-row items-center justify-center">
-          <div class="absolute left-3 flex items-center justify-center h-5 w-5">
-            {this.renderIcon()}
-          </div>
-          <span class="font-medium [font-family:'Roboto',Arial,sans-serif] pl-8">
+        <div class="absolute col-start-1 ml-4 md:col-span-4 md:col-start-3 content-center flex items-center justify-center h-full">
+          {this.renderIcon()}
+          <span class="font-medium [font-family:'Roboto',Arial,sans-serif] ml-4">
             {this.text}
           </span>
           <span style={{ display: "none" }}>Sign in with {this.text}</span>
