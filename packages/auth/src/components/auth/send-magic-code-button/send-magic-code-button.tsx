@@ -64,7 +64,7 @@ export class SendMagicCodeButton {
   }
 
   render() {
-    if (authState.step !== "verification") {
+    if (authState.step !== "magic-code" && authState.step !== "verification") {
       return null;
     }
 

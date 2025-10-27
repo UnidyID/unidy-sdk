@@ -15,7 +15,7 @@ export class PasswordField {
   };
 
   render() {
-    if (authState.step !== "verification" || authState.magicCodeSent) {
+    if (authState.step !== "verification") {
       return null;
     }
 

@@ -2,12 +2,13 @@ import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
-  step: "email" | "verification";
+  step: "email" | "verification" | "magic-code";
   email: string;
   password: string;
   magicCode: string;
   magicCodeRequested: boolean;
   magicCodeSent: boolean;
+  resetPasswordSent: boolean;
   enableResendMagicCodeAfter: number | null;
   sid: string | null;
   loading: boolean; // TODO refactor this or maybe remove loading state completely
@@ -38,6 +39,7 @@ const initialState: AuthState = {
   magicCode: "",
   magicCodeRequested: false,
   magicCodeSent: false,
+  resetPasswordSent: false,
   enableResendMagicCodeAfter: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
@@ -99,7 +101,7 @@ class AuthStore {
     state.error = error;
   }
 
-  setStep(step: "email" | "verification") {
+  setStep(step: "email" | "verification" | "magic-code") {
     state.step = step;
   }
 
@@ -117,6 +119,9 @@ class AuthStore {
   setRefreshToken(refreshToken: string) {
     state.refreshToken = refreshToken;
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+  }
+  setResetPasswordSent(resetPasswordSent: boolean) {
+    state.resetPasswordSent = resetPasswordSent;
   }
 
   setAuthenticated(authenticated: boolean) {
