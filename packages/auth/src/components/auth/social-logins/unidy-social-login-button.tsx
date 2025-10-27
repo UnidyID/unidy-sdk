@@ -45,6 +45,7 @@ export class UnidySocialLoginButton {
 
     return (
       <button
+        type="button"
         class="relative cursor-pointer grid grid-cols-6 content-center gap-3 w-full h-10 border border-solid border-gray-300 rounded-md bg-white text-[#1f1f1f] text-base font-medium hover:bg-gray-50 transition"
         style={{ width: "100%" }}
         onClick={this.onClick}
