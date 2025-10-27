@@ -10,7 +10,8 @@ import { DiscordLogo } from "./social-login-button-logos/DiscordLogo";
 
 @Component({
   tag: "unidy-social-login-button",
-  shadow: false
+  shadow: true,
+  styleUrl: "unidy-social-login-button.css",
 })
 export class UnidySocialLoginButton {
   @Prop() text = "Continue with Google";
@@ -44,7 +45,7 @@ export class UnidySocialLoginButton {
 
     return (
       <button
-        class="relative grid grid-cols-6 content-center gap-3 w-full h-10 border border-[#747775] rounded-md bg-white text-[#1f1f1f] text-base font-medium hover:bg-gray-50 transition"
+        class="relative cursor-pointer grid grid-cols-6 content-center gap-3 w-full h-10 border border-solid border-gray-300 rounded-md bg-white text-[#1f1f1f] text-base font-medium hover:bg-gray-50 transition"
         style={{ width: "100%" }}
         onClick={this.onClick}
         part="social-login-button-width"
