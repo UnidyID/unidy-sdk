@@ -233,7 +233,7 @@ export namespace Components {
         /**
           * @default "google"
          */
-        "socialLoginProvider": "google" | "linkedin" | "apple" | "facebook" | "verimi" | "discord";
+        "socialLoginProvider": SocialLoginProvider;
         /**
           * @default null
          */
@@ -627,7 +627,7 @@ declare namespace LocalJSX {
         /**
           * @default "google"
          */
-        "socialLoginProvider"?: "google" | "linkedin" | "apple" | "facebook" | "verimi" | "discord";
+        "socialLoginProvider"?: SocialLoginProvider;
         /**
           * @default null
          */
