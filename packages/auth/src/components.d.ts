@@ -231,6 +231,10 @@ export namespace Components {
     }
     interface UnidySocialLoginButton {
         /**
+          * @default false
+         */
+        "iconOnly": boolean;
+        /**
           * @default "google"
          */
         "socialLoginProvider": SocialLoginProvider;
@@ -242,6 +246,10 @@ export namespace Components {
           * @default "Continue with Google"
          */
         "text": string;
+        /**
+          * @default "light"
+         */
+        "theme": "light" | "dark";
     }
     interface UnidySubmitButton {
     }
@@ -625,6 +633,10 @@ declare namespace LocalJSX {
     }
     interface UnidySocialLoginButton {
         /**
+          * @default false
+         */
+        "iconOnly"?: boolean;
+        /**
           * @default "google"
          */
         "socialLoginProvider"?: SocialLoginProvider;
@@ -636,6 +648,10 @@ declare namespace LocalJSX {
           * @default "Continue with Google"
          */
         "text"?: string;
+        /**
+          * @default "light"
+         */
+        "theme"?: "light" | "dark";
     }
     interface UnidySubmitButton {
     }

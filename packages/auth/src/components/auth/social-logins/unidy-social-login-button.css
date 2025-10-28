@@ -1,3 +1,12 @@
 :host {
   display: block;
 }
+
+.button-background-dark {
+  background-color: #131314;
+  border-color: #747775;
+
+  &:hover {
+    background-color: #1f1f20;
+  }
+}

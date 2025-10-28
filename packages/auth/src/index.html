@@ -227,12 +227,15 @@
               <h3 class="px-3 text-gray-600 font-medium">OR</h3>
               <div class="flex-1 border-t border-gray-300"></div>
             </div>
-            <unidy-social-login-button text="Continue with Google" social-login-provider="google" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <!-- Theme: light/dark -->
+            <unidy-social-login-button text="Continue with Google" social-login-provider="google" theme="dark" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
             <unidy-social-login-button text="Continue with LinkedIn" social-login-provider="linkedin" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
-            <unidy-social-login-button text="Continue with Apple" social-login-provider="apple" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Apple" social-login-provider="apple" theme="dark" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
             <unidy-social-login-button text="Continue with Facebook" social-login-provider="facebook" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
-            <unidy-social-login-button text="Continue with Verimi" social-login-provider="verimi" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
-            <unidy-social-login-button text="Continue with Discord" social-login-provider="discord" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <unidy-social-login-button text="Continue with Discord" social-login-provider="discord" theme="dark" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <!-- Icon only -->
+            <unidy-social-login-button text="Continue with Verimi" social-login-provider="verimi" icon-only="true" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
+            <!-- Unsupported provider -->
             <unidy-social-login-button text="Continue with Some Provider" social-login-provider="some-provider" social-login-redirect-uri="http://localhost:3333"></unidy-social-login-button>
           </div>
       </signin-step>
