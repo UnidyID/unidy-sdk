@@ -39,7 +39,8 @@ export namespace Components {
           * @default ""
          */
         "customStyle": string;
-        "for": "email" | "magicCode" | "password" | "general";
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
     }
     interface FlashMessage {
         /**
@@ -411,7 +412,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "customStyle"?: string;
-        "for": "email" | "magicCode" | "password" | "general";
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
     }
     interface FlashMessage {
         /**

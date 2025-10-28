@@ -79,12 +79,12 @@ export class Auth {
     }
 
     authStore.setLoading(true);
-    authStore.setError(null);
+    authStore.clearErrors();
 
     const [error, response] = await this.client.auth.createSignIn(email);
 
     if (error) {
-      authStore.setError(error);
+      authStore.setFieldError("email", error);
       authStore.setLoading(false);
     } else {
       authStore.setStep("verification");
@@ -106,12 +106,16 @@ export class Auth {
     }
 
     authStore.setLoading(true);
-    authStore.setError(null);
+    authStore.clearErrors();
 
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
-      authStore.setError(error);
+      if (error === Auth.Errors.general.ACCOUNT_LOCKED) {
+        authStore.setGlobalError("auth", error);
+      } else {
+        authStore.setFieldError("password", error);
+      }
       authStore.setLoading(false);
     } else {
       authStore.setToken(response.jwt);
@@ -129,7 +133,7 @@ export class Auth {
 
     authStore.setMagicCodeRequested(true);
     authStore.setLoading(true);
-    authStore.setError(null);
+    authStore.clearErrors();
 
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
@@ -142,7 +146,7 @@ export class Auth {
         authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
       }
 
-      authStore.setError(error);
+      authStore.setFieldError("magicCode", error);
       authStore.setStep("magic-code");
     } else {
       authStore.setMagicCodeSent(true);
@@ -161,12 +165,16 @@ export class Auth {
     }
 
     authStore.setLoading(true);
-    authStore.setError(null);
+    authStore.clearErrors();
 
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
     if (error) {
-      authStore.setError(error);
+      if (error === Auth.Errors.general.SIGN_IN_EXPIRED || error === Auth.Errors.general.ACCOUNT_LOCKED) {
+        authStore.setGlobalError("auth", error);
+      } else {
+        authStore.setFieldError("magicCode", error);
+      }
       authStore.setLoading(false);
     } else {
       authStore.setToken(response.jwt);
@@ -188,12 +196,12 @@ export class Auth {
     const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
 
     if (error) {
-      authStore.setError(error);
+      authStore.setFieldError("password", error);
       authStore.setLoading(false);
     } else {
       authStore.setResetPasswordSent(true);
       authStore.setLoading(false);
-      authStore.setError(null);
+      authStore.clearErrors();
     }
   }
 
@@ -205,7 +213,7 @@ export class Auth {
     const [error, response] = await this.client.auth.refreshToken(authState.sid as string, authState.refreshToken);
 
     if (error) {
-      authStore.setError(error);
+      authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken(response.jwt);
       authStore.setRefreshToken(response.refresh_token);
@@ -249,7 +257,7 @@ export class Auth {
 
     await this.refreshToken();
 
-    if (authState.error || !authState.token) {
+    if (authState.globalErrors.auth || !authState.token) {
       return this.createAuthError("Failed to refresh token. Please sign in again.", "REFRESH_FAILED", true);
     }
 

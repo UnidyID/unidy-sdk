@@ -13,7 +13,7 @@ export class LogoutButton {
     const auth = await Auth.getInstance();
     auth.logout();
     window.location.reload();
-  };
+  }
 
   render() {
     return (

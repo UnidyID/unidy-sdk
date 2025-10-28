@@ -45,7 +45,7 @@ export class SendMagicCodeButton {
         if (this.countdown <= 0) {
           this.clearCountdown();
           authStore.setEnableResendMagicCodeAfter(null);
-          authStore.setError(null);
+          authStore.clearFieldError("magicCode");
         }
       }, 1000);
     }
