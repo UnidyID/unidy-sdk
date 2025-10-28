@@ -9,6 +9,8 @@ import { AUTH_ERROR_MESSAGES } from "../../../error-definitions";
 export class ErrorMessage {
   @Prop() customStyle = "";
   @Prop() for!: "email" | "password" | "magicCode" | "general";
+
+  // User defined messages(translations) per error code --> TODO: maybe this should be part of config component ?
   @Prop() errorMessages?: Record<string, string>;
 
   private getErrorMessage(errorCode: string): string {
