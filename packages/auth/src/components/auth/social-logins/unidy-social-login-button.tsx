@@ -55,8 +55,8 @@ export class UnidySocialLoginButton {
   render() {
     const buttonBaseClasses = "relative grid grid-cols-6 content-center gap-3 w-full h-10 border border-solid rounded-md text-base font-medium transition";
     const cursorClass = this.isUnsupportedProvider ? "cursor-not-allowed" : "cursor-pointer";
-    const lightModeClasses = `bg-white text-[#1f1f1f] border-gray-300 hover:bg-gray-50`;
-    const darkModeClasses = `button-background-dark text-white border-gray-600 hover:button-border-dark`;
+    const lightModeClasses = "bg-white text-[#1f1f1f] border-gray-300 hover:bg-gray-50";
+    const darkModeClasses = "button-background-dark text-white border-gray-600 hover:button-border-dark";
     const themeClasses = this.theme === "dark" ? darkModeClasses : lightModeClasses;
     const buttonIconOnlyClasses = "relative grid grid-cols-6 content-center gap-3 w-full h-10 border border-solid rounded-md text-base font-medium transition";
     const buttonClasses = `${this.iconOnly ? buttonIconOnlyClasses : buttonBaseClasses} ${cursorClass} ${themeClasses}`;
