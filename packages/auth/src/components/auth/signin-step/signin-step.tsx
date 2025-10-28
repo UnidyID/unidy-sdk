@@ -33,15 +33,20 @@ export class SigninStep {
   };
 
   render() {
-    const isActive =
-      this.name === "email"
-        ? authState.step === "email"
-        : this.name === "verification"
-          ? authState.step === "verification" || authState.step === "magic-code"
-          : false;
+    let shouldRender = false;
+
+    if (this.name === "email") {
+      shouldRender = authState.step === "email";
+    } else if (this.name === "verification") {
+      shouldRender = authState.step === "verification" || authState.step === "magic-code";
+    }
+
+    if (!shouldRender) {
+      return null;
+    }
 
     return (
-      <Host style={{ display: isActive ? "block" : "none" }}>
+      <Host>
         <form onSubmit={this.handleSubmit}>
           <slot />
         </form>
