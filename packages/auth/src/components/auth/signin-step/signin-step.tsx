@@ -1,18 +1,39 @@
-import { Component, Host, h, Prop, Method } from "@stencil/core";
+import { Component, Host, h, Prop, Method, Element, Listen } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 import { Auth } from "../../..";
 
 @Component({
   tag: "signin-step",
-  shadow: false,
+  shadow: true,
 })
 export class SigninStep {
+  @Element() el!: HTMLElement;
   @Prop() name!: "email" | "verification";
   @Prop() alwaysRender = false;
 
   @Method()
   async isActive(): Promise<boolean> {
     return authState.step === this.name || this.alwaysRender;
+  }
+
+  @Listen("click")
+  handleClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (target.tagName === "BUTTON" && target.getAttribute("type") === "submit") {
+      event.preventDefault();
+      this.handleSubmit(event);
+    }
+  }
+
+  @Listen("keydown")
+  handleKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      const target = event.target as HTMLElement;
+      if (target.tagName === "INPUT" && target.getAttribute("type") !== "textarea") {
+        event.preventDefault();
+        this.handleSubmit(event);
+      }
+    }
   }
 
   private handleSubmit = async (event: Event) => {
