@@ -7,11 +7,25 @@
 
 ## Properties
 
-| Property    | Attribute    | Description | Type     | Default            |
-| ----------- | ------------ | ----------- | -------- | ------------------ |
-| `className` | `class-name` |             | `string` | `""`               |
-| `text`      | `text`       |             | `string` | `"Reset Password"` |
+| Property         | Attribute         | Description | Type     | Default                                                 |
+| ---------------- | ----------------- | ----------- | -------- | ------------------------------------------------------- |
+| `className`      | `class-name`      |             | `string` | `""`                                                    |
+| `successMessage` | `success-message` |             | `string` | `"Password reset email sent. Please check your inbox."` |
+| `text`           | `text`            |             | `string` | `"Reset Password"`                                      |
 
+
+## Dependencies
+
+### Depends on
+
+- [flash-message](../../profile/unidy-flash)
+
+### Graph
+```mermaid
+graph TD;
+  reset-password-button --> flash-message
+  style reset-password-button fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 
