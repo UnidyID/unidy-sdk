@@ -1,4 +1,4 @@
-import { Component, Element, Prop, State, h } from "@stencil/core";
+import { AttachInternals, Component, Element, Prop, State, h } from "@stencil/core";
 import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
 import { Textarea } from "../raw-input-fields/Textarea";
 import { Input } from "../raw-input-fields/Input";
@@ -8,9 +8,11 @@ import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSe
 
 @Component({
   tag: "unidy-raw-field",
+  formAssociated: true,
   shadow: false,
 })
 export class UnidyRawField {
+  @AttachInternals() internals!: ElementInternals;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -92,6 +94,17 @@ export class UnidyRawField {
     }
   }
 
+  private validateValue(value: string | string[]): { valid: boolean; message: string } {
+    if (this.required) {
+      const empty = value === undefined || value === null || value === "";
+      if (empty) {
+        return { valid: false, message: "This field is required." };
+      }
+    }
+
+    return { valid: true, message: "" };
+  }
+
   private getNormalizedOptions(): Option[] {
     if (Array.isArray(this.options)) return this.options;
 
@@ -130,9 +143,32 @@ export class UnidyRawField {
   };
 
   private onSelectChange = (val: string) => this.writeStore(this.field, val);
-  private onTextChange = (val: string) => this.writeStore(this.field, val);
+  // private onTextChange = (val: string) => this.writeStore(this.field, val);
+  private onTextChange = (val: string) => {
+    this.selected = val;
+
+    const result = this.validateValue(val);
+
+    const newErrors = { ...profileState.errors };
+    if (result.valid) {
+      delete newErrors[this.field];
+    } else {
+      newErrors[this.field] = result.message;
+    }
+    profileState.errors = newErrors;
+
+    if (result.valid) {
+      this.writeStore(this.field, val);
+    }
+  };
 
   componentWillLoad() {
+    if (this.validateValue(this.readStore(this.field) ?? "").valid === false) {
+      const result = this.validateValue(this.readStore(this.field) ?? "");
+      const newErrors = { ...profileState.errors };
+      newErrors[this.field] = result.message;
+      profileState.errors = newErrors;
+    }
     if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
