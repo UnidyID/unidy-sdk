@@ -40,6 +40,10 @@ export class UnidySocialLoginButton {
       console.warn(`[unidy-social-login-button] Click prevented: unsupported provider "${this.socialLoginProvider}".`);
       return;
     }
+    if (!unidyState.baseUrl) {
+      console.error("[unidy-social-login-button] baseUrl is not set. Make sure <unidy-config> is rendered with a valid base-url.");
+      return;
+    }
     const baseUrl = unidyState.baseUrl;
     window.location.href = `${baseUrl}/users/auth/${this.socialLoginProvider === "google" ? "google_oauth2" : this.socialLoginProvider}?sdk_redirect_uri=${this.socialLoginRedirectUri ? encodeURIComponent(this.socialLoginRedirectUri) : baseUrl}`;
   };
