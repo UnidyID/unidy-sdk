@@ -30,17 +30,13 @@ export class ApiClient {
     return out;
   }
 
-  private async request<T>(
-    method: string,
-    endpoint: string,
-    body?: object,
-    headers?: HeadersInit
-  ): Promise<ApiResponse<T>> {
+  private async request<T>(method: string, endpoint: string, body?: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
     let res: Response | null = null;
     try {
       res = await fetch(`${this.baseUrl}${endpoint}`, {
         method,
         mode: "cors",
+        credentials: "include",
         headers: this.mergeHeaders(this.baseHeaders(), headers),
         body: JSON.stringify(body) || undefined,
       });
