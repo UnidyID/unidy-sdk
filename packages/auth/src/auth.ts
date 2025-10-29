@@ -197,13 +197,10 @@ export class Auth {
 
   extractRefreshTokenFromQuery() {
     const urlParams = new URLSearchParams(window.location.search);
-    const refreshToken = urlParams.get("refresh_token") || null;
     const sid = urlParams.get("sid") || null;
 
-    if (refreshToken && sid) {
+    if (sid) {
       authStore.setSignInId(sid);
-
-      urlParams.delete("refresh_token");
       urlParams.delete("sid");
       const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : "");
       window.history.replaceState({}, document.title, newUrl);
@@ -251,6 +248,7 @@ export class Auth {
   }
 
   async getToken(): Promise<string | AuthError> {
+    //
     const currentToken = authState.token;
 
     if (currentToken && this.isTokenValid(currentToken)) {
