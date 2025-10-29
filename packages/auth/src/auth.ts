@@ -195,20 +195,19 @@ export class Auth {
     }
   }
 
-  extractRefreshTokenFromQuery() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sid = urlParams.get("sid") || null;
+  extractSignInIdFromQuery() {
+    const url = new URL(window.location.href);
+    const sid = url.searchParams.get("sid") || null;
 
     if (sid) {
       authStore.setSignInId(sid);
-      urlParams.delete("sid");
-      const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : "");
-      window.history.replaceState({}, document.title, newUrl);
+      url.searchParams.delete("sid");
+      window.history.replaceState(null, "", url.toString());
     }
   }
 
   async refreshToken() {
-    this.extractRefreshTokenFromQuery();
+    this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
       throw new Error("No sign in ID available");
@@ -248,7 +247,6 @@ export class Auth {
   }
 
   async getToken(): Promise<string | AuthError> {
-    //
     const currentToken = authState.token;
 
     if (currentToken && this.isTokenValid(currentToken)) {
