@@ -16,7 +16,7 @@
 
 | Event        | Description | Type                              |
 | ------------ | ----------- | --------------------------------- |
-| `authEvent`  |             | `CustomEvent<TokenResponse>`      |
+| `authEvent`  |             | `CustomEvent<{ jwt: string; }>`   |
 | `errorEvent` |             | `CustomEvent<{ error: string; }>` |
 
 

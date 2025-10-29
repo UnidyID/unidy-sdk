@@ -15,13 +15,11 @@ export interface AuthState {
   error: string | null;
   authenticated: boolean;
   token: string | null;
-  refreshToken: string | null;
 }
 
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
-  REFRESH_TOKEN: "unidy_refresh_token",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -44,9 +42,8 @@ const initialState: AuthState = {
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   error: null,
-  authenticated: !!localStorage.getItem(SESSION_KEYS.TOKEN),
-  token: localStorage.getItem(SESSION_KEYS.TOKEN),
-  refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
+  authenticated: !!sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
 const { state, reset, onChange } = createStore<AuthState>(initialState);
@@ -116,10 +113,6 @@ class AuthStore {
     this.setAuthenticated(!!token);
   }
 
-  setRefreshToken(refreshToken: string) {
-    state.refreshToken = refreshToken;
-    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
-  }
   setResetPasswordSent(resetPasswordSent: boolean) {
     state.resetPasswordSent = resetPasswordSent;
   }
@@ -129,7 +122,6 @@ class AuthStore {
 
     if (!authenticated) {
       state.token = null;
-      state.refreshToken = null;
       state.sid = null;
     }
   }
@@ -137,7 +129,6 @@ class AuthStore {
   reset() {
     reset();
     saveToStorage(localStorage, SESSION_KEYS.SID, null);
-    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
   }
 }

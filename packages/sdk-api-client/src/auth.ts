@@ -26,7 +26,6 @@ const SendMagicCodeErrorSchema = z.object({
 
 const TokenResponseSchema = z.object({
   jwt: z.string(),
-  refresh_token: z.string(),
 });
 
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
@@ -155,10 +154,8 @@ export class AuthService {
     }
   }
 
-  async refreshToken(signInId: string, refreshToken: string): Promise<RefreshTokenResult> {
-    const response = await this.client.post<{ refresh_token: string }>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {
-      refresh_token: refreshToken,
-    });
+  async refreshToken(signInId: string): Promise<RefreshTokenResult> {
+    const response = await this.client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {});
 
     try {
       if (!response.success) {
