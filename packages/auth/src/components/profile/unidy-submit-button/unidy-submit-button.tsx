@@ -4,8 +4,8 @@ import { Auth } from "../../../auth";
 import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
 @Component({
   tag: "unidy-submit-button",
-  styleUrl: "unidy-submit-button.css",
   shadow: true,
+  styleUrl: "unidy-submit-button.css",
 })
 export class UnidySubmitButton {
   @Element() el!: HTMLElement;

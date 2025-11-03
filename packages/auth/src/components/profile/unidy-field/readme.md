@@ -16,6 +16,7 @@
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                         | `"Please enter a valid phone number."` |
 | `placeholder`              | `placeholder`                 |             | `string \| undefined`            | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                         | `""`                                   |
+| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`                        | `false`                                |
 | `required`                 | `required`                    |             | `boolean`                        | `false`                                |
 
 

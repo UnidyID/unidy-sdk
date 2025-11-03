@@ -10,7 +10,7 @@
 | Property          | Attribute           | Description | Type      | Default                                   |
 | ----------------- | ------------------- | ----------- | --------- | ----------------------------------------- |
 | `alreadySentText` | `already-sent-text` |             | `string`  | `"Magic code already sent to your email"` |
-| `className`       | `class-name`        |             | `string`  | `""`                                      |
+| `customStyle`     | `custom-style`      |             | `string`  | `""`                                      |
 | `disabled`        | `disabled`          |             | `boolean` | `false`                                   |
 | `text`            | `text`              |             | `string`  | `"Send Magic Code"`                       |
 

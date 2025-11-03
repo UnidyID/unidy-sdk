@@ -1,4 +1,5 @@
 import type { Config } from "@stencil/core";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
   namespace: "auth",
@@ -22,5 +23,9 @@ export const config: Config = {
   ],
   testing: {
     browserHeadless: "shell",
+  },
+  plugins: [tailwind(), tailwindHMR()],
+  devServer: {
+    reloadStrategy: "pageReload",
   },
 };

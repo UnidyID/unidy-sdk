@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/auth",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "publishConfig": {
     "tag": "next"
   },
@@ -45,7 +45,10 @@
     "@types/node": "^22.18.8",
     "jest": "^29.7.0",
     "jest-cli": "^29.7.0",
-    "puppeteer": "^24.23.0"
+    "puppeteer": "^24.23.0",
+    "stencil-tailwind-plugin": "^2.0.5",
+    "tailwindcss": "^4.1.7",
+    "@tailwindcss/postcss": "^4.1.7"
   },
   "license": "MIT"
 }

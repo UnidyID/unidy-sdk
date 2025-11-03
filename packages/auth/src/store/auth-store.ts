@@ -2,25 +2,24 @@ import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
-  step: "email" | "verification";
+  step: "email" | "verification" | "magic-code";
   email: string;
   password: string;
   magicCode: string;
   magicCodeRequested: boolean;
   magicCodeSent: boolean;
+  resetPasswordSent: boolean;
   enableResendMagicCodeAfter: number | null;
   sid: string | null;
   loading: boolean; // TODO refactor this or maybe remove loading state completely
   error: string | null;
   authenticated: boolean;
   token: string | null;
-  refreshToken: string | null;
 }
 
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
-  REFRESH_TOKEN: "unidy_refresh_token",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -38,13 +37,13 @@ const initialState: AuthState = {
   magicCode: "",
   magicCodeRequested: false,
   magicCodeSent: false,
+  resetPasswordSent: false,
   enableResendMagicCodeAfter: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   error: null,
-  authenticated: !!localStorage.getItem(SESSION_KEYS.TOKEN),
-  token: localStorage.getItem(SESSION_KEYS.TOKEN),
-  refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
+  authenticated: !!sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
 const { state, reset, onChange } = createStore<AuthState>(initialState);
@@ -99,7 +98,7 @@ class AuthStore {
     state.error = error;
   }
 
-  setStep(step: "email" | "verification") {
+  setStep(step: "email" | "verification" | "magic-code") {
     state.step = step;
   }
 
@@ -114,9 +113,8 @@ class AuthStore {
     this.setAuthenticated(!!token);
   }
 
-  setRefreshToken(refreshToken: string) {
-    state.refreshToken = refreshToken;
-    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+  setResetPasswordSent(resetPasswordSent: boolean) {
+    state.resetPasswordSent = resetPasswordSent;
   }
 
   setAuthenticated(authenticated: boolean) {
@@ -124,7 +122,6 @@ class AuthStore {
 
     if (!authenticated) {
       state.token = null;
-      state.refreshToken = null;
       state.sid = null;
     }
   }
@@ -132,7 +129,6 @@ class AuthStore {
   reset() {
     reset();
     saveToStorage(localStorage, SESSION_KEYS.SID, null);
-    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
   }
 }

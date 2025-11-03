@@ -30,6 +30,7 @@ export class UnidyField {
   @Prop() customStyle?: string;
   @Prop() emptyOption = true;
   @Prop() placeholder?: string;
+  @Prop() renderDefaultLabel = false;
 
   @Element() el!: HTMLElement;
 
@@ -85,11 +86,15 @@ export class UnidyField {
     const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
     // TODO: Add other types
     return (
-      <div>
-        <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
-          {fieldData?.label}
-          {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
-        </label>
+      <div part={`field-container field-container--${this.createSpecificPartKey(this.field)}`}>
+        <slot name="label" />
+
+        {this.renderDefaultLabel && (
+          <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
+            {fieldData?.label}
+            {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
+          </label>
+        )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
           <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
         ) : null}
@@ -105,7 +110,7 @@ export class UnidyField {
         {!isReadonly && (
             <unidy-raw-field
               id={this.field}
-              name={this.field}
+              field={this.field}
               type={fieldData.type as string}
               value={fieldData.value}
               options={fieldData.type === "select" ? fieldData.options : undefined}

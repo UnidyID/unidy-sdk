@@ -38,6 +38,8 @@ export class Auth {
     },
     password: {
       INVALID: "invalid_password",
+      NOT_SET: "password_not_set",
+      RESET_PASSWORD_ALREADY_SENT: "reset_password_already_sent",
     },
     general: {
       ACCOUNT_LOCKED: "account_locked",
@@ -113,7 +115,6 @@ export class Auth {
       authStore.setLoading(false);
     } else {
       authStore.setToken(response.jwt);
-      authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
 
       authStore.getRootComponentRef()?.onAuth(response);
@@ -141,9 +142,11 @@ export class Auth {
       }
 
       authStore.setError(error);
+      authStore.setStep("magic-code");
     } else {
       authStore.setMagicCodeSent(true);
       authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
+      authStore.setStep("magic-code");
     }
   }
 
@@ -166,25 +169,43 @@ export class Auth {
       authStore.setLoading(false);
     } else {
       authStore.setToken(response.jwt);
-      authStore.setRefreshToken(response.refresh_token);
       authStore.setLoading(false);
 
       authStore.getRootComponentRef()?.onAuth(response);
     }
   }
 
-  async refreshToken() {
-    if (!authState.refreshToken) {
-      throw new Error("No refresh token available");
+  async sendResetPasswordEmail() {
+    if (!authState.sid) {
+      throw new Error("No sign in ID available");
     }
 
-    const [error, response] = await this.client.auth.refreshToken(authState.sid as string, authState.refreshToken);
+    authStore.setLoading(true);
+    authStore.setResetPasswordSent(false);
+
+    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
+
+    if (error) {
+      authStore.setError(error);
+      authStore.setLoading(false);
+    } else {
+      authStore.setResetPasswordSent(true);
+      authStore.setLoading(false);
+      authStore.setError(null);
+    }
+  }
+
+  async refreshToken() {
+    if (!authState.sid) {
+      throw new Error("No sign in ID available");
+    }
+
+    const [error, response] = await this.client.auth.refreshToken(authState.sid);
 
     if (error) {
       authStore.setError(error);
     } else {
       authStore.setToken(response.jwt);
-      authStore.setRefreshToken(response.refresh_token);
     }
   }
 
@@ -219,10 +240,7 @@ export class Auth {
       return currentToken;
     }
 
-    if (!authState.refreshToken) {
-      return this.createAuthError("Token expired and no refresh token available. Please sign in again.", "TOKEN_EXPIRED", true);
-    }
-
+    // Try to refresh using HttpOnly cookie
     await this.refreshToken();
 
     if (authState.error || !authState.token) {
