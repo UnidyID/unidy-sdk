@@ -64,7 +64,7 @@ export class SendMagicCodeButton {
     const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
 
     return (
-      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} style={{ width: "100%" }}>
+      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName}>
         {this.countdown > 0
           ? this.alreadySentText
           : authState.loading && authState.magicCodeStep === "requested"

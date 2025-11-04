@@ -16,7 +16,7 @@ export class LogoutButton {
     const auth = await Auth.getInstance();
     const result = await auth.logout();
 
-    if (typeof result === "boolean" && result === true) {
+    if (result === true) {
       this.onLogout.emit();
 
       if (this.reloadOnSuccess) {

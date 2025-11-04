@@ -14,7 +14,7 @@ export class AuthProvider {
     }
 
     return (
-      <Host class={this.componentClassName} style={{ width: "100%" }}>
+      <Host class={this.componentClassName}>
         <slot />
       </Host>
     );

@@ -219,7 +219,7 @@
         <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
 
         <submit-button for="email" text="Continue with Email"
-          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></submit-button>
       </signin-step>
 
       <signin-step name="verification">
@@ -229,7 +229,7 @@
           <reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500"></reset-password-button>
           <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
           <submit-button for="password" text="Sign In"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></submit-button>
         </signin-strategy>
 
         <conditional-render when="magicCodeSent" is="false">
@@ -240,7 +240,7 @@
           </div>
 
           <send-magic-code-button text="Send Magic Code To Your Email"
-            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></send-magic-code-button>
         </conditional-render>
 
         <signin-strategy type="magic-code">
@@ -254,7 +254,7 @@
 
           <conditional-render when="magicCodeSent" is="true">
             <send-magic-code-button text="Resend Magic Code"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50"></send-magic-code-button>
+              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></send-magic-code-button>
           </conditional-render>
         </signin-strategy>
 
