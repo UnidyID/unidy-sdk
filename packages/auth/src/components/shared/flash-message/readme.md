@@ -18,7 +18,7 @@
 ### Used by
 
  - [reset-password-button](../../auth/reset-pass-button)
- - [unidy-profile](../unidy-profile)
+ - [unidy-profile](../../profile/unidy-profile)
 
 ### Graph
 ```mermaid

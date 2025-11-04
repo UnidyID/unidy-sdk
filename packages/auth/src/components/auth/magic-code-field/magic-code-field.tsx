@@ -1,5 +1,5 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { authState, authStore } from "../../../store/auth-store";
+import { authState } from "../../../store/auth-store";
 import { Auth } from "../../../auth.js";
 
 @Component({
@@ -7,7 +7,7 @@ import { Auth } from "../../../auth.js";
   shadow: false,
 })
 export class MagicCodeField {
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @State() codeDigits: string[] = ["", "", "", ""];
 
@@ -22,7 +22,6 @@ export class MagicCodeField {
     this.codeDigits = newDigits;
 
     const fullCode = newDigits.join("");
-    authStore.setMagicCode(fullCode);
 
     if (value && index < 3) {
       const nextInput = this.inputRefs[index + 1];
@@ -58,7 +57,6 @@ export class MagicCodeField {
     }
 
     this.codeDigits = digits;
-    authStore.setMagicCode(digits.join(""));
 
     const firstEmptyIndex = digits.findIndex((digit) => !digit);
     const targetIndex = firstEmptyIndex !== -1 ? firstEmptyIndex : 3;
@@ -73,21 +71,21 @@ export class MagicCodeField {
   };
 
   private authenticateWithCode = async (code: string) => {
-    const authService = await Auth.getInstance();
-    if (!authService) {
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
-    await authService.authenticateWithMagicCode(code);
+    await authInstance.helpers.authenticateWithMagicCode(code);
   };
   render() {
-    if (authState.step !== "magic-code" || !authState.magicCodeSent) {
+    if (authState.step !== "magic-code") {
       return null;
     }
 
     return (
-      <div class={this.customStyle} style={{ display: "flex", gap: "2px", width: "100%", justifyContent: "center" }}>
+      <div class={this.componentClassName} style={{ display: "flex", gap: "2px", width: "100%", justifyContent: "center" }}>
         {this.codeDigits.map((digit, index) => (
           <input
             // biome-ignore lint/suspicious/noArrayIndexKey:
@@ -104,7 +102,7 @@ export class MagicCodeField {
             onKeyDown={(event) => this.handleKeyDown(event, index)}
             onPaste={index === 0 ? this.handlePaste : undefined}
             style={{
-              // TODO refactor this
+              // TODO refactor this somehow !!
               width: "50px",
               height: "50px",
               textAlign: "center",

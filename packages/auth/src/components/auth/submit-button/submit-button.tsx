@@ -1,5 +1,6 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
+import { getParentSigninStep } from "../helpers";
 
 @Component({
   tag: "submit-button",
@@ -11,7 +12,7 @@ export class SubmitButton {
   @Prop() for!: "email" | "password";
   @Prop() text = "";
   @Prop() disabled = false;
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private getButtonText() {
     if (this.text) return this.text;
@@ -32,7 +33,7 @@ export class SubmitButton {
     }
 
     if (authState.step === "verification") {
-      return this.for === "password" && !authState.magicCodeSent;
+      return this.for === "password" && authState.magicCodeStep !== "sent";
     }
 
     return false;
@@ -52,14 +53,20 @@ export class SubmitButton {
     return false;
   }
 
+  private handleClick = async (event: Event) => {
+    event.preventDefault();
+
+    (await getParentSigninStep(this.el))?.submit();
+  };
+
   render() {
     if (!this.shouldRender()) {
       return null;
     }
 
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.customStyle} style={{ width: "100%" }}>
-        {authState.loading && !authState.magicCodeRequested ? "Loading..." : this.getButtonText()}
+      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick}>
+        {authState.loading && authState.magicCodeStep !== "requested" ? "Loading..." : this.getButtonText()}
       </button>
     );
   }

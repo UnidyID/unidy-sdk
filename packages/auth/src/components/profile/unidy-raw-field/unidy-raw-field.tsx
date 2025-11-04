@@ -15,7 +15,7 @@ export class UnidyRawField {
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
-  @Prop() customStyle?: string;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @Prop() field!: string;
   @Prop() value?: string | string[];
@@ -36,7 +36,6 @@ export class UnidyRawField {
   @State() selected?: string | string[];
 
   private readStore(fieldName: string): string | undefined | string[] {
-
     if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
 
@@ -56,9 +55,9 @@ export class UnidyRawField {
     if (field.radio_options) {
       const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
 
-      const checkedValue =  checkedOption?.value ?? field.value ?? "";
+      const checkedValue = checkedOption?.value ?? field.value ?? "";
 
-       return String(checkedValue);
+      return String(checkedValue);
     }
 
     if (field.type === "checkbox") {
@@ -69,7 +68,6 @@ export class UnidyRawField {
   }
 
   private writeStore(fieldName: string, value: string | string[]) {
-
     if (!fieldName) return;
     const data: ProfileRaw = profileState.data;
     if (!data) return;
@@ -96,7 +94,7 @@ export class UnidyRawField {
     if (Array.isArray(this.options)) return this.options;
 
     // unidy-raw-field select-options prop can be a JSON string
-    if (typeof this.options === 'string') return JSON.parse(this.options);
+    if (typeof this.options === "string") return JSON.parse(this.options);
 
     return [];
   }
@@ -153,7 +151,7 @@ export class UnidyRawField {
       this.type === "select";
 
     if (isType && (current === undefined || current === null) && typeof this.value === "string") {
-        this.writeStore(this.field, this.value);
+      this.writeStore(this.field, this.value);
     }
 
     this.selected = current;
@@ -183,10 +181,10 @@ export class UnidyRawField {
   render() {
     if (this.type === "radio") {
       if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
-          const checkedOptions = this.radioOptions.map((opt) => ({
-            ...opt,
-            checked: String(opt.value) === this.selected,
-          }));
+        const checkedOptions = this.radioOptions.map((opt) => ({
+          ...opt,
+          checked: String(opt.value) === this.selected,
+        }));
         return (
           <RadioGroup
             name={this.field}
@@ -210,7 +208,7 @@ export class UnidyRawField {
             checked={isChecked}
             disabled={this.disabled}
             title={this.tooltip}
-            customStyle={this.customStyle}
+            componentClassName={this.componentClassName}
             type="radio"
             specificPartKey={this.specificPartKey}
             onChange={this.onRadioChange}
@@ -246,7 +244,7 @@ export class UnidyRawField {
             checked={isChecked}
             disabled={this.disabled}
             title={this.tooltip}
-            customStyle={this.customStyle}
+            componentClassName={this.componentClassName}
             type="checkbox"
             onToggle={(val, checked) => {
               const current = this.readStore(this.field) as string[];
@@ -271,7 +269,7 @@ export class UnidyRawField {
           title={this.tooltip}
           emptyOption={this.emptyOption}
           onChange={this.onSelectChange}
-          customStyle={this.customStyle}
+          componentClassName={this.componentClassName}
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
           attr_name={this.attrName}
@@ -289,7 +287,7 @@ export class UnidyRawField {
           required={this.required}
           disabled={this.disabled}
           title={this.tooltip}
-          customStyle={this.customStyle}
+          componentClassName={this.componentClassName}
           specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
         />
@@ -305,7 +303,7 @@ export class UnidyRawField {
         disabled={this.disabled}
         title={this.tooltip}
         type={this.type}
-        customStyle={this.customStyle}
+        componentClassName={this.componentClassName}
         placeholder={this.placeholder}
         specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}

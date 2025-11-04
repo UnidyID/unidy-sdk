@@ -18,7 +18,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -28,7 +28,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default "Enter your email"
          */
@@ -38,8 +38,9 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
-        "for": "email" | "magicCode" | "password" | "general";
+        "componentClassName": string;
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
     }
     interface FlashMessage {
         /**
@@ -55,7 +56,11 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
+        /**
+          * @default true
+         */
+        "reloadOnSuccess": boolean;
         /**
           * @default "Logout"
          */
@@ -65,13 +70,13 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default "Enter your password"
          */
@@ -81,7 +86,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "componentClassName": string;
         /**
           * @default "Password reset email sent. Please check your inbox."
          */
@@ -99,7 +104,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default false
          */
@@ -113,7 +118,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface SigninStep {
         /**
@@ -122,19 +127,20 @@ export namespace Components {
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
         "name": "email" | "verification";
+        "submit": () => Promise<void>;
     }
     interface SigninStrategy {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default false
          */
@@ -156,11 +162,11 @@ export namespace Components {
         "baseUrl": string;
     }
     interface UnidyField {
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         /**
           * @default true
          */
@@ -197,11 +203,11 @@ export namespace Components {
     interface UnidyRawField {
         "attrName"?: string;
         "checked"?: boolean;
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         "disabled"?: boolean;
         /**
           * @default false
@@ -231,6 +237,10 @@ export namespace Components {
     }
     interface UnidySubmitButton {
     }
+}
+export interface LogoutButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLLogoutButtonElement;
 }
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -267,7 +277,18 @@ declare global {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
     };
+    interface HTMLLogoutButtonElementEventMap {
+        "onLogout": void;
+    }
     interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLLogoutButtonElement: {
         prototype: HTMLLogoutButtonElement;
@@ -390,7 +411,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -400,7 +421,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Enter your email"
          */
@@ -410,8 +431,9 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
-        "for": "email" | "magicCode" | "password" | "general";
+        "componentClassName"?: string;
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
     }
     interface FlashMessage {
         /**
@@ -427,7 +449,12 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
+        "onOnLogout"?: (event: LogoutButtonCustomEvent<void>) => void;
+        /**
+          * @default true
+         */
+        "reloadOnSuccess"?: boolean;
         /**
           * @default "Logout"
          */
@@ -437,13 +464,13 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Enter your password"
          */
@@ -453,7 +480,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Password reset email sent. Please check your inbox."
          */
@@ -471,7 +498,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default false
          */
@@ -485,7 +512,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
@@ -500,14 +527,14 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default false
          */
@@ -529,11 +556,11 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
     }
     interface UnidyField {
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         /**
           * @default true
          */
@@ -570,11 +597,11 @@ declare namespace LocalJSX {
     interface UnidyRawField {
         "attrName"?: string;
         "checked"?: boolean;
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         "disabled"?: boolean;
         /**
           * @default false
