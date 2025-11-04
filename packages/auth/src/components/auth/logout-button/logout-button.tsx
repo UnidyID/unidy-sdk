@@ -7,7 +7,7 @@ import { Auth } from "../../../auth";
 })
 export class LogoutButton {
   @Prop() text = "Logout";
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private async handleLogout() {
     const auth = await Auth.getInstance();
@@ -17,7 +17,7 @@ export class LogoutButton {
 
   render() {
     return (
-      <button type="button" class={this.customStyle} onClick={this.handleLogout}>
+      <button type="button" class={this.componentClassName} onClick={this.handleLogout}>
         {this.text}
       </button>
     );

@@ -210,26 +210,26 @@
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <signin-root id="sign-in-root" custom-style="
+    <signin-root id="sign-in-root" class-name="
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
       <signin-step name="email">
         <email-field placeholder="Enter your email"
-          custom-style="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></email-field>
-        <error-message for="email" custom-style="mt-1 mb-4 text-sm text-red-500"></error-message>
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></email-field>
+        <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
 
         <submit-button for="email" text="Continue with Email"
-          custom-style="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50"></submit-button>
       </signin-step>
 
       <signin-step name="verification">
         <signin-strategy type="password">
           <password-field placeholder="Enter your password"
-            custom-style="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></password-field>
+            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></password-field>
           <reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500"></reset-password-button>
           <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
           <submit-button for="password" text="Sign In"
-            custom-style="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg"></submit-button>
         </signin-strategy>
 
         <conditional-render when="magicCodeSent" is="false">
@@ -240,7 +240,7 @@
           </div>
 
           <send-magic-code-button text="Send Magic Code To Your Email"
-            custom-style="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center"></send-magic-code-button>
         </conditional-render>
 
         <signin-strategy type="magic-code">
@@ -248,17 +248,17 @@
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </conditional-render>
 
-          <magic-code-field custom-style="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
+          <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
 
-          <error-message for="magicCode" custom-style="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
+          <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
 
           <conditional-render when="magicCodeSent" is="true">
             <send-magic-code-button text="Resend Magic Code"
-              custom-style="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50"></send-magic-code-button>
+              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50"></send-magic-code-button>
           </conditional-render>
         </signin-strategy>
 
-        <error-message for="general" custom-style="my-2 text-sm text-center text-red-500"></error-message>
+        <error-message for="general" class-name="my-2 text-sm text-center text-red-500"></error-message>
       </signin-step>
 
     </signin-root>
@@ -278,7 +278,7 @@
         <unidy-profile language="de">
           <div class="mt-6 space-y-3">
             <logout-button text="Logout"
-              custom-style="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+              class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
             </logout-button>
           </div>
           <unidy-field field="salutation" render-default-label="true"></unidy-field>
@@ -310,7 +310,7 @@
             </label>
 
             <unidy-raw-field field="first_name" type="text" tooltip="First Name raw" placeholder="Enter your first name"
-              required custom-style="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
+              required class-name="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
                           focus:border-red-500 transition"></unidy-raw-field>
           </div>
@@ -319,19 +319,19 @@
           <div class="flex gap-6">
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="salutation" type="radio" value="mr" tooltip="Herr"
-                custom-style="h-4 w-4"></unidy-raw-field>
+                class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">Mr</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="salutation" type="radio" value="mrs" tooltip="Frau"
-                custom-style="h-4 w-4"></unidy-raw-field>
+                class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">Mrs</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="salutation" type="radio" value="mx" tooltip="Divers"
-                custom-style="h-4 w-4"></unidy-raw-field>
+                class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">Mx</span>
             </label>
           </div>
@@ -340,19 +340,19 @@
           <div class="flex gap-6">
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="true" tooltip="Yes"
-                custom-style="h-4 w-4"></unidy-raw-field>
+                class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">Yes</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="false" tooltip="No"
-                custom-style="h-4 w-4"></unidy-raw-field>
+                class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">No</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
               <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="_NOT_SET_"
-                tooltip="Not Set" custom-style="h-4 w-4"></unidy-raw-field>
+                tooltip="Not Set" class-name="h-4 w-4"></unidy-raw-field>
               <span class="text-sm text-gray-800">Not Set</span>
             </label>
           </div>
@@ -362,7 +362,7 @@
               Phone Number
             </label>
 
-            <unidy-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" custom-style="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+            <unidy-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
                           focus:border-blue-500 transition"></unidy-raw-field>
           </div>
@@ -373,13 +373,13 @@
             </label>
 
             <unidy-raw-field field="custom_attributes.self_description" type="textarea" tooltip="Self Description"
-              custom-style="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+              class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
                           min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></unidy-raw-field>
           </div>
           <div class="mb-4">
             <label class="block text-sm font-bold mb-1">Favorite Nut</label>
-            <unidy-raw-field field="custom_attributes.favorite_nut" type="select" custom-style="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
+            <unidy-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
                           bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
                           focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
                 { "value": "erdnuss", "label": "Erdnuss" },
@@ -396,7 +396,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="soccer"
-                  tooltip="Soccer" custom-style="sr-only"></unidy-raw-field>
+                  tooltip="Soccer" class-name="sr-only"></unidy-raw-field>
                 Soccer
               </label>
 
@@ -406,7 +406,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="basketball"
-                  tooltip="Basketball" custom-style="sr-only"></unidy-raw-field>
+                  tooltip="Basketball" class-name="sr-only"></unidy-raw-field>
                 Basketball
               </label>
 
@@ -416,7 +416,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="hockey"
-                  tooltip="Hockey" custom-style="sr-only"></unidy-raw-field>
+                  tooltip="Hockey" class-name="sr-only"></unidy-raw-field>
                 Hockey
               </label>
 
@@ -426,7 +426,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="golf" tooltip="Golf"
-                  custom-style="sr-only"></unidy-raw-field>
+                  class-name="sr-only"></unidy-raw-field>
                 Golf
               </label>
 
@@ -436,7 +436,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="handball"
-                  tooltip="Handball" custom-style="sr-only"></unidy-raw-field>
+                  tooltip="Handball" class-name="sr-only"></unidy-raw-field>
                 Handball
               </label>
 
@@ -446,7 +446,7 @@
                        [&:has(unidy-raw-field_input:checked)]:border-indigo-500
                        [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
                 <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="tennis"
-                  tooltip="Tennis" custom-style="sr-only"></unidy-raw-field>
+                  tooltip="Tennis" class-name="sr-only"></unidy-raw-field>
                 Tennis
               </label>
             </div>

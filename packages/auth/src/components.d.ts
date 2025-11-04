@@ -18,7 +18,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -28,7 +28,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default "Enter your email"
          */
@@ -38,7 +38,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         "errorMessages"?: Record<string, string>;
         "for": "email" | "password" | "magicCode" | "general";
     }
@@ -56,7 +56,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default "Logout"
          */
@@ -66,13 +66,13 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default "Enter your password"
          */
@@ -82,7 +82,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "className": string;
+        "componentClassName": string;
         /**
           * @default "Password reset email sent. Please check your inbox."
          */
@@ -100,7 +100,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default false
          */
@@ -114,7 +114,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
     }
     interface SigninStep {
         /**
@@ -128,14 +128,14 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "customStyle": string;
+        "componentClassName": string;
         /**
           * @default false
          */
@@ -157,11 +157,11 @@ export namespace Components {
         "baseUrl": string;
     }
     interface UnidyField {
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         /**
           * @default true
          */
@@ -198,11 +198,11 @@ export namespace Components {
     interface UnidyRawField {
         "attrName"?: string;
         "checked"?: boolean;
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         "disabled"?: boolean;
         /**
           * @default false
@@ -391,7 +391,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
     }
     interface ConditionalRender {
         "is": "true" | "false";
@@ -401,7 +401,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Enter your email"
          */
@@ -411,7 +411,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
         "for": "email" | "password" | "magicCode" | "general";
     }
@@ -429,7 +429,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Logout"
          */
@@ -439,13 +439,13 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
     }
     interface PasswordField {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Enter your password"
          */
@@ -455,7 +455,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "className"?: string;
+        "componentClassName"?: string;
         /**
           * @default "Password reset email sent. Please check your inbox."
          */
@@ -473,7 +473,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default false
          */
@@ -487,7 +487,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
         "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
     }
@@ -502,14 +502,14 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         "type": "password" | "magic-code";
     }
     interface SubmitButton {
         /**
           * @default ""
          */
-        "customStyle"?: string;
+        "componentClassName"?: string;
         /**
           * @default false
          */
@@ -531,11 +531,11 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
     }
     interface UnidyField {
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         /**
           * @default true
          */
@@ -572,11 +572,11 @@ declare namespace LocalJSX {
     interface UnidyRawField {
         "attrName"?: string;
         "checked"?: boolean;
+        "componentClassName"?: string;
         /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        "customStyle"?: string;
         "disabled"?: boolean;
         /**
           * @default false

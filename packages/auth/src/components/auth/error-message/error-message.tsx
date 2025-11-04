@@ -7,7 +7,7 @@ import { AUTH_ERROR_MESSAGES } from "../../../error-definitions";
   shadow: false,
 })
 export class ErrorMessage {
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() for!: "email" | "password" | "magicCode" | "general";
 
   // User defined messages(translations) per error code --> TODO: maybe this should be part of config component ?
@@ -32,6 +32,6 @@ export class ErrorMessage {
       return null;
     }
 
-    return <div class={this.customStyle}>{this.getErrorMessage(errorCode)}</div>;
+    return <div class={this.componentClassName}>{this.getErrorMessage(errorCode)}</div>;
   }
 }

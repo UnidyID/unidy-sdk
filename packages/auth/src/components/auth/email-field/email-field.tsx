@@ -7,7 +7,7 @@ import { authStore, authState } from "../../../store/auth-store";
 })
 export class EmailField {
   @Prop() placeholder = "Enter your email";
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -16,16 +16,7 @@ export class EmailField {
 
   render() {
     if (authState.step === "verification") {
-      return (
-        <input
-          id="email"
-          type="email"
-          value={authState.email}
-          placeholder="Email"
-          class={this.customStyle}
-          disabled={true}
-        />
-      );
+      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
     }
 
     return (
@@ -36,7 +27,7 @@ export class EmailField {
         autocomplete="email"
         placeholder={this.placeholder}
         disabled={authState.loading}
-        class={this.customStyle}
+        class={this.componentClassName}
         onInput={this.handleInput}
       />
     );

@@ -7,7 +7,7 @@ import { authState } from "../../../store/auth-store";
 })
 export class SigninStrategy {
   @Prop() type!: "password" | "magic-code";
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   render() {
     let shouldRender = false;
@@ -23,7 +23,7 @@ export class SigninStrategy {
     }
 
     return (
-      <Host class={this.customStyle}>
+      <Host class={this.componentClassName}>
         <slot />
       </Host>
     );

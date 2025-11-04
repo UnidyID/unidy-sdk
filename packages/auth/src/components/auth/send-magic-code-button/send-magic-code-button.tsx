@@ -8,7 +8,7 @@ import { Auth } from "../../../auth.js";
 })
 export class SendMagicCodeButton {
   @Prop() disabled = false;
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() text = "Send Magic Code";
   @Prop() alreadySentText = "Magic code already sent to your email";
 
@@ -71,7 +71,7 @@ export class SendMagicCodeButton {
     const isDisabled = this.disabled || authState.magicCodeRequested || this.countdown > 0;
 
     return (
-      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.customStyle} style={{ width: "100%" }}>
+      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} style={{ width: "100%" }}>
         {this.countdown > 0 ? this.alreadySentText : authState.loading && authState.magicCodeRequested ? "Sending..." : this.text}
       </button>
     );

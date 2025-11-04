@@ -11,7 +11,7 @@ export class SubmitButton {
   @Prop() for!: "email" | "password";
   @Prop() text = "";
   @Prop() disabled = false;
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private getButtonText() {
     if (this.text) return this.text;
@@ -58,7 +58,7 @@ export class SubmitButton {
     }
 
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.customStyle} style={{ width: "100%" }}>
+      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} style={{ width: "100%" }}>
         {authState.loading && !authState.magicCodeRequested ? "Loading..." : this.getButtonText()}
       </button>
     );

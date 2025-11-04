@@ -7,7 +7,7 @@ import { authState, authStore } from "../../../store/auth-store";
 })
 export class PasswordField {
   @Prop() placeholder = "Enter your password";
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -26,7 +26,7 @@ export class PasswordField {
         value={authState.password}
         placeholder={this.placeholder}
         disabled={authState.loading}
-        class={this.customStyle}
+        class={this.componentClassName}
         onInput={this.handleInput}
       />
     );

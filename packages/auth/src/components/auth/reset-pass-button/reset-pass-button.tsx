@@ -7,7 +7,7 @@ import { authState } from "../../../store/auth-store";
   shadow: false,
 })
 export class ResetPasswordButton {
-  @Prop() className = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() text = "Reset Password";
   @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
@@ -29,7 +29,7 @@ export class ResetPasswordButton {
 
     return (
       <div>
-        <button type="button" onClick={this.handleClick} class={this.className}>
+        <button type="button" onClick={this.handleClick} class={this.componentClassName}>
           {this.text}
         </button>
         {authState.resetPasswordSent && <flash-message variant="success" message={this.successMessage} />}
