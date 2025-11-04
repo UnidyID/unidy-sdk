@@ -27,7 +27,7 @@ export class Auth {
 
   readonly helpers: AuthHelpers;
 
-  private constructor(private client: UnidyClient) {
+  private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
   }
 
