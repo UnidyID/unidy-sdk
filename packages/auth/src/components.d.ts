@@ -58,6 +58,10 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
+          * @default true
+         */
+        "reloadOnSuccess": boolean;
+        /**
           * @default "Logout"
          */
         "text": string;
@@ -233,6 +237,10 @@ export namespace Components {
     interface UnidySubmitButton {
     }
 }
+export interface LogoutButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLLogoutButtonElement;
+}
 export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLSigninRootElement;
@@ -268,7 +276,18 @@ declare global {
         prototype: HTMLFlashMessageElement;
         new (): HTMLFlashMessageElement;
     };
+    interface HTMLLogoutButtonElementEventMap {
+        "onLogout": void;
+    }
     interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLLogoutButtonElement: {
         prototype: HTMLLogoutButtonElement;
@@ -430,6 +449,11 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        "onOnLogout"?: (event: LogoutButtonCustomEvent<void>) => void;
+        /**
+          * @default true
+         */
+        "reloadOnSuccess"?: boolean;
         /**
           * @default "Logout"
          */

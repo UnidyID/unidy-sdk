@@ -18,7 +18,7 @@ export interface TokenPayload {
 }
 
 export type AuthError = Error & {
-  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN";
+  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN" | "SIGN_IN_NOT_FOUND";
   requiresReauth: boolean;
 };
 
@@ -132,8 +132,15 @@ export class Auth {
     }
   }
 
-  logout() {
+  async logout(): Promise<boolean | AuthError> {
+    const [error, _] = await this.helpers.logout();
+    if (error) {
+      return this.createAuthError("Failed to sign out. Please try again.", "SIGN_IN_NOT_FOUND", false);
+    }
+
     authStore.reset();
+
+    return true;
   }
 
   getEmail(): string | null {
