@@ -40,16 +40,16 @@ export class SigninStep {
     event.preventDefault();
     if (authState.loading) return;
 
-    const authService = await Auth.getInstance();
-    if (!authService) {
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
     if (authState.step === "email") {
-      await authService.createSignIn(authState.email);
+      await authInstance.helpers.createSignIn(authState.email);
     } else if (authState.step === "verification") {
-      await authService.authenticateWithPassword(authState.password);
+      await authInstance.helpers.authenticateWithPassword(authState.password);
     }
   };
 

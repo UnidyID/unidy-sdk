@@ -73,13 +73,13 @@ export class MagicCodeField {
   };
 
   private authenticateWithCode = async (code: string) => {
-    const authService = await Auth.getInstance();
-    if (!authService) {
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
-    await authService.authenticateWithMagicCode(code);
+    await authInstance.helpers.authenticateWithMagicCode(code);
   };
   render() {
     if (authState.step !== "magic-code" || !authState.magicCodeSent) {

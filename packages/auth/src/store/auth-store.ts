@@ -44,7 +44,7 @@ const initialState: AuthState = {
   loading: false,
   errors: {},
   globalErrors: {},
-  authenticated: !!sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  authenticated: false,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 

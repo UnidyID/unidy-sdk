@@ -12,14 +12,14 @@ export class ResetPasswordButton {
   @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
   private handleClick = async () => {
-    const authService = await Auth.getInstance();
+    const authInstance = await Auth.getInstance();
 
-    if (!authService) {
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
-    await authService.sendResetPasswordEmail();
+    await authInstance.helpers.sendResetPasswordEmail();
   };
 
   render() {

@@ -24,14 +24,14 @@ export class SendMagicCodeButton {
   private handleClick = async () => {
     if (this.disabled || authState.loading || this.countdown > 0) return;
 
-    const authService = await Auth.getInstance();
+    const authInstance = await Auth.getInstance();
 
-    if (!authService) {
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
-    await authService.sendMagicCode();
+    await authInstance.helpers.sendMagicCode();
 
     this.startCountdown();
   };
