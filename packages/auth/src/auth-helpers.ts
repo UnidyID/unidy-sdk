@@ -89,11 +89,12 @@ export class AuthHelpers {
       if (error === "magic_code_recently_created") {
         authStore.setMagicCodeStep("sent");
       }
-    } else {
-      authStore.setMagicCodeStep("sent");
-      authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
-      authStore.setStep("magic-code");
+      return [error, response] as const;
     }
+
+    authStore.setMagicCodeStep("sent");
+    authStore.setStep("magic-code");
+    return [null, response] as const;
   }
 
   async authenticateWithMagicCode(code: string) {
@@ -126,7 +127,7 @@ export class AuthHelpers {
     }
 
     authStore.setLoading(true);
-    authStore.setResetPasswordStep(null);
+    authStore.setResetPasswordStep("requested");
 
     const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
 

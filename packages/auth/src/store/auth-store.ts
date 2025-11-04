@@ -9,7 +9,6 @@ export interface AuthState {
 
   magicCodeStep: null | "requested" | "sent";
   resetPasswordStep: null | "requested" | "sent";
-  enableResendMagicCodeAfter: number | null;
 
   loading: boolean;
   errors: Record<string, string | null>;
@@ -38,7 +37,6 @@ const initialState: AuthState = {
   password: "",
   magicCodeStep: null,
   resetPasswordStep: null,
-  enableResendMagicCodeAfter: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   errors: {},
@@ -70,10 +68,6 @@ class AuthStore {
 
   setPassword(password: string) {
     state.password = password;
-  }
-
-  setEnableResendMagicCodeAfter(enableResendMagicCodeAfter: number | null) {
-    state.enableResendMagicCodeAfter = enableResendMagicCodeAfter;
   }
 
   setLoading(loading: boolean) {
@@ -121,7 +115,6 @@ class AuthStore {
 
   setMagicCodeStep(step: null | "requested" | "sent") {
     state.magicCodeStep = step;
-    console.log("magicCodeStep", step);
   }
 
   setResetPasswordStep(step: null | "requested" | "sent") {

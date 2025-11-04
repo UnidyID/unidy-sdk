@@ -15,12 +15,6 @@ export class SendMagicCodeButton {
   @State() countdown = 0;
   private countdownInterval: number | null = null;
 
-  componentWillLoad() {
-    if (authState.enableResendMagicCodeAfter) {
-      this.startCountdown();
-    }
-  }
-
   private handleClick = async () => {
     if (this.disabled || authState.loading || this.countdown > 0) return;
 
@@ -31,24 +25,23 @@ export class SendMagicCodeButton {
       return;
     }
 
-    await authInstance.helpers.sendMagicCode();
+    const [_error, response] = await authInstance.helpers.sendMagicCode();
 
-    this.startCountdown();
+    if (response && "enable_resend_after" in response) {
+      this.startCountdown(response.enable_resend_after);
+    }
   };
 
-  private startCountdown = () => {
-    if (authState.enableResendMagicCodeAfter) {
-      this.countdown = Math.ceil(authState.enableResendMagicCodeAfter / 1000);
+  private startCountdown = (enableResendAfter: number) => {
+    this.countdown = Math.ceil(enableResendAfter / 1000);
 
-      this.countdownInterval = window.setInterval(() => {
-        this.countdown--;
-        if (this.countdown <= 0) {
-          this.clearCountdown();
-          authStore.setEnableResendMagicCodeAfter(null);
-          authStore.clearFieldError("magicCode");
-        }
-      }, 1000);
-    }
+    this.countdownInterval = window.setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        this.clearCountdown();
+        authStore.clearFieldError("magicCode");
+      }
+    }, 1000);
   };
 
   private clearCountdown = () => {
