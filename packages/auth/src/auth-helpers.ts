@@ -57,6 +57,14 @@ export class AuthHelpers {
     }
   }
 
+  async logout() {
+    const [error, _] = await this.client.auth.signOut(authState.sid as string);
+    if (error) {
+      authStore.setGlobalError("auth", error);
+    }
+    return [error, _] as const;
+  }
+
   async refreshToken() {
     if (!authState.sid) {
       throw new Error("No sign in ID available");
