@@ -127,6 +127,7 @@ export namespace Components {
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
         "name": "email" | "verification";
+        "submit": () => Promise<void>;
     }
     interface SigninStrategy {
         /**

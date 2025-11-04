@@ -1,5 +1,6 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
+import { getParentSigninStep } from "../helpers";
 
 @Component({
   tag: "submit-button",
@@ -52,13 +53,25 @@ export class SubmitButton {
     return false;
   }
 
+  private handleClick = async (event: Event) => {
+    event.preventDefault();
+
+    await (await getParentSigninStep(this.el))?.submit();
+  };
+
   render() {
     if (!this.shouldRender()) {
       return null;
     }
 
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} style={{ width: "100%" }}>
+      <button
+        type="submit"
+        disabled={this.isDisabled()}
+        class={this.componentClassName}
+        style={{ width: "100%" }}
+        onClick={this.handleClick}
+      >
         {authState.loading && authState.magicCodeStep !== "requested" ? "Loading..." : this.getButtonText()}
       </button>
     );
