@@ -1,11 +1,14 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, Element } from "@stencil/core";
 import { authState, authStore } from "../../../store/auth-store";
+import { getParentSigninStep } from "../helpers";
 
 @Component({
   tag: "password-field",
   shadow: false,
 })
 export class PasswordField {
+  @Element() el!: HTMLElement;
+
   @Prop() placeholder = "Enter your password";
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -14,21 +17,40 @@ export class PasswordField {
     authStore.setPassword(target.value);
   };
 
+  private handleSubmit = async (event: Event) => {
+    event.preventDefault();
+
+    (await getParentSigninStep(this.el))?.submit();
+  };
+
   render() {
     if (authState.step !== "verification") {
       return null;
     }
 
     return (
-      <input
-        name="password"
-        type="password"
-        value={authState.password}
-        placeholder={this.placeholder}
-        disabled={authState.loading}
-        class={this.componentClassName}
-        onInput={this.handleInput}
-      />
+      <form onSubmit={this.handleSubmit}>
+        {/* Hidden input for accessibility */}
+        <input
+          name="email"
+          type="email"
+          value={authState.email}
+          autocomplete="email"
+          style={{ display: "none" }}
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+        <input
+          name="password"
+          type="password"
+          value={authState.password}
+          autocomplete="current-password"
+          placeholder={this.placeholder}
+          disabled={authState.loading}
+          class={this.componentClassName}
+          onInput={this.handleInput}
+        />
+      </form>
     );
   }
 }

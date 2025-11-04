@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Method, Element, Listen } from "@stencil/core";
+import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 import { Auth } from "../../..";
 
@@ -16,28 +16,8 @@ export class SigninStep {
     return authState.step === this.name || this.alwaysRender;
   }
 
-  @Listen("click")
-  handleClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (target.tagName === "BUTTON" && target.getAttribute("type") === "submit") {
-      event.preventDefault();
-      this.handleSubmit(event);
-    }
-  }
-
-  @Listen("keydown")
-  handleKeydown(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      const target = event.target as HTMLElement;
-      if (target.tagName === "INPUT" && target.getAttribute("type") !== "textarea") {
-        event.preventDefault();
-        this.handleSubmit(event);
-      }
-    }
-  }
-
-  private handleSubmit = async (event: Event) => {
-    event.preventDefault();
+  @Method()
+  async submit() {
     if (authState.loading) return;
 
     const authInstance = await Auth.getInstance();
@@ -51,7 +31,7 @@ export class SigninStep {
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     }
-  };
+  }
 
   render() {
     let shouldRender = false;
@@ -68,9 +48,7 @@ export class SigninStep {
 
     return (
       <Host>
-        <form onSubmit={this.handleSubmit}>
-          <slot />
-        </form>
+        <slot />
       </Host>
     );
   }
