@@ -18,7 +18,7 @@ export interface TokenPayload {
 }
 
 export type AuthError = Error & {
-  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN" | "SIGN_IN_NOT_FOUND";
+  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN" | "SIGN_IN_NOT_FOUND" | "SIGN_OUT_FAILED";
   requiresReauth: boolean;
 };
 
@@ -134,8 +134,9 @@ export class Auth {
 
   async logout(): Promise<boolean | AuthError> {
     const [error, _] = await this.helpers.logout();
+
     if (error) {
-      return this.createAuthError("Failed to sign out. Please try again.", "SIGN_IN_NOT_FOUND", false);
+      return this.createAuthError(`Failed to sign out, reason: ${error}`, "SIGN_OUT_FAILED", false);
     }
 
     authStore.reset();
