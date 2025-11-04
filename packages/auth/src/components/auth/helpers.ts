@@ -1,4 +1,4 @@
-export async function getParentSigninStep(element: HTMLElement): Promise<HTMLSigninStepElement | null> {
+export function getParentSigninStep(element: HTMLElement): HTMLSigninStepElement | null {
   const signinStep = element.closest("signin-step") as HTMLSigninStepElement;
 
   if (!signinStep) {

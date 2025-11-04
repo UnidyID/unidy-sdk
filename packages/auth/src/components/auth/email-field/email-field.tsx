@@ -20,7 +20,7 @@ export class EmailField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    await (await getParentSigninStep(this.el))?.submit();
+    (await getParentSigninStep(this.el))?.submit();
   };
 
   render() {

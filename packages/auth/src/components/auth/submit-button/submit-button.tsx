@@ -56,7 +56,7 @@ export class SubmitButton {
   private handleClick = async (event: Event) => {
     event.preventDefault();
 
-    await (await getParentSigninStep(this.el))?.submit();
+    (await getParentSigninStep(this.el))?.submit();
   };
 
   render() {
