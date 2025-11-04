@@ -12,7 +12,7 @@ export class LogoutButton {
 
   @Event() onLogout!: EventEmitter<void>;
 
-  private async handleLogout() {
+  private handleLogout = async () => {
     const auth = await Auth.getInstance();
     const result = await auth.logout();
 
@@ -23,7 +23,7 @@ export class LogoutButton {
         window.location.reload();
       }
     }
-  }
+  };
 
   render() {
     return (

@@ -67,7 +67,8 @@ export class AuthHelpers {
 
   async refreshToken() {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      // call logger when we add one
+      return;
     }
 
     const [error, response] = await this.client.auth.refreshToken(authState.sid);
