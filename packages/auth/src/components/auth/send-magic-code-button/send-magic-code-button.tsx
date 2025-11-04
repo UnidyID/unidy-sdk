@@ -68,11 +68,15 @@ export class SendMagicCodeButton {
       return null;
     }
 
-    const isDisabled = this.disabled || authState.magicCodeRequested || this.countdown > 0;
+    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} style={{ width: "100%" }}>
-        {this.countdown > 0 ? this.alreadySentText : authState.loading && authState.magicCodeRequested ? "Sending..." : this.text}
+        {this.countdown > 0
+          ? this.alreadySentText
+          : authState.loading && authState.magicCodeStep === "requested"
+            ? "Sending..."
+            : this.text}
       </button>
     );
   }

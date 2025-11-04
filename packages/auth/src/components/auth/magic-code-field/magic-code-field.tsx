@@ -22,7 +22,6 @@ export class MagicCodeField {
     this.codeDigits = newDigits;
 
     const fullCode = newDigits.join("");
-    authStore.setMagicCode(fullCode);
 
     if (value && index < 3) {
       const nextInput = this.inputRefs[index + 1];
@@ -58,7 +57,6 @@ export class MagicCodeField {
     }
 
     this.codeDigits = digits;
-    authStore.setMagicCode(digits.join(""));
 
     const firstEmptyIndex = digits.findIndex((digit) => !digit);
     const targetIndex = firstEmptyIndex !== -1 ? firstEmptyIndex : 3;
@@ -82,7 +80,7 @@ export class MagicCodeField {
     await authInstance.helpers.authenticateWithMagicCode(code);
   };
   render() {
-    if (authState.step !== "magic-code" || !authState.magicCodeSent) {
+    if (authState.step !== "magic-code") {
       return null;
     }
 

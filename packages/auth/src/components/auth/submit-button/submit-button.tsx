@@ -32,7 +32,7 @@ export class SubmitButton {
     }
 
     if (authState.step === "verification") {
-      return this.for === "password" && !authState.magicCodeSent;
+      return this.for === "password" && authState.magicCodeStep !== "sent";
     }
 
     return false;
@@ -59,7 +59,7 @@ export class SubmitButton {
 
     return (
       <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} style={{ width: "100%" }}>
-        {authState.loading && !authState.magicCodeRequested ? "Loading..." : this.getButtonText()}
+        {authState.loading && authState.magicCodeStep !== "requested" ? "Loading..." : this.getButtonText()}
       </button>
     );
   }

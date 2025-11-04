@@ -25,8 +25,6 @@ export class AuthHelpers {
       authStore.setStep("verification");
       authStore.setEmail(email);
       authStore.setSignInId(response.sid);
-      authStore.setMagicCodeSent(false);
-      authStore.setMagicCode("");
       authStore.setLoading(false);
     }
   }
@@ -78,19 +76,21 @@ export class AuthHelpers {
       throw new Error("No sign in ID available");
     }
 
-    authStore.setMagicCodeRequested(true);
+    authStore.setMagicCodeStep("requested");
     authStore.setLoading(true);
     authStore.clearErrors();
 
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
-    authStore.setMagicCodeRequested(false);
     authStore.setLoading(false);
     if (error) {
       authStore.setFieldError("magicCode", error);
       authStore.setStep("magic-code");
+      if (error === "magic_code_recently_created") {
+        authStore.setMagicCodeStep("sent");
+      }
     } else {
-      authStore.setMagicCodeSent(true);
+      authStore.setMagicCodeStep("sent");
       authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
       authStore.setStep("magic-code");
     }
@@ -126,7 +126,7 @@ export class AuthHelpers {
     }
 
     authStore.setLoading(true);
-    authStore.setResetPasswordSent(false);
+    authStore.setResetPasswordStep(null);
 
     const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
 
@@ -134,7 +134,7 @@ export class AuthHelpers {
       authStore.setFieldError("password", error);
       authStore.setLoading(false);
     } else {
-      authStore.setResetPasswordSent(true);
+      authStore.setResetPasswordStep("sent");
       authStore.setLoading(false);
       authStore.clearErrors();
     }

@@ -3,17 +3,18 @@ import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
   step: "email" | "verification" | "magic-code";
+  sid: string | null;
   email: string;
   password: string;
-  magicCode: string;
-  magicCodeRequested: boolean;
-  magicCodeSent: boolean;
-  resetPasswordSent: boolean;
+
+  magicCodeStep: null | "requested" | "sent";
+  resetPasswordStep: null | "requested" | "sent";
   enableResendMagicCodeAfter: number | null;
-  sid: string | null;
-  loading: boolean; // TODO refactor this or maybe remove loading state completely
+
+  loading: boolean;
   errors: Record<string, string | null>;
   globalErrors: Record<string, string | null>;
+
   authenticated: boolean;
   token: string | null;
 }
@@ -35,10 +36,8 @@ const initialState: AuthState = {
   step: "email",
   email: "",
   password: "",
-  magicCode: "",
-  magicCodeRequested: false,
-  magicCodeSent: false,
-  resetPasswordSent: false,
+  magicCodeStep: null,
+  resetPasswordStep: null,
   enableResendMagicCodeAfter: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
@@ -71,18 +70,6 @@ class AuthStore {
 
   setPassword(password: string) {
     state.password = password;
-  }
-
-  setMagicCode(magicCode: string) {
-    state.magicCode = magicCode;
-  }
-
-  setMagicCodeRequested(requested: boolean) {
-    state.magicCodeRequested = requested;
-  }
-
-  setMagicCodeSent(sent: boolean) {
-    state.magicCodeSent = sent;
   }
 
   setEnableResendMagicCodeAfter(enableResendMagicCodeAfter: number | null) {
@@ -132,8 +119,13 @@ class AuthStore {
     this.setAuthenticated(!!token);
   }
 
-  setResetPasswordSent(resetPasswordSent: boolean) {
-    state.resetPasswordSent = resetPasswordSent;
+  setMagicCodeStep(step: null | "requested" | "sent") {
+    state.magicCodeStep = step;
+    console.log("magicCodeStep", step);
+  }
+
+  setResetPasswordStep(step: null | "requested" | "sent") {
+    state.resetPasswordStep = step;
   }
 
   setAuthenticated(authenticated: boolean) {
