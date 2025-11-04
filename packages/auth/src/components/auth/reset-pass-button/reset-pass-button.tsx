@@ -28,12 +28,12 @@ export class ResetPasswordButton {
     }
 
     return (
-      <div>
+      <>
         <button type="button" onClick={this.handleClick} class={this.componentClassName}>
           {this.text}
         </button>
         {authState.resetPasswordSent && <flash-message variant="success" message={this.successMessage} />}
-      </div>
+      </>
     );
   }
 }
