@@ -1,5 +1,5 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { authState, authStore } from "../../../store/auth-store";
+import { authState } from "../../../store/auth-store";
 import { Auth } from "../../../auth.js";
 
 @Component({
@@ -102,7 +102,7 @@ export class MagicCodeField {
             onKeyDown={(event) => this.handleKeyDown(event, index)}
             onPaste={index === 0 ? this.handlePaste : undefined}
             style={{
-              // TODO refactor this
+              // TODO refactor this somehow !!
               width: "50px",
               height: "50px",
               textAlign: "center",
