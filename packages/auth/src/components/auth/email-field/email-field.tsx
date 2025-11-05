@@ -20,6 +20,10 @@ export class EmailField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
+    if (authState.email === "") {
+      return;
+    }
+
     (await getParentSigninStep(this.el))?.submit();
   };
 

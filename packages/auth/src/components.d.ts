@@ -278,7 +278,7 @@ declare global {
         new (): HTMLFlashMessageElement;
     };
     interface HTMLLogoutButtonElementEventMap {
-        "onLogout": void;
+        "logout": void;
     }
     interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -450,7 +450,7 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
-        "onOnLogout"?: (event: LogoutButtonCustomEvent<void>) => void;
+        "onLogout"?: (event: LogoutButtonCustomEvent<void>) => void;
         /**
           * @default true
          */

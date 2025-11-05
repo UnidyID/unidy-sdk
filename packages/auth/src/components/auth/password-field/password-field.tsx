@@ -30,16 +30,6 @@ export class PasswordField {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        {/* Hidden input for accessibility */}
-        <input
-          name="email"
-          type="email"
-          value={authState.email}
-          autocomplete="email"
-          style={{ display: "none" }}
-          tabIndex={-1}
-          aria-hidden="true"
-        />
         <input
           name="password"
           type="password"

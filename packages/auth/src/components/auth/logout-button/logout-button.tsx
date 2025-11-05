@@ -10,14 +10,14 @@ export class LogoutButton {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
-  @Event() onLogout!: EventEmitter<void>;
+  @Event() logout!: EventEmitter<void>;
 
   private handleLogout = async () => {
     const auth = await Auth.getInstance();
     const result = await auth.logout();
 
     if (result === true) {
-      this.onLogout.emit();
+      this.logout.emit();
 
       if (this.reloadOnSuccess) {
         window.location.reload();
