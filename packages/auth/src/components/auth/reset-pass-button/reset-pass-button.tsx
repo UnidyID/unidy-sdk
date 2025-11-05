@@ -7,19 +7,19 @@ import { authState } from "../../../store/auth-store";
   shadow: false,
 })
 export class ResetPasswordButton {
-  @Prop() className = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() text = "Reset Password";
   @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
   private handleClick = async () => {
-    const authService = await Auth.getInstance();
+    const authInstance = await Auth.getInstance();
 
-    if (!authService) {
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
-    await authService.sendResetPasswordEmail();
+    await authInstance.helpers.sendResetPasswordEmail();
   };
 
   render() {
@@ -28,12 +28,12 @@ export class ResetPasswordButton {
     }
 
     return (
-      <div>
-        <button type="button" onClick={this.handleClick} class={this.className}>
+      <>
+        <button type="button" onClick={this.handleClick} class={this.componentClassName}>
           {this.text}
         </button>
-        {authState.resetPasswordSent && <flash-message variant="success" message={this.successMessage} />}
-      </div>
+        {authState.resetPasswordStep === "sent" && <flash-message variant="success" message={this.successMessage} />}
+      </>
     );
   }
 }
