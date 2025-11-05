@@ -108,7 +108,7 @@ export class Field {
           </div>
         )}
         {!isReadonly && (
-          <unidy-raw-field
+          <u-raw-field
             id={this.field}
             field={this.field}
             type={fieldData.type as string}
