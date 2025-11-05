@@ -18,10 +18,10 @@ import { state as profileState } from "../../../store/profile-store";
 
 @Component({
   tag: "u-field",
-  styleUrl: "unidy-field.css",
+  styleUrl: "field.css",
   shadow: true,
 })
-export class UnidyField {
+export class Field {
   @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";

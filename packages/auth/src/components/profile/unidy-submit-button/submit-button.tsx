@@ -3,11 +3,11 @@ import { getUnidyClient } from "../../../api-client";
 import { Auth } from "../../../auth";
 import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
 @Component({
-  tag: "u-submit-button",
+  tag: "u-profile-submit-button",
   shadow: true,
-  styleUrl: "unidy-submit-button.css",
+  styleUrl: "submit-button.css",
 })
-export class UnidySubmitButton {
+export class SubmitButton {
   @Element() el!: HTMLElement;
 
   private authInstance?: Auth;

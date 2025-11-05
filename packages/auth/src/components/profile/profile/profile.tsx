@@ -9,7 +9,7 @@ import type { ProfileRaw } from "../../../store/profile-store";
   tag: "u-profile",
   shadow: false,
 })
-export class UnidyProfile {
+export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
   @Prop() apiUrl?: string;

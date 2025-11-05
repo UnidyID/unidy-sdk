@@ -1,11 +1,4 @@
-export function getParentSigninStep(element: HTMLElement): HTMLSigninStepElement | null {
-  const signinStep = element.closest("signin-step") as HTMLSigninStepElement;
-
-  if (!signinStep) {
-    console.error("Element is not inside a signin-step");
-
-    return null;
-  }
-
+export function getParentSigninStep(element: HTMLElement): HTMLUSigninStepElement | null {
+  const signinStep = element.closest("u-signin-step") as HTMLUSigninStepElement;
   return signinStep;
 }

@@ -162,7 +162,7 @@
     }
 
 
-    u-submit-button::part(button) {
+    u-profile-submit-button::part(button) {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -182,7 +182,7 @@
       letter-spacing: 0.5px;
     }
 
-    u-submit-button::part(button):hover {
+    u-profile-submit-button::part(button):hover {
       background: #0055fe;
     }
 
@@ -218,8 +218,8 @@
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
         <u-error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-submit-button for="email" text="Continue with Email"
-          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
+        <u-auth-submit-button for="email" text="Continue with Email"
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
       </u-signin-step>
 
       <u-signin-step name="verification">
@@ -229,8 +229,8 @@
           <u-reset-password-button text="Reset Password"
             class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
           <u-error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-          <u-submit-button for="password" text="Sign In"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
+          <u-auth-submit-button for="password" text="Sign In"
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
         <u-conditional-render when="magicCodeSent" is="false">
@@ -300,7 +300,7 @@
             render-default-label="true"></u-field>
           <u-field field="custom_attributes.first_name" render-default-label="true"></u-field>
           <u-field field="custom_attributes.self_description" render-default-label="true"></u-field>
-          <u-submit-button>Submit</u-submit-button>
+          <u-profile-submit-button>Submit</u-profile-submit-button>
 
           <h2>Raw Field Examples</h2>
           <div class="mb-4 mt-4">

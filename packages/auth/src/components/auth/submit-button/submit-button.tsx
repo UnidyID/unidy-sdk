@@ -3,7 +3,7 @@ import { authState } from "../../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
 @Component({
-  tag: "u-submit-button",
+  tag: "u-auth-submit-button",
   shadow: false,
 })
 export class SubmitButton {
