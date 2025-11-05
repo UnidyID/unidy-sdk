@@ -7,20 +7,22 @@
 
 ## Properties
 
-| Property                 | Attribute                   | Description | Type                                                                       | Default                  |
-| ------------------------ | --------------------------- | ----------- | -------------------------------------------------------------------------- | ------------------------ |
-| `iconOnly`               | `icon-only`                 |             | `boolean`                                                                  | `false`                  |
-| `socialLoginProvider`    | `social-login-provider`     |             | `"apple" \| "discord" \| "facebook" \| "google" \| "linkedin" \| "verimi"` | `"google"`               |
-| `socialLoginRedirectUri` | `social-login-redirect-uri` |             | `null \| string`                                                           | `null`                   |
-| `text`                   | `text`                      |             | `string`                                                                   | `"Continue with Google"` |
-| `theme`                  | `theme`                     |             | `"dark" \| "light"`                                                        | `"light"`                |
+| Property      | Attribute      | Description | Type                                                                      | Default                  |
+| ------------- | -------------- | ----------- | ------------------------------------------------------------------------- | ------------------------ |
+| `iconOnly`    | `icon-only`    |             | `boolean`                                                                 | `false`                  |
+| `provider`    | `provider`     |             | `"apple" \| "discord" \| "facebook" \| "google" \| "linkedin" \| "unidy"` | `"google"`               |
+| `redirectUri` | `redirect-uri` |             | `string`                                                                  | `window.location.href`   |
+| `text`        | `text`         |             | `string`                                                                  | `"Continue with Google"` |
+| `theme`       | `theme`        |             | `"dark" \| "light"`                                                       | `"light"`                |
 
 
 ## Shadow Parts
 
-| Part                          | Description |
-| ----------------------------- | ----------- |
-| `"social-login-button-width"` |             |
+| Part                            | Description |
+| ------------------------------- | ----------- |
+| `"social-login-button"`         |             |
+| `"social-login-button-content"` |             |
+| `"social-login-button-text"`    |             |
 
 
 ----------------------------------------------
