@@ -66,6 +66,8 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    this.extractSignInIdFromQuery();
+
     if (!authState.sid) {
       // call logger when we add one
       return;
@@ -147,6 +149,17 @@ export class AuthHelpers {
       authStore.setResetPasswordStep("sent");
       authStore.setLoading(false);
       authStore.clearErrors();
+    }
+  }
+
+  private extractSignInIdFromQuery() {
+    const url = new URL(window.location.href);
+    const sid = url.searchParams.get("sid") || null;
+
+    if (sid) {
+      authStore.setSignInId(sid);
+      url.searchParams.delete("sid");
+      window.history.replaceState(null, "", url.toString());
     }
   }
 }
