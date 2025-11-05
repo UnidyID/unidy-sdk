@@ -6,7 +6,7 @@ import { state as profileState, onChange as profileOnChange } from "../../../sto
 import type { ProfileRaw } from "../../../store/profile-store";
 
 @Component({
-  tag: "unidy-profile",
+  tag: "u-profile",
   shadow: false,
 })
 export class UnidyProfile {

@@ -3,7 +3,7 @@ import type { TokenResponse } from "@unidy.io/sdk-api-client";
 import { authStore } from "../../../store/auth-store.js";
 
 @Component({
-  tag: "signin-root",
+  tag: "u-signin-root",
   shadow: true,
 })
 export class SigninRoot {

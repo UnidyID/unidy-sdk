@@ -2,7 +2,7 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { authStore } from "../../../store/auth-store.js";
 
 @Component({
-  tag: "auth-provider",
+  tag: "u-auth-provider",
   shadow: true,
 })
 export class AuthProvider {

@@ -17,7 +17,7 @@ import { state as profileState } from "../../../store/profile-store";
  */
 
 @Component({
-  tag: "unidy-field",
+  tag: "u-field",
   styleUrl: "unidy-field.css",
   shadow: true,
 })

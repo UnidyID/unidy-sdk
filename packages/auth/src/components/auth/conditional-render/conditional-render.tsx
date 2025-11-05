@@ -2,7 +2,7 @@ import { Component, h, Prop, Host } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "conditional-render",
+  tag: "u-conditional-render",
   shadow: true,
 })
 export class ConditionalRender {
