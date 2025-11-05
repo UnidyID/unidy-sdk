@@ -1,4 +1,4 @@
-import { AttachInternals, Component, Element, Prop, State, h } from "@stencil/core";
+import { Component, Element, Prop, State, h } from "@stencil/core";
 import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
 import { Textarea } from "../raw-input-fields/Textarea";
 import { Input } from "../raw-input-fields/Input";
@@ -8,11 +8,9 @@ import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSe
 
 @Component({
   tag: "unidy-raw-field",
-  formAssociated: true,
   shadow: false,
 })
 export class UnidyRawField {
-  @AttachInternals() internals!: ElementInternals;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -141,7 +139,7 @@ export class UnidyRawField {
   };
 
   private onSelectChange = (val: string) => this.writeStore(this.field, val);
-  // private onTextChange = (val: string) => this.writeStore(this.field, val);
+
   private onTextChange = (val: string) => {
     this.selected = val;
 
@@ -150,23 +148,14 @@ export class UnidyRawField {
     const newErrors = { ...profileState.errors };
     if (result.valid) {
       delete newErrors[this.field];
+      this.writeStore(this.field, val);
     } else {
       newErrors[this.field] = result.message;
     }
     profileState.errors = newErrors;
-
-    if (result.valid) {
-      this.writeStore(this.field, val);
-    }
   };
 
   componentWillLoad() {
-    if (this.validateValue(this.readStore(this.field) ?? "").valid === false) {
-      const result = this.validateValue(this.readStore(this.field) ?? "");
-      const newErrors = { ...profileState.errors };
-      newErrors[this.field] = result.message;
-      profileState.errors = newErrors;
-    }
     if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
     if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
 
@@ -212,6 +201,19 @@ export class UnidyRawField {
       input.setCustomValidity("");
       profileState.phoneValid = true;
     }
+  };
+
+  private onBlurFieldValidation = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (input.required && !input.value) {
+        input.setCustomValidity("This field is required.");
+        input.reportValidity();
+    }
+    if (this.type === "tel") {
+      this.phoneFieldValidation(e);
+      return;
+    }
+      input.setCustomValidity("");
   };
 
   render() {
@@ -326,6 +328,7 @@ export class UnidyRawField {
           componentClassName={this.componentClassName}
           specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
+          onBlur={this.onBlurFieldValidation}
         />
       );
     }
@@ -344,6 +347,7 @@ export class UnidyRawField {
         specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}
+        onBlur={this.onBlurFieldValidation}
       />
     );
   }
