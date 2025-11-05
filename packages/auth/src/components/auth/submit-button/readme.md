@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property           | Attribute      | Description | Type                    | Default     |
-| ------------------ | -------------- | ----------- | ----------------------- | ----------- |
-| `customStyle`      | `custom-style` |             | `string`                | `""`        |
-| `disabled`         | `disabled`     |             | `boolean`               | `false`     |
-| `for` _(required)_ | `for`          |             | `"email" \| "password"` | `undefined` |
-| `text`             | `text`         |             | `string`                | `""`        |
+| Property             | Attribute    | Description | Type                    | Default     |
+| -------------------- | ------------ | ----------- | ----------------------- | ----------- |
+| `componentClassName` | `class-name` |             | `string`                | `""`        |
+| `disabled`           | `disabled`   |             | `boolean`               | `false`     |
+| `for` _(required)_   | `for`        |             | `"email" \| "password"` | `undefined` |
+| `text`               | `text`       |             | `string`                | `""`        |
 
 
 ----------------------------------------------

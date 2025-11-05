@@ -7,18 +7,18 @@
 
 ## Properties
 
-| Property         | Attribute         | Description | Type     | Default                                                 |
-| ---------------- | ----------------- | ----------- | -------- | ------------------------------------------------------- |
-| `className`      | `class-name`      |             | `string` | `""`                                                    |
-| `successMessage` | `success-message` |             | `string` | `"Password reset email sent. Please check your inbox."` |
-| `text`           | `text`            |             | `string` | `"Reset Password"`                                      |
+| Property             | Attribute         | Description | Type     | Default                                                 |
+| -------------------- | ----------------- | ----------- | -------- | ------------------------------------------------------- |
+| `componentClassName` | `class-name`      |             | `string` | `""`                                                    |
+| `successMessage`     | `success-message` |             | `string` | `"Password reset email sent. Please check your inbox."` |
+| `text`               | `text`            |             | `string` | `"Reset Password"`                                      |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [flash-message](../../profile/unidy-flash)
+- [flash-message](../../shared/flash-message)
 
 ### Graph
 ```mermaid
