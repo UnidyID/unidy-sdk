@@ -20,7 +20,7 @@
 
 ### Depends on
 
-- [flash-message](../unidy-flash)
+- [flash-message](../../shared/flash-message)
 
 ### Graph
 ```mermaid

@@ -7,10 +7,18 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type     | Default    |
-| ------------- | -------------- | ----------- | -------- | ---------- |
-| `customStyle` | `custom-style` |             | `string` | `""`       |
-| `text`        | `text`         |             | `string` | `"Logout"` |
+| Property             | Attribute           | Description | Type      | Default    |
+| -------------------- | ------------------- | ----------- | --------- | ---------- |
+| `componentClassName` | `class-name`        |             | `string`  | `""`       |
+| `reloadOnSuccess`    | `reload-on-success` |             | `boolean` | `true`     |
+| `text`               | `text`              |             | `string`  | `"Logout"` |
+
+
+## Events
+
+| Event    | Description | Type                |
+| -------- | ----------- | ------------------- |
+| `logout` |             | `CustomEvent<void>` |
 
 
 ----------------------------------------------

@@ -25,6 +25,16 @@ Type: `Promise<boolean>`
 
 
 
+### `submit() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 
 ----------------------------------------------
 
