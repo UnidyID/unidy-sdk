@@ -2,7 +2,7 @@ import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../../auth";
 
 @Component({
-  tag: "logout-button",
+  tag: "u-logout-button",
   shadow: false,
 })
 export class LogoutButton {

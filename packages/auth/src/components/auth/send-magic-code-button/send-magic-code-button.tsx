@@ -3,7 +3,7 @@ import { authState, authStore } from "../../../store/auth-store";
 import { Auth } from "../../../auth.js";
 
 @Component({
-  tag: "send-magic-code-button",
+  tag: "u-send-magic-code-button",
   shadow: false,
 })
 export class SendMagicCodeButton {

@@ -3,7 +3,7 @@ import { authState } from "../../../store/auth-store";
 import { AUTH_ERROR_MESSAGES } from "../../../error-definitions";
 
 @Component({
-  tag: "error-message",
+  tag: "u-error-message",
   shadow: false,
 })
 export class ErrorMessage {

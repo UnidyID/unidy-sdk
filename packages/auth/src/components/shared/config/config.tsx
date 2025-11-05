@@ -4,7 +4,7 @@ import { Auth } from "../../../auth";
 import { getUnidyClient } from "../../../api-client";
 
 @Component({
-  tag: "unidy-config",
+  tag: "u-config",
   shadow: false,
 })
 export class UnidyConfig {

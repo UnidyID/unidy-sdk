@@ -2,7 +2,7 @@ import { Component, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "signin-strategy",
+  tag: "u-signin-strategy",
   shadow: false,
 })
 export class SigninStrategy {

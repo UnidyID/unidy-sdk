@@ -3,7 +3,7 @@ import { Auth } from "../../../auth";
 import { authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "reset-password-button",
+  tag: "u-reset-password-button",
   shadow: false,
 })
 export class ResetPasswordButton {

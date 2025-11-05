@@ -3,7 +3,7 @@ import { authStore, authState } from "../../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
 @Component({
-  tag: "email-field",
+  tag: "u-email-field",
   shadow: false,
 })
 export class EmailField {
