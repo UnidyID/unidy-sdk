@@ -1,7 +1,7 @@
 import { type FunctionalComponent, h } from "@stencil/core";
 
-export const DiscordLogo: FunctionalComponent = () => (
-  <svg class="w-5 h-5 block fill-current" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const DiscordLogo: FunctionalComponent<{ className: string }> = ({ className }) => (
+  <svg viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg" class={className}>
     <title>Discord Logo</title>
     <g clip-path="url(#clip0)">
       <path

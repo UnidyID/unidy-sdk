@@ -1,15 +1,15 @@
 import { type FunctionalComponent, h } from "@stencil/core";
 
-export const LinkedInLogo: FunctionalComponent = () => (
+export const LinkedInLogo: FunctionalComponent<{ className: string }> = ({ className }) => (
   <svg
     version="1.1"
     id="Layer_1"
     xmlns="http://www.w3.org/2000/svg"
     x="0px"
     y="0px"
-    class="w-5 h-5 block"
     viewBox="0 0 382 382"
     style={{ enableBackground: "new 0 0 382 382" }}
+    class={className}
   >
     <title>LinkedIn Logo</title>
     <path

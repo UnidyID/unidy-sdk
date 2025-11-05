@@ -7,13 +7,15 @@ import { FacebookLogo } from "./logos/facebook";
 import { VerimiLogo } from "./logos/verimi";
 import { DiscordLogo } from "./logos/discord";
 
+const SHARED_ICON_CLASSNAME = "w-5 h-5 block";
+
 const ICON_MAP = {
-  google: <GoogleLogo />,
-  linkedin: <LinkedInLogo />,
-  apple: <AppleLogo />,
-  facebook: <FacebookLogo />,
-  verimi: <VerimiLogo />,
-  discord: <DiscordLogo />,
+  google: <GoogleLogo className={SHARED_ICON_CLASSNAME} />,
+  linkedin: <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
+  apple: <AppleLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
+  facebook: <FacebookLogo className={SHARED_ICON_CLASSNAME} />,
+  verimi: <VerimiLogo className={SHARED_ICON_CLASSNAME} />,
+  discord: <DiscordLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
 } as const;
 
 type SocialLoginProvider = keyof typeof ICON_MAP;
@@ -88,7 +90,7 @@ export class UnidySocialLoginButton {
         <div class={this.getContentClasses()} part="social-login-button-content">
           {this.renderIcon()}
           {!this.iconOnly && (
-            <span class="ml-4" part="social-login-button-text">
+            <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
               {this.text}
             </span>
           )}

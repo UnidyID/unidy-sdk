@@ -1,7 +1,7 @@
 import { type FunctionalComponent, h } from "@stencil/core";
 
-export const VerimiLogo: FunctionalComponent = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 block" viewBox="0 0 52 48">
+export const VerimiLogo: FunctionalComponent<{ className: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 48" class={className}>
     <title>Verimi Logo</title>
     <g fill="none" fill-rule="evenodd">
       <path

@@ -1,7 +1,7 @@
 import { type FunctionalComponent, h } from "@stencil/core";
 
-export const GoogleLogo: FunctionalComponent = () => (
-  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: "block" }} class="w-5 h-5 block">
+export const GoogleLogo: FunctionalComponent<{ className: string }> = ({ className }) => (
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ display: "block" }} class={className}>
     <title>Google Logo</title>
     <path
       fill="#EA4335"

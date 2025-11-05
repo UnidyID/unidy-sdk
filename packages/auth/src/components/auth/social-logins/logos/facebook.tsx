@@ -1,7 +1,7 @@
 import { type FunctionalComponent, h } from "@stencil/core";
 
-export const FacebookLogo: FunctionalComponent = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48" class="w-5 h-5 block">
+export const FacebookLogo: FunctionalComponent<{ className: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 48 48" class={className}>
     <title>Facebook Logo</title>
     <path fill="#039be5" d="M24 5A19 19 0 1 0 24 43A19 19 0 1 0 24 5Z" />
     <path
