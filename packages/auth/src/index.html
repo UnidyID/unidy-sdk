@@ -227,7 +227,7 @@
             <h3 class="px-3 text-gray-600 font-medium">OR</h3>
             <div class="flex-1 border-t border-gray-300"></div>
           </div>
-          <!-- Theme: light/dark -->
+
           <unidy-social-login-button text="Continue with Google" provider="google"
             theme="dark"></unidy-social-login-button>
           <unidy-social-login-button text="Continue with LinkedIn" provider="linkedin"
@@ -237,9 +237,11 @@
           <unidy-social-login-button text="Continue with Facebook" provider="facebook"></unidy-social-login-button>
           <unidy-social-login-button text="Continue with Discord" provider="discord" icon-only="true"
             theme="dark"></unidy-social-login-button>
-          <!-- Unsupported provider -->
           <unidy-social-login-button text="Continue with Some Provider"
             provider="some-provider"></unidy-social-login-button>
+          <unidy-social-login-button text="Continue with Unidy" provider="unidy" theme="dark" icon-only="true">
+            <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
+          </unidy-social-login-button>
         </div>
       </signin-step>
 

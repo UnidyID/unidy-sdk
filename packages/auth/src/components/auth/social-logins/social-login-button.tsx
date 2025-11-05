@@ -12,11 +12,11 @@ const ICON_MAP = {
   google: <GoogleLogo className={SHARED_ICON_CLASSNAME} />,
   linkedin: <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
   apple: <AppleLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
-  facebook: <FacebookLogo className="w-6 h-6 block" />,
   discord: <DiscordLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
+  facebook: <FacebookLogo className="w-6 h-6 block" />,
 } as const;
 
-type SocialLoginProvider = keyof typeof ICON_MAP;
+type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
 
 @Component({
   tag: "unidy-social-login-button",
@@ -32,18 +32,22 @@ export class UnidySocialLoginButton {
 
   componentWillLoad() {
     if (this.isUnsupportedProvider) {
-      console.warn(`[unidy-social-login-button] Uunsupported provider "${this.provider}".`);
+      console.warn(`[unidy-social-login-button] Unsupported provider "${this.provider}".`);
       return;
     }
   }
 
   private get isUnsupportedProvider(): boolean {
-    return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider);
+    return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider) && this.provider !== "unidy";
   }
 
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
-    const authProvider = this.provider === "google" ? "google_oauth2" : this.provider;
+    const providerMap: Record<string, string> = {
+      google: "google_oauth2",
+      unidy: "openid_connect",
+    };
+    const authProvider = providerMap[this.provider] || this.provider;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
 
     return `${baseUrl}/users/auth/${authProvider}?sdk_redirect_uri=${redirectUri}`;
@@ -59,7 +63,7 @@ export class UnidySocialLoginButton {
   };
 
   private renderIcon() {
-    if (this.isUnsupportedProvider) {
+    if (this.isUnsupportedProvider || this.provider === "unidy") {
       return null;
     }
 
@@ -82,6 +86,9 @@ export class UnidySocialLoginButton {
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">
           {this.renderIcon()}
+
+          <slot name="icon" />
+
           {!this.iconOnly && (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
               {this.text}
