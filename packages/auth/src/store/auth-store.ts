@@ -3,16 +3,17 @@ import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 
 export interface AuthState {
   step: "email" | "verification" | "magic-code";
+  sid: string | null;
   email: string;
   password: string;
-  magicCode: string;
-  magicCodeRequested: boolean;
-  magicCodeSent: boolean;
-  resetPasswordSent: boolean;
-  enableResendMagicCodeAfter: number | null;
-  sid: string | null;
-  loading: boolean; // TODO refactor this or maybe remove loading state completely
-  error: string | null;
+
+  magicCodeStep: null | "requested" | "sent";
+  resetPasswordStep: null | "requested" | "sent";
+
+  loading: boolean;
+  errors: Record<string, string | null>;
+  globalErrors: Record<string, string | null>;
+
   authenticated: boolean;
   token: string | null;
 }
@@ -34,15 +35,13 @@ const initialState: AuthState = {
   step: "email",
   email: "",
   password: "",
-  magicCode: "",
-  magicCodeRequested: false,
-  magicCodeSent: false,
-  resetPasswordSent: false,
-  enableResendMagicCodeAfter: null,
+  magicCodeStep: null,
+  resetPasswordStep: null,
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
-  error: null,
-  authenticated: !!sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  errors: {},
+  globalErrors: {},
+  authenticated: false,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
@@ -71,31 +70,32 @@ class AuthStore {
     state.password = password;
   }
 
-  setMagicCode(magicCode: string) {
-    state.magicCode = magicCode;
-  }
-
-  setMagicCodeRequested(requested: boolean) {
-    state.magicCodeRequested = requested;
-  }
-
-  setMagicCodeSent(sent: boolean) {
-    state.magicCodeSent = sent;
-  }
-
-  setEnableResendMagicCodeAfter(enableResendMagicCodeAfter: number | null) {
-    state.enableResendMagicCodeAfter = enableResendMagicCodeAfter;
-  }
-
   setLoading(loading: boolean) {
     state.loading = loading;
   }
 
-  setError(error: string | null) {
+  setFieldError(field: string, error: string | null) {
     if (error) {
       this.rootComponentRef?.onError(error);
     }
-    state.error = error;
+    state.errors = { ...state.errors, [field]: error };
+  }
+
+  setGlobalError(key: string, error: string | null) {
+    if (error) {
+      this.rootComponentRef?.onError(error);
+    }
+    state.globalErrors = { ...state.globalErrors, [key]: error };
+  }
+
+  clearFieldError(field: string) {
+    const { [field]: _, ...rest } = state.errors;
+    state.errors = rest;
+  }
+
+  clearErrors() {
+    state.errors = {};
+    state.globalErrors = {};
   }
 
   setStep(step: "email" | "verification" | "magic-code") {
@@ -113,8 +113,12 @@ class AuthStore {
     this.setAuthenticated(!!token);
   }
 
-  setResetPasswordSent(resetPasswordSent: boolean) {
-    state.resetPasswordSent = resetPasswordSent;
+  setMagicCodeStep(step: null | "requested" | "sent") {
+    state.magicCodeStep = step;
+  }
+
+  setResetPasswordStep(step: null | "requested" | "sent") {
+    state.resetPasswordStep = step;
   }
 
   setAuthenticated(authenticated: boolean) {

@@ -1,4 +1,4 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../../auth";
 
 @Component({
@@ -7,17 +7,27 @@ import { Auth } from "../../../auth";
 })
 export class LogoutButton {
   @Prop() text = "Logout";
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() reloadOnSuccess = true;
 
-  private async handleLogout() {
+  @Event() logout!: EventEmitter<void>;
+
+  private handleLogout = async () => {
     const auth = await Auth.getInstance();
-    auth.logout();
-    window.location.reload();
+    const result = await auth.logout();
+
+    if (result === true) {
+      this.logout.emit();
+
+      if (this.reloadOnSuccess) {
+        window.location.reload();
+      }
+    }
   };
 
   render() {
     return (
-      <button type="button" class={this.customStyle} onClick={this.handleLogout}>
+      <button type="button" class={this.componentClassName} onClick={this.handleLogout}>
         {this.text}
       </button>
     );

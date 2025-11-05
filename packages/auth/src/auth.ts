@@ -1,6 +1,7 @@
 import type { UnidyClient } from "@unidy.io/sdk-api-client";
-import { jwtDecode } from "jwt-decode";
 import { authStore, authState } from "./store/auth-store";
+import { jwtDecode } from "jwt-decode";
+import { AuthHelpers } from "./auth-helpers";
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -17,14 +18,18 @@ export interface TokenPayload {
 }
 
 export type AuthError = Error & {
-  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN";
+  code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN" | "SIGN_IN_NOT_FOUND" | "SIGN_OUT_FAILED";
   requiresReauth: boolean;
 };
 
 export class Auth {
   private static instance: Auth;
 
-  private constructor(private client: UnidyClient) {}
+  readonly helpers: AuthHelpers;
+
+  private constructor(client: UnidyClient) {
+    this.helpers = new AuthHelpers(client);
+  }
 
   static Errors = {
     email: {
@@ -69,159 +74,6 @@ export class Auth {
     return !!Auth.instance;
   }
 
-  async createSignIn(email: string) {
-    if (!Auth.isInitialized()) {
-      throw new Error("Auth not initialized");
-    }
-
-    if (!email) {
-      throw new Error("Email is required");
-    }
-
-    authStore.setLoading(true);
-    authStore.setError(null);
-
-    const [error, response] = await this.client.auth.createSignIn(email);
-
-    if (error) {
-      authStore.setError(error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setStep("verification");
-      authStore.setEmail(email);
-      authStore.setSignInId(response.sid);
-      authStore.setMagicCodeSent(false);
-      authStore.setMagicCode("");
-      authStore.setLoading(false);
-    }
-  }
-
-  async authenticateWithPassword(password: string) {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
-    }
-
-    if (!password) {
-      throw new Error("Password is missing");
-    }
-
-    authStore.setLoading(true);
-    authStore.setError(null);
-
-    const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
-
-    if (error) {
-      authStore.setError(error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setToken(response.jwt);
-      authStore.setLoading(false);
-
-      authStore.getRootComponentRef()?.onAuth(response);
-    }
-  }
-
-  async sendMagicCode() {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
-    }
-
-    authStore.setMagicCodeRequested(true);
-    authStore.setLoading(true);
-    authStore.setError(null);
-
-    const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
-
-    authStore.setMagicCodeRequested(false);
-
-    authStore.setLoading(false);
-    if (error) {
-      if (error === "magic_code_recently_created") {
-        authStore.setMagicCodeSent(true);
-        authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
-      }
-
-      authStore.setError(error);
-      authStore.setStep("magic-code");
-    } else {
-      authStore.setMagicCodeSent(true);
-      authStore.setEnableResendMagicCodeAfter(response.enable_resend_after);
-      authStore.setStep("magic-code");
-    }
-  }
-
-  async authenticateWithMagicCode(code: string) {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
-    }
-
-    if (!code) {
-      throw new Error("Magic code is missing");
-    }
-
-    authStore.setLoading(true);
-    authStore.setError(null);
-
-    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
-
-    if (error) {
-      authStore.setError(error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setToken(response.jwt);
-      authStore.setLoading(false);
-
-      authStore.getRootComponentRef()?.onAuth(response);
-    }
-  }
-
-  async sendResetPasswordEmail() {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
-    }
-
-    authStore.setLoading(true);
-    authStore.setResetPasswordSent(false);
-
-    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
-
-    if (error) {
-      authStore.setError(error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setResetPasswordSent(true);
-      authStore.setLoading(false);
-      authStore.setError(null);
-    }
-  }
-
-  extractSignInIdFromQuery() {
-    const url = new URL(window.location.href);
-    const sid = url.searchParams.get("sid") || null;
-
-    if (sid) {
-      authStore.setSignInId(sid);
-      url.searchParams.delete("sid");
-      window.history.replaceState(null, "", url.toString());
-    }
-  }
-
-  async refreshToken() {
-    this.extractSignInIdFromQuery();
-
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
-    }
-
-    const [error, response] = await this.client.auth.refreshToken(authState.sid);
-
-    if (error) {
-      authStore.setError(error);
-    } else {
-      authStore.setToken(response.jwt);
-    }
-  }
-
   isTokenValid(token: string | TokenPayload | null): boolean {
     try {
       let decoded: TokenPayload | null;
@@ -253,10 +105,9 @@ export class Auth {
       return currentToken;
     }
 
-    // Try to refresh using HttpOnly cookie
-    await this.refreshToken();
+    await this.helpers.refreshToken();
 
-    if (authState.error || !authState.token) {
+    if (authState.globalErrors.auth || !authState.token) {
       return this.createAuthError("Failed to refresh token. Please sign in again.", "REFRESH_FAILED", true);
     }
 
@@ -281,8 +132,16 @@ export class Auth {
     }
   }
 
-  logout() {
+  async logout(): Promise<boolean | AuthError> {
+    const [error, _] = await this.helpers.logout();
+
+    if (error) {
+      return this.createAuthError(`Failed to sign out, reason: ${error}`, "SIGN_OUT_FAILED", false);
+    }
+
     authStore.reset();
+
+    return true;
   }
 
   getEmail(): string | null {
@@ -293,6 +152,7 @@ export class Auth {
     const error = new Error(message) as AuthError;
     error.code = code;
     error.requiresReauth = requiresReauth;
+
     return error;
   }
 }
