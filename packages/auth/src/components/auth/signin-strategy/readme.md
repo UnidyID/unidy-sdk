@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property            | Attribute      | Description | Type                         | Default     |
-| ------------------- | -------------- | ----------- | ---------------------------- | ----------- |
-| `customStyle`       | `custom-style` |             | `string`                     | `""`        |
-| `type` _(required)_ | `type`         |             | `"magic-code" \| "password"` | `undefined` |
+| Property             | Attribute    | Description | Type                         | Default     |
+| -------------------- | ------------ | ----------- | ---------------------------- | ----------- |
+| `componentClassName` | `class-name` |             | `string`                     | `""`        |
+| `type` _(required)_  | `type`       |             | `"magic-code" \| "password"` | `undefined` |
 
 
 ----------------------------------------------

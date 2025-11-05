@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property          | Attribute           | Description | Type      | Default                                   |
-| ----------------- | ------------------- | ----------- | --------- | ----------------------------------------- |
-| `alreadySentText` | `already-sent-text` |             | `string`  | `"Magic code already sent to your email"` |
-| `customStyle`     | `custom-style`      |             | `string`  | `""`                                      |
-| `disabled`        | `disabled`          |             | `boolean` | `false`                                   |
-| `text`            | `text`              |             | `string`  | `"Send Magic Code"`                       |
+| Property             | Attribute           | Description | Type      | Default                                   |
+| -------------------- | ------------------- | ----------- | --------- | ----------------------------------------- |
+| `alreadySentText`    | `already-sent-text` |             | `string`  | `"Magic code already sent to your email"` |
+| `componentClassName` | `class-name`        |             | `string`  | `""`                                      |
+| `disabled`           | `disabled`          |             | `boolean` | `false`                                   |
+| `text`               | `text`              |             | `string`  | `"Send Magic Code"`                       |
 
 
 ----------------------------------------------
