@@ -85,9 +85,13 @@ export class UnidySocialLoginButton {
   render() {
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
-        <div class={this.getContentClasses()}>
+        <div class={this.getContentClasses()} part="social-login-button-content">
           {this.renderIcon()}
-          {!this.iconOnly && <span class="font-medium [font-family:'Roboto',Arial,sans-serif] ml-4">{this.text}</span>}
+          {!this.iconOnly && (
+            <span class="ml-4" part="social-login-button-text">
+              {this.text}
+            </span>
+          )}
           {/* Hidden text for accessibility */}
           <span style={{ display: "none" }}>{this.text}</span>
         </div>
