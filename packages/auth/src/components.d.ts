@@ -243,11 +243,11 @@ export namespace Components {
         /**
           * @default "google"
          */
-        "socialLoginProvider": SocialLoginProvider;
+        "provider": SocialLoginProvider;
         /**
-          * @default null
+          * @default window.location.href
          */
-        "socialLoginRedirectUri": string | null;
+        "redirectUri": string;
         /**
           * @default "Continue with Google"
          */
@@ -666,11 +666,11 @@ declare namespace LocalJSX {
         /**
           * @default "google"
          */
-        "socialLoginProvider"?: SocialLoginProvider;
+        "provider"?: SocialLoginProvider;
         /**
-          * @default null
+          * @default window.location.href
          */
-        "socialLoginRedirectUri"?: string | null;
+        "redirectUri"?: string;
         /**
           * @default "Continue with Google"
          */
