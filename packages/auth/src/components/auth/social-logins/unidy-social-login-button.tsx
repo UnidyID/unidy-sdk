@@ -1,11 +1,11 @@
 import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../store/unidy-store";
-import { GoogleLogo } from "./social-login-button-logos/GoogleLogo";
-import { LinkedInLogo } from "./social-login-button-logos/LinkedInLogo";
-import { AppleLogo } from "./social-login-button-logos/AppleLogo";
-import { FacebookLogo } from "./social-login-button-logos/FacebookLogo";
-import { VerimiLogo } from "./social-login-button-logos/VerimiLogo";
-import { DiscordLogo } from "./social-login-button-logos/DiscordLogo";
+import { GoogleLogo } from "./logos/google";
+import { LinkedInLogo } from "./logos/linkedin";
+import { AppleLogo } from "./logos/apple";
+import { FacebookLogo } from "./logos/facebook";
+import { VerimiLogo } from "./logos/verimi";
+import { DiscordLogo } from "./logos/discord";
 
 const IconMap = {
   google: <GoogleLogo />,
