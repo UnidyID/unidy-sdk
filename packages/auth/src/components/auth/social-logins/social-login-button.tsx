@@ -81,7 +81,7 @@ export class UnidySocialLoginButton {
   private getContentClasses(): string {
     return this.iconOnly
       ? "col-span-6 content-center flex items-center justify-center"
-      : "absolute col-start-1 ml-4 md:col-span-4 md:col-start-3 content-center flex items-center justify-center h-full";
+      : "absolute col-start-1 md:col-span-4 md:col-start-3 content-center flex items-center justify-center h-full";
   }
 
   render() {
