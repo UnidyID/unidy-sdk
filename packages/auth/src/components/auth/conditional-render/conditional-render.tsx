@@ -22,7 +22,7 @@ export class ConditionalRender {
 
     switch (this.when) {
       case "magicCodeSent":
-        actualValue = authState.magicCodeSent;
+        actualValue = authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested";
         break;
       case "loading":
         actualValue = authState.loading;

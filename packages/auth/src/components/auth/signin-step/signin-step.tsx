@@ -1,12 +1,13 @@
-import { Component, Host, h, Prop, Method } from "@stencil/core";
+import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 import { Auth } from "../../..";
 
 @Component({
   tag: "signin-step",
-  shadow: false,
+  shadow: true,
 })
 export class SigninStep {
+  @Element() el!: HTMLElement;
   @Prop() name!: "email" | "verification";
   @Prop() alwaysRender = false;
 
@@ -15,36 +16,39 @@ export class SigninStep {
     return authState.step === this.name || this.alwaysRender;
   }
 
-  private handleSubmit = async (event: Event) => {
-    event.preventDefault();
+  @Method()
+  async submit() {
     if (authState.loading) return;
 
-    const authService = await Auth.getInstance();
-    if (!authService) {
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
       console.error("Auth service not initialized");
       return;
     }
 
     if (authState.step === "email") {
-      await authService.createSignIn(authState.email);
+      await authInstance.helpers.createSignIn(authState.email);
     } else if (authState.step === "verification") {
-      await authService.authenticateWithPassword(authState.password);
+      await authInstance.helpers.authenticateWithPassword(authState.password);
     }
-  };
+  }
 
   render() {
-    const isActive =
-      this.name === "email"
-        ? authState.step === "email"
-        : this.name === "verification"
-          ? authState.step === "verification" || authState.step === "magic-code"
-          : false;
+    let shouldRender = false;
+
+    if (this.name === "email") {
+      shouldRender = authState.step === "email";
+    } else if (this.name === "verification") {
+      shouldRender = authState.step === "verification" || authState.step === "magic-code";
+    }
+
+    if (!shouldRender) {
+      return null;
+    }
 
     return (
-      <Host style={{ display: isActive ? "block" : "none" }}>
-        <form onSubmit={this.handleSubmit}>
-          <slot />
-        </form>
+      <Host>
+        <slot />
       </Host>
     );
   }

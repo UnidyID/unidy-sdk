@@ -76,6 +76,13 @@ export type ResetPasswordResult =
   | ["schema_validation_error", SchemaValidationError]
   | [null, null];
 
+export type SignOutResult =
+  | ["sign_in_not_found", ErrorResponse]
+  | ["missing_id_token", ErrorResponse]
+  | ["invalid_id_token", ErrorResponse]
+  | ["schema_validation_error", SchemaValidationError]
+  | [null, null];
+
 export class AuthService {
   private client: ApiClient;
 
@@ -178,6 +185,22 @@ export class AuthService {
         const error_response = ErrorSchema.parse(response.data);
 
         return [error_response.error as "password_not_set" | "reset_password_already_sent" | "sign_in_not_found", error_response];
+      }
+
+      return [null, null];
+    } catch (error) {
+      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+    }
+  }
+
+  async signOut(signInId: string): Promise<SignOutResult> {
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, {});
+
+    try {
+      if (!response.success) {
+        const error_response = ErrorSchema.parse(response.data);
+
+        return [error_response.error as "sign_in_not_found" | "missing_id_token" | "invalid_id_token", error_response];
       }
 
       return [null, null];
