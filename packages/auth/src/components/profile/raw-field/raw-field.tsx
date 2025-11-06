@@ -7,10 +7,10 @@ import { Select, type Option } from "../raw-input-fields/Select";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
 
 @Component({
-  tag: "unidy-raw-field",
+  tag: "u-raw-field",
   shadow: false,
 })
-export class UnidyRawField {
+export class RawField {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";

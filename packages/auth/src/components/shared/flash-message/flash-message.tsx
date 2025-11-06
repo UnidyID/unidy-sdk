@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from "@stencil/core";
 
 @Component({
-  tag: "flash-message",
+  tag: "u-flash-message",
   styleUrl: "flash-message.css",
   shadow: true,
 })

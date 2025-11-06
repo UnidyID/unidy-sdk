@@ -17,11 +17,11 @@ import { state as profileState } from "../../../store/profile-store";
  */
 
 @Component({
-  tag: "unidy-field",
-  styleUrl: "unidy-field.css",
+  tag: "u-field",
+  styleUrl: "field.css",
   shadow: true,
 })
-export class UnidyField {
+export class Field {
   @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
@@ -108,7 +108,7 @@ export class UnidyField {
           </div>
         )}
         {!isReadonly && (
-          <unidy-raw-field
+          <u-raw-field
             id={this.field}
             field={this.field}
             type={fieldData.type as string}
