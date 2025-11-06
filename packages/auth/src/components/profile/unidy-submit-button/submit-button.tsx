@@ -84,7 +84,12 @@ export class SubmitButton {
   render() {
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false}>
+        <button
+          type="button"
+          onClick={() => this.onSubmit()}
+          part="button"
+          disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
+        >
           {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
