@@ -44,6 +44,14 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
+      console.log("authenticateWithPassword error", error);
+      console.log("authenticateWithPassword response", response);
+      if (error === "missing_required_fields") {
+        authStore.setMissingFields(response.fields);
+        console.log("response.fields in auth-helpers", authState.missingRequiredFields);
+        authStore.setStep("missing-fields");
+        return;
+      }
       if (error === "account_locked") {
         authStore.setGlobalError("auth", error);
       } else {

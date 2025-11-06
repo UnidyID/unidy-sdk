@@ -1,14 +1,16 @@
 import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/auth/signin-root/signin-root";
+import type { RequiredFieldsResponse } from "@unidy.io/sdk-api-client";
 
 export interface AuthState {
-  step: "email" | "verification" | "magic-code";
+  step: "email" | "verification" | "magic-code" | "missing-fields";
   sid: string | null;
   email: string;
   password: string;
 
   magicCodeStep: null | "requested" | "sent";
   resetPasswordStep: null | "requested" | "sent";
+  missingRequiredFields?: RequiredFieldsResponse["fields"];
 
   loading: boolean;
   errors: Record<string, string | null>;
@@ -42,6 +44,7 @@ const initialState: AuthState = {
   errors: {},
   globalErrors: {},
   authenticated: false,
+  missingRequiredFields: undefined,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
@@ -68,6 +71,10 @@ class AuthStore {
 
   setPassword(password: string) {
     state.password = password;
+  }
+
+  setMissingFields(fields: RequiredFieldsResponse["fields"]) {
+    state.missingRequiredFields = fields;
   }
 
   setLoading(loading: boolean) {
@@ -98,7 +105,7 @@ class AuthStore {
     state.globalErrors = {};
   }
 
-  setStep(step: "email" | "verification" | "magic-code") {
+  setStep(step: "email" | "verification" | "magic-code" | "missing-fields") {
     state.step = step;
   }
 
@@ -129,6 +136,7 @@ class AuthStore {
       state.sid = null;
     }
   }
+
 
   reset() {
     reset();

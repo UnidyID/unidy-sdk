@@ -14,6 +14,8 @@ export { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
 export namespace Components {
+    interface MissingField {
+    }
     interface UAuthProvider {
         /**
           * @default ""
@@ -247,6 +249,12 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
+    interface HTMLMissingFieldElement extends Components.MissingField, HTMLStencilElement {
+    }
+    var HTMLMissingFieldElement: {
+        prototype: HTMLMissingFieldElement;
+        new (): HTMLMissingFieldElement;
+    };
     interface HTMLUAuthProviderElement extends Components.UAuthProvider, HTMLStencilElement {
     }
     var HTMLUAuthProviderElement: {
@@ -385,6 +393,7 @@ declare global {
         new (): HTMLUSigninStrategyElement;
     };
     interface HTMLElementTagNameMap {
+        "missing-field": HTMLMissingFieldElement;
         "u-auth-provider": HTMLUAuthProviderElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
@@ -407,6 +416,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface MissingField {
+    }
     interface UAuthProvider {
         /**
           * @default ""
@@ -632,6 +643,7 @@ declare namespace LocalJSX {
         "type": "password" | "magic-code";
     }
     interface IntrinsicElements {
+        "missing-field": MissingField;
         "u-auth-provider": UAuthProvider;
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
@@ -657,6 +669,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "missing-field": LocalJSX.MissingField & JSXBase.HTMLAttributes<HTMLMissingFieldElement>;
             "u-auth-provider": LocalJSX.UAuthProvider & JSXBase.HTMLAttributes<HTMLUAuthProviderElement>;
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;

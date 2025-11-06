@@ -1,12 +1,13 @@
 import type { ApiClient } from "./api_client";
 import type { SchemaValidationError } from "./shared";
 import { SchemaValidationErrorSchema } from "./shared";
+import { UserProfileSchema } from "./profile";
 
 import * as z from "zod";
 
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),
-  status: z.enum(["pending_verification", "authenticated"]),
+  status: z.enum(["pending_verification", "authenticated", "completed"]),
   email: z.string(),
   expired: z.boolean(),
 });
@@ -28,10 +29,16 @@ const TokenResponseSchema = z.object({
   jwt: z.string(),
 });
 
+const RequiredFieldsResponseSchema = z.object({
+  error: z.literal("missing_required_fields"),
+  fields: UserProfileSchema.partial().extend({ custom_attributes: UserProfileSchema.shape.custom_attributes?.optional() }).partial(),
+});
+
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
 export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
+export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
 export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
 export type CreateSignInResult =
@@ -43,6 +50,7 @@ export type AuthenticateResultShared =
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
+  | ["missing_required_fields", RequiredFieldsResponse]
   | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
@@ -131,6 +139,13 @@ export class AuthService {
     });
     try {
       if (!response.success) {
+        console.log("response.data", response.data);
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+        console.log("missing_fields_check", missing_fields_check);
+              
+      if (missing_fields_check.success) {
+        return ["missing_required_fields", missing_fields_check.data];
+      }
         const error_response = ErrorSchema.parse(response.data);
 
         return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password", error_response];

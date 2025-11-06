@@ -233,6 +233,10 @@
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
+      </u-signin-step name="missing-fields">
+        <missing-field></missing-field>
+      </u-signin-step>
+
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
             <div class="flex-1 border-t border-gray-300"></div>
