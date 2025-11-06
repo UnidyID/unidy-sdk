@@ -90,6 +90,17 @@ export class RawField {
     }
   }
 
+  private validateValue(value: string | string[]): { valid: boolean; message: string } {
+    if (this.required) {
+      const empty = value === undefined || value === null || value === "";
+      if (empty) {
+        return { valid: false, message: "This field is required." };
+      }
+    }
+
+    return { valid: true, message: "" };
+  }
+
   private getNormalizedOptions(): Option[] {
     if (Array.isArray(this.options)) return this.options;
 
@@ -128,7 +139,21 @@ export class RawField {
   };
 
   private onSelectChange = (val: string) => this.writeStore(this.field, val);
-  private onTextChange = (val: string) => this.writeStore(this.field, val);
+
+  private onTextChange = (val: string) => {
+    this.selected = val;
+
+    const result = this.validateValue(val);
+
+    const newErrors = { ...profileState.errors };
+    if (result.valid) {
+      delete newErrors[this.field];
+      this.writeStore(this.field, val);
+    } else {
+      newErrors[this.field] = result.message;
+    }
+    profileState.errors = newErrors;
+  };
 
   componentWillLoad() {
     if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
@@ -176,6 +201,19 @@ export class RawField {
       input.setCustomValidity("");
       profileState.phoneValid = true;
     }
+  };
+
+  private onBlurFieldValidation = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    if (input.required && !input.value) {
+        input.setCustomValidity("This field is required.");
+        input.reportValidity();
+    }
+    if (this.type === "tel") {
+      this.phoneFieldValidation(e);
+      return;
+    }
+      input.setCustomValidity("");
   };
 
   render() {
@@ -290,6 +328,7 @@ export class RawField {
           componentClassName={this.componentClassName}
           specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
+          onBlur={this.onBlurFieldValidation}
         />
       );
     }
@@ -308,6 +347,7 @@ export class RawField {
         specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}
+        onBlur={this.onBlurFieldValidation}
       />
     );
   }

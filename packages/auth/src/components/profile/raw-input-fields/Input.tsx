@@ -12,6 +12,7 @@ type InputProps = {
   specificPartKey?: string;
   onChange: (value: string) => void;
   onInput: (e: Event) => void;
+  onBlur?: (e: Event) => void;
 };
 
 export const Input: FunctionalComponent<InputProps> = (props) => (
@@ -27,5 +28,6 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
     placeholder={props.placeholder}
     onChange={(e) => props.onChange((e.target as HTMLInputElement).value)}
     onInput={(e) => props.onInput(e)}
+    onBlur={(e) => props.onBlur?.(e)}
   />
 );
