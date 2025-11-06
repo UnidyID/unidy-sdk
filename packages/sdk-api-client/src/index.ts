@@ -7,6 +7,7 @@ export * from "./api_client";
 export * from "./newsletters";
 export * from "./profile";
 export * from "./auth";
+export * from "./shared";
 
 export class UnidyClient {
   private apiClient: ApiClient;
