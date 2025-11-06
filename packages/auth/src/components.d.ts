@@ -237,6 +237,28 @@ export namespace Components {
         "componentClassName": string;
         "type": "password" | "magic-code";
     }
+    interface USocialLoginButton {
+        /**
+          * @default false
+         */
+        "iconOnly": boolean;
+        /**
+          * @default "google"
+         */
+        "provider": SocialLoginProvider;
+        /**
+          * @default window.location.href
+         */
+        "redirectUri": string;
+        /**
+          * @default "Continue with Google"
+         */
+        "text": string;
+        /**
+          * @default "light"
+         */
+        "theme": "light" | "dark";
+    }
 }
 export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -384,6 +406,12 @@ declare global {
         prototype: HTMLUSigninStrategyElement;
         new (): HTMLUSigninStrategyElement;
     };
+    interface HTMLUSocialLoginButtonElement extends Components.USocialLoginButton, HTMLStencilElement {
+    }
+    var HTMLUSocialLoginButtonElement: {
+        prototype: HTMLUSocialLoginButtonElement;
+        new (): HTMLUSocialLoginButtonElement;
+    };
     interface HTMLElementTagNameMap {
         "u-auth-provider": HTMLUAuthProviderElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
@@ -404,6 +432,7 @@ declare global {
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
         "u-signin-strategy": HTMLUSigninStrategyElement;
+        "u-social-login-button": HTMLUSocialLoginButtonElement;
     }
 }
 declare namespace LocalJSX {
@@ -631,6 +660,28 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
         "type": "password" | "magic-code";
     }
+    interface USocialLoginButton {
+        /**
+          * @default false
+         */
+        "iconOnly"?: boolean;
+        /**
+          * @default "google"
+         */
+        "provider"?: SocialLoginProvider;
+        /**
+          * @default window.location.href
+         */
+        "redirectUri"?: string;
+        /**
+          * @default "Continue with Google"
+         */
+        "text"?: string;
+        /**
+          * @default "light"
+         */
+        "theme"?: "light" | "dark";
+    }
     interface IntrinsicElements {
         "u-auth-provider": UAuthProvider;
         "u-auth-submit-button": UAuthSubmitButton;
@@ -651,6 +702,7 @@ declare namespace LocalJSX {
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
         "u-signin-strategy": USigninStrategy;
+        "u-social-login-button": USocialLoginButton;
     }
 }
 export { LocalJSX as JSX };
@@ -676,6 +728,7 @@ declare module "@stencil/core" {
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
+            "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
         }
     }
 }
