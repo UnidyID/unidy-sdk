@@ -19,11 +19,11 @@ const ICON_MAP = {
 type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
 
 @Component({
-  tag: "unidy-social-login-button",
+  tag: "u-social-login-button",
   styleUrl: "social-login-button.css",
   shadow: true,
 })
-export class UnidySocialLoginButton {
+export class SocialLoginButton {
   @Prop() text = "Continue with Google";
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
@@ -32,7 +32,7 @@ export class UnidySocialLoginButton {
 
   componentWillLoad() {
     if (this.isUnsupportedProvider) {
-      console.warn(`[unidy-social-login-button] Unsupported provider "${this.provider}".`);
+      console.warn(`[u-social-login-button] Unsupported provider "${this.provider}".`);
       return;
     }
   }
@@ -55,7 +55,7 @@ export class UnidySocialLoginButton {
 
   private onClick = async () => {
     if (!unidyState.baseUrl) {
-      console.error("[unidy-social-login-button] baseUrl is not set. Make sure <unidy-config> is rendered with a valid base-url.");
+      console.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
       return;
     }
 

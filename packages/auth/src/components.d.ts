@@ -5,138 +5,22 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { TokenResponse } from "@unidy.io/sdk-api-client";
 import { Option } from "./components/profile/raw-input-fields/Select";
 import { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
-export { TokenResponse } from "@unidy.io/sdk-api-client";
+import { TokenResponse } from "@unidy.io/sdk-api-client";
 export { Option } from "./components/profile/raw-input-fields/Select";
 export { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
+export { TokenResponse } from "@unidy.io/sdk-api-client";
 export namespace Components {
-    interface AuthProvider {
+    interface UAuthProvider {
         /**
           * @default ""
          */
         "componentClassName": string;
     }
-    interface ConditionalRender {
-        "is": "true" | "false";
-        "when": string;
-    }
-    interface EmailField {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder": string;
-    }
-    interface ErrorMessage {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
-    }
-    interface FlashMessage {
-        /**
-          * @default ""
-         */
-        "message": string;
-        /**
-          * @default "info"
-         */
-        "variant": "error" | "success" | "info";
-    }
-    interface LogoutButton {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default true
-         */
-        "reloadOnSuccess": boolean;
-        /**
-          * @default "Logout"
-         */
-        "text": string;
-    }
-    interface MagicCodeField {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-    }
-    interface PasswordField {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default "Enter your password"
-         */
-        "placeholder": string;
-    }
-    interface ResetPasswordButton {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage": string;
-        /**
-          * @default "Reset Password"
-         */
-        "text": string;
-    }
-    interface SendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText": string;
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * @default "Send Magic Code"
-         */
-        "text": string;
-    }
-    interface SigninRoot {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-    }
-    interface SigninStep {
-        /**
-          * @default false
-         */
-        "alwaysRender": boolean;
-        "isActive": () => Promise<boolean>;
-        "name": "email" | "verification";
-        "submit": () => Promise<void>;
-    }
-    interface SigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        "type": "password" | "magic-code";
-    }
-    interface SubmitButton {
+    interface UAuthSubmitButton {
         /**
           * @default ""
          */
@@ -151,7 +35,11 @@ export namespace Components {
          */
         "text": string;
     }
-    interface UnidyConfig {
+    interface UConditionalRender {
+        "is": "true" | "false";
+        "when": string;
+    }
+    interface UConfig {
         /**
           * @default ""
          */
@@ -161,7 +49,25 @@ export namespace Components {
          */
         "baseUrl": string;
     }
-    interface UnidyField {
+    interface UEmailField {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default "Enter your email"
+         */
+        "placeholder": string;
+    }
+    interface UErrorMessage {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
+    }
+    interface UField {
         "componentClassName"?: string;
         /**
           * @default "label"
@@ -190,7 +96,47 @@ export namespace Components {
          */
         "required": boolean;
     }
-    interface UnidyProfile {
+    interface UFlashMessage {
+        /**
+          * @default ""
+         */
+        "message": string;
+        /**
+          * @default "info"
+         */
+        "variant": "error" | "success" | "info";
+    }
+    interface ULogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default true
+         */
+        "reloadOnSuccess": boolean;
+        /**
+          * @default "Logout"
+         */
+        "text": string;
+    }
+    interface UMagicCodeField {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
+    interface UPasswordField {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default "Enter your password"
+         */
+        "placeholder": string;
+    }
+    interface UProfile {
         "apiKey"?: string;
         "apiUrl"?: string;
         /**
@@ -200,7 +146,9 @@ export namespace Components {
         "language"?: string;
         "profileId"?: string;
     }
-    interface UnidyRawField {
+    interface UProfileSubmitButton {
+    }
+    interface URawField {
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -235,7 +183,61 @@ export namespace Components {
         "type": string;
         "value"?: string | string[];
     }
-    interface UnidySocialLoginButton {
+    interface UResetPasswordButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default "Password reset email sent. Please check your inbox."
+         */
+        "successMessage": string;
+        /**
+          * @default "Reset Password"
+         */
+        "text": string;
+    }
+    interface USendMagicCodeButton {
+        /**
+          * @default "Magic code already sent to your email"
+         */
+        "alreadySentText": string;
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Send Magic Code"
+         */
+        "text": string;
+    }
+    interface USigninRoot {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
+    interface USigninStep {
+        /**
+          * @default false
+         */
+        "alwaysRender": boolean;
+        "isActive": () => Promise<boolean>;
+        "name": "email" | "verification";
+        "submit": () => Promise<void>;
+    }
+    interface USigninStrategy {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "type": "password" | "magic-code";
+    }
+    interface USocialLoginButton {
         /**
           * @default false
          */
@@ -257,309 +259,190 @@ export namespace Components {
          */
         "theme": "light" | "dark";
     }
-    interface UnidySubmitButton {
-    }
 }
-export interface LogoutButtonCustomEvent<T> extends CustomEvent<T> {
+export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLLogoutButtonElement;
+    target: HTMLULogoutButtonElement;
 }
-export interface SigninRootCustomEvent<T> extends CustomEvent<T> {
+export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLSigninRootElement;
+    target: HTMLUSigninRootElement;
 }
 declare global {
-    interface HTMLAuthProviderElement extends Components.AuthProvider, HTMLStencilElement {
+    interface HTMLUAuthProviderElement extends Components.UAuthProvider, HTMLStencilElement {
     }
-    var HTMLAuthProviderElement: {
-        prototype: HTMLAuthProviderElement;
-        new (): HTMLAuthProviderElement;
+    var HTMLUAuthProviderElement: {
+        prototype: HTMLUAuthProviderElement;
+        new (): HTMLUAuthProviderElement;
     };
-    interface HTMLConditionalRenderElement extends Components.ConditionalRender, HTMLStencilElement {
+    interface HTMLUAuthSubmitButtonElement extends Components.UAuthSubmitButton, HTMLStencilElement {
     }
-    var HTMLConditionalRenderElement: {
-        prototype: HTMLConditionalRenderElement;
-        new (): HTMLConditionalRenderElement;
+    var HTMLUAuthSubmitButtonElement: {
+        prototype: HTMLUAuthSubmitButtonElement;
+        new (): HTMLUAuthSubmitButtonElement;
     };
-    interface HTMLEmailFieldElement extends Components.EmailField, HTMLStencilElement {
+    interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
-    var HTMLEmailFieldElement: {
-        prototype: HTMLEmailFieldElement;
-        new (): HTMLEmailFieldElement;
+    var HTMLUConditionalRenderElement: {
+        prototype: HTMLUConditionalRenderElement;
+        new (): HTMLUConditionalRenderElement;
     };
-    interface HTMLErrorMessageElement extends Components.ErrorMessage, HTMLStencilElement {
+    interface HTMLUConfigElement extends Components.UConfig, HTMLStencilElement {
     }
-    var HTMLErrorMessageElement: {
-        prototype: HTMLErrorMessageElement;
-        new (): HTMLErrorMessageElement;
+    var HTMLUConfigElement: {
+        prototype: HTMLUConfigElement;
+        new (): HTMLUConfigElement;
     };
-    interface HTMLFlashMessageElement extends Components.FlashMessage, HTMLStencilElement {
+    interface HTMLUEmailFieldElement extends Components.UEmailField, HTMLStencilElement {
     }
-    var HTMLFlashMessageElement: {
-        prototype: HTMLFlashMessageElement;
-        new (): HTMLFlashMessageElement;
+    var HTMLUEmailFieldElement: {
+        prototype: HTMLUEmailFieldElement;
+        new (): HTMLUEmailFieldElement;
     };
-    interface HTMLLogoutButtonElementEventMap {
+    interface HTMLUErrorMessageElement extends Components.UErrorMessage, HTMLStencilElement {
+    }
+    var HTMLUErrorMessageElement: {
+        prototype: HTMLUErrorMessageElement;
+        new (): HTMLUErrorMessageElement;
+    };
+    interface HTMLUFieldElement extends Components.UField, HTMLStencilElement {
+    }
+    var HTMLUFieldElement: {
+        prototype: HTMLUFieldElement;
+        new (): HTMLUFieldElement;
+    };
+    interface HTMLUFlashMessageElement extends Components.UFlashMessage, HTMLStencilElement {
+    }
+    var HTMLUFlashMessageElement: {
+        prototype: HTMLUFlashMessageElement;
+        new (): HTMLUFlashMessageElement;
+    };
+    interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
-    interface HTMLLogoutButtonElement extends Components.LogoutButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLULogoutButtonElement extends Components.ULogoutButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLULogoutButtonElementEventMap>(type: K, listener: (this: HTMLULogoutButtonElement, ev: ULogoutButtonCustomEvent<HTMLULogoutButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLLogoutButtonElementEventMap>(type: K, listener: (this: HTMLLogoutButtonElement, ev: LogoutButtonCustomEvent<HTMLLogoutButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLULogoutButtonElementEventMap>(type: K, listener: (this: HTMLULogoutButtonElement, ev: ULogoutButtonCustomEvent<HTMLULogoutButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLLogoutButtonElement: {
-        prototype: HTMLLogoutButtonElement;
-        new (): HTMLLogoutButtonElement;
+    var HTMLULogoutButtonElement: {
+        prototype: HTMLULogoutButtonElement;
+        new (): HTMLULogoutButtonElement;
     };
-    interface HTMLMagicCodeFieldElement extends Components.MagicCodeField, HTMLStencilElement {
+    interface HTMLUMagicCodeFieldElement extends Components.UMagicCodeField, HTMLStencilElement {
     }
-    var HTMLMagicCodeFieldElement: {
-        prototype: HTMLMagicCodeFieldElement;
-        new (): HTMLMagicCodeFieldElement;
+    var HTMLUMagicCodeFieldElement: {
+        prototype: HTMLUMagicCodeFieldElement;
+        new (): HTMLUMagicCodeFieldElement;
     };
-    interface HTMLPasswordFieldElement extends Components.PasswordField, HTMLStencilElement {
+    interface HTMLUPasswordFieldElement extends Components.UPasswordField, HTMLStencilElement {
     }
-    var HTMLPasswordFieldElement: {
-        prototype: HTMLPasswordFieldElement;
-        new (): HTMLPasswordFieldElement;
+    var HTMLUPasswordFieldElement: {
+        prototype: HTMLUPasswordFieldElement;
+        new (): HTMLUPasswordFieldElement;
     };
-    interface HTMLResetPasswordButtonElement extends Components.ResetPasswordButton, HTMLStencilElement {
+    interface HTMLUProfileElement extends Components.UProfile, HTMLStencilElement {
     }
-    var HTMLResetPasswordButtonElement: {
-        prototype: HTMLResetPasswordButtonElement;
-        new (): HTMLResetPasswordButtonElement;
+    var HTMLUProfileElement: {
+        prototype: HTMLUProfileElement;
+        new (): HTMLUProfileElement;
     };
-    interface HTMLSendMagicCodeButtonElement extends Components.SendMagicCodeButton, HTMLStencilElement {
+    interface HTMLUProfileSubmitButtonElement extends Components.UProfileSubmitButton, HTMLStencilElement {
     }
-    var HTMLSendMagicCodeButtonElement: {
-        prototype: HTMLSendMagicCodeButtonElement;
-        new (): HTMLSendMagicCodeButtonElement;
+    var HTMLUProfileSubmitButtonElement: {
+        prototype: HTMLUProfileSubmitButtonElement;
+        new (): HTMLUProfileSubmitButtonElement;
     };
-    interface HTMLSigninRootElementEventMap {
+    interface HTMLURawFieldElement extends Components.URawField, HTMLStencilElement {
+    }
+    var HTMLURawFieldElement: {
+        prototype: HTMLURawFieldElement;
+        new (): HTMLURawFieldElement;
+    };
+    interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
+    }
+    var HTMLUResetPasswordButtonElement: {
+        prototype: HTMLUResetPasswordButtonElement;
+        new (): HTMLUResetPasswordButtonElement;
+    };
+    interface HTMLUSendMagicCodeButtonElement extends Components.USendMagicCodeButton, HTMLStencilElement {
+    }
+    var HTMLUSendMagicCodeButtonElement: {
+        prototype: HTMLUSendMagicCodeButtonElement;
+        new (): HTMLUSendMagicCodeButtonElement;
+    };
+    interface HTMLUSigninRootElementEventMap {
         "authEvent": TokenResponse;
         "errorEvent": { error: string };
     }
-    interface HTMLSigninRootElement extends Components.SigninRoot, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLSigninRootElementEventMap>(type: K, listener: (this: HTMLSigninRootElement, ev: SigninRootCustomEvent<HTMLSigninRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLUSigninRootElement extends Components.USigninRoot, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUSigninRootElementEventMap>(type: K, listener: (this: HTMLUSigninRootElement, ev: USigninRootCustomEvent<HTMLUSigninRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLSigninRootElementEventMap>(type: K, listener: (this: HTMLSigninRootElement, ev: SigninRootCustomEvent<HTMLSigninRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUSigninRootElementEventMap>(type: K, listener: (this: HTMLUSigninRootElement, ev: USigninRootCustomEvent<HTMLUSigninRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLSigninRootElement: {
-        prototype: HTMLSigninRootElement;
-        new (): HTMLSigninRootElement;
+    var HTMLUSigninRootElement: {
+        prototype: HTMLUSigninRootElement;
+        new (): HTMLUSigninRootElement;
     };
-    interface HTMLSigninStepElement extends Components.SigninStep, HTMLStencilElement {
+    interface HTMLUSigninStepElement extends Components.USigninStep, HTMLStencilElement {
     }
-    var HTMLSigninStepElement: {
-        prototype: HTMLSigninStepElement;
-        new (): HTMLSigninStepElement;
+    var HTMLUSigninStepElement: {
+        prototype: HTMLUSigninStepElement;
+        new (): HTMLUSigninStepElement;
     };
-    interface HTMLSigninStrategyElement extends Components.SigninStrategy, HTMLStencilElement {
+    interface HTMLUSigninStrategyElement extends Components.USigninStrategy, HTMLStencilElement {
     }
-    var HTMLSigninStrategyElement: {
-        prototype: HTMLSigninStrategyElement;
-        new (): HTMLSigninStrategyElement;
+    var HTMLUSigninStrategyElement: {
+        prototype: HTMLUSigninStrategyElement;
+        new (): HTMLUSigninStrategyElement;
     };
-    interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
+    interface HTMLUSocialLoginButtonElement extends Components.USocialLoginButton, HTMLStencilElement {
     }
-    var HTMLSubmitButtonElement: {
-        prototype: HTMLSubmitButtonElement;
-        new (): HTMLSubmitButtonElement;
-    };
-    interface HTMLUnidyConfigElement extends Components.UnidyConfig, HTMLStencilElement {
-    }
-    var HTMLUnidyConfigElement: {
-        prototype: HTMLUnidyConfigElement;
-        new (): HTMLUnidyConfigElement;
-    };
-    interface HTMLUnidyFieldElement extends Components.UnidyField, HTMLStencilElement {
-    }
-    var HTMLUnidyFieldElement: {
-        prototype: HTMLUnidyFieldElement;
-        new (): HTMLUnidyFieldElement;
-    };
-    interface HTMLUnidyProfileElement extends Components.UnidyProfile, HTMLStencilElement {
-    }
-    var HTMLUnidyProfileElement: {
-        prototype: HTMLUnidyProfileElement;
-        new (): HTMLUnidyProfileElement;
-    };
-    interface HTMLUnidyRawFieldElement extends Components.UnidyRawField, HTMLStencilElement {
-    }
-    var HTMLUnidyRawFieldElement: {
-        prototype: HTMLUnidyRawFieldElement;
-        new (): HTMLUnidyRawFieldElement;
-    };
-    interface HTMLUnidySocialLoginButtonElement extends Components.UnidySocialLoginButton, HTMLStencilElement {
-    }
-    var HTMLUnidySocialLoginButtonElement: {
-        prototype: HTMLUnidySocialLoginButtonElement;
-        new (): HTMLUnidySocialLoginButtonElement;
-    };
-    interface HTMLUnidySubmitButtonElement extends Components.UnidySubmitButton, HTMLStencilElement {
-    }
-    var HTMLUnidySubmitButtonElement: {
-        prototype: HTMLUnidySubmitButtonElement;
-        new (): HTMLUnidySubmitButtonElement;
+    var HTMLUSocialLoginButtonElement: {
+        prototype: HTMLUSocialLoginButtonElement;
+        new (): HTMLUSocialLoginButtonElement;
     };
     interface HTMLElementTagNameMap {
-        "auth-provider": HTMLAuthProviderElement;
-        "conditional-render": HTMLConditionalRenderElement;
-        "email-field": HTMLEmailFieldElement;
-        "error-message": HTMLErrorMessageElement;
-        "flash-message": HTMLFlashMessageElement;
-        "logout-button": HTMLLogoutButtonElement;
-        "magic-code-field": HTMLMagicCodeFieldElement;
-        "password-field": HTMLPasswordFieldElement;
-        "reset-password-button": HTMLResetPasswordButtonElement;
-        "send-magic-code-button": HTMLSendMagicCodeButtonElement;
-        "signin-root": HTMLSigninRootElement;
-        "signin-step": HTMLSigninStepElement;
-        "signin-strategy": HTMLSigninStrategyElement;
-        "submit-button": HTMLSubmitButtonElement;
-        "unidy-config": HTMLUnidyConfigElement;
-        "unidy-field": HTMLUnidyFieldElement;
-        "unidy-profile": HTMLUnidyProfileElement;
-        "unidy-raw-field": HTMLUnidyRawFieldElement;
-        "unidy-social-login-button": HTMLUnidySocialLoginButtonElement;
-        "unidy-submit-button": HTMLUnidySubmitButtonElement;
+        "u-auth-provider": HTMLUAuthProviderElement;
+        "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
+        "u-conditional-render": HTMLUConditionalRenderElement;
+        "u-config": HTMLUConfigElement;
+        "u-email-field": HTMLUEmailFieldElement;
+        "u-error-message": HTMLUErrorMessageElement;
+        "u-field": HTMLUFieldElement;
+        "u-flash-message": HTMLUFlashMessageElement;
+        "u-logout-button": HTMLULogoutButtonElement;
+        "u-magic-code-field": HTMLUMagicCodeFieldElement;
+        "u-password-field": HTMLUPasswordFieldElement;
+        "u-profile": HTMLUProfileElement;
+        "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
+        "u-raw-field": HTMLURawFieldElement;
+        "u-reset-password-button": HTMLUResetPasswordButtonElement;
+        "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
+        "u-signin-root": HTMLUSigninRootElement;
+        "u-signin-step": HTMLUSigninStepElement;
+        "u-signin-strategy": HTMLUSigninStrategyElement;
+        "u-social-login-button": HTMLUSocialLoginButtonElement;
     }
 }
 declare namespace LocalJSX {
-    interface AuthProvider {
+    interface UAuthProvider {
         /**
           * @default ""
          */
         "componentClassName"?: string;
     }
-    interface ConditionalRender {
-        "is": "true" | "false";
-        "when": string;
-    }
-    interface EmailField {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder"?: string;
-    }
-    interface ErrorMessage {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
-    }
-    interface FlashMessage {
-        /**
-          * @default ""
-         */
-        "message"?: string;
-        /**
-          * @default "info"
-         */
-        "variant"?: "error" | "success" | "info";
-    }
-    interface LogoutButton {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "onLogout"?: (event: LogoutButtonCustomEvent<void>) => void;
-        /**
-          * @default true
-         */
-        "reloadOnSuccess"?: boolean;
-        /**
-          * @default "Logout"
-         */
-        "text"?: string;
-    }
-    interface MagicCodeField {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-    }
-    interface PasswordField {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default "Enter your password"
-         */
-        "placeholder"?: string;
-    }
-    interface ResetPasswordButton {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage"?: string;
-        /**
-          * @default "Reset Password"
-         */
-        "text"?: string;
-    }
-    interface SendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText"?: string;
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * @default "Send Magic Code"
-         */
-        "text"?: string;
-    }
-    interface SigninRoot {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "onAuthEvent"?: (event: SigninRootCustomEvent<TokenResponse>) => void;
-        "onErrorEvent"?: (event: SigninRootCustomEvent<{ error: string }>) => void;
-    }
-    interface SigninStep {
-        /**
-          * @default false
-         */
-        "alwaysRender"?: boolean;
-        "name": "email" | "verification";
-    }
-    interface SigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "type": "password" | "magic-code";
-    }
-    interface SubmitButton {
+    interface UAuthSubmitButton {
         /**
           * @default ""
          */
@@ -574,7 +457,11 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
-    interface UnidyConfig {
+    interface UConditionalRender {
+        "is": "true" | "false";
+        "when": string;
+    }
+    interface UConfig {
         /**
           * @default ""
          */
@@ -584,7 +471,25 @@ declare namespace LocalJSX {
          */
         "baseUrl"?: string;
     }
-    interface UnidyField {
+    interface UEmailField {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default "Enter your email"
+         */
+        "placeholder"?: string;
+    }
+    interface UErrorMessage {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "errorMessages"?: Record<string, string>;
+        "for": "email" | "password" | "magicCode" | "general";
+    }
+    interface UField {
         "componentClassName"?: string;
         /**
           * @default "label"
@@ -613,7 +518,48 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
     }
-    interface UnidyProfile {
+    interface UFlashMessage {
+        /**
+          * @default ""
+         */
+        "message"?: string;
+        /**
+          * @default "info"
+         */
+        "variant"?: "error" | "success" | "info";
+    }
+    interface ULogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "onLogout"?: (event: ULogoutButtonCustomEvent<void>) => void;
+        /**
+          * @default true
+         */
+        "reloadOnSuccess"?: boolean;
+        /**
+          * @default "Logout"
+         */
+        "text"?: string;
+    }
+    interface UMagicCodeField {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
+    interface UPasswordField {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default "Enter your password"
+         */
+        "placeholder"?: string;
+    }
+    interface UProfile {
         "apiKey"?: string;
         "apiUrl"?: string;
         /**
@@ -623,7 +569,9 @@ declare namespace LocalJSX {
         "language"?: string;
         "profileId"?: string;
     }
-    interface UnidyRawField {
+    interface UProfileSubmitButton {
+    }
+    interface URawField {
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -658,7 +606,61 @@ declare namespace LocalJSX {
         "type": string;
         "value"?: string | string[];
     }
-    interface UnidySocialLoginButton {
+    interface UResetPasswordButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default "Password reset email sent. Please check your inbox."
+         */
+        "successMessage"?: string;
+        /**
+          * @default "Reset Password"
+         */
+        "text"?: string;
+    }
+    interface USendMagicCodeButton {
+        /**
+          * @default "Magic code already sent to your email"
+         */
+        "alreadySentText"?: string;
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Send Magic Code"
+         */
+        "text"?: string;
+    }
+    interface USigninRoot {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "onAuthEvent"?: (event: USigninRootCustomEvent<TokenResponse>) => void;
+        "onErrorEvent"?: (event: USigninRootCustomEvent<{ error: string }>) => void;
+    }
+    interface USigninStep {
+        /**
+          * @default false
+         */
+        "alwaysRender"?: boolean;
+        "name": "email" | "verification";
+    }
+    interface USigninStrategy {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "type": "password" | "magic-code";
+    }
+    interface USocialLoginButton {
         /**
           * @default false
          */
@@ -680,55 +682,53 @@ declare namespace LocalJSX {
          */
         "theme"?: "light" | "dark";
     }
-    interface UnidySubmitButton {
-    }
     interface IntrinsicElements {
-        "auth-provider": AuthProvider;
-        "conditional-render": ConditionalRender;
-        "email-field": EmailField;
-        "error-message": ErrorMessage;
-        "flash-message": FlashMessage;
-        "logout-button": LogoutButton;
-        "magic-code-field": MagicCodeField;
-        "password-field": PasswordField;
-        "reset-password-button": ResetPasswordButton;
-        "send-magic-code-button": SendMagicCodeButton;
-        "signin-root": SigninRoot;
-        "signin-step": SigninStep;
-        "signin-strategy": SigninStrategy;
-        "submit-button": SubmitButton;
-        "unidy-config": UnidyConfig;
-        "unidy-field": UnidyField;
-        "unidy-profile": UnidyProfile;
-        "unidy-raw-field": UnidyRawField;
-        "unidy-social-login-button": UnidySocialLoginButton;
-        "unidy-submit-button": UnidySubmitButton;
+        "u-auth-provider": UAuthProvider;
+        "u-auth-submit-button": UAuthSubmitButton;
+        "u-conditional-render": UConditionalRender;
+        "u-config": UConfig;
+        "u-email-field": UEmailField;
+        "u-error-message": UErrorMessage;
+        "u-field": UField;
+        "u-flash-message": UFlashMessage;
+        "u-logout-button": ULogoutButton;
+        "u-magic-code-field": UMagicCodeField;
+        "u-password-field": UPasswordField;
+        "u-profile": UProfile;
+        "u-profile-submit-button": UProfileSubmitButton;
+        "u-raw-field": URawField;
+        "u-reset-password-button": UResetPasswordButton;
+        "u-send-magic-code-button": USendMagicCodeButton;
+        "u-signin-root": USigninRoot;
+        "u-signin-step": USigninStep;
+        "u-signin-strategy": USigninStrategy;
+        "u-social-login-button": USocialLoginButton;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "auth-provider": LocalJSX.AuthProvider & JSXBase.HTMLAttributes<HTMLAuthProviderElement>;
-            "conditional-render": LocalJSX.ConditionalRender & JSXBase.HTMLAttributes<HTMLConditionalRenderElement>;
-            "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
-            "error-message": LocalJSX.ErrorMessage & JSXBase.HTMLAttributes<HTMLErrorMessageElement>;
-            "flash-message": LocalJSX.FlashMessage & JSXBase.HTMLAttributes<HTMLFlashMessageElement>;
-            "logout-button": LocalJSX.LogoutButton & JSXBase.HTMLAttributes<HTMLLogoutButtonElement>;
-            "magic-code-field": LocalJSX.MagicCodeField & JSXBase.HTMLAttributes<HTMLMagicCodeFieldElement>;
-            "password-field": LocalJSX.PasswordField & JSXBase.HTMLAttributes<HTMLPasswordFieldElement>;
-            "reset-password-button": LocalJSX.ResetPasswordButton & JSXBase.HTMLAttributes<HTMLResetPasswordButtonElement>;
-            "send-magic-code-button": LocalJSX.SendMagicCodeButton & JSXBase.HTMLAttributes<HTMLSendMagicCodeButtonElement>;
-            "signin-root": LocalJSX.SigninRoot & JSXBase.HTMLAttributes<HTMLSigninRootElement>;
-            "signin-step": LocalJSX.SigninStep & JSXBase.HTMLAttributes<HTMLSigninStepElement>;
-            "signin-strategy": LocalJSX.SigninStrategy & JSXBase.HTMLAttributes<HTMLSigninStrategyElement>;
-            "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
-            "unidy-config": LocalJSX.UnidyConfig & JSXBase.HTMLAttributes<HTMLUnidyConfigElement>;
-            "unidy-field": LocalJSX.UnidyField & JSXBase.HTMLAttributes<HTMLUnidyFieldElement>;
-            "unidy-profile": LocalJSX.UnidyProfile & JSXBase.HTMLAttributes<HTMLUnidyProfileElement>;
-            "unidy-raw-field": LocalJSX.UnidyRawField & JSXBase.HTMLAttributes<HTMLUnidyRawFieldElement>;
-            "unidy-social-login-button": LocalJSX.UnidySocialLoginButton & JSXBase.HTMLAttributes<HTMLUnidySocialLoginButtonElement>;
-            "unidy-submit-button": LocalJSX.UnidySubmitButton & JSXBase.HTMLAttributes<HTMLUnidySubmitButtonElement>;
+            "u-auth-provider": LocalJSX.UAuthProvider & JSXBase.HTMLAttributes<HTMLUAuthProviderElement>;
+            "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
+            "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
+            "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
+            "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
+            "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
+            "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
+            "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
+            "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
+            "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
+            "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
+            "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
+            "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
+            "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
+            "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
+            "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
+            "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
+            "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
+            "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
         }
     }
 }

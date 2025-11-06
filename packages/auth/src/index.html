@@ -36,17 +36,17 @@
       letter-spacing: -1px;
     }
 
-    unidy-profile {
+    u-profile {
       display: block;
       margin-bottom: 36px;
     }
 
-    unidy-field {
+    u-field {
       display: block;
       margin: 18px 0;
     }
 
-    unidy-field::part(field_label) {
+    u-field::part(field_label) {
       font-weight: 600;
       color: #2d3748;
       margin-bottom: 6px;
@@ -54,12 +54,12 @@
       font-size: 1rem;
     }
 
-    unidy-field::part(required-indicator) {
+    u-field::part(required-indicator) {
       color: red;
     }
 
-    unidy-field::part(input_field),
-    unidy-field::part(select_field) {
+    u-field::part(input_field),
+    u-field::part(select_field) {
       width: 80%;
       padding: 10px 14px;
       border: 1px solid #e2e8f0;
@@ -70,17 +70,17 @@
       transition: border-color 0.2s;
     }
 
-    unidy-field::part(select_field--country_code) {
+    u-field::part(select_field--country_code) {
       width: 40%;
     }
 
-    unidy-field::part(input_field):focus,
-    unidy-field::part(select_field):focus {
+    u-field::part(input_field):focus,
+    u-field::part(select_field):focus {
       border-color: #0055fe;
       outline: none;
     }
 
-    unidy-field::part(radio-group_field) {
+    u-field::part(radio-group_field) {
       display: inline-flex;
       border: 1px solid #5a6677;
       border-radius: 12px;
@@ -88,13 +88,13 @@
       font-family: system-ui, sans-serif;
     }
 
-    unidy-field::part(radio-group-item_radio) {
+    u-field::part(radio-group-item_radio) {
       position: absolute;
       opacity: 0;
       pointer-events: none;
     }
 
-    unidy-field::part(radio-group-item_label) {
+    u-field::part(radio-group-item_label) {
       padding: 6px 18px;
       cursor: pointer;
       background: #fff;
@@ -106,21 +106,21 @@
       min-width: 60px;
     }
 
-    unidy-field::part(radio-group-item_label):hover {
+    u-field::part(radio-group-item_label):hover {
       background: #f5f5f5;
     }
 
-    unidy-field::part(radio_checked) {
+    u-field::part(radio_checked) {
       background: linear-gradient(90deg, #0055fec4 0%, #0055fe 100%);
       color: #fff;
     }
 
-    unidy-field::part(radio_checked):hover {
+    u-field::part(radio_checked):hover {
       background: #0055fe;
       color: #fff;
     }
 
-    unidy-field::part(multi-select-group_field) {
+    u-field::part(multi-select-group_field) {
       display: grid;
       gap: 0.5rem;
       padding: 1rem;
@@ -130,11 +130,11 @@
       transition: background 0.2s ease;
     }
 
-    unidy-field::part(multi-select-group_field):hover {
+    u-field::part(multi-select-group_field):hover {
       background: #f4f4f4;
     }
 
-    unidy-field::part(multi-select-item_label) {
+    u-field::part(multi-select-item_label) {
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -148,7 +148,7 @@
       color: #333;
     }
 
-    unidy-field::part(multi-select-item_checkbox) {
+    u-field::part(multi-select-item_checkbox) {
       width: 1rem;
       height: 1rem;
       accent-color: #0055fe;
@@ -156,13 +156,13 @@
       flex-shrink: 0;
     }
 
-    unidy-field::part(multi-select-item_label):hover {
+    u-field::part(multi-select-item_label):hover {
       border-color: #0055fe;
       background: rgba(79, 70, 229, 0.05);
     }
 
 
-    unidy-submit-button::part(unidy-button) {
+    u-profile-submit-button::part(button) {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -182,11 +182,11 @@
       letter-spacing: 0.5px;
     }
 
-    unidy-submit-button::part(unidy-button):hover {
+    u-profile-submit-button::part(button):hover {
       background: #0055fe;
     }
 
-    unidy-field::part(field-container--first_name) {
+    u-field::part(field-container--first_name) {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -205,21 +205,21 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-  <unidy-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></unidy-config>
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <signin-root id="sign-in-root" class-name="
+    <u-signin-root id="sign-in-root" class-name="
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
-      <signin-step name="email">
-        <email-field placeholder="Enter your email"
-          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></email-field>
-        <error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
+      <u-signin-step name="email">
+        <u-email-field placeholder="Enter your email"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+        <u-error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <submit-button for="email" text="Continue with Email"
-          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></submit-button>
+        <u-auth-submit-button for="email" text="Continue with Email"
+          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
 
         <div class="flex flex-col w-full space-y-4">
           <div class="flex items-center my-4">
@@ -228,63 +228,61 @@
             <div class="flex-1 border-t border-gray-300"></div>
           </div>
 
-          <unidy-social-login-button text="Continue with Google" provider="google"
-            theme="dark"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with LinkedIn" provider="linkedin"
-            redirect-uri="http://localhost:3333"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with Apple" provider="apple"
-            theme="dark"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with Facebook" provider="facebook"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with Discord" provider="discord" icon-only="true"
-            theme="dark"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with Some Provider"
-            provider="some-provider"></unidy-social-login-button>
-          <unidy-social-login-button text="Continue with Unidy" provider="unidy" theme="dark" icon-only="true">
+          <u-social-login-button text="Continue with Google" provider="google" theme="dark"></u-social-login-button>
+          <u-social-login-button text="Continue with LinkedIn" provider="linkedin"></u-social-login-button>
+          <u-social-login-button text="Continue with Apple" provider="apple" theme="dark"></u-social-login-button>
+          <u-social-login-button text="Continue with Facebook" provider="facebook"></u-social-login-button>
+          <u-social-login-button text="Continue with Discord" provider="discord" icon-only="true"
+            theme="dark"></u-social-login-button>
+          <u-social-login-button text="Continue with Some Provider" provider="some-provider"></u-social-login-button>
+
+          <u-social-login-button text="Continue with Unidy" provider="unidy" theme="dark" icon-only="true">
             <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
-          </unidy-social-login-button>
+          </u-social-login-button>
         </div>
-      </signin-step>
+      </u-signin-step>
 
-      <signin-step name="verification">
-        <signin-strategy type="password">
-          <password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></password-field>
-          <reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500"></reset-password-button>
-          <error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></error-message>
-          <submit-button for="password" text="Sign In"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></submit-button>
-        </signin-strategy>
+      <u-signin-step name="verification">
+        <u-signin-strategy type="password">
+          <u-password-field placeholder="Enter your password"
+            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></u-password-field>
+          <u-reset-password-button text="Reset Password"
+            class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+          <u-error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          <u-auth-submit-button for="password" text="Sign In"
+            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
+        </u-signin-strategy>
 
-        <conditional-render when="magicCodeSent" is="false">
+        <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
             <div class="flex-1 border-t border-gray-300"></div>
             <h3 class="px-3 text-gray-600 font-medium">OR</h3>
             <div class="flex-1 border-t border-gray-300"></div>
           </div>
 
-          <send-magic-code-button text="Send Magic Code To Your Email"
-            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></send-magic-code-button>
-        </conditional-render>
+          <u-send-magic-code-button text="Send Magic Code To Your Email"
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
+        </u-conditional-render>
 
-        <signin-strategy type="magic-code">
-          <conditional-render when="magicCodeSent" is="true">
+        <u-signin-strategy type="magic-code">
+          <u-conditional-render when="magicCodeSent" is="true">
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-          </conditional-render>
+          </u-conditional-render>
 
-          <magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></magic-code-field>
+          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></u-magic-code-field>
 
-          <error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></error-message>
+          <u-error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
-          <conditional-render when="magicCodeSent" is="true">
-            <send-magic-code-button text="Resend Magic Code"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></send-magic-code-button>
-          </conditional-render>
-        </signin-strategy>
+          <u-conditional-render when="magicCodeSent" is="true">
+            <u-send-magic-code-button text="Resend Magic Code"
+              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
+          </u-conditional-render>
+        </u-signin-strategy>
 
-        <error-message for="general" class-name="my-2 text-sm text-center text-red-500"></error-message>
-      </signin-step>
+        <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
+      </u-signin-step>
 
-    </signin-root>
+    </u-signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
       <div class="text-center mb-6">
@@ -296,35 +294,33 @@
       </div>
     </div>
 
-    <auth-provider>
+    <u-auth-provider>
       <div class="container">
-        <unidy-profile language="de">
+        <u-profile language="de">
           <div class="mt-6 space-y-3">
-            <logout-button text="Logout"
+            <u-logout-button text="Logout"
               class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-            </logout-button>
+            </u-logout-button>
           </div>
-          <unidy-field field="salutation" render-default-label="true"></unidy-field>
-          <unidy-field field="first_name">
+          <u-field field="salutation" render-default-label="true"></u-field>
+          <u-field field="first_name">
             <label slot="label" class="text-blue-500">First Name:</label>
-          </unidy-field>
-          <unidy-field field="last_name" render-default-label="true"></unidy-field>
-          <unidy-field field="date_of_birth" required="true" render-default-label="true"></unidy-field>
-          <unidy-field field="phone_number" render-default-label="true"></unidy-field>
-          <unidy-field field="country_code" country-code-display-option="icon"
-            render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.favorite_nut" render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.sports_interests" render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.active_membership" render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"
-            render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.weight" placeholder="0.00" render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.football_fan" readonly-placeholder="No information"
-            render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.first_name" render-default-label="true"></unidy-field>
-          <unidy-field field="custom_attributes.self_description" render-default-label="true"></unidy-field>
-          <unidy-submit-button>Submit</unidy-submit-button>
-          <div id="profile-update-message"></div>
+          </u-field>
+          <u-field field="last_name" render-default-label="true"></u-field>
+          <u-field field="date_of_birth" required="true" render-default-label="true"></u-field>
+          <u-field field="phone_number" render-default-label="true"></u-field>
+          <u-field field="country_code" country-code-display-option="icon" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.favorite_nut" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.sports_interests" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.active_membership" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"
+            render-default-label="true"></u-field>
+          <u-field field="custom_attributes.weight" placeholder="0.00" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.football_fan" readonly-placeholder="No information"
+            render-default-label="true"></u-field>
+          <u-field field="custom_attributes.first_name" render-default-label="true"></u-field>
+          <u-field field="custom_attributes.self_description" render-default-label="true"></u-field>
+          <u-profile-submit-button>Submit</u-profile-submit-button>
 
           <h2>Raw Field Examples</h2>
           <div class="mb-4 mt-4">
@@ -332,29 +328,28 @@
               First Name
             </label>
 
-            <unidy-raw-field field="first_name" type="text" tooltip="First Name raw" placeholder="Enter your first name"
+            <u-raw-field field="first_name" type="text" tooltip="First Name raw" placeholder="Enter your first name"
               required class-name="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
-                          focus:border-red-500 transition"></unidy-raw-field>
+                          focus:border-red-500 transition"></u-raw-field>
           </div>
 
           <h3 class="text-lg font-bold text-gray-700 mb-1">Salutation</h3>
           <div class="flex gap-6">
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="salutation" type="radio" value="mr" tooltip="Herr"
-                class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="salutation" type="radio" value="mr" tooltip="Herr" class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">Mr</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="salutation" type="radio" value="mrs" tooltip="Frau"
-                class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="salutation" type="radio" value="mrs" tooltip="Frau"
+                class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">Mrs</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="salutation" type="radio" value="mx" tooltip="Divers"
-                class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="salutation" type="radio" value="mx" tooltip="Divers"
+                class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">Mx</span>
             </label>
           </div>
@@ -362,20 +357,20 @@
           <h3 class="text-lg font-bold text-gray-700 mb-1">Active Membership</h3>
           <div class="flex gap-6">
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="true" tooltip="Yes"
-                class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="custom_attributes.active_membership" type="radio" value="true" tooltip="Yes"
+                class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">Yes</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="false" tooltip="No"
-                class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="custom_attributes.active_membership" type="radio" value="false" tooltip="No"
+                class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">No</span>
             </label>
 
             <label class="inline-flex gap-2 cursor-pointer">
-              <unidy-raw-field field="custom_attributes.active_membership" type="radio" value="_NOT_SET_"
-                tooltip="Not Set" class-name="h-4 w-4"></unidy-raw-field>
+              <u-raw-field field="custom_attributes.active_membership" type="radio" value="_NOT_SET_" tooltip="Not Set"
+                class-name="h-4 w-4"></u-raw-field>
               <span class="text-sm text-gray-800">Not Set</span>
             </label>
           </div>
@@ -385,9 +380,9 @@
               Phone Number
             </label>
 
-            <unidy-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
+            <u-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
                           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                          focus:border-blue-500 transition"></unidy-raw-field>
+                          focus:border-blue-500 transition"></u-raw-field>
           </div>
 
           <div class="mb-4">
@@ -395,14 +390,14 @@
               Self Description
             </label>
 
-            <unidy-raw-field field="custom_attributes.self_description" type="textarea" tooltip="Self Description"
+            <u-raw-field field="custom_attributes.self_description" type="textarea" tooltip="Self Description"
               class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
                           min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></unidy-raw-field>
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></u-raw-field>
           </div>
           <div class="mb-4">
             <label class="block text-sm font-bold mb-1">Favorite Nut</label>
-            <unidy-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
+            <u-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
                           bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
                           focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
                 { "value": "erdnuss", "label": "Erdnuss" },
@@ -415,68 +410,68 @@
             <div class="flex flex-wrap gap-2">
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="soccer"
-                  tooltip="Soccer" class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="soccer" tooltip="Soccer"
+                  class-name="sr-only"></u-raw-field>
                 Soccer
               </label>
 
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="basketball"
-                  tooltip="Basketball" class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="basketball"
+                  tooltip="Basketball" class-name="sr-only"></u-raw-field>
                 Basketball
               </label>
 
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="hockey"
-                  tooltip="Hockey" class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="hockey" tooltip="Hockey"
+                  class-name="sr-only"></u-raw-field>
                 Hockey
               </label>
 
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="golf" tooltip="Golf"
-                  class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="golf" tooltip="Golf"
+                  class-name="sr-only"></u-raw-field>
                 Golf
               </label>
 
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="handball"
-                  tooltip="Handball" class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="handball"
+                  tooltip="Handball" class-name="sr-only"></u-raw-field>
                 Handball
               </label>
 
               <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
                        hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(unidy-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(unidy-raw-field_input:checked)]:border-indigo-500
-                       [&:has(unidy-raw-field_input:checked)]:text-indigo-800">
-                <unidy-raw-field field="custom_attributes.sports_interests" type="checkbox" value="tennis"
-                  tooltip="Tennis" class-name="sr-only"></unidy-raw-field>
+                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
+                       [&:has(u-raw-field_input:checked)]:border-indigo-500
+                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
+                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="tennis" tooltip="Tennis"
+                  class-name="sr-only"></u-raw-field>
                 Tennis
               </label>
             </div>
           </div>
-        </unidy-profile>
+        </u-profile>
       </div>
-    </auth-provider>
+    </u-auth-provider>
   </div>
 
   <script type="module">

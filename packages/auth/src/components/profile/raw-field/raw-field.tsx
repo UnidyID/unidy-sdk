@@ -7,10 +7,10 @@ import { Select, type Option } from "../raw-input-fields/Select";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
 
 @Component({
-  tag: "unidy-raw-field",
+  tag: "u-raw-field",
   shadow: false,
 })
-export class UnidyRawField {
+export class RawField {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -131,8 +131,8 @@ export class UnidyRawField {
   private onTextChange = (val: string) => this.writeStore(this.field, val);
 
   componentWillLoad() {
-    if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
-    if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
+    if (!this.field) throw new Error('u-raw-field: "field" is required.');
+    if (!this.type) throw new Error('u-raw-field: "type" is required.');
 
     const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select", "checkbox"]);
     if (!allowed.has(this.type)) {

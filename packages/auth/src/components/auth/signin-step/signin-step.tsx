@@ -3,7 +3,7 @@ import { authState } from "../../../store/auth-store";
 import { Auth } from "../../..";
 
 @Component({
-  tag: "signin-step",
+  tag: "u-signin-step",
   shadow: true,
 })
 export class SigninStep {

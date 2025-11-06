@@ -3,7 +3,7 @@ import { authState } from "../../../store/auth-store";
 import { Auth } from "../../../auth.js";
 
 @Component({
-  tag: "magic-code-field",
+  tag: "u-magic-code-field",
   shadow: false,
 })
 export class MagicCodeField {

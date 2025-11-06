@@ -3,7 +3,7 @@ import { authState, authStore } from "../../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
 @Component({
-  tag: "password-field",
+  tag: "u-password-field",
   shadow: false,
 })
 export class PasswordField {

@@ -33,13 +33,13 @@
 
 ### Used by
 
- - [unidy-field](../unidy-field)
+ - [u-field](../field)
 
 ### Graph
 ```mermaid
 graph TD;
-  unidy-field --> unidy-raw-field
-  style unidy-raw-field fill:#f9f,stroke:#333,stroke-width:4px
+  u-field --> u-raw-field
+  style u-raw-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
