@@ -156,8 +156,8 @@ export class RawField {
   };
 
   componentWillLoad() {
-    if (!this.field) throw new Error('unidy-raw-field: "field" is required.');
-    if (!this.type) throw new Error('unidy-raw-field: "type" is required.');
+    if (!this.field) throw new Error('u-raw-field: "field" is required.');
+    if (!this.type) throw new Error('u-raw-field: "type" is required.');
 
     const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select", "checkbox"]);
     if (!allowed.has(this.type)) {
