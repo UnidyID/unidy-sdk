@@ -1,19 +1,15 @@
 import { Component, Element, h } from "@stencil/core";
 import { getUnidyClient } from "../../../api-client";
-import { Auth } from "../../../auth";
 import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
+import { authState, authStore } from "../../../store/auth-store";
 @Component({
-  tag: "u-profile-submit-button",
-  shadow: true,
-  styleUrl: "submit-button.css",
+  tag: "u-missing-fields-submit-button",
+  shadow: true
 })
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
-  private authInstance?: Auth;
-
   async componentWillLoad() {
-    this.authInstance = await Auth.getInstance();
   }
 
   private async onSubmit() {
@@ -42,26 +38,17 @@ export class SubmitButton {
     }
 
     const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
+    const sid = authState.sid as string;
 
-    const resp = await getUnidyClient().profile.updateProfile({
-      idToken: (await this.authInstance?.getToken()) as string,
-      data: updatedProfileData,
-      lang: profileState.language,
-    });
+    const [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
 
-    if (resp?.success) {
-      profileState.loading = false;
-      profileState.configuration = JSON.parse(JSON.stringify(resp.data));
-      profileState.configUpdateSource = "submit";
-      profileState.errors = {};
-    } else {
-      if (resp?.data && "flatErrors" in resp.data) {
-        profileState.errors = resp.data.flatErrors as Record<string, string>;
-      } else {
-        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
-      }
-      profileState.loading = false;
+    if (error) {
+      return;
     }
+
+    const { jwt } = response;
+    profileState.loading = false;
+    authStore.setToken(jwt);
   }
 
   private buildPayload(stateData: ProfileRaw) {
@@ -82,6 +69,7 @@ export class SubmitButton {
   }
 
   render() {
+   if (authState.step !== "missing-fields") return null;
     return (
       <div>
         <button type="button" onClick={() => this.onSubmit()} part="button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false}>
