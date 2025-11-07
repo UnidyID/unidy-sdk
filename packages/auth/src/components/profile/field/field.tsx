@@ -17,17 +17,17 @@ import { state as profileState } from "../../../store/profile-store";
  */
 
 @Component({
-  tag: "unidy-field",
-  styleUrl: "unidy-field.css",
+  tag: "u-field",
+  styleUrl: "field.css",
   shadow: true,
 })
-export class UnidyField {
+export class Field {
   @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
-  @Prop() customStyle?: string;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
   @Prop() emptyOption = true;
   @Prop() placeholder?: string;
   @Prop() renderDefaultLabel = false;
@@ -53,7 +53,7 @@ export class UnidyField {
 
   private createSpecificPartKey(fieldName: string) {
     if (fieldName.startsWith("custom_attributes.")) {
-      return fieldName.replace(/[^\w-]/g, "-") ;
+      return fieldName.replace(/[^\w-]/g, "-");
     }
     return fieldName;
   }
@@ -108,25 +108,25 @@ export class UnidyField {
           </div>
         )}
         {!isReadonly && (
-            <unidy-raw-field
-              id={this.field}
-              field={this.field}
-              type={fieldData.type as string}
-              value={fieldData.value}
-              options={fieldData.type === "select" ? fieldData.options : undefined}
-              radioOptions={fieldData.type === "radio" ? fieldData.radio_options : undefined}
-              multiSelectOptions={fieldData.type === "checkbox" ? fieldData.options : undefined}
-              required={fieldData.required || this.required}
-              disabled={isLocked}
-              tooltip={isLocked ? lockedText : undefined}
-              placeholder={this.placeholder}
-              customStyle={this.customStyle}
-              emptyOption={this.emptyOption}
-              countryCodeDisplayOption={this.countryCodeDisplayOption}
-              attrName={fieldData.attr_name}
-              specificPartKey={this.createSpecificPartKey(this.field)}
-            />
-          )}
+          <u-raw-field
+            id={this.field}
+            field={this.field}
+            type={fieldData.type as string}
+            value={fieldData.value}
+            options={fieldData.type === "select" ? fieldData.options : undefined}
+            radioOptions={fieldData.type === "radio" ? fieldData.radio_options : undefined}
+            multiSelectOptions={fieldData.type === "checkbox" ? fieldData.options : undefined}
+            required={fieldData.required || this.required}
+            disabled={isLocked}
+            tooltip={isLocked ? lockedText : undefined}
+            placeholder={this.placeholder}
+            componentClassName={this.componentClassName}
+            emptyOption={this.emptyOption}
+            countryCodeDisplayOption={this.countryCodeDisplayOption}
+            attrName={fieldData.attr_name}
+            specificPartKey={this.createSpecificPartKey(this.field)}
+          />
+        )}
 
         {profileState.errors[this.field] && <span part="field-error-message">ERROR: {profileState.errors[this.field]}</span>}
       </div>

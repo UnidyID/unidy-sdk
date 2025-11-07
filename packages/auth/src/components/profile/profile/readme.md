@@ -16,19 +16,6 @@
 | `profileId`   | `profile-id`   |             | `string \| undefined`                | `undefined` |
 
 
-## Dependencies
-
-### Depends on
-
-- [flash-message](../unidy-flash)
-
-### Graph
-```mermaid
-graph TD;
-  unidy-profile --> flash-message
-  style unidy-profile fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

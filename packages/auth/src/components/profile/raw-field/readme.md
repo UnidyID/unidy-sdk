@@ -11,8 +11,8 @@
 | -------------------------- | ----------------------------- | ----------- | ---------------------------------- | -------------------------------------- |
 | `attrName`                 | `attr-name`                   |             | `string \| undefined`              | `undefined`                            |
 | `checked`                  | `checked`                     |             | `boolean \| undefined`             | `undefined`                            |
+| `componentClassName`       | `class-name`                  |             | `string \| undefined`              | `undefined`                            |
 | `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label" \| undefined`   | `"label"`                              |
-| `customStyle`              | `custom-style`                |             | `string \| undefined`              | `undefined`                            |
 | `disabled`                 | `disabled`                    |             | `boolean \| undefined`             | `undefined`                            |
 | `emptyOption`              | `empty-option`                |             | `boolean`                          | `false`                                |
 | `field` _(required)_       | `field`                       |             | `string`                           | `undefined`                            |
@@ -33,13 +33,13 @@
 
 ### Used by
 
- - [unidy-field](../unidy-field)
+ - [u-field](../field)
 
 ### Graph
 ```mermaid
 graph TD;
-  unidy-field --> unidy-raw-field
-  style unidy-raw-field fill:#f9f,stroke:#333,stroke-width:4px
+  u-field --> u-raw-field
+  style u-raw-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

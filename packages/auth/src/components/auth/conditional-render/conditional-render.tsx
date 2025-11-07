@@ -2,7 +2,7 @@ import { Component, h, Prop, Host } from "@stencil/core";
 import { authState } from "../../../store/auth-store";
 
 @Component({
-  tag: "conditional-render",
+  tag: "u-conditional-render",
   shadow: true,
 })
 export class ConditionalRender {
@@ -22,7 +22,7 @@ export class ConditionalRender {
 
     switch (this.when) {
       case "magicCodeSent":
-        actualValue = authState.magicCodeSent;
+        actualValue = authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested";
         break;
       case "loading":
         actualValue = authState.loading;

@@ -1,16 +1,17 @@
-import { type FunctionalComponent, h } from '@stencil/core';
+import { type FunctionalComponent, h } from "@stencil/core";
 
 type TextareaProps = {
-    id: string;
-    value: string | undefined;
-    disabled?: boolean;
-    required?: boolean;
-    title?: string;
-    name?: string;
-    customStyle?: string;
-    placeholder?: string;
-    specificPartKey?: string;
-    onChange: (value: string) => void;
+  id: string;
+  value: string | undefined;
+  disabled?: boolean;
+  required?: boolean;
+  title?: string;
+  name?: string;
+  componentClassName?: string;
+  placeholder?: string;
+  specificPartKey?: string;
+  onChange: (value: string) => void;
+  onBlur?: (e: Event) => void;
 };
 
 export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
@@ -18,11 +19,12 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     id={props.id}
     value={props.value}
     name={props.name}
-    class={props.customStyle}
+    class={props.componentClassName}
     required={props.required}
-    part={`textarea_field ${props.specificPartKey ? `textarea_field--${props.specificPartKey}` : ''}`}
+    part={`textarea_field ${props.specificPartKey ? `textarea_field--${props.specificPartKey}` : ""}`}
     disabled={props.disabled}
     title={props.title}
     onChange={(e) => props.onChange((e.target as HTMLTextAreaElement).value)}
+    onBlur={props.onBlur}
   />
 );

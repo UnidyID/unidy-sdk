@@ -2,11 +2,11 @@ import { Component, Host, Prop, h } from "@stencil/core";
 import { authStore } from "../../../store/auth-store.js";
 
 @Component({
-  tag: "auth-provider",
+  tag: "u-auth-provider",
   shadow: true,
 })
 export class AuthProvider {
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   render() {
     if (!authStore.state.authenticated) {
@@ -14,7 +14,7 @@ export class AuthProvider {
     }
 
     return (
-      <Host class={this.customStyle} style={{ width: "100%" }}>
+      <Host class={this.componentClassName}>
         <slot />
       </Host>
     );

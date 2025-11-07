@@ -3,11 +3,11 @@ import { getUnidyClient } from "../../../api-client";
 import { Auth } from "../../../auth";
 import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
 @Component({
-  tag: "unidy-submit-button",
+  tag: "u-profile-submit-button",
   shadow: true,
-  styleUrl: "unidy-submit-button.css",
+  styleUrl: "submit-button.css",
 })
-export class UnidySubmitButton {
+export class SubmitButton {
   @Element() el!: HTMLElement;
 
   private authInstance?: Auth;
@@ -84,7 +84,7 @@ export class UnidySubmitButton {
   render() {
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={profileState.phoneValid === false}>
+        <button type="button" onClick={() => this.onSubmit()} part="unidy-button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false}>
           {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>

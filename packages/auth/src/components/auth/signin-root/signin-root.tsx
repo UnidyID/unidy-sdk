@@ -3,11 +3,11 @@ import type { TokenResponse } from "@unidy.io/sdk-api-client";
 import { authStore } from "../../../store/auth-store.js";
 
 @Component({
-  tag: "signin-root",
+  tag: "u-signin-root",
   shadow: true,
 })
 export class SigninRoot {
-  @Prop() customStyle = "";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
   @Event() errorEvent!: EventEmitter<{ error: string }>;
@@ -30,7 +30,7 @@ export class SigninRoot {
     }
 
     return (
-      <Host class={this.customStyle} style={{ width: "100%" }}>
+      <Host class={this.componentClassName}>
         <slot />
       </Host>
     );

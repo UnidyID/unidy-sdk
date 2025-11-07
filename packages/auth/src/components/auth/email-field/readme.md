@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type     | Default              |
-| ------------- | -------------- | ----------- | -------- | -------------------- |
-| `customStyle` | `custom-style` |             | `string` | `""`                 |
-| `placeholder` | `placeholder`  |             | `string` | `"Enter your email"` |
+| Property             | Attribute     | Description | Type     | Default              |
+| -------------------- | ------------- | ----------- | -------- | -------------------- |
+| `componentClassName` | `class-name`  |             | `string` | `""`                 |
+| `placeholder`        | `placeholder` |             | `string` | `"Enter your email"` |
 
 
 ----------------------------------------------

@@ -12,5 +12,6 @@ export * from "./store/auth-store";
 export * from "./auth";
 export * from "./components";
 export * from "./api-client";
+export * from "./error-definitions";
 
 export type { AuthError, TokenPayload } from "./auth";
