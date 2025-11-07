@@ -1,5 +1,7 @@
 import { authStore, authState } from "./store/auth-store";
 import type { UnidyClient } from "@unidy.io/sdk-api-client";
+import { ProfileRaw } from "./store/profile-store";
+import { state as profileState } from "./store/profile-store";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -44,11 +46,9 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
-      console.log("authenticateWithPassword error", error);
-      console.log("authenticateWithPassword response", response);
       if (error === "missing_required_fields") {
         authStore.setMissingFields(response.fields);
-        console.log("response.fields in auth-helpers", authState.missingRequiredFields);
+        profileState.data = JSON.parse(JSON.stringify(response.fields)) as ProfileRaw;
         authStore.setStep("missing-fields");
         return;
       }

@@ -14,8 +14,6 @@ export { RadioOption } from "./components/profile/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./components/profile/raw-input-fields/MultiSelect";
 export { TokenResponse } from "@unidy.io/sdk-api-client";
 export namespace Components {
-    interface MissingField {
-    }
     interface UAuthProvider {
         /**
           * @default ""
@@ -127,6 +125,8 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+    }
+    interface UMissingField {
     }
     interface UPasswordField {
         /**
@@ -271,12 +271,6 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
-    interface HTMLMissingFieldElement extends Components.MissingField, HTMLStencilElement {
-    }
-    var HTMLMissingFieldElement: {
-        prototype: HTMLMissingFieldElement;
-        new (): HTMLMissingFieldElement;
-    };
     interface HTMLUAuthProviderElement extends Components.UAuthProvider, HTMLStencilElement {
     }
     var HTMLUAuthProviderElement: {
@@ -347,6 +341,12 @@ declare global {
     var HTMLUMagicCodeFieldElement: {
         prototype: HTMLUMagicCodeFieldElement;
         new (): HTMLUMagicCodeFieldElement;
+    };
+    interface HTMLUMissingFieldElement extends Components.UMissingField, HTMLStencilElement {
+    }
+    var HTMLUMissingFieldElement: {
+        prototype: HTMLUMissingFieldElement;
+        new (): HTMLUMissingFieldElement;
     };
     interface HTMLUPasswordFieldElement extends Components.UPasswordField, HTMLStencilElement {
     }
@@ -421,7 +421,6 @@ declare global {
         new (): HTMLUSocialLoginButtonElement;
     };
     interface HTMLElementTagNameMap {
-        "missing-field": HTMLMissingFieldElement;
         "u-auth-provider": HTMLUAuthProviderElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
@@ -432,6 +431,7 @@ declare global {
         "u-flash-message": HTMLUFlashMessageElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
+        "u-missing-field": HTMLUMissingFieldElement;
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
@@ -445,8 +445,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface MissingField {
-    }
     interface UAuthProvider {
         /**
           * @default ""
@@ -559,6 +557,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    interface UMissingField {
     }
     interface UPasswordField {
         /**
@@ -694,7 +694,6 @@ declare namespace LocalJSX {
         "theme"?: "light" | "dark";
     }
     interface IntrinsicElements {
-        "missing-field": MissingField;
         "u-auth-provider": UAuthProvider;
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
@@ -705,6 +704,7 @@ declare namespace LocalJSX {
         "u-flash-message": UFlashMessage;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
+        "u-missing-field": UMissingField;
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
         "u-profile-submit-button": UProfileSubmitButton;
@@ -721,7 +721,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "missing-field": LocalJSX.MissingField & JSXBase.HTMLAttributes<HTMLMissingFieldElement>;
             "u-auth-provider": LocalJSX.UAuthProvider & JSXBase.HTMLAttributes<HTMLUAuthProviderElement>;
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
@@ -732,6 +731,7 @@ declare module "@stencil/core" {
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
+            "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;

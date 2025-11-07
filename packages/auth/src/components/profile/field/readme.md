@@ -46,7 +46,7 @@
 
 ### Used by
 
- - [missing-field](../../auth/missing-field)
+ - [u-missing-field](../../auth/missing-field)
 
 ### Depends on
 
@@ -56,7 +56,7 @@
 ```mermaid
 graph TD;
   u-field --> u-raw-field
-  missing-field --> u-field
+  u-missing-field --> u-field
   style u-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

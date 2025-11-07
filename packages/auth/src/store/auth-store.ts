@@ -20,6 +20,25 @@ export interface AuthState {
   token: string | null;
 }
 
+const missingRequiredUserDefaultFields = () => {
+  const fields = state.missingRequiredFields ?? {};
+  const { custom_attributes, ...missingRequiredUserDefaultFields } = fields as Record<string, any>;
+  return missingRequiredUserDefaultFields as Record<string, any>;
+};
+
+const missingRequiredCustomAttributeFields = () => {
+  const fields = state.missingRequiredFields ?? {};
+  return (fields?.custom_attributes ?? {}) as Record<string, any>;
+};
+
+export const missingFieldNames = () => {
+  const userDefaultFields = Object.keys(missingRequiredUserDefaultFields());
+  const ca = Object.keys(missingRequiredCustomAttributeFields()).map(
+    (k) => `custom_attributes.${k}`
+  );
+  return [...userDefaultFields, ...ca];
+};
+
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
