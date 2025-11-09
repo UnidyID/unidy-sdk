@@ -38,10 +38,10 @@ export class TicketableList {
   @Prop() containerClass?: string;
 
   // TODO: add a component that can override this
-  @Prop({ mutable: true }) filter: string = '';
+  @Prop({ mutable: true }) filter = '';
 
   // TODO: Add pagination component to override all of this
-  @Prop({ mutable: true }) limit: number = 10;
+  @Prop({ mutable: true }) limit = 10;
 
   @Prop() skeletonCount?: number = DEFAULT_SKELETON_COUNT;
   @Prop() skeletonAllText?: boolean = false;
