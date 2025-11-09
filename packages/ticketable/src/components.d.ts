@@ -5,31 +5,20 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { PaginationMeta } from "@unidy.io/sdk-api-client";
+import { PaginationStore } from "./store/pagination-store";
+export { PaginationMeta } from "@unidy.io/sdk-api-client";
+export { PaginationStore } from "./store/pagination-store";
 export namespace Components {
-    interface TicketableList {
+    interface UPaginationButton {
+        "customClass"?: string;
         /**
-          * @default 'public-newsletter-api-key'
+          * @default 'next'
          */
-        "apiKey"?: string;
-        /**
-          * @default 'http://localhost:3000'
-         */
-        "baseUrl"?: string;
-        "containerClass"?: string;
-        "filter"?: string;
-        /**
-          * @default 10
-         */
-        "limit"?: number;
-        /**
-          * @default false
-         */
-        "skeletonAllText"?: boolean;
-        /**
-          * @default DEFAULT_SKELETON_COUNT
-         */
-        "skeletonCount"?: number;
-        "target"?: string;
+        "direction": 'prev' | 'next';
+    }
+    interface UPaginationPage {
+        "customClass"?: string;
     }
     interface UTicketableList {
         /**
@@ -54,23 +43,38 @@ export namespace Components {
          */
         "locale"?: string;
         /**
+          * @default 1
+         */
+        "page": number;
+        /**
+          * @default null
+         */
+        "paginationMeta": PaginationMeta | null;
+        /**
           * @default false
          */
         "skeletonAllText"?: boolean;
-        /**
-          * @default DEFAULT_SKELETON_COUNT
-         */
         "skeletonCount"?: number;
+        /**
+          * @default null
+         */
+        "store": PaginationStore | null;
         "target"?: string;
         "ticketableType": 'ticket' | 'subscription';
     }
 }
 declare global {
-    interface HTMLTicketableListElement extends Components.TicketableList, HTMLStencilElement {
+    interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
-    var HTMLTicketableListElement: {
-        prototype: HTMLTicketableListElement;
-        new (): HTMLTicketableListElement;
+    var HTMLUPaginationButtonElement: {
+        prototype: HTMLUPaginationButtonElement;
+        new (): HTMLUPaginationButtonElement;
+    };
+    interface HTMLUPaginationPageElement extends Components.UPaginationPage, HTMLStencilElement {
+    }
+    var HTMLUPaginationPageElement: {
+        prototype: HTMLUPaginationPageElement;
+        new (): HTMLUPaginationPageElement;
     };
     interface HTMLUTicketableListElement extends Components.UTicketableList, HTMLStencilElement {
     }
@@ -79,35 +83,21 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "ticketable-list": HTMLTicketableListElement;
+        "u-pagination-button": HTMLUPaginationButtonElement;
+        "u-pagination-page": HTMLUPaginationPageElement;
         "u-ticketable-list": HTMLUTicketableListElement;
     }
 }
 declare namespace LocalJSX {
-    interface TicketableList {
+    interface UPaginationButton {
+        "customClass"?: string;
         /**
-          * @default 'public-newsletter-api-key'
+          * @default 'next'
          */
-        "apiKey"?: string;
-        /**
-          * @default 'http://localhost:3000'
-         */
-        "baseUrl"?: string;
-        "containerClass"?: string;
-        "filter"?: string;
-        /**
-          * @default 10
-         */
-        "limit"?: number;
-        /**
-          * @default false
-         */
-        "skeletonAllText"?: boolean;
-        /**
-          * @default DEFAULT_SKELETON_COUNT
-         */
-        "skeletonCount"?: number;
-        "target"?: string;
+        "direction"?: 'prev' | 'next';
+    }
+    interface UPaginationPage {
+        "customClass"?: string;
     }
     interface UTicketableList {
         /**
@@ -132,18 +122,28 @@ declare namespace LocalJSX {
          */
         "locale"?: string;
         /**
+          * @default 1
+         */
+        "page"?: number;
+        /**
+          * @default null
+         */
+        "paginationMeta"?: PaginationMeta | null;
+        /**
           * @default false
          */
         "skeletonAllText"?: boolean;
-        /**
-          * @default DEFAULT_SKELETON_COUNT
-         */
         "skeletonCount"?: number;
+        /**
+          * @default null
+         */
+        "store"?: PaginationStore | null;
         "target"?: string;
         "ticketableType": 'ticket' | 'subscription';
     }
     interface IntrinsicElements {
-        "ticketable-list": TicketableList;
+        "u-pagination-button": UPaginationButton;
+        "u-pagination-page": UPaginationPage;
         "u-ticketable-list": UTicketableList;
     }
 }
@@ -151,7 +151,8 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "ticketable-list": LocalJSX.TicketableList & JSXBase.HTMLAttributes<HTMLTicketableListElement>;
+            "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
+            "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
         }
     }

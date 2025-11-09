@@ -58,24 +58,32 @@
 
   <h2 class="text-3xl font-bold text-gray-900 mt-12 mb-6">My Tickets (Table View)</h2>
 
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Title</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Starts</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Ends</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Price</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Action</th>
-        </tr>
-      </thead>
+  <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0" target="#tickets-table-body" limit="10" skeleton-all-text="true">
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Title</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Starts</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Ends</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Price</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Action</th>
+          </tr>
+        </thead>
 
-      <tbody id="tickets-table-body" class="divide-y divide-gray-200">
-      </tbody>
-    </table>
-  </div>
+        <tbody id="tickets-table-body" class="divide-y divide-gray-200">
+        </tbody>
+      </table>
 
-  <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0;state=inactive" target="#tickets-table-body" limit="1" skeleton-all-text="true">
+      <div class="flex items-center gap-2 mt-4">
+        <u-pagination-button direction="prev" custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400">
+          <span slot="icon">⬅️</span>
+        </u-pagination-button>
+        <u-pagination-page custom-class="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
+        <u-pagination-button direction="next" custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"></u-pagination-button>
+      </div>
+    </div>
+
     <template>
       <tr class="hover:bg-gray-50 transition-colors duration-150">
         <td class="px-6 py-4 whitespace-nowrap">

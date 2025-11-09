@@ -135,6 +135,7 @@
       "name": "ticketable",
       "version": "0.0.1",
       "dependencies": {
+        "@stencil/store": "^2.2.0",
         "@unidy.io/sdk-api-client": "workspace:*",
         "date-fns": "^4.1.0",
         "zod": "^4.1.12",

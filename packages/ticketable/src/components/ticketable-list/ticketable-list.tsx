@@ -1,5 +1,6 @@
-import { Component, h, State, Element, Host, Prop } from '@stencil/core';
+import { Component, h, State, Element, Host, Prop, Watch } from '@stencil/core';
 import { ApiClient } from '@unidy.io/sdk-api-client';
+import type { PaginationMeta } from '@unidy.io/sdk-api-client';
 import { format } from 'date-fns/format';
 import { enUS } from 'date-fns/locale/en-US';
 import { de } from 'date-fns/locale/de';
@@ -10,6 +11,7 @@ import { ro } from 'date-fns/locale/ro';
 import { TicketsService } from '../../api/tickets';
 import { SubscriptionsService } from '../../api/subscriptions';
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
+import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
 
 const DEFAULT_SKELETON_COUNT = 2;
 const LOCALES = {
@@ -22,10 +24,13 @@ const LOCALES = {
 
 @Component({ tag: 'u-ticketable-list', shadow: false })
 export class TicketableList {
+  @Element() element: HTMLElement;
+
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: any[] = [];
   @State() loading = true;
   @State() error: string | null = null;
+  @Prop() paginationMeta: PaginationMeta | null = null;
 
   // TODO: pull from config
   @Prop() baseUrl?: string = 'http://localhost:3000';
@@ -42,13 +47,33 @@ export class TicketableList {
 
   // TODO: Add pagination component to override all of this
   @Prop({ mutable: true }) limit = 10;
+  @Prop({ mutable: true }) page = 1;
 
-  @Prop() skeletonCount?: number = DEFAULT_SKELETON_COUNT;
+  @Prop() skeletonCount?: number;
   @Prop() skeletonAllText?: boolean = false;
   @Prop() ticketableType!: 'ticket' | 'subscription';
 
+  @Watch('page')
+  @Watch('limit')
+  @Watch('filter')
+  async fetchData() {
+    await this.loadData();
+  }
+
+  @Prop() store: PaginationStore | null = null;
+
+  async componentWillLoad() {
+    this.store = createPaginationStore();
+  }
+
   // TODO[LOGGING]: Log this to console (use shared logger)
   async componentDidLoad() {
+    await this.loadData();
+  }
+
+  private async loadData() {
+    this.loading = true;
+
     if (!this.baseUrl || !this.apiKey) {
       this.error = '[u-ticketable-list] baseUrl and apiKey are required';
       this.loading = false;
@@ -71,8 +96,11 @@ export class TicketableList {
       const apiClient = new ApiClient(this.baseUrl, this.apiKey);
       const service = this.ticketableType === 'ticket' ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
 
-      const params = Object.fromEntries((this.filter || '').split(';').map(pair => pair.split('=')));
-      const response = await service.list({}, params);
+      const response = await service.list({}, {
+        page: this.page,
+        limit: this.limit,
+        ...Object.fromEntries((this.filter || '').split(';').map(pair => pair.split('='))),
+      });
 
       if (!response.success || !response.data) {
         this.error = response.error instanceof Error ? response.error.message : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
@@ -81,14 +109,19 @@ export class TicketableList {
       }
 
       this.items = response.data.results;
+      this.paginationMeta = response.data.meta;
+      
+      // Update the store with pagination data
+      if (this.store) {
+        this.store.state.paginationMeta = response.data.meta;
+      }
+      
       this.loading = false;
     } catch (err) {
       this.error = err instanceof Error ? err.message : '[u-ticketable-list] An error occurred';
       this.loading = false;
     }
   }
-
-  @Element() element: HTMLElement;
 
   private renderFragment(template: HTMLTemplateElement, item?: any): DocumentFragment {
     const fragment = template.content.cloneNode(true) as DocumentFragment;
@@ -183,7 +216,9 @@ export class TicketableList {
 
   private renderContent(target: Element, template: HTMLTemplateElement) {
     if (this.loading) {
-      Array.from({ length: this.skeletonCount || DEFAULT_SKELETON_COUNT }).forEach(() => target.appendChild(this.renderFragment(template)));
+      // Use skeletonCount if provided, otherwise use limit
+      const skeletonCount = this.skeletonCount || this.limit;
+      Array.from({ length: skeletonCount }).forEach(() => target.appendChild(this.renderFragment(template)));
     } else if (!this.error) {
       this.items.forEach(item => target.appendChild(this.renderFragment(template, item)));
     } else {
@@ -205,7 +240,7 @@ export class TicketableList {
     }
 
     if (this.target) {
-      return <Host style={{ display: 'none' }}></Host>;
+      return <Host><slot/></Host>;
     }
 
     const element = document.createElement('div');
