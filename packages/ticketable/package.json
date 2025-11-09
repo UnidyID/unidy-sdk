@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "stencil build",
-    "start": "stencil build --dev --watch --serve",
+    "dev": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"
@@ -48,7 +48,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "zod": "^4.1.12",
-    "@unidy.io/sdk-api-client": "workspace:*"
+    "@unidy.io/sdk-api-client": "workspace:*",
+    "date-fns": "^4.1.0",
+    "zod": "^4.1.12"
   }
 }

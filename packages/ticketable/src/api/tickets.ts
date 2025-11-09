@@ -1,6 +1,8 @@
 import type { ApiClient, ApiResponse } from "@unidy.io/sdk-api-client";
-import { PaginationMetaSchema, type PaginationMeta, buildQueryString } from "@unidy.io/sdk-api-client";
+import { PaginationMetaSchema, type PaginationMeta } from "@unidy.io/sdk-api-client";
 import * as z from "zod";
+import { TicketableListParamsBaseSchema } from "./schemas";
+import { getWithSchema } from "./get-with-schema";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.string().datetime().transform((str) => new Date(str));
@@ -43,73 +45,28 @@ const TicketsListResponseSchema = z.object({
 
 export type TicketsListResponse = z.infer<typeof TicketsListResponseSchema>;
 
-// Get response (just the ticket)
-export type TicketGetResponse = Ticket;
-
 // Query params schema with validations
-const TicketsListParamsSchema = z.object({
-  service_id: z.coerce.number().int().positive(),
-  ticket_category_id: z.string().uuid(),
-  state: z.string(),
-  payment_state: z.string(),
-  order_by: z.enum(["starts_at", "ends_at", "reference", "created_at"]),
-  order_direction: z.enum(["asc", "desc"]),
-  page: z.number().int().min(1),
-  limit: z.number().int().min(0).max(250),
-}).partial();
+const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_category_id: z.string().uuid(), }).partial();
 
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
 export class TicketsService {
-  constructor(private client: ApiClient) {}
+  list: (args: unknown, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
+  get: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
-  async list(params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>> {
-    // Validate and parse params with Zod
-    const validatedParams = params ? TicketsListParamsSchema.parse(params) : undefined;
-    const queryString = validatedParams ? buildQueryString(validatedParams) : "";
-    const response = await this.client.get<unknown>(`/api/sdk/v1/tickets${queryString}`);
+  constructor(private client: ApiClient) {
+    this.list = getWithSchema(
+      this.client,
+      TicketsListResponseSchema,
+      (_args: unknown) => `/api/sdk/v1/tickets`,
+      TicketsListParamsSchema
+    )
 
-    if (!response.success || !response.data) {
-      return response as ApiResponse<TicketsListResponse>;
-    }
-
-    const parsed = TicketsListResponseSchema.safeParse(response.data);
-    if (!parsed.success) {
-      return {
-        ...response,
-        success: false,
-        error: "Invalid response format",
-        data: undefined,
-      };
-    }
-
-    return {
-      ...response,
-      data: parsed.data,
-    };
-  }
-
-  async get(id: string): Promise<ApiResponse<TicketGetResponse>> {
-    const response = await this.client.get<unknown>(`/api/sdk/v1/tickets/${id}`);
-
-    if (!response.success || !response.data) {
-      return response as ApiResponse<TicketGetResponse>;
-    }
-
-    const parsed = TicketSchema.safeParse(response.data);
-    if (!parsed.success) {
-      return {
-        ...response,
-        success: false,
-        error: "Invalid response format",
-        data: undefined,
-      };
-    }
-
-    return {
-      ...response,
-      data: parsed.data,
-    };
+    this.get = getWithSchema(
+      this.client,
+      TicketSchema,
+      (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`
+    )
   }
 }
 

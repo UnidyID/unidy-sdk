@@ -1,6 +1,8 @@
 import type { ApiClient, ApiResponse } from "@unidy.io/sdk-api-client";
-import { PaginationMetaSchema, type PaginationMeta, buildQueryString } from "@unidy.io/sdk-api-client";
+import { PaginationMetaSchema, type PaginationMeta } from "@unidy.io/sdk-api-client";
 import * as z from "zod";
+import { TicketableListParamsBaseSchema } from "./schemas";
+import { getWithSchema } from "./get-with-schema";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.string().datetime().transform((str) => new Date(str));
@@ -42,73 +44,28 @@ const SubscriptionsListResponseSchema = z.object({
 
 export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
 
-// Get response (just the subscription)
-export type SubscriptionGetResponse = Subscription;
-
 // Query params schema with validations
-const SubscriptionsListParamsSchema = z.object({
-  service_id: z.coerce.number().int().positive(),
-  subscription_category_id: z.string().uuid(),
-  state: z.string(),
-  payment_state: z.string(),
-  order_by: z.enum(["starts_at", "ends_at", "reference", "created_at"]),
-  order_direction: z.enum(["asc", "desc"]),
-  page: z.number().int().min(1),
-  limit: z.number().int().min(0).max(250),
-}).partial();
+const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ subscription_category_id: z.string().uuid(), }).partial();
 
 export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
 
 export class SubscriptionsService {
-  constructor(private client: ApiClient) {}
+  list: (args: unknown, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
+  get: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
 
-  async list(params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>> {
-    // Validate and parse params with Zod
-    const validatedParams = params ? SubscriptionsListParamsSchema.parse(params) : undefined;
-    const queryString = validatedParams ? buildQueryString(validatedParams) : "";
-    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions${queryString}`);
+  constructor(private client: ApiClient) {
+    this.list = getWithSchema(
+      this.client,
+      SubscriptionsListResponseSchema,
+      (_args: unknown) => `/api/sdk/v1/subscriptions`,
+      SubscriptionsListParamsSchema
+    )
 
-    if (!response.success || !response.data) {
-      return response as ApiResponse<SubscriptionsListResponse>;
-    }
-
-    const parsed = SubscriptionsListResponseSchema.safeParse(response.data);
-    if (!parsed.success) {
-      return {
-        ...response,
-        success: false,
-        error: "Invalid response format",
-        data: undefined,
-      };
-    }
-
-    return {
-      ...response,
-      data: parsed.data,
-    };
-  }
-
-  async get(id: string): Promise<ApiResponse<SubscriptionGetResponse>> {
-    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions/${id}`);
-
-    if (!response.success || !response.data) {
-      return response as ApiResponse<SubscriptionGetResponse>;
-    }
-
-    const parsed = SubscriptionSchema.safeParse(response.data);
-    if (!parsed.success) {
-      return {
-        ...response,
-        success: false,
-        error: "Invalid response format",
-        data: undefined,
-      };
-    }
-
-    return {
-      ...response,
-      data: parsed.data,
-    };
+    this.get = getWithSchema(
+      this.client,
+      SubscriptionSchema,
+      (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`
+    )
   }
 }
 

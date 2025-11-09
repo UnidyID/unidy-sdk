@@ -18,20 +18,9 @@ export const PaginationMetaSchema = z.object({
 
 export type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
 
-/**
- * Builds a query string from validated Zod schema output
- * @param params - Validated params object from a Zod schema
- * @returns Query string with ? prefix, or empty string if no params
- */
-export function buildQueryString(params: Record<string, unknown>): string {
-  const searchParams = new URLSearchParams();
+export const PaginationParamsSchema = z.object({
+  page: z.number().int().min(1),
+  limit: z.number().int().min(0).max(250),
+});
 
-  // Build query string from validated params
-  for (const [key, value] of Object.entries(params)) {
-    if (value === undefined || value === null) continue;
-    searchParams.append(key, String(value));
-  }
-
-  const queryString = searchParams.toString();
-  return queryString ? `?${queryString}` : "";
-}
+export type PaginationParams = z.infer<typeof PaginationParamsSchema>;

@@ -7,8 +7,62 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface TicketableList {
+        /**
+          * @default 'public-newsletter-api-key'
+         */
+        "apiKey"?: string;
+        /**
+          * @default 'http://localhost:3000'
+         */
+        "baseUrl"?: string;
         "containerClass"?: string;
         "filter"?: string;
+        /**
+          * @default 10
+         */
+        "limit"?: number;
+        /**
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * @default DEFAULT_SKELETON_COUNT
+         */
+        "skeletonCount"?: number;
+        "target"?: string;
+    }
+    interface UTicketableList {
+        /**
+          * @default 'public-newsletter-api-key'
+         */
+        "apiKey"?: string;
+        /**
+          * @default 'http://localhost:3000'
+         */
+        "baseUrl"?: string;
+        "containerClass"?: string;
+        /**
+          * @default ''
+         */
+        "filter": string;
+        /**
+          * @default 10
+         */
+        "limit": number;
+        /**
+          * @default 'en-US'
+         */
+        "locale"?: string;
+        /**
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * @default DEFAULT_SKELETON_COUNT
+         */
+        "skeletonCount"?: number;
+        "target"?: string;
+        "ticketableType": 'ticket' | 'subscription';
     }
 }
 declare global {
@@ -18,17 +72,79 @@ declare global {
         prototype: HTMLTicketableListElement;
         new (): HTMLTicketableListElement;
     };
+    interface HTMLUTicketableListElement extends Components.UTicketableList, HTMLStencilElement {
+    }
+    var HTMLUTicketableListElement: {
+        prototype: HTMLUTicketableListElement;
+        new (): HTMLUTicketableListElement;
+    };
     interface HTMLElementTagNameMap {
         "ticketable-list": HTMLTicketableListElement;
+        "u-ticketable-list": HTMLUTicketableListElement;
     }
 }
 declare namespace LocalJSX {
     interface TicketableList {
+        /**
+          * @default 'public-newsletter-api-key'
+         */
+        "apiKey"?: string;
+        /**
+          * @default 'http://localhost:3000'
+         */
+        "baseUrl"?: string;
         "containerClass"?: string;
         "filter"?: string;
+        /**
+          * @default 10
+         */
+        "limit"?: number;
+        /**
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * @default DEFAULT_SKELETON_COUNT
+         */
+        "skeletonCount"?: number;
+        "target"?: string;
+    }
+    interface UTicketableList {
+        /**
+          * @default 'public-newsletter-api-key'
+         */
+        "apiKey"?: string;
+        /**
+          * @default 'http://localhost:3000'
+         */
+        "baseUrl"?: string;
+        "containerClass"?: string;
+        /**
+          * @default ''
+         */
+        "filter"?: string;
+        /**
+          * @default 10
+         */
+        "limit"?: number;
+        /**
+          * @default 'en-US'
+         */
+        "locale"?: string;
+        /**
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * @default DEFAULT_SKELETON_COUNT
+         */
+        "skeletonCount"?: number;
+        "target"?: string;
+        "ticketableType": 'ticket' | 'subscription';
     }
     interface IntrinsicElements {
         "ticketable-list": TicketableList;
+        "u-ticketable-list": UTicketableList;
     }
 }
 export { LocalJSX as JSX };
@@ -36,6 +152,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "ticketable-list": LocalJSX.TicketableList & JSXBase.HTMLAttributes<HTMLTicketableListElement>;
+            "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
         }
     }
 }
