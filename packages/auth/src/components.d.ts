@@ -126,6 +126,24 @@ export namespace Components {
          */
         "componentClassName": string;
     }
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText": string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text": string;
+    }
     interface UPasswordField {
         /**
           * @default ""
@@ -340,6 +358,12 @@ declare global {
         prototype: HTMLUMagicCodeFieldElement;
         new (): HTMLUMagicCodeFieldElement;
     };
+    interface HTMLUPasskeyElement extends Components.UPasskey, HTMLStencilElement {
+    }
+    var HTMLUPasskeyElement: {
+        prototype: HTMLUPasskeyElement;
+        new (): HTMLUPasskeyElement;
+    };
     interface HTMLUPasswordFieldElement extends Components.UPasswordField, HTMLStencilElement {
     }
     var HTMLUPasswordFieldElement: {
@@ -423,6 +447,7 @@ declare global {
         "u-flash-message": HTMLUFlashMessageElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
+        "u-passkey": HTMLUPasskeyElement;
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
@@ -548,6 +573,24 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText"?: string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text"?: string;
     }
     interface UPasswordField {
         /**
@@ -693,6 +736,7 @@ declare namespace LocalJSX {
         "u-flash-message": UFlashMessage;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
+        "u-passkey": UPasskey;
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
         "u-profile-submit-button": UProfileSubmitButton;
@@ -719,6 +763,7 @@ declare module "@stencil/core" {
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
+            "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
