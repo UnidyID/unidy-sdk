@@ -31,7 +31,9 @@ const TokenResponseSchema = z.object({
 
 const RequiredFieldsResponseSchema = z.object({
   error: z.literal("missing_required_fields"),
-  fields: UserProfileSchema.partial().extend({ custom_attributes: UserProfileSchema.shape.custom_attributes?.optional() }).partial(),
+  fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
+    custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
+  }),
 });
 
 export type ErrorResponse = z.infer<typeof ErrorSchema>;

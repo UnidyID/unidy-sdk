@@ -7,8 +7,8 @@
 
 ## Shadow Parts
 
-| Part             | Description |
-| ---------------- | ----------- |
+| Part       | Description |
+| ---------- | ----------- |
 | `"button"` |             |
 
 
