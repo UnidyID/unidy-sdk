@@ -160,7 +160,7 @@ export class AuthService {
   }
 
   async updateMissingFields(signInId: string, user: Record<string, any>): Promise<AuthenticateResultShared> {
-    const response = await this.client.patch<Record<string, any>>(`/api/sdk/v1/sign_ins/${signInId}/update_required_fields`, {
+    const response = await this.client.patch<unknown>(`/api/sdk/v1/sign_ins/${signInId}/update_required_fields`, {
       user,
     });
 

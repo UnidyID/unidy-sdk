@@ -23,6 +23,7 @@ export class MissingField {
           <form>
             {fieldNames.map((fieldName) => (
               <u-field
+                key={fieldName}
                 field={fieldName}
                 renderDefaultLabel={true}
               />
