@@ -1,7 +1,7 @@
 import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/auth/signin-root/signin-root";
 import type { RequiredFieldsResponse } from "@unidy.io/sdk-api-client";
-import { type ProfileNode } from "./profile-store";
+import type { ProfileNode } from "./profile-store";
 
 export interface AuthState {
   step: "email" | "verification" | "magic-code" | "missing-fields";

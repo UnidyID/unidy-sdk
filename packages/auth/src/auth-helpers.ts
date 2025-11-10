@@ -1,6 +1,6 @@
 import { authStore, authState } from "./store/auth-store";
 import type { UnidyClient } from "@unidy.io/sdk-api-client";
-import { ProfileRaw } from "./store/profile-store";
+import type { ProfileRaw } from "./store/profile-store";
 import { state as profileState } from "./store/profile-store";
 
 export class AuthHelpers {
