@@ -13,7 +13,6 @@ import { SubscriptionsService } from '../../api/subscriptions';
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
 import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
 
-const DEFAULT_SKELETON_COUNT = 2;
 const LOCALES = {
   'en-US': enUS,
   'de': de,

@@ -6,9 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { NewsletterConfig } from "./components/newsletter/newsletter";
-import { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export { NewsletterConfig } from "./components/newsletter/newsletter";
-export { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk-api-client";
 export namespace Components {
     interface UnidyNewsletter {
         /**

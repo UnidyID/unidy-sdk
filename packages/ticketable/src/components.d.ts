@@ -5,9 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { PaginationMeta } from "@unidy.io/sdk-api-client";
 import { PaginationStore } from "./store/pagination-store";
-export { PaginationMeta } from "@unidy.io/sdk-api-client";
 export { PaginationStore } from "./store/pagination-store";
 export namespace Components {
     interface UPaginationButton {
