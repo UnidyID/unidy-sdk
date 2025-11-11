@@ -1,14 +1,17 @@
 import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/auth/signin-root/signin-root";
+import type { RequiredFieldsResponse } from "@unidy.io/sdk-api-client";
+import type { ProfileNode } from "./profile-store";
 
 export interface AuthState {
-  step: "email" | "verification" | "magic-code";
+  step: "email" | "verification" | "magic-code" | "missing-fields";
   sid: string | null;
   email: string;
   password: string;
 
   magicCodeStep: null | "requested" | "sent";
   resetPasswordStep: null | "requested" | "sent";
+  missingRequiredFields?: RequiredFieldsResponse["fields"];
 
   loading: boolean;
   errors: Record<string, string | null>;
@@ -17,6 +20,25 @@ export interface AuthState {
   authenticated: boolean;
   token: string | null;
 }
+
+const missingRequiredUserDefaultFields = () => {
+  const fields = state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  const { custom_attributes, ...missingRequiredUserDefaultFields } = fields;
+  return missingRequiredUserDefaultFields as Record<string, ProfileNode>;
+};
+
+const missingRequiredCustomAttributeFields = () => {
+  const fields = state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  return (fields?.custom_attributes ?? {}) as Record<string, ProfileNode>;
+};
+
+export const missingFieldNames = () => {
+  const userDefaultFields = Object.keys(missingRequiredUserDefaultFields());
+  const ca = Object.keys(missingRequiredCustomAttributeFields()).map(
+    (k) => `custom_attributes.${k}`
+  );
+  return [...userDefaultFields, ...ca];
+};
 
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
@@ -42,6 +64,7 @@ const initialState: AuthState = {
   errors: {},
   globalErrors: {},
   authenticated: false,
+  missingRequiredFields: undefined,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
@@ -68,6 +91,10 @@ class AuthStore {
 
   setPassword(password: string) {
     state.password = password;
+  }
+
+  setMissingFields(fields: RequiredFieldsResponse["fields"]) {
+    state.missingRequiredFields = fields;
   }
 
   setLoading(loading: boolean) {
@@ -98,7 +125,7 @@ class AuthStore {
     state.globalErrors = {};
   }
 
-  setStep(step: "email" | "verification" | "magic-code") {
+  setStep(step: "email" | "verification" | "magic-code" | "missing-fields") {
     state.step = step;
   }
 
@@ -129,6 +156,7 @@ class AuthStore {
       state.sid = null;
     }
   }
+
 
   reset() {
     reset();

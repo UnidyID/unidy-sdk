@@ -1,5 +1,7 @@
 import { authStore, authState } from "./store/auth-store";
 import type { UnidyClient } from "@unidy.io/sdk-api-client";
+import type { ProfileRaw } from "./store/profile-store";
+import { state as profileState } from "./store/profile-store";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -44,6 +46,12 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
+      if (error === "missing_required_fields") {
+        authStore.setMissingFields(response.fields);
+        profileState.data = JSON.parse(JSON.stringify(response.fields)) as ProfileRaw;
+        authStore.setStep("missing-fields");
+        return;
+      }
       if (error === "account_locked") {
         authStore.setGlobalError("auth", error);
       } else {
