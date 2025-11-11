@@ -164,6 +164,15 @@ Renders a complete sign-in and registration flow. This component is automaticall
 -   `authEvent`: Fired on successful authentication. `event.detail` contains the authentication payload.
 -   `errorEvent`: Fired on authentication failure. `event.detail.error` contains the error code.
 
+#### `<u-flash-message>`
+
+Displays a temporary message to the user, such as success, error, or informational messages.
+
+**Attributes:**
+
+-   `message` (required): The text content of the message to display.
+-   `variant`: The type of message, which affects its styling. Can be `error`, `success`, or `info`. Defaults to `info`.
+
 ### Login Flow Components
 
 These components are used within `<u-signin-root>` to construct the login experience.
@@ -431,6 +440,36 @@ u-field::part(input_field) {
   background: #f0f8ff;
 }
 ```
+
+### Available CSS Shadow Parts
+
+| Component | Part | Description |
+| --- | --- | --- |
+| `<u-social-login-button>` | `social-login-button` | The button element itself. |
+| | `social-login-button-content` | The container for the button's content. |
+| | `social-login-button-text` | The text within the button. |
+| `<u-magic-code-field>` | `digit-input` | An individual digit input field. |
+| `<u-field>` | `field-container` | The main container for the field. |
+| | `field-container--<field-name>` | A field-specific container. e.g. `field-container--email` |
+| | `field_label` | The label for the field. |
+| | `field_label--<field-name>` | A field-specific label. e.g. `field_label--email` |
+| | `required-indicator` | The asterisk for required fields. |
+| | `readonly-indicator` | The text displayed for readonly fields. |
+| | `multi-select-readonly-container` | The container for readonly multi-select fields. |
+| | `multi-select-readonly-field` | An individual readonly multi-select field. |
+| | `field-error-message` | The error message for the field. |
+| | `select_field` | The `<select>` element. |
+| | `select_field--<field-name>` | A field-specific `<select>` element. e.g. `select_field--country_code` |
+| | `radio-group-item_radio` | A radio button in a radio group. |
+| | `radio-group_field` | The fieldset for a radio group. |
+| | `radio-group-item_label` | The label for a radio button. |
+| | `radio_checked` | A checked radio button. |
+| | `multi-select-item_checkbox` | A checkbox in a multi-select group. |
+| | `multi-select-group_field` | The fieldset for a multi-select group. |
+| | `multi-select-item_label` | The label for a checkbox. |
+| | `textarea_field` | The `<textarea>` element. |
+| | `input_field` | The `<input>` element. |
+| `<u-profile-submit-button>` | `unidy-button` | The button element itself. |
 
 ## Advanced Usage: `<u-raw-field>`
 
