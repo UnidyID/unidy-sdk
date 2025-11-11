@@ -2,6 +2,8 @@ import { authStore, authState } from "./store/auth-store";
 import type { UnidyClient } from "@unidy.io/sdk-api-client";
 import type { ProfileRaw } from "./store/profile-store";
 import { state as profileState } from "./store/profile-store";
+import { jwtDecode } from "jwt-decode";
+import type { TokenPayload } from "./auth";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -157,6 +159,131 @@ export class AuthHelpers {
       authStore.setResetPasswordStep("sent");
       authStore.setLoading(false);
       authStore.clearErrors();
+    }
+  }
+
+  async authenticateWithPasskey() {
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    // Check if WebAuthn is available
+    if (!window.PublicKeyCredential) {
+      authStore.setGlobalError("auth", "passkey_not_supported");
+      authStore.setLoading(false);
+      return;
+    }
+
+    try {
+      // Step 1: Get passkey options from server (pass sid if available from previous step)
+      const [optionsError, options] = await this.client.auth.getPasskeyOptions(authState.sid || undefined);
+
+      if (optionsError || !options) {
+        authStore.setGlobalError("auth", optionsError || "bad_request");
+        authStore.setLoading(false);
+        return;
+      }
+
+      // Step 2: Convert options for navigator.credentials.get()
+      // Helper to decode base64url (WebAuthn uses base64url encoding)
+      const decodeBase64Url = (base64url: string): Uint8Array => {
+        // Convert base64url to regular base64 for atob
+        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        // Add padding if needed
+        const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+        return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+      };
+
+      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
+        challenge: Uint8Array.from(atob(options.challenge), (c) => c.charCodeAt(0)),
+        timeout: options.timeout || 60000,
+        rpId: options.rpId,
+        userVerification: (options.userVerification as UserVerificationRequirement) || "required",
+        allowCredentials: options.allowCredentials?.map((cred: any) => ({
+          ...cred,
+          id: decodeBase64Url(cred.id),
+        })),
+      };
+
+      // Step 3: Get credential from browser
+      const credential = (await navigator.credentials.get({
+        publicKey: publicKeyCredentialRequestOptions,
+      })) as PublicKeyCredential | null;
+
+      if (!credential) {
+        authStore.setGlobalError("auth", "passkey_cancelled");
+        authStore.setLoading(false);
+        return;
+      }
+
+      // Step 4: Format credential for server
+      const response = credential.response as AuthenticatorAssertionResponse;
+      const formattedCredential = {
+        id: credential.id,
+        rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+        response: {
+          authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
+          clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
+          signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
+        },
+        type: credential.type,
+      };
+
+      // Step 5: Verify credential with server
+      const [verifyError, tokenResponse] = await this.client.auth.authenticateWithPasskey(formattedCredential);
+
+      if (verifyError || !tokenResponse) {
+        authStore.setGlobalError("auth", verifyError || "authentication_failed");
+        authStore.setLoading(false);
+        return;
+      }
+
+      // Success: Set token and notify
+      authStore.setToken(tokenResponse.jwt);
+      
+      // Extract sid from response or JWT token and update store
+      // @ts-ignore
+      if (tokenResponse.sid) {
+        // @ts-ignore
+        authStore.setSignInId(tokenResponse.sid);
+      } else {
+        // Fallback: extract sid from JWT token payload
+        try {
+          const decoded = jwtDecode<TokenPayload>(tokenResponse.jwt);
+          if (decoded.sid) {
+            authStore.setSignInId(decoded.sid);
+          }
+        } catch (error) {
+          // Failed to decode JWT token to extract sid, continue without it
+        }
+      }
+      
+      authStore.setLoading(false);
+      authStore.getRootComponentRef()?.onAuth(tokenResponse);
+    } catch (error) {
+      console.log(error)
+
+      // Handle WebAuthn API errors
+      let errorMessage = "passkey_error";
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case "NotSupportedError":
+            errorMessage = "passkey_not_supported";
+            break;
+          case "NotAllowedError":
+            errorMessage = "passkey_cancelled";
+            break;
+          case "SecurityError":
+            errorMessage = "passkey_security_error";
+            break;
+          case "InvalidStateError":
+            errorMessage = "passkey_invalid_state";
+            break;
+          default:
+            errorMessage = "passkey_error";
+        }
+      }
+      authStore.setGlobalError("auth", errorMessage);
+      authStore.setLoading(false);
     }
   }
 

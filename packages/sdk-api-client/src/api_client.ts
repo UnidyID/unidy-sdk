@@ -1,3 +1,5 @@
+import type * as z from "zod";
+
 export interface ApiResponse<T> {
   data?: T;
   success: boolean;
@@ -79,5 +81,50 @@ export class ApiClient {
 
   async patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
     return this.request<T>("PATCH", endpoint, body, headers);
+  }
+
+  getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
+    returnSchema: z.ZodSchema<TReturn>,
+    urlBuilder: (args: TArgs) => string,
+    paramSchema?: z.ZodSchema<TParams>
+  ): TParams extends undefined
+    ? (args: TArgs) => Promise<ApiResponse<TReturn>>
+    : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {
+    const fn = async (args: TArgs, params?: TParams) => {
+      // Build URL
+      const baseUrl = urlBuilder(args);
+
+      // Validate and parse params with Zod if provided
+      let queryString = "";
+      if (paramSchema && params) {
+        const validatedParams = paramSchema.parse(params);
+        queryString = `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}`;
+      }
+
+      const fullUrl = `${baseUrl}${queryString}`;
+      const response = await this.get<unknown>(fullUrl);
+
+      if (!response.success || !response.data) {
+        return response as ApiResponse<TReturn>;
+      }
+
+      const parsed = returnSchema.safeParse(response.data);
+
+      if (!parsed.success) {
+        console.log(parsed.error);
+        return {
+          ...response,
+          success: false,
+          error: "Invalid response format",
+          data: undefined,
+        };
+      }
+
+      return {
+        ...response,
+        data: parsed.data,
+      };
+    };
+    return fn as any;
   }
 }

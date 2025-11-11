@@ -10,8 +10,8 @@ import * as clientComponents from '../newsletter-react/lib/index';
 
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent, type HydrateModule, type ReactWebComponent, type SerializeShadowRootOptions } from '@stencil/react-output-target/ssr';
-import type { UnidyNewsletterCustomEvent } from "@unidy.io/newsletter";
-import type { UnidyNewsletter as UnidyNewsletterElement } from "@unidy.io/newsletter/dist/per-component/unidy-newsletter.js";
+import { type UnidyNewsletterCustomEvent } from "@unidy.io/newsletter";
+import { UnidyNewsletter as UnidyNewsletterElement } from "@unidy.io/newsletter/dist/per-component/unidy-newsletter.js";
 
 export const serializeShadowRoot: SerializeShadowRootOptions = { default: "declarative-shadow-dom" };
 

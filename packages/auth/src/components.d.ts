@@ -130,6 +130,24 @@ export namespace Components {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText": string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text": string;
+    }
     interface UPasswordField {
         /**
           * @default ""
@@ -356,6 +374,12 @@ declare global {
         prototype: HTMLUMissingFieldsSubmitButtonElement;
         new (): HTMLUMissingFieldsSubmitButtonElement;
     };
+    interface HTMLUPasskeyElement extends Components.UPasskey, HTMLStencilElement {
+    }
+    var HTMLUPasskeyElement: {
+        prototype: HTMLUPasskeyElement;
+        new (): HTMLUPasskeyElement;
+    };
     interface HTMLUPasswordFieldElement extends Components.UPasswordField, HTMLStencilElement {
     }
     var HTMLUPasswordFieldElement: {
@@ -441,6 +465,7 @@ declare global {
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
+        "u-passkey": HTMLUPasskeyElement;
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
@@ -570,6 +595,24 @@ declare namespace LocalJSX {
     interface UMissingField {
     }
     interface UMissingFieldsSubmitButton {
+    }
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText"?: string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text"?: string;
     }
     interface UPasswordField {
         /**
@@ -717,6 +760,7 @@ declare namespace LocalJSX {
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
+        "u-passkey": UPasskey;
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
         "u-profile-submit-button": UProfileSubmitButton;
@@ -745,6 +789,7 @@ declare module "@stencil/core" {
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+            "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
