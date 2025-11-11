@@ -162,7 +162,8 @@
     }
 
 
-    u-profile-submit-button::part(button) {
+    u-profile-submit-button::part(button),
+    u-missing-fields-submit-button::part(button) {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -252,6 +253,11 @@
           <u-auth-submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
+
+      </u-signin-step name="missing-fields">
+        <u-missing-field></u-missing-field>
+        <u-missing-fields-submit-button></u-missing-fields-submit-button>
+      </u-signin-step>
 
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">

@@ -10,13 +10,16 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 :host {
   display: block;
 }
 
-button[part="unidy-button"]:disabled {
+button[part="button"]:disabled {
   opacity: 0.6;
   cursor: not-allowed !important;
 }

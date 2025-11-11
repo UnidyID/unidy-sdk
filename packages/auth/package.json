@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/auth",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.7",
   "publishConfig": {
     "tag": "next"
   },
@@ -29,6 +29,7 @@
   "files": ["dist/", "loader/"],
   "scripts": {
     "build": "stencil build",
+    "clean": "rm -rf dist www loader .stencil",
     "dev": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
