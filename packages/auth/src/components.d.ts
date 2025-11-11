@@ -130,6 +130,24 @@ export namespace Components {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText": string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text": string;
+    }
     interface UPasswordField {
         /**
           * @default ""
@@ -344,6 +362,7 @@ declare global {
         prototype: HTMLUMagicCodeFieldElement;
         new (): HTMLUMagicCodeFieldElement;
     };
+<<<<<<< HEAD
     interface HTMLUMissingFieldElement extends Components.UMissingField, HTMLStencilElement {
     }
     var HTMLUMissingFieldElement: {
@@ -355,6 +374,13 @@ declare global {
     var HTMLUMissingFieldsSubmitButtonElement: {
         prototype: HTMLUMissingFieldsSubmitButtonElement;
         new (): HTMLUMissingFieldsSubmitButtonElement;
+=======
+    interface HTMLUPasskeyElement extends Components.UPasskey, HTMLStencilElement {
+    }
+    var HTMLUPasskeyElement: {
+        prototype: HTMLUPasskeyElement;
+        new (): HTMLUPasskeyElement;
+>>>>>>> 3ffc7b20e4e4ab1031267bfa94b2eeb64d9efa06
     };
     interface HTMLUPasswordFieldElement extends Components.UPasswordField, HTMLStencilElement {
     }
@@ -439,8 +465,12 @@ declare global {
         "u-flash-message": HTMLUFlashMessageElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
+<<<<<<< HEAD
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
+=======
+        "u-passkey": HTMLUPasskeyElement;
+>>>>>>> 3ffc7b20e4e4ab1031267bfa94b2eeb64d9efa06
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
@@ -567,9 +597,29 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
     }
+<<<<<<< HEAD
     interface UMissingField {
     }
     interface UMissingFieldsSubmitButton {
+=======
+    interface UPasskey {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Authenticating..."
+         */
+        "loadingText"?: string;
+        /**
+          * @default "Sign in with Passkey"
+         */
+        "text"?: string;
+>>>>>>> 3ffc7b20e4e4ab1031267bfa94b2eeb64d9efa06
     }
     interface UPasswordField {
         /**
@@ -715,8 +765,12 @@ declare namespace LocalJSX {
         "u-flash-message": UFlashMessage;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
+<<<<<<< HEAD
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
+=======
+        "u-passkey": UPasskey;
+>>>>>>> 3ffc7b20e4e4ab1031267bfa94b2eeb64d9efa06
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
         "u-profile-submit-button": UProfileSubmitButton;
@@ -743,8 +797,12 @@ declare module "@stencil/core" {
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
+<<<<<<< HEAD
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+=======
+            "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
+>>>>>>> 3ffc7b20e4e4ab1031267bfa94b2eeb64d9efa06
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
