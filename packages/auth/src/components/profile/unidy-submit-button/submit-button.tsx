@@ -1,7 +1,8 @@
 import { Component, Element, h } from "@stencil/core";
 import { getUnidyClient } from "../../../api-client";
 import { Auth } from "../../../auth";
-import { type ProfileRaw, state as profileState } from "../../../store/profile-store";
+import { state as profileState } from "../../../store/profile-store";
+import { validateRequiredFieldsUnchanged, buildPayload } from "../../shared/u-fields-submit-button-logic/submit-button-logic";
 @Component({
   tag: "u-profile-submit-button",
   shadow: true,
@@ -21,27 +22,12 @@ export class SubmitButton {
 
     const { configuration, ...stateWithoutConfig } = profileState;
 
-    for (const key of Object.keys(stateWithoutConfig.data)) {
-      if (key === "custom_attributes") continue;
-      const field = stateWithoutConfig.data[key];
-      if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
-        profileState.errors = { [key]: "This field is required." };
-        profileState.loading = false;
-        return;
-      }
+    if (!validateRequiredFieldsUnchanged(stateWithoutConfig.data)) {
+      profileState.loading = false;
+      return;
     }
 
-    for (const key of Object.keys(stateWithoutConfig.data.custom_attributes ?? {})) {
-      const field = stateWithoutConfig.data.custom_attributes?.[key];
-      const fieldDisplayName = `custom_attributes.${key}`;
-      if (field?.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
-        profileState.errors = { [fieldDisplayName]: "This field is required." };
-        profileState.loading = false;
-        return;
-      }
-    }
-
-    const updatedProfileData = this.buildPayload(stateWithoutConfig.data);
+    const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
     const resp = await getUnidyClient().profile.updateProfile({
       idToken: (await this.authInstance?.getToken()) as string,
@@ -62,19 +48,6 @@ export class SubmitButton {
       }
       profileState.loading = false;
     }
-  }
-
-  private buildPayload(stateData: ProfileRaw) {
-    return {
-      ...Object.fromEntries(
-        Object.entries(stateData)
-          .filter(([k]) => k !== "custom_attributes")
-          .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
-      ),
-      custom_attributes: Object.fromEntries(
-        Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
-      ),
-    };
   }
 
   private hasSlotContent(): boolean {

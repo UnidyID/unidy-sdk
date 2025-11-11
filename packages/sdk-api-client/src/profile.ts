@@ -62,7 +62,7 @@ const CustomFieldSchema = BaseFieldDataSchema.extend({
   options: z.array(SelectOptionSchema).optional()
 }).strict();
 
-const UserProfileSchema = z.object({
+export const UserProfileSchema = z.object({
   salutation: RadioFieldSchema,
   first_name: TextFieldSchema,
   last_name: TextFieldSchema,
