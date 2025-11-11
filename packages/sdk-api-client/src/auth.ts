@@ -144,10 +144,10 @@ export class AuthService {
         console.log("response.data", response.data);
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
         console.log("missing_fields_check", missing_fields_check);
-              
-      if (missing_fields_check.success) {
-        return ["missing_required_fields", missing_fields_check.data];
-      }
+
+        if (missing_fields_check.success) {
+          return ["missing_required_fields", missing_fields_check.data];
+        }
         const error_response = ErrorSchema.parse(response.data);
 
         return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password", error_response];
@@ -159,6 +159,7 @@ export class AuthService {
     }
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async updateMissingFields(signInId: string, user: Record<string, any>): Promise<AuthenticateResultShared> {
     const response = await this.client.patch<unknown>(`/api/sdk/v1/sign_ins/${signInId}/update_required_fields`, {
       user,
