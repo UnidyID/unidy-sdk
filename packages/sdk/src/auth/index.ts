@@ -10,7 +10,7 @@
 
 export * from "./store/auth-store";
 export * from "./auth";
-export * from "./components";
+export * from "./components.js";
 export * from "./api-client";
 export * from "./error-definitions";
 

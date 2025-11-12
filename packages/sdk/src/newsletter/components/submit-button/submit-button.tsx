@@ -1,6 +1,6 @@
 import { Component, Prop, h, Event, type EventEmitter } from "@stencil/core";
 import newsletterStore from "../../store/store";
-import { UnidyClient } from "../../../api/index";
+import { UnidyClient } from "../../../api";
 import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "../../api/newsletters";
 
 @Component({

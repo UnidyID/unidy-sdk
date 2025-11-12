@@ -1,5 +1,5 @@
-import { Component, h, Prop, Element } from "@stencil/core";
-import { newsletterStore } from "../../store";
+import { Component, h, Prop } from "@stencil/core";
+import { newsletterStore } from "../../store/store";
 
 @Component({
   tag: "email-field",
@@ -7,7 +7,7 @@ import { newsletterStore } from "../../store";
 })
 export class EmailField {
   @Prop() placeholder = "Email";
-  @Prop() className: string;
+  @Prop() className: string | undefined;
 
   render() {
     return (

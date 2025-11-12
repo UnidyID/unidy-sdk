@@ -1,5 +1,5 @@
 import * as z from "zod/mini";
-import type { ApiClient, ApiResponse } from "../../sdk/src/api/src/api_client";
+import type { ApiClient, ApiResponse } from "../../api";
 import { EventEmitter } from "node:events";
 
 const NewsletterSubscriptionSchema = z.object({

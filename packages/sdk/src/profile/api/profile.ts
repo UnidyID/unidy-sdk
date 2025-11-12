@@ -1,4 +1,4 @@
-import type { ApiClient, ApiResponse } from "../../sdk/src/api/src/api_client";
+import type { ApiClient, ApiResponse } from "../../api";
 import * as z from "zod";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);

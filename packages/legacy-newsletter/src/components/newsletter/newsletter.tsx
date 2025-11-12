@@ -1,5 +1,6 @@
 import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
-import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
+import { UnidyClient } from "@unidy.io/sdk/sdk-api-client";
+import { type NewsletterSubscription, type NewsletterSubscriptionError } from "@unidy.io/sdk/newsletter";
 
 export type NewsletterConfig = {
   internalName: string;

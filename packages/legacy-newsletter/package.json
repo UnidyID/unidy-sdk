@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@stencil/react-output-target": "^1.2.0",
-    "@unidy.io/sdk-api-client": "workspace:*"
+    "@unidy.io/sdk": "^1.0.0-alpha"
   },
   "devDependencies": {
     "@stencil/core": "^4.27.1",
