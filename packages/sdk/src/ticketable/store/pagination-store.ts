@@ -1,5 +1,5 @@
 import { createStore } from '@stencil/store';
-import type { PaginationMeta } from '@unidy.io/sdk-api-client';
+import type { PaginationMeta } from '../../api/shared';
 
 export interface PaginationState {
   paginationMeta: PaginationMeta | null;

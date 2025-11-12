@@ -1,4 +1,4 @@
-import { PaginationParamsSchema } from "@unidy.io/sdk-api-client";
+import { PaginationParamsSchema } from "../../api/shared";
 import * as z from "zod";
 
 export const TicketableListParamsBaseSchema = z.object({

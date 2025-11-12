@@ -1,5 +1,5 @@
 import { Component, h, Prop, Element, Host, State } from '@stencil/core';
-import type { PaginationMeta } from '@unidy.io/sdk-api-client';
+import type { PaginationMeta } from '../../../api/shared';
 import type { PaginationStore } from '../../store/pagination-store';
 
 @Component({ tag: 'u-pagination-button', shadow: false })

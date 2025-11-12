@@ -1,5 +1,3 @@
-//import { UnidyClient } from "@unidy.io/sdk-api-client";
-//import { unidyState } from "./auth/store/unidy-store";
 import { UnidyClient } from "../api/index";
 import { unidyState } from "../shared/store/unidy-store";
 

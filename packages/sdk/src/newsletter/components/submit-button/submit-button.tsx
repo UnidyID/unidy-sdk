@@ -1,7 +1,7 @@
 import { Component, Prop, h, Event, type EventEmitter } from "@stencil/core";
-import newsletterStore from "../../store";
-import { UnidyClient } from "@unidy.io/sdk-api-client";
-import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "@unidy.io/sdk-api-client";
+import newsletterStore from "../../store/store";
+import { UnidyClient } from "../../../api/index";
+import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "../../api/newsletters";
 
 @Component({
   tag: "submit-button",

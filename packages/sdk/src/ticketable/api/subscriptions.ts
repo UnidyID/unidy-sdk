@@ -1,5 +1,5 @@
-import type { ApiClient, ApiResponse } from "@unidy.io/sdk-api-client";
-import { PaginationMetaSchema, type PaginationMeta } from "@unidy.io/sdk-api-client";
+import type { ApiClient, ApiResponse } from "../../api/index";
+import { PaginationMetaSchema, type PaginationMeta } from "../../api/shared";
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { getWithSchema } from "./get-with-schema";

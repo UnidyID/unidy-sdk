@@ -2,7 +2,6 @@ import type { ApiClient } from "../../api/api_client";
 import type { SchemaValidationError } from "../../api/shared";
 import { SchemaValidationErrorSchema } from "../../api/shared";
 import { UserProfileSchema } from "../../profile/api/profile";
-// import { UserProfileSchema } from "@unidy.io/sdk-api-client/src/profile";
 
 import * as z from "zod";
 

@@ -1,4 +1,4 @@
-import type { ApiClient, ApiResponse } from "@unidy.io/sdk-api-client";
+import type { ApiClient, ApiResponse } from "../../api/index";
 import type * as z from "zod";
 
 export function getWithSchema<TReturn, TArgs extends object, TParams = undefined>(

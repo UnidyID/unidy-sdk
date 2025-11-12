@@ -1,4 +1,4 @@
-import type { UnidyClient } from "@unidy.io/sdk-api-client";
+import type { UnidyClient } from "../api/index";
 import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
 import { AuthHelpers } from "./auth-helpers";

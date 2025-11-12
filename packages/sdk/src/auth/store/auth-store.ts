@@ -1,6 +1,6 @@
 import { createStore } from "@stencil/store";
-import type { SigninRoot } from "../components/auth/signin-root/signin-root";
-import type { RequiredFieldsResponse } from "@unidy.io/sdk-api-client";
+import type { SigninRoot } from "../components/signin-root/signin-root";
+import type { RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile/store/profile-store";
 
 export interface AuthState {

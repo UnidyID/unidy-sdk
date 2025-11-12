@@ -8,12 +8,25 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-// From auth index.ts
-export * from "./auth/store/auth-store";
-export * from "./auth";
-export * from "./auth/components";
-export * from "./auth/api-client";
-export * from "./auth/error-definitions";
-export type { AuthError, TokenPayload } from "./auth";
-// From newsletter index.ts
-export * from ".components.d.ts";
+
+export * from './api';
+
+export * from './newsletter-react';
+
+const canRegister =
+  typeof globalThis !== 'undefined' &&
+  !!(globalThis as any).document &&
+  !!(globalThis as any).customElements;
+
+if (canRegister) {
+  import('../loader/index.js')
+    .then(({ defineCustomElements }) => defineCustomElements())
+    .catch(() => {
+    });
+}
+
+export async function registerAll(): Promise<void> {
+  const { defineCustomElements } = await import('../loader/index.js');
+  defineCustomElements();
+}
+

@@ -1,6 +1,6 @@
 import { Component, h, State, Element, Host, Prop, Watch } from '@stencil/core';
-import { ApiClient } from '@unidy.io/sdk-api-client';
-import type { PaginationMeta } from '@unidy.io/sdk-api-client';
+import { ApiClient } from '../../../api/index';
+import type { PaginationMeta } from '../../../api/shared';
 import { format } from 'date-fns/format';
 import { enUS } from 'date-fns/locale/en-US';
 import { de } from 'date-fns/locale/de';
@@ -8,8 +8,8 @@ import { fr } from 'date-fns/locale/fr';
 import { nlBE } from 'date-fns/locale/nl-BE';
 import { ro } from 'date-fns/locale/ro';
 
-import { TicketsService } from '../../../api/tickets';
-import { SubscriptionsService } from '../../../api/subscriptions';
+import { TicketsService } from '../../api/tickets';
+import { SubscriptionsService } from '../../api/subscriptions';
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
 import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
 

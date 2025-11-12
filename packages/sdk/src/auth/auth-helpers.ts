@@ -1,9 +1,3 @@
-// import { authStore, authState } from "./auth/store/auth-store";
-// import type { UnidyClient } from "@unidy.io/sdk-api-client";
-// import type { ProfileRaw } from "./auth/store/profile-store";
-// import { state as profileState } from "./auth/store/profile-store";
-// import { jwtDecode } from "jwt-decode";
-// import type { TokenPayload } from "./auth";
 import { authStore, authState } from "../auth/store/auth-store";
 import type { UnidyClient } from "../api";
 import type { ProfileRaw } from "../profile/store/profile-store";
