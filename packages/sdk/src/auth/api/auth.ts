@@ -1,9 +1,7 @@
-import type { ApiClient } from "../../api/api_client";
-import type { SchemaValidationError } from "../../api/shared";
-import { SchemaValidationErrorSchema } from "../../api/shared";
-import { UserProfileSchema } from "../../profile/api/profile";
-
 import * as z from "zod";
+
+import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
+import { UserProfileSchema } from "../../profile/api/profile";
 
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),

@@ -1,4 +1,4 @@
-import type { ApiClient, ApiResponse } from "../../api/index";
+import type { ApiClient, ApiResponse } from "../../api";
 import type * as z from "zod";
 
 export function getWithSchema<TReturn, TArgs extends object, TParams = undefined>(

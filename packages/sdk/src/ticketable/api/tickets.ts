@@ -1,16 +1,15 @@
-import type { ApiClient, ApiResponse } from "../../api/index";
-import { PaginationMetaSchema, type PaginationMeta } from "../../api/shared";
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { getWithSchema } from "./get-with-schema";
+import { type ApiClient, type ApiResponse, type PaginationMeta, PaginationMetaSchema } from "../../api";
 
 // Date transformer for ISO8601 strings
-const dateTransformer = z.string().datetime().transform((str) => new Date(str));
-const nullableDateTransformer = z.string().datetime().nullable().transform((str) => str ? new Date(str) : null);
+const dateTransformer = z.coerce.date();
+const nullableDateTransformer = z.coerce.date().nullable();
 
 // Ticket types based on TicketSerializer
 const TicketSchema = z.object({
-  id: z.string().uuid(), // unidy_id
+  id: z.uuid(), // unidy_id
   title: z.string(),
   text: z.string().nullable(),
   reference: z.string(),
@@ -28,8 +27,8 @@ const TicketSchema = z.object({
   created_at: dateTransformer, // ISO8601(3) -> Date
   updated_at: dateTransformer, // ISO8601(3) -> Date
   price: z.number(), // decimal(8, 2) -> float
-  user_id: z.string().uuid(),
-  ticket_category_id: z.string().uuid(),
+  user_id: z.uuid(),
+  ticket_category_id: z.uuid(),
 });
 
 export type Ticket = z.infer<typeof TicketSchema>;
@@ -51,7 +50,7 @@ const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_c
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
 export class TicketsService {
-  list: (args: unknown, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
+  list: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
   get: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
   constructor(private client: ApiClient) {
@@ -69,4 +68,3 @@ export class TicketsService {
     )
   }
 }
-

@@ -1,6 +1,6 @@
 import { Component, h, State, Element, Host, Prop, Watch } from '@stencil/core';
-import { ApiClient } from '../../../api/index';
-import type { PaginationMeta } from '../../../api/shared';
+import { ApiClient, type PaginationMeta } from '../../../api';
+import type { Locale } from "date-fns";
 import { format } from 'date-fns/format';
 import { enUS } from 'date-fns/locale/en-US';
 import { de } from 'date-fns/locale/de';
@@ -13,7 +13,7 @@ import { SubscriptionsService } from '../../api/subscriptions';
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
 import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
 
-const LOCALES = {
+const LOCALES: Record<string, Locale> = {
   'en-US': enUS,
   'de': de,
   'fr': fr,
@@ -36,7 +36,7 @@ export class TicketableList {
   // TODO: pull from config
   @Prop() apiKey?: string = 'public-newsletter-api-key';
   // TODO: pull from config
-  @Prop() locale?: string = 'en-US';
+  @Prop() locale = 'en-US';
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
@@ -109,12 +109,12 @@ export class TicketableList {
 
       this.items = response.data.results;
       this.paginationMeta = response.data.meta;
-      
+
       // Update the store with pagination data
       if (this.store) {
         this.store.state.paginationMeta = response.data.meta;
       }
-      
+
       this.loading = false;
     } catch (err) {
       this.error = err instanceof Error ? err.message : '[u-ticketable-list] An error occurred';
@@ -202,7 +202,7 @@ export class TicketableList {
     const template = this.element.querySelector('template');
     if (!template) return;
 
-    const targetElement = document.querySelector(this.target);
+    const targetElement = document.querySelector(this.target!);
     if (!targetElement) {
       // TODO[LOGGING]: Log this to console (use shared logger)
       return;

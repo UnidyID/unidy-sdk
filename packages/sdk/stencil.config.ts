@@ -13,6 +13,9 @@ export const config: Config = {
     { type: 'dist', dir: 'dist/newsletter', esmLoaderPath: '../loader' },
     { type: 'dist-custom-elements', dir: 'dist/newsletter/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
 
+    { type: 'dist', dir: 'dist/profile', esmLoaderPath: '../loader' },
+    { type: 'dist-custom-elements', dir: 'dist/profile/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
+
     { type: 'dist', dir: 'dist/ticketable', esmLoaderPath: '../loader' },
     { type: 'dist-custom-elements', dir: 'dist/ticketable/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
 
@@ -23,6 +26,7 @@ export const config: Config = {
       copy: [
         { src: 'auth/index.html', dest: 'auth/index.html' },
         { src: 'newsletter/index.html', dest: 'newsletter/index.html' },
+        { src: 'profile/index.html', dest: 'profile/index.html' },
         { src: 'ticketable/index.html', dest: 'ticketable/index.html' }
       ]
     }

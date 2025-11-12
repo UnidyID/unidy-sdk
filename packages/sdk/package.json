@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@rollup/plugin-alias": "^5.1.0",
     "@stencil/core": "^4.38.0",
     "@stencil/react-output-target": "^1.2.0",
     "@tailwindcss/postcss": "^4.1.7",
@@ -81,6 +82,10 @@
       "require": "./loader/index.cjs",
       "types": "./loader/index.d.ts"
     },
+    "./api": {
+      "import": "./dist/api/index.js",
+      "require": "./dist/api/index.cjs.js"
+    },
     "./auth": {
       "import": "./dist/auth/sdk.esm.js",
       "require": "./dist/auth/sdk.cjs.js"
@@ -89,17 +94,17 @@
       "import": "./dist/newsletter/sdk.esm.js",
       "require": "./dist/newsletter/sdk.cjs.js"
     },
+    "./profile": {
+      "import": "./dist/profile/sdk.esm.js",
+      "require": "./dist/profile/sdk.cjs.js"
+    },
+    "./shared": {
+      "import": "./dist/shared/sdk.esm.js",
+      "require": "./dist/shared/sdk.cjs.js"
+    },
     "./ticketable": {
       "import": "./dist/ticketable/sdk.esm.js",
       "require": "./dist/ticketable/sdk.cjs.js"
-    },
-    "./sdk-api-client": {
-      "import": "./dist/api/index.js",
-      "require": "./dist/api/index.cjs.js"
-    },
-    "./react": {
-      "import": "./dist/newsletter-react/index.js",
-      "require": "./dist/newsletter-react/index.cjs.js"
     }
   }
 }

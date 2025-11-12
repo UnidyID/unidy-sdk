@@ -3,6 +3,8 @@ import { getUnidyClient } from "../../api-client";
 import { state as profileState } from "../../../profile/store/profile-store";
 import { authState, authStore } from "../../store/auth-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
+import type { TokenResponse } from "../../api/auth";
+
 @Component({
   tag: "u-missing-fields-submit-button",
   shadow: true
@@ -29,7 +31,7 @@ export class SubmitButton {
       return;
     }
 
-    const { jwt } = response;
+    const { jwt } = (response as TokenResponse);
     profileState.loading = false;
     authStore.setToken(jwt);
   }

@@ -7,17 +7,17 @@
 
 ## Properties
 
-| Property                   | Attribute                     | Description | Type                             | Default                                |
-| -------------------------- | ----------------------------- | ----------- | -------------------------------- | -------------------------------------- |
-| `componentClassName`       | `class-name`                  |             | `string \| undefined`            | `undefined`                            |
-| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label" \| undefined` | `"label"`                              |
-| `emptyOption`              | `empty-option`                |             | `boolean`                        | `true`                                 |
-| `field` _(required)_       | `field`                       |             | `string`                         | `undefined`                            |
-| `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                         | `"Please enter a valid phone number."` |
-| `placeholder`              | `placeholder`                 |             | `string \| undefined`            | `undefined`                            |
-| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                         | `""`                                   |
-| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`                        | `false`                                |
-| `required`                 | `required`                    |             | `boolean`                        | `false`                                |
+| Property                   | Attribute                     | Description | Type                | Default                                |
+| -------------------------- | ----------------------------- | ----------- | ------------------- | -------------------------------------- |
+| `componentClassName`       | `class-name`                  |             | `string`            | `undefined`                            |
+| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`                              |
+| `emptyOption`              | `empty-option`                |             | `boolean`           | `true`                                 |
+| `field` _(required)_       | `field`                       |             | `string`            | `undefined`                            |
+| `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`            | `"Please enter a valid phone number."` |
+| `placeholder`              | `placeholder`                 |             | `string`            | `undefined`                            |
+| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`            | `""`                                   |
+| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `false`                                |
+| `required`                 | `required`                    |             | `boolean`           | `false`                                |
 
 
 ## Shadow Parts
@@ -46,7 +46,7 @@
 
 ### Used by
 
- - [u-missing-field](../../auth/missing-field)
+ - [u-missing-field](../../../auth/components/missing-field)
 
 ### Depends on
 

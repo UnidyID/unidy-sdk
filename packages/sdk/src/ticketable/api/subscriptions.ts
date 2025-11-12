@@ -1,8 +1,7 @@
-import type { ApiClient, ApiResponse } from "../../api/index";
-import { PaginationMetaSchema, type PaginationMeta } from "../../api/shared";
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { getWithSchema } from "./get-with-schema";
+import { type ApiClient, type ApiResponse, type PaginationMeta, PaginationMetaSchema } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.string().datetime().transform((str) => new Date(str));
@@ -50,7 +49,7 @@ const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ su
 export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
 
 export class SubscriptionsService {
-  list: (args: unknown, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
+  list: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
   get: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
 
   constructor(private client: ApiClient) {

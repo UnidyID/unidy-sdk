@@ -10,7 +10,7 @@
 | Property             | Attribute    | Description | Type                                                | Default     |
 | -------------------- | ------------ | ----------- | --------------------------------------------------- | ----------- |
 | `componentClassName` | `class-name` |             | `string`                                            | `""`        |
-| `errorMessages`      | --           |             | `undefined \| { [x: string]: string; }`             | `undefined` |
+| `errorMessages`      | --           |             | `{ [x: string]: string; }`                          | `undefined` |
 | `for` _(required)_   | `for`        |             | `"email" \| "general" \| "magicCode" \| "password"` | `undefined` |
 
 

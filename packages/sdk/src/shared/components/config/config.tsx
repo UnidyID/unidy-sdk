@@ -1,7 +1,6 @@
 import { Component, Prop, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
-import { Auth } from "../../../auth/auth";
-import { getUnidyClient } from "../../../api-client";
+import { Auth, getUnidyClient } from "../../../auth";
 
 @Component({
   tag: "u-config",

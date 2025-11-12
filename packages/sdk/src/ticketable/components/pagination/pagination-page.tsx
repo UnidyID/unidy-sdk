@@ -1,5 +1,5 @@
 import { Component, h, Element, Host, State, Prop } from '@stencil/core';
-import type { PaginationMeta } from '../../../api/shared';
+import type { PaginationMeta } from '../../../api';
 import type { PaginationStore } from '../../store/pagination-store';
 
 @Component({ tag: 'u-pagination-page', shadow: false })

@@ -1,5 +1,11 @@
 import { authStore, authState } from "../auth/store/auth-store";
-import type { UnidyClient } from "../api";
+import type {
+    CreateSignInResponse,
+    PasskeyOptionsResponse,
+    RequiredFieldsResponse,
+    TokenResponse,
+    UnidyClient
+} from "../api";
 import type { ProfileRaw } from "../profile/store/profile-store";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
@@ -28,7 +34,7 @@ export class AuthHelpers {
     } else {
       authStore.setStep("verification");
       authStore.setEmail(email);
-      authStore.setSignInId(response.sid);
+      authStore.setSignInId((response as CreateSignInResponse).sid);
       authStore.setLoading(false);
     }
   }
@@ -49,8 +55,8 @@ export class AuthHelpers {
 
     if (error) {
       if (error === "missing_required_fields") {
-        authStore.setMissingFields(response.fields);
-        profileState.data = JSON.parse(JSON.stringify(response.fields)) as ProfileRaw;
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
         authStore.setStep("missing-fields");
         return;
       }
@@ -61,9 +67,9 @@ export class AuthHelpers {
       }
       authStore.setLoading(false);
     } else {
-      authStore.setToken(response.jwt);
+      authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth(response);
+      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
     }
   }
 
@@ -88,7 +94,7 @@ export class AuthHelpers {
     if (error) {
       authStore.setGlobalError("auth", error);
     } else {
-      authStore.setToken(response.jwt);
+      authStore.setToken((response as TokenResponse).jwt);
     }
   }
 
@@ -136,9 +142,9 @@ export class AuthHelpers {
       authStore.setFieldError("magicCode", error);
       authStore.setLoading(false);
     } else {
-      authStore.setToken(response.jwt);
+      authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth(response);
+      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
     }
   }
 
@@ -194,11 +200,11 @@ export class AuthHelpers {
       };
 
       const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
-        challenge: Uint8Array.from(atob(options.challenge), (c) => c.charCodeAt(0)),
-        timeout: options.timeout || 60000,
-        rpId: options.rpId,
-        userVerification: (options.userVerification as UserVerificationRequirement) || "required",
-        allowCredentials: options.allowCredentials?.map((cred: any) => ({
+        challenge: Uint8Array.from(atob((options as PasskeyOptionsResponse).challenge), (c) => c.charCodeAt(0)),
+        timeout: (options as PasskeyOptionsResponse).timeout || 60000,
+        rpId: (options as PasskeyOptionsResponse).rpId,
+        userVerification: ((options as PasskeyOptionsResponse).userVerification as UserVerificationRequirement) || "required",
+        allowCredentials: (options as PasskeyOptionsResponse).allowCredentials?.map((cred: any) => ({
           ...cred,
           id: decodeBase64Url(cred.id),
         })),
@@ -229,8 +235,9 @@ export class AuthHelpers {
       };
 
       // Step 5: Verify credential with server
-      const [verifyError, tokenResponse] = await this.client.auth.authenticateWithPasskey(formattedCredential);
+      const [verifyError, tkResponse] = await this.client.auth.authenticateWithPasskey(formattedCredential);
 
+      const tokenResponse = tkResponse as TokenResponse;
       if (verifyError || !tokenResponse) {
         authStore.setGlobalError("auth", verifyError || "authentication_failed");
         authStore.setLoading(false);

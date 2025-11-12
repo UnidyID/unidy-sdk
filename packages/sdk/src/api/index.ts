@@ -1,13 +1,13 @@
 import { ApiClient } from "./api_client";
+import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter/api/newsletters";
 import { ProfileService } from "../profile/api/profile";
-import { AuthService } from "../auth/api/auth";
 
 export * from "./api_client";
-export * from "../newsletter/api/newsletters"
-export * from "../profile/api/profile"
-export * from "../auth/api/auth"
-export * from "./shared"
+export * from "../auth/api/auth";
+export * from "../newsletter/api/newsletters";
+export * from "../profile/api/profile";
+export * from "./shared";
 
 export class UnidyClient {
   private apiClient: ApiClient;

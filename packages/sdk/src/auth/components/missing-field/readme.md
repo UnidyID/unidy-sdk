@@ -9,7 +9,7 @@
 
 ### Depends on
 
-- [u-field](../../profile/field)
+- [u-field](../../../profile/components/field)
 
 ### Graph
 ```mermaid
