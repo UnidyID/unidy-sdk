@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/core";
 import type { TokenResponse } from "../../api/auth";
-import { authStore } from "../../store/auth-store.js";
+import { authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-root",

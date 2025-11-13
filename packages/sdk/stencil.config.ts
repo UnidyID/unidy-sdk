@@ -7,26 +7,14 @@ export const config: Config = {
   srcDir: 'src',
 
   outputTargets: [
-    { type: 'dist', dir: 'dist/auth', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements', dir: 'dist/auth/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
-
-    { type: 'dist', dir: 'dist/newsletter', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements', dir: 'dist/newsletter/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
-
-    { type: 'dist', dir: 'dist/profile', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements', dir: 'dist/profile/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
-
-    { type: 'dist', dir: 'dist/ticketable', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements', dir: 'dist/ticketable/custom-elements', customElementsExportBehavior: 'auto-define-custom-elements', externalRuntime: false },
-
+    { type: 'dist', esmLoaderPath: '../loader' },
+    { type: 'dist-custom-elements' },
     { type: 'docs-readme' },
     {
       type: 'www',
       serviceWorker: null,
       copy: [
-        { src: 'auth/index.html', dest: 'auth/index.html' },
         { src: 'newsletter/index.html', dest: 'newsletter/index.html' },
-        { src: 'profile/index.html', dest: 'profile/index.html' },
         { src: 'ticketable/index.html', dest: 'ticketable/index.html' }
       ]
     }

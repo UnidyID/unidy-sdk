@@ -1,7 +1,7 @@
 import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 import type { RequiredFieldsResponse } from "../api/auth";
-import type { ProfileNode } from "../../profile/store/profile-store";
+import type { ProfileNode } from "../../profile";
 
 export interface AuthState {
   step: "email" | "verification" | "magic-code" | "missing-fields";
@@ -22,13 +22,13 @@ export interface AuthState {
 }
 
 const missingRequiredUserDefaultFields = () => {
-  const fields = state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  const fields = store.state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
   const { custom_attributes, ...missingRequiredUserDefaultFields } = fields;
   return missingRequiredUserDefaultFields as Record<string, ProfileNode>;
 };
 
 const missingRequiredCustomAttributeFields = () => {
-  const fields = state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  const fields = store.state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
   return (fields?.custom_attributes ?? {}) as Record<string, ProfileNode>;
 };
 
@@ -68,7 +68,13 @@ const initialState: AuthState = {
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
-const { state, reset, onChange } = createStore<AuthState>(initialState);
+const store = createStore<AuthState>(initialState);
+const { state, reset } = store;
+
+const authStoreOnChange: <K extends keyof AuthState>(
+  prop: K,
+  cb: (value: AuthState[K]) => void,
+) => () => void = store.onChange;
 
 class AuthStore {
   private rootComponentRef: SigninRoot | null = null;
@@ -166,4 +172,4 @@ class AuthStore {
 }
 
 export const authStore = new AuthStore();
-export { state as authState, onChange };
+export { state as authState, authStoreOnChange as onChange };

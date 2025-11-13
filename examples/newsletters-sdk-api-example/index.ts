@@ -1,4 +1,4 @@
-import { UnidyClient } from "@unidy.io/sdk/api";
+import { UnidyClient } from "@unidy.io/sdk";
 
 const client = new UnidyClient("http://localhost:3000", "8a4c2291e0c6214751140b7c9f66c92079b40b5ac9cd65d1203492b8144da1a0");
 

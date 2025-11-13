@@ -7,7 +7,7 @@ import { newsletterStore } from "../../store/store";
 })
 export class EmailField {
   @Prop() placeholder = "Email";
-  @Prop() className: string | undefined;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   render() {
     return (
@@ -17,7 +17,7 @@ export class EmailField {
         part="input"
         style={{ width: "100%" }}
         autoComplete="email"
-        class={this.className}
+        class={this.componentClassName}
         placeholder={this.placeholder}
         value={newsletterStore.get("email")}
         onChange={(e) => newsletterStore.set("email", (e.target as HTMLInputElement).value)}

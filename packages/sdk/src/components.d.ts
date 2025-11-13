@@ -21,7 +21,7 @@ export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
     interface EmailField {
-        "className": string | undefined;
+        "componentClassName"?: string;
         /**
           * @default "Email"
          */
@@ -29,14 +29,14 @@ export namespace Components {
     }
     interface NewsletterCheckbox {
         "checked": boolean;
-        "className": string;
+        "componentClassName"?: string;
         "internalName": string;
         "label": string;
     }
     interface SubmitButton {
         "apiKey": string;
         "apiUrl": string;
-        "className": string;
+        "componentClassName"?: string;
     }
     interface UAuthProvider {
         /**
@@ -384,8 +384,8 @@ declare global {
         new (): HTMLNewsletterCheckboxElement;
     };
     interface HTMLSubmitButtonElementEventMap {
-        "success": CreateSubscriptionsResponse;
-        "error": CreateSubscriptionsResult[1];
+        "successEvent": CreateSubscriptionsResponse;
+        "errorEvent": CreateSubscriptionsResult[1];
     }
     interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLSubmitButtonElementEventMap>(type: K, listener: (this: HTMLSubmitButtonElement, ev: SubmitButtonCustomEvent<HTMLSubmitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -614,7 +614,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface EmailField {
-        "className"?: string | undefined;
+        "componentClassName"?: string;
         /**
           * @default "Email"
          */
@@ -622,16 +622,16 @@ declare namespace LocalJSX {
     }
     interface NewsletterCheckbox {
         "checked"?: boolean;
-        "className"?: string;
+        "componentClassName"?: string;
         "internalName"?: string;
         "label"?: string;
     }
     interface SubmitButton {
         "apiKey"?: string;
         "apiUrl"?: string;
-        "className"?: string;
-        "onError"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
-        "onSuccess"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
+        "componentClassName"?: string;
+        "onErrorEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
+        "onSuccessEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
     }
     interface UAuthProvider {
         /**

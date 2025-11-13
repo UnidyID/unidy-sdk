@@ -8,10 +8,11 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export * from "./store/auth-store";
+export { authState, authStore, missingFieldNames } from "./store/auth-store";
+export { onChange as onAuthChange } from "./store/auth-store";
 export * from "./auth";
-export * from "./components";
 export * from "./api-client";
 export * from "./error-definitions";
 
 export type { AuthError, TokenPayload } from "./auth";
+export type { AuthState } from "./store/auth-store";

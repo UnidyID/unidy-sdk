@@ -5,15 +5,21 @@ export interface PaginationState {
   paginationMeta: PaginationMeta | null;
 }
 
-export function createPaginationStore() {
+export type PaginationStore = {
+  state: PaginationState;
+  onChange: <K extends keyof PaginationState>(
+    prop: K,
+    cb: (newValue: PaginationState[K]) => void,
+  ) => () => void;
+  reset: () => void;
+};
+
+export function createPaginationStore(): PaginationStore {
   const initialState: PaginationState = {
     paginationMeta: null,
   };
 
-  const { state, onChange } = createStore<PaginationState>(initialState);
+  const store = createStore<PaginationState>(initialState);
 
-  return { state, onChange };
+  return { state: store.state, onChange: store.onChange, reset: store.reset };
 }
-
-export type PaginationStore = ReturnType<typeof createPaginationStore>;
-

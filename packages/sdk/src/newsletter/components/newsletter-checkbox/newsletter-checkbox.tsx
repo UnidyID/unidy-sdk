@@ -9,7 +9,7 @@ export class NewsletterCheckbox {
   @Prop() label: string;
   @Prop() internalName: string;
   @Prop() checked: boolean;
-  @Prop() className: string;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   componentWillLoad() {
     if (this.checked) {
@@ -32,7 +32,7 @@ export class NewsletterCheckbox {
 
   render() {
     return (
-      <label part="label" class={this.className}>
+      <label part="label" class={this.componentClassName}>
         <input type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
         {this.label}
       </label>

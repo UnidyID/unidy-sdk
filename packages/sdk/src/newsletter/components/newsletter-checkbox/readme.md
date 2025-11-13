@@ -7,12 +7,12 @@
 
 ## Properties
 
-| Property       | Attribute       | Description | Type      | Default     |
-| -------------- | --------------- | ----------- | --------- | ----------- |
-| `checked`      | `checked`       |             | `boolean` | `undefined` |
-| `className`    | `class-name`    |             | `string`  | `undefined` |
-| `internalName` | `internal-name` |             | `string`  | `undefined` |
-| `label`        | `label`         |             | `string`  | `undefined` |
+| Property             | Attribute       | Description | Type      | Default     |
+| -------------------- | --------------- | ----------- | --------- | ----------- |
+| `checked`            | `checked`       |             | `boolean` | `undefined` |
+| `componentClassName` | `class-name`    |             | `string`  | `undefined` |
+| `internalName`       | `internal-name` |             | `string`  | `undefined` |
+| `label`              | `label`         |             | `string`  | `undefined` |
 
 
 ## Shadow Parts

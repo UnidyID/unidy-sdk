@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property      | Attribute     | Description | Type     | Default     |
-| ------------- | ------------- | ----------- | -------- | ----------- |
-| `className`   | `class-name`  |             | `string` | `undefined` |
-| `placeholder` | `placeholder` |             | `string` | `"Email"`   |
+| Property             | Attribute     | Description | Type     | Default     |
+| -------------------- | ------------- | ----------- | -------- | ----------- |
+| `componentClassName` | `class-name`  |             | `string` | `undefined` |
+| `placeholder`        | `placeholder` |             | `string` | `"Email"`   |
 
 
 ## Shadow Parts

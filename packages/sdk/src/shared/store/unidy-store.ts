@@ -10,8 +10,11 @@ const initialState: State = {
   baseUrl: "",
 };
 
-const { state, reset, onChange } = createStore<State>(initialState);
+const store = createStore<State>(initialState);
 
-export { state as unidyState, reset, onChange };
-
-
+export const unidyState = store.state;
+export const reset = store.reset;
+export const onChange: <K extends keyof State>(
+  prop: K,
+  cb: (value: State[K]) => void,
+) => () => void = store.onChange;

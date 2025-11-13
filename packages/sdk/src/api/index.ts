@@ -1,7 +1,7 @@
 import { ApiClient } from "./api_client";
 import { AuthService } from "../auth/api/auth";
-import { NewsletterService } from "../newsletter/api/newsletters";
-import { ProfileService } from "../profile/api/profile";
+import { NewsletterService } from "../newsletter";
+import { ProfileService } from "../profile";
 
 export * from "./api_client";
 export * from "../auth/api/auth";

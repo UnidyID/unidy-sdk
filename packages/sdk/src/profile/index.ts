@@ -8,4 +8,7 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export type * from './components.js';
+export * from "./api/profile";
+export { profileStore, state as profileState } from "./store/profile-store";
+export { onChange as onProfileChange } from "./store/profile-store";
+export type { ProfileState, ProfileRaw, ProfileNode } from "./store/profile-store";

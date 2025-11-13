@@ -1,5 +1,5 @@
 import { Component, Host, Prop, h } from "@stencil/core";
-import { authStore } from "../../store/auth-store.js";
+import { authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-auth-provider",

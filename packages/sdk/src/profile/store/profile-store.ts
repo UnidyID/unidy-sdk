@@ -43,5 +43,11 @@ const initialState: ProfileState = {
 
 const profileStore = createStore<ProfileState>(initialState);
 
+const profileStoreOnChange: <K extends keyof ProfileState>(
+  prop: K,
+  cb: (value: ProfileState[K]) => void,
+) => () => void = profileStore.onChange;
+
 export { profileStore };
-export const { state, onChange } = profileStore;
+export const { state } = profileStore;
+export { profileStoreOnChange as onChange };

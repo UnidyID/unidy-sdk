@@ -8,4 +8,9 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export * from "./api";
+export * from './api';
+export * from './auth';
+export * from './newsletter';
+export * from './profile';
+export * from './ticketable';
+export type * from './components.d';

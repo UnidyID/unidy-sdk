@@ -10,10 +10,10 @@ import type { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "../
 export class SubmitButton {
   @Prop() apiUrl: string;
   @Prop() apiKey: string;
-  @Prop() className: string;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @Event() success: EventEmitter<CreateSubscriptionsResponse>;
-  @Event() error: EventEmitter<CreateSubscriptionsResult[1]>;
+  @Event() successEvent: EventEmitter<CreateSubscriptionsResponse>;
+  @Event() errorEvent: EventEmitter<CreateSubscriptionsResult[1]>;
 
   private client: UnidyClient;
 
@@ -37,15 +37,15 @@ export class SubmitButton {
     const [error, response] = await this.client.newsletters.createSubscriptions(payload);
 
     if (error) {
-      this.error.emit(response);
+      this.errorEvent.emit(response);
     } else {
-      this.success.emit(response.data);
+      this.successEvent.emit(response.data);
     }
   };
 
   render() {
     return (
-      <button type="button" onClick={this.submit} class={this.className} part="button">
+      <button type="button" onClick={this.submit} class={this.componentClassName} part="button">
         <slot />
       </button>
     );
