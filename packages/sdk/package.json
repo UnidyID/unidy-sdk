@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
     "build:api": "bun build src/api/*.ts src/**/api/*.ts --outdir dist --minify --sourcemap",
-    "build:types": "tsc -p .",
+    "build:types": "tsc -p tsconfig.types.json",
     "build:stencil": "stencil build",
     "build": "bun run clean && bun run build:api && bun run build:stencil && bun run build:types",
     "dev:api": "bun build src/api/*.ts  src/**/api/*.ts --outdir dist --watch --sourcemap",
