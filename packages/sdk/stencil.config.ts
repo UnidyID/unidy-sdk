@@ -14,6 +14,7 @@ export const config: Config = {
       type: 'www',
       serviceWorker: null,
       copy: [
+        { src: 'auth/index.html', dest: 'auth/index.html' },
         { src: 'newsletter/index.html', dest: 'newsletter/index.html' },
         { src: 'ticketable/index.html', dest: 'ticketable/index.html' }
       ]
