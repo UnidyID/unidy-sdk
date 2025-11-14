@@ -33,8 +33,7 @@ export function replaceTextNodesWithSkeletons(
   );
 
   const textNodes: Text[] = [];
-  let curTextNode: Node;
-  while (curTextNode = walker.nextNode()) {
+  for (let curTextNode = walker.nextNode(); curTextNode; curTextNode = walker.nextNode()) {
     if (curTextNode.textContent?.trim()) {
       let parent = curTextNode.parentNode;
       let isInsideTicketableValue = false;
@@ -62,4 +61,3 @@ export function replaceTextNodesWithSkeletons(
     parent.replaceChild(skeletonSpan, textNode);
   }
 }
-

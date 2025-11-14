@@ -44,6 +44,7 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
       data: parsed.data,
     };
   };
+  // biome-ignore lint/suspicious/noExplicitAny: fn can literally be any function
   return fn as any;
 }
 
