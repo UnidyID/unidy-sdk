@@ -31,7 +31,7 @@ export class PaginationButton {
   }
 
   disconnectedCallback() {
-    this.unsubscribe && this.unsubscribe();
+    this.unsubscribe?.();
   }
 
   private handleClick = () => {
@@ -70,6 +70,7 @@ export class PaginationButton {
     return (
       <Host>
         <button
+          type="button"
           onClick={this.handleClick}
           disabled={disabled}
           aria-label={isPrev ? 'Previous page' : 'Next page'}

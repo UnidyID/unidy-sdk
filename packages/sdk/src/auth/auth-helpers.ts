@@ -204,7 +204,7 @@ export class AuthHelpers {
         timeout: (options as PasskeyOptionsResponse).timeout || 60000,
         rpId: (options as PasskeyOptionsResponse).rpId,
         userVerification: ((options as PasskeyOptionsResponse).userVerification as UserVerificationRequirement) || "required",
-        allowCredentials: (options as PasskeyOptionsResponse).allowCredentials?.map((cred: any) => ({
+        allowCredentials: (options as PasskeyOptionsResponse).allowCredentials?.map((cred) => ({
           ...cred,
           id: decodeBase64Url(cred.id),
         })),

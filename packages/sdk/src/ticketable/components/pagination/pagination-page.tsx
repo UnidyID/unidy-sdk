@@ -30,7 +30,7 @@ export class PaginationPage {
   }
 
   disconnectedCallback() {
-    this.unsubscribe && this.unsubscribe();
+    this.unsubscribe?.();
   }
 
   render() {

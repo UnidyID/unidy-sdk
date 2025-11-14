@@ -8,8 +8,8 @@ import { fr } from 'date-fns/locale/fr';
 import { nlBE } from 'date-fns/locale/nl-BE';
 import { ro } from 'date-fns/locale/ro';
 
-import { TicketsService } from '../../api/tickets';
-import { SubscriptionsService } from '../../api/subscriptions';
+import { type Ticket, TicketsService } from '../../api/tickets';
+import { type Subscription, SubscriptionsService } from '../../api/subscriptions';
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
 import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
 
@@ -26,7 +26,7 @@ export class TicketableList {
   @Element() element: HTMLElement;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
-  @State() items: any[] = [];
+  @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
   @Prop() paginationMeta: PaginationMeta | null = null;
@@ -122,12 +122,12 @@ export class TicketableList {
     }
   }
 
-  private renderFragment(template: HTMLTemplateElement, item?: any): DocumentFragment {
+  private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {
     const fragment = template.content.cloneNode(true) as DocumentFragment;
     const isSkeleton = !item;
 
-    fragment.querySelectorAll('[unidy-attr]').forEach(elem => {
-      Array.from(elem.attributes)
+    for (const elem of fragment.querySelectorAll('[unidy-attr]')) {
+      for (const [unidyAttr, newValue] of Array.from(elem.attributes)
         .filter(attr => attr.name.startsWith('unidy-attr-'))
         .map(attr => {
           if (isSkeleton) {
@@ -135,29 +135,28 @@ export class TicketableList {
           }
 
           let value = attr.value;
-          Object.entries(item).forEach(([key, val]) => {
+          for (const [key, val] of Object.entries(item)) {
             value = value.replaceAll(`{{${key}}}`, val as string);
-          });
+          }
 
           return [attr, value] as const;
-        })
-        .forEach(([attr, newValue]) => {
-          elem.setAttribute(attr.name.replace('unidy-attr-', ''), newValue);
-          elem.removeAttribute(attr.name);
-        });
-    });
+        })) {
+          elem.setAttribute(unidyAttr.name.replace('unidy-attr-', ''), newValue);
+          elem.removeAttribute(unidyAttr.name);
+        }
+    }
 
     if (isSkeleton && this.skeletonAllText) {
       replaceTextNodesWithSkeletons(fragment);
     }
 
-    fragment.querySelectorAll('ticketable-value').forEach(valueEl => {
+    for (const valueEl of fragment.querySelectorAll('ticketable-value')) {
       if (isSkeleton) {
         valueEl.innerHTML = createSkeletonLoader('Sample Text');
       } else {
         const key = valueEl.getAttribute('name');
-        if (!key) return;
-        const value = (item as any)[key];
+        if (!key) continue;
+        const value = item[key];
         const formatAttr = valueEl.getAttribute('format');
         const dateFormatAttr = valueEl.getAttribute('date-format');
 
@@ -181,7 +180,7 @@ export class TicketableList {
 
         valueEl.textContent = finalValue;
       }
-    });
+    }
 
     return fragment;
   }
@@ -202,7 +201,7 @@ export class TicketableList {
     const template = this.element.querySelector('template');
     if (!template) return;
 
-    const targetElement = document.querySelector(this.target!);
+    const targetElement = document.querySelector(this.target);
     if (!targetElement) {
       // TODO[LOGGING]: Log this to console (use shared logger)
       return;
@@ -217,9 +216,13 @@ export class TicketableList {
     if (this.loading) {
       // Use skeletonCount if provided, otherwise use limit
       const skeletonCount = this.skeletonCount || this.limit;
-      Array.from({ length: skeletonCount }).forEach(() => target.appendChild(this.renderFragment(template)));
+      for (const _item of Array.from({length: skeletonCount})) {
+        target.appendChild(this.renderFragment(template));
+      }
     } else if (!this.error) {
-      this.items.forEach(item => target.appendChild(this.renderFragment(template, item)));
+      for (const item of this.items) {
+        target.appendChild(this.renderFragment(template, item));
+      }
     } else {
       // TODO[LOGGING]: Log this to console (use shared logger)
       target.innerHTML = '<h1>Error: {this.error}</h1>';
@@ -247,8 +250,8 @@ export class TicketableList {
 
     return (
       <Host>
-        <div class={this.containerClass} innerHTML={element.innerHTML}></div>
-        <slot name="pagination"></slot>
+        <div class={this.containerClass} innerHTML={element.innerHTML} />
+        <slot name="pagination" />
       </Host>
     );
   }

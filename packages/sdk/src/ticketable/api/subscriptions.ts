@@ -4,12 +4,12 @@ import { getWithSchema } from "./get-with-schema";
 import { type ApiClient, type ApiResponse, type PaginationMeta, PaginationMetaSchema } from "../../api";
 
 // Date transformer for ISO8601 strings
-const dateTransformer = z.string().datetime().transform((str) => new Date(str));
-const nullableDateTransformer = z.string().datetime().nullable().transform((str) => str ? new Date(str) : null);
+const dateTransformer = z.coerce.date();
+const nullableDateTransformer = z.coerce.date().nullable();
 
 // Subscription types based on SubscriptionSerializer
 const SubscriptionSchema = z.object({
-  id: z.string().uuid(), // unidy_id
+  id: z.uuid(), // unidy_id
   title: z.string(),
   text: z.string(),
   payment_frequency: z.string().nullable(),
@@ -26,8 +26,8 @@ const SubscriptionSchema = z.object({
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   next_payment_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   price: z.number(), // decimal(8, 2) -> float
-  user_id: z.string().uuid(),
-  subscription_category_id: z.string().uuid(),
+  user_id: z.uuid(),
+  subscription_category_id: z.uuid(),
 });
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
@@ -56,7 +56,7 @@ export class SubscriptionsService {
     this.list = getWithSchema(
       this.client,
       SubscriptionsListResponseSchema,
-      (_args: unknown) => `/api/sdk/v1/subscriptions`,
+      (_args: unknown) => "/api/sdk/v1/subscriptions",
       SubscriptionsListParamsSchema
     )
 

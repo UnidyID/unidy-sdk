@@ -57,7 +57,7 @@ export class TicketsService {
     this.list = getWithSchema(
       this.client,
       TicketsListResponseSchema,
-      (_args: unknown) => `/api/sdk/v1/tickets`,
+      (_args: unknown) => "/api/sdk/v1/tickets",
       TicketsListParamsSchema
     )
 

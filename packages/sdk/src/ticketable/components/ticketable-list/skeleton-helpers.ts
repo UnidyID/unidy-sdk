@@ -33,10 +33,10 @@ export function replaceTextNodesWithSkeletons(
   );
 
   const textNodes: Text[] = [];
-  let textNode;
-  while (textNode = walker.nextNode()) {
-    if (textNode.textContent && textNode.textContent.trim()) {
-      let parent = textNode.parentNode;
+  let curTextNode: Node;
+  while (curTextNode = walker.nextNode()) {
+    if (curTextNode.textContent?.trim()) {
+      let parent = curTextNode.parentNode;
       let isInsideTicketableValue = false;
       while (parent) {
         if (parent.nodeName.toLowerCase() === 'ticketable-value') {
@@ -46,20 +46,20 @@ export function replaceTextNodesWithSkeletons(
         parent = parent.parentNode;
       }
       if (!isInsideTicketableValue) {
-        textNodes.push(textNode as Text);
+        textNodes.push(curTextNode as Text);
       }
     }
   }
 
-  textNodes.forEach((textNode) => {
+  for (const textNode of textNodes) {
     const parent = textNode.parentNode;
-    if (!parent) return;
+    if (!parent) continue;
 
     const text = textNode.textContent || '';
     const placeholderText = text.trim() || 'Sample Text';
     const skeletonSpan = document.createElement('span');
     skeletonSpan.innerHTML = createSkeletonFn(placeholderText);
     parent.replaceChild(skeletonSpan, textNode);
-  });
+  }
 }
 

@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
-import { UserProfileSchema } from "../../profile/api/profile";
+import { UserProfileSchema } from "../../profile";
 
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),
