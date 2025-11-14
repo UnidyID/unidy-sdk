@@ -1,0 +1,14 @@
+/**
+ * @fileoverview entry point for your component library
+ *
+ * This is the entry point for your component library. Use this file to export utilities,
+ * constants or data structure that accompany your components.
+ *
+ * DO NOT use this file to export your components. Instead, use the recommended approaches
+ * to consume components of this package as outlined in the `README.md`.
+ */
+
+export * from "./api/profile";
+export { profileStore, state as profileState } from "./store/profile-store";
+export { onChange as onProfileChange } from "./store/profile-store";
+export type { ProfileState, ProfileRaw, ProfileNode } from "./store/profile-store";

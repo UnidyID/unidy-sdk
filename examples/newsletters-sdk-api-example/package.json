@@ -9,6 +9,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@unidy.io/sdk-api-client": "*"
+    "@unidy.io/sdk": "^1.0.0-alpha"
   }
 }

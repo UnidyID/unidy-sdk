@@ -1,5 +1,6 @@
 import { Component, Event, type EventEmitter, Prop, State, h } from "@stencil/core";
-import { type NewsletterSubscription, type NewsletterSubscriptionError, UnidyClient } from "@unidy.io/sdk-api-client";
+import { UnidyClient } from "@unidy.io/sdk";
+import type { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk";
 
 export type NewsletterConfig = {
   internalName: string;
@@ -62,10 +63,10 @@ export class Newsletter {
   // New state to track which newsletters are currently resending the DOI email.
   @State() resendingDoi: string[] = [];
 
-  @Event({ eventName: "success" })
+  @Event({ eventName: "successEvent" })
   successEvent: EventEmitter<NewsletterSubscription[]>;
 
-  @Event({ eventName: "error" })
+  @Event({ eventName: "errorEvent" })
   errorEvent: EventEmitter<NewsletterSubscriptionError[]>;
 
   @Event()
