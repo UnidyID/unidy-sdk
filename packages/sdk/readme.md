@@ -1,12 +1,14 @@
-# Unidy Auth SDK
+# Unidy SDK
 
-The Unidy Auth SDK provides a set of framework-agnostic web components to integrate Unidy authentication and profile management into your web application.
+The Unidy SDK provides a set of framework-agnostic web components to integrate Unidy newsletters, tickets and subscriptions, authentication and profile management into your web application.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+- [Quick Start: examples](#quick-start-examples)
+  - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+  - [Quick Start: Newsletter implementation]
 - [Components](#components)
   - [Core Components](#core-components)
   - [Login Flow Components](#login-flow-components)
@@ -38,11 +40,11 @@ Add the following scripts to your HTML file:
 
 ```html
 <!-- 1. Loads the web components (e.g., <u-signin-root>) -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/auth/auth.esm.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
 
 <!-- 2. Makes the Auth helper class available for use in your scripts -->
 <script type="module">
-  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/index.esm.js';
+  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/index.esm.js';
   // ... use Auth class
 </script>
 ```
@@ -52,25 +54,28 @@ Add the following scripts to your HTML file:
 If you are using a build system like Webpack or Rollup, you can install the SDK via npm or yarn:
 
 ```bash
-npm install @unidy.io/auth
+npm install @unidy.io/sdk
 # or
-yarn add @unidy.io/auth
+yarn add @unidy.io/sdk
 ```
 
 Then, you can import the necessary parts into your application:
 
 ```javascript
 // 1. Import and define the web components
-import { defineCustomElements } from '@unidy.io/auth/loader';
+import { defineCustomElements } from '@unidy.io/sdk/loader';
 defineCustomElements();
 
 // 2. Import the Auth helper class
-import { Auth } from '@unidy.io/auth';
+import { Auth } from '@unidy.io/sdk/auth';
 
 // Now you can use the components in your HTML and the Auth class in your scripts.
 ```
 
-## Quick Start: Authentication Flow
+## Quick Start: examples
+
+
+### Quick Start: Authentication Flow
 
 This example demonstrates a complete authentication flow. The SDK automatically shows the correct interface based on the user's authentication status.
 
@@ -81,7 +86,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   <meta charset="UTF-8">
   <title>Unidy Auth Demo</title>
   <!-- Load Components -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/auth/auth.esm.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
 </head>
 <body>
 
