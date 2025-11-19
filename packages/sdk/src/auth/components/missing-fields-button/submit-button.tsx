@@ -3,7 +3,9 @@ import { getUnidyClient } from "../../api-client";
 import { state as profileState } from "../../../profile/store/profile-store";
 import { authState, authStore } from "../../store/auth-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
+import { jwtDecode } from "jwt-decode";
 import type { TokenResponse } from "../../api/auth";
+import type { TokenPayload } from "../../auth";
 
 @Component({
   tag: "u-missing-fields-submit-button",
@@ -25,7 +27,16 @@ export class SubmitButton {
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
     const sid = authState.sid as string;
 
-    const [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
+    let error: string | null;
+    let response: unknown;
+
+    if (sid) {
+      // Password Sign-In Flow
+      [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
+    } else {
+      // Social Sign-In Flow
+      [error, response] = await getUnidyClient().auth.updateMissingFieldsSocial(updatedProfileData);
+    }
 
     if (error) {
       return;
@@ -34,6 +45,12 @@ export class SubmitButton {
     const { jwt } = (response as TokenResponse);
     profileState.loading = false;
     authStore.setToken(jwt);
+
+    // needed for social sign-in flow
+    if (!authState.sid) {
+      const decodedToken = jwtDecode<TokenPayload>(jwt);
+      authStore.setSignInId(decodedToken.sid);
+    }
   }
 
   private hasSlotContent(): boolean {

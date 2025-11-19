@@ -98,6 +98,36 @@ export class AuthHelpers {
     }
   }
 
+  handleSocialAuthRedirect(): void {
+    // missing required fields flow
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const error = params.get("error");
+
+    if (error !== "missing_required_fields") {
+      return;
+    }
+
+    const encodedFields = params.get("fields");
+    if (!encodedFields) {
+      return;
+    }
+
+    try {
+      const fields = this.decodeUrlSafeBase64<RequiredFieldsResponse["fields"]>(encodedFields);
+
+      authStore.setMissingFields(fields);
+      profileState.data = fields as ProfileRaw;
+      authStore.setStep("missing-fields");
+
+      params.delete("error");
+      params.delete("fields");
+      window.history.replaceState(null, "", url.toString());
+    } catch (e) {
+      authStore.setGlobalError("auth", "invalid_required_fields_payload");
+    }
+  }  
+
   async sendMagicCode() {
     if (!authState.sid) {
       throw new Error("No sign in ID available");
@@ -304,4 +334,11 @@ export class AuthHelpers {
       window.history.replaceState(null, "", url.toString());
     }
   }
+
+  private decodeUrlSafeBase64<T = unknown>(encoded: string): T {
+    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    const json = atob(padded);
+    return JSON.parse(json) as T;
+  }  
 }
