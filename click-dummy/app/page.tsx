@@ -150,9 +150,7 @@ const CustomTicketables = () => {
   const pagination = usePagination();
   const ticketables = useTicketables({
     pagination,
-    // I just now realized we need to support other things besides just =, we do have like, but maybe we could have something like
-    // { title: 'asd%', state: 'active', expires_at: '2023...', _operators: { expires_at: 'gt', title: 'like' }
-    filter: { category_id: "asdasd", state: state },
+    filter: { category_id: "asdasd", state: state, expires_at: new Date('2023-01-01'), title: 'Foo - %', _operators: { expires_at: 'gt', title: 'like' } },
   });
 
   if (ticketables.loading) {
