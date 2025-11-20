@@ -96,7 +96,7 @@ export class Field {
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
-          <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
+          <span part="readonly-indicator" role="textbox" aria-readonly="true">{fieldData?.value || this.readonlyPlaceholder}</span>
         ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
           <div part="multi-select-readonly-container">
@@ -125,10 +125,11 @@ export class Field {
             countryCodeDisplayOption={this.countryCodeDisplayOption}
             attrName={fieldData.attr_name}
             specificPartKey={this.createSpecificPartKey(this.field)}
+            aria-describedby={profileState.errors[this.field] ? `${this.field}-error` : undefined}
           />
         )}
 
-        {profileState.errors[this.field] && <span part="field-error-message">ERROR: {profileState.errors[this.field]}</span>}
+        {profileState.errors[this.field] && <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">ERROR: {profileState.errors[this.field]}</span>}
       </div>
     );
   }

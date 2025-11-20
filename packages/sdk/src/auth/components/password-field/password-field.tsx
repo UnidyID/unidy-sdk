@@ -36,6 +36,7 @@ export class PasswordField {
           value={authState.password}
           autocomplete="current-password"
           placeholder={this.placeholder}
+          aria-label={this.placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}

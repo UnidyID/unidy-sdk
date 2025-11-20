@@ -16,6 +16,7 @@ export class EmailField {
         name="email"
         part="input"
         style={{ width: "100%" }}
+        aria-label={this.placeholder}
         autoComplete="email"
         class={this.componentClassName}
         placeholder={this.placeholder}

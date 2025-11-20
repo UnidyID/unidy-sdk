@@ -13,7 +13,7 @@ const ICON_MAP = {
   linkedin: <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
   apple: <AppleLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
   discord: <DiscordLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
-  facebook: <FacebookLogo className="w-6 h-6 block" />,
+  facebook: <FacebookLogo className="w-6 h-6 block" aria-hidden="true" />,
 } as const;
 
 type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
@@ -85,17 +85,18 @@ export class SocialLoginButton {
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">
-          {this.renderIcon()}
+          <slot name="icon">
+            <span aria-hidden="true">{this.renderIcon()}</span>
+          </slot>
 
-          <slot name="icon" />
-
-          {!this.iconOnly && (
+          {this.iconOnly ? (
+            // Render the hidden text for accessibility.
+            <span style={{ display: "none" }}>{this.text}</span>
+          ) : (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
               {this.text}
             </span>
           )}
-          {/* Hidden text for accessibility */}
-          <span style={{ display: "none" }}>{this.text}</span>
         </div>
       </button>
     );

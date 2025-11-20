@@ -43,11 +43,13 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
     <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ""}`} title={props.title}>
       {props.options.map((opt) => (
         <label
+          htmlFor={`${props.name}-${opt.value}`}
           key={String(opt.value)}
           part={`radio-group-item_label ${props.specificPartKey ? `radio-group-item_label--${props.specificPartKey}` : ""} ${opt.checked ? "radio_checked" : ""}`}
           data-checked={opt.checked ? "true" : "false"}
         >
           <input
+            id={`${props.name}-${opt.value}`}
             type={props.type}
             name={props.name}
             value={String(opt.value)}

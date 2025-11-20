@@ -27,7 +27,7 @@ export class LogoutButton {
 
   render() {
     return (
-      <button type="button" class={this.componentClassName} onClick={this.handleLogout}>
+      <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
         {this.text}
       </button>
     );

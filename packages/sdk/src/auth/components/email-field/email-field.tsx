@@ -29,7 +29,7 @@ export class EmailField {
 
   render() {
     if (authState.step === "verification") {
-      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
+      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} aria-label="Email" />;
     }
 
     return (
@@ -42,6 +42,7 @@ export class EmailField {
           placeholder={this.placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
+          aria-label={this.placeholder}
           onInput={this.handleInput}
         />
       </form>

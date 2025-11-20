@@ -346,6 +346,7 @@ export class RawField {
         placeholder={this.placeholder}
         specificPartKey={this.specificPartKey}
         onChange={this.onTextChange}
+        aria-describedby={this.field}
         onInput={this.phoneFieldValidation}
         onBlur={this.onBlurFieldValidation}
       />

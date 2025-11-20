@@ -76,7 +76,7 @@ export class PaginationButton {
           aria-label={isPrev ? 'Previous page' : 'Next page'}
           class={this.customClass}
         >
-          <slot name="icon">{icon}</slot>
+          <slot name="icon" aria-hidden="true">{icon}</slot>
         </button>
       </Host>
     );

@@ -47,12 +47,13 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
       title={props.title}
     >
       {props.options.map((opt) => (
-        <label
+        <label 
           key={opt.value}
+          htmlFor={`${props.specificPartKey}-${opt.value}`}
           part={`multi-select-item_label ${props.specificPartKey ? `multi-select-item_label--${props.specificPartKey}` : ""}`}
         >
           <input
-            id={opt.value}
+            id={`${props.specificPartKey}-${opt.value}`}
             type={props.type}
             checked={Array.isArray(props.value) && props.value.includes(opt.value)}
             disabled={props.disabled}

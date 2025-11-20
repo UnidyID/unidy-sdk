@@ -41,11 +41,10 @@ export class Passkey {
 
     return (
       <Host>
-        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName}>
+        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
           {authState.loading ? this.loadingText : this.text}
         </button>
       </Host>
     );
   }
 }
-

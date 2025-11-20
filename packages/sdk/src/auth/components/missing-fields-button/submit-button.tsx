@@ -44,8 +44,8 @@ export class SubmitButton {
    if (authState.step !== "missing-fields") return null;
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false}>
-          {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+        <button type="button" onClick={() => this.onSubmit()} part="button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false} aria-live="polite">
+          {profileState.loading ? <span class="spinner" aria-label="Loading" /> : this.hasSlotContent() ? <slot /> : "Submit"}
         </button>
       </div>
     );
