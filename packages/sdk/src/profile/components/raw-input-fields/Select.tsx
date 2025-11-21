@@ -16,6 +16,7 @@ type SelectProps = {
   specificPartKey?: string;
   onChange: (value: string) => void;
   countryIcon?: (code: string) => string;
+  ariaDescribedBy?: string;
 };
 
 export const Select: FunctionalComponent<SelectProps> = (props) => {
@@ -35,7 +36,7 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}
-      aria-describedby={props.title}
+      aria-describedby={props.ariaDescribedBy}
     >
       {props.emptyOption ? <option value="" selected={props.value === null || props.value === ""} /> : null}
       {props.options.map((opt) => (

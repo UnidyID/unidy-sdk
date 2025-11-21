@@ -8,6 +8,7 @@ import { newsletterStore } from "../../store/store";
 export class EmailField {
   @Prop() placeholder = "Email";
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+  @Prop() ariaLabel = "Email";
 
   render() {
     return (
@@ -16,12 +17,12 @@ export class EmailField {
         name="email"
         part="input"
         style={{ width: "100%" }}
-        aria-label={this.placeholder}
         autoComplete="email"
         class={this.componentClassName}
         placeholder={this.placeholder}
         value={newsletterStore.get("email")}
         onChange={(e) => newsletterStore.set("email", (e.target as HTMLInputElement).value)}
+        aria-label={this.ariaLabel}
       />
     );
   }

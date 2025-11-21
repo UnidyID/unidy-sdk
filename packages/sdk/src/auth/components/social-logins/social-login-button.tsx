@@ -13,7 +13,7 @@ const ICON_MAP = {
   linkedin: <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
   apple: <AppleLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
   discord: <DiscordLogo className={`${SHARED_ICON_CLASSNAME} fill-current`} />,
-  facebook: <FacebookLogo className="w-6 h-6 block" aria-hidden="true" />,
+  facebook: <FacebookLogo className="w-6 h-6 block" />,
 } as const;
 
 type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";

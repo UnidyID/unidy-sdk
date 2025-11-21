@@ -11,6 +11,7 @@ export class PasswordField {
 
   @Prop() placeholder = "Enter your password";
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() ariaLabel = "Password";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -36,10 +37,10 @@ export class PasswordField {
           value={authState.password}
           autocomplete="current-password"
           placeholder={this.placeholder}
-          aria-label={this.placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}
+          aria-label={this.ariaLabel}
         />
       </form>
     );

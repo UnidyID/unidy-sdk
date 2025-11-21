@@ -96,16 +96,14 @@ export class Field {
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
-          <span part="readonly-indicator" role="textbox" aria-readonly="true">{fieldData?.value || this.readonlyPlaceholder}</span>
+          <span id={this.field} part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
         ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
-          <div part="multi-select-readonly-container">
+          <ul id={this.field} class="multi-select-readonly-container" part="multi-select-readonly-container">
             {multiSelectReadonlyLabels.map((label) => (
-              <span key={label} part="multi-select-readonly-field">
-                {label}
-              </span>
+              <li key={label} part="multi-select-readonly-field">{label}</li>
             ))}
-          </div>
+          </ul>
         )}
         {!isReadonly && (
           <u-raw-field
@@ -125,7 +123,7 @@ export class Field {
             countryCodeDisplayOption={this.countryCodeDisplayOption}
             attrName={fieldData.attr_name}
             specificPartKey={this.createSpecificPartKey(this.field)}
-            aria-describedby={profileState.errors[this.field] ? `${this.field}-error` : undefined}
+            ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
           />
         )}
 

@@ -11,6 +11,7 @@ export class EmailField {
 
   @Prop() placeholder = "Enter your email";
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() ariaLabel = "Email";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -29,7 +30,7 @@ export class EmailField {
 
   render() {
     if (authState.step === "verification") {
-      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} aria-label="Email" />;
+      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
     }
 
     return (
@@ -42,8 +43,8 @@ export class EmailField {
           placeholder={this.placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
-          aria-label={this.placeholder}
           onInput={this.handleInput}
+          aria-label={this.ariaLabel}
         />
       </form>
     );
