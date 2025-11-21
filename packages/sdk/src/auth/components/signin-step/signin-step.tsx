@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../..";
@@ -22,7 +23,7 @@ export class SigninStep {
 
     const authInstance = await Auth.getInstance();
     if (!authInstance) {
-      console.error("Auth service not initialized");
+      Sentry.logger.error("Auth service not initialized");
       return;
     }
 

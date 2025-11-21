@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import * as z from "zod/mini";
 import type { ApiClient, ApiResponse } from "../../api";
 import EventEmitter from "eventemitter3";
@@ -61,10 +62,12 @@ export class NewsletterService extends EventEmitter {
 
     switch (response.status) {
       case 429:
+        Sentry.logger.warn("Rate limit exceeded");
         this.emit("rate_limit_exceeded", response);
 
         return ["rate_limit_exceeded", response];
       case 500:
+        Sentry.captureException(response)
         return ["server_error", response];
       case 0:
         return ["network_error", response];

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, h, Prop, State, Host } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
@@ -23,9 +24,8 @@ export class Passkey {
     if (this.disabled || authState.loading || !this.isSupported) return;
 
     const authInstance = await Auth.getInstance();
-
     if (!authInstance) {
-      console.error("Auth service not initialized");
+      Sentry.logger.error("Auth service not initialized");
       return;
     }
 

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import type { ApiClient, ApiResponse } from "../../api";
 import * as z from "zod";
 
@@ -150,12 +151,13 @@ export class ProfileService {
       }
 
       return { ...resp, data };
-    } catch (e) {
+    } catch (error) {
+      Sentry.captureException(error);
       return {
-        status: e instanceof TypeError ? 0 : 500,
+        status: error instanceof TypeError ? 0 : 500,
         success: false,
         headers: new Headers(),
-        error: e instanceof Error ? e.message : String(e),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -190,12 +192,13 @@ export class ProfileService {
       }
 
       return { ...resp, data: result };
-    } catch (e) {
+    } catch (error) {
+      Sentry.captureException(error);
       return {
-        status: e instanceof TypeError ? 0 : 500,
+        status: error instanceof TypeError ? 0 : 500,
         success: false,
         headers: new Headers(),
-        error: e instanceof Error ? e.message : String(e),
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }

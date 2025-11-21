@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { GoogleLogo } from "./logos/google";
@@ -32,7 +33,7 @@ export class SocialLoginButton {
 
   componentWillLoad() {
     if (this.isUnsupportedProvider) {
-      console.warn(`[u-social-login-button] Unsupported provider "${this.provider}".`);
+      Sentry.captureException(`[u-social-login-button] Unsupported provider "${this.provider}".`);
       return;
     }
   }
@@ -55,7 +56,7 @@ export class SocialLoginButton {
 
   private onClick = async () => {
     if (!unidyState.baseUrl) {
-      console.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
+      Sentry.logger.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
       return;
     }
 

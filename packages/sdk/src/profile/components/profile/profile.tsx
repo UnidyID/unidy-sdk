@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, Host, Prop, State, h } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
@@ -27,6 +28,10 @@ export class Profile {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
       this.authInstance = await Auth.getInstance();
+      if (!this.authInstance) {
+        Sentry.logger.error("Auth service not initialized");
+        return;
+      }
 
       const idToken = await this.authInstance?.getToken();
 
@@ -54,7 +59,7 @@ export class Profile {
         profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
       }
     } catch (error) {
-      console.error("Failed to fetch profile data:", error);
+      Sentry.captureException("Failed to fetch profile data:", error);
       profileState.flashErrors = { error: "Failed to load profile data. Please check configuration." };
     }
     this.fetchingProfileData = false;

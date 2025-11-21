@@ -1,5 +1,4 @@
 import { Component, h, Element } from "@stencil/core";
-import { state as profileState } from "../../../profile/store/profile-store";
 import { authState, missingFieldNames } from "../../store/auth-store";
 
 @Component({
@@ -8,10 +7,6 @@ import { authState, missingFieldNames } from "../../store/auth-store";
 })
 export class MissingField {
   @Element() el!: HTMLElement;
-
-  componentWillRender() {
-    console.log("MissingField componentWillRender profileState.data:", profileState.data);
-  }
 
   render() {
     if (authState.step !== "missing-fields") return null;

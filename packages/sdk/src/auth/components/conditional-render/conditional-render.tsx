@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, h, Prop, Host } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 
@@ -31,7 +32,7 @@ export class ConditionalRender {
         actualValue = authState.authenticated;
         break;
       default:
-        console.warn(`Unknown property: ${this.when}`);
+        Sentry.logger.warn(`Unknown property: ${this.when}`);
 
         // don't render in case of invalid property
         return false;

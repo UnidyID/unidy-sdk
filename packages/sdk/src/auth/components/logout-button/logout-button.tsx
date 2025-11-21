@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../auth";
 
@@ -13,8 +14,13 @@ export class LogoutButton {
   @Event() logout!: EventEmitter<void>;
 
   private handleLogout = async () => {
-    const auth = await Auth.getInstance();
-    const result = await auth.logout();
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
+      Sentry.logger.error("Auth service not initialized");
+      return;
+    }
+
+    const result = await authInstance.logout();
 
     if (result === true) {
       this.logout.emit();

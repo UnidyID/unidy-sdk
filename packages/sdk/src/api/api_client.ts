@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/node";
+
 import type * as z from "zod";
 
 export interface ApiResponse<T> {
@@ -49,7 +51,7 @@ export class ApiClient {
       } catch (e) {
         data = undefined;
       }
-
+      
       const response: ApiResponse<T> = {
         data,
         status: res.status,
@@ -59,6 +61,7 @@ export class ApiClient {
 
       return response;
     } catch (error) {
+      Sentry.captureException(error);
       const response: ApiResponse<T> = {
         status: res ? res.status : error instanceof TypeError ? 0 : 500,
         error: error instanceof Error ? error.message : String(error),
