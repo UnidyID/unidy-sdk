@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-// We should have a <jump-to-service> button, that would log you into unidy, and then hit a oauth service in Unidy (it's connect URI)
+// We should have a <jump-to-service service_id="1"> button, that would log you into unidy, and then hit a oauth service in Unidy (it's connect URI)
 // so we could have a 1 button log into Eventim 🤔
 
 // Kinda related, kinda not
@@ -69,6 +69,17 @@ import { useSyncExternalStore } from "react";
 
 // Examples we need to have
 // - How to build a dropdown/user thing for if you're logged in (gate / logout button)
+// Example of how to make the salutation be a <select> element and not a radio button thing
+// Build a demo with a modal for login
+
+// Password reset needs to be fully in SDK
+// Try and get registration in SDK :)
+
+// Ticketables need to be able to render metadata/wallet_export data as fields
+// Ticketables need to be able to be exported as PKPass / PDF
+
+// Think of a usecase where the user has custom validation on an input field (i.e. validate that the zip code is fine)
+// Think of a usecase where we prefil data in the profile component
 
 class UnidySDK {
   constructor(private config: any = {});
@@ -190,21 +201,33 @@ export default function Home() {
           <AdditionalFields>
             {/* Maybe we could implement this unidy-field component as a react component, so it would find first parent that's of type "unidy-store-provider", and i.e. the profile component would wrap it's slot with a <unidy-store-provider> and then field would just save data into that store 🤔 */}
             <Field field="first_name" />
+            <Field field="custom_attributes.favorite_player" />
           </AdditionalFields>
 
           <NewsletterCheckbox newsletter="main" />
           {/* The way this would work is to now even show the children of this component if the "main" is disabled */}
           <NewsletterGate newsletter="main">
+            <h1>HEYYYY, YOU HAVE HTE MAIN NEWSLETTER</h1>
+
             <PreferenceCheckbox newsletter="main" pref="default" />
             <PreferenceCheckbox newsletter="main" pref="daily" />
           </NewsletterGate>
 
-          <NewsletterCheckbox newsletter="other" />
-          {/* We should also build a solution in which we could dynamically disable these if the other is unchecked */}
-          <PreferenceCheckbox newsletter="other" pref="default" checked />
-          <PreferenceCheckbox newsletter="other" pref="daily" checked />
-          <PreferenceCheckbox newsletter="other" pref="weekly" />
-          <PreferenceCheckbox newsletter="other" pref="monthly" />
+          <AuthGate
+            condition={(user) => user && user.first_name === "John" && user.custom_attributes.favorite_player != 'Messi' && user.newsletters.find((n) => n.internal_name === "other")?.preferences.find((p) => p.internal_name === "default")?.checked === true}
+            relations={{
+              newsletters: {
+                internal_name: "other",
+              },
+            }}
+          >
+            <NewsletterCheckbox newsletter="other" />
+            {/* We should also build a solution in which we could dynamically disable these if the other is unchecked */}
+            <PreferenceCheckbox newsletter="other" pref="default" checked />
+            <PreferenceCheckbox newsletter="other" pref="daily" checked />
+            <PreferenceCheckbox newsletter="other" pref="weekly" />
+            <PreferenceCheckbox newsletter="other" pref="monthly" />
+          </AuthGate>
 
           <SubmitButton />
         </NewsletterSDK>
@@ -241,6 +264,7 @@ export default function Home() {
             // I mean a customer could do this themself, but not sure if that's the correct way 🤔?
           >
             <SignInStep step="email">
+              <h1>Pls enter your real email address, I promise we won't spam you</h1>
               <Email />
               <SocialLogin />
               <Passkey />
@@ -303,7 +327,14 @@ export default function Home() {
           <NewsletterPreferenceCenter newsletter="main"></NewsletterPreferenceCenter>
 
           <NewsletterPreferenceCenterProvider>
-            <UnsubFrom newsletter="main"></UnsubFrom>
+            <AuthGate condition={(user) => user && user.custom_attributes.vip === true}>
+              <UnsubFrom newsletter="main"></UnsubFrom>
+            </AuthGate>
+
+            <AuthGate condition={(user) => user && user.custom_attributes.vip === false}>
+              <h1>You're not a VIP, you can't unsubscribe from the newsletter</h1>
+            </AuthGate>
+
             <Checkbox newsletter="main" pref="default" />
             <Checkbox newsletter="main" pref="daily" />
             <Checkbox newsletter="main" pref="weekly" />
@@ -379,7 +410,7 @@ export default function Home() {
         </script>
 
         <AuthGate
-          condition={(user) => user && user.custom_attributes.membership}
+          condition={(user) => user && user.custom_attributes.membership === true}
         >
           <h1>Hey, you can manage your thing here</h1>
         </AuthGate>
