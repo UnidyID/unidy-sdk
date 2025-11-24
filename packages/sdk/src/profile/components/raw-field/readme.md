@@ -9,6 +9,7 @@
 
 | Property                   | Attribute                     | Description | Type                  | Default                                |
 | -------------------------- | ----------------------------- | ----------- | --------------------- | -------------------------------------- |
+| `ariaDescribedBy`          | `aria-described-by`           |             | `string`              | `""`                                   |
 | `attrName`                 | `attr-name`                   |             | `string`              | `undefined`                            |
 | `checked`                  | `checked`                     |             | `boolean`             | `undefined`                            |
 | `componentClassName`       | `class-name`                  |             | `string`              | `undefined`                            |
