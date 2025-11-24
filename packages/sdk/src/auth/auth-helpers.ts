@@ -113,6 +113,13 @@ export class AuthHelpers {
       return;
     }
 
+    const signInId = params.get("sid");
+    if (signInId) {
+      authStore.setSignInId(signInId);
+    } else {
+      return;
+    }
+
     try {
       const fields = this.decodeUrlSafeBase64<RequiredFieldsResponse["fields"]>(encodedFields);
 

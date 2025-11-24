@@ -217,30 +217,6 @@ export class AuthService {
     }
   }
 
-  // TODO: rename
-  async updateMissingFieldsSocial(user: Record<string, any>): Promise<AuthenticateResultShared> {
-    const response = await this.client.patch<unknown>(`/api/sdk/v1/sign_ins/update_required_fields_social`, {
-      user,
-    });
-
-    try {
-      if (!response.success) {
-        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
-        if (missing_fields_check.success) {
-          return ["missing_required_fields", missing_fields_check.data];
-        }
-
-        const error_response = ErrorSchema.parse(response.data);
-
-        return [error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
-      }
-
-      return [null, TokenResponseSchema.parse(response.data)];
-    } catch (error) {
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
-  }
-
   async authenticateWithMagicCode(signInId: string, code: string): Promise<AuthenticateWithMagicCodeResult> {
     const response = await this.client.post<{ code: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       code,
