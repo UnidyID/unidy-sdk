@@ -86,7 +86,7 @@ export class MagicCodeField {
     }
 
     return (
-      <div class={`magic-code-container ${this.componentClassName}`}>
+      <div class={`flex gap-0.5 w-full justify-center ${this.componentClassName}`}>
         {this.codeDigits.map((digit, index) => (
           <input
             // biome-ignore lint/suspicious/noArrayIndexKey:
@@ -104,7 +104,7 @@ export class MagicCodeField {
             onKeyDown={(event) => this.handleKeyDown(event, index)}
             onPaste={index === 0 ? this.handlePaste : undefined}
             aria-label={`Digit ${index + 1} of ${this.codeDigits.length}`}
-            class="magic-code-input"
+            class="w-[50px] h-[50px] text-center text-lg border-2 border-slate-200 rounded-lg outline-none transition-colors duration-200"
             part="digit-input"
           />
         ))}
