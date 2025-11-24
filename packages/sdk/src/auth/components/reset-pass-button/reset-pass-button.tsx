@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -15,7 +15,7 @@ export class ResetPasswordButton {
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();
     if (!authInstance) {
-      Sentry.logger.error("Auth service not initialized");
+      console.error("Auth service not initialized");
       return;
     }
 

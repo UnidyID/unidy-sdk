@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Component, Element, h } from "@stencil/core";
 import { getUnidyClient } from "../../../auth/api-client";
 import { Auth } from "../../../auth/auth";
@@ -17,7 +16,7 @@ export class SubmitButton {
   async componentWillLoad() {
     this.authInstance = await Auth.getInstance();
     if (!this.authInstance) {
-      Sentry.logger.error("Auth service not initialized");
+      console.error("Auth service not initialized");
     }
   }
 

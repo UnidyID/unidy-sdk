@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { GoogleLogo } from "./logos/google";
@@ -56,7 +56,7 @@ export class SocialLoginButton {
 
   private onClick = async () => {
     if (!unidyState.baseUrl) {
-      Sentry.logger.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
+      console.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
       return;
     }
 

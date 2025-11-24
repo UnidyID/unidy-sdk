@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Component, h, Prop, State } from "@stencil/core";
 import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
@@ -21,7 +20,7 @@ export class SendMagicCodeButton {
 
     const authInstance = await Auth.getInstance();
     if (!authInstance) {
-      Sentry.logger.error("Auth service not initialized");
+      console.error("Auth service not initialized");
       return;
     }
 

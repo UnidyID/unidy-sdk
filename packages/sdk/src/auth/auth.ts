@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import type { UnidyClient } from "../api";
 import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";

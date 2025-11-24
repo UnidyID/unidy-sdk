@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import { Component, Host, Prop, State, h } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
@@ -29,7 +29,7 @@ export class Profile {
     } else {
       this.authInstance = await Auth.getInstance();
       if (!this.authInstance) {
-        Sentry.logger.error("Auth service not initialized");
+        console.error("Auth service not initialized");
         return;
       }
 

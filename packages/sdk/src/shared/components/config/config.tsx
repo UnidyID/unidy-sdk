@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import { Component, Prop, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
 import { Auth, getUnidyClient } from "../../../auth";
@@ -15,7 +15,7 @@ export class UnidyConfig {
     this.initializeSentry();
 
     if (!this.baseUrl || !this.apiKey) {
-      Sentry.logger.error("baseUrl and apiKey are required");
+      console.error("baseUrl and apiKey are required");
       return;
     }
 
@@ -33,9 +33,6 @@ export class UnidyConfig {
     Sentry.init({
       dsn: "https://057cb9294eb543f15a73220ed572fe8c@o4507882295132160.ingest.de.sentry.io/4507882297229392",
       environment: process.env.NODE_ENV,
-      integrations: [
-        Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
-      ],
       sendDefaultPii: true,
       tracesSampleRate: 0.005,
     });

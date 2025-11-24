@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { Component, h, Element, Host, State, Prop } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import type { PaginationStore } from "../../store/pagination-store";
@@ -17,7 +16,7 @@ export class PaginationPage {
   componentDidLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      Sentry.logger.warn("TicketableList component not found");
+      console.warn("TicketableList component not found");
       return;
     }
 
@@ -36,7 +35,7 @@ export class PaginationPage {
 
   render() {
     if (!this.store) {
-      Sentry.logger.warn("TicketableList component not found");
+      console.warn("TicketableList component not found");
       return null;
     }
 

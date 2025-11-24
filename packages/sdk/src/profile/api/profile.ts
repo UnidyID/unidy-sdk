@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/browser";
 import type { ApiClient, ApiResponse } from "../../api";
 import * as z from "zod";
 
