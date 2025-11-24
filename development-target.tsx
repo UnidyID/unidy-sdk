@@ -159,7 +159,7 @@ const CustomTicketables = () => {
   const [state, setState] = useState<undefined | "active" | "inactive">();
 
   const pagination = usePagination();
-  const ticketables = useTicketables({
+  const ticketables = useTicketables('tickets', {
     pagination,
     filter: { category_id: "asdasd", state: state, expires_at: new Date('2023-01-01'), title: 'Foo - %', _operators: { expires_at: 'gt', title: 'like' } },
   });
