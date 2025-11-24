@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";

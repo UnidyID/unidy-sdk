@@ -51,7 +51,7 @@ export class ApiClient {
       } catch (e) {
         data = undefined;
       }
-      
+
       const response: ApiResponse<T> = {
         data,
         status: res.status,
