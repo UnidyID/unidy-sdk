@@ -176,6 +176,12 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
     if (error) {
+      if (error === "missing_required_fields") {
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+        authStore.setStep("missing-fields");
+        return;
+      }
       authStore.setFieldError("magicCode", error);
       authStore.setLoading(false);
     } else {
