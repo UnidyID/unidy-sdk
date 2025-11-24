@@ -30,6 +30,6 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
     onChange={(e) => props.onChange((e.target as HTMLInputElement).value)}
     onInput={(e) => props.onInput(e)}
     onBlur={(e) => props.onBlur?.(e)}
-    aria-describedby={props.ariaDescribedBy}
+    aria-describedby={props.ariaDescribedBy || undefined}
   />
 );

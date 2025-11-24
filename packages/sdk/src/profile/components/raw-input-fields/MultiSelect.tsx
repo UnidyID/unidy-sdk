@@ -39,7 +39,7 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
         title={props.title}
         class={props.componentClassName}
         onChange={(e) => props.onToggle(props.value, (e.target as HTMLInputElement).checked)}
-        aria-describedby={props.ariaDescribedBy}
+        aria-describedby={props.ariaDescribedBy || undefined}
       />
     );
   }
@@ -47,7 +47,7 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
   return (
     <div
       part={`multi-select-group_field ${props.specificPartKey ? `multi-select-group_field--${props.specificPartKey}` : ""}`}
-      title={props.title} aria-describedby={props.ariaDescribedBy}
+      title={props.title} aria-describedby={props.ariaDescribedBy || undefined}
     >
       {props.options.map((opt) => (
         <label 

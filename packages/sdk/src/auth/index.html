@@ -219,8 +219,9 @@
       <u-signin-step name="email">
         <u-passkey text="Sign in with Passkey"
           loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
-        <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-described-by="passkey-error-email"></u-passkey>
+        <u-error-message id="passkey-error-email" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -229,8 +230,9 @@
         </div>
 
         <u-email-field placeholder="Enter your email"
-          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
-        <u-error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
+          aria-describedby="email-error"></u-email-field>
+        <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <u-auth-submit-button for="email" text="Continue with Email"
           class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
@@ -259,8 +261,9 @@
       <u-signin-step name="verification">
         <u-passkey text="Sign in with Passkey"
           loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
-        <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-describedby="passkey-error-verification"></u-passkey>
+        <u-error-message id="passkey-error-verification" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -270,18 +273,14 @@
 
         <u-signin-strategy type="password">
           <u-password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></u-password-field>
+            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+            aria-describedby="password-error"></u-password-field>
           <u-reset-password-button text="Reset Password"
             class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-          <u-error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
           <u-auth-submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
-
-      </u-signin-step name="missing-fields">
-        <u-missing-field></u-missing-field>
-        <u-missing-fields-submit-button></u-missing-fields-submit-button>
-      </u-signin-step>
 
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
@@ -299,9 +298,9 @@
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </u-conditional-render>
 
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></u-magic-code-field>
+          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg" aria-describedby="magic-code-error"></u-magic-code-field>
 
-          <u-error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+          <u-error-message id="magic-code-error" for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
           <u-conditional-render when="magicCodeSent" is="true">
             <u-send-magic-code-button text="Resend Magic Code"
@@ -312,6 +311,10 @@
         <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
       </u-signin-step>
 
+      </u-signin-step name="missing-fields">
+        <u-missing-field></u-missing-field>
+        <u-missing-fields-submit-button></u-missing-fields-submit-button>
+      </u-signin-step>
     </u-signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
@@ -426,14 +429,14 @@
                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></u-raw-field>
           </div>
           <div class="mb-4">
-            <label class="block text-sm font-bold mb-1">Favorite Nut</label>
+            <label for="custom_attributes.favorite_nut" class="block text-sm font-bold mb-1">Favorite Nut</label>
             <u-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
                           bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
                           focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
                 { "value": "erdnuss", "label": "Erdnuss" },
                 { "value": "haselnuss", "label": "Haselnuss" },
                 { "value": "walnuss", "label": "Walnuss" }
-              ]' />
+              ]'></u-raw-field>
           </div>
           <div class="mb-4">
             <h3 class="block text-sm font-bold mb-1">Favorite sports</h3>

@@ -27,6 +27,6 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     title={props.title}
     onChange={(e) => props.onChange((e.target as HTMLTextAreaElement).value)}
     onBlur={props.onBlur}
-    aria-describedby={props.ariaDescribedBy}
+    aria-describedby={props.ariaDescribedBy || undefined}
   />
 );

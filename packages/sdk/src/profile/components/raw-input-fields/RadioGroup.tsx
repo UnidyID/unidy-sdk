@@ -37,13 +37,14 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
         title={props.title}
         class={props.componentClassName}
         onChange={() => props.onChange(String(props.value))}
-        aria-describedby={props.ariaDescribedBy}
+        aria-describedby={props.ariaDescribedBy || undefined}
       />
     );
   }
 
   return (
-    <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ""}`} title={props.title} aria-describedby={props.ariaDescribedBy}>
+    <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ""}`}
+         title={props.title} aria-describedby={props.ariaDescribedBy || undefined}>
       {props.options.map((opt) => (
         <label
           htmlFor={`${props.name}-${opt.value}`}

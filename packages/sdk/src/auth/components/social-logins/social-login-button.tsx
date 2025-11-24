@@ -91,7 +91,7 @@ export class SocialLoginButton {
 
           {this.iconOnly ? (
             // Render the hidden text for accessibility.
-            <span style={{ display: "none" }}>{this.text}</span>
+            <span class="sr-only">{this.text}</span>
           ) : (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
               {this.text}

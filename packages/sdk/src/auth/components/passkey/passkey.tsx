@@ -11,6 +11,7 @@ export class Passkey {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() text = "Sign in with Passkey";
   @Prop() loadingText = "Authenticating...";
+  @Prop() ariaDescribedBy? = "";
 
   @State() isSupported = false;
 
@@ -41,7 +42,8 @@ export class Passkey {
 
     return (
       <Host>
-        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
+        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName}
+                aria-live="polite" aria-describedby={this.ariaDescribedBy || undefined}>
           {authState.loading ? this.loadingText : this.text}
         </button>
       </Host>
