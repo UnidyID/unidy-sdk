@@ -14,6 +14,7 @@ export interface ProfileNode {
   options?: Option[];
   radio_options?: RadioOption[];
   attr_name?: string;
+  profile_query?: boolean;
 }
 
 export type ProfileRaw = {

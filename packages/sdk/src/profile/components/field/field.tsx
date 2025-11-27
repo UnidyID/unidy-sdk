@@ -47,7 +47,15 @@ export class Field {
   componentDidRender() {
     const fieldErrors = profileState.errors;
     if (fieldErrors?.[this.field]) {
-      this.el.shadowRoot?.getElementById(this.field)?.focus();
+      this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      (this.el.shadowRoot
+        ?.getElementById(this.field)
+        ?.querySelector("input, select, textarea") as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | null
+      )?.focus();
     }
   }
 
