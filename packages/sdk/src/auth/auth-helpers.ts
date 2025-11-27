@@ -108,8 +108,8 @@ export class AuthHelpers {
       return;
     }
 
-    const encodedFields = params.get("fields");
-    if (!encodedFields) {
+    const fieldsFromUrl = params.get("fields");
+    if (!fieldsFromUrl) {
       return;
     }
 
@@ -121,7 +121,9 @@ export class AuthHelpers {
     }
 
     try {
-      const fields = this.decodeUrlSafeBase64<RequiredFieldsResponse["fields"]>(encodedFields);
+      sessionStorage.setItem("unidy_missing_required_fields", fieldsFromUrl);
+      sessionStorage.setItem("unidy_step", "missing-fields");
+      const fields = JSON.parse(fieldsFromUrl);
 
       authStore.setMissingFields(fields);
       profileState.data = fields as ProfileRaw;
@@ -129,8 +131,11 @@ export class AuthHelpers {
 
       params.delete("error");
       params.delete("fields");
-      window.history.replaceState(null, "", url.toString());
+      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
+      window.history.pushState(null, "", cleanUrl);
+
     } catch (e) {
+      console.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }  
@@ -346,12 +351,5 @@ export class AuthHelpers {
       url.searchParams.delete("sid");
       window.history.replaceState(null, "", url.toString());
     }
-  }
-
-  private decodeUrlSafeBase64<T = unknown>(encoded: string): T {
-    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
-    const json = atob(padded);
-    return JSON.parse(json) as T;
   }  
 }

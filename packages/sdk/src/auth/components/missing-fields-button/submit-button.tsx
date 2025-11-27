@@ -34,6 +34,8 @@ export class SubmitButton {
 
     const { jwt } = (response as TokenResponse);
     profileState.loading = false;
+    sessionStorage.removeItem("unidy_missing_required_fields");
+    sessionStorage.removeItem("unidy_step");
     authStore.setToken(jwt);
   }
 
