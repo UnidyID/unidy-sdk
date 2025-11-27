@@ -6,7 +6,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Quick Start: examples](#quick-start-examples)
+- [Quick Start: Examples](#quick-start-examples)
   - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
   - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
   - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
@@ -43,11 +43,11 @@ Add the following scripts to your HTML file:
 
 ```html
 <!-- 1. Loads the web components (e.g., <u-signin-root>) -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
 
 <!-- 2. Makes the Auth helper class available for use in your scripts -->
 <script type="module">
-  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/index.esm.js';
+  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js';
   // ... use Auth class
 </script>
 ```
@@ -75,7 +75,7 @@ import { Auth } from '@unidy.io/sdk/auth';
 // Now you can use the components in your HTML and the Auth class in your scripts.
 ```
 
-## Quick Start: examples
+## Quick Start: Examples
 
 
 ### Quick Start: Authentication Flow
