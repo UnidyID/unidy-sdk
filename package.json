@@ -1,7 +1,7 @@
 {
   "name": "unidy-sdk",
   "private": true,
-  "packageManager": "bun@1.2.13",
+  "packageManager": "bun@1.3.2",
   "workspaces": ["packages/*"],
   "scripts": {
     "clean": "rm -rf ./node_modules && rm -rf ./packages/*/dist && rm -rf ./packages/*/www && rm -rf ./packages/*/.stencil && rm -rf ./packages/*/loader",
@@ -12,6 +12,6 @@
     "build": "bun --filter './packages/*' build"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "^2.3.6"
   }
 }
