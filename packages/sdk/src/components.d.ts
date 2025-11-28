@@ -73,6 +73,12 @@ export namespace Components {
          */
         "baseUrl": string;
     }
+    interface UConnectionStatus {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
     interface UEmailField {
         /**
           * @default ""
@@ -157,9 +163,9 @@ export namespace Components {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction": 'prev' | 'next';
+        "direction": "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
@@ -317,16 +323,16 @@ export namespace Components {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter": string;
         /**
@@ -334,7 +340,7 @@ export namespace Components {
          */
         "limit": number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale": string;
         /**
@@ -355,7 +361,7 @@ export namespace Components {
          */
         "store": PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
 }
 export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
@@ -424,6 +430,12 @@ declare global {
     var HTMLUConfigElement: {
         prototype: HTMLUConfigElement;
         new (): HTMLUConfigElement;
+    };
+    interface HTMLUConnectionStatusElement extends Components.UConnectionStatus, HTMLStencilElement {
+    }
+    var HTMLUConnectionStatusElement: {
+        prototype: HTMLUConnectionStatusElement;
+        new (): HTMLUConnectionStatusElement;
     };
     interface HTMLUEmailFieldElement extends Components.UEmailField, HTMLStencilElement {
     }
@@ -588,6 +600,7 @@ declare global {
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
+        "u-connection-status": HTMLUConnectionStatusElement;
         "u-email-field": HTMLUEmailFieldElement;
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
@@ -667,6 +680,12 @@ declare namespace LocalJSX {
           * @default ""
          */
         "baseUrl"?: string;
+    }
+    interface UConnectionStatus {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
     }
     interface UEmailField {
         /**
@@ -753,9 +772,9 @@ declare namespace LocalJSX {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction"?: 'prev' | 'next';
+        "direction"?: "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
@@ -913,16 +932,16 @@ declare namespace LocalJSX {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter"?: string;
         /**
@@ -930,7 +949,7 @@ declare namespace LocalJSX {
          */
         "limit"?: number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale"?: string;
         /**
@@ -951,7 +970,7 @@ declare namespace LocalJSX {
          */
         "store"?: PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
         "email-field": EmailField;
@@ -961,6 +980,7 @@ declare namespace LocalJSX {
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
+        "u-connection-status": UConnectionStatus;
         "u-email-field": UEmailField;
         "u-error-message": UErrorMessage;
         "u-field": UField;
@@ -996,6 +1016,7 @@ declare module "@stencil/core" {
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
+            "u-connection-status": LocalJSX.UConnectionStatus & JSXBase.HTMLAttributes<HTMLUConnectionStatusElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
