@@ -1,27 +1,27 @@
-import { Component, h, State, Element, Host, Prop, Watch } from '@stencil/core';
-import { ApiClient, type PaginationMeta } from '../../../api';
+import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
+import { ApiClient, type PaginationMeta } from "../../../api";
 import type { Locale } from "date-fns";
-import { format } from 'date-fns/format';
-import { enUS } from 'date-fns/locale/en-US';
-import { de } from 'date-fns/locale/de';
-import { fr } from 'date-fns/locale/fr';
-import { nlBE } from 'date-fns/locale/nl-BE';
-import { ro } from 'date-fns/locale/ro';
+import { format } from "date-fns/format";
+import { enUS } from "date-fns/locale/en-US";
+import { de } from "date-fns/locale/de";
+import { fr } from "date-fns/locale/fr";
+import { nlBE } from "date-fns/locale/nl-BE";
+import { ro } from "date-fns/locale/ro";
 
-import { type Ticket, TicketsService } from '../../api/tickets';
-import { type Subscription, SubscriptionsService } from '../../api/subscriptions';
-import { createSkeletonLoader, replaceTextNodesWithSkeletons } from './skeleton-helpers';
-import { createPaginationStore, type PaginationStore } from '../../store/pagination-store';
+import { type Ticket, TicketsService } from "../../api/tickets";
+import { type Subscription, SubscriptionsService } from "../../api/subscriptions";
+import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
+import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
 
 const LOCALES: Record<string, Locale> = {
-  'en-US': enUS,
-  'de': de,
-  'fr': fr,
-  'nl-BE': nlBE,
-  'ro': ro,
+  "en-US": enUS,
+  de: de,
+  fr: fr,
+  "nl-BE": nlBE,
+  ro: ro,
 };
 
-@Component({ tag: 'u-ticketable-list', shadow: false })
+@Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList {
   @Element() element: HTMLElement;
 
@@ -32,17 +32,17 @@ export class TicketableList {
   @Prop() paginationMeta: PaginationMeta | null = null;
 
   // TODO: pull from config
-  @Prop() baseUrl?: string = 'http://localhost:3000';
+  @Prop() baseUrl?: string = "http://localhost:3000";
   // TODO: pull from config
-  @Prop() apiKey?: string = 'public-newsletter-api-key';
+  @Prop() apiKey?: string = "public-newsletter-api-key";
   // TODO: pull from config
-  @Prop() locale = 'en-US';
+  @Prop() locale = "en-US";
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
 
   // TODO: add a component that can override this
-  @Prop({ mutable: true }) filter = '';
+  @Prop({ mutable: true }) filter = "";
 
   // TODO: Add pagination component to override all of this
   @Prop({ mutable: true }) limit = 10;
@@ -50,11 +50,11 @@ export class TicketableList {
 
   @Prop() skeletonCount?: number;
   @Prop() skeletonAllText?: boolean = false;
-  @Prop() ticketableType!: 'ticket' | 'subscription';
+  @Prop() ticketableType!: "ticket" | "subscription";
 
-  @Watch('page')
-  @Watch('limit')
-  @Watch('filter')
+  @Watch("page")
+  @Watch("limit")
+  @Watch("filter")
   async fetchData() {
     await this.loadData();
   }
@@ -74,18 +74,18 @@ export class TicketableList {
     this.loading = true;
 
     if (!this.baseUrl || !this.apiKey) {
-      this.error = '[u-ticketable-list] baseUrl and apiKey are required';
+      this.error = "[u-ticketable-list] baseUrl and apiKey are required";
       this.loading = false;
       return;
     }
 
     if (!this.ticketableType) {
-      this.error = '[u-ticketable-list] ticketable-type attribute is required';
+      this.error = "[u-ticketable-list] ticketable-type attribute is required";
       this.loading = false;
       return;
     }
 
-    if (this.ticketableType !== 'ticket' && this.ticketableType !== 'subscription') {
+    if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
       this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
       this.loading = false;
       return;
@@ -93,16 +93,22 @@ export class TicketableList {
 
     try {
       const apiClient = new ApiClient(this.baseUrl, this.apiKey);
-      const service = this.ticketableType === 'ticket' ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
+      const service = this.ticketableType === "ticket" ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
 
-      const response = await service.list({}, {
-        page: this.page,
-        limit: this.limit,
-        ...Object.fromEntries((this.filter || '').split(';').map(pair => pair.split('='))),
-      });
+      const response = await service.list(
+        {},
+        {
+          page: this.page,
+          limit: this.limit,
+          ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
+        },
+      );
 
       if (!response.success || !response.data) {
-        this.error = response.error instanceof Error ? response.error.message : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
+        this.error =
+          response.error instanceof Error
+            ? response.error.message
+            : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
         this.loading = false;
         return;
       }
@@ -117,7 +123,7 @@ export class TicketableList {
 
       this.loading = false;
     } catch (err) {
-      this.error = err instanceof Error ? err.message : '[u-ticketable-list] An error occurred';
+      this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
     }
   }
@@ -126,12 +132,12 @@ export class TicketableList {
     const fragment = template.content.cloneNode(true) as DocumentFragment;
     const isSkeleton = !item;
 
-    for (const elem of fragment.querySelectorAll('[unidy-attr]')) {
+    for (const elem of fragment.querySelectorAll("[unidy-attr]")) {
       for (const [unidyAttr, newValue] of Array.from(elem.attributes)
-        .filter(attr => attr.name.startsWith('unidy-attr-'))
-        .map(attr => {
+        .filter((attr) => attr.name.startsWith("unidy-attr-"))
+        .map((attr) => {
           if (isSkeleton) {
-            return [attr, '#'] as const;
+            return [attr, "#"] as const;
           }
 
           let value = attr.value;
@@ -141,41 +147,41 @@ export class TicketableList {
 
           return [attr, value] as const;
         })) {
-          elem.setAttribute(unidyAttr.name.replace('unidy-attr-', ''), newValue);
-          elem.removeAttribute(unidyAttr.name);
-        }
+        elem.setAttribute(unidyAttr.name.replace("unidy-attr-", ""), newValue);
+        elem.removeAttribute(unidyAttr.name);
+      }
     }
 
     if (isSkeleton && this.skeletonAllText) {
       replaceTextNodesWithSkeletons(fragment);
     }
 
-    for (const valueEl of fragment.querySelectorAll('ticketable-value')) {
+    for (const valueEl of fragment.querySelectorAll("ticketable-value")) {
       if (isSkeleton) {
-        valueEl.innerHTML = createSkeletonLoader('Sample Text');
+        valueEl.innerHTML = createSkeletonLoader("Sample Text");
       } else {
-        const key = valueEl.getAttribute('name');
+        const key = valueEl.getAttribute("name");
         if (!key) continue;
         const value = item[key];
-        const formatAttr = valueEl.getAttribute('format');
-        const dateFormatAttr = valueEl.getAttribute('date-format');
+        const formatAttr = valueEl.getAttribute("format");
+        const dateFormatAttr = valueEl.getAttribute("date-format");
 
         let finalValue: string;
 
-        if (typeof value === 'object' && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || 'yyyy-MM-dd', { locale: LOCALES[this.locale] || de });
-        } else if (typeof value === 'number' && key === 'price') {
-          finalValue = new Intl.NumberFormat(this.locale, { style: 'currency', currency: item.currency || 'EUR' }).format(value);
-        } else if (typeof value === 'number') {
+        if (typeof value === "object" && value instanceof Date) {
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[this.locale] || de });
+        } else if (typeof value === "number" && key === "price") {
+          finalValue = new Intl.NumberFormat(this.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
+        } else if (typeof value === "number") {
           finalValue = value.toFixed(2);
         } else if (value != null) {
           finalValue = String(value);
         } else {
-          finalValue = valueEl.getAttribute('default') || '';
+          finalValue = valueEl.getAttribute("default") || "";
         }
 
         if (formatAttr) {
-          finalValue = formatAttr.replaceAll('{{value}}', finalValue);
+          finalValue = formatAttr.replaceAll("{{value}}", finalValue);
         }
 
         valueEl.textContent = finalValue;
@@ -198,7 +204,7 @@ export class TicketableList {
   }
 
   private renderToTarget() {
-    const template = this.element.querySelector('template');
+    const template = this.element.querySelector("template");
     if (!template) return;
 
     const targetElement = document.querySelector(this.target);
@@ -208,7 +214,7 @@ export class TicketableList {
     }
 
     // Clear existing content
-    targetElement.innerHTML = '';
+    targetElement.innerHTML = "";
     this.renderContent(targetElement, template);
   }
 
@@ -216,7 +222,7 @@ export class TicketableList {
     if (this.loading) {
       // Use skeletonCount if provided, otherwise use limit
       const skeletonCount = this.skeletonCount || this.limit;
-      for (const _item of Array.from({length: skeletonCount})) {
+      for (const _item of Array.from({ length: skeletonCount })) {
         target.appendChild(this.renderFragment(template));
       }
     } else if (!this.error) {
@@ -225,7 +231,7 @@ export class TicketableList {
       }
     } else {
       // TODO[LOGGING]: Log this to console (use shared logger)
-      target.innerHTML = '<h1>Error: {this.error}</h1>';
+      target.innerHTML = "<h1>Error: {this.error}</h1>";
     }
   }
 
@@ -235,17 +241,21 @@ export class TicketableList {
       return <h1>Error: {this.error}</h1>;
     }
 
-    const template = this.element.querySelector('template');
+    const template = this.element.querySelector("template");
     if (!template) {
       // TODO[LOGGING]: Log this to console (use shared logger)
       return <h1>No template found - fix config</h1>;
     }
 
     if (this.target) {
-      return <Host><slot/></Host>;
+      return (
+        <Host>
+          <slot />
+        </Host>
+      );
     }
 
-    const element = document.createElement('div');
+    const element = document.createElement("div");
     this.renderContent(element, template);
 
     return (

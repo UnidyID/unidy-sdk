@@ -45,7 +45,7 @@ const TicketsListResponseSchema = z.object({
 export type TicketsListResponse = z.infer<typeof TicketsListResponseSchema>;
 
 // Query params schema with validations
-const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_category_id: z.string().uuid(), }).partial();
+const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_category_id: z.string().uuid() }).partial();
 
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
@@ -54,17 +54,8 @@ export class TicketsService {
   get: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
   constructor(private client: ApiClient) {
-    this.list = getWithSchema(
-      this.client,
-      TicketsListResponseSchema,
-      (_args: unknown) => "/api/sdk/v1/tickets",
-      TicketsListParamsSchema
-    )
+    this.list = getWithSchema(this.client, TicketsListResponseSchema, (_args: unknown) => "/api/sdk/v1/tickets", TicketsListParamsSchema);
 
-    this.get = getWithSchema(
-      this.client,
-      TicketSchema,
-      (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`
-    )
+    this.get = getWithSchema(this.client, TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
   }
 }

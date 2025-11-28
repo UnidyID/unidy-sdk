@@ -22,15 +22,8 @@ export function createSkeletonLoader(text: string): string {
  * @param node - The root node to process
  * @param createSkeletonFn - Function to create skeleton HTML (defaults to createSkeletonLoader)
  */
-export function replaceTextNodesWithSkeletons(
-  node: Node,
-  createSkeletonFn: (text: string) => string = createSkeletonLoader
-): void {
-  const walker = document.createTreeWalker(
-    node,
-    NodeFilter.SHOW_TEXT,
-    null
-  );
+export function replaceTextNodesWithSkeletons(node: Node, createSkeletonFn: (text: string) => string = createSkeletonLoader): void {
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
 
   const textNodes: Text[] = [];
   for (let curTextNode = walker.nextNode(); curTextNode; curTextNode = walker.nextNode()) {
@@ -38,7 +31,7 @@ export function replaceTextNodesWithSkeletons(
       let parent = curTextNode.parentNode;
       let isInsideTicketableValue = false;
       while (parent) {
-        if (parent.nodeName.toLowerCase() === 'ticketable-value') {
+        if (parent.nodeName.toLowerCase() === "ticketable-value") {
           isInsideTicketableValue = true;
           break;
         }
@@ -54,9 +47,9 @@ export function replaceTextNodesWithSkeletons(
     const parent = textNode.parentNode;
     if (!parent) continue;
 
-    const text = textNode.textContent || '';
-    const placeholderText = text.trim() || 'Sample Text';
-    const skeletonSpan = document.createElement('span');
+    const text = textNode.textContent || "";
+    const placeholderText = text.trim() || "Sample Text";
+    const skeletonSpan = document.createElement("span");
     skeletonSpan.innerHTML = createSkeletonFn(placeholderText);
     parent.replaceChild(skeletonSpan, textNode);
   }

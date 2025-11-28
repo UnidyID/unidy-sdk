@@ -1,5 +1,5 @@
-import { createStore } from '@stencil/store';
-import type { PaginationMeta } from '../../api';
+import { createStore } from "@stencil/store";
+import type { PaginationMeta } from "../../api";
 
 export interface PaginationState {
   paginationMeta: PaginationMeta | null;
@@ -7,10 +7,7 @@ export interface PaginationState {
 
 export type PaginationStore = {
   state: PaginationState;
-  onChange: <K extends keyof PaginationState>(
-    prop: K,
-    cb: (newValue: PaginationState[K]) => void,
-  ) => () => void;
+  onChange: <K extends keyof PaginationState>(prop: K, cb: (newValue: PaginationState[K]) => void) => () => void;
   reset: () => void;
 };
 

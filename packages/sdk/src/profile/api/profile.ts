@@ -3,63 +3,66 @@ import * as z from "zod";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
 
-const BaseFieldDataSchema = z.object({
-  required: z.boolean(),
-  label: z.string(),
-  attr_name: z.string(),
-  locked: z.boolean().optional(),
-  locked_text: z.string().optional()
-}).strict();
+const BaseFieldDataSchema = z
+  .object({
+    required: z.boolean(),
+    label: z.string(),
+    attr_name: z.string(),
+    locked: z.boolean().optional(),
+    locked_text: z.string().optional(),
+  })
+  .strict();
 
-
-const SelectOptionSchema = z.object({
-  value: z.string(),
-  label: z.string(),
-}).strict();
+const SelectOptionSchema = z
+  .object({
+    value: z.string(),
+    label: z.string(),
+  })
+  .strict();
 
 const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
 
-const RadioOptionSchema = z.object({
-  value: RadioValue,
-  label: z.string(),
-  checked: z.boolean()
-}).strict();
+const RadioOptionSchema = z
+  .object({
+    value: RadioValue,
+    label: z.string(),
+    checked: z.boolean(),
+  })
+  .strict();
 
 const TextFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null()]),
   type: z.enum(["text", "textarea"]),
 }).strict();
 
-
 const PhoneFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string().nullable()]),
-  type: z.enum(["tel"])
+  type: z.enum(["tel"]),
 }).strict();
 
 const RadioFieldSchema = BaseFieldDataSchema.extend({
   value: RadioValue,
   type: z.enum(["radio"]),
-  radio_options: z.array(RadioOptionSchema)
+  radio_options: z.array(RadioOptionSchema),
 }).strict();
 
 const SelectFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: z.enum(["select"]),
-  options: z.array(SelectOptionSchema)
+  options: z.array(SelectOptionSchema),
 }).strict();
 
 const DateFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null()]),
-  type: z.enum(["date", "datetime-local"])
+  type: z.enum(["date", "datetime-local"]),
 }).strict();
-
 
 const CustomFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
   type: FieldType,
   readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
-  options: z.array(SelectOptionSchema).optional()
+  options: z.array(SelectOptionSchema).optional(),
 }).strict();
 
 export const UserProfileSchema = z.object({
@@ -76,50 +79,44 @@ export const UserProfileSchema = z.object({
   country_code: SelectFieldSchema,
   date_of_birth: DateFieldSchema,
   preferred_language: TextFieldSchema.optional(),
-  custom_attributes: z.record(z.string(), CustomFieldSchema)
-})
+  custom_attributes: z.record(z.string(), CustomFieldSchema),
+});
 
-const UserProfileErrorSchema = z.object({
-  error_identifier: z.string()
-}).strict();
+const UserProfileErrorSchema = z
+  .object({
+    error_identifier: z.string(),
+  })
+  .strict();
 
-const FormErrorsValue = z.union([
-  z.array(z.string()),
-  z.array(z.tuple([z.number(), z.array(z.string())])),
-]);
+const FormErrorsValue = z.union([z.array(z.string()), z.array(z.tuple([z.number(), z.array(z.string())]))]);
 
 const FormErrorsRawSchema = z.record(z.string(), FormErrorsValue);
 
-const UserProfileFormErrorSchema = z.object({
-  errors: FormErrorsRawSchema,
-}).strict().transform(({ errors }) => {
-  const flatErrors = Object.fromEntries(
-    Object.entries(errors).map(([field, value]) => {
-      const errorMessages =
-        Array.isArray(value) && value.length > 0 && typeof value[0] === "string"
-          ? (value as string[])
-          : (value as Array<[number, string[]]>).flatMap(([, arr]) => arr);
-      return [field, errorMessages.join(" | ")];
-    })
-  );
-  return { errors, flatErrors };
-});
+const UserProfileFormErrorSchema = z
+  .object({
+    errors: FormErrorsRawSchema,
+  })
+  .strict()
+  .transform(({ errors }) => {
+    const flatErrors = Object.fromEntries(
+      Object.entries(errors).map(([field, value]) => {
+        const errorMessages =
+          Array.isArray(value) && value.length > 0 && typeof value[0] === "string"
+            ? (value as string[])
+            : (value as Array<[number, string[]]>).flatMap(([, arr]) => arr);
+        return [field, errorMessages.join(" | ")];
+      }),
+    );
+    return { errors, flatErrors };
+  });
 
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
 export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
 
-const ProfileResultSchema = z.union([
-  UserProfileSchema,
-  UserProfileErrorSchema,
-  UserProfileFormErrorSchema,
-]);
+const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
 
-export type ProfileResult =
-  | UserProfileData
-  | UserProfileError
-  | UserProfileFormError
-  | Record<string, string>;
+export type ProfileResult = UserProfileData | UserProfileError | UserProfileFormError | Record<string, string>;
 
 declare global {
   interface Window {
@@ -139,7 +136,7 @@ export class ProfileService {
     }
 
     try {
-      const resp = await this.client.get<unknown>( `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`, { "X-ID-Token": idToken });
+      const resp = await this.client.get<unknown>(`/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`, { "X-ID-Token": idToken });
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {
@@ -171,7 +168,11 @@ export class ProfileService {
     const payload = data as object;
 
     try {
-      const resp = await this.client.patch<unknown>( `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`, { ...payload }, { "X-ID-Token": idToken });
+      const resp = await this.client.patch<unknown>(
+        `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+        { ...payload },
+        { "X-ID-Token": idToken },
+      );
 
       const parsed = ProfileResultSchema.safeParse(resp.data);
       if (!parsed.success) {

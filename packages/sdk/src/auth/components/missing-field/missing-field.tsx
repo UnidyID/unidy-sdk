@@ -20,15 +20,11 @@ export class MissingField {
 
     return (
       <div class="missing-fields">
-          <form>
-            {fieldNames.map((fieldName) => (
-              <u-field
-                key={fieldName}
-                field={fieldName}
-                renderDefaultLabel={true}
-              />
-            ))}
-          </form>
+        <form>
+          {fieldNames.map((fieldName) => (
+            <u-field key={fieldName} field={fieldName} renderDefaultLabel={true} />
+          ))}
+        </form>
       </div>
     );
   }

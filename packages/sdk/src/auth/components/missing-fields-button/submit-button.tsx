@@ -7,7 +7,7 @@ import type { TokenResponse } from "../../api/auth";
 
 @Component({
   tag: "u-missing-fields-submit-button",
-  shadow: true
+  shadow: true,
 })
 export class SubmitButton {
   @Element() el!: HTMLElement;
@@ -31,7 +31,7 @@ export class SubmitButton {
       return;
     }
 
-    const { jwt } = (response as TokenResponse);
+    const { jwt } = response as TokenResponse;
     profileState.loading = false;
     authStore.setToken(jwt);
   }
@@ -41,10 +41,15 @@ export class SubmitButton {
   }
 
   render() {
-   if (authState.step !== "missing-fields") return null;
+    if (authState.step !== "missing-fields") return null;
     return (
       <div>
-        <button type="button" onClick={() => this.onSubmit()} part="button" disabled={profileState.errors && Object.keys(profileState.errors).length > 0 || profileState.phoneValid === false}>
+        <button
+          type="button"
+          onClick={() => this.onSubmit()}
+          part="button"
+          disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
+        >
           {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
