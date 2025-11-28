@@ -48,14 +48,10 @@ export class Field {
     const fieldErrors = profileState.errors;
     if (fieldErrors?.[this.field]) {
       this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
-      (this.el.shadowRoot
+      this.el.shadowRoot
         ?.getElementById(this.field)
-        ?.querySelector("input, select, textarea") as
-        | HTMLInputElement
-        | HTMLTextAreaElement
-        | HTMLSelectElement
-        | null
-      )?.focus();
+        ?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, select, textarea")
+        ?.focus();
     }
   }
 
