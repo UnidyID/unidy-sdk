@@ -210,6 +210,18 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
   <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
 
+  <u-connection-status>
+    <div
+      class="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 flex items-start gap-2 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+      <div class="flex-1">
+        <strong class="block text-yellow-800 text-base mb-1">Connection Error</strong>
+        <p class="text-yellow-700 text-sm m-0">
+          Unable to connect to the Unidy server
+        </p>
+      </div>
+    </div>
+  </u-connection-status>
+
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
@@ -217,8 +229,7 @@
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
       <u-signin-step name="email">
-        <u-passkey text="Sign in with Passkey"
-          loading-text="Authenticating..."
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
         <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
@@ -257,8 +268,7 @@
       </u-signin-step>
 
       <u-signin-step name="verification">
-        <u-passkey text="Sign in with Passkey"
-          loading-text="Authenticating..."
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
         <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 

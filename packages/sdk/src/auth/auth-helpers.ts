@@ -4,12 +4,22 @@ import type { ProfileRaw } from "../profile/store/profile-store";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
+import { unidyState } from "../shared/store/unidy-store";
 
 export class AuthHelpers {
   private client: UnidyClient;
 
   constructor(client: UnidyClient) {
     this.client = client;
+  }
+
+  private handleConnectionStatus(error: string | null): boolean {
+    const connectionFailed = error === "connection_failed";
+
+    unidyState.backendConnected = !connectionFailed;
+    authStore.setLoading(false);
+
+    return connectionFailed;
   }
 
   async createSignIn(email: string) {
@@ -21,6 +31,10 @@ export class AuthHelpers {
     authStore.clearErrors();
 
     const [error, response] = await this.client.auth.createSignIn(email);
+
+    if (this.handleConnectionStatus(error)) {
+      return;
+    }
 
     if (error) {
       authStore.setFieldError("email", error);
@@ -47,6 +61,10 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
+    if (this.handleConnectionStatus(error)) {
+      return;
+    }
+
     if (error) {
       if (error === "missing_required_fields") {
         authStore.setMissingFields((response as RequiredFieldsResponse).fields);
@@ -69,9 +87,13 @@ export class AuthHelpers {
 
   async logout() {
     const [error, _] = await this.client.auth.signOut(authState.sid as string);
-    if (error) {
+
+    this.handleConnectionStatus(error);
+
+    if (error && error !== "connection_failed") {
       authStore.setGlobalError("auth", error);
     }
+
     return [error, _] as const;
   }
 
@@ -84,6 +106,10 @@ export class AuthHelpers {
     }
 
     const [error, response] = await this.client.auth.refreshToken(authState.sid);
+
+    if (this.handleConnectionStatus(error)) {
+      return;
+    }
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -104,6 +130,11 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
     authStore.setLoading(false);
+
+    if (this.handleConnectionStatus(error)) {
+      return [error, response] as const;
+    }
+
     if (error) {
       authStore.setFieldError("magicCode", error);
       authStore.setStep("magic-code");
@@ -132,6 +163,10 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
+    if (this.handleConnectionStatus(error)) {
+      return;
+    }
+
     if (error) {
       authStore.setFieldError("magicCode", error);
       authStore.setLoading(false);
@@ -151,6 +186,10 @@ export class AuthHelpers {
     authStore.setResetPasswordStep("requested");
 
     const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
+
+    if (this.handleConnectionStatus(error)) {
+      return;
+    }
 
     if (error) {
       authStore.setFieldError("password", error);
@@ -176,6 +215,10 @@ export class AuthHelpers {
     try {
       // Step 1: Get passkey options from server (pass sid if available from previous step)
       const [optionsError, options] = await this.client.auth.getPasskeyOptions(authState.sid || undefined);
+
+      if (this.handleConnectionStatus(optionsError)) {
+        return;
+      }
 
       if (optionsError || !options) {
         authStore.setGlobalError("auth", optionsError || "bad_request");
@@ -230,6 +273,10 @@ export class AuthHelpers {
 
       // Step 5: Verify credential with server
       const [verifyError, tkResponse] = await this.client.auth.authenticateWithPasskey(formattedCredential);
+
+      if (this.handleConnectionStatus(verifyError)) {
+        return;
+      }
 
       const tokenResponse = tkResponse as TokenResponse;
       if (verifyError || !tokenResponse) {

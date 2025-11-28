@@ -43,25 +43,29 @@ export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
 export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
 export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
+type CommonErrors =
+  | ["connection_failed", null]
+  | ["schema_validation_error", SchemaValidationError];
+
 export type CreateSignInResult =
+  | CommonErrors
   | ["account_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, CreateSignInResponse];
 
 export type AuthenticateResultShared =
+  | CommonErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export type SendMagicCodeResult =
+  | CommonErrors
   | ["magic_code_recently_created", SendMagicCodeError]
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, SendMagicCodeResponse];
 
 export type AuthenticateWithPasswordResult = ["invalid_password", ErrorResponse] | AuthenticateResultShared;
@@ -73,24 +77,24 @@ export type AuthenticateWithMagicCodeResult =
   | AuthenticateResultShared;
 
 export type RefreshTokenResult =
+  | CommonErrors
   | ["invalid_refresh_token", ErrorResponse]
   | ["refresh_token_revoked", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export type ResetPasswordResult =
+  | CommonErrors
   | ["password_not_set", ErrorResponse]
   | ["reset_password_already_sent", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, null];
 
 export type SignOutResult =
+  | CommonErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["missing_id_token", ErrorResponse]
   | ["invalid_id_token", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, null];
 
 const PasskeyOptionsResponseSchema = z.object({
@@ -116,16 +120,16 @@ export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema
 export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;
 
 export type GetPasskeyOptionsResult =
+  | CommonErrors
   | ["bad_request", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, PasskeyOptionsResponse];
 
 export type AuthenticateWithPasskeyResult =
+  | CommonErrors
   | ["invalid_passkey", ErrorResponse]
   | ["verification_failed", ErrorResponse]
   | ["authentication_failed", ErrorResponse]
   | ["bad_request", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export class AuthService {
@@ -137,6 +141,11 @@ export class AuthService {
 
   async createSignIn(email: string): Promise<CreateSignInResult> {
     const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email });
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
@@ -153,6 +162,10 @@ export class AuthService {
 
   async sendMagicCode(signInId: string): Promise<SendMagicCodeResult> {
     const response = await this.client.post<SendMagicCodeResponse>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`, {});
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
 
     try {
       if (!response.success) {
@@ -176,6 +189,11 @@ export class AuthService {
     const response = await this.client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       password,
     });
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         console.log("response.data", response.data);
@@ -203,6 +221,10 @@ export class AuthService {
       user,
     });
 
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
@@ -227,6 +249,10 @@ export class AuthService {
       code,
     });
 
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
@@ -245,6 +271,10 @@ export class AuthService {
   async refreshToken(signInId: string): Promise<RefreshTokenResult> {
     const response = await this.client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {});
 
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
@@ -262,6 +292,10 @@ export class AuthService {
   async sendResetPasswordEmail(signInId: string): Promise<ResetPasswordResult> {
     const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`, {});
 
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
@@ -278,6 +312,10 @@ export class AuthService {
 
   async signOut(signInId: string): Promise<SignOutResult> {
     const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, {});
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
 
     try {
       if (!response.success) {
@@ -297,6 +335,10 @@ export class AuthService {
     const endpoint = sid ? `/api/sdk/v1/passkeys/new?sid=${encodeURIComponent(sid)}` : "/api/sdk/v1/passkeys/new";
     const response = await this.client.get<PasskeyOptionsResponse>(endpoint);
 
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
+
     try {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
@@ -314,6 +356,10 @@ export class AuthService {
     const response = await this.client.post<{ publicKeyCredential: PasskeyCredential }>("/api/sdk/v1/passkeys", {
       publicKeyCredential: credential,
     });
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
 
     try {
       if (!response.success) {

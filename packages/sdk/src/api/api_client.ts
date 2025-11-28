@@ -8,14 +8,33 @@ export interface ApiResponse<T> {
   status: number;
   headers: Headers;
   error?: Error | string;
+  connectionError?: boolean; // when backend is unreachable (network error, connection refused, etc.)
 }
 
 export class ApiClient {
+  private static readonly CONNECTION_ERROR_MESSAGES = [
+    "Failed to fetch",
+    "NetworkError",
+    "ERR_CONNECTION_REFUSED",
+    "ERR_NETWORK",
+    "ERR_INTERNET_DISCONNECTED",
+  ];
+
   constructor(
     public baseUrl: string,
     public api_key: string,
   ) {
     this.api_key = api_key;
+  }
+
+  private isConnectionError(error: unknown): boolean {
+    if (error instanceof Error) {
+      return ApiClient.CONNECTION_ERROR_MESSAGES.some((msg) =>
+        error.message.includes(msg)
+      );
+    }
+
+    return false;
   }
 
   private baseHeaders(): Headers {
@@ -57,17 +76,27 @@ export class ApiClient {
         status: res.status,
         headers: res.headers,
         success: res.ok,
+        connectionError: false,
       };
 
       return response;
     } catch (error) {
-      Sentry.captureException(error);
+      const connectionFailed = this.isConnectionError(error);
+
+      if (connectionFailed) {
+        Sentry.captureException(error, {
+          tags: { error_type: "connection_error" },
+          extra: { endpoint, method }
+        });
+      }
+
       const response: ApiResponse<T> = {
-        status: res ? res.status : error instanceof TypeError ? 0 : 500,
+        status: res ? res.status : connectionFailed ? 0 : 500,
         error: error instanceof Error ? error.message : String(error),
         headers: res ? res.headers : new Headers(),
         success: false,
         data: undefined,
+        connectionError: connectionFailed,
       };
 
       return response;

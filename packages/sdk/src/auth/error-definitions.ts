@@ -13,6 +13,8 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   // Global (flash?) error messages
   account_locked: "Account locked because of too many failed attempts. Try again later",
   sign_in_expired: "Sign in expired. Please go back and enter your email again",
+
+  missing_refresh_token: "Please login again"
 };
 
 export const AUTH_ERROR_CODES = {
