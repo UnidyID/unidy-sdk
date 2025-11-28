@@ -86,7 +86,7 @@ export class ApiClient {
   getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
     returnSchema: z.ZodSchema<TReturn>,
     urlBuilder: (args: TArgs) => string,
-    paramSchema?: z.ZodSchema<TParams>
+    paramSchema?: z.ZodSchema<TParams>,
   ): TParams extends undefined
     ? (args: TArgs) => Promise<ApiResponse<TReturn>>
     : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {

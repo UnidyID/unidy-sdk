@@ -22,21 +22,19 @@ export interface AuthState {
 }
 
 const missingRequiredUserDefaultFields = () => {
-  const fields = store.state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  const fields = store.state.missingRequiredFields ?? ({} as RequiredFieldsResponse["fields"]);
   const { custom_attributes, ...missingRequiredUserDefaultFields } = fields;
   return missingRequiredUserDefaultFields as Record<string, ProfileNode>;
 };
 
 const missingRequiredCustomAttributeFields = () => {
-  const fields = store.state.missingRequiredFields ?? {} as RequiredFieldsResponse["fields"];
+  const fields = store.state.missingRequiredFields ?? ({} as RequiredFieldsResponse["fields"]);
   return (fields?.custom_attributes ?? {}) as Record<string, ProfileNode>;
 };
 
 export const missingFieldNames = () => {
   const userDefaultFields = Object.keys(missingRequiredUserDefaultFields());
-  const ca = Object.keys(missingRequiredCustomAttributeFields()).map(
-    (k) => `custom_attributes.${k}`
-  );
+  const ca = Object.keys(missingRequiredCustomAttributeFields()).map((k) => `custom_attributes.${k}`);
   return [...userDefaultFields, ...ca];
 };
 
@@ -71,10 +69,7 @@ const initialState: AuthState = {
 const store = createStore<AuthState>(initialState);
 const { state, reset } = store;
 
-const authStoreOnChange: <K extends keyof AuthState>(
-  prop: K,
-  cb: (value: AuthState[K]) => void,
-) => () => void = store.onChange;
+const authStoreOnChange: <K extends keyof AuthState>(prop: K, cb: (value: AuthState[K]) => void) => () => void = store.onChange;
 
 class AuthStore {
   private rootComponentRef: SigninRoot | null = null;
@@ -162,7 +157,6 @@ class AuthStore {
       state.sid = null;
     }
   }
-
 
   reset() {
     reset();

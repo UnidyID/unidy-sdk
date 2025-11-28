@@ -90,7 +90,7 @@ export class NewsletterService extends EventEmitter {
   }
 
   async resendDoi(newsletterName: string, email: string): Promise<boolean> {
-    const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, {email});
+    const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, { email });
 
     return response.status === 204;
   }
@@ -105,9 +105,11 @@ export class NewsletterService extends EventEmitter {
       }
 
       const errors = errorIdentifier
-        ? response.data.errors.filter((error: {
-          error_identifier: string
-        }) => error.error_identifier === errorIdentifier)
+        ? response.data.errors.filter(
+            (error: {
+              error_identifier: string;
+            }) => error.error_identifier === errorIdentifier,
+          )
         : response.data.errors;
 
       if (errors.length > 0) {
