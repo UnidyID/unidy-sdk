@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import type { ApiClient, ApiResponse } from "../../api";
 import type * as z from "zod";
 
@@ -30,7 +31,7 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
     const parsed = returnSchema.safeParse(response.data);
 
     if (!parsed.success) {
-      console.log(parsed.error);
+      Sentry.captureException(parsed.error);
       return {
         ...response,
         success: false,

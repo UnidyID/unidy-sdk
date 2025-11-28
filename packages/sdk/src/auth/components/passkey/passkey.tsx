@@ -23,7 +23,6 @@ export class Passkey {
     if (this.disabled || authState.loading || !this.isSupported) return;
 
     const authInstance = await Auth.getInstance();
-
     if (!authInstance) {
       console.error("Auth service not initialized");
       return;
