@@ -1,16 +1,21 @@
-# Unidy Auth SDK
+# Unidy SDK
 
-The Unidy Auth SDK provides a set of framework-agnostic web components to integrate Unidy authentication and profile management into your web application.
+The Unidy SDK provides a set of framework-agnostic web components to integrate Unidy newsletters, tickets and subscriptions, authentication and profile management into your web application.
 
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+- [Quick Start: Examples](#quick-start-examples)
+  - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+  - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
+  - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
 - [Components](#components)
   - [Core Components](#core-components)
   - [Login Flow Components](#login-flow-components)
   - [Profile Components](#profile-components)
+  - [Newsletter Components](#newsletter-components)
+  - [Ticket Components](#ticket-components)
 - [API Reference](#api-reference)
   - [Auth Class](#auth-class)
   - [Types](#types)
@@ -19,8 +24,8 @@ The Unidy Auth SDK provides a set of framework-agnostic web components to integr
 
 ## Prerequisites
 
-Before using the SDK, you must obtain a SDK API key, which currently available as a self-service option: 
-Go to the Super-Admin and select the "SDK Clients" option and create a new client. If you already have a
+Before using the SDK, you must obtain a SDK API key, which is currently available as a self-service option:
+Go to the Super-Admin and select the "SDK Clients" option and create a new client. If you already have an
 SDK client open it by clicking on it's name, the view will show the API key as last element.
 
 If you don't have access to the Super-Admin in Unidy, please contact your Unidy representative and request
@@ -38,11 +43,11 @@ Add the following scripts to your HTML file:
 
 ```html
 <!-- 1. Loads the web components (e.g., <u-signin-root>) -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/auth/auth.esm.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
 
 <!-- 2. Makes the Auth helper class available for use in your scripts -->
 <script type="module">
-  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/index.esm.js';
+  import { Auth } from 'https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js';
   // ... use Auth class
 </script>
 ```
@@ -52,25 +57,28 @@ Add the following scripts to your HTML file:
 If you are using a build system like Webpack or Rollup, you can install the SDK via npm or yarn:
 
 ```bash
-npm install @unidy.io/auth
+npm install @unidy.io/sdk
 # or
-yarn add @unidy.io/auth
+yarn add @unidy.io/sdk
 ```
 
 Then, you can import the necessary parts into your application:
 
 ```javascript
 // 1. Import and define the web components
-import { defineCustomElements } from '@unidy.io/auth/loader';
+import { defineCustomElements } from '@unidy.io/sdk/loader';
 defineCustomElements();
 
 // 2. Import the Auth helper class
-import { Auth } from '@unidy.io/auth';
+import { Auth } from '@unidy.io/sdk/auth';
 
 // Now you can use the components in your HTML and the Auth class in your scripts.
 ```
 
-## Quick Start: Authentication Flow
+## Quick Start: Examples
+
+
+### Quick Start: Authentication Flow
 
 This example demonstrates a complete authentication flow. The SDK automatically shows the correct interface based on the user's authentication status.
 
@@ -81,7 +89,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   <meta charset="UTF-8">
   <title>Unidy Auth Demo</title>
   <!-- Load Components -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/auth@latest/dist/auth/auth.esm.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
 </head>
 <body>
 
@@ -129,6 +137,48 @@ This example demonstrates a complete authentication flow. The SDK automatically 
 </body>
 </html>
 ```
+### Quick Start: Newsletter implementation
+
+This example demonstrates how to implement a newsletter subscription form using the Unidy SDK.
+
+```html
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Newsletter Signup</title>
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white/90 shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
+    <div class="flex flex-col items-center gap-2">
+      <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
+    </div>
+
+    <email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-gray-500 text-sm">Select newsletters</label>
+      <newsletter-checkbox label="Newsletter" internal-name="internal-name-for-newsletter" checked="true"
+        class-name="flex items-center gap-2"></newsletter-checkbox>
+      <submit-button api-key="your-api-key" api-url="https://your-unidy-instance.com"
+        class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+        <span>Subscribe</span>
+      </submit-button>
+
+      <div id="message-container" class="mt-4 text-center text-sm"></div>
+    </div>
+</body>
+</html>
+```
+### Quick Start: Ticket implementation
+
+Ticket implementation documentation is under development and will be available in a future release.
 
 ## Components
 
@@ -183,8 +233,17 @@ Defines a distinct step in the sign-in process (e.g., entering an email, enterin
 
 **Attributes:**
 
--   `name` (required): The name of the step (e.g., `email`, `verification`).
+-   `name` (required): The name of the step (e.g., `email`, `verification`, `missing-fields`).
 -   `always-render`: If set to `true`, the step will always render its content regardless of the current authentication step.
+
+#### `<u-passkey>`
+
+Renders a button that initiates passkey authentication.
+
+**Attributes:**
+-   `text`: The text to display on the button. Defaults to "Sign in with Passkey".
+-   `loading-text`: The text to display on the button while authenticating. Defaults to "Authenticating..."
+-   `class-name`: A string of classes to pass to the button.
 
 #### `<u-signin-strategy>`
 
@@ -221,6 +280,18 @@ Renders a specialized input for the one-time magic code.
 
 - `class-name`: A string of classes to pass to the input field.
 
+#### `<u-missing-field>`
+
+Renders a list of input fields for collecting additional required fields during sign-in. It must be placed inside a `<u-signin-step name="missing-fields">` element.
+
+**Note:**
+
+`<u-missing-field>` renders one or more `<u-field>` components internally. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
+
+#### `<u-missing-fields-submit-button>`
+
+Renders a button to submit changes made in the `<u-missing-field>` component. It must be placed below a `<u-missing-field>` element.
+
 #### `<u-error-message>`
 
 Displays validation errors for a specific field or for general errors.
@@ -233,7 +304,7 @@ Displays validation errors for a specific field or for general errors.
 
 #### `<u-send-magic-code-button>`
 
-Renders a button that triggers sending a magic code to the user's email. After a code is sent, the button enters a countdown state, preventing the user from requesting another code until the timer finishes, the duration pf this timer is controlled by the backend.
+Renders a button that triggers sending a magic code to the user's email. After a code is sent, the button enters a countdown state, preventing the user from requesting another code until the timer finishes, the duration of this timer is controlled by the backend.
 
 **Attributes:**
 
@@ -355,6 +426,40 @@ This component renders a button that, when clicked, logs the user out.
 **Events:**
 
 - `logout`: Fired on successful logout.
+
+### Newsletter Components
+
+#### `<email-field>`
+
+Renders a pre-configured input for the user's email address.
+
+**Attributes:**
+-   `placeholder`: The placeholder text for the input field. Defaults to `Enter your email`.
+-   `class-name`: A string of classes to pass to the input field.
+
+#### `<newsletter-checkbox>`
+
+Renders a checkbox for subscribing to a specific newsletter.
+
+**Attributes:**
+-   `label` (required): The label to display next to the checkbox.
+-   `internal-name` (required): The internal name of the newsletter in Unidy.
+-   `checked` (required): If set to `true`, the checkbox will be checked by default.
+-   `class-name`: A string of classes to pass to the checkbox container.
+
+
+#### `<submit-button>`
+
+Renders a button to submit the newsletter subscription form.
+
+**Attributes**
+-   `api-url` (required): `"https://your-unidy-instance.com"`
+-   `api-key` (required): `"your-api-key"`
+-   `class-name`: A string of classes to pass to the button.
+
+### Ticket Components
+
+Ticket component documentation is under development and will be available in a future release.
 
 ## API Reference
 

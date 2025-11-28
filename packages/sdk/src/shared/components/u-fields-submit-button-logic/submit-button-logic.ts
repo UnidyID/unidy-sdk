@@ -21,7 +21,7 @@ export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
 
   return true;
 }
- 
+
 export function buildPayload(stateData: ProfileRaw) {
   return {
     ...Object.fromEntries(

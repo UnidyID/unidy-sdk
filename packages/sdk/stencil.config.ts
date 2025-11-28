@@ -1,26 +1,26 @@
-import type { Config } from '@stencil/core';
-import tailwind, { tailwindHMR } from 'stencil-tailwind-plugin';
+import type { Config } from "@stencil/core";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
-  namespace: 'sdk',
-  tsconfig: 'tsconfig.json',
-  srcDir: 'src',
+  namespace: "sdk",
+  tsconfig: "tsconfig.json",
+  srcDir: "src",
 
   outputTargets: [
-    { type: 'dist', esmLoaderPath: '../loader' },
-    { type: 'dist-custom-elements' },
-    { type: 'docs-readme' },
+    { type: "dist", esmLoaderPath: "../loader" },
+    { type: "dist-custom-elements" },
+    { type: "docs-readme" },
     {
-      type: 'www',
+      type: "www",
       serviceWorker: null,
       copy: [
-        { src: 'auth/index.html', dest: 'auth/index.html' },
-        { src: 'newsletter/index.html', dest: 'newsletter/index.html' },
-        { src: 'ticketable/index.html', dest: 'ticketable/index.html' }
-      ]
-    }
+        { src: "auth/index.html", dest: "auth/index.html" },
+        { src: "newsletter/index.html", dest: "newsletter/index.html" },
+        { src: "ticketable/index.html", dest: "ticketable/index.html" },
+      ],
+    },
   ],
   plugins: [tailwind(), tailwindHMR()],
-  testing: { browserHeadless: 'shell' },
-  devServer: { reloadStrategy: 'pageReload', openBrowser: false }
+  testing: { browserHeadless: "shell" },
+  devServer: { reloadStrategy: "pageReload", openBrowser: false },
 };

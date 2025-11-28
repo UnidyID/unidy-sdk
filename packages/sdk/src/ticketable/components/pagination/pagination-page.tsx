@@ -1,8 +1,8 @@
-import { Component, h, Element, Host, State, Prop } from '@stencil/core';
-import type { PaginationMeta } from '../../../api';
-import type { PaginationStore } from '../../store/pagination-store';
+import { Component, h, Element, Host, State, Prop } from "@stencil/core";
+import type { PaginationMeta } from "../../../api";
+import type { PaginationStore } from "../../store/pagination-store";
 
-@Component({ tag: 'u-pagination-page', shadow: false })
+@Component({ tag: "u-pagination-page", shadow: false })
 export class PaginationPage {
   @Element() element: HTMLElement;
 
@@ -14,9 +14,9 @@ export class PaginationPage {
   private unsubscribe: (() => void) | null = null;
 
   componentDidLoad() {
-    this.store = this.element.closest('u-ticketable-list')?.store;
+    this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return;
     }
 
@@ -24,7 +24,7 @@ export class PaginationPage {
     this.paginationMeta = this.store.state.paginationMeta;
 
     // Subscribe to store changes - watch for changes to paginationMeta
-    this.unsubscribe = this.store.onChange('paginationMeta', (value: PaginationMeta | null) => {
+    this.unsubscribe = this.store.onChange("paginationMeta", (value: PaginationMeta | null) => {
       this.paginationMeta = value;
     });
   }
@@ -34,8 +34,8 @@ export class PaginationPage {
   }
 
   render() {
-    if(!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+    if (!this.store) {
+      console.warn("TicketableList component not found");
       return null;
     }
 
