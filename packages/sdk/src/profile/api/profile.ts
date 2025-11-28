@@ -10,8 +10,8 @@ const BaseFieldDataSchema = z
     attr_name: z.string(),
     locked: z.boolean().optional(),
     locked_text: z.string().optional(),
-    profile_query: z.boolean()
-  }).strict();
+  })
+  .strict();
 
 const SelectOptionSchema = z
   .object({
