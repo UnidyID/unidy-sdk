@@ -1,12 +1,12 @@
-import { Component, h, Prop, Element, Host, State } from '@stencil/core';
-import type { PaginationMeta } from '../../../api';
-import type { PaginationStore } from '../../store/pagination-store';
+import { Component, h, Prop, Element, Host, State } from "@stencil/core";
+import type { PaginationMeta } from "../../../api";
+import type { PaginationStore } from "../../store/pagination-store";
 
-@Component({ tag: 'u-pagination-button', shadow: false })
+@Component({ tag: "u-pagination-button", shadow: false })
 export class PaginationButton {
   @Element() element: HTMLElement;
 
-  @Prop() direction: 'prev' | 'next' = 'next';
+  @Prop() direction: "prev" | "next" = "next";
   @Prop() customClass?: string;
 
   @State() paginationMeta: PaginationMeta | null = null;
@@ -15,9 +15,9 @@ export class PaginationButton {
   private unsubscribe: (() => void) | null = null;
 
   componentDidLoad() {
-    this.store = this.element.closest('u-ticketable-list')?.store;
+    this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return;
     }
 
@@ -25,7 +25,7 @@ export class PaginationButton {
     this.paginationMeta = this.store.state.paginationMeta;
 
     // Subscribe to store changes - watch for changes to paginationMeta
-    this.unsubscribe = this.store.onChange('paginationMeta', (value: PaginationMeta | null) => {
+    this.unsubscribe = this.store.onChange("paginationMeta", (value: PaginationMeta | null) => {
       this.paginationMeta = value;
     });
   }
@@ -35,12 +35,12 @@ export class PaginationButton {
   }
 
   private handleClick = () => {
-    const parent = this.element.closest('u-ticketable-list');
+    const parent = this.element.closest("u-ticketable-list");
     if (!parent || !this.paginationMeta) {
       return;
     }
 
-    const isPrev = this.direction === 'prev';
+    const isPrev = this.direction === "prev";
     let newPage: number | null = null;
 
     if (isPrev && this.paginationMeta.prev !== null) {
@@ -50,22 +50,21 @@ export class PaginationButton {
     }
 
     if (newPage !== null) {
-      parent.setAttribute('page', String(newPage));
+      parent.setAttribute("page", String(newPage));
     }
   };
 
   render() {
-    if(!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+    if (!this.store) {
+      console.warn("TicketableList component not found");
       return null;
     }
 
-    const isPrev = this.direction === 'prev';
-    const icon = isPrev ? '←' : '→';
+    const isPrev = this.direction === "prev";
+    const icon = isPrev ? "←" : "→";
 
     // Determine disabled state based on pagination meta
-    const disabled = !this.paginationMeta ||
-      (isPrev ? this.paginationMeta.prev === null : this.paginationMeta.next === null);
+    const disabled = !this.paginationMeta || (isPrev ? this.paginationMeta.prev === null : this.paginationMeta.next === null);
 
     return (
       <Host>
@@ -73,7 +72,7 @@ export class PaginationButton {
           type="button"
           onClick={this.handleClick}
           disabled={disabled}
-          aria-label={isPrev ? 'Previous page' : 'Next page'}
+          aria-label={isPrev ? "Previous page" : "Next page"}
           class={this.customClass}
         >
           <slot name="icon">{icon}</slot>

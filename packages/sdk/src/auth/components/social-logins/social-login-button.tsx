@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { GoogleLogo } from "./logos/google";
@@ -32,7 +33,7 @@ export class SocialLoginButton {
 
   componentWillLoad() {
     if (this.isUnsupportedProvider) {
-      console.warn(`[u-social-login-button] Unsupported provider "${this.provider}".`);
+      Sentry.captureException(`[u-social-login-button] Unsupported provider "${this.provider}".`);
       return;
     }
   }

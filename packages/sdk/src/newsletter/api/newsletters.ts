@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as z from "zod/mini";
 import type { ApiClient, ApiResponse } from "../../api";
 import EventEmitter from "eventemitter3";
@@ -61,10 +62,12 @@ export class NewsletterService extends EventEmitter {
 
     switch (response.status) {
       case 429:
+        console.warn("Rate limit exceeded");
         this.emit("rate_limit_exceeded", response);
 
         return ["rate_limit_exceeded", response];
       case 500:
+        Sentry.captureException(response)
         return ["server_error", response];
       case 0:
         return ["network_error", response];
@@ -90,7 +93,7 @@ export class NewsletterService extends EventEmitter {
   }
 
   async resendDoi(newsletterName: string, email: string): Promise<boolean> {
-    const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, {email});
+    const response = await this.client.post<null>(`/api/sdk/v1/newsletters/${newsletterName}/resend_doi`, { email });
 
     return response.status === 204;
   }
@@ -105,9 +108,11 @@ export class NewsletterService extends EventEmitter {
       }
 
       const errors = errorIdentifier
-        ? response.data.errors.filter((error: {
-          error_identifier: string
-        }) => error.error_identifier === errorIdentifier)
+        ? response.data.errors.filter(
+            (error: {
+              error_identifier: string;
+            }) => error.error_identifier === errorIdentifier,
+          )
         : response.data.errors;
 
       if (errors.length > 0) {
