@@ -1,11 +1,5 @@
 import { authStore, authState } from "../auth/store/auth-store";
-import type {
-    CreateSignInResponse,
-    PasskeyOptionsResponse,
-    RequiredFieldsResponse,
-    TokenResponse,
-    UnidyClient
-} from "../api";
+import type { CreateSignInResponse, PasskeyOptionsResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
 import type { ProfileRaw } from "../profile/store/profile-store";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
@@ -69,7 +63,7 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
     }
   }
 
@@ -144,7 +138,7 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
     }
   }
 
@@ -193,9 +187,9 @@ export class AuthHelpers {
       // Helper to decode base64url (WebAuthn uses base64url encoding)
       const decodeBase64Url = (base64url: string): Uint8Array => {
         // Convert base64url to regular base64 for atob
-        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
         // Add padding if needed
-        const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
         return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
       };
 
@@ -246,7 +240,7 @@ export class AuthHelpers {
 
       // Success: Set token and notify
       authStore.setToken(tokenResponse.jwt);
-      
+
       // Extract sid from response or JWT token and update store
       // @ts-ignore
       if (tokenResponse.sid) {
@@ -263,11 +257,11 @@ export class AuthHelpers {
           // Failed to decode JWT token to extract sid, continue without it
         }
       }
-      
+
       authStore.setLoading(false);
       authStore.getRootComponentRef()?.onAuth(tokenResponse);
     } catch (error) {
-      console.log(error)
+      console.log(error);
 
       // Handle WebAuthn API errors
       let errorMessage = "passkey_error";

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import type { ApiClient, ApiResponse } from "../../api";
 import type * as z from "zod";
 
@@ -5,7 +6,7 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
   client: ApiClient,
   returnSchema: z.ZodSchema<TReturn>,
   urlBuilder: (args: TArgs) => string,
-  paramSchema?: z.ZodSchema<TParams>
+  paramSchema?: z.ZodSchema<TParams>,
 ): TParams extends undefined
   ? (args: TArgs) => Promise<ApiResponse<TReturn>>
   : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {
@@ -30,7 +31,7 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
     const parsed = returnSchema.safeParse(response.data);
 
     if (!parsed.success) {
-      console.log(parsed.error);
+      Sentry.captureException(parsed.error);
       return {
         ...response,
         success: false,
@@ -47,4 +48,3 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
   // biome-ignore lint/suspicious/noExplicitAny: fn can literally be any function
   return fn as any;
 }
-

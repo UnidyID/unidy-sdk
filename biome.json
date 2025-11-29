@@ -10,11 +10,13 @@
     "ignore": [
       "./**/components.d.ts",
       "./**/dist/**/*",
+      "./**/hydrate/**/*",
       "./**/loader/**/*",
-      "./**/www/build/*",
+      "./**/www/*",
       "./**/tsconfig.*.json",
       "./**/tsconfig.json",
-      "./examples"
+      "./examples",
+      "./development-target.tsx"
     ]
   },
   "formatter": {

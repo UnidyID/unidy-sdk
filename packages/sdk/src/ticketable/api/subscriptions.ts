@@ -44,7 +44,7 @@ const SubscriptionsListResponseSchema = z.object({
 export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
 
 // Query params schema with validations
-const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ subscription_category_id: z.string().uuid(), }).partial();
+const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ subscription_category_id: z.string().uuid() }).partial();
 
 export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
 
@@ -57,14 +57,9 @@ export class SubscriptionsService {
       this.client,
       SubscriptionsListResponseSchema,
       (_args: unknown) => "/api/sdk/v1/subscriptions",
-      SubscriptionsListParamsSchema
-    )
+      SubscriptionsListParamsSchema,
+    );
 
-    this.get = getWithSchema(
-      this.client,
-      SubscriptionSchema,
-      (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`
-    )
+    this.get = getWithSchema(this.client, SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
   }
 }
-

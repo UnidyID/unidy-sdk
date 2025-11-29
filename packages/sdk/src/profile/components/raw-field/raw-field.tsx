@@ -207,14 +207,14 @@ export class RawField {
   private onBlurFieldValidation = (e: Event) => {
     const input = e.target as HTMLInputElement;
     if (input.required && !input.value) {
-        input.setCustomValidity("This field is required.");
-        input.reportValidity();
+      input.setCustomValidity("This field is required.");
+      input.reportValidity();
     }
     if (this.type === "tel") {
       this.phoneFieldValidation(e);
       return;
     }
-      input.setCustomValidity("");
+    input.setCustomValidity("");
   };
 
   render() {
