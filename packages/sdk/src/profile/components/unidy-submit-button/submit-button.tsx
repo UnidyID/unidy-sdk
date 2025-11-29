@@ -1,12 +1,12 @@
 import { Component, Element, h } from "@stencil/core";
-import { getUnidyClient } from "../../../auth/api-client";
-import { Auth } from "../../../auth/auth";
+import { getUnidyClient } from "../../../auth";
+import { Auth } from "../../../auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 @Component({
   tag: "u-profile-submit-button",
-  shadow: true,
   styleUrl: "submit-button.css",
+  shadow: true,
 })
 export class SubmitButton {
   @Element() el!: HTMLElement;
@@ -64,9 +64,10 @@ export class SubmitButton {
           type="button"
           onClick={() => this.onSubmit()}
           part="button"
+          aria-live="polite"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+          {profileState.loading ? <span class="spinner" aria-label="Loading" /> : this.hasSlotContent() ? <slot /> : "Submit"}
         </button>
       </div>
     );

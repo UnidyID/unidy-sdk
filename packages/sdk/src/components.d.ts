@@ -21,6 +21,10 @@ export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
     interface EmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel": string;
         "componentClassName"?: string;
         /**
           * @default "Email"
@@ -74,6 +78,10 @@ export namespace Components {
         "baseUrl": string;
     }
     interface UEmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel": string;
         /**
           * @default ""
          */
@@ -184,6 +192,10 @@ export namespace Components {
     }
     interface UPasswordField {
         /**
+          * @default "Password"
+         */
+        "ariaLabel": string;
+        /**
           * @default ""
          */
         "componentClassName": string;
@@ -205,6 +217,10 @@ export namespace Components {
     interface UProfileSubmitButton {
     }
     interface URawField {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy": string;
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -614,6 +630,10 @@ declare global {
 }
 declare namespace LocalJSX {
     interface EmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel"?: string;
         "componentClassName"?: string;
         /**
           * @default "Email"
@@ -669,6 +689,10 @@ declare namespace LocalJSX {
         "baseUrl"?: string;
     }
     interface UEmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel"?: string;
         /**
           * @default ""
          */
@@ -780,6 +804,10 @@ declare namespace LocalJSX {
     }
     interface UPasswordField {
         /**
+          * @default "Password"
+         */
+        "ariaLabel"?: string;
+        /**
           * @default ""
          */
         "componentClassName"?: string;
@@ -801,6 +829,10 @@ declare namespace LocalJSX {
     interface UProfileSubmitButton {
     }
     interface URawField {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;

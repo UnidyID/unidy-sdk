@@ -63,7 +63,7 @@ export class SendMagicCodeButton {
     const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
 
     return (
-      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName}>
+      <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
         {this.countdown > 0
           ? this.alreadySentText
           : authState.loading && authState.magicCodeStep === "requested"

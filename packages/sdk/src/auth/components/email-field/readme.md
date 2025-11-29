@@ -9,6 +9,7 @@
 
 | Property             | Attribute     | Description | Type     | Default              |
 | -------------------- | ------------- | ----------- | -------- | -------------------- |
+| `ariaLabel`          | `aria-label`  |             | `string` | `"Email"`            |
 | `componentClassName` | `class-name`  |             | `string` | `""`                 |
 | `placeholder`        | `placeholder` |             | `string` | `"Enter your email"` |
 

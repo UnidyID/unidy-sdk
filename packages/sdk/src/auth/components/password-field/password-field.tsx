@@ -11,6 +11,7 @@ export class PasswordField {
 
   @Prop() placeholder = "Enter your password";
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() ariaLabel = "Password";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -39,6 +40,7 @@ export class PasswordField {
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}
+          aria-label={this.ariaLabel}
         />
       </form>
     );
