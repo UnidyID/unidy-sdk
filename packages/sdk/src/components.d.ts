@@ -130,6 +130,42 @@ export namespace Components {
          */
         "variant": "error" | "success" | "info";
     }
+    interface UJumpToService {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "newtab": boolean;
+        "redirectUri"?: string;
+        "scopes"?: string;
+        "serviceId": string;
+        /**
+          * @default false
+         */
+        "skipOauthAuthorization": boolean;
+        /**
+          * @default "Jump to Service"
+         */
+        "text": string;
+    }
+    interface UJumpToUnidy {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "newtab": boolean;
+        "path": string;
+        /**
+          * @default "Jump to Unidy"
+         */
+        "text": string;
+    }
     interface ULogoutButton {
         /**
           * @default ""
@@ -449,6 +485,18 @@ declare global {
         prototype: HTMLUFlashMessageElement;
         new (): HTMLUFlashMessageElement;
     };
+    interface HTMLUJumpToServiceElement extends Components.UJumpToService, HTMLStencilElement {
+    }
+    var HTMLUJumpToServiceElement: {
+        prototype: HTMLUJumpToServiceElement;
+        new (): HTMLUJumpToServiceElement;
+    };
+    interface HTMLUJumpToUnidyElement extends Components.UJumpToUnidy, HTMLStencilElement {
+    }
+    var HTMLUJumpToUnidyElement: {
+        prototype: HTMLUJumpToUnidyElement;
+        new (): HTMLUJumpToUnidyElement;
+    };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
@@ -592,6 +640,8 @@ declare global {
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
+        "u-jump-to-service": HTMLUJumpToServiceElement;
+        "u-jump-to-unidy": HTMLUJumpToUnidyElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
@@ -724,6 +774,42 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface UJumpToService {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "newtab"?: boolean;
+        "redirectUri"?: string;
+        "scopes"?: string;
+        "serviceId": string;
+        /**
+          * @default false
+         */
+        "skipOauthAuthorization"?: boolean;
+        /**
+          * @default "Jump to Service"
+         */
+        "text"?: string;
+    }
+    interface UJumpToUnidy {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "newtab"?: boolean;
+        "path": string;
+        /**
+          * @default "Jump to Unidy"
+         */
+        "text"?: string;
     }
     interface ULogoutButton {
         /**
@@ -965,6 +1051,8 @@ declare namespace LocalJSX {
         "u-error-message": UErrorMessage;
         "u-field": UField;
         "u-flash-message": UFlashMessage;
+        "u-jump-to-service": UJumpToService;
+        "u-jump-to-unidy": UJumpToUnidy;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
@@ -1000,6 +1088,8 @@ declare module "@stencil/core" {
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-jump-to-service": LocalJSX.UJumpToService & JSXBase.HTMLAttributes<HTMLUJumpToServiceElement>;
+            "u-jump-to-unidy": LocalJSX.UJumpToUnidy & JSXBase.HTMLAttributes<HTMLUJumpToUnidyElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;

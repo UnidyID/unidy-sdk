@@ -14,6 +14,14 @@ const ErrorSchema = z.object({
   error: z.string(),
 });
 
+const JumpToServiceErrorSchema = z.object({
+  error_identifier: z.string(),
+});
+
+const JumpToUnidyErrorSchema = z.object({
+  error_identifier: z.string(),
+});
+
 const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
 });
@@ -111,8 +119,34 @@ const PasskeyCredentialSchema = z.object({
   type: z.string(),
 });
 
+const JumpToServiceRequestSchema = z.object({
+  email: z.string(),
+  redirect_uri: z.string().optional(),
+  scopes: z.array(z.string()).optional(),
+  skip_oauth_authorization: z.boolean().optional(),
+});
+
+const JumpToUnidyRequestSchema = z.object({
+  email: z.string(),
+  path: z.string().refine((val) => val.startsWith("/"), {
+    message: "Path must start with '/'",
+  }),
+});
+
+const JumpToServiceResponseSchema = z.object({
+  token: z.string(),
+});
+
+const JumpToUnidyResponseSchema = z.object({
+  token: z.string(),
+});
+
 export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema>;
 export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;
+export type JumpToServiceRequest = z.infer<typeof JumpToServiceRequestSchema>;
+export type JumpToServiceResponse = z.infer<typeof JumpToServiceResponseSchema>;
+export type JumpToUnidyRequest = z.infer<typeof JumpToUnidyRequestSchema>;
+export type JumpToUnidyResponse = z.infer<typeof JumpToUnidyResponseSchema>;
 
 export type GetPasskeyOptionsResult =
   | ["bad_request", ErrorResponse]
@@ -126,6 +160,20 @@ export type AuthenticateWithPasskeyResult =
   | ["bad_request", ErrorResponse]
   | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
+
+export type JumpToServiceResult =
+  | ["user_not_found", ErrorResponse]
+  | ["application_not_found", ErrorResponse]
+  | ["invalid_redirect_uri", ErrorResponse]
+  | ["invalid_scope", ErrorResponse]
+  | ["schema_validation_error", SchemaValidationError]
+  | [null, string];
+
+export type JumpToUnidyResult =
+  | ["user_not_found", ErrorResponse]
+  | ["invalid_path", ErrorResponse]
+  | ["schema_validation_error", SchemaValidationError]
+  | [null, string];
 
 export class AuthService {
   private client: ApiClient;
@@ -318,5 +366,54 @@ export class AuthService {
     } catch (error) {
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
+  }
+
+  async jumpToService(serviceId: string, request: JumpToServiceRequest): Promise<JumpToServiceResult> {
+    const validatedRequest = JumpToServiceRequestSchema.parse(request);
+
+    const response = await this.client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest);
+
+    if (!response.success) {
+      const errorParse = JumpToServiceErrorSchema.safeParse(response.data);
+      if (errorParse.success) {
+        const errorIdentifier = errorParse.data.error_identifier;
+        return [
+          errorIdentifier as "user_not_found" | "application_not_found" | "invalid_redirect_uri" | "invalid_scope",
+          { error: errorIdentifier },
+        ] as const;
+      }
+
+      return ["user_not_found", { error: "unknown_error" }] as const;
+    }
+
+    const parsed = JumpToServiceResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }] as const;
+    }
+
+    return [null, parsed.data.token] as const;
+  }
+
+  async jumpToUnidy(request: JumpToUnidyRequest): Promise<JumpToUnidyResult> {
+    const validatedRequest = JumpToUnidyRequestSchema.parse(request);
+
+    const response = await this.client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest);
+
+    if (!response.success) {
+      const errorParse = JumpToUnidyErrorSchema.safeParse(response.data);
+      if (errorParse.success) {
+        const errorIdentifier = errorParse.data.error_identifier;
+        return [errorIdentifier as "user_not_found" | "invalid_path", { error: errorIdentifier }] as const;
+      }
+
+      return ["user_not_found", { error: "unknown_error" }] as const;
+    }
+
+    const parsed = JumpToUnidyResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }] as const;
+    }
+
+    return [null, parsed.data.token] as const;
   }
 }

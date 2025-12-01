@@ -328,6 +328,22 @@
       <div class="container">
         <u-profile language="de">
           <div class="mt-6 space-y-3">
+            <div class="flex gap-4 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-sm mb-4">
+              <u-jump-to-service service-id="2" text="Jump to Service"
+                class-name="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+              </u-jump-to-service>
+              <u-jump-to-service service-id="2" newtab text="Open in New Tab"
+                class-name="flex-1 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+              </u-jump-to-service>
+            </div>
+            <div class="flex gap-4 p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-sm mb-4">
+              <u-jump-to-unidy path="/tickets" text="Jump to Tickets"
+                class-name="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+              </u-jump-to-unidy>
+              <u-jump-to-unidy path="/tickets" newtab text="Open Tickets in New Tab"
+                class-name="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
+              </u-jump-to-unidy>
+            </div>
             <u-logout-button text="Logout"
               class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
             </u-logout-button>
