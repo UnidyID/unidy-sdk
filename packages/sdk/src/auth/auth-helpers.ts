@@ -76,6 +76,9 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    if (authState.step === "missing-fields") {
+      return;
+    }
     this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
@@ -115,8 +118,6 @@ export class AuthHelpers {
     }
 
     try {
-      sessionStorage.setItem("unidy_missing_required_fields", fieldsFromUrl);
-      sessionStorage.setItem("unidy_step", "missing-fields");
       const fields = JSON.parse(fieldsFromUrl);
 
       authStore.setMissingFields(fields);
@@ -126,13 +127,12 @@ export class AuthHelpers {
       params.delete("error");
       params.delete("fields");
       const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
-      window.history.pushState(null, "", cleanUrl);
-
+      window.history.replaceState(null, "", cleanUrl);
     } catch (e) {
       console.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
-  }  
+  }
 
   async sendMagicCode() {
     if (!authState.sid) {
@@ -345,5 +345,5 @@ export class AuthHelpers {
       url.searchParams.delete("sid");
       window.history.replaceState(null, "", url.toString());
     }
-  }  
+  }
 }
