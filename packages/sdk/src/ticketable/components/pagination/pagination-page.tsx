@@ -16,7 +16,7 @@ export class PaginationPage {
   componentDidLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return;
     }
 
@@ -35,7 +35,7 @@ export class PaginationPage {
 
   render() {
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return null;
     }
 

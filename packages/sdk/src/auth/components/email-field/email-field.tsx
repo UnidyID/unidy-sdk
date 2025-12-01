@@ -11,6 +11,7 @@ export class EmailField {
 
   @Prop() placeholder = "Enter your email";
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() ariaLabel = "Email";
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -43,6 +44,7 @@ export class EmailField {
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}
+          aria-label={this.ariaLabel}
         />
       </form>
     );

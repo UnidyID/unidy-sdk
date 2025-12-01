@@ -65,7 +65,7 @@ export class SubmitButton {
     }
 
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick}>
+      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
         {authState.loading && authState.magicCodeStep !== "requested" ? "Loading..." : this.getButtonText()}
       </button>
     );

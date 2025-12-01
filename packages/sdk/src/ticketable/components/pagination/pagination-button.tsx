@@ -17,7 +17,7 @@ export class PaginationButton {
   componentDidLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return;
     }
 
@@ -56,7 +56,7 @@ export class PaginationButton {
 
   render() {
     if (!this.store) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      console.warn("TicketableList component not found");
       return null;
     }
 
@@ -75,7 +75,7 @@ export class PaginationButton {
           aria-label={isPrev ? "Previous page" : "Next page"}
           class={this.customClass}
         >
-          <slot name="icon">{icon}</slot>
+          <slot name="icon"><span aria-hidden="true">{icon}</span></slot>
         </button>
       </Host>
     );

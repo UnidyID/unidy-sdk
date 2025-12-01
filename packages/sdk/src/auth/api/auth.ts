@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as z from "zod";
 
 import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
@@ -145,6 +146,7 @@ export class AuthService {
 
       return [null, CreateSignInResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -165,6 +167,7 @@ export class AuthService {
 
       return [null, SendMagicCodeResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -187,6 +190,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -211,6 +215,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -237,6 +242,7 @@ export class AuthService {
       }
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -253,6 +259,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -269,6 +276,7 @@ export class AuthService {
 
       return [null, null];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -285,6 +293,7 @@ export class AuthService {
 
       return [null, null];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -301,6 +310,7 @@ export class AuthService {
 
       return [null, PasskeyOptionsResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -321,6 +331,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }

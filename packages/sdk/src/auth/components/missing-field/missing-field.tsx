@@ -8,8 +8,6 @@ import { authState, missingFieldNames } from "../../store/auth-store";
 export class MissingField {
   @Element() el!: HTMLElement;
 
-  componentWillLoad() {}
-
   render() {
     if (authState.step !== "missing-fields") return null;
 

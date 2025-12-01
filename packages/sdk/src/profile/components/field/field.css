@@ -6,6 +6,13 @@
   outline-color: red;
 }
 
+.multi-select-readonly-container {
+  list-style: none;
+}
+.multi-select-readonly-container li {
+  display: inline-block;
+}
+
 .spinner {
   display: inline-block;
   width: 20px;
