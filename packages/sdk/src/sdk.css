@@ -1,0 +1,10 @@
+/*
+  unidy SDK Global Styles
+  This file should be included in the <head> of the application to prevent
+  Flash of Unstyled Content (FOUC) and apply global styles.
+*/
+
+u-auth-provider:not(:defined),
+u-signin-root:not(:defined) {
+  visibility: hidden;
+}

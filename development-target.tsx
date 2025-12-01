@@ -169,7 +169,7 @@ const CustomTicketables = () => {
   });
 
   if (ticketables.loading) {
-    return <Spinner />;
+    return <u-spinner />;
   }
 
   if (ticketables.error) {

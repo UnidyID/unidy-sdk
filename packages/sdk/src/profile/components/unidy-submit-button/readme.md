@@ -22,6 +22,7 @@
 ```mermaid
 graph TD;
   u-full-profile --> u-profile-submit-button
+  u-profile-submit-button --> u-spinner
   style u-profile-submit-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

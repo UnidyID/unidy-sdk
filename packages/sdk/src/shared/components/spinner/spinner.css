@@ -1,0 +1,22 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Default size, can be overridden by setting --u-spinner-font-size on the host or parent */
+  font-size: var(--spinner-font-size, 20px); /* Use custom property with a fallback */
+}
+
+.spinner-inner {
+  width: 1em;
+  height: 1em;
+  border: 0.1em solid var(--spinner-color-secondary, #ccc); /* 10% of size, customizable color */
+  border-top: 0.1em solid var(--spinner-color-primary, #333); /* Customizable primary color */
+  border-radius: 50%;
+  animation: u-spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes u-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

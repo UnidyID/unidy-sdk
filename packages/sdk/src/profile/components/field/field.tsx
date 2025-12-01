@@ -77,7 +77,7 @@ export class Field {
 
   render() {
     if (profileState.loading) {
-      return <div class="spinner" />;
+      return <u-spinner />;
     }
 
     const fieldData = this.getFieldData();

@@ -4,7 +4,6 @@ import { Auth } from "../../auth";
 
 @Component({
   tag: "u-magic-code-field",
-  styleUrl: "magic-code-field.css",
   shadow: false,
 })
 export class MagicCodeField {

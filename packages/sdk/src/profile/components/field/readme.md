@@ -51,11 +51,13 @@
 
 ### Depends on
 
+- [u-spinner](../../../shared/components/spinner)
 - [u-raw-field](../raw-field)
 
 ### Graph
 ```mermaid
 graph TD;
+  u-field --> u-spinner
   u-field --> u-raw-field
   u-full-profile --> u-field
   u-missing-field --> u-field
