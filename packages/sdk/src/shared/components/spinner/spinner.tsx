@@ -7,6 +7,6 @@ import { Component, h } from "@stencil/core";
 })
 export class Spinner {
   render() {
-    return <div class="spinner-inner" part="spinner" aria-label="Loading"></div>;
+    return <div class="spinner-inner" part="spinner" aria-label="Loading" />;
   }
 }
