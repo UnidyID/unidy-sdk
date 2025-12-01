@@ -30,6 +30,7 @@ export class RawField {
   @Prop() radioOptions?: RadioOption[];
   @Prop() multiSelectOptions?: MultiSelectOption[];
   @Prop() specificPartKey?: string;
+  @Prop() ariaDescribedBy = "";
 
   @Element() el!: HTMLElement;
 
@@ -206,14 +207,14 @@ export class RawField {
   private onBlurFieldValidation = (e: Event) => {
     const input = e.target as HTMLInputElement;
     if (input.required && !input.value) {
-        input.setCustomValidity("This field is required.");
-        input.reportValidity();
+      input.setCustomValidity("This field is required.");
+      input.reportValidity();
     }
     if (this.type === "tel") {
       this.phoneFieldValidation(e);
       return;
     }
-      input.setCustomValidity("");
+    input.setCustomValidity("");
   };
 
   render() {
@@ -232,6 +233,7 @@ export class RawField {
             onChange={this.onRadioChange}
             options={checkedOptions}
             specificPartKey={this.specificPartKey}
+            aria-describedby={this.ariaDescribedBy}
           />
         );
       }
@@ -250,6 +252,7 @@ export class RawField {
             type="radio"
             specificPartKey={this.specificPartKey}
             onChange={this.onRadioChange}
+            aria-describedby={this.ariaDescribedBy}
           />
         );
       }
@@ -267,6 +270,7 @@ export class RawField {
             type="checkbox"
             specificPartKey={this.specificPartKey}
             onToggle={this.onMultiToggle}
+            aria-describedby={this.ariaDescribedBy}
           />
         );
       }
@@ -289,6 +293,7 @@ export class RawField {
               const updated = checked ? [...current, val] : current.filter((v) => v !== val);
               this.writeStore(this.field, updated);
             }}
+            aria-describedby={this.ariaDescribedBy}
           />
         );
       }
@@ -312,6 +317,7 @@ export class RawField {
           countryIcon={this.countryIcon}
           attr_name={this.attrName}
           specificPartKey={this.specificPartKey}
+          aria-describedby={this.ariaDescribedBy}
         />
       );
     }
@@ -329,6 +335,7 @@ export class RawField {
           specificPartKey={this.specificPartKey}
           onChange={this.onTextChange}
           onBlur={this.onBlurFieldValidation}
+          aria-describedby={this.ariaDescribedBy}
         />
       );
     }
@@ -348,6 +355,7 @@ export class RawField {
         onChange={this.onTextChange}
         onInput={this.phoneFieldValidation}
         onBlur={this.onBlurFieldValidation}
+        aria-describedby={this.ariaDescribedBy}
       />
     );
   }

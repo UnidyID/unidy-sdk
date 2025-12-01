@@ -32,8 +32,8 @@ export class NewsletterCheckbox {
 
   render() {
     return (
-      <label part="label" class={this.componentClassName}>
-        <input type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
+      <label htmlFor={this.internalName} part="label" class={this.componentClassName}>
+        <input id={this.internalName} type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
         {this.label}
       </label>
     );

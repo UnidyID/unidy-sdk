@@ -45,7 +45,7 @@ export class SubmitButton {
 
   render() {
     return (
-      <button type="button" onClick={this.submit} class={this.componentClassName} part="button">
+      <button type="button" onClick={this.submit} class={this.componentClassName} part="button" aria-live="polite">
         <slot />
       </button>
     );

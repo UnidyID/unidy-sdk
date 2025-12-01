@@ -46,7 +46,7 @@ export class ConditionalRender {
     }
 
     return (
-      <Host>
+      <Host aria-live="polite">
         <slot />
       </Host>
     );

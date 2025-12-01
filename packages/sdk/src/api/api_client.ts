@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/browser";
+
 import type * as z from "zod";
 
 export interface ApiResponse<T> {
@@ -59,6 +61,7 @@ export class ApiClient {
 
       return response;
     } catch (error) {
+      Sentry.captureException(error);
       const response: ApiResponse<T> = {
         status: res ? res.status : error instanceof TypeError ? 0 : 500,
         error: error instanceof Error ? error.message : String(error),
@@ -86,7 +89,7 @@ export class ApiClient {
   getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
     returnSchema: z.ZodSchema<TReturn>,
     urlBuilder: (args: TArgs) => string,
-    paramSchema?: z.ZodSchema<TParams>
+    paramSchema?: z.ZodSchema<TParams>,
   ): TParams extends undefined
     ? (args: TArgs) => Promise<ApiResponse<TReturn>>
     : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {
