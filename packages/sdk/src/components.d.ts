@@ -108,7 +108,7 @@ export namespace Components {
         "invalidPhoneMessage": string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder": string;
         /**
@@ -129,6 +129,42 @@ export namespace Components {
           * @default "info"
          */
         "variant": "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * @default "Custom Attributes"
+         */
+        "customAttributesTitle": string;
+        "language"?: string;
+        "listOfFields"?: string;
+        /**
+          * @default ""
+         */
+        "logoutButtonClassName": string;
+        /**
+          * @default "Logout"
+         */
+        "logoutButtonText": string;
+        /**
+          * @default "Profile Information"
+         */
+        "profileInformaitionTitle": string;
+        /**
+          * @default true
+         */
+        "renderDefaultLabel": boolean;
+        /**
+          * @default ""
+         */
+        "sectionTitleClassName": string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText": string;
     }
     interface ULogoutButton {
         /**
@@ -449,6 +485,12 @@ declare global {
         prototype: HTMLUFlashMessageElement;
         new (): HTMLUFlashMessageElement;
     };
+    interface HTMLUFullProfileElement extends Components.UFullProfile, HTMLStencilElement {
+    }
+    var HTMLUFullProfileElement: {
+        prototype: HTMLUFullProfileElement;
+        new (): HTMLUFullProfileElement;
+    };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
@@ -592,6 +634,7 @@ declare global {
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
+        "u-full-profile": HTMLUFullProfileElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
@@ -703,7 +746,7 @@ declare namespace LocalJSX {
         "invalidPhoneMessage"?: string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder"?: string;
         /**
@@ -724,6 +767,42 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * @default "Custom Attributes"
+         */
+        "customAttributesTitle"?: string;
+        "language"?: string;
+        "listOfFields"?: string;
+        /**
+          * @default ""
+         */
+        "logoutButtonClassName"?: string;
+        /**
+          * @default "Logout"
+         */
+        "logoutButtonText"?: string;
+        /**
+          * @default "Profile Information"
+         */
+        "profileInformaitionTitle"?: string;
+        /**
+          * @default true
+         */
+        "renderDefaultLabel"?: boolean;
+        /**
+          * @default ""
+         */
+        "sectionTitleClassName"?: string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**
@@ -965,6 +1044,7 @@ declare namespace LocalJSX {
         "u-error-message": UErrorMessage;
         "u-field": UField;
         "u-flash-message": UFlashMessage;
+        "u-full-profile": UFullProfile;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
@@ -1000,6 +1080,7 @@ declare module "@stencil/core" {
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;

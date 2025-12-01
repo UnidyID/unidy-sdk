@@ -326,7 +326,9 @@
 
     <u-auth-provider>
       <div class="container">
-        <u-profile language="de">
+        <u-full-profile language="en" list-of-fields="first_name,last_name,custom_attributes.favorite_nut" country-code-display-option="icon" section-title-class-name="text-lg font-semibold mb-4" logout-button-class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"></u-full-profile>
+
+        <!-- <u-profile language="de">
           <div class="mt-6 space-y-3">
             <u-logout-button text="Logout"
               class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -499,7 +501,7 @@
               </label>
             </div>
           </div>
-        </u-profile>
+        </u-profile> -->
       </div>
     </u-auth-provider>
   </div>

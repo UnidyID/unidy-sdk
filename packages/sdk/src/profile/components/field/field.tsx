@@ -24,7 +24,7 @@ import { state as profileState } from "../../store/profile-store";
 export class Field {
   @Prop() field!: string;
   @Prop() required = false;
-  @Prop() readonlyPlaceholder = "";
+  @Prop() readonlyPlaceholder = "No information";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
   @Prop({ attribute: "class-name" }) componentClassName?: string;
