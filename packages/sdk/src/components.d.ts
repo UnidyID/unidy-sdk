@@ -143,32 +143,12 @@ export namespace Components {
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        /**
-          * @default "Custom Attributes"
-         */
-        "customAttributesTitle": string;
+        "fields"?: string;
         "language"?: string;
-        "listOfFields"?: string;
-        /**
-          * @default ""
-         */
-        "logoutButtonClassName": string;
-        /**
-          * @default "Logout"
-         */
-        "logoutButtonText": string;
-        /**
-          * @default "Profile Information"
-         */
-        "profileInformaitionTitle": string;
         /**
           * @default true
          */
         "renderDefaultLabel": boolean;
-        /**
-          * @default ""
-         */
-        "sectionTitleClassName": string;
         /**
           * @default "Submit"
          */
@@ -201,14 +181,18 @@ export namespace Components {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction": 'prev' | 'next';
+        "direction": "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
     }
     interface UPasskey {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         /**
           * @default ""
          */
@@ -369,16 +353,16 @@ export namespace Components {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter": string;
         /**
@@ -386,7 +370,7 @@ export namespace Components {
          */
         "limit": number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale": string;
         /**
@@ -407,7 +391,7 @@ export namespace Components {
          */
         "store": PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
 }
 export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
@@ -797,32 +781,12 @@ declare namespace LocalJSX {
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
-        /**
-          * @default "Custom Attributes"
-         */
-        "customAttributesTitle"?: string;
+        "fields"?: string;
         "language"?: string;
-        "listOfFields"?: string;
-        /**
-          * @default ""
-         */
-        "logoutButtonClassName"?: string;
-        /**
-          * @default "Logout"
-         */
-        "logoutButtonText"?: string;
-        /**
-          * @default "Profile Information"
-         */
-        "profileInformaitionTitle"?: string;
         /**
           * @default true
          */
         "renderDefaultLabel"?: boolean;
-        /**
-          * @default ""
-         */
-        "sectionTitleClassName"?: string;
         /**
           * @default "Submit"
          */
@@ -856,14 +820,18 @@ declare namespace LocalJSX {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction"?: 'prev' | 'next';
+        "direction"?: "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
     }
     interface UPasskey {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         /**
           * @default ""
          */
@@ -1024,16 +992,16 @@ declare namespace LocalJSX {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter"?: string;
         /**
@@ -1041,7 +1009,7 @@ declare namespace LocalJSX {
          */
         "limit"?: number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale"?: string;
         /**
@@ -1062,7 +1030,7 @@ declare namespace LocalJSX {
          */
         "store"?: PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
         "email-field": EmailField;
