@@ -73,12 +73,6 @@ export namespace Components {
          */
         "baseUrl": string;
     }
-    interface UConnectionStatus {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-    }
     interface UEmailField {
         /**
           * @default ""
@@ -95,7 +89,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
+        "for": "email" | "password" | "magicCode" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -431,12 +425,6 @@ declare global {
         prototype: HTMLUConfigElement;
         new (): HTMLUConfigElement;
     };
-    interface HTMLUConnectionStatusElement extends Components.UConnectionStatus, HTMLStencilElement {
-    }
-    var HTMLUConnectionStatusElement: {
-        prototype: HTMLUConnectionStatusElement;
-        new (): HTMLUConnectionStatusElement;
-    };
     interface HTMLUEmailFieldElement extends Components.UEmailField, HTMLStencilElement {
     }
     var HTMLUEmailFieldElement: {
@@ -600,7 +588,6 @@ declare global {
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
-        "u-connection-status": HTMLUConnectionStatusElement;
         "u-email-field": HTMLUEmailFieldElement;
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
@@ -681,12 +668,6 @@ declare namespace LocalJSX {
          */
         "baseUrl"?: string;
     }
-    interface UConnectionStatus {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-    }
     interface UEmailField {
         /**
           * @default ""
@@ -703,7 +684,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
+        "for": "email" | "password" | "magicCode" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -980,7 +961,6 @@ declare namespace LocalJSX {
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
-        "u-connection-status": UConnectionStatus;
         "u-email-field": UEmailField;
         "u-error-message": UErrorMessage;
         "u-field": UField;
@@ -1016,7 +996,6 @@ declare module "@stencil/core" {
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
-            "u-connection-status": LocalJSX.UConnectionStatus & JSXBase.HTMLAttributes<HTMLUConnectionStatusElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;

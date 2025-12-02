@@ -1,6 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { AUTH_ERROR_MESSAGES } from "../../error-definitions";
+import { unidyState } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-error-message",
@@ -8,7 +9,7 @@ import { AUTH_ERROR_MESSAGES } from "../../error-definitions";
 })
 export class ErrorMessage {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() for!: "email" | "password" | "magicCode" | "general";
+  @Prop() for!: "email" | "password" | "magicCode" | "general" | "connection";
 
   // User defined messages(translations) per error code --> TODO: maybe this should be part of config component ?
   @Prop() errorMessages?: Record<string, string>;
@@ -26,7 +27,15 @@ export class ErrorMessage {
   }
 
   render() {
-    const errorCode = this.for === "general" ? authState.globalErrors.auth : authState.errors[this.for];
+    let errorCode: string | null = null;
+
+    if (this.for === "connection") {
+      errorCode = unidyState.backendConnected ? null : "connection_failed";
+    } else if (this.for === "general") {
+      errorCode = authState.globalErrors.auth;
+    } else {
+      errorCode = authState.errors[this.for];
+    }
 
     if (!errorCode) {
       return null;

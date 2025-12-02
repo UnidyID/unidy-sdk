@@ -210,17 +210,9 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
   <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
 
-  <u-connection-status>
-    <div
-      class="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 flex items-start gap-2 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
-      <div class="flex-1">
-        <strong class="block text-yellow-800 text-base mb-1">Connection Error</strong>
-        <p class="text-yellow-700 text-sm m-0">
-          Unable to connect to the Unidy server
-        </p>
-      </div>
-    </div>
-  </u-connection-status>
+  <u-error-message for="connection"
+    class-name="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 flex items-start gap-2 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+  </u-error-message>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
