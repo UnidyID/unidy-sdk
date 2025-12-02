@@ -288,11 +288,6 @@
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
-        <u-signin-step name="missing-fields">
-          <u-missing-field></u-missing-field>
-          <u-missing-fields-submit-button></u-missing-fields-submit-button>
-        </u-signin-step>
-
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
             <div class="flex-1 border-t border-gray-300"></div>
@@ -320,6 +315,11 @@
         </u-signin-strategy>
 
         <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
+      </u-signin-step>
+
+      <u-signin-step name="missing-fields">
+        <u-missing-field></u-missing-field>
+        <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>
 
     </u-signin-root>
