@@ -15,8 +15,8 @@
 | `field` _(required)_       | `field`                       |             | `string`            | `undefined`                            |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`            | `"Please enter a valid phone number."` |
 | `placeholder`              | `placeholder`                 |             | `string`            | `undefined`                            |
-| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`            | `""`                                   |
-| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `false`                                |
+| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`            | `"No information"`                     |
+| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `true`                                 |
 | `required`                 | `required`                    |             | `boolean`           | `false`                                |
 
 
@@ -46,6 +46,7 @@
 
 ### Used by
 
+ - [u-full-profile](../full-profile)
  - [u-missing-field](../../../auth/components/missing-field)
 
 ### Depends on
@@ -56,6 +57,7 @@
 ```mermaid
 graph TD;
   u-field --> u-raw-field
+  u-full-profile --> u-field
   u-missing-field --> u-field
   style u-field fill:#f9f,stroke:#333,stroke-width:4px
 ```

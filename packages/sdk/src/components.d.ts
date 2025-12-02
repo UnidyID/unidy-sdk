@@ -116,11 +116,11 @@ export namespace Components {
         "invalidPhoneMessage": string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder": string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel": boolean;
         /**
@@ -137,6 +137,18 @@ export namespace Components {
           * @default "info"
          */
         "variant": "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "fields"?: string;
+        "language"?: string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText": string;
     }
     interface ULogoutButton {
         /**
@@ -165,14 +177,18 @@ export namespace Components {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction": 'prev' | 'next';
+        "direction": "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
     }
     interface UPasskey {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         /**
           * @default ""
          */
@@ -333,16 +349,16 @@ export namespace Components {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter": string;
         /**
@@ -350,7 +366,7 @@ export namespace Components {
          */
         "limit": number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale": string;
         /**
@@ -371,7 +387,7 @@ export namespace Components {
          */
         "store": PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
 }
 export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
@@ -464,6 +480,12 @@ declare global {
     var HTMLUFlashMessageElement: {
         prototype: HTMLUFlashMessageElement;
         new (): HTMLUFlashMessageElement;
+    };
+    interface HTMLUFullProfileElement extends Components.UFullProfile, HTMLStencilElement {
+    }
+    var HTMLUFullProfileElement: {
+        prototype: HTMLUFullProfileElement;
+        new (): HTMLUFullProfileElement;
     };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
@@ -608,6 +630,7 @@ declare global {
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
+        "u-full-profile": HTMLUFullProfileElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
@@ -727,11 +750,11 @@ declare namespace LocalJSX {
         "invalidPhoneMessage"?: string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder"?: string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel"?: boolean;
         /**
@@ -748,6 +771,18 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "fields"?: string;
+        "language"?: string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**
@@ -777,14 +812,18 @@ declare namespace LocalJSX {
     interface UPaginationButton {
         "customClass"?: string;
         /**
-          * @default 'next'
+          * @default "next"
          */
-        "direction"?: 'prev' | 'next';
+        "direction"?: "prev" | "next";
     }
     interface UPaginationPage {
         "customClass"?: string;
     }
     interface UPasskey {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         /**
           * @default ""
          */
@@ -945,16 +984,16 @@ declare namespace LocalJSX {
     }
     interface UTicketableList {
         /**
-          * @default 'public-newsletter-api-key'
+          * @default "public-newsletter-api-key"
          */
         "apiKey"?: string;
         /**
-          * @default 'http://localhost:3000'
+          * @default "http://localhost:3000"
          */
         "baseUrl"?: string;
         "containerClass"?: string;
         /**
-          * @default ''
+          * @default ""
          */
         "filter"?: string;
         /**
@@ -962,7 +1001,7 @@ declare namespace LocalJSX {
          */
         "limit"?: number;
         /**
-          * @default 'en-US'
+          * @default "en-US"
          */
         "locale"?: string;
         /**
@@ -983,7 +1022,7 @@ declare namespace LocalJSX {
          */
         "store"?: PaginationStore | null;
         "target"?: string;
-        "ticketableType": 'ticket' | 'subscription';
+        "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
         "email-field": EmailField;
@@ -997,6 +1036,7 @@ declare namespace LocalJSX {
         "u-error-message": UErrorMessage;
         "u-field": UField;
         "u-flash-message": UFlashMessage;
+        "u-full-profile": UFullProfile;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
@@ -1032,6 +1072,7 @@ declare module "@stencil/core" {
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
