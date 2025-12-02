@@ -12,7 +12,9 @@ export class UnidyConfig {
   @Prop() apiKey = "";
 
   componentWillLoad() {
-    this.initializeSentry();
+    if (process.env.NODE_ENV === "production" && !window.location.href.includes("localhost")) {
+      this.initializeSentry();
+    }
 
     if (!this.baseUrl || !this.apiKey) {
       console.error("baseUrl and apiKey are required");
