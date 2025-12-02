@@ -3,6 +3,7 @@ import * as z from "zod";
 
 import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
 import { UserProfileSchema } from "../../profile";
+import { unidyState } from "../../shared/store/unidy-store";
 
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),
@@ -43,25 +44,24 @@ export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
 export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
 export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
-export type CreateSignInResult =
-  | ["account_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
-  | [null, CreateSignInResponse];
+type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
+
+export type CreateSignInResult = CommonErrors | ["account_not_found", ErrorResponse] | [null, CreateSignInResponse];
 
 export type AuthenticateResultShared =
+  | CommonErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export type SendMagicCodeResult =
+  | CommonErrors
   | ["magic_code_recently_created", SendMagicCodeError]
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, SendMagicCodeResponse];
 
 export type AuthenticateWithPasswordResult = ["invalid_password", ErrorResponse] | AuthenticateResultShared;
@@ -73,24 +73,24 @@ export type AuthenticateWithMagicCodeResult =
   | AuthenticateResultShared;
 
 export type RefreshTokenResult =
+  | CommonErrors
   | ["invalid_refresh_token", ErrorResponse]
   | ["refresh_token_revoked", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export type ResetPasswordResult =
+  | CommonErrors
   | ["password_not_set", ErrorResponse]
   | ["reset_password_already_sent", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, null];
 
 export type SignOutResult =
+  | CommonErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["missing_id_token", ErrorResponse]
   | ["invalid_id_token", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, null];
 
 const PasskeyOptionsResponseSchema = z.object({
@@ -115,17 +115,14 @@ const PasskeyCredentialSchema = z.object({
 export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema>;
 export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;
 
-export type GetPasskeyOptionsResult =
-  | ["bad_request", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
-  | [null, PasskeyOptionsResponse];
+export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
 
 export type AuthenticateWithPasskeyResult =
+  | CommonErrors
   | ["invalid_passkey", ErrorResponse]
   | ["verification_failed", ErrorResponse]
   | ["authentication_failed", ErrorResponse]
   | ["bad_request", ErrorResponse]
-  | ["schema_validation_error", SchemaValidationError]
   | [null, TokenResponse];
 
 export class AuthService {
@@ -137,24 +134,21 @@ export class AuthService {
 
   async createSignIn(email: string): Promise<CreateSignInResult> {
     const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email });
-    try {
+
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
-
         return ["account_not_found", error_response];
       }
 
       return [null, CreateSignInResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async sendMagicCode(signInId: string): Promise<SendMagicCodeResult> {
     const response = await this.client.post<SendMagicCodeResponse>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`, {});
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         try {
           const error_response = SendMagicCodeErrorSchema.parse(response.data);
@@ -166,17 +160,15 @@ export class AuthService {
       }
 
       return [null, SendMagicCodeResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async authenticateWithPassword(signInId: string, password: string): Promise<AuthenticateWithPasswordResult> {
     const response = await this.client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       password,
     });
-    try {
+
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
 
@@ -189,10 +181,7 @@ export class AuthService {
       }
 
       return [null, TokenResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -201,7 +190,7 @@ export class AuthService {
       user,
     });
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
         if (missing_fields_check.success) {
@@ -214,10 +203,7 @@ export class AuthService {
       }
 
       return [null, TokenResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async authenticateWithMagicCode(signInId: string, code: string): Promise<AuthenticateWithMagicCodeResult> {
@@ -225,7 +211,7 @@ export class AuthService {
       code,
     });
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
 
@@ -241,16 +227,13 @@ export class AuthService {
         ];
       }
       return [null, TokenResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async refreshToken(signInId: string): Promise<RefreshTokenResult> {
     const response = await this.client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {});
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
 
@@ -258,16 +241,13 @@ export class AuthService {
       }
 
       return [null, TokenResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async sendResetPasswordEmail(signInId: string): Promise<ResetPasswordResult> {
     const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`, {});
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
 
@@ -275,16 +255,13 @@ export class AuthService {
       }
 
       return [null, null];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async signOut(signInId: string): Promise<SignOutResult> {
     const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, {});
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
 
@@ -292,27 +269,21 @@ export class AuthService {
       }
 
       return [null, null];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async getPasskeyOptions(sid?: string): Promise<GetPasskeyOptionsResult> {
     const endpoint = sid ? `/api/sdk/v1/passkeys/new?sid=${encodeURIComponent(sid)}` : "/api/sdk/v1/passkeys/new";
     const response = await this.client.get<PasskeyOptionsResponse>(endpoint);
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
         return ["bad_request", error_response];
       }
 
       return [null, PasskeyOptionsResponseSchema.parse(response.data)];
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
+    });
   }
 
   async authenticateWithPasskey(credential: PasskeyCredential): Promise<AuthenticateWithPasskeyResult> {
@@ -320,7 +291,7 @@ export class AuthService {
       publicKeyCredential: credential,
     });
 
-    try {
+    return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
         return [
@@ -330,6 +301,22 @@ export class AuthService {
       }
 
       return [null, TokenResponseSchema.parse(response.data)];
+    });
+  }
+
+  private handleResponse<T>(
+    // biome-ignore lint/suspicious/noExplicitAny: generic handler for all responses
+    response: any,
+    handler: () => T,
+  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
+    if (response.connectionError) {
+      unidyState.backendConnected = false;
+
+      return ["connection_failed", null];
+    }
+
+    try {
+      return handler();
     } catch (error) {
       Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];

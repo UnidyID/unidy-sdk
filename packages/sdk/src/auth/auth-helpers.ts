@@ -52,6 +52,7 @@ export class AuthHelpers {
         authStore.setMissingFields((response as RequiredFieldsResponse).fields);
         profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
         authStore.setStep("missing-fields");
+        authStore.setLoading(false);
         return;
       }
       if (error === "account_locked") {
@@ -69,9 +70,11 @@ export class AuthHelpers {
 
   async logout() {
     const [error, _] = await this.client.auth.signOut(authState.sid as string);
+
     if (error) {
       authStore.setGlobalError("auth", error);
     }
+
     return [error, _] as const;
   }
 
@@ -146,6 +149,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
     authStore.setLoading(false);
+
     if (error) {
       authStore.setFieldError("magicCode", error);
       authStore.setStep("magic-code");

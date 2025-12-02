@@ -97,7 +97,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
+        "for": "email" | "password" | "magicCode" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -731,7 +731,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general";
+        "for": "email" | "password" | "magicCode" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
