@@ -3,6 +3,7 @@ import { getUnidyClient } from "../../../auth/api-client";
 import { Auth } from "../../../auth/auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
+import { hasSlotContent } from "../../../shared/component-utils";
 @Component({
   tag: "u-profile-submit-button",
   shadow: true,
@@ -53,10 +54,6 @@ export class SubmitButton {
     }
   }
 
-  private hasSlotContent(): boolean {
-    return this.el.hasChildNodes() && this.el.textContent?.trim() !== "";
-  }
-
   render() {
     return (
       <div>
@@ -66,7 +63,7 @@ export class SubmitButton {
           part="button"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+          {profileState.loading ? <span class="spinner" /> : hasSlotContent(this.el) ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
     );

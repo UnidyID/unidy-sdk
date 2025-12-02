@@ -2,6 +2,7 @@ import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 import type { RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
+import { unidyState } from "../../shared/store/unidy-store";
 
 export interface AuthState {
   step: "email" | "verification" | "magic-code" | "missing-fields";
@@ -110,6 +111,11 @@ class AuthStore {
   }
 
   setGlobalError(key: string, error: string | null) {
+    if (error === "connection_failed") {
+      unidyState.backendConnected = false;
+      return;
+    }
+
     if (error) {
       this.rootComponentRef?.onError(error);
     }

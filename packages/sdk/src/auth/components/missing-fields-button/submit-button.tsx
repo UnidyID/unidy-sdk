@@ -4,6 +4,7 @@ import { state as profileState } from "../../../profile/store/profile-store";
 import { authState, authStore } from "../../store/auth-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 import type { TokenResponse } from "../../api/auth";
+import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-missing-fields-submit-button",
@@ -36,10 +37,6 @@ export class SubmitButton {
     authStore.setToken(jwt);
   }
 
-  private hasSlotContent(): boolean {
-    return this.el.hasChildNodes() && this.el.textContent?.trim() !== "";
-  }
-
   render() {
     if (authState.step !== "missing-fields") return null;
     return (
@@ -50,7 +47,7 @@ export class SubmitButton {
           part="button"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <span class="spinner" /> : this.hasSlotContent() ? <slot /> : "SUBMIT BY DEFAULT"}
+          {profileState.loading ? <span class="spinner" /> : hasSlotContent(this.el) ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
       </div>
     );
