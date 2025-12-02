@@ -79,6 +79,9 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    if (authState.step === "missing-fields") {
+      return;
+    }
     this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
@@ -92,6 +95,45 @@ export class AuthHelpers {
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
+    }
+  }
+
+  handleSocialAuthRedirect(): void {
+    // missing required fields flow
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const error = params.get("error");
+
+    if (error !== "missing_required_fields") {
+      return;
+    }
+
+    const fieldsFromUrl = params.get("fields");
+    if (!fieldsFromUrl) {
+      return;
+    }
+
+    const signInId = params.get("sid");
+    if (signInId) {
+      authStore.setSignInId(signInId);
+    } else {
+      return;
+    }
+
+    try {
+      const fields = JSON.parse(fieldsFromUrl);
+
+      authStore.setMissingFields(fields);
+      profileState.data = fields as ProfileRaw;
+      authStore.setStep("missing-fields");
+
+      params.delete("error");
+      params.delete("fields");
+      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
+      window.history.replaceState(null, "", cleanUrl);
+    } catch (e) {
+      console.error("Failed to parse missing fields payload:", e);
+      authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
 
@@ -137,6 +179,12 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
     if (error) {
+      if (error === "missing_required_fields") {
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+        authStore.setStep("missing-fields");
+        return;
+      }
       authStore.setFieldError("magicCode", error);
       authStore.setLoading(false);
     } else {

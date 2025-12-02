@@ -67,7 +67,7 @@ export class NewsletterService extends EventEmitter {
 
         return ["rate_limit_exceeded", response];
       case 500:
-        Sentry.captureException(response)
+        Sentry.captureException(response);
         return ["server_error", response];
       case 0:
         return ["network_error", response];

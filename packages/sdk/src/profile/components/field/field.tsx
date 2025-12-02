@@ -24,13 +24,13 @@ import { state as profileState } from "../../store/profile-store";
 export class Field {
   @Prop() field!: string;
   @Prop() required = false;
-  @Prop() readonlyPlaceholder = "";
+  @Prop() readonlyPlaceholder = "No information";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
   @Prop({ attribute: "class-name" }) componentClassName?: string;
   @Prop() emptyOption = true;
   @Prop() placeholder?: string;
-  @Prop() renderDefaultLabel = false;
+  @Prop() renderDefaultLabel = true;
 
   @Element() el!: HTMLElement;
 
@@ -47,7 +47,11 @@ export class Field {
   componentDidRender() {
     const fieldErrors = profileState.errors;
     if (fieldErrors?.[this.field]) {
-      this.el.shadowRoot?.getElementById(this.field)?.focus();
+      this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      this.el.shadowRoot
+        ?.getElementById(this.field)
+        ?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, select, textarea")
+        ?.focus();
     }
   }
 
@@ -96,16 +100,18 @@ export class Field {
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
-          <span part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
+          <span id={this.field} part="readonly-indicator">
+            {fieldData?.value || this.readonlyPlaceholder}
+          </span>
         ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
-          <div part="multi-select-readonly-container">
+          <ul id={this.field} class="multi-select-readonly-container" part="multi-select-readonly-container">
             {multiSelectReadonlyLabels.map((label) => (
-              <span key={label} part="multi-select-readonly-field">
+              <li key={label} part="multi-select-readonly-field">
                 {label}
-              </span>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
         {!isReadonly && (
           <u-raw-field
@@ -125,10 +131,15 @@ export class Field {
             countryCodeDisplayOption={this.countryCodeDisplayOption}
             attrName={fieldData.attr_name}
             specificPartKey={this.createSpecificPartKey(this.field)}
+            ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
           />
         )}
 
-        {profileState.errors[this.field] && <span part="field-error-message">ERROR: {profileState.errors[this.field]}</span>}
+        {profileState.errors[this.field] && (
+          <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">
+            ERROR: {profileState.errors[this.field]}
+          </span>
+        )}
       </div>
     );
   }

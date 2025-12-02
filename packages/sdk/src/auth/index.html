@@ -230,8 +230,10 @@
 
       <u-signin-step name="email">
         <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
-        <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-described-by="passkey-error-email"></u-passkey>
+        <u-error-message id="passkey-error-email" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -240,8 +242,9 @@
         </div>
 
         <u-email-field placeholder="Enter your email"
-          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
-        <u-error-message for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
+          aria-describedby="email-error"></u-email-field>
+        <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <u-auth-submit-button for="email" text="Continue with Email"
           class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
@@ -269,8 +272,10 @@
 
       <u-signin-step name="verification">
         <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-passkey>
-        <u-error-message for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-describedby="passkey-error-verification"></u-passkey>
+        <u-error-message id="passkey-error-verification" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -280,10 +285,12 @@
 
         <u-signin-strategy type="password">
           <u-password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full "></u-password-field>
+            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+            aria-describedby="password-error"></u-password-field>
           <u-reset-password-button text="Reset Password"
             class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-          <u-error-message for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          <u-error-message id="password-error" for="password"
+            class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
           <u-auth-submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
@@ -304,9 +311,11 @@
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </u-conditional-render>
 
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"></u-magic-code-field>
+          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+            aria-describedby="magic-code-error"></u-magic-code-field>
 
-          <u-error-message for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+          <u-error-message id="magic-code-error" for="magicCode"
+            class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
           <u-conditional-render when="magicCodeSent" is="true">
             <u-send-magic-code-button text="Resend Magic Code"
@@ -317,11 +326,10 @@
         <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
       </u-signin-step>
 
-      <u-signin-step name="missing-fields">
+      </u-signin-step name="missing-fields">
         <u-missing-field></u-missing-field>
         <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>
-
     </u-signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
@@ -336,180 +344,16 @@
 
     <u-auth-provider>
       <div class="container">
-        <u-profile language="de">
-          <div class="mt-6 space-y-3">
-            <u-logout-button text="Logout"
-              class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-            </u-logout-button>
-          </div>
-          <u-field field="salutation" render-default-label="true"></u-field>
-          <u-field field="first_name">
-            <label slot="label" class="text-blue-500">First Name:</label>
-          </u-field>
-          <u-field field="last_name" render-default-label="true"></u-field>
-          <u-field field="date_of_birth" required="true" render-default-label="true"></u-field>
-          <u-field field="phone_number" render-default-label="true"></u-field>
-          <u-field field="country_code" country-code-display-option="icon" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.favorite_nut" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.sports_interests" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.active_membership" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.back_number" readonly-placeholder="No back number provided"
-            render-default-label="true"></u-field>
-          <u-field field="custom_attributes.weight" placeholder="0.00" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.football_fan" readonly-placeholder="No information"
-            render-default-label="true"></u-field>
-          <u-field field="custom_attributes.first_name" render-default-label="true"></u-field>
-          <u-field field="custom_attributes.self_description" render-default-label="true"></u-field>
-          <u-profile-submit-button>Submit</u-profile-submit-button>
-
-          <h2>Raw Field Examples</h2>
-          <div class="mb-4 mt-4">
-            <label for="first_name" class="block text-sm font-bold text-gray-700 mb-1">
-              First Name
-            </label>
-
-            <u-raw-field field="first_name" type="text" tooltip="First Name raw" placeholder="Enter your first name"
-              required class-name="block w-full rounded-lg border border-gray-300 bg-red-200 px-3 py-2 shadow-sm
-                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500
-                          focus:border-red-500 transition"></u-raw-field>
-          </div>
-
-          <h3 class="text-lg font-bold text-gray-700 mb-1">Salutation</h3>
-          <div class="flex gap-6">
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="salutation" type="radio" value="mr" tooltip="Herr" class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">Mr</span>
-            </label>
-
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="salutation" type="radio" value="mrs" tooltip="Frau"
-                class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">Mrs</span>
-            </label>
-
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="salutation" type="radio" value="mx" tooltip="Divers"
-                class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">Mx</span>
-            </label>
-          </div>
-
-          <h3 class="text-lg font-bold text-gray-700 mb-1">Active Membership</h3>
-          <div class="flex gap-6">
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="custom_attributes.active_membership" type="radio" value="true" tooltip="Yes"
-                class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">Yes</span>
-            </label>
-
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="custom_attributes.active_membership" type="radio" value="false" tooltip="No"
-                class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">No</span>
-            </label>
-
-            <label class="inline-flex gap-2 cursor-pointer">
-              <u-raw-field field="custom_attributes.active_membership" type="radio" value="_NOT_SET_" tooltip="Not Set"
-                class-name="h-4 w-4"></u-raw-field>
-              <span class="text-sm text-gray-800">Not Set</span>
-            </label>
-          </div>
-
-          <div class="mb-4 mt-4">
-            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-
-            <u-raw-field field="phone_number" type="tel" tooltip="Telefonnummer" class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
-                          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500
-                          focus:border-blue-500 transition"></u-raw-field>
-          </div>
-
-          <div class="mb-4">
-            <label for="custom_attributes.self_description" class="block text-sm font-medium text-gray-700 mb-1">
-              Self Description
-            </label>
-
-            <u-raw-field field="custom_attributes.self_description" type="textarea" tooltip="Self Description"
-              class-name="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm
-                          min-h-[120px] resize-y placeholder-gray-400 focus:outline-none
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></u-raw-field>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-bold mb-1">Favorite Nut</label>
-            <u-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
-                          bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
-                          focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
-                { "value": "erdnuss", "label": "Erdnuss" },
-                { "value": "haselnuss", "label": "Haselnuss" },
-                { "value": "walnuss", "label": "Walnuss" }
-              ]' />
-          </div>
-          <div class="mb-4">
-            <h3 class="block text-sm font-bold mb-1">Favorite sports</h3>
-            <div class="flex flex-wrap gap-2">
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="soccer" tooltip="Soccer"
-                  class-name="sr-only"></u-raw-field>
-                Soccer
-              </label>
-
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="basketball"
-                  tooltip="Basketball" class-name="sr-only"></u-raw-field>
-                Basketball
-              </label>
-
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="hockey" tooltip="Hockey"
-                  class-name="sr-only"></u-raw-field>
-                Hockey
-              </label>
-
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="golf" tooltip="Golf"
-                  class-name="sr-only"></u-raw-field>
-                Golf
-              </label>
-
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="handball"
-                  tooltip="Handball" class-name="sr-only"></u-raw-field>
-                Handball
-              </label>
-
-              <label class="inline-flex h-10 min-w-[90px] items-center justify-center rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-900 cursor-pointer transition
-                       hover:border-gray-300 focus-within:ring-2 focus-within:ring-indigo-400
-                       [&:has(u-raw-field_input:checked)]:bg-indigo-50
-                       [&:has(u-raw-field_input:checked)]:border-indigo-500
-                       [&:has(u-raw-field_input:checked)]:text-indigo-800">
-                <u-raw-field field="custom_attributes.sports_interests" type="checkbox" value="tennis" tooltip="Tennis"
-                  class-name="sr-only"></u-raw-field>
-                Tennis
-              </label>
-            </div>
-          </div>
-        </u-profile>
+        <div class="mb-6">
+          <u-logout-button text="Logout"
+            class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+          </u-logout-button>
+          <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+          <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+        </div>
+        <u-full-profile language="en"
+          fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+          country-code-display-option="icon"></u-full-profile>
       </div>
     </u-auth-provider>
   </div>

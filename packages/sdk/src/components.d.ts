@@ -21,6 +21,10 @@ export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
     interface EmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel": string;
         "componentClassName"?: string;
         /**
           * @default "Email"
@@ -75,6 +79,10 @@ export namespace Components {
     }
     interface UEmailField {
         /**
+          * @default "Email"
+         */
+        "ariaLabel": string;
+        /**
           * @default ""
          */
         "componentClassName": string;
@@ -108,11 +116,11 @@ export namespace Components {
         "invalidPhoneMessage": string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder": string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel": boolean;
         /**
@@ -129,6 +137,18 @@ export namespace Components {
           * @default "info"
          */
         "variant": "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "fields"?: string;
+        "language"?: string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText": string;
     }
     interface ULogoutButton {
         /**
@@ -168,6 +188,10 @@ export namespace Components {
         /**
           * @default ""
          */
+        "ariaDescribedBy"?: string;
+        /**
+          * @default ""
+         */
         "componentClassName": string;
         /**
           * @default false
@@ -183,6 +207,10 @@ export namespace Components {
         "text": string;
     }
     interface UPasswordField {
+        /**
+          * @default "Password"
+         */
+        "ariaLabel": string;
         /**
           * @default ""
          */
@@ -205,6 +233,10 @@ export namespace Components {
     interface UProfileSubmitButton {
     }
     interface URawField {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy": string;
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -449,6 +481,12 @@ declare global {
         prototype: HTMLUFlashMessageElement;
         new (): HTMLUFlashMessageElement;
     };
+    interface HTMLUFullProfileElement extends Components.UFullProfile, HTMLStencilElement {
+    }
+    var HTMLUFullProfileElement: {
+        prototype: HTMLUFullProfileElement;
+        new (): HTMLUFullProfileElement;
+    };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
@@ -592,6 +630,7 @@ declare global {
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
+        "u-full-profile": HTMLUFullProfileElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
@@ -614,6 +653,10 @@ declare global {
 }
 declare namespace LocalJSX {
     interface EmailField {
+        /**
+          * @default "Email"
+         */
+        "ariaLabel"?: string;
         "componentClassName"?: string;
         /**
           * @default "Email"
@@ -670,6 +713,10 @@ declare namespace LocalJSX {
     }
     interface UEmailField {
         /**
+          * @default "Email"
+         */
+        "ariaLabel"?: string;
+        /**
           * @default ""
          */
         "componentClassName"?: string;
@@ -703,11 +750,11 @@ declare namespace LocalJSX {
         "invalidPhoneMessage"?: string;
         "placeholder"?: string;
         /**
-          * @default ""
+          * @default "No information"
          */
         "readonlyPlaceholder"?: string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel"?: boolean;
         /**
@@ -724,6 +771,18 @@ declare namespace LocalJSX {
           * @default "info"
          */
         "variant"?: "error" | "success" | "info";
+    }
+    interface UFullProfile {
+        /**
+          * @default "label"
+         */
+        "countryCodeDisplayOption"?: "icon" | "label";
+        "fields"?: string;
+        "language"?: string;
+        /**
+          * @default "Submit"
+         */
+        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**
@@ -764,6 +823,10 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
+        "ariaDescribedBy"?: string;
+        /**
+          * @default ""
+         */
         "componentClassName"?: string;
         /**
           * @default false
@@ -779,6 +842,10 @@ declare namespace LocalJSX {
         "text"?: string;
     }
     interface UPasswordField {
+        /**
+          * @default "Password"
+         */
+        "ariaLabel"?: string;
         /**
           * @default ""
          */
@@ -801,6 +868,10 @@ declare namespace LocalJSX {
     interface UProfileSubmitButton {
     }
     interface URawField {
+        /**
+          * @default ""
+         */
+        "ariaDescribedBy"?: string;
         "attrName"?: string;
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -965,6 +1036,7 @@ declare namespace LocalJSX {
         "u-error-message": UErrorMessage;
         "u-field": UField;
         "u-flash-message": UFlashMessage;
+        "u-full-profile": UFullProfile;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
@@ -1000,6 +1072,7 @@ declare module "@stencil/core" {
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;

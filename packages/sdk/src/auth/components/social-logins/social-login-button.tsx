@@ -44,14 +44,9 @@ export class SocialLoginButton {
 
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
-    const providerMap: Record<string, string> = {
-      google: "google_oauth2",
-      unidy: "openid_connect",
-    };
-    const authProvider = providerMap[this.provider] || this.provider;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
 
-    return `${baseUrl}/users/auth/${authProvider}?sdk_redirect_uri=${redirectUri}`;
+    return `${baseUrl}/api/sdk/v1/sign_ins/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
   }
 
   private onClick = async () => {
@@ -86,17 +81,18 @@ export class SocialLoginButton {
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">
-          {this.renderIcon()}
+          <slot name="icon">
+            <span aria-hidden="true">{this.renderIcon()}</span>
+          </slot>
 
-          <slot name="icon" />
-
-          {!this.iconOnly && (
+          {this.iconOnly ? (
+            // Render the hidden text for accessibility.
+            <span class="sr-only">{this.text}</span>
+          ) : (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
               {this.text}
             </span>
           )}
-          {/* Hidden text for accessibility */}
-          <span style={{ display: "none" }}>{this.text}</span>
         </div>
       </button>
     );

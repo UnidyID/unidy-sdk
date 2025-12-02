@@ -23,7 +23,7 @@ export class FlashMessage {
         <span>
           {this.variant === "error" ? "✘" : "✓"} {this.message}
         </span>
-        <button type="button" onClick={() => this.closeError()}>
+        <button type="button" onClick={() => this.closeError()} aria-live="polite">
           Close
         </button>
       </div>

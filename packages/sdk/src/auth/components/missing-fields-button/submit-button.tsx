@@ -29,6 +29,7 @@ export class SubmitButton {
     const [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
 
     if (error) {
+      profileState.loading = false;
       return;
     }
 
@@ -46,6 +47,7 @@ export class SubmitButton {
           onClick={() => this.onSubmit()}
           part="button"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
+          aria-live="polite"
         >
           {profileState.loading ? <span class="spinner" /> : hasSlotContent(this.el) ? <slot /> : "SUBMIT BY DEFAULT"}
         </button>
