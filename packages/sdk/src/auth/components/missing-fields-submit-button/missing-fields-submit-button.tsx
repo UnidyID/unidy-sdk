@@ -10,7 +10,7 @@ import { hasSlotContent } from "../../../shared/component-utils";
   tag: "u-missing-fields-submit-button",
   shadow: true,
 })
-export class SubmitButton {
+export class MissingFieldsSubmitButton {
   @Element() el!: HTMLElement;
 
   private async onSubmit() {

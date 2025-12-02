@@ -82,9 +82,9 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
 ### Used by
 
- - [u-auth-submit-button](../../../auth/components/submit-button)
+ - [u-auth-submit-button](../../../auth/components/auth-submit-button)
  - [u-field](../../../profile/components/field)
- - [u-missing-fields-submit-button](../../../auth/components/missing-fields-button)
+ - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
  - [u-profile-submit-button](../../../profile/components/unidy-submit-button)
 
 ### Graph

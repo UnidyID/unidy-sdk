@@ -6,7 +6,7 @@ import { getParentSigninStep } from "../helpers";
   tag: "u-auth-submit-button",
   shadow: false,
 })
-export class SubmitButton {
+export class AuthSubmitButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email" | "password";
