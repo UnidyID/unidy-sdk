@@ -47,6 +47,11 @@ export class ErrorMessage {
       return null;
     }
 
+    // Only render connection_failed for "general" and "connection" types
+    if (errorCode === "connection_failed" && this.for !== "general" && this.for !== "connection") {
+      return null;
+    }
+
     return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : this.getErrorMessage(errorCode)}</Host>;
   }
 }
