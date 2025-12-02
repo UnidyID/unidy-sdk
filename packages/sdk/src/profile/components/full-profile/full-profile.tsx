@@ -1,5 +1,4 @@
-import { Component, h, Host, Prop } from "@stencil/core";
-import type { ProfileRaw } from "../../store/profile-store";
+import { Component, h, Prop } from "@stencil/core";
 import { state as profileState } from "../../store/profile-store";
 
 @Component({
@@ -12,7 +11,6 @@ export class FullProfile {
 
   @Prop() fields?: string;
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
-  @Prop() renderDefaultLabel = true;
 
   @Prop() submitButtonText = "Submit";
 
@@ -24,33 +22,21 @@ export class FullProfile {
         .filter(Boolean);
     }
     return [
-      ...Object.keys((profileState.data as ProfileRaw) || {}).filter((field) => field !== "custom_attributes" && field !== "email"),
+      ...Object.keys(profileState.data || {}).filter((field) => field !== "custom_attributes" && field !== "email"),
       ...Object.keys(profileState.data?.custom_attributes || {}).map((field) => `custom_attributes.${field}`),
     ];
   }
 
   render() {
     return (
-      <Host>
-        <slot name="before-fields" />
-        <u-profile language={this.language}>
-          {this.list().map((field) => (
-            <u-field
-              key={field}
-              field={field}
-              renderDefaultLabel={this.renderDefaultLabel}
-              countryCodeDisplayOption={this.countryCodeDisplayOption}
-            />
-          ))}
-
-          <div class="flex justify-end">
-            <u-profile-submit-button>{this.submitButtonText}</u-profile-submit-button>
-          </div>
-
-          <div id="profile-update-message" />
-        </u-profile>
-        <slot name="after-fields" />
-      </Host>
+      <u-profile language={this.language}>
+        {this.list().map((field) => (
+          <u-field key={field} field={field} renderDefaultLabel={true} countryCodeDisplayOption={this.countryCodeDisplayOption} />
+        ))}
+        <div class="flex justify-end">
+          <u-profile-submit-button>{this.submitButtonText}</u-profile-submit-button>
+        </div>
+      </u-profile>
     );
   }
 }

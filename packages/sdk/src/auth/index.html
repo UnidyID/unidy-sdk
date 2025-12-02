@@ -329,21 +329,14 @@
 
     <u-auth-provider>
       <div class="container">
-        <u-full-profile language="en"  fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon">
-          <div slot="before-fields" class="mb-6">
-            <u-logout-button text="Logout"
-              class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-            </u-logout-button>
-            <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
-            <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
-          </div>
-          <div slot="after-fields" class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 class="font-semibold text-blue-800 mb-1">Tip</h4>
-            <p class="text-sm text-blue-700">
-              Keeping your profile information up to date ensures that we can provide you with a personalized and secure experience.
-            </p>
-          </div>
-        </u-full-profile>
+        <div slot="before-fields" class="mb-6">
+          <u-logout-button text="Logout"
+            class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+          </u-logout-button>
+          <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+          <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+        </div>
+        <u-full-profile language="en"  fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile>
 
         <!-- <u-profile language="de">
           <div class="mt-6 space-y-3">

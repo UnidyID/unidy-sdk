@@ -12,7 +12,6 @@
 | `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`   |
 | `fields`                   | `fields`                      |             | `string`            | `undefined` |
 | `language`                 | `language`                    |             | `string`            | `undefined` |
-| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `true`      |
 | `submitButtonText`         | `submit-button-text`          |             | `string`            | `"Submit"`  |
 
 

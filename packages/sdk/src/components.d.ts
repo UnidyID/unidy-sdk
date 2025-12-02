@@ -146,10 +146,6 @@ export namespace Components {
         "fields"?: string;
         "language"?: string;
         /**
-          * @default true
-         */
-        "renderDefaultLabel": boolean;
-        /**
           * @default "Submit"
          */
         "submitButtonText": string;
@@ -783,10 +779,6 @@ declare namespace LocalJSX {
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
         "language"?: string;
-        /**
-          * @default true
-         */
-        "renderDefaultLabel"?: boolean;
         /**
           * @default "Submit"
          */
