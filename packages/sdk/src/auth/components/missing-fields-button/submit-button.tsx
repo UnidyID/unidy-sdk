@@ -28,6 +28,7 @@ export class SubmitButton {
     const [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
 
     if (error) {
+      profileState.loading = false;
       return;
     }
 

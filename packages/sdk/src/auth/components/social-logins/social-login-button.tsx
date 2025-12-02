@@ -44,14 +44,9 @@ export class SocialLoginButton {
 
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
-    const providerMap: Record<string, string> = {
-      google: "google_oauth2",
-      unidy: "openid_connect",
-    };
-    const authProvider = providerMap[this.provider] || this.provider;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
 
-    return `${baseUrl}/users/auth/${authProvider}?sdk_redirect_uri=${redirectUri}`;
+    return `${baseUrl}/api/sdk/v1/sign_ins/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
   }
 
   private onClick = async () => {
