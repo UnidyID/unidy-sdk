@@ -64,7 +64,7 @@ export class SubmitButton {
           aria-live="polite"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <span class="spinner" /> : hasSlotContent(this.el) ? <slot /> : "SUBMIT BY DEFAULT"}
+          {profileState.loading ? <span class="spinner" aria-label="Loading" /> : hasSlotContent(this.el) ? <slot /> : "Submit"}
         </button>
       </div>
     );

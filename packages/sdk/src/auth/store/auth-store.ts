@@ -104,22 +104,31 @@ class AuthStore {
   }
 
   setFieldError(field: string, error: string | null) {
-    if (error) {
-      this.rootComponentRef?.onError(error);
-    }
+    if (!this.handleError(error)) return;
+
     state.errors = { ...state.errors, [field]: error };
   }
 
   setGlobalError(key: string, error: string | null) {
+    if (!this.handleError(error)) return;
+    state.globalErrors = { ...state.globalErrors, [key]: error };
+  }
+
+  private handleError(error: string | null): boolean {
+    if (!error) return true;
+
     if (error === "connection_failed") {
       unidyState.backendConnected = false;
-      return;
+      return false;
     }
 
-    if (error) {
-      this.rootComponentRef?.onError(error);
+    if (error === "sign_in_not_found") {
+      this.reset();
+      return false;
     }
-    state.globalErrors = { ...state.globalErrors, [key]: error };
+
+    this.rootComponentRef?.onError(error);
+    return true;
   }
 
   clearFieldError(field: string) {

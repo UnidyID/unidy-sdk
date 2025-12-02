@@ -3,7 +3,6 @@ import { authState } from "../../store/auth-store";
 import { AUTH_ERROR_MESSAGES, CONNECTION_FAILED_MESSAGE } from "../../error-definitions";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { hasSlotContent } from "../../../shared/component-utils";
-import { authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-error-message",
@@ -28,9 +27,6 @@ export class ErrorMessage {
 
     if (errorCode === "connection_failed") {
       return CONNECTION_FAILED_MESSAGE;
-    }
-    if (errorCode === "sign_in_not_found") {
-      authStore.reset();
     }
 
     return errorCode || "An error occurred";
