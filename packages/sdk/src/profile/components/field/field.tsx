@@ -30,7 +30,7 @@ export class Field {
   @Prop({ attribute: "class-name" }) componentClassName?: string;
   @Prop() emptyOption = true;
   @Prop() placeholder?: string;
-  @Prop() renderDefaultLabel = false;
+  @Prop() renderDefaultLabel = true;
 
   @Element() el!: HTMLElement;
 
@@ -100,12 +100,16 @@ export class Field {
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
-          <span id={this.field} part="readonly-indicator">{fieldData?.value || this.readonlyPlaceholder}</span>
+          <span id={this.field} part="readonly-indicator">
+            {fieldData?.value || this.readonlyPlaceholder}
+          </span>
         ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
           <ul id={this.field} class="multi-select-readonly-container" part="multi-select-readonly-container">
             {multiSelectReadonlyLabels.map((label) => (
-              <li key={label} part="multi-select-readonly-field">{label}</li>
+              <li key={label} part="multi-select-readonly-field">
+                {label}
+              </li>
             ))}
           </ul>
         )}
@@ -131,7 +135,11 @@ export class Field {
           />
         )}
 
-        {profileState.errors[this.field] && <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">ERROR: {profileState.errors[this.field]}</span>}
+        {profileState.errors[this.field] && (
+          <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">
+            ERROR: {profileState.errors[this.field]}
+          </span>
+        )}
       </div>
     );
   }

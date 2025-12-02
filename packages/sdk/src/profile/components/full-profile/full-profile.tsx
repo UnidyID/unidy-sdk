@@ -31,7 +31,7 @@ export class FullProfile {
     return (
       <u-profile language={this.language}>
         {this.list().map((field) => (
-          <u-field key={field} field={field} renderDefaultLabel={true} countryCodeDisplayOption={this.countryCodeDisplayOption} />
+          <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
         <div class="flex justify-end">
           <u-profile-submit-button>{this.submitButtonText}</u-profile-submit-button>

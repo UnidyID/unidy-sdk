@@ -120,7 +120,7 @@ export namespace Components {
          */
         "readonlyPlaceholder": string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel": boolean;
         /**
@@ -754,7 +754,7 @@ declare namespace LocalJSX {
          */
         "readonlyPlaceholder"?: string;
         /**
-          * @default false
+          * @default true
          */
         "renderDefaultLabel"?: boolean;
         /**

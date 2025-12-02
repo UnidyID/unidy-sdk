@@ -329,7 +329,7 @@
 
     <u-auth-provider>
       <div class="container">
-        <div slot="before-fields" class="mb-6">
+        <div class="mb-6">
           <u-logout-button text="Logout"
             class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
           </u-logout-button>
@@ -345,7 +345,7 @@
             </u-logout-button>
           </div>
           <u-field field="salutation" render-default-label="true"></u-field>
-          <u-field field="first_name">
+          <u-field field="first_name" render-default-label="false">
             <label slot="label" class="text-blue-500">First Name:</label>
           </u-field>
           <u-field field="last_name" render-default-label="true"></u-field>
