@@ -1,5 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
-import { authState, authStore } from "../../store/auth-store";
+import { authState } from "../../store/auth-store";
 import { AUTH_ERROR_MESSAGES } from "../../error-definitions";
 
 @Component({
@@ -20,10 +20,6 @@ export class ErrorMessage {
 
     if (AUTH_ERROR_MESSAGES[errorCode]) {
       return AUTH_ERROR_MESSAGES[errorCode];
-    }
-
-    if (errorCode === 'sign_in_not_found') {
-      authStore.reset();
     }
 
     return errorCode || "An error occurred";
