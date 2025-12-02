@@ -1,4 +1,4 @@
-import { Component, h } from "@stencil/core";
+import {Component, h, Host} from "@stencil/core";
 
 @Component({
   tag: "u-spinner",
@@ -7,6 +7,10 @@ import { Component, h } from "@stencil/core";
 })
 export class Spinner {
   render() {
-    return <div class="spinner-inner" part="spinner" aria-label="Loading" />;
+    return (
+      <Host class="inline-flex items-center justify-center">
+        <div class="spinner-inner w-[1em] h-[1em] rounded-[50%] animate-spin" part="spinner" aria-label="Loading" />;
+      </Host>
+    );
   }
 }
