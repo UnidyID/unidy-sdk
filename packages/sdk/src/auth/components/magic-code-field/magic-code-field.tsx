@@ -4,6 +4,7 @@ import { Auth } from "../../auth";
 
 @Component({
   tag: "u-magic-code-field",
+  styleUrl: "magic-code-field.css",
   shadow: false,
 })
 export class MagicCodeField {
@@ -85,7 +86,7 @@ export class MagicCodeField {
     }
 
     return (
-      <div class={this.componentClassName} style={{ display: "flex", gap: "2px", width: "100%", justifyContent: "center" }}>
+      <div class={`flex gap-0.5 w-full justify-center ${this.componentClassName}`}>
         {this.codeDigits.map((digit, index) => (
           <input
             // biome-ignore lint/suspicious/noArrayIndexKey:
@@ -93,6 +94,7 @@ export class MagicCodeField {
             ref={(el) => {
               if (el) this.inputRefs[index] = el;
             }}
+            id={`digit-input-${index + 1}`}
             type="text"
             inputmode="numeric"
             maxlength="1"
@@ -101,18 +103,8 @@ export class MagicCodeField {
             onInput={(event) => this.handleInput(event, index)}
             onKeyDown={(event) => this.handleKeyDown(event, index)}
             onPaste={index === 0 ? this.handlePaste : undefined}
-            style={{
-              // TODO refactor this somehow !!
-              width: "50px",
-              height: "50px",
-              textAlign: "center",
-              fontSize: "18px",
-              border: "2px solid #e2e8f0",
-              borderRadius: "8px",
-              outline: "none",
-              transition: "border-color 0.2s",
-            }}
-            class="magic-code-input"
+            aria-label={`Digit ${index + 1} of ${this.codeDigits.length}`}
+            class="w-[50px] h-[50px] text-center text-lg border-2 border-slate-200 rounded-lg outline-none transition-colors duration-200"
             part="digit-input"
           />
         ))}

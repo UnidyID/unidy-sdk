@@ -13,8 +13,13 @@ export class LogoutButton {
   @Event() logout!: EventEmitter<void>;
 
   private handleLogout = async () => {
-    const auth = await Auth.getInstance();
-    const result = await auth.logout();
+    const authInstance = await Auth.getInstance();
+    if (!authInstance) {
+      console.error("Auth service not initialized");
+      return;
+    }
+
+    const result = await authInstance.logout();
 
     if (result === true) {
       this.logout.emit();
@@ -27,7 +32,7 @@ export class LogoutButton {
 
   render() {
     return (
-      <button type="button" class={this.componentClassName} onClick={this.handleLogout}>
+      <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
         {this.text}
       </button>
     );

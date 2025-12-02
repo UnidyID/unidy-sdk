@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import type { UnidyClient } from "../api";
 import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
@@ -29,6 +30,7 @@ export class Auth {
 
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
+    this.helpers.handleSocialAuthRedirect();
   }
 
   static Errors = {
@@ -89,6 +91,7 @@ export class Auth {
       const currentTime = Date.now() / 1000;
       return decoded.exp > currentTime;
     } catch (error) {
+      Sentry.captureException(error);
       return false;
     }
   }
@@ -128,6 +131,7 @@ export class Auth {
     try {
       return jwtDecode<TokenPayload>(token);
     } catch (error) {
+      Sentry.captureException(error);
       return null;
     }
   }

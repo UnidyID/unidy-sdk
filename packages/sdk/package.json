@@ -10,19 +10,15 @@
   "files": ["dist/", "loader/"],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build:api": "bun build src/api/*.ts src/**/api/*.ts --outdir dist --minify --sourcemap",
-    "build:types": "tsc -p tsconfig.types.json",
-    "build:stencil": "stencil build",
-    "build": "bun run clean && bun run build:api && bun run build:stencil && bun run build:types",
-    "dev:api": "bun build src/api/*.ts  src/**/api/*.ts --outdir dist --watch --sourcemap",
-    "dev:stencil": "stencil build --dev --watch --serve",
-    "dev": "bunx concurrently \"bun run dev:api\" \"bun run dev:stencil\"",
+    "build": "bun run clean && stencil build",
+    "dev": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e && jest",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"
   },
   "dependencies": {
     "@stencil/store": "^2.2.1",
+    "@sentry/browser": "^10.26.0",
     "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.0",

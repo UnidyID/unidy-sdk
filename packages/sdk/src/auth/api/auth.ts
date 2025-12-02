@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/browser";
 import * as z from "zod";
 
 import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
@@ -145,6 +146,7 @@ export class AuthService {
 
       return [null, CreateSignInResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -165,6 +167,7 @@ export class AuthService {
 
       return [null, SendMagicCodeResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -175,9 +178,7 @@ export class AuthService {
     });
     try {
       if (!response.success) {
-        console.log("response.data", response.data);
         const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
-        console.log("missing_fields_check", missing_fields_check);
 
         if (missing_fields_check.success) {
           return ["missing_required_fields", missing_fields_check.data];
@@ -189,6 +190,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -213,6 +215,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -224,7 +227,14 @@ export class AuthService {
 
     try {
       if (!response.success) {
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+
+        if (missing_fields_check.success) {
+          return ["missing_required_fields", missing_fields_check.data];
+        }
+
         const error_response = ErrorSchema.parse(response.data);
+
         return [
           error_response.error as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "not_valid" | "used" | "expired",
           error_response,
@@ -232,6 +242,7 @@ export class AuthService {
       }
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -248,6 +259,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -264,6 +276,7 @@ export class AuthService {
 
       return [null, null];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -280,6 +293,7 @@ export class AuthService {
 
       return [null, null];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -296,6 +310,7 @@ export class AuthService {
 
       return [null, PasskeyOptionsResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }
@@ -316,6 +331,7 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     } catch (error) {
+      Sentry.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }

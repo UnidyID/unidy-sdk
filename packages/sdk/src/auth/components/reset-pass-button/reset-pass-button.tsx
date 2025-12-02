@@ -13,7 +13,6 @@ export class ResetPasswordButton {
 
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();
-
     if (!authInstance) {
       console.error("Auth service not initialized");
       return;
@@ -32,7 +31,7 @@ export class ResetPasswordButton {
         <button type="button" onClick={this.handleClick} class={this.componentClassName}>
           {this.text}
         </button>
-        {authState.resetPasswordStep === "sent" && <flash-message variant="success" message={this.successMessage} />}
+        {authState.resetPasswordStep === "sent" && <flash-message variant="success" message={this.successMessage}  aria-live="polite"/>}
       </>
     );
   }

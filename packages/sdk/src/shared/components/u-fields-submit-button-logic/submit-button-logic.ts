@@ -4,7 +4,7 @@ export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
   for (const key of Object.keys(sWC)) {
     if (key === "custom_attributes") continue;
     const field = sWC[key];
-    if (field.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+    if (field.required === true && (field.value === "" || field.value === null)) {
       profileState.errors = { [key]: "This field is required." };
       return false;
     }
@@ -13,7 +13,7 @@ export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
   for (const key of Object.keys(sWC.custom_attributes ?? {})) {
     const field = sWC.custom_attributes?.[key];
     const fieldDisplayName = `custom_attributes.${key}`;
-    if (field?.required === true && (field.value === "" || field.value === null || field.value === undefined)) {
+    if (field?.required === true && (field.value === "" || field.value === null)) {
       profileState.errors = { [fieldDisplayName]: "This field is required." };
       return false;
     }
@@ -21,7 +21,7 @@ export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
 
   return true;
 }
- 
+
 export function buildPayload(stateData: ProfileRaw) {
   return {
     ...Object.fromEntries(

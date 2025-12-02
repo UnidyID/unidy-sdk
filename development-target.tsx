@@ -148,9 +148,7 @@ const AuthGate = <T extends {}>(props: {
             }
               ? { subscriptions: { id: string }[] }
               : {}) &
-              (T extends { newsletters: any }
-                ? { newsletters: { id: number }[] }
-                : {}))
+              (T extends { newsletters: any } ? { newsletters: { id: number }[] } : {})),
         // we wanna make this return any "boolean-ish" value so it's easier for the customer
       ) => boolean | null | undefined);
 }) => {};
@@ -159,9 +157,15 @@ const CustomTicketables = () => {
   const [state, setState] = useState<undefined | "active" | "inactive">();
 
   const pagination = usePagination();
-  const ticketables = useTicketables('tickets', {
+  const ticketables = useTicketables("tickets", {
     pagination,
-    filter: { category_id: "asdasd", state: state, expires_at: new Date('2023-01-01'), title: 'Foo - %', _operators: { expires_at: 'gt', title: 'like' } },
+    filter: {
+      category_id: "asdasd",
+      state: state,
+      expires_at: new Date("2023-01-01"),
+      title: "Foo - %",
+      _operators: { expires_at: "gt", title: "like" },
+    },
   });
 
   if (ticketables.loading) {
@@ -214,7 +218,13 @@ export default function Home() {
           </NewsletterGate>
 
           <AuthGate
-            condition={(user) => user && user.first_name === "John" && user.custom_attributes.favorite_player != 'Messi' && user.newsletters.find((n) => n.internal_name === "other")?.preferences.find((p) => p.internal_name === "default")?.checked === true}
+            condition={(user) =>
+              user &&
+              user.first_name === "John" &&
+              user.custom_attributes.favorite_player != "Messi" &&
+              user.newsletters.find((n) => n.internal_name === "other")?.preferences.find((p) => p.internal_name === "default")?.checked ===
+                true
+            }
             relations={{
               newsletters: {
                 internal_name: "other",
@@ -343,9 +353,7 @@ export default function Home() {
           {/* here profile would also provide that store container to read from */}
           <Profile>
             <UnidyField field="asdasd" />
-            <CustomFieldProvider field="last_name">
-              {({ data, onChange }) => <input value={data} />}
-            </CustomFieldProvider>
+            <CustomFieldProvider field="last_name">{({ data, onChange }) => <input value={data} />}</CustomFieldProvider>
 
             <SubmitButton />
           </Profile>
@@ -364,10 +372,7 @@ export default function Home() {
 
                 {/* We also need to be able to support pdf/pkpass URLs on the object, maybe we could just generate that on the server 🤔 */}
 
-                <a
-                  unidy-attr
-                  unidy-attr-href="{{button_cta_url}}?utm_origin=website"
-                >
+                <a unidy-attr unidy-attr-href="{{button_cta_url}}?utm_origin=website">
                   Edit ticket
                 </a>
               </h2>
@@ -400,18 +405,14 @@ export default function Home() {
             () => {
               gate("thing", {
                 fn: (user) =>
-                  !!user.newsletters
-                    .find((n) => n.internal_name === "main")
-                    ?.preferences.find((p) => p.internal_name === "gold"),
+                  !!user.newsletters.find((n) => n.internal_name === "main")?.preferences.find((p) => p.internal_name === "gold"),
                 relationships: { newsletters: true },
               });
             }
           }
         </script>
 
-        <AuthGate
-          condition={(user) => user && user.custom_attributes.membership === true}
-        >
+        <AuthGate condition={(user) => user && user.custom_attributes.membership === true}>
           <h1>Hey, you can manage your thing here</h1>
         </AuthGate>
 

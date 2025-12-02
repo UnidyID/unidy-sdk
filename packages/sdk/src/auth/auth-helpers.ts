@@ -1,11 +1,5 @@
 import { authStore, authState } from "../auth/store/auth-store";
-import type {
-    CreateSignInResponse,
-    PasskeyOptionsResponse,
-    RequiredFieldsResponse,
-    TokenResponse,
-    UnidyClient
-} from "../api";
+import type { CreateSignInResponse, PasskeyOptionsResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
 import type { ProfileRaw } from "../profile/store/profile-store";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
@@ -69,7 +63,7 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
     }
   }
 
@@ -82,6 +76,9 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    if (authState.step === "missing-fields") {
+      return;
+    }
     this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
@@ -95,6 +92,45 @@ export class AuthHelpers {
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
+    }
+  }
+
+  handleSocialAuthRedirect(): void {
+    // missing required fields flow
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const error = params.get("error");
+
+    if (error !== "missing_required_fields") {
+      return;
+    }
+
+    const fieldsFromUrl = params.get("fields");
+    if (!fieldsFromUrl) {
+      return;
+    }
+
+    const signInId = params.get("sid");
+    if (signInId) {
+      authStore.setSignInId(signInId);
+    } else {
+      return;
+    }
+
+    try {
+      const fields = JSON.parse(fieldsFromUrl);
+
+      authStore.setMissingFields(fields);
+      profileState.data = fields as ProfileRaw;
+      authStore.setStep("missing-fields");
+
+      params.delete("error");
+      params.delete("fields");
+      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
+      window.history.replaceState(null, "", cleanUrl);
+    } catch (e) {
+      console.error("Failed to parse missing fields payload:", e);
+      authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
 
@@ -139,12 +175,18 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
     if (error) {
+      if (error === "missing_required_fields") {
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+        authStore.setStep("missing-fields");
+        return;
+      }
       authStore.setFieldError("magicCode", error);
       authStore.setLoading(false);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth((response as TokenResponse));
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
     }
   }
 
@@ -193,9 +235,9 @@ export class AuthHelpers {
       // Helper to decode base64url (WebAuthn uses base64url encoding)
       const decodeBase64Url = (base64url: string): Uint8Array => {
         // Convert base64url to regular base64 for atob
-        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+        const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
         // Add padding if needed
-        const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
         return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
       };
 
@@ -246,7 +288,7 @@ export class AuthHelpers {
 
       // Success: Set token and notify
       authStore.setToken(tokenResponse.jwt);
-      
+
       // Extract sid from response or JWT token and update store
       // @ts-ignore
       if (tokenResponse.sid) {
@@ -263,11 +305,11 @@ export class AuthHelpers {
           // Failed to decode JWT token to extract sid, continue without it
         }
       }
-      
+
       authStore.setLoading(false);
       authStore.getRootComponentRef()?.onAuth(tokenResponse);
     } catch (error) {
-      console.log(error)
+      console.log(error);
 
       // Handle WebAuthn API errors
       let errorMessage = "passkey_error";
