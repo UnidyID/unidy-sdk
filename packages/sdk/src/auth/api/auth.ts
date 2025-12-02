@@ -3,6 +3,7 @@ import * as z from "zod";
 
 import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
 import { UserProfileSchema } from "../../profile";
+import { unidyState } from "../../shared/store/unidy-store";
 
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),
@@ -129,23 +130,6 @@ export class AuthService {
 
   constructor(client: ApiClient) {
     this.client = client;
-  }
-
-  private handleResponse<T>(
-    // biome-ignore lint/suspicious/noExplicitAny: generic handler for all responses
-    response: any,
-    handler: () => T,
-  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
-    if (response.connectionError) {
-      return ["connection_failed", null];
-    }
-
-    try {
-      return handler();
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
   }
 
   async createSignIn(email: string): Promise<CreateSignInResult> {
@@ -313,5 +297,24 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     });
+  }
+
+  private handleResponse<T>(
+    // biome-ignore lint/suspicious/noExplicitAny: generic handler for all responses
+    response: any,
+    handler: () => T,
+  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
+    if (response.connectionError) {
+      unidyState.backendConnected = false;
+
+      return ["connection_failed", null];
+    }
+
+    try {
+      return handler();
+    } catch (error) {
+      Sentry.captureException(error);
+      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+    }
   }
 }
