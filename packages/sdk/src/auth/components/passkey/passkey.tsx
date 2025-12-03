@@ -1,6 +1,7 @@
 import { Component, h, Prop, State, Host } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-passkey",
@@ -23,11 +24,8 @@ export class Passkey {
   private handleClick = async () => {
     if (this.disabled || authState.loading || !this.isSupported) return;
 
+    await waitForConfig();
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     await authInstance.helpers.authenticateWithPasskey();
   };

@@ -1,6 +1,7 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-send-magic-code-button",
@@ -18,11 +19,8 @@ export class SendMagicCodeButton {
   private handleClick = async () => {
     if (this.disabled || authState.loading || this.countdown > 0) return;
 
+    await waitForConfig();
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     const [_error, response] = await authInstance.helpers.sendMagicCode();
 

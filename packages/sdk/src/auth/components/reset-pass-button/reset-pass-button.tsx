@@ -1,6 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
+import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-reset-password-button",
@@ -12,11 +13,8 @@ export class ResetPasswordButton {
   @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
   private handleClick = async () => {
+    await waitForConfig();
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     await authInstance.helpers.sendResetPasswordEmail();
   };

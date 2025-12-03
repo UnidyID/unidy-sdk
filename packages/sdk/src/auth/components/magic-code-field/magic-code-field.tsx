@@ -1,6 +1,7 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-magic-code-field",
@@ -72,11 +73,8 @@ export class MagicCodeField {
   };
 
   private authenticateWithCode = async (code: string) => {
+    await waitForConfig();
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     await authInstance.helpers.authenticateWithMagicCode(code);
   };

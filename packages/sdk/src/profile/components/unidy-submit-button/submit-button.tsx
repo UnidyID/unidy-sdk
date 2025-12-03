@@ -4,6 +4,8 @@ import { Auth } from "../../../auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 import { hasSlotContent } from "../../../shared/component-utils";
+import { waitForConfig } from "../../../shared/store/unidy-store";
+
 @Component({
   tag: "u-profile-submit-button",
   styleUrl: "submit-button.css",
@@ -15,10 +17,8 @@ export class SubmitButton {
   private authInstance?: Auth;
 
   async componentWillLoad() {
+    await waitForConfig();
     this.authInstance = await Auth.getInstance();
-    if (!this.authInstance) {
-      console.error("Auth service not initialized");
-    }
   }
 
   private async onSubmit() {
