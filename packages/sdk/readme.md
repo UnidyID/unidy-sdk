@@ -134,6 +134,32 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     <u-logout-button>Sign Out</u-logout-button>
   </u-auth-provider>
 
+  <!-- These are alternative implementations of the profile: -->
+
+  <!-- 3.1 Full Profile Component: You can define specific fields. -->
+  <u-auth-provider>
+    <div class="mb-6">
+      <u-logout-button text="Logout"
+        class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+      </u-logout-button>
+      <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+      <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+    </div>
+    <u-full-profile language="en" fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
+  </u-auth-provider> 
+
+  <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
+   <u-auth-provider>
+    <div class="mb-6">
+      <u-logout-button text="Logout"
+        class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+      </u-logout-button>
+      <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+      <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+    </div>    
+    <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
+   </u-auth-provider>
+
 </body>
 </html>
 ```
@@ -365,6 +391,18 @@ A utility component that renders its children only when a specific condition is 
 
 ### Profile Components
 
+#### `<u-full-profile>`
+
+This component renders a complete profile form that allows users to view and edit their profile data. It also includes the `<u-submit-button>`. The component must be placed inside a `<u-auth-provider>`. Internally, it renders one or more `<u-field>` components. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
+
+**Attributes:**
+
+- `language`: The language to use for profile data.
+- `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
+- `fields`: A comma-separated string specifying which fields should be returned instead of the full profile.
+- `submit-button-text`: The button text for the button.
+
+
 #### `<u-profile>`
 
 This component renders a form for users to view and edit their profile data. It must be placed inside a `<u-auth-provider>`.
@@ -388,7 +426,7 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 **Attributes:**
 
 -   `field` (required): The name of the user attribute (e.g., `first_name` or even `custom_attributes.my_attr`).
--   `render-default-label`: Set to `true` to automatically display a label based on the attribute's name.
+-   `render-default-label`: Set to `false` to display a custom label which you need to provide.
 -   `required`: If set to `true`, the field will be marked as required.
 -   `readonly-placeholder`: The text to display for a readonly field that has no value.
 -   `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
