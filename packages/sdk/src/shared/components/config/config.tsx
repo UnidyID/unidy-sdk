@@ -51,6 +51,7 @@ export class UnidyConfig {
     });
   }
 
+  // extend the list of properties that should be watched when new properties are added to the Config
   @Watch("mode")
   @Watch("locale")
   onPropChange(newValue: string, oldValue: string, propName: keyof Config) {
