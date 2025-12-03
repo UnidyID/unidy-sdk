@@ -6,6 +6,7 @@ export interface Config {
   apiKey: string;
   baseUrl: string;
   locale: string;
+  mode: "production" | "development";
 }
 
 export interface ConfigChange {
@@ -20,7 +21,6 @@ export interface ConfigChange {
 })
 export class UnidyConfig {
   @Prop() mode: "production" | "development" = "production";
-
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
   @Prop() locale = "en";
@@ -47,6 +47,7 @@ export class UnidyConfig {
       apiKey: this.apiKey,
       baseUrl: this.baseUrl,
       locale: this.locale,
+      mode: this.mode,
     });
   }
 
@@ -54,7 +55,10 @@ export class UnidyConfig {
   @Watch("locale")
   onPropChange(newValue: string, oldValue: string, propName: keyof Config) {
     if (oldValue === undefined) return;
-    unidyState[propName] = newValue;
+
+    if (propName in unidyState) {
+      (unidyState as Record<keyof Config, string>)[propName] = newValue;
+    }
 
     this.configChange.emit({
       key: propName,

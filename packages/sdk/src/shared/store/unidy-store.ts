@@ -1,6 +1,6 @@
 import { createStore } from "@stencil/store";
 
-export interface State {
+export interface UnidyState {
   mode: "production" | "development";
   apiKey: string;
   baseUrl: string;
@@ -10,7 +10,7 @@ export interface State {
   backendConnected: boolean;
 }
 
-const initialState: State = {
+const initialState: UnidyState = {
   mode: "production",
   apiKey: "",
   baseUrl: "",
@@ -20,11 +20,11 @@ const initialState: State = {
   backendConnected: true,
 };
 
-const store = createStore<State>(initialState);
+const store = createStore<UnidyState>(initialState);
 
 export const unidyState = store.state;
 export const reset = store.reset;
-export const onChange: <K extends keyof State>(prop: K, cb: (value: State[K]) => void) => () => void = store.onChange;
+export const onChange: <K extends keyof UnidyState>(prop: K, cb: (value: UnidyState[K]) => void) => () => void = store.onChange;
 
 export function waitForConfig(): Promise<void> {
   if (unidyState.isConfigured) {
