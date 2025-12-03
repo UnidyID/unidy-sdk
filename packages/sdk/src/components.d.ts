@@ -82,6 +82,10 @@ export namespace Components {
           * @default "en"
          */
         "locale": string;
+        /**
+          * @default "production"
+         */
+        "mode": "production" | "development";
     }
     interface UEmailField {
         /**
@@ -736,6 +740,10 @@ declare namespace LocalJSX {
           * @default "en"
          */
         "locale"?: string;
+        /**
+          * @default "production"
+         */
+        "mode"?: "production" | "development";
         "onConfigChange"?: (event: UConfigCustomEvent<ConfigChange>) => void;
         "onUnidyInitialized"?: (event: UConfigCustomEvent<Config>) => void;
     }

@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
-import { Auth, getUnidyClient } from "../../../auth";
 
 export interface Config {
   apiKey: string;
@@ -20,6 +19,8 @@ export interface ConfigChange {
   shadow: false,
 })
 export class UnidyConfig {
+  @Prop() mode: "production" | "development" = "production";
+
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
   @Prop() locale = "en";
@@ -28,7 +29,9 @@ export class UnidyConfig {
   @Event() configChange!: EventEmitter<ConfigChange>;
 
   componentWillLoad() {
-    this.initializeSentry();
+    if (this.mode === "development" || !window.location.href.includes("localhost")) {
+      this.initializeSentry();
+    }
 
     if (!this.baseUrl || !this.apiKey) {
       console.error("baseUrl and apiKey are required");
@@ -47,10 +50,17 @@ export class UnidyConfig {
     });
   }
 
+  @Watch("mode")
   @Watch("locale")
-  onLocaleChange(newValue: string, oldValue: string) {
+  onPropChange(newValue: string, oldValue: string, propName: keyof Config) {
     if (oldValue === undefined) return;
-    unidyState.locale = newValue;
+    unidyState[propName] = newValue;
+
+    this.configChange.emit({
+      key: propName,
+      value: newValue,
+      previousValue: oldValue,
+    });
   }
 
   render() {

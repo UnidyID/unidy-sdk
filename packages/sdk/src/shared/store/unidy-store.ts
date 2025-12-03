@@ -1,6 +1,7 @@
 import { createStore } from "@stencil/store";
 
 export interface State {
+  mode: "production" | "development";
   apiKey: string;
   baseUrl: string;
   locale: string;
@@ -10,6 +11,7 @@ export interface State {
 }
 
 const initialState: State = {
+  mode: "production",
   apiKey: "",
   baseUrl: "",
   locale: "en",
