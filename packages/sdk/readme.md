@@ -426,7 +426,7 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 **Attributes:**
 
 -   `field` (required): The name of the user attribute (e.g., `first_name` or even `custom_attributes.my_attr`).
--   `render-default-label`: Set to `false` to automatically display a custom label.
+-   `render-default-label`: Set to `false` to display a custom label which you need to provide.
 -   `required`: If set to `true`, the field will be marked as required.
 -   `readonly-placeholder`: The text to display for a readonly field that has no value.
 -   `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
