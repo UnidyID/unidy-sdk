@@ -1,6 +1,7 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
+import i18n from "../../../i18n";
 
 @Component({
   tag: "u-auth-submit-button",
@@ -10,20 +11,17 @@ export class AuthSubmitButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email" | "password";
-  @Prop() text = "";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private getButtonText() {
-    if (this.text) return this.text;
-
     switch (authState.step) {
       case "email":
-        return "Continue";
+        return i18n.t("buttons.continue");
       case "verification":
-        return "Sign In";
+        return i18n.t("buttons.sign_in");
       default:
-        return "Continue";
+        return i18n.t("buttons.submit");
     }
   }
 
@@ -70,13 +68,7 @@ export class AuthSubmitButton {
 
     return (
       <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? (
-          <div>
-            <u-spinner /> Loading...
-          </div>
-        ) : (
-          this.getButtonText()
-        )}
+        {authState.loading && authState.magicCodeStep !== "requested" ? <div><u-spinner /> {i18n.t("loading")}</div> : this.getButtonText()}
       </button>
     );
   }

@@ -1,4 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
+import i18n from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
@@ -9,7 +10,6 @@ import { getParentSigninStep } from "../helpers";
 export class PasswordField {
   @Element() el!: HTMLElement;
 
-  @Prop() placeholder = "Enter your password";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Password";
 
@@ -33,6 +33,8 @@ export class PasswordField {
       return null;
     }
 
+    const placeholder = i18n.t('auth.password.placeholder', { defaultValue: 'Enter your password' });
+
     return (
       <form onSubmit={this.handleSubmit}>
         <input
@@ -40,7 +42,7 @@ export class PasswordField {
           type="password"
           value={authState.password}
           autocomplete="current-password"
-          placeholder={this.placeholder}
+          placeholder={placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}

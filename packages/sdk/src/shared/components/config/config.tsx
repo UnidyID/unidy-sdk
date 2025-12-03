@@ -1,5 +1,8 @@
+import * as Sentry from "@sentry/browser";
 import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
+import i18n from "../../../i18n";
 import { unidyState } from "../../store/unidy-store";
+import {Auth, getUnidyClient} from "../../../auth";
 
 export interface Config {
   apiKey: string;
@@ -22,10 +25,18 @@ export class UnidyConfig {
   @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
+  @Prop() customTranslations: string | Record<string, any> = "";
+  @Prop() fallbackLocale = "en";
   @Prop() locale = "en";
 
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
+
+  @Watch('language')
+  onLanguageChange(newValue: string) {
+    unidyState.locale = newValue;
+    i18n.changeLanguage(newValue);
+  }
 
   componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
@@ -44,6 +55,15 @@ export class UnidyConfig {
       locale: this.locale,
       mode: this.mode,
     });
+
+    this.loadCustomTranslations();
+    i18n.init({
+      fallbackLng: this.fallbackLocale,
+    });
+    unidyState.locale = this.locale;
+    i18n.changeLanguage(this.locale);
+
+    Auth.initialize(getUnidyClient());
   }
 
   // extend the list of properties that should be watched when new properties are added to the Config
@@ -65,5 +85,24 @@ export class UnidyConfig {
 
   render() {
     return <slot />;
+  }
+
+  private loadCustomTranslations() {
+    if (this.customTranslations) {
+      try {
+        const translations =
+          typeof this.customTranslations === "string"
+            ? JSON.parse(this.customTranslations)
+            : this.customTranslations;
+
+        for (const lang in translations) {
+          if (Object.prototype.hasOwnProperty.call(translations, lang)) {
+            i18n.addResourceBundle(lang, "translation", translations[lang], true, true);
+          }
+        }
+      } catch (error) {
+        Sentry.captureException("Failed to parse customTranslations", error)
+      }
+    }
   }
 }

@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-
+import i18n from "../i18n";
 import type * as z from "zod";
 
 export interface ApiResponse<T> {
@@ -165,7 +165,9 @@ export class ApiClient {
         return {
           ...response,
           success: false,
-          error: "Invalid response format",
+          error: i18n.t('errors.invalidResponseFormat', {
+            defaultValue: 'Invalid response format',
+          }),
           data: undefined,
         };
       }

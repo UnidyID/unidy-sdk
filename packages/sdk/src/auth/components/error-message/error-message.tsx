@@ -1,6 +1,6 @@
 import { Component, Element, h, Host, Prop } from "@stencil/core";
+import i18n from "../../../i18n";
 import { authState } from "../../store/auth-store";
-import { AUTH_ERROR_MESSAGES, CONNECTION_FAILED_MESSAGE } from "../../error-definitions";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { hasSlotContent } from "../../../shared/component-utils";
 
@@ -21,15 +21,16 @@ export class ErrorMessage {
       return this.errorMessages[errorCode];
     }
 
-    if (AUTH_ERROR_MESSAGES[errorCode]) {
-      return AUTH_ERROR_MESSAGES[errorCode];
+    const translatedError = i18n.t(`errors.${errorCode}`);
+    if (translatedError !== `errors.${errorCode}`) {
+      return translatedError;
     }
 
     if (errorCode === "connection_failed") {
       return CONNECTION_FAILED_MESSAGE;
     }
 
-    return errorCode || "An error occurred";
+    return errorCode || i18n.t('errors.unknown', { defaultValue: 'An error occurred' });
   }
 
   render() {

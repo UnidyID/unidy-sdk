@@ -62,10 +62,6 @@ export namespace Components {
          */
         "disabled": boolean;
         "for": "email" | "password";
-        /**
-          * @default ""
-         */
-        "text": string;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -85,6 +81,14 @@ export namespace Components {
           * @default ""
          */
         "baseUrl": string;
+        /**
+          * @default ""
+         */
+        "customTranslations": string | Record<string, any>;
+        /**
+          * @default "en"
+         */
+        "fallbackLocale": string;
         /**
           * @default "en"
          */
@@ -107,10 +111,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder": string;
     }
     interface UErrorMessage {
         /**
@@ -183,10 +183,6 @@ export namespace Components {
           * @default true
          */
         "reloadOnSuccess": boolean;
-        /**
-          * @default "Logout"
-         */
-        "text": string;
     }
     interface UMagicCodeField {
         /**
@@ -221,14 +217,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * @default "Authenticating..."
-         */
-        "loadingText": string;
-        /**
-          * @default "Sign in with Passkey"
-         */
-        "text": string;
     }
     interface UPasswordField {
         /**
@@ -239,17 +227,12 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-        /**
-          * @default "Enter your password"
-         */
-        "placeholder": string;
     }
     interface UProfile {
         /**
           * @default ""
          */
         "initialData": string | Record<string, string>;
-        "language"?: string;
         "profileId"?: string;
     }
     interface UProfileSubmitButton {
@@ -301,20 +284,8 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage": string;
-        /**
-          * @default "Reset Password"
-         */
-        "text": string;
     }
     interface USendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText": string;
         /**
           * @default ""
          */
@@ -323,10 +294,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * @default "Send Magic Code"
-         */
-        "text": string;
     }
     interface USigninRoot {
         /**
@@ -363,10 +330,6 @@ export namespace Components {
           * @default window.location.href
          */
         "redirectUri": string;
-        /**
-          * @default "Continue with Google"
-         */
-        "text": string;
         /**
           * @default "light"
          */
@@ -742,10 +705,6 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         "for": "email" | "password";
-        /**
-          * @default ""
-         */
-        "text"?: string;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -765,6 +724,14 @@ declare namespace LocalJSX {
           * @default ""
          */
         "baseUrl"?: string;
+        /**
+          * @default ""
+         */
+        "customTranslations"?: string | Record<string, any>;
+        /**
+          * @default "en"
+         */
+        "fallbackLocale"?: string;
         /**
           * @default "en"
          */
@@ -789,10 +756,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
@@ -866,10 +829,6 @@ declare namespace LocalJSX {
           * @default true
          */
         "reloadOnSuccess"?: boolean;
-        /**
-          * @default "Logout"
-         */
-        "text"?: string;
     }
     interface UMagicCodeField {
         /**
@@ -904,14 +863,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * @default "Authenticating..."
-         */
-        "loadingText"?: string;
-        /**
-          * @default "Sign in with Passkey"
-         */
-        "text"?: string;
     }
     interface UPasswordField {
         /**
@@ -922,17 +873,12 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
-        /**
-          * @default "Enter your password"
-         */
-        "placeholder"?: string;
     }
     interface UProfile {
         /**
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
-        "language"?: string;
         "profileId"?: string;
     }
     interface UProfileSubmitButton {
@@ -984,20 +930,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage"?: string;
-        /**
-          * @default "Reset Password"
-         */
-        "text"?: string;
     }
     interface USendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText"?: string;
         /**
           * @default ""
          */
@@ -1006,10 +940,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * @default "Send Magic Code"
-         */
-        "text"?: string;
     }
     interface USigninRoot {
         /**
@@ -1046,10 +976,6 @@ declare namespace LocalJSX {
           * @default window.location.href
          */
         "redirectUri"?: string;
-        /**
-          * @default "Continue with Google"
-         */
-        "text"?: string;
         /**
           * @default "light"
          */

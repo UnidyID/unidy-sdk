@@ -1,11 +1,12 @@
 import { type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
+import i18n from "../../../i18n";
 
 export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
   for (const key of Object.keys(sWC)) {
     if (key === "custom_attributes") continue;
     const field = sWC[key];
     if (field.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [key]: "This field is required." };
+      profileState.errors = { [key]: i18n.t("errors.required_field", { field: key }) };
       return false;
     }
   }
@@ -14,7 +15,7 @@ export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
     const field = sWC.custom_attributes?.[key];
     const fieldDisplayName = `custom_attributes.${key}`;
     if (field?.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [fieldDisplayName]: "This field is required." };
+      profileState.errors = { [fieldDisplayName]: i18n.t("errors.required_field", { field: fieldDisplayName }) };
       return false;
     }
   }

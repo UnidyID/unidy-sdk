@@ -1,4 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
+import i18n from "../../../i18n";
 import { authStore, authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
@@ -9,7 +10,6 @@ import { getParentSigninStep } from "../helpers";
 export class EmailField {
   @Element() el!: HTMLElement;
 
-  @Prop() placeholder = "Enter your email";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
@@ -30,6 +30,8 @@ export class EmailField {
   };
 
   render() {
+    const placeholder = i18n.t('auth.email.placeholder', { defaultValue: 'Enter your email' });
+
     return (
       <form onSubmit={this.handleSubmit}>
         <input
@@ -37,7 +39,7 @@ export class EmailField {
           type="email"
           value={authState.email}
           autocomplete="email"
-          placeholder={this.placeholder}
+          placeholder={placeholder}
           disabled={this.disabled || authState.loading || authState.step === "verification"}
           class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
           onInput={this.handleInput}

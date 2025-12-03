@@ -1,9 +1,11 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, Prop, State, h } from "@stencil/core";
+import i18n from "../../../i18n";
 import { Auth } from "../../../auth/auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
 import { getUnidyClient } from "../../../auth/api-client";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
+import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
 
 @Component({
@@ -13,15 +15,21 @@ import type { ProfileRaw } from "../../store/profile-store";
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-  @Prop() language?: string;
 
   private authInstance?: Auth;
 
   @State() fetchingProfileData = false;
+  // This state will be used to trigger re-renders when the language changes.
+  @State() effectiveLanguage: string;
+
+  constructor() {
+    this.effectiveLanguage = unidyState.locale;
+    unidyOnChange('locale', (lng) => {
+      this.effectiveLanguage = lng;
+    });
+  }
 
   async componentWillLoad() {
-    profileState.language = this.language;
-
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
@@ -40,7 +48,7 @@ export class Profile {
   async fetchProfileData(idToken: string) {
     this.fetchingProfileData = true;
     try {
-      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: this.language });
+      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
 
       if (resp.success) {
         profileState.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
@@ -54,7 +62,7 @@ export class Profile {
       }
     } catch (error) {
       Sentry.captureException("Failed to fetch profile data:", error);
-      profileState.flashErrors = { error: "Failed to load profile data. Please check configuration." };
+      profileState.flashErrors = { error: i18n.t('errors.failedToLoadProfile') };
     }
     this.fetchingProfileData = false;
   }
@@ -80,16 +88,16 @@ export class Profile {
 
     if (authStore.state.authenticated) {
       return this.fetchingProfileData ? (
-        <div>Loading...</div>
+        <div>{i18n.t('loading')}</div>
       ) : (
         <Host>
           <slot />
           {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
-          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated" />}
+          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={i18n.t('profile.updated')} />}
         </Host>
       );
     }
 
-    return <h2>Please sign in to view your profile</h2>;
+    return <h2>{i18n.t('profile.signInToView')}</h2>;
   }
 }
