@@ -114,6 +114,8 @@ export namespace Components {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        "pattern"?: string;
+        "patternErrorMessage"?: string;
         "placeholder"?: string;
         /**
           * @default "No information"
@@ -127,6 +129,7 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
+        "validationId"?: string;
     }
     interface UFlashMessage {
         /**
@@ -256,6 +259,8 @@ export namespace Components {
         "invalidPhoneMessage": string;
         "multiSelectOptions"?: MultiSelectOption[];
         "options"?: string | Option[];
+        "pattern"?: string;
+        "patternErrorMessage"?: string;
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];
         /**
@@ -269,6 +274,7 @@ export namespace Components {
         "specificPartKey"?: string;
         "tooltip"?: string;
         "type": string;
+        "validationId"?: string;
         "value"?: string | string[];
     }
     interface UResetPasswordButton {
@@ -748,6 +754,8 @@ declare namespace LocalJSX {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        "pattern"?: string;
+        "patternErrorMessage"?: string;
         "placeholder"?: string;
         /**
           * @default "No information"
@@ -761,6 +769,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
+        "validationId"?: string;
     }
     interface UFlashMessage {
         /**
@@ -891,6 +900,8 @@ declare namespace LocalJSX {
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
         "options"?: string | Option[];
+        "pattern"?: string;
+        "patternErrorMessage"?: string;
         "placeholder"?: string;
         "radioOptions"?: RadioOption[];
         /**
@@ -904,6 +915,7 @@ declare namespace LocalJSX {
         "specificPartKey"?: string;
         "tooltip"?: string;
         "type": string;
+        "validationId"?: string;
         "value"?: string | string[];
     }
     interface UResetPasswordButton {

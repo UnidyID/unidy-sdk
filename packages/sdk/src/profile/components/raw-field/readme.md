@@ -20,6 +20,8 @@
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`              | `"Please enter a valid phone number."` |
 | `multiSelectOptions`       | --                            |             | `MultiSelectOption[]` | `undefined`                            |
 | `options`                  | `options`                     |             | `Option[] \| string`  | `undefined`                            |
+| `pattern`                  | `pattern`                     |             | `string`              | `undefined`                            |
+| `patternErrorMessage`      | `pattern-error-message`       |             | `string`              | `undefined`                            |
 | `placeholder`              | `placeholder`                 |             | `string`              | `undefined`                            |
 | `radioOptions`             | --                            |             | `RadioOption[]`       | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`              | `""`                                   |
@@ -27,6 +29,7 @@
 | `specificPartKey`          | `specific-part-key`           |             | `string`              | `undefined`                            |
 | `tooltip`                  | `tooltip`                     |             | `string`              | `undefined`                            |
 | `type` _(required)_        | `type`                        |             | `string`              | `undefined`                            |
+| `validationId`             | `validation-id`               |             | `string`              | `undefined`                            |
 | `value`                    | `value`                       |             | `string \| string[]`  | `undefined`                            |
 
 

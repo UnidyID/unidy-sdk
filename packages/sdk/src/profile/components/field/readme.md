@@ -14,10 +14,13 @@
 | `emptyOption`              | `empty-option`                |             | `boolean`           | `true`                                 |
 | `field` _(required)_       | `field`                       |             | `string`            | `undefined`                            |
 | `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`            | `"Please enter a valid phone number."` |
+| `pattern`                  | `pattern`                     |             | `string`            | `undefined`                            |
+| `patternErrorMessage`      | `pattern-error-message`       |             | `string`            | `undefined`                            |
 | `placeholder`              | `placeholder`                 |             | `string`            | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`            | `"No information"`                     |
 | `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `true`                                 |
 | `required`                 | `required`                    |             | `boolean`           | `false`                                |
+| `validationId`             | `validation-id`               |             | `string`            | `undefined`                            |
 
 
 ## Shadow Parts
