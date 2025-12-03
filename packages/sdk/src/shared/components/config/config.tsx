@@ -6,7 +6,7 @@ import { Auth, getUnidyClient } from "../../../auth";
 export interface Config {
   apiKey: string;
   baseUrl: string;
-  language: string;
+  locale: string;
 }
 
 export interface ConfigChange {
@@ -22,7 +22,7 @@ export interface ConfigChange {
 export class UnidyConfig {
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
-  @Prop() language?: string;
+  @Prop() locale = "en";
 
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
@@ -35,43 +35,22 @@ export class UnidyConfig {
       return;
     }
 
-    const resolvedLanguage = this.language || navigator.language || "en";
-
     unidyState.apiKey = this.apiKey;
     unidyState.baseUrl = this.baseUrl;
-    unidyState.language = resolvedLanguage;
-
+    unidyState.locale = this.locale;
     unidyState.isConfigured = true;
-
-    Auth.initialize(getUnidyClient());
 
     this.unidyInitialized.emit({
       apiKey: this.apiKey,
       baseUrl: this.baseUrl,
-      language: resolvedLanguage,
+      locale: this.locale,
     });
   }
 
-  @Watch("baseUrl")
-  onBaseUrlChange(newValue: string, oldValue: string) {
-    if (oldValue === "") return;
-    unidyState.baseUrl = newValue;
-    this.configChange.emit({ key: "baseUrl", value: newValue, previousValue: oldValue });
-  }
-
-  @Watch("apiKey")
-  onApiKeyChange(newValue: string, oldValue: string) {
-    if (oldValue === "") return;
-    unidyState.apiKey = newValue;
-    this.configChange.emit({ key: "apiKey", value: newValue, previousValue: oldValue });
-  }
-
-  @Watch("language")
-  onLanguageChange(newValue: string, oldValue: string) {
+  @Watch("locale")
+  onLocaleChange(newValue: string, oldValue: string) {
     if (oldValue === undefined) return;
-    const resolvedLanguage = newValue || navigator.language || "en";
-    unidyState.language = resolvedLanguage;
-    this.configChange.emit({ key: "language", value: resolvedLanguage, previousValue: oldValue || "" });
+    unidyState.locale = newValue;
   }
 
   render() {

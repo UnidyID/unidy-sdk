@@ -3,7 +3,7 @@ import { createStore } from "@stencil/store";
 export interface State {
   apiKey: string;
   baseUrl: string;
-  language: string;
+  locale: string;
   isConfigured: boolean;
 
   backendConnected: boolean;
@@ -12,7 +12,7 @@ export interface State {
 const initialState: State = {
   apiKey: "",
   baseUrl: "",
-  language: "",
+  locale: "en",
   isConfigured: false,
 
   backendConnected: true,

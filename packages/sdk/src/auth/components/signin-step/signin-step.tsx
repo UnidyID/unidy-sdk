@@ -1,7 +1,6 @@
 import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../..";
-import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-signin-step",
@@ -21,7 +20,6 @@ export class SigninStep {
   async submit() {
     if (authState.loading) return;
 
-    await waitForConfig();
     const authInstance = await Auth.getInstance();
 
     if (authState.step === "email") {

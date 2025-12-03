@@ -5,7 +5,6 @@ import { authStore, onChange as authOnChange } from "../../../auth/store/auth-st
 import { getUnidyClient } from "../../../auth/api-client";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
 import type { ProfileRaw } from "../../store/profile-store";
-import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-profile",
@@ -28,7 +27,6 @@ export class Profile {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
-      await waitForConfig();
       this.authInstance = await Auth.getInstance();
 
       const idToken = await this.authInstance?.getToken();

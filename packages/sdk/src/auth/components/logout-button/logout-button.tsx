@@ -1,6 +1,5 @@
 import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../auth";
-import { waitForConfig } from "../../../shared/store/unidy-store";
 
 @Component({
   tag: "u-logout-button",
@@ -14,7 +13,6 @@ export class LogoutButton {
   @Event() logout!: EventEmitter<void>;
 
   private handleLogout = async () => {
-    await waitForConfig();
     const authInstance = await Auth.getInstance();
 
     const result = await authInstance.logout();
