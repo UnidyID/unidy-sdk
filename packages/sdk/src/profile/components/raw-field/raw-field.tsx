@@ -106,6 +106,7 @@ export class RawField {
   }
 
   private validateValue(value: string | string[]): { valid: boolean; message: string } {
+    // TODO: We should validate this when the component is loading.
     if (this.required) {
       const empty = value === undefined || value === null || value === "";
       if (empty) {
