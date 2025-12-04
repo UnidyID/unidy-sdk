@@ -15,6 +15,7 @@
 ```mermaid
 graph TD;
   u-missing-field --> u-field
+  u-field --> u-spinner
   u-field --> u-raw-field
   style u-missing-field fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -6,7 +6,7 @@ import { getParentSigninStep } from "../helpers";
   tag: "u-auth-submit-button",
   shadow: false,
 })
-export class SubmitButton {
+export class AuthSubmitButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email" | "password";
@@ -66,7 +66,7 @@ export class SubmitButton {
 
     return (
       <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? "Loading..." : this.getButtonText()}
+        {authState.loading && authState.magicCodeStep !== "requested" ? <div><u-spinner /> Loading...</div> : this.getButtonText()}
       </button>
     );
   }

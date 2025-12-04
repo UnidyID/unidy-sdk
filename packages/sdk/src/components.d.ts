@@ -347,6 +347,8 @@ export namespace Components {
          */
         "theme": "light" | "dark";
     }
+    interface USpinner {
+    }
     interface UTicketableList {
         /**
           * @default "public-newsletter-api-key"
@@ -612,6 +614,12 @@ declare global {
         prototype: HTMLUSocialLoginButtonElement;
         new (): HTMLUSocialLoginButtonElement;
     };
+    interface HTMLUSpinnerElement extends Components.USpinner, HTMLStencilElement {
+    }
+    var HTMLUSpinnerElement: {
+        prototype: HTMLUSpinnerElement;
+        new (): HTMLUSpinnerElement;
+    };
     interface HTMLUTicketableListElement extends Components.UTicketableList, HTMLStencilElement {
     }
     var HTMLUTicketableListElement: {
@@ -648,6 +656,7 @@ declare global {
         "u-signin-step": HTMLUSigninStepElement;
         "u-signin-strategy": HTMLUSigninStrategyElement;
         "u-social-login-button": HTMLUSocialLoginButtonElement;
+        "u-spinner": HTMLUSpinnerElement;
         "u-ticketable-list": HTMLUTicketableListElement;
     }
 }
@@ -982,6 +991,8 @@ declare namespace LocalJSX {
          */
         "theme"?: "light" | "dark";
     }
+    interface USpinner {
+    }
     interface UTicketableList {
         /**
           * @default "public-newsletter-api-key"
@@ -1054,6 +1065,7 @@ declare namespace LocalJSX {
         "u-signin-step": USigninStep;
         "u-signin-strategy": USigninStrategy;
         "u-social-login-button": USocialLoginButton;
+        "u-spinner": USpinner;
         "u-ticketable-list": UTicketableList;
     }
 }
@@ -1090,6 +1102,7 @@ declare module "@stencil/core" {
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
+            "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
         }
     }

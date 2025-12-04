@@ -48,7 +48,7 @@ A simple component for conditional rendering based on auth state properties.
 
 <!-- Show loading spinner -->
 <conditional-render when="loading" is="true">
-  <div class="spinner">Loading...</div>
+  <div class="loading-indicator"><u-spinner /> Loading...</div>
 </conditional-render>
 
 <!-- Show when authenticated -->

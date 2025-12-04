@@ -79,6 +79,7 @@
       "require": "./loader/index.cjs",
       "types": "./loader/index.d.ts"
     },
+    "./sdk.css": "./dist/sdk.css",
     "./api": {
       "import": "./dist/api/index.js",
       "require": "./dist/api/index.cjs.js"
