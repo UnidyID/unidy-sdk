@@ -35,6 +35,7 @@
     "account_not_found": "Konto nicht gefunden",
     "authentication_failed": "Authentifizierung fehlgeschlagen",
     "bad_request": "Ungültige Anfrage",
+    "connection_failed": "Verbindung zum Unidy Server nicht möglich.",
     "expired": "Abgelaufen",
     "failedToLoadProfile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration.",
     "invalid_id_token": "Ungültiger ID-Token",

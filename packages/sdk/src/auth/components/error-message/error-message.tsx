@@ -26,10 +26,6 @@ export class ErrorMessage {
       return translatedError;
     }
 
-    if (errorCode === "connection_failed") {
-      return CONNECTION_FAILED_MESSAGE;
-    }
-
     return errorCode || i18n.t('errors.unknown', { defaultValue: 'An error occurred' });
   }
 

@@ -35,6 +35,7 @@
     "account_not_found": "Account not found",
     "authentication_failed": "Authentication failed",
     "bad_request": "Bad request",
+    "connection_failed": "Unable to connect to the Unidy server",
     "expired": "Expired",
     "failedToLoadProfile": "Failed to load profile data. Please check configuration.",
     "invalid_id_token": "Invalid ID token",
