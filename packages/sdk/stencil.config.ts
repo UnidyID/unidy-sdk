@@ -6,9 +6,7 @@ export const config: Config = {
   tsconfig: "tsconfig.json",
   srcDir: "src",
 
-  env: {
-    NODE_ENV: "development",
-  },
+  globalScript: "src/globalScript.ts",
   outputTargets: [
     { type: "dist", esmLoaderPath: "../loader" },
     { type: "dist-custom-elements" },
