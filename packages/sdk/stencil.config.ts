@@ -6,6 +6,7 @@ export const config: Config = {
   tsconfig: "tsconfig.json",
   srcDir: "src",
 
+  globalScript: "src/globalScript.ts",
   outputTargets: [
     {
       type: "dist",
