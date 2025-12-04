@@ -31,6 +31,9 @@ export class RawField {
   @Prop() multiSelectOptions?: MultiSelectOption[];
   @Prop() specificPartKey?: string;
   @Prop() ariaDescribedBy = "";
+  @Prop() pattern?: string;
+  @Prop() patternErrorMessage?: string;
+  @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   @Element() el!: HTMLElement;
 
@@ -91,11 +94,43 @@ export class RawField {
     }
   }
 
+  private runExternalValidator(value: string | string[]) {
+    if (this.validationFunc) {
+      try {
+        return this.validationFunc(value);
+      } catch (e) {
+        console.error("External validator (validationFunc) threw an error:", e);
+        return null;
+      }
+    }
+  }
+
   private validateValue(value: string | string[]): { valid: boolean; message: string } {
+    // TODO: We should validate this when the component is loading.
     if (this.required) {
       const empty = value === undefined || value === null || value === "";
       if (empty) {
         return { valid: false, message: "This field is required." };
+      }
+    }
+
+    if (this.pattern && typeof value === "string") {
+      const regex = new RegExp(this.pattern);
+      if (!regex.test(value)) {
+        return { valid: false, message: this.patternErrorMessage || "Invalid format." };
+      }
+    }
+
+    const externalResult = this.runExternalValidator(value);
+    console.log("External validator result:", externalResult);
+    if (externalResult && !externalResult.valid) {
+      return { valid: false, message: externalResult.message || "Invalid input." };
+    }
+
+    if (this.type === "tel") {
+      const phonePattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
+      if (typeof value === "string" && value !== "" && !phonePattern.test(value)) {
+        return { valid: false, message: this.invalidPhoneMessage };
       }
     }
 
@@ -121,11 +156,6 @@ export class RawField {
       .join("");
   }
 
-  private onRadioChange = (newVal: string) => {
-    this.writeStore(this.field, String(newVal));
-    this.selected = newVal;
-  };
-
   private onMultiToggle = (optValue: string, checked: boolean) => {
     const currentValues = Array.isArray(this.selected) ? this.selected : [];
     let updatedValues: string[];
@@ -136,23 +166,39 @@ export class RawField {
     }
 
     this.selected = updatedValues;
+    // TODO: validate multiselect if needed
     this.writeStore(this.field, updatedValues);
   };
 
-  private onSelectChange = (val: string) => this.writeStore(this.field, val);
-
-  private onTextChange = (val: string) => {
-    this.selected = val;
+  private onBlurFieldValidation = (e: Event) => {
+    const input = e.target as HTMLInputElement | HTMLTextAreaElement;
+    const val = input.value;
 
     const result = this.validateValue(val);
-
     const newErrors = { ...profileState.errors };
+
     if (result.valid) {
       delete newErrors[this.field];
-      this.writeStore(this.field, val);
     } else {
       newErrors[this.field] = result.message;
     }
+
+    profileState.errors = newErrors;
+  };
+
+  private onChangeFieldValidation = (newValue: string) => {
+    this.selected = newValue;
+
+    const result = this.validateValue(newValue);
+    const newErrors = { ...profileState.errors };
+
+    if (result.valid) {
+      delete newErrors[this.field];
+      this.writeStore(this.field, newValue);
+    } else {
+      newErrors[this.field] = result.message;
+    }
+
     profileState.errors = newErrors;
   };
 
@@ -190,33 +236,6 @@ export class RawField {
     }
   }
 
-  private phoneFieldValidation = (e: Event) => {
-    if (this.type !== "tel") return;
-    const input = e.target as HTMLInputElement;
-    const pattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
-    if (input.value !== "" && !pattern.test(input.value)) {
-      input.setCustomValidity(this.invalidPhoneMessage);
-      input.reportValidity();
-      profileState.phoneValid = false;
-    } else {
-      input.setCustomValidity("");
-      profileState.phoneValid = true;
-    }
-  };
-
-  private onBlurFieldValidation = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    if (input.required && !input.value) {
-      input.setCustomValidity("This field is required.");
-      input.reportValidity();
-    }
-    if (this.type === "tel") {
-      this.phoneFieldValidation(e);
-      return;
-    }
-    input.setCustomValidity("");
-  };
-
   render() {
     if (this.type === "radio") {
       if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
@@ -230,10 +249,11 @@ export class RawField {
             disabled={this.disabled}
             title={this.tooltip}
             type="radio"
-            onChange={this.onRadioChange}
+            onChange={this.onChangeFieldValidation}
             options={checkedOptions}
             specificPartKey={this.specificPartKey}
             aria-describedby={this.ariaDescribedBy}
+            required={this.required}
           />
         );
       }
@@ -251,8 +271,9 @@ export class RawField {
             componentClassName={this.componentClassName}
             type="radio"
             specificPartKey={this.specificPartKey}
-            onChange={this.onRadioChange}
+            onChange={this.onChangeFieldValidation}
             aria-describedby={this.ariaDescribedBy}
+            required={this.required}
           />
         );
       }
@@ -311,7 +332,7 @@ export class RawField {
           disabled={this.disabled}
           title={this.tooltip}
           emptyOption={this.emptyOption}
-          onChange={this.onSelectChange}
+          onChange={this.onChangeFieldValidation}
           componentClassName={this.componentClassName}
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
@@ -333,7 +354,7 @@ export class RawField {
           title={this.tooltip}
           componentClassName={this.componentClassName}
           specificPartKey={this.specificPartKey}
-          onChange={this.onTextChange}
+          onChange={this.onChangeFieldValidation}
           onBlur={this.onBlurFieldValidation}
           aria-describedby={this.ariaDescribedBy}
         />
@@ -352,8 +373,7 @@ export class RawField {
         componentClassName={this.componentClassName}
         placeholder={this.placeholder}
         specificPartKey={this.specificPartKey}
-        onChange={this.onTextChange}
-        onInput={this.phoneFieldValidation}
+        onChange={this.onChangeFieldValidation}
         onBlur={this.onBlurFieldValidation}
         aria-describedby={this.ariaDescribedBy}
       />

@@ -12,6 +12,7 @@ type RadioGroupProps =
       specificPartKey?: string;
       onChange: (value: string) => void;
       ariaDescribedBy?: string;
+      required?: boolean;
     }
   | {
       value: string;
@@ -23,6 +24,7 @@ type RadioGroupProps =
       componentClassName?: string;
       onChange: (value: string) => void;
       ariaDescribedBy?: string;
+      required?: boolean;
     };
 
 export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
@@ -31,6 +33,7 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
       <input
         type={props.type}
         name={props.name}
+        required={props.required}
         value={String(props.value)}
         checked={props.checked}
         disabled={props.disabled}
@@ -43,8 +46,11 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
   }
 
   return (
-    <div part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ""}`}
-         title={props.title} aria-describedby={props.ariaDescribedBy || undefined}>
+    <div
+      part={`radio-group_field ${props.specificPartKey ? `radio-group_field--${props.specificPartKey}` : ""}`}
+      title={props.title}
+      aria-describedby={props.ariaDescribedBy || undefined}
+    >
       {props.options.map((opt) => (
         <label
           htmlFor={`${props.name}-${opt.value}`}
@@ -56,6 +62,7 @@ export const RadioGroup: FunctionalComponent<RadioGroupProps> = (props) => {
             id={`${props.name}-${opt.value}`}
             type={props.type}
             name={props.name}
+            required={props.required}
             value={String(opt.value)}
             checked={opt.checked}
             disabled={props.disabled}
