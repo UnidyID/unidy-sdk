@@ -4,12 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-  <title>Stencil Component Starter</title>
+  <title>Unidy Auth Demo</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script type="module" src="/build/sdk.esm.js"></script>
   <script nomodule src="/build/sdk.js"></script>
+  <link rel="stylesheet" href="/css/sdk.css"></link>
   <style>
     body {
       background: #f6f8fa;
@@ -20,7 +21,7 @@
 
     .container {
       max-width: 480px;
-      margin: 48px auto;
+      margin: 0 auto;
       padding: 32px 24px;
       background: #fff;
       border-radius: 18px;
@@ -34,6 +35,32 @@
       font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: -1px;
+    }
+
+    .sdk-loading-spinner-wrapper {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+
+    .sdk-loading-spinner {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.125em;
+      border-radius: 50%;
+      animation: sdk-loading-spin 1s linear infinite;
+
+      border: 0.1em solid #ccc;
+      border-top-color: #333;
+    }
+
+    @keyframes sdk-loading-spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     u-profile {
@@ -189,6 +216,13 @@
       background: #0055fe;
     }
 
+    u-profile-submit-button,
+    u-missing-fields-submit-button {
+        --spinner-font-size: 30px;
+        --spinner-color-primary: #fff;
+        --spinner-color-secondary: rgba(255, 255, 255, 0.4);
+    }
+
     u-field::part(field-container--first_name) {
       display: flex;
       flex-direction: column;
@@ -225,13 +259,17 @@
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
-    <u-signin-root id="sign-in-root" class-name="
-      bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
+    <div id="sdk-initial-spinner" class="sdk-loading-spinner-wrapper">
+      <div class="sdk-loading-spinner" style="font-size: 50px" aria-label="Loading"></div>
+    </div>
+
+    <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
+                   class="flex flex-col gap-2">
 
       <u-signin-step name="email">
         <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-          aria-described-by="passkey-error-email"></u-passkey>
+          aria-describedby="passkey-error-email"></u-passkey>
         <u-error-message id="passkey-error-email" for="general"
           class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
@@ -326,7 +364,7 @@
         <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
       </u-signin-step>
 
-      </u-signin-step name="missing-fields">
+      <u-signin-step name="missing-fields">
         <u-missing-field></u-missing-field>
         <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>
@@ -533,6 +571,18 @@
       </div>
     </u-auth-provider>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // The 'appload' event is fired by Stencil when the app is fully loaded and hydrated.
+      window.addEventListener('appload', () => {
+        const spinner = document.getElementById('sdk-initial-spinner');
+        if (spinner) {
+          spinner.remove();
+        }
+      });
+    });
+  </script>
 
   <script type="module">
     import { Auth } from "/build/index.esm.js";

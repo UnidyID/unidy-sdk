@@ -24,12 +24,12 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 
 ## Prerequisites
 
-Before using the SDK, you must obtain a SDK API key, which is currently available as a self-service option:
+Before using the SDK, you must obtain an SDK API key, which is currently available as a self-service option:
 Go to the Super-Admin and select the "SDK Clients" option and create a new client. If you already have an
 SDK client open it by clicking on it's name, the view will show the API key as last element.
 
 If you don't have access to the Super-Admin in Unidy, please contact your Unidy representative and request
-an API key, Unidy will create a SDK client for you and communicate the resulting API key securely.
+an API key, Unidy will create an SDK client for you and communicate the resulting API key securely.
 
 ## Installation
 
@@ -44,6 +44,7 @@ Add the following scripts to your HTML file:
 ```html
 <!-- 1. Loads the web components (e.g., <u-signin-root>) -->
 <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.css"></link>
 
 <!-- 2. Makes the Auth helper class available for use in your scripts -->
 <script type="module">
@@ -249,6 +250,18 @@ Displays a temporary message to the user, such as success, error, or information
 -   `message` (required): The text content of the message to display.
 -   `variant`: The type of message, which affects its styling. Can be `error`, `success`, or `info`. Defaults to `info`.
 
+#### `<u-spinner>`
+
+A flexible, reusable spinner component for indicating loading states. It is designed to be used inside other components (e.g., a submit button) to show that an action is in progress.
+
+The spinner's size and colors can be customized via CSS Custom Properties.
+
+**CSS Custom Properties:**
+
+-   `--u-spinner-font-size`: The size of the spinner (e.g., `20px`).
+-   `--spinner-color-primary`: The color of the main rotating part of the spinner.
+-   `--spinner-color-secondary`: The color of the track (the non-moving part).
+
 ### Login Flow Components
 
 These components are used within `<u-signin-root>` to construct the login experience.
@@ -346,7 +359,7 @@ Renders a button that initiates the password reset flow.
 **Attributes:**
 
 -   `text`: The text to display on the button. Defaults to "Reset Password".
--   `success-message`: The message to display after the password reset email has been sent. Defaults to "Password reset email sent. Please check your inbox.".
+-   `success-message`: The message to display after the password reset email has been sent. Defaults to "Password reset email sent. Please check your inbox".
 -   `class-name`: A string of classes to pass to the button.
 
 #### `<u-social-login-button>`
@@ -586,33 +599,34 @@ u-field::part(input_field) {
 
 ### Available CSS Shadow Parts
 
-| Component | Part | Description |
-| --- | --- | --- |
-| `<u-social-login-button>` | `social-login-button` | The button element itself. |
-| | `social-login-button-content` | The container for the button's content. |
-| | `social-login-button-text` | The text within the button. |
-| `<u-magic-code-field>` | `digit-input` | An individual digit input field. |
-| `<u-field>` | `field-container` | The main container for the field. |
-| | `field-container--<field-name>` | A field-specific container. e.g. `field-container--email` |
-| | `field_label` | The label for the field. |
-| | `field_label--<field-name>` | A field-specific label. e.g. `field_label--email` |
-| | `required-indicator` | The asterisk for required fields. |
-| | `readonly-indicator` | The text displayed for readonly fields. |
-| | `multi-select-readonly-container` | The container for readonly multi-select fields. |
-| | `multi-select-readonly-field` | An individual readonly multi-select field. |
-| | `field-error-message` | The error message for the field. |
-| | `select_field` | The `<select>` element. |
-| | `select_field--<field-name>` | A field-specific `<select>` element. e.g. `select_field--country_code` |
-| | `radio-group-item_radio` | A radio button in a radio group. |
-| | `radio-group_field` | The fieldset for a radio group. |
-| | `radio-group-item_label` | The label for a radio button. |
-| | `radio_checked` | A checked radio button. |
-| | `multi-select-item_checkbox` | A checkbox in a multi-select group. |
-| | `multi-select-group_field` | The fieldset for a multi-select group. |
-| | `multi-select-item_label` | The label for a checkbox. |
-| | `textarea_field` | The `<textarea>` element. |
-| | `input_field` | The `<input>` element. |
-| `<u-profile-submit-button>` | `unidy-button` | The button element itself. |
+| Component                   | Part                              | Description                                                            |
+|-----------------------------|-----------------------------------|------------------------------------------------------------------------|
+| `<u-field>`                 | `field-container`                 | The main container for the field.                                      |
+|                             | `field-container--<field-name>`   | A field-specific container. e.g. `field-container--email`              |
+|                             | `field_label`                     | The label for the field.                                               |
+|                             | `field_label--<field-name>`       | A field-specific label. e.g. `field_label--email`                      |
+|                             | `field-error-message`             | The error message for the field.                                       |
+|                             | `input_field`                     | The `<input>` element.                                                 |
+|                             | `multi-select-group_field`        | The fieldset for a multi-select group.                                 |
+|                             | `multi-select-item_checkbox`      | A checkbox in a multi-select group.                                    |
+|                             | `multi-select-item_label`         | The label for a checkbox.                                              |
+|                             | `multi-select-readonly-container` | The container for readonly multi-select fields.                        |
+|                             | `multi-select-readonly-field`     | An individual readonly multi-select field.                             |
+|                             | `radio-group_field`               | The fieldset for a radio group.                                        |
+|                             | `radio-group-item_label`          | The label for a radio button.                                          |
+|                             | `radio-group-item_radio`          | A radio button in a radio group.                                       |
+|                             | `radio_checked`                   | A checked radio button.                                                |
+|                             | `readonly-indicator`              | The text displayed for readonly fields.                                |
+|                             | `required-indicator`              | The asterisk for required fields.                                      |
+|                             | `select_field`                    | The `<select>` element.                                                |
+|                             | `select_field--<field-name>`      | A field-specific `<select>` element. e.g. `select_field--country_code` |
+|                             | `textarea_field`                  | The `<textarea>` element.                                              |
+| `<u-magic-code-field>`      | `digit-input`                     | An individual digit input field.                                       |
+| `<u-profile-submit-button>` | `unidy-button`                    | The button element itself.                                             |
+| `<u-social-login-button>`   | `social-login-button`             | The button element itself.                                             |
+|                             | `social-login-button-content`     | The container for the button's content.                                |
+|                             | `social-login-button-text`        | The text within the button.                                            |
+| `<u-spinner>`               | `spinner`                         | The inner rotating `<div>` element of the spinner.                     |
 
 ## Advanced Usage: `<u-raw-field>`
 

@@ -4,6 +4,7 @@ import { Auth } from "../../../auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 import { hasSlotContent } from "../../../shared/component-utils";
+
 @Component({
   tag: "u-profile-submit-button",
   styleUrl: "submit-button.css",
@@ -64,7 +65,7 @@ export class SubmitButton {
           aria-live="polite"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <span class="spinner" aria-label="Loading" /> : hasSlotContent(this.el) ? <slot /> : "Submit"}
+          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : "Submit"}
         </button>
       </div>
     );
