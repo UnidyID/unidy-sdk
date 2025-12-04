@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
 
@@ -29,8 +28,6 @@ export class UnidyConfig {
   @Event() configChange!: EventEmitter<ConfigChange>;
 
   componentWillLoad() {
-    this.initializeSentry();
-
     if (!this.baseUrl || !this.apiKey) {
       console.error("baseUrl and apiKey are required");
       return;
@@ -69,13 +66,4 @@ export class UnidyConfig {
   render() {
     return <slot />;
   }
-
-  private initializeSentry = () => {
-    Sentry.init({
-      dsn: "https://d4cc4e5f6d985e61c56330dd27d104d6@o4507882295132160.ingest.de.sentry.io/4510443854037072",
-      environment: process.env.NODE_ENV,
-      sendDefaultPii: true,
-      tracesSampleRate: 0.005,
-    });
-  };
 }

@@ -32,6 +32,10 @@ export class Field {
   @Prop() placeholder?: string;
   @Prop() renderDefaultLabel = true;
 
+  @Prop() pattern?: string;
+  @Prop() patternErrorMessage?: string;
+  @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
+
   @Element() el!: HTMLElement;
 
   @State() selected?: string | string[];
@@ -46,7 +50,8 @@ export class Field {
 
   componentDidRender() {
     const fieldErrors = profileState.errors;
-    if (fieldErrors?.[this.field]) {
+
+    if (Object.keys(fieldErrors)[0] === this.field) {
       this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
       this.el.shadowRoot
         ?.getElementById(this.field)
@@ -77,7 +82,7 @@ export class Field {
 
   render() {
     if (profileState.loading) {
-      return <div class="spinner" />;
+      return <u-spinner />;
     }
 
     const fieldData = this.getFieldData();
@@ -132,6 +137,9 @@ export class Field {
             attrName={fieldData.attr_name}
             specificPartKey={this.createSpecificPartKey(this.field)}
             ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
+            pattern={this.pattern}
+            patternErrorMessage={this.patternErrorMessage}
+            validationFunc={this.validationFunc}
           />
         )}
 

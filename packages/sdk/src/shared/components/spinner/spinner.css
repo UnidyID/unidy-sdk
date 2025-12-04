@@ -1,0 +1,8 @@
+:host {
+  font-size: var(--spinner-font-size, 20px);
+}
+
+.spinner-inner {
+  border: 0.1em solid var(--spinner-color-secondary, #ccc);
+  border-top: 0.1em solid var(--spinner-color-primary, #333);
+}
