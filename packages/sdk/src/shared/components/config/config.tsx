@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Prop, h } from "@stencil/core";
+import {Component, Prop, h, Env} from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
 import { Auth, getUnidyClient } from "../../../auth";
 
@@ -11,8 +11,9 @@ export class UnidyConfig {
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
 
-  componentWillLoad() {
-    if (process.env.NODE_ENV === "production" && !window.location.href.includes("localhost")) {
+  async componentWillLoad() {
+    if (Env.NODE_ENV !== "development") {
+      console.log("Initializing Sentry...");
       this.initializeSentry();
     }
 
