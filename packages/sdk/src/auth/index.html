@@ -210,6 +210,18 @@
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
   <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
 
+  <u-error-message for="connection"
+    class-name="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+    <div class="flex items-start gap-2">
+      <div>
+        <strong class="block text-yellow-800">Connection Error</strong>
+        <p class="text-yellow-700 text-sm">
+          Unable to connect to the Unidy server
+        </p>
+      </div>
+    </div>
+  </u-error-message>
+
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
@@ -217,11 +229,11 @@
       bg-white rounded-xl shadow-xl p-8 border border-gray-100" class="flex flex-col gap-2">
 
       <u-signin-step name="email">
-        <u-passkey text="Sign in with Passkey"
-          loading-text="Authenticating..."
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
           aria-described-by="passkey-error-email"></u-passkey>
-        <u-error-message id="passkey-error-email" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+        <u-error-message id="passkey-error-email" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -259,11 +271,11 @@
       </u-signin-step>
 
       <u-signin-step name="verification">
-        <u-passkey text="Sign in with Passkey"
-          loading-text="Authenticating..."
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
           aria-describedby="passkey-error-verification"></u-passkey>
-        <u-error-message id="passkey-error-verification" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+        <u-error-message id="passkey-error-verification" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -277,7 +289,8 @@
             aria-describedby="password-error"></u-password-field>
           <u-reset-password-button text="Reset Password"
             class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-          <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          <u-error-message id="password-error" for="password"
+            class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
           <u-auth-submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
@@ -298,9 +311,11 @@
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
           </u-conditional-render>
 
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg" aria-describedby="magic-code-error"></u-magic-code-field>
+          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+            aria-describedby="magic-code-error"></u-magic-code-field>
 
-          <u-error-message id="magic-code-error" for="magicCode" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+          <u-error-message id="magic-code-error" for="magicCode"
+            class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
           <u-conditional-render when="magicCodeSent" is="true">
             <u-send-magic-code-button text="Resend Magic Code"
@@ -329,6 +344,18 @@
 
     <u-auth-provider>
       <div class="container">
+        <div class="mb-6">
+          <u-logout-button text="Logout"
+            class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+          </u-logout-button>
+          <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+          <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+        </div>
+        <u-full-profile language="en"  fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile>
+        <!-- For testing -->
+        <!-- <u-full-profile language="en"
+          fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+          country-code-display-option="icon"></u-full-profile>
         <u-profile language="de">
           <div class="mt-6 space-y-3">
             <u-logout-button text="Logout"
@@ -502,8 +529,7 @@
               </label>
             </div>
           </div>
-        </u-profile>        
-        <!-- <u-full-profile language="en"  fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile> -->
+        </u-profile> -->
       </div>
     </u-auth-provider>
   </div>
