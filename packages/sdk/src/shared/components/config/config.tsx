@@ -11,7 +11,7 @@ export class UnidyConfig {
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
 
-  async componentWillLoad() {
+ componentWillLoad() {
     if (Env.NODE_ENV !== "development") {
       console.log("Initializing Sentry...");
       this.initializeSentry();
