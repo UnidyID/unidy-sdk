@@ -29,9 +29,7 @@ export class UnidyConfig {
   @Event() configChange!: EventEmitter<ConfigChange>;
 
   componentWillLoad() {
-    if (this.mode === "development" || !window.location.href.includes("localhost")) {
-      this.initializeSentry();
-    }
+    this.initializeSentry();
 
     if (!this.baseUrl || !this.apiKey) {
       console.error("baseUrl and apiKey are required");
