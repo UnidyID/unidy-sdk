@@ -129,7 +129,7 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
-        "validationId"?: string;
+        "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
     interface UFlashMessage {
         /**
@@ -274,7 +274,7 @@ export namespace Components {
         "specificPartKey"?: string;
         "tooltip"?: string;
         "type": string;
-        "validationId"?: string;
+        "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
     interface UResetPasswordButton {
@@ -769,7 +769,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
-        "validationId"?: string;
+        "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
     interface UFlashMessage {
         /**
@@ -915,7 +915,7 @@ declare namespace LocalJSX {
         "specificPartKey"?: string;
         "tooltip"?: string;
         "type": string;
-        "validationId"?: string;
+        "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
     interface UResetPasswordButton {

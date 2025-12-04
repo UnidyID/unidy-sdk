@@ -34,7 +34,7 @@ export class Field {
 
   @Prop() pattern?: string;
   @Prop() patternErrorMessage?: string;
-  @Prop() validationId?: string;
+  @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   @Element() el!: HTMLElement;
 
@@ -139,7 +139,7 @@ export class Field {
             ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
             pattern={this.pattern}
             patternErrorMessage={this.patternErrorMessage}
-            validationId={this.validationId}
+            validationFunc={this.validationFunc}
           />
         )}
 

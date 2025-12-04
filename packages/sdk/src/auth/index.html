@@ -340,7 +340,7 @@
             <label slot="label" class="text-blue-500">First Name:</label>
           </u-field>
           <u-field field="last_name" render-default-label="true"></u-field>
-          <u-field field="date_of_birth" required="true" validation-id="dateOfBirthValidation"></u-field>
+          <u-field field="date_of_birth" required="true"></u-field>
           <u-field field="phone_number" render-default-label="true"></u-field>
           <u-field field="country_code" country-code-display-option="icon" render-default-label="true"></u-field>
           <u-field field="custom_attributes.favorite_nut" render-default-label="true"></u-field>
@@ -551,6 +551,13 @@
         ? { valid: true, message: "" }
         : { valid: false, message: "You must be at least 18 years old." };
     }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const field = document.querySelector('u-field[field="date_of_birth"]');
+      if (field) {
+        field.validationFunc = dateOfBirthValidation;
+      }
+    });
   </script>
 
 </body>

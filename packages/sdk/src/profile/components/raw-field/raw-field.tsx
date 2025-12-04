@@ -33,13 +33,11 @@ export class RawField {
   @Prop() ariaDescribedBy = "";
   @Prop() pattern?: string;
   @Prop() patternErrorMessage?: string;
-  @Prop() validationId?: string; // validation id, so that our sdk finds the correct custom validation function
+  @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   @Element() el!: HTMLElement;
 
   @State() selected?: string | string[];
-
-  //
 
   private readStore(fieldName: string): string | undefined | string[] {
     if (!fieldName) return;
@@ -97,21 +95,13 @@ export class RawField {
   }
 
   private runExternalValidator(value: string | string[]) {
-    if (!this.validationId) return null;
-
-    const externalValidator = window[this.validationId];
-    console.log("External validator function:", typeof externalValidator);
-
-    if (typeof externalValidator !== "function") {
-      console.warn(`Validator "${this.validationId}" not found on window.`);
-      return null;
-    }
-
-    try {
-      return externalValidator(value);
-    } catch (e) {
-      console.error("Validator threw an error:", e);
-      return { valid: false, message: "Validation failed" };
+    if (this.validationFunc) {
+      try {
+        return this.validationFunc(value);
+      } catch (e) {
+        console.error("External validator (validationFunc) threw an error:", e);
+        return null;
+      }
     }
   }
 
@@ -130,12 +120,10 @@ export class RawField {
       }
     }
 
-    if (this.validationId) {
-      const externalResult = this.runExternalValidator(value);
-      console.log("External validator result:", externalResult);
-      if (externalResult && !externalResult.valid) {
-        return { valid: false, message: externalResult.message || "Invalid input." };
-      }
+    const externalResult = this.runExternalValidator(value);
+    console.log("External validator result:", externalResult);
+    if (externalResult && !externalResult.valid) {
+      return { valid: false, message: externalResult.message || "Invalid input." };
     }
 
     if (this.type === "tel") {
