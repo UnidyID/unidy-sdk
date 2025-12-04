@@ -26,14 +26,22 @@ export const unidyState = store.state;
 export const reset = store.reset;
 export const onChange: <K extends keyof UnidyState>(prop: K, cb: (value: UnidyState[K]) => void) => () => void = store.onChange;
 
+const CONFIG_TIMEOUT_MS = 5000;
+
 export function waitForConfig(): Promise<void> {
   if (unidyState.isConfigured) {
     return Promise.resolve();
   }
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      unsubscribe();
+      reject(new Error(`Unidy SDK: <u-config> not found or not loaded within ${CONFIG_TIMEOUT_MS}ms`));
+    }, CONFIG_TIMEOUT_MS);
+
     const unsubscribe = onChange("isConfigured", (value) => {
       if (value) {
+        clearTimeout(timeout);
         unsubscribe();
         resolve();
       }
