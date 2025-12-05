@@ -56,6 +56,7 @@
     "passkey_invalid_state": "Ungültiger Passkey-Status",
     "passkey_not_supported": "Passkey nicht unterstützt",
     "passkey_security_error": "Passkey-Sicherheitsfehler",
+    "prefix": "FEHLER: ",
     "refresh_failed": "Authorisierungstoken konnte nicht aktualisiert werden. Bitte melden Sie sich erneut an.",
     "refresh_token_revoked": "Aktualisierungs-Token widerrufen",
     "required_field": "{{field}} ist erforderlich",

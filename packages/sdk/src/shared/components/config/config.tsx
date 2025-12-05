@@ -34,8 +34,8 @@ export class UnidyConfig {
 
   @Watch('locale')
   onLocaleChange(newValue: string) {
-    unidyState.locale = newValue;
     i18n.changeLanguage(newValue);
+    unidyState.locale = newValue;
   }
 
   componentWillLoad() {
@@ -56,12 +56,11 @@ export class UnidyConfig {
       mode: this.mode,
     });
 
+    i18n.options.fallbackLng = this.fallbackLocale;
+
     this.loadCustomTranslations();
-    i18n.init({
-      fallbackLng: this.fallbackLocale,
-    });
-    unidyState.locale = this.locale;
     i18n.changeLanguage(this.locale);
+    unidyState.locale = this.locale;
 
     Auth.initialize(getUnidyClient());
   }

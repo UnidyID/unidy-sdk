@@ -56,6 +56,7 @@
     "passkey_invalid_state": "Passkey invalid state",
     "passkey_not_supported": "Passkey not supported",
     "passkey_security_error": "Passkey security error",
+    "prefix": "ERROR: ",
     "refresh_failed": "Failed to refresh token. Please sign in again.",
     "refresh_token_revoked": "Refresh token revoked",
     "required_field": "{{field}} is required",

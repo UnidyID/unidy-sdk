@@ -1,9 +1,8 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, Prop, State, h } from "@stencil/core";
 import i18n from "../../../i18n";
-import { Auth } from "../../../auth/auth";
+import { Auth, getUnidyClient } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
-import { getUnidyClient } from "../../../auth/api-client";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
 import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
