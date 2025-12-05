@@ -46,7 +46,11 @@ export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
 type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
 
-export type CreateSignInResult = CommonErrors | ["account_not_found", ErrorResponse] | [null, CreateSignInResponse];
+export type CreateSignInResult =
+  | CommonErrors
+  | ["account_not_found", ErrorResponse]
+  | [null, CreateSignInResponse]
+  | AuthenticateWithPasswordResult;
 
 export type AuthenticateResultShared =
   | CommonErrors
@@ -132,13 +136,26 @@ export class AuthService {
     this.client = client;
   }
 
-  async createSignIn(email: string): Promise<CreateSignInResult> {
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email });
+  async createSignIn(email: string, password?: string): Promise<CreateSignInResult> {
+    //
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+
+        if (missing_fields_check.success) {
+          return ["missing_required_fields", missing_fields_check.data];
+        }
         const error_response = ErrorSchema.parse(response.data);
-        return ["account_not_found", error_response];
+        return [
+          error_response.error as "account_not_found" | "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password",
+          error_response,
+        ];
+      }
+
+      if (password) {
+        return [null, TokenResponseSchema.parse(response.data)];
       }
 
       return [null, CreateSignInResponseSchema.parse(response.data)];

@@ -266,7 +266,11 @@
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
                    class="flex flex-col gap-2">
 
-      <u-signin-step name="email">
+      <u-signin-step name="single-login">
+        <u-single-step-login></u-single-step-login>
+      </u-signin-step>             
+
+      <!-- <u-signin-step name="email">
         <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
           aria-describedby="passkey-error-email"></u-passkey>
@@ -306,7 +310,7 @@
             <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
           </u-social-login-button>
         </div>
-      </u-signin-step>
+      </u-signin-step> -->
 
       <u-signin-step name="verification">
         <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
@@ -365,6 +369,7 @@
       </u-signin-step>
 
       <u-signin-step name="missing-fields">
+        h
         <u-missing-field></u-missing-field>
         <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>

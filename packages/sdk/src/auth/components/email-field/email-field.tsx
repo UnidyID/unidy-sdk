@@ -13,6 +13,8 @@ export class EmailField {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
 
+  @Prop() mode: "step" | "single-step" = "step";
+
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
     authStore.setEmail(target.value);
@@ -29,7 +31,7 @@ export class EmailField {
   };
 
   render() {
-    if (authState.step === "verification") {
+    if (authState.step === "verification" && this.mode === "step") {
       return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
     }
 

@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification";
+  @Prop() name!: "email" | "verification" | "single-login";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -26,7 +26,7 @@ export class SigninStep {
       return;
     }
 
-    if (authState.step === "email") {
+    if (authState.step === "email" || authState.step === "single-login") {
       await authInstance.helpers.createSignIn(authState.email);
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
@@ -35,11 +35,14 @@ export class SigninStep {
 
   render() {
     let shouldRender = false;
+    console.log("SigninStep render check for:", this.name, "Current step:", authState.step);
 
     if (this.name === "email") {
       shouldRender = authState.step === "email";
     } else if (this.name === "verification") {
       shouldRender = authState.step === "verification" || authState.step === "magic-code";
+    } else if (this.name === "single-login") {
+      shouldRender = authState.step === "single-login";
     }
 
     if (!shouldRender) {

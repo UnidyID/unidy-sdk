@@ -12,7 +12,7 @@ export class AuthHelpers {
     this.client = client;
   }
 
-  async createSignIn(email: string) {
+  async createSignIn(email: string, password?: string) {
     if (!email) {
       throw new Error("Email is required");
     }
@@ -20,17 +20,26 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn(email);
+    const [error, response] = await this.client.auth.createSignIn(email, password);
 
     if (error) {
-      authStore.setFieldError("email", error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setStep("verification");
-      authStore.setEmail(email);
-      authStore.setSignInId((response as CreateSignInResponse).sid);
-      authStore.setLoading(false);
+      this.handleAuthError(error, response);
+      return;
     }
+
+    if (password) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setToken((response as TokenResponse).jwt);
+      authStore.setLoading(false);
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
+      return;
+    }
+
+    authStore.setStep("verification");
+    authStore.setEmail(email);
+    authStore.setSignInId((response as CreateSignInResponse).sid);
+    authStore.setLoading(false);
   }
 
   async authenticateWithPassword(password: string) {
@@ -48,24 +57,34 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
-      if (error === "missing_required_fields") {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
-        authStore.setStep("missing-fields");
-        authStore.setLoading(false);
-        return;
-      }
-      if (error === "account_locked") {
-        authStore.setGlobalError("auth", error);
-      } else {
-        authStore.setFieldError("password", error);
-      }
-      authStore.setLoading(false);
+      this.handleAuthError(error, response);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
       authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
     }
+  }
+
+  private handleAuthError(error: string, response: unknown) {
+    if (error === "account_not_found") {
+      authStore.setFieldError("email", error);
+      authStore.setLoading(false);
+      return;
+    }
+    if (error === "missing_required_fields") {
+      // TODO: handle missing fields flow in 1-step auth
+      authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+      profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+      authStore.setStep("missing-fields");
+      authStore.setLoading(false);
+      return;
+    }
+    if (error === "account_locked") {
+      authStore.setGlobalError("auth", error);
+    } else {
+      authStore.setFieldError("password", error);
+    }
+    authStore.setLoading(false);
   }
 
   async logout() {

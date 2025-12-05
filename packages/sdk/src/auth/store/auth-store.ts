@@ -5,7 +5,7 @@ import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
 export interface AuthState {
-  step: "email" | "verification" | "magic-code" | "missing-fields";
+  step: "email" | "verification" | "magic-code" | "missing-fields" | "single-login";
   sid: string | null;
   email: string;
   password: string;
@@ -52,8 +52,10 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
   }
 };
 
+const initialStep = document.querySelector("u-single-step-login") ? "single-login" : "email";
+
 const initialState: AuthState = {
-  step: "email",
+  step: initialStep,
   email: "",
   password: "",
   magicCodeStep: null,
@@ -141,7 +143,7 @@ class AuthStore {
     state.globalErrors = {};
   }
 
-  setStep(step: "email" | "verification" | "magic-code" | "missing-fields") {
+  setStep(step: "email" | "verification" | "magic-code" | "missing-fields" | "single-login") {
     state.step = step;
   }
 
