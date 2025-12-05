@@ -451,7 +451,7 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 -   `patternErrorMessage`: A custom message shown when the `pattern` validation fails.
 -   `validationFunc`:   A custom validation function that you assign **as a JavaScript property** on the element instance (not as an HTML attribute).
   This allows you to implement field-specific validation logic (e.g. age checks, cross-field validation, external business rules).
-  The function must return `{ valid: boolean, message?: string }`.
+  The function must return `{ valid: boolean, message: string }`.
   If it throws an error, the component logs it but does not block the user.
 
 **Example: Custom validation**
@@ -460,13 +460,7 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
   <script>
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
-      const today = new Date();
-      const dob = new Date(value);
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age--;
-      }
+      // logic
 
       return age >= 18
         ? { valid: true, message: "" }
