@@ -1,18 +1,20 @@
+import { Build } from "@stencil/core";
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import HttpApi from 'i18next-http-backend';
+import de from './locales/de.json';
+import en from './locales/en.json';
 
 i18n
-  .use(HttpApi)
   .use(initReactI18next)
   .init({
-    debug: true,
+    debug: Build.isDev,
     interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
+      escapeValue: false,
     },
-    backend: {
-      loadPath: '/locales/{{lng}}.json'
-    }
+    resources: {
+      de: { translation: de },
+      en: { translation: en },
+    },
   });
 
 export default i18n;

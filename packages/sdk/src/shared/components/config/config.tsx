@@ -32,8 +32,8 @@ export class UnidyConfig {
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
 
-  @Watch('language')
-  onLanguageChange(newValue: string) {
+  @Watch('locale')
+  onLocaleChange(newValue: string) {
     unidyState.locale = newValue;
     i18n.changeLanguage(newValue);
   }

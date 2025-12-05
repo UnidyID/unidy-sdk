@@ -10,7 +10,6 @@
 | Property      | Attribute      | Description | Type                                 | Default     |
 | ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
 | `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
-| `language`    | `language`     |             | `string`                             | `undefined` |
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
 
 

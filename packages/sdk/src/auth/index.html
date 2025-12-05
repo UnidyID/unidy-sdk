@@ -248,9 +248,9 @@
              "de": {
                "fields": {
                  "custom_attributes.favorite_nut": {
-                   "label": "Lieblingsnuss",
+                   "label": "Lieblingsnussi",
                    "options": {
-                     "peanut": "Erdinussi",
+                     "peanut": "Erdnussi",
                      "hazelnut": "Haselnussi",
                      "walnut": "Walnussi"
                    }
@@ -593,19 +593,13 @@
         </u-profile> -->
       </div>
     </u-auth-provider>
-  </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // The 'appload' event is fired by Stencil when the app is fully loaded and hydrated.
-      window.addEventListener('appload', () => {
-        const spinner = document.getElementById('sdk-initial-spinner');
-        if (spinner) {
-          spinner.remove();
-        }
-      });
-    });
-  </script>
+    <div id="locale-switch">
+      Select your language:
+      <button onclick="changeLocale('en')">English</button>
+      <button onclick="changeLocale('de')">German</button>
+    </div>
+  </div>
 
   <script type="module">
     import { Auth, Flash } from "/build/index.esm.js";
@@ -637,6 +631,11 @@
       }
     });
 
+    function changeLocale(locale) {
+      const config = document.querySelector('u-config');
+      config.setAttribute('locale', locale);
+    }
+
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
       const today = new Date();
@@ -660,7 +659,13 @@
     // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
     // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
     window.addEventListener("appload", () => {
-      const field = document.querySelector('u-field[field="date_of_birth"]');
+        const spinner = document.getElementById('sdk-initial-spinner');
+        if (spinner) {
+            spinner.remove();
+        }
+    });
+
+    const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
         field.validationFunc = dateOfBirthValidation;
       }
