@@ -202,7 +202,7 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.setResetPasswordStep("requested");
 
-    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
+    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid, window.location.href);
 
     if (error) {
       authStore.setFieldError("password", error);
@@ -211,6 +211,67 @@ export class AuthHelpers {
       authStore.setResetPasswordStep("sent");
       authStore.setLoading(false);
       authStore.clearErrors();
+    }
+  }
+
+  handleResetPasswordRedirect(): boolean {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const resetToken = params.get("reset_password_token");
+
+    if (!resetToken) {
+      return false;
+    }
+
+    authStore.setResetToken(resetToken);
+    authStore.setStep("reset-password");
+
+    return true;
+  }
+
+  async resetPassword() {
+    if (!authState.resetPassword.token) {
+      throw new Error("No reset token available");
+    }
+
+    if (!authState.resetPassword.newPassword) {
+      authStore.setFieldError("resetPassword", "password_required");
+      return;
+    }
+
+    if (
+      authState.resetPassword.passwordConfirmation &&
+      authState.resetPassword.newPassword !== authState.resetPassword.passwordConfirmation
+    ) {
+      authStore.setFieldError("resetPassword", "passwords_do_not_match");
+      return;
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.resetPassword(
+      authState.sid as string,
+      authState.resetPassword.token,
+      authState.resetPassword.newPassword,
+      authState.resetPassword.passwordConfirmation,
+    );
+
+    // TODO: remove later when we have proper password requirements handling
+    if (error === "invalid_password") {
+      console.log("Temporary displaying this: ", response.details?.password);
+    }
+
+    if (error) {
+      authStore.setFieldError("resetPassword", error);
+      authStore.setLoading(false);
+    } else {
+      authStore.setStep("verification");
+      authStore.setResetPasswordStep("completed");
+      authStore.setResetToken(null);
+      authStore.setNewPassword("");
+      authStore.setConfirmPassword("");
+      authStore.setLoading(false);
     }
   }
 
