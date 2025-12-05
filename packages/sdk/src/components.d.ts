@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -13,6 +14,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -97,7 +99,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -211,7 +213,7 @@ export namespace Components {
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel": string;
         /**
@@ -219,7 +221,11 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * @default "Enter your password"
+          * @default "login"
+         */
+        "for": PasswordFieldFor;
+        /**
+          * @default ""
          */
         "placeholder": string;
     }
@@ -291,6 +297,24 @@ export namespace Components {
          */
         "text": string;
     }
+    interface UResetPasswordSubmit {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default "Resetting..."
+         */
+        "loadingText": string;
+        /**
+          * @default "Reset Password"
+         */
+        "text": string;
+    }
     interface USendMagicCodeButton {
         /**
           * @default "Magic code already sent to your email"
@@ -321,7 +345,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "reset-password";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -578,6 +602,12 @@ declare global {
         prototype: HTMLUResetPasswordButtonElement;
         new (): HTMLUResetPasswordButtonElement;
     };
+    interface HTMLUResetPasswordSubmitElement extends Components.UResetPasswordSubmit, HTMLStencilElement {
+    }
+    var HTMLUResetPasswordSubmitElement: {
+        prototype: HTMLUResetPasswordSubmitElement;
+        new (): HTMLUResetPasswordSubmitElement;
+    };
     interface HTMLUSendMagicCodeButtonElement extends Components.USendMagicCodeButton, HTMLStencilElement {
     }
     var HTMLUSendMagicCodeButtonElement: {
@@ -657,6 +687,7 @@ declare global {
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
         "u-raw-field": HTMLURawFieldElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
+        "u-reset-password-submit": HTMLUResetPasswordSubmitElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
@@ -746,7 +777,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -861,7 +892,7 @@ declare namespace LocalJSX {
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel"?: string;
         /**
@@ -869,7 +900,11 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * @default "Enter your password"
+          * @default "login"
+         */
+        "for"?: PasswordFieldFor;
+        /**
+          * @default ""
          */
         "placeholder"?: string;
     }
@@ -941,6 +976,24 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    interface UResetPasswordSubmit {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default "Resetting..."
+         */
+        "loadingText"?: string;
+        /**
+          * @default "Reset Password"
+         */
+        "text"?: string;
+    }
     interface USendMagicCodeButton {
         /**
           * @default "Magic code already sent to your email"
@@ -972,7 +1025,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "reset-password";
     }
     interface USigninStrategy {
         /**
@@ -1072,6 +1125,7 @@ declare namespace LocalJSX {
         "u-profile-submit-button": UProfileSubmitButton;
         "u-raw-field": URawField;
         "u-reset-password-button": UResetPasswordButton;
+        "u-reset-password-submit": UResetPasswordSubmit;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
@@ -1109,6 +1163,7 @@ declare module "@stencil/core" {
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
+            "u-reset-password-submit": LocalJSX.UResetPasswordSubmit & JSXBase.HTMLAttributes<HTMLUResetPasswordSubmitElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
