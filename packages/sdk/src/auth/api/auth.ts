@@ -79,11 +79,26 @@ export type RefreshTokenResult =
   | ["sign_in_not_found", ErrorResponse]
   | [null, TokenResponse];
 
-export type ResetPasswordResult =
+export type SendResetPasswordEmailResult =
   | CommonErrors
   | ["password_not_set", ErrorResponse]
   | ["reset_password_already_sent", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
+  | [null, null];
+
+export type InvalidPasswordResponse = z.infer<typeof InvalidPasswordResponseSchema>;
+const InvalidPasswordResponseSchema = z.object({
+  details: z.object({
+    password: z.array(z.string()),
+  }),
+});
+
+export type ResetPasswordResult =
+  | CommonErrors
+  | ["reset_token_missing", ErrorResponse]
+  | ["invalid_reset_token", ErrorResponse]
+  | ["reset_token_expired", ErrorResponse]
+  | ["invalid_password", InvalidPasswordResponse]
   | [null, null];
 
 export type SignOutResult =
@@ -244,14 +259,35 @@ export class AuthService {
     });
   }
 
-  async sendResetPasswordEmail(signInId: string): Promise<ResetPasswordResult> {
-    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`, {});
+  async sendResetPasswordEmail(signInId: string, returnTo: string): Promise<SendResetPasswordEmailResult> {
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/send_reset_password`, { return_to: returnTo });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
         const error_response = ErrorSchema.parse(response.data);
 
         return [error_response.error as "password_not_set" | "reset_password_already_sent" | "sign_in_not_found", error_response];
+      }
+
+      return [null, null];
+    });
+  }
+
+  async resetPassword(signInId: string, token: string, password: string, passwordConfirmation: string): Promise<ResetPasswordResult> {
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/reset_password`, {
+      token,
+      password,
+      password_confirmation: passwordConfirmation,
+    });
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error_response = ErrorSchema.parse(response.data);
+
+        return [
+          error_response.error as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired" | "invalid_password",
+          response.data,
+        ];
       }
 
       return [null, null];
