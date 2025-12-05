@@ -325,10 +325,11 @@
           <u-password-field placeholder="Enter your password"
             class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
             aria-describedby="password-error"></u-password-field>
-          <u-reset-password-button text="Reset Password"
-            class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+          <u-reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500">
+          </u-reset-password-button>
           <u-error-message id="password-error" for="password"
             class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
           <u-auth-submit-button for="password" text="Sign In"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
@@ -368,6 +369,23 @@
         <u-missing-field></u-missing-field>
         <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>
+
+      <u-signin-step name="reset-password">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2 text-center">Reset Your Password</h2>
+        <p class="text-gray-600 text-sm mb-6 text-center">Enter your new password below</p>
+
+        <u-password-field for="new-password" placeholder="New password"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
+        <u-password-field for="password-confirmation" placeholder="Confirm password"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
+
+        <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-reset-password-submit text="Set New Password 123" loading-text="Resetting..."
+          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200">
+          Set new password
+        </u-reset-password-submit>
+      </u-signin-step>
     </u-signin-root>
 
     <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
@@ -389,7 +407,9 @@
           <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
           <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
         </div>
-        <u-full-profile language="en"  fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile>
+        <u-full-profile language="en"
+          fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+          country-code-display-option="icon"></u-full-profile>
         <!-- For testing -->
         <!-- <u-full-profile language="en"
           fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
