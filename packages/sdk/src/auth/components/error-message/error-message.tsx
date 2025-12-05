@@ -10,7 +10,7 @@ import { hasSlotContent } from "../../../shared/component-utils";
 })
 export class ErrorMessage {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() for!: "email" | "password" | "magicCode" | "general" | "connection";
+  @Prop() for!: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
 
   // User defined messages(translations) per error code --> TODO: maybe this should be part of config component ?
   @Prop() errorMessages?: Record<string, string>;
