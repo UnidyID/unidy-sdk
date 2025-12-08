@@ -5,8 +5,8 @@ export interface UnidyState {
   apiKey: string;
   baseUrl: string;
   locale: string;
-  isConfigured: boolean;
 
+  isConfigured: boolean;
   backendConnected: boolean;
 }
 
@@ -15,8 +15,8 @@ const initialState: UnidyState = {
   apiKey: "",
   baseUrl: "",
   locale: "en",
-  isConfigured: false,
 
+  isConfigured: false,
   backendConnected: true,
 };
 
@@ -26,7 +26,7 @@ export const unidyState = store.state;
 export const reset = store.reset;
 export const onChange: <K extends keyof UnidyState>(prop: K, cb: (value: UnidyState[K]) => void) => () => void = store.onChange;
 
-const CONFIG_TIMEOUT_MS = 5000;
+const CONFIG_TIMEOUT_MS = 1000;
 
 export function waitForConfig(): Promise<void> {
   if (unidyState.isConfigured) {
