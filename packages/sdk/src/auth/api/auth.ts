@@ -35,6 +35,7 @@ const RequiredFieldsResponseSchema = z.object({
   fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
     custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
   }),
+  sid: z.string().optional(),
 });
 
 export type ErrorResponse = z.infer<typeof ErrorSchema>;

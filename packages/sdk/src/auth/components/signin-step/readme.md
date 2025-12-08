@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property            | Attribute       | Description | Type                                          | Default     |
-| ------------------- | --------------- | ----------- | --------------------------------------------- | ----------- |
-| `alwaysRender`      | `always-render` |             | `boolean`                                     | `false`     |
-| `name` _(required)_ | `name`          |             | `"email" \| "single-login" \| "verification"` | `undefined` |
+| Property            | Attribute       | Description | Type                                                              | Default     |
+| ------------------- | --------------- | ----------- | ----------------------------------------------------------------- | ----------- |
+| `alwaysRender`      | `always-render` |             | `boolean`                                                         | `false`     |
+| `name` _(required)_ | `name`          |             | `"email" \| "missing-fields" \| "single-login" \| "verification"` | `undefined` |
 
 
 ## Methods

@@ -40,6 +40,7 @@ export class MissingFieldsSubmitButton {
 
   render() {
     if (authState.step !== "missing-fields") return null;
+
     return (
       <div>
         <button

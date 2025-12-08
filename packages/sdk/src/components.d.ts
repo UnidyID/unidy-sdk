@@ -321,7 +321,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "single-login";
+        "name": "email" | "verification" | "single-login" | "missing-fields";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -981,7 +981,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "single-login";
+        "name": "email" | "verification" | "single-login" | "missing-fields";
     }
     interface USigninStrategy {
         /**

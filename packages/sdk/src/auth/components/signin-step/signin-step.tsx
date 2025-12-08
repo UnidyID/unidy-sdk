@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification" | "single-login";
+  @Prop() name!: "email" | "verification" | "single-login" | "missing-fields";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -43,6 +43,8 @@ export class SigninStep {
       shouldRender = authState.step === "verification" || authState.step === "magic-code";
     } else if (this.name === "single-login") {
       shouldRender = authState.step === "single-login";
+    } else if (this.name === "missing-fields") {
+      shouldRender = authState.step === "missing-fields";
     }
 
     if (!shouldRender) {

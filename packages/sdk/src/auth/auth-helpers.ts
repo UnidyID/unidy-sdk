@@ -72,9 +72,13 @@ export class AuthHelpers {
       return;
     }
     if (error === "missing_required_fields") {
-      // TODO: handle missing fields flow in 1-step auth
       authStore.setMissingFields((response as RequiredFieldsResponse).fields);
       profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+
+      if ((response as RequiredFieldsResponse).sid) {
+        authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+      }
+
       authStore.setStep("missing-fields");
       authStore.setLoading(false);
       return;
