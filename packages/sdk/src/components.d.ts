@@ -146,6 +146,10 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default null
+         */
+        "removeAfterSeconds": number | null;
     }
     interface UFullProfile {
         /**
@@ -815,6 +819,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default null
+         */
+        "removeAfterSeconds"?: number | null;
     }
     interface UFullProfile {
         /**

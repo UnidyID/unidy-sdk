@@ -10,10 +10,12 @@ export interface FlashMessage {
 
 interface FlashState {
   messages: FlashMessage[];
+  autoRemoveDelay: number | null;
 }
 
 const store = createStore<FlashState>({
   messages: [],
+  autoRemoveDelay: null,
 });
 
 let idCounter = 0;
@@ -26,6 +28,11 @@ class FlashStore {
   private addMessage(text: string, variant: FlashVariant): string {
     const id = `flash-${++idCounter}`;
     store.state.messages = [...store.state.messages, { id, text, variant }];
+
+    if (store.state.autoRemoveDelay) {
+      setTimeout(() => this.remove(id), store.state.autoRemoveDelay);
+    }
+
     return id;
   }
 
