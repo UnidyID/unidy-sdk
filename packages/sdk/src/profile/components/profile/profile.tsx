@@ -13,8 +13,6 @@ import type { ProfileRaw } from "../../store/profile-store";
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-  @Prop() apiUrl?: string;
-  @Prop() apiKey?: string;
   @Prop() language?: string;
 
   private authInstance?: Auth;
