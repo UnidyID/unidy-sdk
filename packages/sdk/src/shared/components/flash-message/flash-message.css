@@ -1,3 +1,9 @@
+.u-flash-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .u-flash-message {
   display: flex;
   align-items: flex-start;

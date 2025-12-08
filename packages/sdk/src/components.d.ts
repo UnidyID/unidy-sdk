@@ -145,15 +145,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "closeButtonClassName": string;
-        /**
-          * @default ""
-         */
         "componentClassName": string;
-        /**
-          * @default ""
-         */
-        "contentClassName": string;
     }
     interface UFullProfile {
         /**
@@ -822,15 +814,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "closeButtonClassName"?: string;
-        /**
-          * @default ""
-         */
         "componentClassName"?: string;
-        /**
-          * @default ""
-         */
-        "contentClassName"?: string;
     }
     interface UFullProfile {
         /**

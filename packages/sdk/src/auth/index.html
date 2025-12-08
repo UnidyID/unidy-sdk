@@ -605,7 +605,9 @@
   </script>
 
   <script type="module">
-    import { Auth } from "/build/index.esm.js";
+    import { Auth, Flash } from "/build/index.esm.js";
+
+    window.Flash = Flash;
 
     const userSection = document.getElementById("userSection");
     const payloadOutput = document.getElementById("payloadOutput");
@@ -631,8 +633,7 @@
         }, 100);
       }
     });
-  </script>
-  <script>
+
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
       const today = new Date();
@@ -642,7 +643,7 @@
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
         age--;
       }
-    
+
       return age >= 18
         ? { valid: true, message: "" }
         : { valid: false, message: "You must be at least 18 years old." };

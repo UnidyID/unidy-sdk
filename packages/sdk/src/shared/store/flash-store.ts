@@ -3,41 +3,54 @@ import { createStore } from "@stencil/store";
 export type FlashVariant = "error" | "success" | "info";
 
 export interface FlashMessage {
+  id: string;
   text: string;
   variant: FlashVariant;
 }
 
 interface FlashState {
-  message: FlashMessage | null;
+  messages: FlashMessage[];
 }
 
 const store = createStore<FlashState>({
-  message: null,
+  messages: [],
 });
+
+let idCounter = 0;
 
 class FlashStore {
   get state() {
     return store.state;
   }
 
-  private setMessage(text: string, variant: FlashVariant) {
-    store.state.message = { text, variant };
+  private addMessage(text: string, variant: FlashVariant): string {
+    const id = `flash-${++idCounter}`;
+    store.state.messages = [...store.state.messages, { id, text, variant }];
+    return id;
   }
 
-  clear() {
-    store.state.message = null;
+  remove(id: string) {
+    store.state.messages = store.state.messages.filter((m) => m.id !== id);
   }
 
-  set info(text: string) {
-    this.setMessage(text, "info");
+  clear(variant?: FlashVariant) {
+    if (variant) {
+      store.state.messages = store.state.messages.filter((m) => m.variant !== variant);
+    } else {
+      store.state.messages = [];
+    }
   }
 
   set success(text: string) {
-    this.setMessage(text, "success");
+    this.addMessage(text, "success");
   }
 
   set error(text: string) {
-    this.setMessage(text, "error");
+    this.addMessage(text, "error");
+  }
+
+  set info(text: string) {
+    this.addMessage(text, "info");
   }
 }
 
