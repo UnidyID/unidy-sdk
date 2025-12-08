@@ -56,7 +56,7 @@ export class SendMagicCodeButton {
   }
 
   render() {
-    if (authState.step !== "magic-code" && authState.step !== "verification") {
+    if (authState.step !== "magic-code" && authState.step !== "verification" && authState.step !== "single-login") {
       return null;
     }
 

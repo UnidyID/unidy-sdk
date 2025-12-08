@@ -18,6 +18,7 @@ const ErrorSchema = z.object({
 
 const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
+  sid: z.string().optional(),
 });
 
 const SendMagicCodeErrorSchema = z.object({
@@ -51,7 +52,8 @@ export type CreateSignInResult =
   | CommonErrors
   | ["account_not_found", ErrorResponse]
   | [null, CreateSignInResponse]
-  | AuthenticateWithPasswordResult;
+  | AuthenticateWithPasswordResult
+  | SendMagicCodeResult;
 
 export type AuthenticateResultShared =
   | CommonErrors
@@ -137,9 +139,9 @@ export class AuthService {
     this.client = client;
   }
 
-  async createSignIn(email: string, password?: string): Promise<CreateSignInResult> {
+  async createSignIn(email: string, password?: string, sendMagicCode?: boolean): Promise<CreateSignInResult> {
     //
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password });
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -157,6 +159,10 @@ export class AuthService {
 
       if (password) {
         return [null, TokenResponseSchema.parse(response.data)];
+      }
+
+      if (sendMagicCode) {
+        return [null, SendMagicCodeResponseSchema.parse(response.data)];
       }
 
       return [null, CreateSignInResponseSchema.parse(response.data)];

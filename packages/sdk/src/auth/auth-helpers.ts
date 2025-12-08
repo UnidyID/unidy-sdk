@@ -12,7 +12,7 @@ export class AuthHelpers {
     this.client = client;
   }
 
-  async createSignIn(email: string, password?: string) {
+  async createSignIn(email: string, password?: string, sendMagicCode?: boolean) {
     if (!email) {
       throw new Error("Email is required");
     }
@@ -20,7 +20,7 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn(email, password);
+    const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
       this.handleAuthError(error, response);
@@ -33,6 +33,14 @@ export class AuthHelpers {
       authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
       authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
+      return;
+    }
+
+    if (sendMagicCode) {
+      authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setMagicCodeStep("sent");
+      authStore.setStep("magic-code");
+      authStore.setLoading(false);
       return;
     }
 
@@ -161,13 +169,19 @@ export class AuthHelpers {
   }
 
   async sendMagicCode() {
-    if (!authState.sid) {
+    if (!authState.sid && authState.step !== "single-login") {
       throw new Error("No sign in ID available");
     }
 
     authStore.setMagicCodeStep("requested");
     authStore.setLoading(true);
     authStore.clearErrors();
+
+    if (authState.step === "single-login") {
+      this.createSignIn(authState.email, undefined, true);
+      authStore.setLoading(false);
+      return;
+    }
 
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
