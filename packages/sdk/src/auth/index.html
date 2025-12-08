@@ -267,7 +267,22 @@
                    class="flex flex-col gap-2">
 
       <u-signin-step name="single-login">
-        <u-single-step-login></u-single-step-login>
+        <u-single-step-login>
+          <div slot="form">
+            <u-email-field placeholder="Enter your email"
+              class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
+              aria-describedby="email-error"></u-email-field>
+            <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+            <u-password-field placeholder="Enter your password"
+              class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+              aria-describedby="password-error"></u-password-field>
+            <u-reset-password-button text="Reset Password"
+              class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+            <u-error-message id="password-error" for="password"
+              class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          </div>
+        </u-single-step-login>
       </u-signin-step>             
 
       <!-- <u-signin-step name="email">

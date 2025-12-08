@@ -13,8 +13,6 @@ export class PasswordField {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Password";
 
-  @Prop() mode: "step" | "single-step" = "step";
-
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
     authStore.setPassword(target.value);
@@ -27,7 +25,7 @@ export class PasswordField {
   };
 
   render() {
-    if (this.mode === "step" && authState.step !== "verification") {
+    if (authState.step !== "single-login" && authState.step !== "verification") {
       return null;
     }
 

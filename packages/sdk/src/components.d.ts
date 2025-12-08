@@ -87,10 +87,6 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * @default "step"
-         */
-        "mode": "step" | "single-step";
-        /**
           * @default "Enter your email"
          */
         "placeholder": string;
@@ -222,10 +218,6 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-        /**
-          * @default "step"
-         */
-        "mode": "step" | "single-step";
         /**
           * @default "Enter your password"
          */
@@ -753,10 +745,6 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * @default "step"
-         */
-        "mode"?: "step" | "single-step";
-        /**
           * @default "Enter your email"
          */
         "placeholder"?: string;
@@ -889,10 +877,6 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
-        /**
-          * @default "step"
-         */
-        "mode"?: "step" | "single-step";
         /**
           * @default "Enter your password"
          */

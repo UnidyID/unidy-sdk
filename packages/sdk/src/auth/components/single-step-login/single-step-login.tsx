@@ -32,25 +32,7 @@ export class SingleStepLogin {
     if (authState.step !== "single-login") return null;
     return (
       <div>
-        <u-email-field
-          mode="single-step"
-          placeholder="Enter your email"
-          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
-          aria-describedby="email-error"
-        />
-
-        <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500" />
-
-        <u-password-field
-          mode="single-step"
-          placeholder="Enter your password"
-          class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
-          aria-describedby="password-error"
-        />
-
-        <u-reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500" />
-
-        <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500" />
+        <slot name="form" />
 
         <button
           type="button"

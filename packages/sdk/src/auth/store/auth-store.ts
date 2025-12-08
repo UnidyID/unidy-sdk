@@ -52,7 +52,7 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
   }
 };
 
-const initialStep = document.querySelector("u-single-step-login") ? "single-login" : "email";
+const initialStep = document.querySelector("u-signin-step").name ? "single-login" : "email";
 
 const initialState: AuthState = {
   step: initialStep,
