@@ -5,7 +5,7 @@ import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 import { hasSlotContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 
 @Component({
   tag: "u-profile-submit-button",
@@ -64,7 +64,7 @@ export class SubmitButton {
           aria-live="polite"
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
         >
-          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : i18n.t("buttons.submit")}
+          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : t("buttons.submit")}
         </button>
       </div>
     );

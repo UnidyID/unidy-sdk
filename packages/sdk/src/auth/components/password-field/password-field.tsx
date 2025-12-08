@@ -1,5 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
@@ -33,7 +33,7 @@ export class PasswordField {
       return null;
     }
 
-    const placeholder = i18n.t('auth.password.placeholder', { defaultValue: 'Enter your password' });
+    const placeholder = t("auth.password.placeholder", { defaultValue: "Enter your password" });
 
     return (
       <form onSubmit={this.handleSubmit}>

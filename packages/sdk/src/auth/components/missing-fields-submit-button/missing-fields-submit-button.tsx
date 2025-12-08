@@ -5,7 +5,7 @@ import { authState, authStore } from "../../store/auth-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 import type { TokenResponse } from "../../api/auth";
 import { hasSlotContent } from "../../../shared/component-utils";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 
 @Component({
   tag: "u-missing-fields-submit-button",
@@ -50,7 +50,7 @@ export class MissingFieldsSubmitButton {
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
           aria-live="polite"
         >
-          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : i18n.t("buttons.submit")}
+          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : t("buttons.submit")}
         </button>
       </div>
     );

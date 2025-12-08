@@ -1,5 +1,5 @@
 import { Component, h, Prop, State, Host } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
 
@@ -37,8 +37,8 @@ export class Passkey {
     }
 
     const isDisabled = this.disabled || authState.loading;
-    const text = i18n.t('auth.passkey.buttonText', { defaultValue: 'Sign in with Passkey' });
-    const loadingText = i18n.t('auth.passkey.loadingText', { defaultValue: 'Authenticating...' });
+    const text = t("auth.passkey.buttonText", { defaultValue: "Sign in with Passkey" });
+    const loadingText = t("auth.passkey.loadingText", { defaultValue: "Authenticating..." });
 
     return (
       <Host>

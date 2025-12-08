@@ -1,5 +1,5 @@
 import { Component, Element, h, Host, Prop } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { authState } from "../../store/auth-store";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { hasSlotContent } from "../../../shared/component-utils";
@@ -21,12 +21,12 @@ export class ErrorMessage {
       return this.errorMessages[errorCode];
     }
 
-    const translatedError = i18n.t(`errors.${errorCode}`);
+    const translatedError = t(`errors.${errorCode}`);
     if (translatedError !== `errors.${errorCode}`) {
       return translatedError;
     }
 
-    return errorCode || i18n.t('errors.unknown', { defaultValue: 'An error occurred' });
+    return errorCode || t("errors.unknown", { defaultValue: "An error occurred" });
   }
 
   render() {

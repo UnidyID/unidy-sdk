@@ -1,5 +1,5 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
 
@@ -60,17 +60,13 @@ export class SendMagicCodeButton {
     }
 
     const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
-    const text = i18n.t('auth.magicCode.buttonText', { defaultValue: 'Send Magic Code' });
-    const alreadySentText = i18n.t('auth.magicCode.alreadySentText', { defaultValue: 'Magic code already sent to your email' });
-    const sendingText = i18n.t('auth.magicCode.sendingText', { defaultValue: 'Sending...' });
+    const text = t("auth.magicCode.buttonText", { defaultValue: "Send Magic Code" });
+    const alreadySentText = t("auth.magicCode.alreadySentText", { defaultValue: "Magic code already sent to your email" });
+    const sendingText = t("auth.magicCode.sendingText", { defaultValue: "Sending..." });
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
-        {this.countdown > 0
-          ? alreadySentText
-          : authState.loading && authState.magicCodeStep === "requested"
-            ? sendingText
-            : text}
+        {this.countdown > 0 ? alreadySentText : authState.loading && authState.magicCodeStep === "requested" ? sendingText : text}
       </button>
     );
   }

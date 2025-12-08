@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, Prop, State, h } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { Auth, getUnidyClient } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
@@ -23,8 +23,9 @@ export class Profile {
 
   constructor() {
     this.effectiveLanguage = unidyState.locale;
-    unidyOnChange('locale', (lng) => {
+    unidyOnChange("locale", (lng) => {
       this.effectiveLanguage = lng;
+      this.componentWillLoad();
     });
   }
 
@@ -61,7 +62,7 @@ export class Profile {
       }
     } catch (error) {
       Sentry.captureException("Failed to fetch profile data:", error);
-      profileState.flashErrors = { error: i18n.t('errors.failedToLoadProfile') };
+      profileState.flashErrors = { error: t("errors.failedToLoadProfile") };
     }
     this.fetchingProfileData = false;
   }
@@ -87,16 +88,16 @@ export class Profile {
 
     if (authStore.state.authenticated) {
       return this.fetchingProfileData ? (
-        <div>{i18n.t('loading')}</div>
+        <div>{t("loading")}</div>
       ) : (
         <Host>
           <slot />
           {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
-          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={i18n.t('profile.updated')} />}
+          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={t("profile.updated")} />}
         </Host>
       );
     }
 
-    return <h2>{i18n.t('profile.signInToView')}</h2>;
+    return <h2>{t("profile.signInToView")}</h2>;
   }
 }

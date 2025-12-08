@@ -32,7 +32,7 @@ export class UnidyConfig {
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
 
-  @Watch('locale')
+  @Watch("locale")
   onLocaleChange(newValue: string) {
     i18n.changeLanguage(newValue);
     unidyState.locale = newValue;
@@ -100,7 +100,7 @@ export class UnidyConfig {
           }
         }
       } catch (error) {
-        Sentry.captureException("Failed to parse customTranslations", error)
+        Sentry.captureException("Failed to parse customTranslations", error);
       }
     }
   }

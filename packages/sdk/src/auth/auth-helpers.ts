@@ -4,7 +4,7 @@ import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
-import i18n from "../i18n";
+import { t } from "../i18n";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -15,7 +15,7 @@ export class AuthHelpers {
 
   async createSignIn(email: string) {
     if (!email) {
-      throw new Error(i18n.t("errors.required_field", { field: "Email" }));
+      throw new Error(t("errors.required_field", { field: "Email" }));
     }
 
     authStore.setLoading(true);
@@ -38,11 +38,11 @@ export class AuthHelpers {
 
   async authenticateWithPassword(password: string) {
     if (!authState.sid) {
-      throw new Error(i18n.t("errors.no_sign_in_id"));
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     if (!password) {
-      throw new Error(i18n.t("errors.required_field", { field: "Password" }));
+      throw new Error(t("errors.required_field", { field: "Password" }));
     }
 
     authStore.setLoading(true);
@@ -142,7 +142,7 @@ export class AuthHelpers {
 
   async sendMagicCode() {
     if (!authState.sid) {
-      throw new Error(i18n.t("errors.no_sign_in_id"));
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setMagicCodeStep("requested");
@@ -169,11 +169,11 @@ export class AuthHelpers {
 
   async authenticateWithMagicCode(code: string) {
     if (!authState.sid) {
-      throw new Error(i18n.t("errors.no_sign_in_id"));
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     if (!code) {
-      throw new Error(i18n.t("errors.magic_code_is_missing"));
+      throw new Error(t("errors.magic_code_is_missing"));
     }
 
     authStore.setLoading(true);
@@ -199,7 +199,7 @@ export class AuthHelpers {
 
   async sendResetPasswordEmail() {
     if (!authState.sid) {
-      throw new Error(i18n.t("errors.no_sign_in_id"));
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setLoading(true);

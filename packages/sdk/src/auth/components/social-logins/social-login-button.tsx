@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { authState } from "../../store/auth-store";
 import { GoogleLogo } from "./logos/google";
@@ -96,8 +96,8 @@ export class SocialLoginButton {
     }
 
     const providerName = this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
-    const text = i18n.t('auth.socialLogin.buttonText', {
-      defaultValue: 'Continue with {{provider}}',
+    const text = t("auth.socialLogin.buttonText", {
+      defaultValue: "Continue with {{provider}}",
       provider: providerName,
     });
 

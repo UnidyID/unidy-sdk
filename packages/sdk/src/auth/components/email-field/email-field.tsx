@@ -1,5 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { authStore, authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
@@ -30,7 +30,7 @@ export class EmailField {
   };
 
   render() {
-    const placeholder = i18n.t('auth.email.placeholder', { defaultValue: 'Enter your email' });
+    const placeholder = t("auth.email.placeholder", { defaultValue: "Enter your email" });
 
     return (
       <form onSubmit={this.handleSubmit}>

@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Element } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -76,7 +76,7 @@ export class Field {
           // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
           const match = fieldData.options?.find((opt: any) => opt.value === val);
           const optionTranslationKey = `fields.${this.field}.options.${val}`;
-          const translatedOptionLabel = i18n.t(optionTranslationKey);
+          const translatedOptionLabel = t(optionTranslationKey);
           const optionLabel = translatedOptionLabel !== optionTranslationKey ? translatedOptionLabel : match?.label;
           multiselectMatches.push(optionLabel ?? val);
         })
@@ -95,30 +95,30 @@ export class Field {
     }
 
     const labelTranslationKey = `fields.${this.field}.label`;
-    const translatedLabel = i18n.t(labelTranslationKey);
+    const translatedLabel = t(labelTranslationKey);
     const label = translatedLabel !== labelTranslationKey ? translatedLabel : fieldData?.label;
 
     const placeholderTranslationKey = `fields.${this.field}.placeholder`;
-    const placeholder = i18n.t(placeholderTranslationKey, { defaultValue: this.placeholder });
+    const placeholder = t(placeholderTranslationKey, { defaultValue: this.placeholder });
 
     const readonlyPlaceholderTranslationKey = `fields.${this.field}.readonlyPlaceholder`;
-    const readonlyPlaceholder = i18n.t(readonlyPlaceholderTranslationKey, { defaultValue: this.readonlyPlaceholder });
+    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, { defaultValue: this.readonlyPlaceholder });
 
-    const translatedOptions = (fieldData.options || []).map(opt => {
+    const translatedOptions = (fieldData.options || []).map((opt) => {
       const translationKey = `fields.${this.field}.options.${opt.value}`;
-      const translatedLabel = i18n.t(translationKey);
+      const translatedLabel = t(translationKey);
       const label = translatedLabel !== translationKey ? translatedLabel : opt.label;
       return { ...opt, label };
     });
 
-    const translatedRadioOptions = (fieldData.radio_options || []).map(opt => {
+    const translatedRadioOptions = (fieldData.radio_options || []).map((opt) => {
       const translationKey = `fields.${this.field}.options.${opt.value}`;
-      const translatedLabel = i18n.t(translationKey);
+      const translatedLabel = t(translationKey);
       const label = translatedLabel !== translationKey ? translatedLabel : opt.label;
       return { ...opt, label };
     });
 
-    const errorPrefix = i18n.t('errors.prefix', { defaultValue: 'ERROR: ' });
+    const errorPrefix = t("errors.prefix", { defaultValue: "ERROR: " });
 
     const isLocked = !!fieldData?.locked;
     const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";

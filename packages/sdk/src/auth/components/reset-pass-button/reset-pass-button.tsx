@@ -1,5 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
-import i18n from "../../../i18n";
+import { t } from "../../../i18n";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
 import { Flash } from "../../../shared/store/flash-store";
@@ -17,7 +17,7 @@ export class ResetPasswordButton {
     await authInstance.helpers.sendResetPasswordEmail();
 
     if (authState.resetPasswordStep === "sent") {
-      const successMessage = i18n.t('auth.resetPassword.successMessage', { defaultValue: 'Password reset email sent. Please check your inbox.' });
+      const successMessage = t("auth.resetPassword.successMessage", { defaultValue: "Password reset email sent. Please check your inbox." });
       Flash.success.addMessage(successMessage);
     }
   };
@@ -31,7 +31,7 @@ export class ResetPasswordButton {
       return null;
     }
 
-    const text = i18n.t('auth.resetPassword.buttonText', { defaultValue: 'Reset Password' });
+    const text = t("auth.resetPassword.buttonText", { defaultValue: "Reset Password" });
 
     return (
       <button type="button" onClick={this.handleClick} class={this.componentClassName}>
