@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+import { Config, ConfigChange } from "./shared/components/config/config";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -13,6 +14,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+export { Config, ConfigChange } from "./shared/components/config/config";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -76,6 +78,14 @@ export namespace Components {
           * @default ""
          */
         "baseUrl": string;
+        /**
+          * @default "en"
+         */
+        "locale": string;
+        /**
+          * @default "production"
+         */
+        "mode": "production" | "development";
     }
     interface UEmailField {
         /**
@@ -402,6 +412,10 @@ export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLSubmitButtonElement;
 }
+export interface UConfigCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUConfigElement;
+}
 export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLULogoutButtonElement;
@@ -459,7 +473,19 @@ declare global {
         prototype: HTMLUConditionalRenderElement;
         new (): HTMLUConditionalRenderElement;
     };
+    interface HTMLUConfigElementEventMap {
+        "unidyInitialized": Config;
+        "configChange": ConfigChange;
+    }
     interface HTMLUConfigElement extends Components.UConfig, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUConfigElementEventMap>(type: K, listener: (this: HTMLUConfigElement, ev: UConfigCustomEvent<HTMLUConfigElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUConfigElementEventMap>(type: K, listener: (this: HTMLUConfigElement, ev: UConfigCustomEvent<HTMLUConfigElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUConfigElement: {
         prototype: HTMLUConfigElement;
@@ -725,6 +751,16 @@ declare namespace LocalJSX {
           * @default ""
          */
         "baseUrl"?: string;
+        /**
+          * @default "en"
+         */
+        "locale"?: string;
+        /**
+          * @default "production"
+         */
+        "mode"?: "production" | "development";
+        "onConfigChange"?: (event: UConfigCustomEvent<ConfigChange>) => void;
+        "onUnidyInitialized"?: (event: UConfigCustomEvent<Config>) => void;
     }
     interface UEmailField {
         /**
