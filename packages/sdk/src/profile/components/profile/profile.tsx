@@ -13,8 +13,6 @@ import type { ProfileRaw } from "../../store/profile-store";
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-  @Prop() apiUrl?: string;
-  @Prop() apiKey?: string;
   @Prop() language?: string;
 
   private authInstance?: Auth;
@@ -28,10 +26,6 @@ export class Profile {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
       this.authInstance = await Auth.getInstance();
-      if (!this.authInstance) {
-        console.error("Auth service not initialized");
-        return;
-      }
 
       const idToken = await this.authInstance?.getToken();
 

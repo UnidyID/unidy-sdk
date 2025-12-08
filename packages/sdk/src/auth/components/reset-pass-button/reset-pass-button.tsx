@@ -14,10 +14,6 @@ export class ResetPasswordButton {
 
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     await authInstance.helpers.sendResetPasswordEmail();
 
