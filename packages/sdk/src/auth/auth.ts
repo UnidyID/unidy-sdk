@@ -3,6 +3,8 @@ import type { UnidyClient } from "../api";
 import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
 import { AuthHelpers } from "./auth-helpers";
+import { waitForConfig } from "../shared/store/unidy-store";
+import { getUnidyClient } from "./api-client";
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -55,8 +57,10 @@ export class Auth {
   } as const;
 
   static async getInstance(): Promise<Auth> {
-    while (!Auth.isInitialized()) {
-      await new Promise((r) => setTimeout(r, 10));
+    if (!Auth.isInitialized()) {
+      await waitForConfig();
+
+      return Auth.initialize(getUnidyClient());
     }
 
     return Auth.instance;

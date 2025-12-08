@@ -17,9 +17,6 @@ export class SubmitButton {
 
   async componentWillLoad() {
     this.authInstance = await Auth.getInstance();
-    if (!this.authInstance) {
-      console.error("Auth service not initialized");
-    }
   }
 
   private async onSubmit() {

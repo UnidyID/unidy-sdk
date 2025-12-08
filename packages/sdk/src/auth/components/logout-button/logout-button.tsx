@@ -14,10 +14,6 @@ export class LogoutButton {
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     const result = await authInstance.logout();
 

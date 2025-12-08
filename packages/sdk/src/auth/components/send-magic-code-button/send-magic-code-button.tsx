@@ -19,10 +19,6 @@ export class SendMagicCodeButton {
     if (this.disabled || authState.loading || this.countdown > 0) return;
 
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     const [_error, response] = await authInstance.helpers.sendMagicCode();
 
