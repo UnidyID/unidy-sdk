@@ -147,13 +147,13 @@ export namespace Components {
          */
         "closeButtonClassName": string;
         /**
-          * @default "Close"
-         */
-        "closeText": string;
-        /**
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default ""
+         */
+        "contentClassName": string;
     }
     interface UFullProfile {
         /**
@@ -238,8 +238,6 @@ export namespace Components {
         "placeholder": string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -826,13 +824,13 @@ declare namespace LocalJSX {
          */
         "closeButtonClassName"?: string;
         /**
-          * @default "Close"
-         */
-        "closeText"?: string;
-        /**
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default ""
+         */
+        "contentClassName"?: string;
     }
     interface UFullProfile {
         /**
@@ -918,8 +916,6 @@ declare namespace LocalJSX {
         "placeholder"?: string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */

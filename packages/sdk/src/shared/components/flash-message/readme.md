@@ -7,11 +7,9 @@
 
 ## Properties
 
-| Property               | Attribute            | Description | Type     | Default   |
-| ---------------------- | -------------------- | ----------- | -------- | --------- |
-| `closeButtonClassName` | `close-button-class` |             | `string` | `""`      |
-| `closeText`            | `close-text`         |             | `string` | `"Close"` |
-| `componentClassName`   | `class-name`         |             | `string` | `""`      |
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
 ----------------------------------------------
