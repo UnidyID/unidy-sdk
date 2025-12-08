@@ -1,30 +1,34 @@
-import { Component, Prop, State, h } from "@stencil/core";
+import { Component, Prop, h } from "@stencil/core";
+import { Flash, flashState } from "../../store/flash-store";
 
 @Component({
   tag: "u-flash-message",
   styleUrl: "flash-message.css",
-  shadow: true,
+  shadow: false,
 })
 export class FlashMessage {
-  @Prop() message = "";
-  @Prop() variant: "error" | "success" | "info" = "info";
-  @State() isVisible = true;
+  @Prop() closeText = "Close";
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop({ attribute: "close-button-class" }) closeButtonClassName = "";
 
-  private closeError() {
-    this.isVisible = false;
+  private handleClose() {
+    Flash.clear();
   }
 
   render() {
-    if (!this.isVisible || !this.message) {
+    const message = flashState.message;
+
+    if (!message) {
       return null;
     }
+
     return (
-      <div class={`${this.variant}-message`}>
-        <span>
-          {this.variant === "error" ? "✘" : "✓"} {this.message}
+      <div class={`u-flash-message u-flash-${message.variant} ${this.componentClassName}`} role="alert" aria-live="polite">
+        <span class="u-flash-content">
+          <slot name="content">{message.text}</slot>
         </span>
-        <button type="button" onClick={() => this.closeError()} aria-live="polite">
-          Close
+        <button type="button" class={`u-flash-close ${this.closeButtonClassName}`} onClick={() => this.handleClose()}>
+          <slot name="close">{this.closeText}</slot>
         </button>
       </div>
     );

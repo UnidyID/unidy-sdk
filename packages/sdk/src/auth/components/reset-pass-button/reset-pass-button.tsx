@@ -1,6 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
+import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-reset-password-button",
@@ -19,6 +20,10 @@ export class ResetPasswordButton {
     }
 
     await authInstance.helpers.sendResetPasswordEmail();
+
+    if (authState.resetPasswordStep === "sent") {
+      Flash.success = this.successMessage;
+    }
   };
 
   render() {
@@ -27,12 +32,9 @@ export class ResetPasswordButton {
     }
 
     return (
-      <>
-        <button type="button" onClick={this.handleClick} class={this.componentClassName}>
-          {this.text}
-        </button>
-        {authState.resetPasswordStep === "sent" && <flash-message variant="success" message={this.successMessage}  aria-live="polite"/>}
-      </>
+      <button type="button" onClick={this.handleClick} class={this.componentClassName}>
+        {this.text}
+      </button>
     );
   }
 }

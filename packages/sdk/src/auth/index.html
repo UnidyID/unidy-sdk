@@ -190,6 +190,24 @@
       background: rgba(79, 70, 229, 0.05);
     }
 
+    .u-flash-error {
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .u-flash-success {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .u-flash-info {
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+    }
+
 
     u-profile-submit-button::part(button),
     u-missing-fields-submit-button::part(button) {
@@ -218,9 +236,9 @@
 
     u-profile-submit-button,
     u-missing-fields-submit-button {
-        --spinner-font-size: 30px;
-        --spinner-color-primary: #fff;
-        --spinner-color-secondary: rgba(255, 255, 255, 0.4);
+      --spinner-font-size: 30px;
+      --spinner-color-primary: #fff;
+      --spinner-color-secondary: rgba(255, 255, 255, 0.4);
     }
 
     u-field::part(field-container--first_name) {
@@ -255,6 +273,10 @@
       </div>
     </div>
   </u-error-message>
+
+  <u-flash-message class-name="fixed top-5 right-5 z-50 w-96" message-class="rounded-lg shadow-lg"
+    close-button-class="font-medium hover:opacity-80" close-text="X">
+  </u-flash-message>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
