@@ -190,7 +190,6 @@
       background: rgba(79, 70, 229, 0.05);
     }
 
-
     u-profile-submit-button::part(button),
     u-missing-fields-submit-button::part(button) {
       display: flex;
@@ -218,9 +217,9 @@
 
     u-profile-submit-button,
     u-missing-fields-submit-button {
-        --spinner-font-size: 30px;
-        --spinner-color-primary: #fff;
-        --spinner-color-secondary: rgba(255, 255, 255, 0.4);
+      --spinner-font-size: 30px;
+      --spinner-color-primary: #fff;
+      --spinner-color-secondary: rgba(255, 255, 255, 0.4);
     }
 
     u-field::part(field-container--first_name) {
@@ -256,6 +255,8 @@
     </div>
   </u-error-message>
 
+  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="10"></u-flash-message>
+
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
 
@@ -264,21 +265,9 @@
     </div>
 
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
-                   class="flex flex-col gap-2">
+      class="flex flex-col gap-2">
 
       <u-signin-step name="email">
-        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-          aria-describedby="passkey-error-email"></u-passkey>
-        <u-error-message id="passkey-error-email" for="general"
-          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-
-        <div class="flex items-center my-4">
-          <div class="flex-1 border-t border-gray-300"></div>
-          <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-          <div class="flex-1 border-t border-gray-300"></div>
-        </div>
-
         <u-email-field placeholder="Enter your email"
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
           aria-describedby="email-error"></u-email-field>
@@ -306,14 +295,6 @@
             <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
           </u-social-login-button>
         </div>
-      </u-signin-step>
-
-      <u-signin-step name="verification">
-        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-          aria-describedby="passkey-error-verification"></u-passkey>
-        <u-error-message id="passkey-error-verification" for="general"
-          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -321,6 +302,14 @@
           <div class="flex-1 border-t border-gray-300"></div>
         </div>
 
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-describedby="passkey-error-email"></u-passkey>
+        <u-error-message id="passkey-error-email" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+      </u-signin-step>
+
+      <u-signin-step name="verification">
         <u-signin-strategy type="password">
           <u-password-field placeholder="Enter your password"
             class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
@@ -329,7 +318,7 @@
             class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
           <u-error-message id="password-error" for="password"
             class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-          <u-auth-submit-button for="password" text="Sign In"
+          <u-auth-submit-button for="password" text="Sign In with Password"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
@@ -361,7 +350,17 @@
           </u-conditional-render>
         </u-signin-strategy>
 
-        <u-error-message for="general" class-name="my-2 text-sm text-center text-red-500"></u-error-message>
+        <div class="flex items-center my-4">
+          <div class="flex-1 border-t border-gray-300"></div>
+          <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+          <div class="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
+          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+          aria-describedby="passkey-error-verification"></u-passkey>
+        <u-error-message id="passkey-error-verification" for="general"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
       </u-signin-step>
 
       <u-signin-step name="missing-fields">
@@ -585,7 +584,9 @@
   </script>
 
   <script type="module">
-    import { Auth } from "/build/index.esm.js";
+    import { Auth, Flash } from "/build/index.esm.js";
+
+    window.Flash = Flash;
 
     const userSection = document.getElementById("userSection");
     const payloadOutput = document.getElementById("payloadOutput");
@@ -611,8 +612,7 @@
         }, 100);
       }
     });
-  </script>
-  <script>
+
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
       const today = new Date();
@@ -622,7 +622,7 @@
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
         age--;
       }
-    
+
       return age >= 18
         ? { valid: true, message: "" }
         : { valid: false, message: "You must be at least 18 years old." };
