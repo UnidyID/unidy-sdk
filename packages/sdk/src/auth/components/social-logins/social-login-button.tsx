@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { authState } from "../../store/auth-store";
 import { GoogleLogo } from "./logos/google";
 import { LinkedInLogo } from "./logos/linkedin";
 import { AppleLogo } from "./logos/apple";
@@ -42,6 +43,18 @@ export class SocialLoginButton {
     return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider) && this.provider !== "unidy";
   }
 
+  private get isProviderEnabled(): boolean {
+    if (authState.step !== "verification") {
+      return true; // TODO: for now we show all providers on the email step since we don't have registration flow in place yet
+    }
+
+    if (!authState.availableLoginOptions?.social_logins) {
+      return false;
+    }
+
+    return authState.availableLoginOptions.social_logins.some((enabled) => enabled.startsWith(this.provider) || enabled === this.provider);
+  }
+
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
@@ -78,6 +91,10 @@ export class SocialLoginButton {
   }
 
   render() {
+    if (!this.isProviderEnabled) {
+      return null;
+    }
+
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">
