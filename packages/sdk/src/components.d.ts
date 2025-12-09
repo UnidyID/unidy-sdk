@@ -66,7 +66,11 @@ export namespace Components {
         "text": string;
     }
     interface UConditionalRender {
-        "is": "true" | "false";
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not": boolean;
         "when": string;
     }
     interface UConfig {
@@ -741,8 +745,12 @@ declare namespace LocalJSX {
         "text"?: string;
     }
     interface UConditionalRender {
-        "is": "true" | "false";
-        "when": string;
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not"?: boolean;
+        "when"?: string;
     }
     interface UConfig {
         /**
