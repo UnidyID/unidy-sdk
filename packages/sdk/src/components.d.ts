@@ -97,6 +97,10 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * @default "Enter your email"
          */
         "placeholder": string;
@@ -769,6 +773,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * @default "Enter your email"
          */

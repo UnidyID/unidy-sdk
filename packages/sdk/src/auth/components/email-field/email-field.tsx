@@ -12,6 +12,7 @@ export class EmailField {
   @Prop() placeholder = "Enter your email";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
+  @Prop() disabled = false;
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -29,10 +30,6 @@ export class EmailField {
   };
 
   render() {
-    if (authState.step === "verification") {
-      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
-    }
-
     return (
       <form onSubmit={this.handleSubmit}>
         <input
@@ -41,8 +38,8 @@ export class EmailField {
           value={authState.email}
           autocomplete="email"
           placeholder={this.placeholder}
-          disabled={authState.loading}
-          class={this.componentClassName}
+          disabled={this.disabled || authState.loading || authState.step === "verification"}
+          class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />
