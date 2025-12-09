@@ -48,17 +48,17 @@ class FlashStore {
     }
   }
 
-  set success(text: string) {
-    this.addMessage(text, "success");
-  }
+  success = {
+    addMessage: (text: string) => this.addMessage(text, "success"),
+  };
 
-  set error(text: string) {
-    this.addMessage(text, "error");
-  }
+  error = {
+    addMessage: (text: string) => this.addMessage(text, "error"),
+  };
 
-  set info(text: string) {
-    this.addMessage(text, "info");
-  }
+  info = {
+    addMessage: (text: string) => this.addMessage(text, "info"),
+  };
 }
 
 export const Flash = new FlashStore();

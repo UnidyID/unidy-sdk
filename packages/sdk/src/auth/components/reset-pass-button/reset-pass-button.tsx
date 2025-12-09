@@ -18,7 +18,7 @@ export class ResetPasswordButton {
     await authInstance.helpers.sendResetPasswordEmail();
 
     if (authState.resetPasswordStep === "sent") {
-      Flash.success = this.successMessage;
+      Flash.success.addMessage(this.successMessage);
     }
   };
 
