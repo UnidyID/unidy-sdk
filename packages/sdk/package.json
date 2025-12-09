@@ -2,6 +2,7 @@
   "name": "@unidy.io/sdk",
   "version": "1.0.0-alpha.4",
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
+  "homepage": "https://sdk-demo.unidy.io",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -51,11 +52,11 @@
     "typescript": "^5.0.0"
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stenciljs/component-starter.git"
+    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
   },
   "license": "MIT",
   "keywords": [
