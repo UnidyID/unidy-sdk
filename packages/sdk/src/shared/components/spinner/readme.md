@@ -86,6 +86,7 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
  - [u-field](../../../profile/components/field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
  - [u-profile-submit-button](../../../profile/components/unidy-submit-button)
+ - [u-registration-button](../../../auth/components/registration)
 
 ### Graph
 ```mermaid
@@ -94,6 +95,7 @@ graph TD;
   u-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
   u-profile-submit-button --> u-spinner
+  u-registration-button --> u-spinner
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

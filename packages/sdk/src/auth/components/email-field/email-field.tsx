@@ -29,7 +29,7 @@ export class EmailField {
   };
 
   render() {
-    if (authState.step === "verification") {
+    if (authState.step === "verification" || authState.step === "registration") {
       return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
     }
 

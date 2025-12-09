@@ -234,8 +234,6 @@ export namespace Components {
         "placeholder": string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -287,6 +285,21 @@ export namespace Components {
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
+    interface URegistrationButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "for": "email";
+        /**
+          * @default window.location.href
+         */
+        "redirectUri": string;
+        /**
+          * @default ""
+         */
+        "text": string;
+    }
     interface UResetPasswordButton {
         /**
           * @default ""
@@ -331,7 +344,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "registration";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -598,6 +611,12 @@ declare global {
         prototype: HTMLURawFieldElement;
         new (): HTMLURawFieldElement;
     };
+    interface HTMLURegistrationButtonElement extends Components.URegistrationButton, HTMLStencilElement {
+    }
+    var HTMLURegistrationButtonElement: {
+        prototype: HTMLURegistrationButtonElement;
+        new (): HTMLURegistrationButtonElement;
+    };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
     var HTMLUResetPasswordButtonElement: {
@@ -682,6 +701,7 @@ declare global {
         "u-profile": HTMLUProfileElement;
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
         "u-raw-field": HTMLURawFieldElement;
+        "u-registration-button": HTMLURegistrationButtonElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signin-root": HTMLUSigninRootElement;
@@ -910,8 +930,6 @@ declare namespace LocalJSX {
         "placeholder"?: string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -963,6 +981,21 @@ declare namespace LocalJSX {
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
+    interface URegistrationButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "for": "email";
+        /**
+          * @default window.location.href
+         */
+        "redirectUri"?: string;
+        /**
+          * @default ""
+         */
+        "text"?: string;
+    }
     interface UResetPasswordButton {
         /**
           * @default ""
@@ -1008,7 +1041,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "registration";
     }
     interface USigninStrategy {
         /**
@@ -1107,6 +1140,7 @@ declare namespace LocalJSX {
         "u-profile": UProfile;
         "u-profile-submit-button": UProfileSubmitButton;
         "u-raw-field": URawField;
+        "u-registration-button": URegistrationButton;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signin-root": USigninRoot;
@@ -1144,6 +1178,7 @@ declare module "@stencil/core" {
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
+            "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;

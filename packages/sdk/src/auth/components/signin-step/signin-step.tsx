@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification";
+  @Prop() name!: "email" | "verification" | "registration";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -36,6 +36,8 @@ export class SigninStep {
       shouldRender = authState.step === "email";
     } else if (this.name === "verification") {
       shouldRender = authState.step === "verification" || authState.step === "magic-code";
+    } else if (this.name === "registration") {
+      shouldRender = authState.step === "registration" && authState.errors.email === "account_not_found";
     }
 
     if (!shouldRender) {
