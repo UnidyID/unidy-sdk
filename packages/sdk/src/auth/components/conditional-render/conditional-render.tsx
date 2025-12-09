@@ -34,11 +34,16 @@ function isTruthy(value: unknown): boolean {
   shadow: true,
 })
 export class ConditionalRender {
-  @Prop() when: string; // condition to check
+  @Prop() when!: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
 
   private getValue(): unknown {
+    if (!this.when) {
+      console.warn("[u-conditional-render] 'when' prop is required");
+      return false;
+    }
+
     const shortcut = SEMANTIC_SHORTCUTS[this.when];
     if (shortcut) {
       return shortcut(authState);

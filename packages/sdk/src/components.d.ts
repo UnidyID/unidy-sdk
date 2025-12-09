@@ -750,7 +750,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "not"?: boolean;
-        "when"?: string;
+        "when": string;
     }
     interface UConfig {
         /**
