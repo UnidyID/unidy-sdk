@@ -17,9 +17,11 @@ export class MagicCodeField {
   private handleInput = (event: Event, index: number) => {
     const target = event.target as HTMLInputElement;
     const value = target.value.replace(/[^0-9]/g, "");
+    const sanitizedDigit = value.slice(-1);
+    target.value = sanitizedDigit;
 
     const newDigits = [...this.codeDigits];
-    newDigits[index] = value.slice(-1);
+    newDigits[index] = sanitizedDigit;
     this.codeDigits = newDigits;
 
     const fullCode = newDigits.join("");
