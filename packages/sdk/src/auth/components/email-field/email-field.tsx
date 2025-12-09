@@ -26,7 +26,7 @@ export class EmailField {
       return;
     }
 
-    (await getParentSigninStep(this.el))?.submit();
+    await getParentSigninStep(this.el)?.submit();
   };
 
   render() {

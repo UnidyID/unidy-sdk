@@ -47,6 +47,7 @@
     "magic_code_is_missing": "Magischer Code fehlt",
     "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
     "missing_id_token": "Fehlender ID-Token",
+    "missing_refresh_token": "Kein refresh token gefunden",
     "missing_required_fields": "Fehlende Pflichtfelder",
     "no_sign_in_id": "Keine Anmelde-ID verfügbar",
     "not_valid": "Nicht gültig",
@@ -65,6 +66,7 @@
     "sign_in_expired": "Anmeldung abgelaufen",
     "sign_in_not_found": "Anmeldung nicht gefunden",
     "sign_out_failed": "Abmelden fehlgeschlagen, Grund: {{reason}}",
+    "unknown": "Ein unbekannter Fehler ist aufgetreten",
     "used": "Verwendet",
     "verification_failed": "Verifizierung fehlgeschlagen"
   },

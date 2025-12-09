@@ -18,14 +18,10 @@ export class Profile {
   private authInstance?: Auth;
 
   @State() fetchingProfileData = false;
-  // This state will be used to trigger re-renders when the language changes.
-  @State() effectiveLanguage: string;
 
   constructor() {
-    this.effectiveLanguage = unidyState.locale;
-    unidyOnChange("locale", (lng) => {
-      this.effectiveLanguage = lng;
-      this.componentWillLoad();
+    unidyOnChange("locale", async (_locale) => {
+      await this.getTokenAndFetchProfile();
     });
   }
 
@@ -33,19 +29,26 @@ export class Profile {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
-      this.authInstance = await Auth.getInstance();
-
-      const idToken = await this.authInstance?.getToken();
-
-      if (idToken && typeof idToken === "string") {
-        await this.fetchProfileData(idToken as string);
-      }
+      await this.getTokenAndFetchProfile();
     }
 
     profileState.loading = false;
   }
 
+  async getTokenAndFetchProfile() {
+    this.authInstance = await Auth.getInstance();
+
+    const idToken = await this.authInstance?.getToken();
+
+    if (idToken && typeof idToken === "string") {
+      await this.fetchProfileData(idToken as string);
+    }
+  }
+
   async fetchProfileData(idToken: string) {
+    // avoid multiple requests
+    if (this.fetchingProfileData) return;
+
     this.fetchingProfileData = true;
     try {
       const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });

@@ -95,26 +95,23 @@ export class Field {
     }
 
     const labelTranslationKey = `fields.${this.field}.label`;
-    const translatedLabel = t(labelTranslationKey);
-    const label = translatedLabel !== labelTranslationKey ? translatedLabel : fieldData?.label;
+    const label = t(labelTranslationKey, { defaultValue: fieldData?.label });
 
     const placeholderTranslationKey = `fields.${this.field}.placeholder`;
-    const placeholder = t(placeholderTranslationKey, { defaultValue: this.placeholder });
+    const placeholder = t(placeholderTranslationKey, { defaultValue: this.placeholder ? this.placeholder : "" });
 
     const readonlyPlaceholderTranslationKey = `fields.${this.field}.readonlyPlaceholder`;
-    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, { defaultValue: this.readonlyPlaceholder });
+    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, { defaultValue: this.readonlyPlaceholder ? this.readonlyPlaceholder : "" });
 
     const translatedOptions = (fieldData.options || []).map((opt) => {
       const translationKey = `fields.${this.field}.options.${opt.value}`;
-      const translatedLabel = t(translationKey);
-      const label = translatedLabel !== translationKey ? translatedLabel : opt.label;
+      const label = t(translationKey, { defaultValue: opt.label });
       return { ...opt, label };
     });
 
     const translatedRadioOptions = (fieldData.radio_options || []).map((opt) => {
       const translationKey = `fields.${this.field}.options.${opt.value}`;
-      const translatedLabel = t(translationKey);
-      const label = translatedLabel !== translationKey ? translatedLabel : opt.label;
+      const label = t(translationKey, { defaultValue: opt.label });
       return { ...opt, label };
     });
 
