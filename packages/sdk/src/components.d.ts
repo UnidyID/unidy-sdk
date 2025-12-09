@@ -145,11 +145,11 @@ export namespace Components {
         /**
           * @default ""
          */
-        "message": string;
+        "componentClassName": string;
         /**
-          * @default "info"
+          * @default null
          */
-        "variant": "error" | "success" | "info";
+        "removeAfterSeconds": number | null;
     }
     interface UFullProfile {
         /**
@@ -840,11 +840,11 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "message"?: string;
+        "componentClassName"?: string;
         /**
-          * @default "info"
+          * @default null
          */
-        "variant"?: "error" | "success" | "info";
+        "removeAfterSeconds"?: number | null;
     }
     interface UFullProfile {
         /**
