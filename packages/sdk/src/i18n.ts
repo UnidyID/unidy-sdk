@@ -1,11 +1,10 @@
 import { Build } from "@stencil/core";
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
 import de from "./locales/de.json";
 import en from "./locales/en.json";
-import { unidyState } from "./shared/store/unidy-store";
+import { onChange as unidyOnChange, unidyState } from "./shared/store/unidy-store";
 
-i18n.use(initReactI18next).init({
+await i18n.init({
   lng: "en",
   fallbackLng: "en",
   debug: Build.isDev,
@@ -17,6 +16,8 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
   },
 });
+
+unidyOnChange("locale", (locale) => i18n.changeLanguage(locale));
 
 export default i18n;
 

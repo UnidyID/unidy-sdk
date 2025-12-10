@@ -32,12 +32,6 @@ export class UnidyConfig {
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
 
-  @Watch("locale")
-  onLocaleChange(newValue: string) {
-    i18n.changeLanguage(newValue);
-    unidyState.locale = newValue;
-  }
-
   componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
       console.error("baseUrl and apiKey are required");
@@ -59,7 +53,6 @@ export class UnidyConfig {
     i18n.options.fallbackLng = this.fallbackLocale;
 
     this.loadCustomTranslations();
-    i18n.changeLanguage(this.locale);
     unidyState.locale = this.locale;
 
     Auth.initialize(getUnidyClient());
