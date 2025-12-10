@@ -1,14 +1,31 @@
-import { Component, Prop, h } from "@stencil/core";
+import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
 import { unidyState } from "../../store/unidy-store";
-import { Auth, getUnidyClient } from "../../../auth";
+
+export interface Config {
+  apiKey: string;
+  baseUrl: string;
+  locale: string;
+  mode: "production" | "development";
+}
+
+export interface ConfigChange {
+  key: string;
+  value: string;
+  previousValue: string;
+}
 
 @Component({
   tag: "u-config",
   shadow: false,
 })
 export class UnidyConfig {
+  @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
+  @Prop() locale = "en";
+
+  @Event() unidyInitialized!: EventEmitter<Config>;
+  @Event() configChange!: EventEmitter<ConfigChange>;
 
   componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
@@ -18,8 +35,32 @@ export class UnidyConfig {
 
     unidyState.apiKey = this.apiKey;
     unidyState.baseUrl = this.baseUrl;
+    unidyState.locale = this.locale;
+    unidyState.isConfigured = true;
 
-    Auth.initialize(getUnidyClient());
+    this.unidyInitialized.emit({
+      apiKey: this.apiKey,
+      baseUrl: this.baseUrl,
+      locale: this.locale,
+      mode: this.mode,
+    });
+  }
+
+  // extend the list of properties that should be watched when new properties are added to the Config
+  @Watch("mode")
+  @Watch("locale")
+  onPropChange(newValue: string, oldValue: string, propName: keyof Config) {
+    if (oldValue === undefined) return;
+
+    if (propName in unidyState) {
+      (unidyState as Record<keyof Config, string>)[propName] = newValue;
+    }
+
+    this.configChange.emit({
+      key: propName,
+      value: newValue,
+      previousValue: oldValue,
+    });
   }
 
   render() {

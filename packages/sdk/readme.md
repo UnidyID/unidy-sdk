@@ -447,6 +447,34 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 -   `class-name`: A string of classes to pass to the input field.
 -   `empty-option`: If set to `true`, an empty option will be added to select fields.
 -   `placeholder`: The placeholder text for the input field.
+-   `pattern`: A custom regular expression (string) used to validate the field value.
+-   `patternErrorMessage`: A custom message shown when the `pattern` validation fails.
+-   `validationFunc`:   A custom validation function that you assign **as a JavaScript property** on the element instance (not as an HTML attribute).
+  This allows you to implement field-specific validation logic (e.g. age checks, cross-field validation, external business rules).
+  The function must return `{ valid: boolean, message: string }`.
+  If it throws an error, the component logs it but does not block the user.
+
+**Example: Custom validation**
+
+```html
+  <script>
+    // Custom validation function for date_of_birth
+    function dateOfBirthValidation(value) {
+      // logic
+
+      return age >= 18
+        ? { valid: true, message: "" }
+        : { valid: false, message: "You must be at least 18 years old." };
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const field = document.querySelector('u-field[field="date_of_birth"]');
+      if (field) {
+        field.validationFunc = dateOfBirthValidation;
+      }
+    });
+  </script>
+```
 
 **Slots:**
 
@@ -654,6 +682,9 @@ This component is best used when you need to integrate with a design system or a
 -   `radio-options`: An array of options for a radio group.
 -   `multi-select-options`: An array of options for a multi-select group.
 -   `specificPartKey`: A key used for styling specific parts of the component.
+-   `pattern`: A custom regular expression (string) used to validate the field value.
+-   `patternErrorMessage`: A custom message shown when the `pattern` validation fails.
+-   `validationFunc`: A custom validation function that you can assign directly to the element instance. This allows you to implement field-specific validation logic (e.g. age checks, cross-field logic, external rules, etc.).
 
 **Example:**
 

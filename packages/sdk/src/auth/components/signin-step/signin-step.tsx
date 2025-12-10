@@ -21,10 +21,6 @@ export class SigninStep {
     if (authState.loading) return;
 
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     if (authState.step === "email") {
       await authInstance.helpers.createSignIn(authState.email);

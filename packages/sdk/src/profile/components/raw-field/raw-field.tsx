@@ -122,7 +122,7 @@ export class RawField {
     }
 
     const externalResult = this.runExternalValidator(value);
-    console.log("External validator result:", externalResult);
+
     if (externalResult && !externalResult.valid) {
       return { valid: false, message: externalResult.message || "Invalid input." };
     }
