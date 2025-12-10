@@ -95,6 +95,7 @@ export class SocialLoginButton {
       return null;
     }
 
+    // TODO: allow users to customize already used providers with custom text and icon
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">

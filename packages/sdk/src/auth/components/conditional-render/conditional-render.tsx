@@ -1,7 +1,7 @@
 import { Component, h, Prop, Host } from "@stencil/core";
 import { authState, type AuthState } from "../../store/auth-store";
 
-const SEMANTIC_SHORTCUTS: Record<string, (state: AuthState) => unknown> = {
+const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
   // login options
   passkeyEnabled: (state) => state.availableLoginOptions?.passkey,
   passwordEnabled: (state) => state.availableLoginOptions?.password,
@@ -18,13 +18,6 @@ const SEMANTIC_SHORTCUTS: Record<string, (state: AuthState) => unknown> = {
   resetPasswordRequested: (state) => state.resetPasswordStep === "requested",
 };
 
-function getByPath(obj: unknown, path: string): unknown {
-  return path.split(".").reduce<unknown>((current, key) => {
-    if (current === null || current === undefined) return undefined;
-    return (current as Record<string, unknown>)[key];
-  }, obj);
-}
-
 function isTruthy(value: unknown): boolean {
   return Boolean(value);
 }
@@ -34,25 +27,32 @@ function isTruthy(value: unknown): boolean {
   shadow: true,
 })
 export class ConditionalRender {
-  @Prop() when!: string; // condition to check
+  @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
+  @Prop() conditionFunction?: (state: AuthState) => boolean;
 
   private getValue(): unknown {
-    if (!this.when) {
-      console.warn("[u-conditional-render] 'when' prop is required");
+    if (!this.when && !this.conditionFunction) {
+      console.warn("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
       return false;
     }
 
-    const shortcut = SEMANTIC_SHORTCUTS[this.when];
+    const shortcut = PREDEFINED_STATES[this.when];
     if (shortcut) {
       return shortcut(authState);
     }
 
-    return getByPath(authState, this.when);
+    console.error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid shortcut`);
+    return false;
   }
 
   private shouldRender(): boolean {
+    if (this.conditionFunction) {
+      const result = this.conditionFunction(authState);
+      return this.not ? !result : result;
+    }
+
     const value = this.getValue();
 
     let result: boolean;
