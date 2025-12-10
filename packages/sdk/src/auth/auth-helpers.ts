@@ -4,6 +4,7 @@ import type { ProfileRaw } from "../profile/store/profile-store";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
+import { Flash } from "../shared/store/flash-store";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -261,17 +262,17 @@ export class AuthHelpers {
     if (error === "invalid_password") {
       console.log("Temporary displaying this: ", response.details?.password);
     }
-
     if (error) {
       authStore.setFieldError("resetPassword", error);
       authStore.setLoading(false);
     } else {
-      authStore.setStep("verification");
+      authStore.setStep("email");
       authStore.setResetPasswordStep("completed");
       authStore.setResetToken(null);
       authStore.setNewPassword("");
       authStore.setConfirmPassword("");
       authStore.setLoading(false);
+      Flash.success.addMessage("Password reset successfully");
     }
   }
 
