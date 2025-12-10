@@ -14,3 +14,4 @@ export * from "./newsletter";
 export * from "./profile";
 export * from "./ticketable";
 export type * from "./components.d";
+export { Flash } from "./shared/store/flash-store";

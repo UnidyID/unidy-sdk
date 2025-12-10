@@ -97,6 +97,10 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * @default "Enter your email"
          */
         "placeholder": string;
@@ -145,11 +149,11 @@ export namespace Components {
         /**
           * @default ""
          */
-        "message": string;
+        "componentClassName": string;
         /**
-          * @default "info"
+          * @default null
          */
-        "variant": "error" | "success" | "info";
+        "removeAfterSeconds": number | null;
     }
     interface UFullProfile {
         /**
@@ -770,6 +774,10 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * @default "Enter your email"
          */
         "placeholder"?: string;
@@ -818,11 +826,11 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "message"?: string;
+        "componentClassName"?: string;
         /**
-          * @default "info"
+          * @default null
          */
-        "variant"?: "error" | "success" | "info";
+        "removeAfterSeconds"?: number | null;
     }
     interface UFullProfile {
         /**
