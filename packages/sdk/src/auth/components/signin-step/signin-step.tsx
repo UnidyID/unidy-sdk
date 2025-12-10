@@ -23,7 +23,7 @@ export class SigninStep {
     const authInstance = await Auth.getInstance();
 
     if (authState.step === "email" || authState.step === "single-login") {
-      await authInstance.helpers.createSignIn(authState.email);
+      await authInstance.helpers.createSignIn(authState.email, authState.password);
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     }

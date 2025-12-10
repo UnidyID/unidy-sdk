@@ -266,23 +266,25 @@
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
                    class="flex flex-col gap-2">
 
-      <u-signin-step name="single-login">
-        <u-single-step-login>
-          <div slot="form">
-            <u-email-field placeholder="Enter your email"
-              class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
-              aria-describedby="email-error"></u-email-field>
-            <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-            <u-password-field placeholder="Enter your password"
-              class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
-              aria-describedby="password-error"></u-password-field>
-            <u-reset-password-button text="Reset Password"
-              class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-            <u-error-message id="password-error" for="password"
-              class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-          </div>
-        </u-single-step-login>
+      <u-signin-step name="single-login">
+        <u-email-field placeholder="Enter your email"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
+          aria-describedby="email-error"></u-email-field>
+        <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-password-field placeholder="Enter your password"
+          class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+          aria-describedby="password-error"></u-password-field>
+
+        <u-reset-password-button text="Reset Password"
+          class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+
+        <u-error-message id="password-error" for="password"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-auth-submit-button class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
+
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
             <div class="flex-1 border-t border-gray-300"></div>
@@ -411,7 +413,6 @@
       </u-signin-step>
 
       <u-signin-step name="missing-fields">
-        h
         <u-missing-field></u-missing-field>
         <u-missing-fields-submit-button></u-missing-fields-submit-button>
       </u-signin-step>

@@ -59,7 +59,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for": "email" | "password";
+        "for"?: "email" | "password";
         /**
           * @default ""
          */
@@ -234,8 +234,6 @@ export namespace Components {
         "placeholder": string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -340,8 +338,6 @@ export namespace Components {
          */
         "componentClassName": string;
         "type": "password" | "magic-code";
-    }
-    interface USingleStepLogin {
     }
     interface USocialLoginButton {
         /**
@@ -642,12 +638,6 @@ declare global {
         prototype: HTMLUSigninStrategyElement;
         new (): HTMLUSigninStrategyElement;
     };
-    interface HTMLUSingleStepLoginElement extends Components.USingleStepLogin, HTMLStencilElement {
-    }
-    var HTMLUSingleStepLoginElement: {
-        prototype: HTMLUSingleStepLoginElement;
-        new (): HTMLUSingleStepLoginElement;
-    };
     interface HTMLUSocialLoginButtonElement extends Components.USocialLoginButton, HTMLStencilElement {
     }
     var HTMLUSocialLoginButtonElement: {
@@ -695,7 +685,6 @@ declare global {
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
         "u-signin-strategy": HTMLUSigninStrategyElement;
-        "u-single-step-login": HTMLUSingleStepLoginElement;
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
         "u-ticketable-list": HTMLUTicketableListElement;
@@ -741,7 +730,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for": "email" | "password";
+        "for"?: "email" | "password";
         /**
           * @default ""
          */
@@ -919,8 +908,6 @@ declare namespace LocalJSX {
         "placeholder"?: string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -1026,8 +1013,6 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
         "type": "password" | "magic-code";
     }
-    interface USingleStepLogin {
-    }
     interface USocialLoginButton {
         /**
           * @default false
@@ -1123,7 +1108,6 @@ declare namespace LocalJSX {
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
         "u-signin-strategy": USigninStrategy;
-        "u-single-step-login": USingleStepLogin;
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
         "u-ticketable-list": UTicketableList;
@@ -1161,7 +1145,6 @@ declare module "@stencil/core" {
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
-            "u-single-step-login": LocalJSX.USingleStepLogin & JSXBase.HTMLAttributes<HTMLUSingleStepLoginElement>;
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;

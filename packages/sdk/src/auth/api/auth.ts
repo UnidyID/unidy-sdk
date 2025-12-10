@@ -140,7 +140,6 @@ export class AuthService {
   }
 
   async createSignIn(email: string, password?: string, sendMagicCode?: boolean): Promise<CreateSignInResult> {
-    //
     const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
 
     return this.handleResponse(response, () => {

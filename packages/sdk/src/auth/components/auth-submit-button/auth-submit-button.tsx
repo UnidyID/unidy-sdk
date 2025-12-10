@@ -9,7 +9,7 @@ import { getParentSigninStep } from "../helpers";
 export class AuthSubmitButton {
   @Element() el!: HTMLElement;
 
-  @Prop() for!: "email" | "password";
+  @Prop() for?: "email" | "password";
   @Prop() text = "";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -21,6 +21,8 @@ export class AuthSubmitButton {
       case "email":
         return "Continue";
       case "verification":
+        return "Sign In";
+      case "single-login":
         return "Sign In";
       default:
         return "Continue";
@@ -36,6 +38,10 @@ export class AuthSubmitButton {
       return this.for === "password" && authState.magicCodeStep !== "sent";
     }
 
+    if (authState.step === "single-login") {
+      return true;
+    }
+
     return false;
   }
 
@@ -48,6 +54,10 @@ export class AuthSubmitButton {
 
     if (authState.step === "verification" && this.for === "password") {
       return authState.password === "";
+    }
+
+    if (authState.step === "single-login") {
+      return authState.password === "" || authState.email === "";
     }
 
     return false;
@@ -66,7 +76,13 @@ export class AuthSubmitButton {
 
     return (
       <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? <div><u-spinner /> Loading...</div> : this.getButtonText()}
+        {authState.loading && authState.magicCodeStep !== "requested" ? (
+          <div>
+            <u-spinner /> Loading...
+          </div>
+        ) : (
+          this.getButtonText()
+        )}
       </button>
     );
   }

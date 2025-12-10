@@ -11,7 +11,7 @@
 | -------------------- | ------------ | ----------- | ----------------------- | ----------- |
 | `componentClassName` | `class-name` |             | `string`                | `""`        |
 | `disabled`           | `disabled`   |             | `boolean`               | `false`     |
-| `for` _(required)_   | `for`        |             | `"email" \| "password"` | `undefined` |
+| `for`                | `for`        |             | `"email" \| "password"` | `undefined` |
 | `text`               | `text`       |             | `string`                | `""`        |
 
 

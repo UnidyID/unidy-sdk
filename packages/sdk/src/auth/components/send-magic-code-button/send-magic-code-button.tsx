@@ -56,7 +56,7 @@ export class SendMagicCodeButton {
       return null;
     }
 
-    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
+    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0 || authState.email === "";
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
