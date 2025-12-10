@@ -31,7 +31,6 @@ export class SigninStep {
 
   render() {
     let shouldRender = false;
-    console.log("SigninStep render check for:", this.name, "Current step:", authState.step);
 
     if (this.name === "email") {
       shouldRender = authState.step === "email";
