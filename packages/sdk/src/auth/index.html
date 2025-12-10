@@ -245,19 +245,31 @@
           base-url="http://localhost:3000"
           api-key="public-newsletter-api-key"
           custom-translations='{
-             "de": {
-               "fields": {
-                 "custom_attributes.favorite_nut": {
-                   "label": "Lieblingsnussi",
-                   "options": {
-                     "peanut": "Erdnussi",
-                     "hazelnut": "Haselnussi",
-                     "walnut": "Walnussi"
-                   }
-                 }
-               }
-             }
-           }'></u-config>
+            "de": {
+              "fields": {
+                "custom_attributes.favorite_nut": {
+                  "label": "Lieblingsnussi",
+                  "options": {
+                    "peanut": "Erdnussi",
+                    "hazelnut": "Haselnussi",
+                    "walnut": "Walnussi"
+                  }
+                }
+              }
+            },
+            "en": {
+              "fields": {
+                "custom_attributes.favorite_nut": {
+                  "label": "Favorite Nut",
+                  "options": {
+                    "peanut": "Peanut",
+                    "hazelnut": "Hazelnut",
+                    "walnut": "Walnut"
+                  }
+                }
+              }
+            }
+          }'></u-config>
 
   <u-error-message for="connection"
     class-name="fixed top-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
@@ -601,6 +613,23 @@
     </div>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // The 'appload' event is fired by Stencil when the app is fully loaded and hydrated.
+      window.addEventListener('appload', () => {
+        const spinner = document.getElementById('sdk-initial-spinner');
+        if (spinner) {
+          spinner.remove();
+        }
+      });
+    });
+
+    function changeLocale(locale) {
+      const config = document.querySelector('u-config');
+      config.setAttribute('locale', locale);
+    }
+  </script>
+
   <script type="module">
     import { Auth, Flash } from "/build/index.esm.js";
 
@@ -631,11 +660,6 @@
       }
     });
 
-    function changeLocale(locale) {
-      const config = document.querySelector('u-config');
-      config.setAttribute('locale', locale);
-    }
-
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
       const today = new Date();
@@ -659,13 +683,7 @@
     // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
     // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
     window.addEventListener("appload", () => {
-        const spinner = document.getElementById('sdk-initial-spinner');
-        if (spinner) {
-            spinner.remove();
-        }
-    });
-
-    const field = document.querySelector('u-field[field="date_of_birth"]');
+      const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
         field.validationFunc = dateOfBirthValidation;
       }

@@ -17,6 +17,10 @@ export interface ConfigChange {
   previousValue: string;
 }
 
+type TranslationTree = {
+  [key: string]: string | TranslationTree;
+};
+
 @Component({
   tag: "u-config",
   shadow: false,
@@ -25,7 +29,7 @@ export class UnidyConfig {
   @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
-  @Prop() customTranslations: string | Record<string, any> = "";
+  @Prop() customTranslations: string | Record<string, TranslationTree> = "";
   @Prop() fallbackLocale = "en";
   @Prop() locale = "en";
 

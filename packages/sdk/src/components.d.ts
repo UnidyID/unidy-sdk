@@ -84,7 +84,7 @@ export namespace Components {
         /**
           * @default ""
          */
-        "customTranslations": string | Record<string, any>;
+        "customTranslations": string | Record<string, TranslationTree>;
         /**
           * @default "en"
          */
@@ -726,7 +726,7 @@ declare namespace LocalJSX {
         /**
           * @default ""
          */
-        "customTranslations"?: string | Record<string, any>;
+        "customTranslations"?: string | Record<string, TranslationTree>;
         /**
           * @default "en"
          */
