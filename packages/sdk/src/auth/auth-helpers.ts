@@ -26,9 +26,11 @@ export class AuthHelpers {
       authStore.setFieldError("email", error);
       authStore.setLoading(false);
     } else {
+      const signInResponse = response as CreateSignInResponse;
       authStore.setStep("verification");
       authStore.setEmail(email);
-      authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setSignInId(signInResponse.sid);
+      authStore.setLoginOptions(signInResponse.login_options);
       authStore.setLoading(false);
     }
   }

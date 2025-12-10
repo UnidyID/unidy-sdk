@@ -52,6 +52,10 @@ export class SendMagicCodeButton {
   }
 
   render() {
+    if (!authState.availableLoginOptions?.magic_link) {
+      return null;
+    }
+
     if (authState.step !== "magic-code" && authState.step !== "verification") {
       return null;
     }

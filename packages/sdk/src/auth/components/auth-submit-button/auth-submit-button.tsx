@@ -28,6 +28,10 @@ export class AuthSubmitButton {
   }
 
   private shouldRender(): boolean {
+    if (!authState.availableLoginOptions?.password && this.for === "password") {
+      return false;
+    }
+
     if (authState.step === "email") {
       return this.for === "email";
     }
@@ -66,7 +70,13 @@ export class AuthSubmitButton {
 
     return (
       <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? <div><u-spinner /> Loading...</div> : this.getButtonText()}
+        {authState.loading && authState.magicCodeStep !== "requested" ? (
+          <div>
+            <u-spinner /> Loading...
+          </div>
+        ) : (
+          this.getButtonText()
+        )}
       </button>
     );
   }

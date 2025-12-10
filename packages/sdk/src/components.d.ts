@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
@@ -14,6 +15,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
@@ -66,8 +68,13 @@ export namespace Components {
         "text": string;
     }
     interface UConditionalRender {
-        "is": "true" | "false";
-        "when": string;
+        "conditionFunction"?: (state: AuthState) => boolean;
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not": boolean;
+        "when"?: string;
     }
     interface UConfig {
         /**
@@ -741,8 +748,13 @@ declare namespace LocalJSX {
         "text"?: string;
     }
     interface UConditionalRender {
-        "is": "true" | "false";
-        "when": string;
+        "conditionFunction"?: (state: AuthState) => boolean;
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not"?: boolean;
+        "when"?: string;
     }
     interface UConfig {
         /**
