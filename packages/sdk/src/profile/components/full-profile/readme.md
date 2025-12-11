@@ -11,8 +11,7 @@
 | -------------------------- | ----------------------------- | ----------- | ------------------- | ----------- |
 | `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`   |
 | `fields`                   | `fields`                      |             | `string`            | `undefined` |
-| `language`                 | `language`                    |             | `string`            | `undefined` |
-| `submitButtonText`         | `submit-button-text`          |             | `string`            | `"Submit"`  |
+| `submitButtonText`         | `submit-button-text`          |             | `string`            | `""`        |
 
 
 ## Dependencies

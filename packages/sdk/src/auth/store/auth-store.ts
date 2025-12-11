@@ -1,6 +1,6 @@
 import { createStore } from "@stencil/store";
 import type { SigninRoot } from "../components/signin-root/signin-root";
-import type { RequiredFieldsResponse } from "../api/auth";
+import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
@@ -20,6 +20,7 @@ export interface AuthState {
     passwordConfirmation: string;
   };
   missingRequiredFields?: RequiredFieldsResponse["fields"];
+  availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
   errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection", string | null>;
@@ -83,6 +84,12 @@ const initialState: AuthState = {
   globalErrors: {},
   authenticated: false,
   missingRequiredFields: undefined,
+  availableLoginOptions: {
+    magic_link: false,
+    password: false,
+    social_logins: [],
+    passkey: true,
+  },
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
 };
 
@@ -116,6 +123,10 @@ class AuthStore {
 
   setMissingFields(fields: RequiredFieldsResponse["fields"]) {
     state.missingRequiredFields = fields;
+  }
+
+  setLoginOptions(availableLoginOptions: LoginOptions) {
+    state.availableLoginOptions = availableLoginOptions;
   }
 
   setLoading(loading: boolean) {

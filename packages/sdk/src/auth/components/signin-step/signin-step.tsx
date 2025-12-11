@@ -1,7 +1,6 @@
 import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../..";
-import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-signin-step",

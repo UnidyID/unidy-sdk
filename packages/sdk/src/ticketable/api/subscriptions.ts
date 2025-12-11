@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { getWithSchema } from "./get-with-schema";
-import { type ApiClient, type ApiResponse, type PaginationMeta, PaginationMetaSchema } from "../../api";
+import { type ApiClient, type ApiResponse, PaginationMetaSchema } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -31,9 +31,6 @@ const SubscriptionSchema = z.object({
 });
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
-
-// Re-export PaginationMeta for convenience
-export type { PaginationMeta };
 
 // List response
 const SubscriptionsListResponseSchema = z.object({

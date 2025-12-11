@@ -11,8 +11,8 @@
 export { authState, authStore, missingFieldNames } from "./store/auth-store";
 export { onChange as onAuthChange } from "./store/auth-store";
 export * from "./auth";
-export * from "./api-client";
 export * from "./error-definitions";
 
 export type { AuthError, TokenPayload } from "./auth";
 export type { AuthState, AuthStep } from "./store/auth-store";
+export type { LoginOptions } from "./api/auth";

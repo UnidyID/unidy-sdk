@@ -4,7 +4,8 @@ import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
 import { AuthHelpers } from "./auth-helpers";
 import { waitForConfig } from "../shared/store/unidy-store";
-import { getUnidyClient } from "./api-client";
+import { getUnidyClient } from "../api";
+import { t } from "../i18n";
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -116,7 +117,7 @@ export class Auth {
     await this.helpers.refreshToken();
 
     if (authState.globalErrors.auth || !authState.token) {
-      return this.createAuthError("Failed to refresh token. Please sign in again.", "REFRESH_FAILED", true);
+      return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 
     return authState.token as string;
@@ -145,7 +146,7 @@ export class Auth {
     const [error, _] = await this.helpers.logout();
 
     if (error) {
-      return this.createAuthError(`Failed to sign out, reason: ${error}`, "SIGN_OUT_FAILED", false);
+      return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
 
     authStore.reset();

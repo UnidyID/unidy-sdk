@@ -1,25 +1,3 @@
-export const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  account_not_found: "Account not found",
-
-  invalid_password: "Invalid password",
-  password_not_set: "Password not set",
-  reset_password_already_sent: "Reset password email already sent",
-  password_required: "Password is required",
-  passwords_do_not_match: "Passwords do not match",
-
-  magic_code_recently_created: "Magic code already sent. If you didn't receive one, please try again in a minute",
-  magic_code_expired: "Magic code expired",
-  magic_code_used: "Magic code used",
-  magic_code_not_valid: "Magic code not valid",
-
-  // Global (flash?) error messages --> TODO: fix flash message component (make it actually usable by the client)
-  account_locked: "Account locked because of too many failed attempts. Try again later",
-  sign_in_expired: "Sign in expired. Please go back and enter your email again",
-  missing_refresh_token: "Please login again",
-};
-
-export const CONNECTION_FAILED_MESSAGE = "Unable to connect to the Unidy server";
-
 export const AUTH_ERROR_CODES = {
   EMAIL: {
     NOT_FOUND: "account_not_found",

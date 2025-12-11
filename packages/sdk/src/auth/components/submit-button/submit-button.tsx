@@ -1,33 +1,35 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
+import { t } from "../../../i18n";
 
 @Component({
   tag: "u-auth-submit-button",
   shadow: false,
 })
-export class AuthSubmitButton {
+export class SubmitButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email" | "password";
-  @Prop() text = "";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private getButtonText() {
-    if (this.text) return this.text;
-
     switch (authState.step) {
       case "email":
-        return "Continue";
+        return t("buttons.continue");
       case "verification":
-        return "Sign In";
+        return t("buttons.sign_in");
       default:
-        return "Continue";
+        return t("buttons.submit");
     }
   }
 
   private shouldRender(): boolean {
+    if (!authState.availableLoginOptions?.password && this.for === "password") {
+      return false;
+    }
+
     if (authState.step === "email") {
       return this.for === "email";
     }
@@ -56,7 +58,7 @@ export class AuthSubmitButton {
   private handleClick = async (event: Event) => {
     event.preventDefault();
 
-    (await getParentSigninStep(this.el))?.submit();
+    await getParentSigninStep(this.el)?.submit();
   };
 
   render() {
@@ -64,9 +66,21 @@ export class AuthSubmitButton {
       return null;
     }
 
+    const loadingContent = (
+      <div class="flex items-center gap-1">
+        <u-spinner /> {t("loading")}
+      </div>
+    );
+
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? <div><u-spinner /> Loading...</div> : this.getButtonText()}
+      <button
+        type="submit"
+        disabled={this.isDisabled()}
+        class={`${this.componentClassName} flex justify-center`}
+        onClick={this.handleClick}
+        aria-live="polite"
+      >
+        {authState.loading && authState.magicCodeStep !== "requested" ? loadingContent : this.getButtonText()}
       </button>
     );
   }

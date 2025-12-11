@@ -7,10 +7,16 @@
 
 ## Properties
 
+<<<<<<< HEAD
 | Property             | Attribute    | Description | Type     | Default            |
 | -------------------- | ------------ | ----------- | -------- | ------------------ |
 | `componentClassName` | `class-name` |             | `string` | `""`               |
 | `text`               | `text`       |             | `string` | `"Reset Password"` |
+=======
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
+>>>>>>> master
 
 
 ## Dependencies

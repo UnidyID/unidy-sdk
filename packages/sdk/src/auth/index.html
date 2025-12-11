@@ -241,10 +241,38 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+  <u-config
+          base-url="http://localhost:3000"
+          api-key="public-newsletter-api-key"
+          custom-translations='{
+            "de": {
+              "fields": {
+                "custom_attributes.favorite_nut": {
+                  "label": "Lieblingsnussi",
+                  "options": {
+                    "peanut": "Erdnussi",
+                    "hazelnut": "Haselnussi",
+                    "walnut": "Walnussi"
+                  }
+                }
+              }
+            },
+            "en": {
+              "fields": {
+                "custom_attributes.favorite_nut": {
+                  "label": "Favorite Nut",
+                  "options": {
+                    "peanut": "Peanut",
+                    "hazelnut": "Hazelnut",
+                    "walnut": "Walnut"
+                  }
+                }
+              }
+            }
+          }'></u-config>
 
   <u-error-message for="connection"
-    class-name="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+    class-name="fixed top-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
     <div class="flex items-start gap-2">
       <div>
         <strong class="block text-yellow-800">Connection Error</strong>
@@ -255,7 +283,7 @@
     </div>
   </u-error-message>
 
-  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="10"></u-flash-message>
+  <u-flash-message class-name="fixed bottom-5 left-5" remove-after-seconds="10"></u-flash-message>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
@@ -268,12 +296,13 @@
       class="flex flex-col gap-2">
 
       <u-signin-step name="email">
-        <u-email-field placeholder="Enter your email"
+        <u-email-field
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
           aria-describedby="email-error"></u-email-field>
+        <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render>
         <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-auth-submit-button for="email" text="Continue with Email"
+        <u-auth-submit-button for="email"
           class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
 
         <div class="flex flex-col w-full space-y-4">
@@ -283,15 +312,15 @@
             <div class="flex-1 border-t border-gray-300"></div>
           </div>
 
-          <u-social-login-button text="Continue with Google" provider="google" theme="dark"></u-social-login-button>
-          <u-social-login-button text="Continue with LinkedIn" provider="linkedin"></u-social-login-button>
-          <u-social-login-button text="Continue with Apple" provider="apple" theme="dark"></u-social-login-button>
-          <u-social-login-button text="Continue with Facebook" provider="facebook"></u-social-login-button>
-          <u-social-login-button text="Continue with Discord" provider="discord" icon-only="true"
+          <u-social-login-button provider="google" theme="dark"></u-social-login-button>
+          <u-social-login-button provider="linkedin"></u-social-login-button>
+          <u-social-login-button provider="apple" theme="dark"></u-social-login-button>
+          <u-social-login-button provider="facebook"></u-social-login-button>
+          <u-social-login-button provider="discord" icon-only="true"
             theme="dark"></u-social-login-button>
-          <u-social-login-button text="Continue with Some Provider" provider="some-provider"></u-social-login-button>
+          <u-social-login-button provider="some-provider"></u-social-login-button>
 
-          <u-social-login-button text="Continue with Unidy" provider="unidy" theme="dark" icon-only="true">
+          <u-social-login-button provider="unidy" theme="dark" icon-only="true">
             <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
           </u-social-login-button>
         </div>
@@ -322,45 +351,19 @@
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
-        <u-conditional-render when="magicCodeSent" is="false">
+        <u-conditional-render when="passkeyEnabled">
           <div class="flex items-center my-4">
             <div class="flex-1 border-t border-gray-300"></div>
             <h3 class="px-3 text-gray-600 font-medium">OR</h3>
             <div class="flex-1 border-t border-gray-300"></div>
           </div>
 
-          <u-send-magic-code-button text="Send Magic Code To Your Email"
-            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
+          <u-passkey
+            class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
+            aria-describedby="passkey-error-email"></u-passkey>
+          <u-error-message id="passkey-error-email" for="general"
+            class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
         </u-conditional-render>
-
-        <u-signin-strategy type="magic-code">
-          <u-conditional-render when="magicCodeSent" is="true">
-            <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-          </u-conditional-render>
-
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
-            aria-describedby="magic-code-error"></u-magic-code-field>
-
-          <u-error-message id="magic-code-error" for="magicCode"
-            class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
-
-          <u-conditional-render when="magicCodeSent" is="true">
-            <u-send-magic-code-button text="Resend Magic Code"
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
-          </u-conditional-render>
-        </u-signin-strategy>
-
-        <div class="flex items-center my-4">
-          <div class="flex-1 border-t border-gray-300"></div>
-          <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-          <div class="flex-1 border-t border-gray-300"></div>
-        </div>
-
-        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-          aria-describedby="passkey-error-verification"></u-passkey>
-        <u-error-message id="passkey-error-verification" for="general"
-          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
       </u-signin-step>
 
       <u-signin-step name="missing-fields">
@@ -396,25 +399,23 @@
       </div>
     </div>
 
-    <u-auth-provider>
+    <u-signed-in>
       <div class="container">
         <div class="mb-6">
-          <u-logout-button text="Logout"
+          <u-logout-button id="logout-button"
             class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
           </u-logout-button>
           <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
           <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
         </div>
-        <u-full-profile language="en"
-          fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
-          country-code-display-option="icon"></u-full-profile>
+        <u-full-profile fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile>
         <!-- For testing -->
-        <!-- <u-full-profile language="en"
+        <!-- <u-full-profile
           fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
           country-code-display-option="icon"></u-full-profile>
-        <u-profile language="de">
+        <u-profile>
           <div class="mt-6 space-y-3">
-            <u-logout-button text="Logout"
+            <u-logout-button
               class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
             </u-logout-button>
           </div>
@@ -516,9 +517,9 @@
             <u-raw-field field="custom_attributes.favorite_nut" type="select" class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm
                           bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2
                           focus:ring-blue-500 focus:border-blue-500 transition" empty-option="false" options='[
-                { "value": "erdnuss", "label": "Erdnuss" },
-                { "value": "haselnuss", "label": "Haselnuss" },
-                { "value": "walnuss", "label": "Walnuss" }
+                { "value": "peanut", "label": "Erdnuss" },
+                { "value": "hazelnut", "label": "Haselnuss" },
+                { "value": "walnut", "label": "Walnuss" }
               ]'></u-raw-field>
           </div>
           <div class="mb-4">
@@ -587,7 +588,12 @@
           </div>
         </u-profile> -->
       </div>
-    </u-auth-provider>
+    </u-signed-in>
+
+    <div class="flex gap-2 mb-2 fixed top-0 right-0 mt-2 mx-4 items-center">
+      <button class="px-3 py-1 bg-gray-300 rounded-md" onclick="changeLocale('en')">🇬🇧</button>
+      <button class="px-3 py-1 bg-gray-300 rounded-md" onclick="changeLocale('de')">🇩🇪</button>
+    </div>
   </div>
 
   <script>
@@ -600,6 +606,11 @@
         }
       });
     });
+
+    function changeLocale(locale) {
+      const config = document.querySelector('u-config');
+      config.setAttribute('locale', locale);
+    }
   </script>
 
   <script type="module">
@@ -611,6 +622,7 @@
     const payloadOutput = document.getElementById("payloadOutput");
     const message = document.getElementById("message");
     const signinRoot = document.getElementById("sign-in-root");
+    const logoutButton = document.getElementById('logout-button');
 
     const auth = await Auth.getInstance();
 
@@ -632,6 +644,10 @@
       }
     });
 
+    logoutButton.addEventListener('logout', () => {
+      console.log('User logged out successfully');
+    });
+
     // Custom validation function for date_of_birth
     function dateOfBirthValidation(value) {
       const today = new Date();
@@ -647,10 +663,22 @@
         : { valid: false, message: "You must be at least 18 years old." };
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
+    function customConditionFunction(state) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(state.email);
+    }
+
+    // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
+    // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
+    window.addEventListener("appload", () => {
       const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
         field.validationFunc = dateOfBirthValidation;
+      }
+
+      const customConditionEl = document.getElementById('custom-condition-example');
+      if (customConditionEl) {
+        customConditionEl.conditionFunction = customConditionFunction;
       }
     });
   </script>

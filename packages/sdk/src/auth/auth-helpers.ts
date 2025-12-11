@@ -1,10 +1,11 @@
 import { authStore, authState } from "../auth/store/auth-store";
 import type { CreateSignInResponse, PasskeyOptionsResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
-import type { ProfileRaw } from "../profile/store/profile-store";
+import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
 import { Flash } from "../shared/store/flash-store";
+import { t } from "../i18n";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -15,7 +16,7 @@ export class AuthHelpers {
 
   async createSignIn(email: string) {
     if (!email) {
-      throw new Error("Email is required");
+      throw new Error(t("errors.required_field", { field: "Email" }));
     }
 
     authStore.setLoading(true);
@@ -27,20 +28,22 @@ export class AuthHelpers {
       authStore.setFieldError("email", error);
       authStore.setLoading(false);
     } else {
+      const signInResponse = response as CreateSignInResponse;
       authStore.setStep("verification");
       authStore.setEmail(email);
-      authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setSignInId(signInResponse.sid);
+      authStore.setLoginOptions(signInResponse.login_options);
       authStore.setLoading(false);
     }
   }
 
   async authenticateWithPassword(password: string) {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     if (!password) {
-      throw new Error("Password is missing");
+      throw new Error(t("errors.required_field", { field: "Password" }));
     }
 
     authStore.setLoading(true);
@@ -140,7 +143,7 @@ export class AuthHelpers {
 
   async sendMagicCode() {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setMagicCodeStep("requested");
@@ -167,11 +170,11 @@ export class AuthHelpers {
 
   async authenticateWithMagicCode(code: string) {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     if (!code) {
-      throw new Error("Magic code is missing");
+      throw new Error(t("errors.magic_code_is_missing"));
     }
 
     authStore.setLoading(true);
@@ -197,7 +200,7 @@ export class AuthHelpers {
 
   async sendResetPasswordEmail() {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setLoading(true);

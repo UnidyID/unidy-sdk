@@ -7,9 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default |
-| -------------------- | ------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name` |             | `string` | `""`    |
+| Property             | Attribute              | Description | Type     | Default |
+| -------------------- | ---------------------- | ----------- | -------- | ------- |
+| `componentClassName` | `class-name`           |             | `string` | `""`    |
+| `removeAfterSeconds` | `remove-after-seconds` |             | `number` | `null`  |
 
 
 ## Dependencies

@@ -1,0 +1,78 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Enter your email"
+    },
+    "magicCode": {
+      "alreadySentText": "Magic code already sent to your email",
+      "buttonText": "Send Magic Code",
+      "sendingText": "Sending..."
+    },
+    "passkey": {
+      "buttonText": "Sign in with Passkey",
+      "loadingText": "Authenticating..."
+    },
+    "password": {
+      "placeholder": "Enter your password"
+    },
+    "resetPassword": {
+      "buttonText": "Reset Password",
+      "successMessage": "Password reset email sent. Please check your inbox."
+    },
+    "socialLogin": {
+      "buttonText": "Continue with {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Close",
+    "continue": "Continue",
+    "logout": "Logout",
+    "sign_in": "Sign In",
+    "submit": "Submit"
+  },
+  "errors": {
+    "account_locked": "Account locked",
+    "account_not_found": "Account not found",
+    "authentication_failed": "Authentication failed",
+    "bad_request": "Bad request",
+    "connection_failed": "Unable to connect to the Unidy server",
+    "expired": "Expired",
+    "failedToLoadProfile": "Failed to load profile data. Please check configuration.",
+    "invalid_id_token": "Invalid ID token",
+    "invalid_passkey": "Invalid passkey",
+    "invalid_password": "Invalid password",
+    "invalid_refresh_token": "Invalid refresh token",
+    "invalid_required_fields_payload": "Invalid required fields payload",
+    "invalidResponseFormat": "Invalid response format",
+    "magic_code_is_missing": "Magic code is missing",
+    "magic_code_recently_created": "Magic code recently created",
+    "missing_id_token": "Missing ID token",
+    "missing_refresh_token": "No refresh token present",
+    "missing_required_fields": "Missing required fields",
+    "no_sign_in_id": "No sign in ID available",
+    "not_valid": "Not valid",
+    "password_not_set": "Password not set",
+    "passkey_cancelled": "Passkey authentication cancelled",
+    "passkey_error": "An unknown passkey error occurred",
+    "passkey_invalid_state": "Passkey invalid state",
+    "passkey_not_supported": "Passkey not supported",
+    "passkey_security_error": "Passkey security error",
+    "prefix": "ERROR: ",
+    "refresh_failed": "Failed to refresh token. Please sign in again.",
+    "refresh_token_revoked": "Refresh token revoked",
+    "required_field": "{{field}} is required",
+    "reset_password_already_sent": "Reset password already sent",
+    "schema_validation_error": "Schema validation error",
+    "sign_in_expired": "Sign in expired",
+    "sign_in_not_found": "Sign in not found",
+    "sign_out_failed": "Failed to sign out, reason: {{reason}}",
+    "unknown": "An unknown error occurred",
+    "used": "Used",
+    "verification_failed": "Verification failed"
+  },
+  "loading": "Loading...",
+  "profile": {
+    "signInToView": "Please sign in to view your profile",
+    "updated": "Profile is updated"
+  }
+}

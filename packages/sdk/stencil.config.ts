@@ -13,6 +13,7 @@ export const config: Config = {
       esmLoaderPath: "../loader",
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
+        { src: "locales", dest: "locales" },
       ],
     },
     { type: "dist-custom-elements" },

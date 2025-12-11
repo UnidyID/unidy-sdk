@@ -13,9 +13,9 @@ export class SigninStrategy {
     let shouldRender = false;
 
     if (this.type === "password") {
-      shouldRender = authState.step === "verification";
+      shouldRender = authState.step === "verification" && authState.availableLoginOptions?.password;
     } else if (this.type === "magic-code") {
-      shouldRender = authState.step === "magic-code";
+      shouldRender = authState.step === "magic-code" && authState.availableLoginOptions?.magic_link;
     }
 
     if (!shouldRender) {
