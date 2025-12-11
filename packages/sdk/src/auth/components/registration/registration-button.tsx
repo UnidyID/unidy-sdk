@@ -1,6 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { authState, authStore } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 import { unidyState } from "../../../shared/store/unidy-store";
 
 @Component({
@@ -41,8 +40,6 @@ export class RegistrationButton {
     if (authState.errors.email === "account_not_found" && authState.step === "registration") {
       window.location.href = this.getAuthUrl();
     }
-
-    (await getParentSigninStep(this.el))?.submit();
   };
 
   render() {
@@ -54,13 +51,7 @@ export class RegistrationButton {
       <>
         <slot name="registration-content" />
         <button type="submit" class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-          {authState.loading && authState.magicCodeStep !== "requested" ? (
-            <div>
-              <u-spinner /> Loading...
-            </div>
-          ) : (
-            this.getButtonText()
-          )}
+          {this.getButtonText()}
         </button>
       </>
     );
