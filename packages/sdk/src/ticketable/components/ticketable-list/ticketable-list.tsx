@@ -1,5 +1,5 @@
 import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { ApiClient, type PaginationMeta } from "../../../api";
+import { type PaginationMeta, UnidyClient } from "../../../api";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import { enUS } from "date-fns/locale/en-US";
@@ -8,10 +8,11 @@ import { fr } from "date-fns/locale/fr";
 import { nlBE } from "date-fns/locale/nl-BE";
 import { ro } from "date-fns/locale/ro";
 
-import { type Ticket, TicketsService } from "../../api/tickets";
-import { type Subscription, SubscriptionsService } from "../../api/subscriptions";
+import { type Ticket } from "../../api/tickets";
+import { type Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import {unidyState} from "../../../shared/store/unidy-store";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -29,14 +30,8 @@ export class TicketableList {
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
+  @State() instance: UnidyClient | null = null;
   @Prop() paginationMeta: PaginationMeta | null = null;
-
-  // TODO: pull from config
-  @Prop() baseUrl?: string = "http://localhost:3000";
-  // TODO: pull from config
-  @Prop() apiKey?: string = "public-newsletter-api-key";
-  // TODO: pull from config
-  @Prop() locale = "en-US";
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
@@ -73,12 +68,6 @@ export class TicketableList {
   private async loadData() {
     this.loading = true;
 
-    if (!this.baseUrl || !this.apiKey) {
-      this.error = "[u-ticketable-list] baseUrl and apiKey are required";
-      this.loading = false;
-      return;
-    }
-
     if (!this.ticketableType) {
       this.error = "[u-ticketable-list] ticketable-type attribute is required";
       this.loading = false;
@@ -92,8 +81,7 @@ export class TicketableList {
     }
 
     try {
-      const apiClient = new ApiClient(this.baseUrl, this.apiKey);
-      const service = this.ticketableType === "ticket" ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
+      const service = this.ticketableType === "ticket" ? this.getUnidyClient().tickets : this.getUnidyClient().subscriptions;
 
       const response = await service.list(
         {},
@@ -126,6 +114,20 @@ export class TicketableList {
       this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
     }
+  }
+
+  getUnidyClient(): UnidyClient {
+    if (!unidyState.isConfigured) {
+      throw new Error(
+        "Config not initialized. Ensure <u-config> is loaded before making API calls by using waitForConfig() to wait for initialization.",
+      );
+    }
+
+    if (!this.instance) {
+      this.instance = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
+    }
+
+    return this.instance;
   }
 
   private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {
@@ -169,9 +171,9 @@ export class TicketableList {
         let finalValue: string;
 
         if (typeof value === "object" && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[this.locale] || de });
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || de });
         } else if (typeof value === "number" && key === "price") {
-          finalValue = new Intl.NumberFormat(this.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
+          finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
           finalValue = value.toFixed(2);
         } else if (value != null) {
