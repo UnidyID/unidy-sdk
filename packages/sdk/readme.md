@@ -126,7 +126,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   </u-signin-root>
 
   <!-- 3. This profile view is automatically shown to logged-in users -->
-  <u-auth-provider>
+  <u-signed-in>
     <h2>Welcome!</h2>
     <u-profile>
       <u-field field="first_name" render-default-label="true"></u-field>
@@ -134,12 +134,12 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <u-profile-submit-button>Save Changes</u-profile-submit-button>
     </u-profile>
     <u-logout-button>Sign Out</u-logout-button>
-  </u-auth-provider>
+  </u-signed-in>
 
   <!-- These are alternative implementations of the profile: -->
 
   <!-- 3.1 Full Profile Component: You can define specific fields. -->
-  <u-auth-provider>
+  <u-signed-in>
     <div class="mb-6">
       <u-logout-button text="Logout"
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -148,10 +148,10 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile language="en" fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
-  </u-auth-provider>
+  </u-signed-in>
 
   <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
-   <u-auth-provider>
+   <u-signed-in>
     <div class="mb-6">
       <u-logout-button text="Logout"
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -160,7 +160,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
-   </u-auth-provider>
+   </u-signed-in>
 
 </body>
 </html>
@@ -221,7 +221,7 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 
     <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
 
-    <u-auth-provider>
+    <u-signed-in>
         <u-ticketable-list ticketable-type="ticket" limit="5">
             <template>
                 <div>
@@ -235,7 +235,7 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
                 <u-pagination-button direction="next"></u-pagination-button>
             </div>
         </u-ticketable-list>
-    </u-auth-provider>
+    </u-signed-in>
 
 </body>
 </html>
@@ -258,7 +258,7 @@ This required component configures the SDK with your Unidy instance details.
 -   `fallback-locale`: The fallback language to use if a translation is not available in the current locale. Defaults to `en`.
 -   `custom-translations`: A JSON string or object containing custom translations. See the [Internationalization (i18n)](#internationalization-i18n) section for more details.
 
-#### `<u-auth-provider>`
+#### `<u-signed-in>`
 
 This component acts as a gatekeeper for authenticated content. It automatically renders its child elements if the user has a valid session, and hides them otherwise. All components that require an authenticated context, such as `<u-profile>`, must be placed inside it.
 
@@ -495,7 +495,7 @@ A utility component that renders its children only when a specific condition is 
 
 #### `<u-full-profile>`
 
-This component renders a complete profile form that allows users to view and edit their profile data. It also includes the `<u-submit-button>`. The component must be placed inside a `<u-auth-provider>`. Internally, it renders one or more `<u-field>` components. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
+This component renders a complete profile form that allows users to view and edit their profile data. It also includes the `<u-submit-button>`. The component must be placed inside a `<u-signed-in>`. Internally, it renders one or more `<u-field>` components. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
 
 **Attributes:**
 
@@ -507,7 +507,7 @@ This component renders a complete profile form that allows users to view and edi
 
 #### `<u-profile>`
 
-This component renders a form for users to view and edit their profile data. It must be placed inside a `<u-auth-provider>`.
+This component renders a form for users to view and edit their profile data. It must be placed inside a `<u-signed-in>`.
 
 **Attributes:**
 
