@@ -32,13 +32,11 @@ export class ConditionalRender {
   @Prop() not = false;
   @Prop() conditionFunction?: (state: AuthState) => boolean;
 
-  private getValue(): unknown {
-    const shortcut = PREDEFINED_STATES[this.when];
-    if (shortcut) {
-      return shortcut(authState);
-    }
+  private evaluatePredefinedState(): unknown {
+    const predefinedFunction = PREDEFINED_STATES[this.when];
+    if (predefinedFunction) return predefinedFunction(authState);
 
-    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid shortcut`);
+    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid predefined state`);
   }
 
   private shouldRender(): boolean {
@@ -52,7 +50,7 @@ export class ConditionalRender {
       return this.not ? !result : result;
     }
 
-    const value = this.getValue();
+    const value = this.evaluatePredefinedState();
 
     let result: boolean;
 
