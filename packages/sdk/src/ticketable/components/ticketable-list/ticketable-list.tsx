@@ -1,25 +1,43 @@
 import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { ApiClient, type PaginationMeta } from "../../../api";
+import { ApiClient } from "../../../api";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
-import { enUS } from "date-fns/locale/en-US";
 import { de } from "date-fns/locale/de";
-import { fr } from "date-fns/locale/fr";
-import { nlBE } from "date-fns/locale/nl-BE";
-import { ro } from "date-fns/locale/ro";
 
 import { type Ticket, TicketsService } from "../../api/tickets";
 import { type Subscription, SubscriptionsService } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import { Auth } from "../../../auth";
+import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
 
-const LOCALES: Record<string, Locale> = {
-  "en-US": enUS,
-  de: de,
-  fr: fr,
-  "nl-BE": nlBE,
-  ro: ro,
-};
+const LOCALES: Record<string, Locale> = {};
+
+async function loadLocales() {
+  // TODO: This should be pulled into a shared component
+  await Promise.all([
+    !LOCALES.en &&
+      import("date-fns/locale/en-GB").then((module) => {
+        LOCALES.en = module.enGB;
+      }),
+    !LOCALES.de &&
+      import("date-fns/locale/de").then((module) => {
+        LOCALES.de = module.de;
+      }),
+    !LOCALES.fr &&
+      import("date-fns/locale/fr").then((module) => {
+        LOCALES.fr = module.fr;
+      }),
+    !LOCALES.nl_be &&
+      import("date-fns/locale/nl-BE").then((module) => {
+        LOCALES.nl_be = module.nlBE;
+      }),
+    !LOCALES.ro &&
+      import("date-fns/locale/ro").then((module) => {
+        LOCALES.ro = module.ro;
+      }),
+  ]);
+}
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList {
@@ -54,6 +72,9 @@ export class TicketableList {
 
   async componentWillLoad() {
     await waitForConfig();
+    loadLocales().catch((err) => {
+      console.error("[u-ticketable-list] Failed to load locales, falling back to 'de'", err);
+    });
   }
 
   // TODO[LOGGING]: Log this to console (use shared logger)
