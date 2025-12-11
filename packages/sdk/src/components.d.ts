@@ -11,7 +11,6 @@ import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
-import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
 export { Config, ConfigChange } from "./shared/components/config/config";
@@ -19,7 +18,6 @@ export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
-export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
     interface EmailField {
@@ -234,8 +232,6 @@ export namespace Components {
         "placeholder": string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -366,14 +362,6 @@ export namespace Components {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -384,26 +372,18 @@ export namespace Components {
          */
         "limit": number;
         /**
-          * @default "en-US"
-         */
-        "locale": string;
-        /**
           * @default 1
          */
         "page": number;
-        /**
-          * @default null
-         */
-        "paginationMeta": PaginationMeta | null;
         /**
           * @default false
          */
         "skeletonAllText"?: boolean;
         "skeletonCount"?: number;
         /**
-          * @default null
+          * @default createPaginationStore()
          */
-        "store": PaginationStore | null;
+        "store": PaginationStore;
         "target"?: string;
         "ticketableType": "ticket" | "subscription";
     }
@@ -910,8 +890,6 @@ declare namespace LocalJSX {
         "placeholder"?: string;
     }
     interface UProfile {
-        "apiKey"?: string;
-        "apiUrl"?: string;
         /**
           * @default ""
          */
@@ -1042,14 +1020,6 @@ declare namespace LocalJSX {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -1060,26 +1030,18 @@ declare namespace LocalJSX {
          */
         "limit"?: number;
         /**
-          * @default "en-US"
-         */
-        "locale"?: string;
-        /**
           * @default 1
          */
         "page"?: number;
-        /**
-          * @default null
-         */
-        "paginationMeta"?: PaginationMeta | null;
         /**
           * @default false
          */
         "skeletonAllText"?: boolean;
         "skeletonCount"?: number;
         /**
-          * @default null
+          * @default createPaginationStore()
          */
-        "store"?: PaginationStore | null;
+        "store"?: PaginationStore;
         "target"?: string;
         "ticketableType": "ticket" | "subscription";
     }

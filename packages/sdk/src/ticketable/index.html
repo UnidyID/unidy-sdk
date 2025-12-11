@@ -1,22 +1,35 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <title>Unidy Tickets &amp; Subscriptions Demo</title>
 
-    <script type="module" src="/build/ticketable.esm.js"></script>
-    <script nomodule src="/build/ticketable.js"></script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Unidy Tickets &amp; Subscriptions Demo</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+  <link rel="stylesheet" href="/css/sdk.css">
 
-  <body class="p-8 bg-gray-50 min-h-screen">
-    <h1 class="text-4xl font-bold text-gray-900 mb-8">My Tickets</h1>
+  <script type="module" src="/build/sdk.esm.js"></script>
+  <script nomodule src="/build/sdk.js"></script>
 
-    <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0;state=inactive" container-class="grid grid-cols-2 gap-4" limit="1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-8 bg-gray-50 min-h-screen">
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-8">My Tickets</h1>
+
+  <u-conditional-render when="authenticated" is="false">
+    <h2>Well fuck, you're not authenticated, click here</h2>
+    <a href="/auth">Login</a>
+  </u-conditional-render>
+
+  <u-auth-provider>
+    <u-ticketable-list ticketable-type="ticket" filter="category_id=ea992407-6cc3-43a4-b953-34609e2f4069"
+      container-class="grid grid-cols-2 gap-4" limit="4">
       <template>
-        <div class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+        <div
+          class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
           <div class="flex items-start justify-between p-6">
             <div class="flex-1">
               <h2 class="text-2xl font-bold text-gray-900 mb-4">
@@ -47,11 +60,8 @@
               </div>
             </div>
 
-            <a
-              unidy-attr
-              unidy-attr-href="{{button_cta_url}}"
-              class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
-            >
+            <a unidy-attr unidy-attr-href="{{button_cta_url}}" target="_blank" rel="noopener noreferrer"
+              class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap">
               View Details
             </a>
           </div>
@@ -61,33 +71,41 @@
 
     <div class="flex items-center justify-between mt-12 mb-6">
       <h2 class="text-3xl font-bold text-gray-900">My Tickets (Table View)</h2>
-      <select
-        id="state-filter"
-        class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      >
+      <select id="state-filter"
+        class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         <option value="">All States</option>
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
     </div>
 
-    <u-ticketable-list
-      id="tickets-list"
-      ticketable-type="ticket"
-      filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0"
-      target="#tickets-table-body"
-      limit="10"
-      skeleton-all-text="true"
-    >
+    <u-ticketable-list id="tickets-list" ticketable-type="ticket"
+      filter="category_id=ea992407-6cc3-43a4-b953-34609e2f4069" target="#tickets-table-body" limit="5"
+      skeleton-all-text="true">
       <div class="overflow-x-auto">
         <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Title</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Starts</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Ends</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Action</th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Title
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Starts
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Ends
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Price
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                Action
+              </th>
             </tr>
           </thead>
 
@@ -95,17 +113,17 @@
         </table>
 
         <div class="flex items-center gap-2 mt-4">
-          <u-pagination-button
-            direction="prev"
-            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-          >
+          <u-pagination-button direction="prev"
+            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400">
             <span slot="icon">⬅️</span>
           </u-pagination-button>
           <u-pagination-page custom-class="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
-          <u-pagination-button
-            direction="next"
-            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-          ></u-pagination-button>
+          <u-pagination-button direction="next"
+            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400">
+            <span slot="icon">
+              Next
+            </span>
+          </u-pagination-button>
         </div>
       </div>
 
@@ -132,30 +150,33 @@
             </div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap">
-            <a
-              unidy-attr
-              unidy-attr-href="{{button_cta_url}}"
-              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
-            >
+            <a unidy-attr unidy-attr-href="{{button_cta_url}}" target="_blank" rel="noopener noreferrer"
+              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap">
               View Details
             </a>
           </td>
         </tr>
       </template>
     </u-ticketable-list>
+  </u-auth-provider>
 
-    <script>
-      document.getElementById('state-filter').addEventListener('change', e => {
-        const list = document.getElementById('tickets-list');
-        const params = new URLSearchParams(list.getAttribute('filter').replace(/;/g, '&'));
+  <script>
+    document
+      .getElementById("state-filter")
+      .addEventListener("change", (e) => {
+        const list = document.getElementById("tickets-list");
+        const params = new URLSearchParams(
+          list.getAttribute("filter").replace(/;/g, "&")
+        );
         if (e.target.value) {
-          params.set('state', e.target.value);
+          params.set("state", e.target.value);
         } else {
-          params.delete('state');
+          params.delete("state");
         }
 
-        list.setAttribute('filter', params.toString().replace(/&/g, ';'));
+        list.setAttribute("filter", params.toString().replace(/&/g, ";"));
       });
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>
