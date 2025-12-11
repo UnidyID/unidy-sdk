@@ -33,21 +33,20 @@ export class ConditionalRender {
   @Prop() conditionFunction?: (state: AuthState) => boolean;
 
   private getValue(): unknown {
-    if (!this.when && !this.conditionFunction) {
-      console.warn("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
-      return false;
-    }
-
     const shortcut = PREDEFINED_STATES[this.when];
     if (shortcut) {
       return shortcut(authState);
     }
 
-    console.error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid shortcut`);
-    return false;
+    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid shortcut`);
   }
 
   private shouldRender(): boolean {
+    if (!this.when && !this.conditionFunction) {
+      console.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
+      return false;
+    }
+
     if (this.conditionFunction) {
       const result = this.conditionFunction(authState);
       return this.not ? !result : result;
