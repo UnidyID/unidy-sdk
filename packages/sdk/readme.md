@@ -15,7 +15,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
   - [Login Flow Components](#login-flow-components)
   - [Profile Components](#profile-components)
   - [Newsletter Components](#newsletter-components)
-  - [Ticket Components](#ticket-components)
+  - [Ticket & Subscription Components](#ticket--subscription-components)
 - [API Reference](#api-reference)
   - [Auth Class](#auth-class)
   - [Types](#types)
@@ -126,7 +126,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   </u-signin-root>
 
   <!-- 3. This profile view is automatically shown to logged-in users -->
-  <u-auth-provider>
+  <u-signed-in>
     <h2>Welcome!</h2>
     <u-profile>
       <u-field field="first_name" render-default-label="true"></u-field>
@@ -134,12 +134,12 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <u-profile-submit-button>Save Changes</u-profile-submit-button>
     </u-profile>
     <u-logout-button>Sign Out</u-logout-button>
-  </u-auth-provider>
+  </u-signed-in>
 
   <!-- These are alternative implementations of the profile: -->
 
   <!-- 3.1 Full Profile Component: You can define specific fields. -->
-  <u-auth-provider>
+  <u-signed-in>
     <div class="mb-6">
       <u-logout-button text="Logout"
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -148,10 +148,10 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile language="en" fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
-  </u-auth-provider>
+  </u-signed-in>
 
   <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
-   <u-auth-provider>
+   <u-signed-in>
     <div class="mb-6">
       <u-logout-button text="Logout"
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -160,7 +160,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
-   </u-auth-provider>
+   </u-signed-in>
 
 </body>
 </html>
@@ -206,7 +206,40 @@ This example demonstrates how to implement a newsletter subscription form using 
 ```
 ### Quick Start: Ticket implementation
 
-Ticket implementation documentation is under development and will be available in a future release.
+This example demonstrates how to list tickets and subscriptions using the Unidy SDK.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unidy Ticketable Demo</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.css">
+</head>
+<body>
+
+    <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+
+    <u-signed-in>
+        <u-ticketable-list ticketable-type="ticket" limit="5">
+            <template>
+                <div>
+                    <ticketable-value name="title"></ticketable-value>
+                    <ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+                </div>
+            </template>
+            <div slot="pagination">
+                <u-pagination-button direction="prev"></u-pagination-button>
+                <u-pagination-page></u-pagination-page>
+                <u-pagination-button direction="next"></u-pagination-button>
+            </div>
+        </u-ticketable-list>
+    </u-signed-in>
+
+</body>
+</html>
+```
 
 ## Components
 
@@ -225,7 +258,7 @@ This required component configures the SDK with your Unidy instance details.
 -   `fallback-locale`: The fallback language to use if a translation is not available in the current locale. Defaults to `en`.
 -   `custom-translations`: A JSON string or object containing custom translations. See the [Internationalization (i18n)](#internationalization-i18n) section for more details.
 
-#### `<u-auth-provider>`
+#### `<u-signed-in>`
 
 This component acts as a gatekeeper for authenticated content. It automatically renders its child elements if the user has a valid session, and hides them otherwise. All components that require an authenticated context, such as `<u-profile>`, must be placed inside it.
 
@@ -462,7 +495,7 @@ A utility component that renders its children only when a specific condition is 
 
 #### `<u-full-profile>`
 
-This component renders a complete profile form that allows users to view and edit their profile data. It also includes the `<u-submit-button>`. The component must be placed inside a `<u-auth-provider>`. Internally, it renders one or more `<u-field>` components. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
+This component renders a complete profile form that allows users to view and edit their profile data. It also includes the `<u-submit-button>`. The component must be placed inside a `<u-signed-in>`. Internally, it renders one or more `<u-field>` components. To style the input fields, use the styling options and shadow parts available for `<u-field>`. See the [Styling](#styling) section and the [`<u-field>`](#u-field) documentation for details.
 
 **Attributes:**
 
@@ -474,7 +507,7 @@ This component renders a complete profile form that allows users to view and edi
 
 #### `<u-profile>`
 
-This component renders a form for users to view and edit their profile data. It must be placed inside a `<u-auth-provider>`.
+This component renders a form for users to view and edit their profile data. It must be placed inside a `<u-signed-in>`.
 
 **Attributes:**
 
@@ -592,9 +625,58 @@ Renders a button to submit the newsletter subscription form.
 -   `api-key` (required): `"your-api-key"`
 -   `class-name`: A string of classes to pass to the button.
 
-### Ticket Components
+### Ticket & Subscription Components
 
-Ticket component documentation is under development and will be available in a future release.
+The `ticketable` components and API allow you to fetch and display lists of tickets and subscriptions.
+
+#### `<u-ticketable-list>`
+
+This component fetches and renders a list of tickets or subscriptions. It requires a `<template>` element as a child to define the layout for each item in the list.
+
+**Attributes:**
+
+-   `ticketable-type` (required): The type of item to fetch. Can be `ticket` or `subscription`.
+-   `limit`: The number of items to fetch per page. Defaults to `10`.
+-   `page`: The current page to fetch. Defaults to `1`.
+-   `filter`: A string to filter the results. The format is `key=value;key2=value2`.
+-   `container-class`: A string of classes to pass to the container element.
+-   `target`: A CSS selector for an element to render the list into. If provided, the component will render the list into the target element instead of its own host.
+-   `skeleton-count`: The number of skeleton loaders to display while loading. Defaults to the `limit`.
+-   `skeleton-all-text`: If set to `true`, all text nodes in the template will be replaced with skeleton loaders.
+
+**Slots:**
+
+-   The default slot should contain a `<template>` element that defines the layout for each item.
+-   `pagination`: A slot for pagination components.
+
+**Inside the template:**
+
+-   `<ticketable-value>`: This component is used inside the template to display a value from the ticket or subscription object.
+    -   `name` (required): The name of the attribute to display (e.g., `title`, `starts_at`).
+    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`).
+    -   `format`: A string to format the value (e.g., `Price: {{value}}`).
+    -   `default`: A default value to display if the attribute is not present.
+
+#### `<u-pagination-page>`
+
+Displays the current page and the total number of pages.
+
+**Attributes:**
+
+-   `custom-class`: A string of classes to pass to the span element.
+
+#### `<u-pagination-button>`
+
+Renders a button to navigate to the previous or next page.
+
+**Attributes:**
+
+-   `direction` (required): The direction of the button. Can be `prev` or `next`.
+-   `custom-class`: A string of classes to pass to the button element.
+
+**Slots:**
+
+-   `icon`: Allows you to provide a custom icon for the button.
 
 ## API Reference
 
@@ -647,6 +729,20 @@ Returns the email address that was used during the sign-in flow.
 
 Logs the user out by invalidating the session and clearing all stored tokens.
 
+### Ticketable API
+
+The SDK provides two service classes for interacting with the `ticketable` API: `TicketsService` and `SubscriptionsService`.
+
+#### `TicketsService`
+
+-   `list(args: object, params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>>`: Fetches a paginated list of tickets.
+-   `get(args: { id: string }): Promise<ApiResponse<Ticket>>`: Fetches a single ticket by its ID.
+
+#### `SubscriptionsService`
+
+-   `list(args: object, params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>>`: Fetches a paginated list of subscriptions.
+-   `get(args: { id: string }): Promise<ApiResponse<Subscription>>`: Fetches a single subscription by its ID.
+
 ### Types
 
 #### `TokenPayload`
@@ -656,6 +752,93 @@ An object representing the decoded JWT payload. It contains standard claims like
 #### `AuthError`
 
 An error object returned on failed authentication operations. It includes a `code` property with a specific error identifier (e.g., `REFRESH_FAILED`) and a `requiresReauth` boolean indicating if the user needs to sign in again.
+
+#### `UserProfile`
+
+An object representing a user's profile. Each field in the profile is an object with a `value` property and additional metadata.
+
+| Name | Type | Description |
+|---|---|---|
+| `salutation` | `object` | The user's salutation (e.g., Mr., Ms.). |
+| `first_name` | `object` | The user's first name. |
+| `last_name` | `object` | The user's last name. |
+| `email` | `object` | The user's email address. |
+| `phone_number` | `object` | The user's phone number. |
+| `company_name` | `object` | The user's company name. |
+| `address_line_1` | `object` | The first line of the user's address. |
+| `address_line_2` | `object` | The second line of the user's address. |
+| `city` | `object` | The city of the user's address. |
+| `postal_code` | `object` | The postal code of the user's address. |
+| `country_code` | `object` | The country code of the user's address. |
+| `date_of_birth` | `object` | The user's date of birth. |
+| `preferred_language` | `object` | The user's preferred language. |
+| `custom_attributes` | `Record<string, object>` | A record of custom attributes. |
+
+#### `NewsletterSubscription`
+
+An object representing a newsletter subscription.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | `number` | The unique identifier of the subscription. |
+| `email` | `string` | The email address of the subscriber. |
+| `newsletter_internal_name` | `string` | The internal name of the newsletter. |
+| `preference_identifiers` | `string[]` | A list of preference identifiers. |
+| `preference_token` | `string` | A token for managing preferences. |
+| `confirmed_at` | `string \| null` | The date the subscription was confirmed. |
+
+#### `Subscription`
+
+An object representing a subscription.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | `string` | The unique identifier of the subscription. |
+| `title` | `string` | The title of the subscription. |
+| `text` | `string` | The description of the subscription. |
+| `payment_frequency` | `string \| null` | The payment frequency of the subscription. |
+| `metadata` | `Record<string, unknown> \| null` | Additional metadata for the subscription. |
+| `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the subscription to a wallet. |
+| `state` | `string` | The state of the subscription. |
+| `reference` | `string` | A reference for the subscription. |
+| `payment_state` | `string \| null` | The payment state of the subscription. |
+| `currency` | `string \| null` | The currency of the subscription price. |
+| `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
+| `created_at` | `Date` | The creation date of the subscription. |
+| `updated_at` | `Date` | The last update date of the subscription. |
+| `starts_at` | `Date \| null` | The start date of the subscription. |
+| `ends_at` | `Date \| null` | The end date of the subscription. |
+| `next_payment_at` | `Date \| null` | The date of the next payment. |
+| `price` | `number` | The price of the subscription. |
+| `user_id` | `string` | The ID of the user who owns the subscription. |
+| `subscription_category_id` | `string` | The ID of the subscription category. |
+
+#### `Ticket`
+
+An object representing a ticket.
+
+| Name | Type | Description |
+|---|---|---|
+| `id` | `string` | The unique identifier of the ticket. |
+| `title` | `string` | The title of the ticket. |
+| `text` | `string \| null` | The description of the ticket. |
+| `reference` | `string` | A reference for the ticket. |
+| `metadata` | `Record<string, unknown> \| null` | Additional metadata for the ticket. |
+| `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the ticket to a wallet. |
+| `state` | `string` | The state of the ticket. |
+| `payment_state` | `string \| null` | The payment state of the ticket. |
+| `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
+| `info_banner` | `string \| null` | An informational banner for the ticket. |
+| `seating` | `string \| null` | Seating information for the ticket. |
+| `venue` | `string \| null` | The venue for the ticket. |
+| `currency` | `string \| null` | The currency of the ticket price. |
+| `starts_at` | `Date` | The start date of the ticket. |
+| `ends_at` | `Date \| null` | The end date of the ticket. |
+| `created_at` | `Date` | The creation date of the ticket. |
+| `updated_at` | `Date` | The last update date of the ticket. |
+| `price` | `number` | The price of the ticket. |
+| `user_id` | `string` | The ID of the user who owns the ticket. |
+| `ticket_category_id` | `string` | The ID of the ticket category. |
 
 ## Styling
 

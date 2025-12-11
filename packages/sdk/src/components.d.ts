@@ -46,12 +46,6 @@ export namespace Components {
         "apiUrl": string;
         "componentClassName"?: string;
     }
-    interface UAuthProvider {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-    }
     interface UAuthSubmitButton {
         /**
           * @default ""
@@ -294,6 +288,12 @@ export namespace Components {
          */
         "disabled": boolean;
     }
+    interface USignedIn {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
     interface USigninRoot {
         /**
           * @default ""
@@ -337,14 +337,6 @@ export namespace Components {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -354,10 +346,6 @@ export namespace Components {
           * @default 10
          */
         "limit": number;
-        /**
-          * @default "en-US"
-         */
-        "locale": string;
         /**
           * @default 1
          */
@@ -425,12 +413,6 @@ declare global {
     var HTMLSubmitButtonElement: {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
-    };
-    interface HTMLUAuthProviderElement extends Components.UAuthProvider, HTMLStencilElement {
-    }
-    var HTMLUAuthProviderElement: {
-        prototype: HTMLUAuthProviderElement;
-        new (): HTMLUAuthProviderElement;
     };
     interface HTMLUAuthSubmitButtonElement extends Components.UAuthSubmitButton, HTMLStencilElement {
     }
@@ -581,6 +563,12 @@ declare global {
         prototype: HTMLUSendMagicCodeButtonElement;
         new (): HTMLUSendMagicCodeButtonElement;
     };
+    interface HTMLUSignedInElement extends Components.USignedIn, HTMLStencilElement {
+    }
+    var HTMLUSignedInElement: {
+        prototype: HTMLUSignedInElement;
+        new (): HTMLUSignedInElement;
+    };
     interface HTMLUSigninRootElementEventMap {
         "authEvent": TokenResponse;
         "errorEvent": { error: string };
@@ -633,7 +621,6 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "submit-button": HTMLSubmitButtonElement;
-        "u-auth-provider": HTMLUAuthProviderElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
@@ -655,6 +642,7 @@ declare global {
         "u-raw-field": HTMLURawFieldElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
+        "u-signed-in": HTMLUSignedInElement;
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
         "u-signin-strategy": HTMLUSigninStrategyElement;
@@ -687,12 +675,6 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
         "onErrorEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
         "onSuccessEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
-    }
-    interface UAuthProvider {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
     }
     interface UAuthSubmitButton {
         /**
@@ -939,6 +921,12 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
     }
+    interface USignedIn {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
     interface USigninRoot {
         /**
           * @default ""
@@ -982,14 +970,6 @@ declare namespace LocalJSX {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -999,10 +979,6 @@ declare namespace LocalJSX {
           * @default 10
          */
         "limit"?: number;
-        /**
-          * @default "en-US"
-         */
-        "locale"?: string;
         /**
           * @default 1
          */
@@ -1027,7 +1003,6 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "newsletter-checkbox": NewsletterCheckbox;
         "submit-button": SubmitButton;
-        "u-auth-provider": UAuthProvider;
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
@@ -1049,6 +1024,7 @@ declare namespace LocalJSX {
         "u-raw-field": URawField;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
+        "u-signed-in": USignedIn;
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
         "u-signin-strategy": USigninStrategy;
@@ -1064,7 +1040,6 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
-            "u-auth-provider": LocalJSX.UAuthProvider & JSXBase.HTMLAttributes<HTMLUAuthProviderElement>;
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
@@ -1086,6 +1061,7 @@ declare module "@stencil/core" {
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
+            "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
