@@ -66,15 +66,21 @@ export class AuthSubmitButton {
       return null;
     }
 
+    const loadingContent = (
+      <div class="flex items-center gap-1">
+        <u-spinner /> {t("loading")}
+      </div>
+    );
+
     return (
-      <button type="submit" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {authState.loading && authState.magicCodeStep !== "requested" ? (
-          <div>
-            <u-spinner /> {t("loading")}
-          </div>
-        ) : (
-          this.getButtonText()
-        )}
+      <button
+        type="submit"
+        disabled={this.isDisabled()}
+        class={`${this.componentClassName} flex justify-center`}
+        onClick={this.handleClick}
+        aria-live="polite"
+      >
+        {authState.loading && authState.magicCodeStep !== "requested" ? loadingContent : loadingContent}
       </button>
     );
   }
