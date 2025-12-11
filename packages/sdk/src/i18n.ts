@@ -4,7 +4,7 @@ import de from "./locales/de.json";
 import en from "./locales/en.json";
 import { onChange as unidyOnChange, unidyState } from "./shared/store/unidy-store";
 
-await i18n.init({
+i18n.init({
   lng: "en",
   fallbackLng: "en",
   debug: Build.isDev,
