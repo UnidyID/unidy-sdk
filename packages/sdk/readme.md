@@ -20,6 +20,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
   - [Auth Class](#auth-class)
   - [Types](#types)
 - [Styling](#styling)
+- [Internationalization (i18n)](#internationalization-i18n)
 - [Advanced Usage: `<u-raw-field>`](#advanced-usage-u-raw-field)
 
 ## Prerequisites
@@ -219,6 +220,10 @@ This required component configures the SDK with your Unidy instance details.
 
 -   `base-url` (required): The base URL of your Unidy instance.
 -   `api-key` (required): Your application's API key.
+-   `mode`: The mode of the SDK. Can be `production` or `development`. Defaults to `production`.
+-   `locale`: The language to use for the SDK. Defaults to `en`.
+-   `fallback-locale`: The fallback language to use if a translation is not available in the current locale. Defaults to `en`.
+-   `custom-translations`: A JSON string or object containing custom translations. See the [Internationalization (i18n)](#internationalization-i18n) section for more details.
 
 #### `<u-auth-provider>`
 
@@ -706,6 +711,47 @@ u-field::part(input_field) {
 |                             | `social-login-button-content`     | The container for the button's content.                                |
 |                             | `social-login-button-text`        | The text within the button.                                            |
 | `<u-spinner>`               | `spinner`                         | The inner rotating `<div>` element of the spinner.                     |
+
+## Internationalization (i18n)
+
+The SDK uses `i18next` for internationalization. You can provide your own translations for any text in the SDK by using the `custom-translations` attribute on the `<u-config>` component.
+
+The value of this attribute can be a JSON string or a JavaScript object. The keys of the object should be language codes (e.g., "en", "de"), and the values should be nested objects representing the translation keys.
+
+**Example:**
+
+```html
+<u-config
+  base-url="http://localhost:3000"
+  api-key="public-newsletter-api-key"
+  custom-translations='{
+    "de": {
+      "fields": {
+        "custom_attributes.favorite_nut": {
+          "label": "Lieblingsnuss",
+          "options": {
+            "peanut": "Erdnuss",
+            "hazelnut": "Haselnuss",
+            "walnut": "Walnuss"
+          }
+        }
+      }
+    },
+    "en": {
+      "fields": {
+        "custom_attributes.favorite_nut": {
+          "label": "Favorite Nut",
+          "options": {
+            "peanut": "Peanut",
+            "hazelnut": "Hazelnut",
+            "walnut": "Walnut"
+          }
+        }
+      }
+    }
+  }'
+></u-config>
+```
 
 ## Advanced Usage: `<u-raw-field>`
 
