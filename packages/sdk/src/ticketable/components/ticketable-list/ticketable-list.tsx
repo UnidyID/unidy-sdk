@@ -1,8 +1,7 @@
 import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
-
 import { getUnidyClient } from "../../../auth/api-client";
 
+import type { PaginationMeta } from "../../../api";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import { enUS } from "date-fns/locale/en-US";
