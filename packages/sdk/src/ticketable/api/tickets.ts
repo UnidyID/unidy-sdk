@@ -53,9 +53,22 @@ export class TicketsService {
   list: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
   get: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
-  constructor(private client: ApiClient) {
-    this.list = getWithSchema(this.client, TicketsListResponseSchema, (_args: unknown) => "/api/sdk/v1/tickets", TicketsListParamsSchema);
+  constructor(
+    private client: ApiClient,
+    private idToken: string,
+  ) {
+    this.list = getWithSchema(
+      this.client,
+      this.idToken,
+      TicketsListResponseSchema,
+      (_args: unknown) => "/api/sdk/v1/tickets",
+      TicketsListParamsSchema,
+    );
 
-    this.get = getWithSchema(this.client, TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
+    this.get = getWithSchema(this.client, this.idToken, TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
+  }
+
+  setIdToken(idToken: string) {
+    this.idToken = idToken;
   }
 }

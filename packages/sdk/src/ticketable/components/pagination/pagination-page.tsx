@@ -13,7 +13,7 @@ export class PaginationPage {
   private store: PaginationStore | null = null;
   private unsubscribe: (() => void) | null = null;
 
-  componentDidLoad() {
+  componentWillLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
       console.warn("TicketableList component not found");

@@ -4,6 +4,7 @@ import type * as z from "zod";
 
 export function getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
   client: ApiClient,
+  idToken: string,
   returnSchema: z.ZodSchema<TReturn>,
   urlBuilder: (args: TArgs) => string,
   paramSchema?: z.ZodSchema<TParams>,
@@ -22,7 +23,7 @@ export function getWithSchema<TReturn, TArgs extends object, TParams = undefined
     }
 
     const fullUrl = `${baseUrl}${queryString}`;
-    const response = await client.get<unknown>(fullUrl);
+    const response = await client.get<unknown>(fullUrl, { "X-ID-Token": idToken });
 
     if (!response.success || !response.data) {
       return response as ApiResponse<TReturn>;

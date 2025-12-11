@@ -52,14 +52,27 @@ export class SubscriptionsService {
   list: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
   get: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
 
-  constructor(private client: ApiClient) {
+  constructor(
+    private client: ApiClient,
+    private idToken: string,
+  ) {
     this.list = getWithSchema(
       this.client,
+      this.idToken,
       SubscriptionsListResponseSchema,
       (_args: unknown) => "/api/sdk/v1/subscriptions",
       SubscriptionsListParamsSchema,
     );
 
-    this.get = getWithSchema(this.client, SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
+    this.get = getWithSchema(
+      this.client,
+      this.idToken,
+      SubscriptionSchema,
+      (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`,
+    );
+  }
+
+  setIdToken(idToken: string) {
+    this.idToken = idToken;
   }
 }

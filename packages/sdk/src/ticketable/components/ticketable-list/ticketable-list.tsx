@@ -29,14 +29,7 @@ export class TicketableList {
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
-  @Prop() paginationMeta: PaginationMeta | null = null;
-
-  // TODO: pull from config
-  @Prop() baseUrl?: string = "http://localhost:3000";
-  // TODO: pull from config
-  @Prop() apiKey?: string = "public-newsletter-api-key";
-  // TODO: pull from config
-  @Prop() locale = "en-US";
+  @Prop() store: PaginationStore = createPaginationStore();
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
@@ -59,10 +52,8 @@ export class TicketableList {
     await this.loadData();
   }
 
-  @Prop() store: PaginationStore | null = null;
-
   async componentWillLoad() {
-    this.store = createPaginationStore();
+    await waitForConfig();
   }
 
   // TODO[LOGGING]: Log this to console (use shared logger)
@@ -73,8 +64,8 @@ export class TicketableList {
   private async loadData() {
     this.loading = true;
 
-    if (!this.baseUrl || !this.apiKey) {
-      this.error = "[u-ticketable-list] baseUrl and apiKey are required";
+    if (!unidyState.baseUrl || !unidyState.apiKey) {
+      this.error = "[u-ticketable-list] baseUrl and apiKey are required in the unidy-store";
       this.loading = false;
       return;
     }
@@ -91,9 +82,27 @@ export class TicketableList {
       return;
     }
 
+    // TODO: Add a simple shared way of doing this
+    const auth = await Auth.getInstance();
+    if (!auth) {
+      this.error = "[u-ticketable-list] Auth instance not found";
+      this.loading = false;
+      return;
+    }
+
+    // TODO: Handle auth on change THAT SHOULD EXIST ON THE AUTH INSTANCE
+
+    const idToken = await auth.getToken();
+    if (typeof idToken !== "string") {
+      this.error = "[u-ticketable-list] Failed to get ID token";
+      this.loading = false;
+      return;
+    }
+
     try {
-      const apiClient = new ApiClient(this.baseUrl, this.apiKey);
-      const service = this.ticketableType === "ticket" ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
+      const apiClient = new ApiClient(unidyState.baseUrl, unidyState.apiKey);
+      const service =
+        this.ticketableType === "ticket" ? new TicketsService(apiClient, idToken) : new SubscriptionsService(apiClient, idToken);
 
       const response = await service.list(
         {},
@@ -114,12 +123,7 @@ export class TicketableList {
       }
 
       this.items = response.data.results;
-      this.paginationMeta = response.data.meta;
-
-      // Update the store with pagination data
-      if (this.store) {
-        this.store.state.paginationMeta = response.data.meta;
-      }
+      this.store.state.paginationMeta = response.data.meta;
 
       this.loading = false;
     } catch (err) {
@@ -169,9 +173,9 @@ export class TicketableList {
         let finalValue: string;
 
         if (typeof value === "object" && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[this.locale] || de });
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || de });
         } else if (typeof value === "number" && key === "price") {
-          finalValue = new Intl.NumberFormat(this.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
+          finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
           finalValue = value.toFixed(2);
         } else if (value != null) {

@@ -14,7 +14,7 @@ export class PaginationButton {
   private store: PaginationStore | null = null;
   private unsubscribe: (() => void) | null = null;
 
-  componentDidLoad() {
+  componentWillLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
       console.warn("TicketableList component not found");
@@ -75,7 +75,9 @@ export class PaginationButton {
           aria-label={isPrev ? "Previous page" : "Next page"}
           class={this.customClass}
         >
-          <slot name="icon"><span aria-hidden="true">{icon}</span></slot>
+          <slot name="icon">
+            <span aria-hidden="true">{icon}</span>
+          </slot>
         </button>
       </Host>
     );
