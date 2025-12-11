@@ -1,5 +1,5 @@
 import { UnidyClient } from "../api";
-import { unidyState } from "../shared/store/unidy-store";
+import { unidyState } from "./store/unidy-store";
 
 let instance: UnidyClient | null = null;
 
