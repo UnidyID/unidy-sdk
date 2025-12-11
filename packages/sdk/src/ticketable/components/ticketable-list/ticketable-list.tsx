@@ -8,8 +8,8 @@ import { fr } from "date-fns/locale/fr";
 import { nlBE } from "date-fns/locale/nl-BE";
 import { ro } from "date-fns/locale/ro";
 
-import { type Ticket } from "../../api/tickets";
-import { type Subscription } from "../../api/subscriptions";
+import type { Ticket } from "../../api/tickets";
+import type { Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
 import {unidyState} from "../../../shared/store/unidy-store";
