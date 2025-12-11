@@ -2,7 +2,8 @@ import * as Sentry from "@sentry/browser";
 import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
 import i18n from "../../../i18n";
 import { unidyState } from "../../store/unidy-store";
-import {Auth, getUnidyClient} from "../../../auth";
+import { Auth } from "../../../auth";
+import { getUnidyClient } from "../../../api";
 
 export interface Config {
   apiKey: string;
@@ -86,10 +87,7 @@ export class UnidyConfig {
   private loadCustomTranslations() {
     if (this.customTranslations) {
       try {
-        const translations =
-          typeof this.customTranslations === "string"
-            ? JSON.parse(this.customTranslations)
-            : this.customTranslations;
+        const translations = typeof this.customTranslations === "string" ? JSON.parse(this.customTranslations) : this.customTranslations;
 
         for (const lang in translations) {
           if (Object.prototype.hasOwnProperty.call(translations, lang)) {

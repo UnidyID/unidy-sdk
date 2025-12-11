@@ -1,5 +1,5 @@
 import { Component, Element, h } from "@stencil/core";
-import { getUnidyClient } from "../../../auth";
+import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";

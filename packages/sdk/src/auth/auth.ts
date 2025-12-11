@@ -4,7 +4,7 @@ import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
 import { AuthHelpers } from "./auth-helpers";
 import { waitForConfig } from "../shared/store/unidy-store";
-import { getUnidyClient } from "../shared/api-client";
+import { getUnidyClient } from "../api";
 import { t } from "../i18n";
 
 export interface TokenPayload {

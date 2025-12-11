@@ -13,7 +13,6 @@ export * from "./shared";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
 
-
 export class UnidyClient {
   private apiClient: ApiClient;
 
@@ -35,3 +34,21 @@ export class UnidyClient {
     this.subscriptions = new SubscriptionsService(this.apiClient);
   }
 }
+
+let instance: UnidyClient | null = null;
+
+function getUnidyClient(): UnidyClient {
+  if (!unidyState.isConfigured) {
+    throw new Error(
+      "Config not initialized. Ensure <u-config> is loaded before making API calls by using waitForConfig() to wait for initialization.",
+    );
+  }
+
+  if (!instance) {
+    instance = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
+  }
+
+  return instance;
+}
+
+export { getUnidyClient };
