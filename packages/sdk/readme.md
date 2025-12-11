@@ -147,7 +147,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile language="en" fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
-  </u-auth-provider> 
+  </u-auth-provider>
 
   <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
    <u-auth-provider>
@@ -157,7 +157,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       </u-logout-button>
       <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
-    </div>    
+    </div>
     <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
    </u-auth-provider>
 
@@ -391,16 +391,67 @@ Renders a button to submit the current sign-in step.
 
 #### `<u-conditional-render>`
 
-A utility component that renders its children only when a specific condition is met.
+A utility component that renders its children only when a specific condition is met. You can use either the `when` attribute with predefined states or a custom `conditionFunction` for more complex logic.
 
 **Attributes:**
 
--   `when` (required): The name of the state variable to check. (`"magicCodeSent"`, `"loading"`, `"authenticated"`).
--   `is` (required): The value the state variable should have for the content to be rendered. (`"true"`, `"false"`).
+- `when`: The name of a predefined state to check. Available states:
+  - `passkeyEnabled` - True if passkey login is enabled
+  - `passwordEnabled` - True if password login is enabled
+  - `magicCodeEnabled` - True if magic code login is enabled
+  - `socialLoginsEnabled` - True if any social login providers are enabled
+  - `loading` - True while an auth operation is in progress
+  - `authenticated` - True if the user is authenticated
+  - `magicCodeSent` - True if a magic code has been sent or requested
+  - `magicCodeRequested` - True if a magic code has been requested
+  - `resetPasswordSent` - True if a password reset has been sent or requested
+  - `resetPasswordRequested` - True if a password reset has been requested
+- `is`: Optional value the state variable should have for the content to be rendered. Accepts `"true"`, `"enabled"`, `"false"`, `"disabled"`, or an exact value to compare.
+- `not`: If set to `true`, inverts the condition result. Defaults to `false`.
+- `conditionFunction`: A custom function assigned **as a JavaScript property** (not as an HTML attribute) that receives the full `AuthState` and returns a boolean. Use this for custom conditional logic.
+
+> **Note:** Either `when` or `conditionFunction` must be provided.
 
 **Slots:**
 
 - The default slot allows you to provide the content to be rendered conditionally.
+
+**Example: Using predefined states**
+
+```html
+<u-conditional-render when="authenticated">
+  <p>Welcome back!</p>
+</u-conditional-render>
+
+<u-conditional-render when="magicCodeSent" is="false">
+  <u-send-magic-code-button text="Send Magic Code"></u-send-magic-code-button>
+</u-conditional-render>
+
+<u-conditional-render when="loading" not>
+  <p>Content shown when not loading</p>
+</u-conditional-render>
+```
+
+**Example: Using conditionFunction**
+
+```html
+<u-conditional-render id="valid-email-indicator">
+  <span class="text-green-600">✓ Valid email entered</span>
+</u-conditional-render>
+
+<script>
+  // Use 'appload' event - fired by Stencil when components are fully hydrated
+  window.addEventListener("appload", () => {
+    const el = document.getElementById('valid-email-indicator');
+    if (el) {
+      el.conditionFunction = (state) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(state.email);
+      };
+    }
+  });
+</script>
+```
 
 ### Profile Components
 
@@ -610,7 +661,7 @@ For more advanced customization, you can target internal elements using CSS Shad
 **Example using `class-name`:**
 
 ```html
-<u-email-field 
+<u-email-field
   placeholder="Enter your email"
   class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
 </u-email-field>

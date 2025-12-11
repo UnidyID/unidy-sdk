@@ -16,3 +16,4 @@ export * from "./error-definitions";
 
 export type { AuthError, TokenPayload } from "./auth";
 export type { AuthState } from "./store/auth-store";
+export type { LoginOptions } from "./api/auth";

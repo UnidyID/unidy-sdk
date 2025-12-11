@@ -5,11 +5,19 @@ import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema
 import { UserProfileSchema } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
+const LoginOptionsSchema = z.object({
+  magic_link: z.boolean(),
+  password: z.boolean(),
+  social_logins: z.array(z.string()),
+  passkey: z.boolean(),
+});
+
 const CreateSignInResponseSchema = z.object({
   sid: z.string(),
   status: z.enum(["pending_verification", "authenticated", "completed"]),
   email: z.string(),
   expired: z.boolean(),
+  login_options: LoginOptionsSchema,
 });
 
 const ErrorSchema = z.object({
@@ -40,6 +48,7 @@ const RequiredFieldsResponseSchema = z.object({
 });
 
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
+export type LoginOptions = z.infer<typeof LoginOptionsSchema>;
 export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
