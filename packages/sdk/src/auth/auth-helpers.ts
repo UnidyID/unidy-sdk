@@ -44,11 +44,9 @@ export class AuthHelpers {
       return;
     }
 
-    const signInResponse = response as CreateSignInResponse;
     authStore.setStep("verification");
     authStore.setEmail(email);
-    authStore.setSignInId(signInResponse.sid);
-    authStore.setLoginOptions(signInResponse.login_options);
+    authStore.setSignInId((response as CreateSignInResponse).sid);
     authStore.setLoading(false);
   }
 

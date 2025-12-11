@@ -7,10 +7,9 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type     | Default |
-| -------------------- | ---------------------- | ----------- | -------- | ------- |
-| `componentClassName` | `class-name`           |             | `string` | `""`    |
-| `removeAfterSeconds` | `remove-after-seconds` |             | `number` | `null`  |
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
 ----------------------------------------------

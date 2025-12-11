@@ -29,10 +29,6 @@ export class PasswordField {
       return null;
     }
 
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password) {
-      return null;
-    }
-
     return (
       <form onSubmit={this.handleSubmit}>
         <input

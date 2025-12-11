@@ -27,10 +27,6 @@ export class ResetPasswordButton {
       return null;
     }
 
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password) {
-      return null;
-    }
-
     return (
       <button type="button" onClick={this.handleClick} class={this.componentClassName}>
         {this.text}

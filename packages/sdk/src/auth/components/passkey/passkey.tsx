@@ -29,10 +29,6 @@ export class Passkey {
   };
 
   render() {
-    if (!authState.availableLoginOptions?.passkey) {
-      return null;
-    }
-
     if (!this.isSupported) {
       return null;
     }
@@ -41,14 +37,8 @@ export class Passkey {
 
     return (
       <Host>
-        <button
-          type="button"
-          disabled={isDisabled}
-          onClick={this.handleClick}
-          class={this.componentClassName}
-          aria-live="polite"
-          aria-describedby={this.ariaDescribedBy || undefined}
-        >
+        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName}
+                aria-live="polite" aria-describedby={this.ariaDescribedBy || undefined}>
           {authState.loading ? this.loadingText : this.text}
         </button>
       </Host>

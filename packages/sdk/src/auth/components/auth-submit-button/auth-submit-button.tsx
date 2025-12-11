@@ -30,10 +30,6 @@ export class AuthSubmitButton {
   }
 
   private shouldRender(): boolean {
-    if (!authState.availableLoginOptions?.password && this.for === "password") {
-      return false;
-    }
-
     if (authState.step === "email") {
       return this.for === "email";
     }
