@@ -80,7 +80,7 @@ export class AuthSubmitButton {
         onClick={this.handleClick}
         aria-live="polite"
       >
-        {authState.loading && authState.magicCodeStep !== "requested" ? loadingContent : loadingContent}
+        {authState.loading && authState.magicCodeStep !== "requested" ? loadingContent : this.getButtonText()}
       </button>
     );
   }
