@@ -7,7 +7,7 @@ import { t } from "../../../i18n";
   tag: "u-auth-submit-button",
   shadow: false,
 })
-export class AuthSubmitButton {
+export class SubmitButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email" | "password";
