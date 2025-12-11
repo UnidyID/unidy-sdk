@@ -418,7 +418,7 @@
     <u-signed-in>
       <div class="container">
         <div class="mb-6">
-          <u-logout-button
+          <u-logout-button id="logout-button"
             class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
           </u-logout-button>
           <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
@@ -639,6 +639,7 @@
     const payloadOutput = document.getElementById("payloadOutput");
     const message = document.getElementById("message");
     const signinRoot = document.getElementById("sign-in-root");
+    const logoutButton = document.getElementById('logout-button');
 
     const auth = await Auth.getInstance();
 
@@ -658,6 +659,10 @@
           }
         }, 100);
       }
+    });
+
+    logoutButton.addEventListener('logout', () => {
+      console.log('User logged out successfully');
     });
 
     // Custom validation function for date_of_birth
