@@ -1,4 +1,5 @@
 import { Component, h, Prop, State } from "@stencil/core";
+import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
 
@@ -9,8 +10,6 @@ import { Auth } from "../../auth";
 export class SendMagicCodeButton {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() text = "Send Magic Code";
-  @Prop() alreadySentText = "Magic code already sent to your email";
 
   @State() countdown = 0;
   private countdownInterval: number | null = null;
@@ -61,14 +60,13 @@ export class SendMagicCodeButton {
     }
 
     const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
+    const text = t("auth.magicCode.buttonText", { defaultValue: "Send Magic Code" });
+    const alreadySentText = t("auth.magicCode.alreadySentText", { defaultValue: "Magic code already sent to your email" });
+    const sendingText = t("auth.magicCode.sendingText", { defaultValue: "Sending..." });
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
-        {this.countdown > 0
-          ? this.alreadySentText
-          : authState.loading && authState.magicCodeStep === "requested"
-            ? "Sending..."
-            : this.text}
+        {this.countdown > 0 ? alreadySentText : authState.loading && authState.magicCodeStep === "requested" ? sendingText : text}
       </button>
     );
   }

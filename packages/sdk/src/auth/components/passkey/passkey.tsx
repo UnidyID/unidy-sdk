@@ -1,4 +1,5 @@
 import { Component, h, Prop, State, Host } from "@stencil/core";
+import { t } from "../../../i18n";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
 
@@ -9,8 +10,6 @@ import { Auth } from "../../auth";
 export class Passkey {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() text = "Sign in with Passkey";
-  @Prop() loadingText = "Authenticating...";
   @Prop() ariaDescribedBy? = "";
 
   @State() isSupported = false;
@@ -38,6 +37,8 @@ export class Passkey {
     }
 
     const isDisabled = this.disabled || authState.loading;
+    const text = t("auth.passkey.buttonText", { defaultValue: "Sign in with Passkey" });
+    const loadingText = t("auth.passkey.loadingText", { defaultValue: "Authenticating..." });
 
     return (
       <Host>
@@ -49,7 +50,7 @@ export class Passkey {
           aria-live="polite"
           aria-describedby={this.ariaDescribedBy || undefined}
         >
-          {authState.loading ? this.loadingText : this.text}
+          {authState.loading ? loadingText : text}
         </button>
       </Host>
     );

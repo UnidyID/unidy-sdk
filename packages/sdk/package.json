@@ -20,6 +20,7 @@
     "@stencil/store": "^2.2.1",
     "@sentry/browser": "^10.26.0",
     "date-fns": "^4.1.0",
+    "i18next": "^23.11.5",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -80,6 +81,7 @@
       "types": "./loader/index.d.ts"
     },
     "./sdk.css": "./dist/sdk.css",
+    "./locales": "./dist/locales",
     "./api": {
       "import": "./dist/api/index.js",
       "require": "./dist/api/index.cjs.js"

@@ -1,12 +1,12 @@
 import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../auth";
+import { t } from "../../../i18n";
 
 @Component({
   tag: "u-logout-button",
   shadow: false,
 })
 export class LogoutButton {
-  @Prop() text = "Logout";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
@@ -29,7 +29,7 @@ export class LogoutButton {
   render() {
     return (
       <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
-        {this.text}
+        {t("buttons.logout")}
       </button>
     );
   }

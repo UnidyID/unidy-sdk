@@ -1,4 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
 import { Flash } from "../../../shared/store/flash-store";
@@ -9,8 +10,6 @@ import { Flash } from "../../../shared/store/flash-store";
 })
 export class ResetPasswordButton {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() text = "Reset Password";
-  @Prop() successMessage = "Password reset email sent. Please check your inbox.";
 
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();
@@ -18,7 +17,8 @@ export class ResetPasswordButton {
     await authInstance.helpers.sendResetPasswordEmail();
 
     if (authState.resetPasswordStep === "sent") {
-      Flash.success.addMessage(this.successMessage);
+      const successMessage = t("auth.resetPassword.successMessage", { defaultValue: "Password reset email sent. Please check your inbox." });
+      Flash.success.addMessage(successMessage);
     }
   };
 
@@ -31,9 +31,11 @@ export class ResetPasswordButton {
       return null;
     }
 
+    const text = t("auth.resetPassword.buttonText", { defaultValue: "Reset Password" });
+
     return (
       <button type="button" onClick={this.handleClick} class={this.componentClassName}>
-        {this.text}
+        {text}
       </button>
     );
   }

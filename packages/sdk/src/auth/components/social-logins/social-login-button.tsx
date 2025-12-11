@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { authState } from "../../store/auth-store";
 import { GoogleLogo } from "./logos/google";
@@ -26,7 +27,6 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: true,
 })
 export class SocialLoginButton {
-  @Prop() text = "Continue with Google";
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
   @Prop() iconOnly = false;
@@ -95,6 +95,12 @@ export class SocialLoginButton {
       return null;
     }
 
+    const providerName = this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
+    const text = t("auth.socialLogin.buttonText", {
+      defaultValue: "Continue with {{provider}}",
+      provider: providerName,
+    });
+
     // TODO: allow users to customize already used providers with custom text and icon
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
@@ -105,10 +111,10 @@ export class SocialLoginButton {
 
           {this.iconOnly ? (
             // Render the hidden text for accessibility.
-            <span class="sr-only">{this.text}</span>
+            <span class="sr-only">{text}</span>
           ) : (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
-              {this.text}
+              {text}
             </span>
           )}
         </div>
