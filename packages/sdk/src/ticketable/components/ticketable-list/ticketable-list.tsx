@@ -1,5 +1,8 @@
 import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { type PaginationMeta, UnidyClient } from "../../../api";
+import type { PaginationMeta } from "../../../api";
+
+import { getUnidyClient } from "../../../auth/api-client";
+
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import { enUS } from "date-fns/locale/en-US";
@@ -12,7 +15,7 @@ import type { Ticket } from "../../api/tickets";
 import type { Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
-import {unidyState} from "../../../shared/store/unidy-store";
+import { unidyState } from "../../../shared/store/unidy-store";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -30,7 +33,6 @@ export class TicketableList {
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
-  @State() instance: UnidyClient | null = null;
   @Prop() paginationMeta: PaginationMeta | null = null;
 
   @Prop() target?: string;
@@ -81,7 +83,8 @@ export class TicketableList {
     }
 
     try {
-      const service = this.ticketableType === "ticket" ? this.getUnidyClient().tickets : this.getUnidyClient().subscriptions;
+      const unidyClient = await getUnidyClient();
+      const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
       const response = await service.list(
         {},
@@ -114,20 +117,6 @@ export class TicketableList {
       this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
     }
-  }
-
-  getUnidyClient(): UnidyClient {
-    if (!unidyState.isConfigured) {
-      throw new Error(
-        "Config not initialized. Ensure <u-config> is loaded before making API calls by using waitForConfig() to wait for initialization.",
-      );
-    }
-
-    if (!this.instance) {
-      this.instance = new UnidyClient(unidyState.baseUrl, unidyState.apiKey);
-    }
-
-    return this.instance;
   }
 
   private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {

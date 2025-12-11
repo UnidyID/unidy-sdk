@@ -337,14 +337,6 @@ export namespace Components {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -354,10 +346,6 @@ export namespace Components {
           * @default 10
          */
         "limit": number;
-        /**
-          * @default "en-US"
-         */
-        "locale": string;
         /**
           * @default 1
          */
@@ -982,14 +970,6 @@ declare namespace LocalJSX {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -999,10 +979,6 @@ declare namespace LocalJSX {
           * @default 10
          */
         "limit"?: number;
-        /**
-          * @default "en-US"
-         */
-        "locale"?: string;
         /**
           * @default 1
          */
