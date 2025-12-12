@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type                    | Default     |
-| -------------------- | ------------ | ----------- | ----------------------- | ----------- |
-| `componentClassName` | `class-name` |             | `string`                | `""`        |
-| `disabled`           | `disabled`   |             | `boolean`               | `false`     |
-| `for` _(required)_   | `for`        |             | `"email" \| "password"` | `undefined` |
+| Property             | Attribute    | Description | Type                                       | Default     |
+| -------------------- | ------------ | ----------- | ------------------------------------------ | ----------- |
+| `componentClassName` | `class-name` |             | `string`                                   | `""`        |
+| `disabled`           | `disabled`   |             | `boolean`                                  | `false`     |
+| `for` _(required)_   | `for`        |             | `"email" \| "password" \| "resetPassword"` | `undefined` |
 
 
 ## Dependencies

@@ -4,7 +4,7 @@ import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
-export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password";
+export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration";
 
 export interface AuthState {
   step: AuthStep;
