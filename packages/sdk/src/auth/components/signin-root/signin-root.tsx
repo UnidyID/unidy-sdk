@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/core";
+import {Component, Host, h, Prop, Event, type EventEmitter, Element} from "@stencil/core";
 import type { TokenResponse } from "../../api/auth";
 import { authStore } from "../../store/auth-store";
 
@@ -7,6 +7,8 @@ import { authStore } from "../../store/auth-store";
   shadow: true,
 })
 export class SigninRoot {
+  @Element() el!: HTMLElement;
+
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
@@ -14,6 +16,12 @@ export class SigninRoot {
 
   componentDidLoad() {
     authStore.setRootComponentRef(this);
+    const signInSteps = this.el.querySelectorAll("u-signin-step").values();
+    if ([...signInSteps].some((step: HTMLUSigninStepElement) => step.name == "single-login")) {
+      authStore.setInitialStep("single-login");
+    } else {
+      authStore.setInitialStep("email");
+    }
   }
 
   onAuth(response: TokenResponse) {

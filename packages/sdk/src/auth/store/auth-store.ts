@@ -60,10 +60,8 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
   }
 };
 
-const initialStep = document.querySelector("u-signin-step")?.getAttribute("name") === "single-login" ? "single-login" : "email";
-
 const initialState: AuthState = {
-  step: initialStep,
+  step: "email",
   email: "",
   password: "",
   magicCodeStep: null,
@@ -113,6 +111,10 @@ class AuthStore {
 
   get state() {
     return state;
+  }
+
+  setInitialStep(step: AuthStep) {
+    state.step = step;
   }
 
   setEmail(email: string) {

@@ -1,4 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
 @Component({
