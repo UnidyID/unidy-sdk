@@ -1,6 +1,7 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, Host, h, Prop, Element } from "@stencil/core";
 import { authState, authStore } from "../../store/auth-store";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { t } from "../../../i18n";
 
 @Component({
   tag: "u-registration-button",
@@ -10,16 +11,15 @@ export class RegistrationButton {
   @Element() el!: HTMLElement;
 
   @Prop() for!: "email";
-  @Prop() text = "";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() redirectUri: string = window.location.href;
 
   private getButtonText() {
-    if (this.text) return this.text;
+    return t("buttons.registration", { defaultValue: "Register New Account" });
   }
 
   private shouldRender(): boolean {
-    if (authState.step === "email" && authState.errors.email === "account_not_found") {
+    if (authState.errors.email === "account_not_found") {
       authStore.setStep("registration");
       return this.for === "email";
     }
@@ -48,12 +48,12 @@ export class RegistrationButton {
     }
 
     return (
-      <>
+      <Host>
         <slot name="registration-content" />
         <button type="submit" class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
           {this.getButtonText()}
         </button>
-      </>
+      </Host>
     );
   }
 }

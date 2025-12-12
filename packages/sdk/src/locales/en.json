@@ -31,7 +31,8 @@
     "continue": "Continue",
     "logout": "Logout",
     "sign_in": "Sign In",
-    "submit": "Submit"
+    "submit": "Submit",
+    "registration": "Register New Account"
   },
   "errors": {
     "account_locked": "Account locked",

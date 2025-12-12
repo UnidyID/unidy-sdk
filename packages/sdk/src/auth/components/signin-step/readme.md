@@ -10,7 +10,7 @@
 | Property            | Attribute       | Description | Type                                                              | Default     |
 | ------------------- | --------------- | ----------- | ----------------------------------------------------------------- | ----------- |
 | `alwaysRender`      | `always-render` |             | `boolean`                                                         | `false`     |
-| `name` _(required)_ | `name`          |             | `"email" \| "reset-password" \| "registration" \| "verification"` | `undefined` |
+| `name` _(required)_ | `name`          |             | `"email" \| "registration" \| "reset-password" \| "verification"` | `undefined` |
 
 
 ## Methods

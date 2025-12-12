@@ -28,7 +28,8 @@
     "continue": "Weiter",
     "logout": "Abmelden",
     "sign_in": "Anmelden",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "registration": "Neues Konto registrieren"
   },
   "errors": {
     "account_locked": "Konto gesperrt",

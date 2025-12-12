@@ -292,10 +292,6 @@ export namespace Components {
           * @default window.location.href
          */
         "redirectUri": string;
-        /**
-          * @default ""
-         */
-        "text": string;
     }
     interface UResetPasswordButton {
         /**
@@ -955,10 +951,6 @@ declare namespace LocalJSX {
           * @default window.location.href
          */
         "redirectUri"?: string;
-        /**
-          * @default ""
-         */
-        "text"?: string;
     }
     interface UResetPasswordButton {
         /**
