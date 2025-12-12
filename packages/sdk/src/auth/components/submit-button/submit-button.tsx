@@ -10,7 +10,7 @@ import { t } from "../../../i18n";
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
-  @Prop() for!: "email" | "password";
+  @Prop() for!: "email" | "password" | "resetPassword";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -21,6 +21,12 @@ export class SubmitButton {
       case "verification":
         if (this.for === "password") {
           return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
+        }
+
+        return t("buttons.submit");
+      case "reset-password":
+        if (this.for === "resetPassword") {
+          return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
         }
 
         return t("buttons.submit");
@@ -42,6 +48,10 @@ export class SubmitButton {
       return this.for === "password" && authState.magicCodeStep !== "sent";
     }
 
+    if (authState.step === "reset-password") {
+      return this.for === "resetPassword";
+    }
+
     return false;
   }
 
@@ -54,6 +64,10 @@ export class SubmitButton {
 
     if (authState.step === "verification" && this.for === "password") {
       return authState.password === "";
+    }
+
+    if (authState.step === "reset-password" && this.for === "resetPassword") {
+      return !authState.resetPassword.newPassword || !authState.resetPassword.passwordConfirmation;
     }
 
     return false;
@@ -80,11 +94,13 @@ export class SubmitButton {
       <button
         type="submit"
         disabled={this.isDisabled()}
-        class={`${this.componentClassName} flex justify-center`}
+        class={`${this.componentClassName} flex justify-center disabled:opacity-50 disabled:cursor-not-allowed`}
         onClick={this.handleClick}
         aria-live="polite"
       >
-        {authState.loading && authState.magicCodeStep !== "requested" ? loadingContent : this.getButtonText()}
+        {authState.loading && authState.magicCodeStep !== "requested" && authState.step !== "reset-password"
+          ? loadingContent
+          : this.getButtonText()}
       </button>
     );
   }

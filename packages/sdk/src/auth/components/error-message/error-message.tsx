@@ -49,6 +49,9 @@ export class ErrorMessage {
       return null;
     }
 
-    return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : this.getErrorMessage(errorCode)}</Host>;
+    const errorMessage = this.getErrorMessage(errorCode);
+    const formattedMessage = errorMessage?.includes("\n") ? <div style={{ whiteSpace: "pre-line" }}>{errorMessage}</div> : errorMessage;
+
+    return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : formattedMessage}</Host>;
   }
 }

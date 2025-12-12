@@ -410,13 +410,14 @@
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
         <u-password-field for="password-confirmation" placeholder="Confirm password"
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
+        <div class="flex flex-col gap-1 mb-1">
+          <u-error-message for="resetPassword" class-name="mt-1 mb-1 text-sm text-red-500"></u-error-message>
+          <u-error-message for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
+        </div>
         <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-        <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-reset-password-submit text="Set New Password 123" loading-text="Resetting..."
-          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200">
-          Set new password
-        </u-reset-password-submit>
+        <u-auth-submit-button for="resetPassword"
+          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200"></u-auth-submit-button>
       </u-signin-step>
     </u-signin-root>
 

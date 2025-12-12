@@ -57,7 +57,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for": "email" | "password";
+        "for": "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -287,24 +287,6 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-    }
-    interface UResetPasswordSubmit {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * @default "Resetting..."
-         */
-        "loadingText": string;
-        /**
-          * @default "Reset Password"
-         */
-        "text": string;
     }
     interface USendMagicCodeButton {
         /**
@@ -585,12 +567,6 @@ declare global {
         prototype: HTMLUResetPasswordButtonElement;
         new (): HTMLUResetPasswordButtonElement;
     };
-    interface HTMLUResetPasswordSubmitElement extends Components.UResetPasswordSubmit, HTMLStencilElement {
-    }
-    var HTMLUResetPasswordSubmitElement: {
-        prototype: HTMLUResetPasswordSubmitElement;
-        new (): HTMLUResetPasswordSubmitElement;
-    };
     interface HTMLUSendMagicCodeButtonElement extends Components.USendMagicCodeButton, HTMLStencilElement {
     }
     var HTMLUSendMagicCodeButtonElement: {
@@ -675,7 +651,6 @@ declare global {
         "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
         "u-raw-field": HTMLURawFieldElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
-        "u-reset-password-submit": HTMLUResetPasswordSubmitElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
         "u-signin-root": HTMLUSigninRootElement;
@@ -720,7 +695,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for": "email" | "password";
+        "for": "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -954,24 +929,6 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
     }
-    interface UResetPasswordSubmit {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * @default "Resetting..."
-         */
-        "loadingText"?: string;
-        /**
-          * @default "Reset Password"
-         */
-        "text"?: string;
-    }
     interface USendMagicCodeButton {
         /**
           * @default ""
@@ -1084,7 +1041,6 @@ declare namespace LocalJSX {
         "u-profile-submit-button": UProfileSubmitButton;
         "u-raw-field": URawField;
         "u-reset-password-button": UResetPasswordButton;
-        "u-reset-password-submit": UResetPasswordSubmit;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
         "u-signin-root": USigninRoot;
@@ -1122,7 +1078,6 @@ declare module "@stencil/core" {
             "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
-            "u-reset-password-submit": LocalJSX.UResetPasswordSubmit & JSXBase.HTMLAttributes<HTMLUResetPasswordSubmitElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
