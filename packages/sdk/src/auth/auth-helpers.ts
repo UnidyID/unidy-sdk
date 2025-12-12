@@ -71,9 +71,6 @@ export class AuthHelpers {
     if (error) {
       this.handleAuthError(error, response);
     } else {
-      // authStore.setToken((response as TokenResponse).jwt);
-      // authStore.setLoading(false);
-      // authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
       authStore.setLoading(false);
       this.handleAuthSuccess(response as TokenResponse);
       return;
