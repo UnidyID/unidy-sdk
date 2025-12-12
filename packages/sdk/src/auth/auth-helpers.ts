@@ -272,9 +272,9 @@ export class AuthHelpers {
     if (error) {
       authStore.setFieldError("resetPassword", error);
 
-      // TODO: remove later when we have proper password requirements handling
+      // TODO: add proper password requirements handling --> for now this is fine
       if (error === "invalid_password") {
-        console.log("Temporary displaying this: ", response.details?.password);
+        authStore.setFieldError("password", response.error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
       }
     } else {
       authStore.setStep("email");

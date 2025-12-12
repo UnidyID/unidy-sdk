@@ -46,7 +46,7 @@ const RequiredFieldsResponseSchema = z.object({
 });
 
 const InvalidPasswordResponseSchema = z.object({
-  details: z.object({
+  error_details: z.object({
     password: z.array(z.string()),
   }),
 });

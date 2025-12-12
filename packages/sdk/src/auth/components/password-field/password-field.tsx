@@ -72,10 +72,12 @@ export class PasswordField {
       case "new-password":
         authStore.setNewPassword(target.value);
         authStore.clearFieldError("resetPassword");
+        authStore.clearFieldError("password");
         break;
       case "password-confirmation":
         authStore.setConfirmPassword(target.value);
         authStore.clearFieldError("resetPassword");
+        authStore.clearFieldError("password");
         break;
     }
   };
