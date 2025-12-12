@@ -115,10 +115,12 @@ class AuthStore {
 
   setEmail(email: string) {
     state.email = email;
+    state.errors.email = null;
   }
 
   setPassword(password: string) {
     state.password = password;
+    state.errors.password = null;
   }
 
   setMissingFields(fields: RequiredFieldsResponse["fields"]) {

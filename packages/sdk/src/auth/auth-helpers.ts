@@ -267,16 +267,23 @@ export class AuthHelpers {
     }
     if (error) {
       authStore.setFieldError("resetPassword", error);
-      authStore.setLoading(false);
     } else {
       authStore.setStep("email");
       authStore.setResetPasswordStep("completed");
       authStore.setResetToken(null);
       authStore.setNewPassword("");
       authStore.setConfirmPassword("");
-      authStore.setLoading(false);
+
+      const url = new URL(window.location.href);
+      if (url.searchParams.has("reset_password_token")) {
+        url.searchParams.delete("reset_password_token");
+        window.history.replaceState(null, "", url.toString());
+      }
+
       Flash.success.addMessage("Password reset successfully");
     }
+
+    authStore.setLoading(false);
   }
 
   async authenticateWithPasskey() {

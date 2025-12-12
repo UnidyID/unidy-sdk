@@ -89,7 +89,7 @@ export class PasswordField {
   private shouldRender(): boolean {
     switch (this.for) {
       case "login":
-        return authState.step === "verification";
+        return authState.step === "verification" && authState.availableLoginOptions?.password;
       case "new-password":
       case "password-confirmation":
         return authState.step === "reset-password";
@@ -98,10 +98,6 @@ export class PasswordField {
 
   render() {
     if (!this.shouldRender()) {
-      return null;
-    }
-
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password) {
       return null;
     }
 

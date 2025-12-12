@@ -62,6 +62,7 @@
     "refresh_token_revoked": "Refresh token revoked",
     "required_field": "{{field}} is required",
     "reset_password_already_sent": "Reset password already sent",
+    "passwords_do_not_match": "Passwords do not match",
     "schema_validation_error": "Schema validation error",
     "sign_in_expired": "Sign in expired",
     "sign_in_not_found": "Sign in not found",
