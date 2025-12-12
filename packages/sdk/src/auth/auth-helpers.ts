@@ -50,20 +50,19 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
-    if (error) {
-      if (error === "missing_required_fields") {
-        this.handleMissingFields(response as RequiredFieldsResponse);
-        return;
-      }
-      if (error === "account_locked") {
-        authStore.setGlobalError("auth", error);
-      } else {
-        authStore.setFieldError("password", error);
-      }
+    if (!error) {
       authStore.setLoading(false);
-    } else {
       this.handleAuthSuccess(response as TokenResponse);
+      return;
     }
+
+    if (error === "missing_required_fields") {
+      this.handleMissingFields(response as RequiredFieldsResponse);
+      return;
+    }
+
+    authStore.setFieldError("password", error);
+    authStore.setLoading(false);
   }
 
   async logout() {
@@ -148,18 +147,21 @@ export class AuthHelpers {
 
     authStore.setLoading(false);
 
-    if (error) {
-      authStore.setFieldError("magicCode", error);
-      authStore.setStep("magic-code");
-      if (error === "magic_code_recently_created") {
-        authStore.setMagicCodeStep("sent");
-      }
-      return [error, response] as const;
+    authStore.setStep("magic-code");
+
+    if (!error) {
+      authStore.setMagicCodeStep("sent");
+
+      return [null, response] as const;
     }
 
-    authStore.setMagicCodeStep("sent");
-    authStore.setStep("magic-code");
-    return [null, response] as const;
+    authStore.setFieldError("magicCode", error);
+
+    if (error === "magic_code_recently_created") {
+      authStore.setMagicCodeStep("sent");
+    }
+
+    return [error, response] as const;
   }
 
   async authenticateWithMagicCode(code: string) {
@@ -176,16 +178,18 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
-    if (error) {
-      if (error === "missing_required_fields") {
-        this.handleMissingFields(response as RequiredFieldsResponse);
-        return;
-      }
-      authStore.setFieldError("magicCode", error);
-      authStore.setLoading(false);
-    } else {
+    if (!error) {
       this.handleAuthSuccess(response as TokenResponse);
+      return;
     }
+
+    if (error === "missing_required_fields") {
+      this.handleMissingFields(response as RequiredFieldsResponse);
+      return;
+    }
+
+    authStore.setLoading(false);
+    authStore.setFieldError("magicCode", error);
   }
 
   async sendResetPasswordEmail() {
@@ -200,12 +204,12 @@ export class AuthHelpers {
 
     if (error) {
       authStore.setFieldError("password", error);
-      authStore.setLoading(false);
     } else {
       authStore.setResetPasswordStep("sent");
-      authStore.setLoading(false);
       authStore.clearErrors();
     }
+
+    authStore.setLoading(false);
   }
 
   handleResetPasswordRedirect(): boolean {
@@ -251,12 +255,13 @@ export class AuthHelpers {
       authState.resetPassword.passwordConfirmation,
     );
 
-    // TODO: remove later when we have proper password requirements handling
-    if (error === "invalid_password") {
-      console.log("Temporary displaying this: ", response.details?.password);
-    }
     if (error) {
       authStore.setFieldError("resetPassword", error);
+
+      // TODO: remove later when we have proper password requirements handling
+      if (error === "invalid_password") {
+        console.log("Temporary displaying this: ", response.details?.password);
+      }
     } else {
       authStore.setStep("email");
       authStore.updateResetPassword({
