@@ -25,20 +25,26 @@ export class ResetPasswordButton {
     }
   };
 
+  private getButtonText() {
+    if (authState.step === "verification" && authState.availableLoginOptions && !authState.availableLoginOptions.password) {
+      return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
+    }
+
+    if (authState.step === "reset-password") {
+      return t("auth.resetPassword.buttonTextResend", { defaultValue: "Resend Password Reset Email" });
+    }
+
+    return t("auth.resetPassword.buttonTextReset", { defaultValue: "Reset Password" });
+  }
+
   render() {
-    if (authState.step !== "verification") {
+    if (!["verification", "reset-password"].includes(authState.step)) {
       return null;
     }
-
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password) {
-      return null;
-    }
-
-    const text = t("auth.resetPassword.buttonText", { defaultValue: "Reset Password" });
 
     return (
       <button type="button" onClick={this.handleClick} class={this.componentClassName}>
-        {text}
+        {this.getButtonText()}
       </button>
     );
   }

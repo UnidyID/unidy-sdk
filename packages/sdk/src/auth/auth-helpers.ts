@@ -203,7 +203,7 @@ export class AuthHelpers {
     const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid, window.location.href);
 
     if (error) {
-      authStore.setFieldError("password", error);
+      authStore.setFieldError("resetPassword", error);
     } else {
       authStore.setResetPasswordStep("sent");
       authStore.clearErrors();
@@ -212,7 +212,7 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
-  handleResetPasswordRedirect(): boolean {
+  async handleResetPasswordRedirect(): Promise<boolean> {
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const resetToken = params.get("reset_password_token");
@@ -221,8 +221,22 @@ export class AuthHelpers {
       return false;
     }
 
+    if (authState.sid) {
+      authStore.setLoading(true);
+
+      const [error] = await this.client.auth.validateResetPasswordToken(authState.sid, resetToken);
+
+      if (error) {
+        authStore.setFieldError("resetPassword", error);
+        authStore.setStep("reset-password");
+        authStore.setLoading(false);
+        return false;
+      }
+    }
+
     authStore.setResetToken(resetToken);
     authStore.setStep("reset-password");
+    authStore.setLoading(false);
 
     return true;
   }

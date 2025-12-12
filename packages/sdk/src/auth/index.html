@@ -331,7 +331,7 @@
           <div class="flex-1 border-t border-gray-300"></div>
         </div>
 
-        <u-passkey text="Sign in with Passkey" loading-text="Authenticating..."
+        <u-passkey
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
           aria-describedby="passkey-error-email"></u-passkey>
         <u-error-message id="passkey-error-email" for="general"
@@ -343,11 +343,12 @@
           <u-password-field placeholder="Enter your password"
             class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
             aria-describedby="password-error"></u-password-field>
-          <u-reset-password-button text="Reset Password" class-name="mb-4 text-sm text-blue-500">
+          <u-reset-password-button class-name="mb-4 text-sm text-blue-500">
           </u-reset-password-button>
-          <u-error-message id="password-error" for="password"
-            class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-          <u-auth-submit-button for="password" text="Sign In with Password"
+          <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+          <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+          <u-auth-submit-button for="password"
             class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
         </u-signin-strategy>
 
@@ -409,7 +410,7 @@
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
         <u-password-field for="password-confirmation" placeholder="Confirm password"
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
-
+        <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
         <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <u-reset-password-submit text="Set New Password 123" loading-text="Resetting..."

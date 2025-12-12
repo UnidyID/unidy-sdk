@@ -19,7 +19,11 @@ export class SubmitButton {
       case "email":
         return t("buttons.continue");
       case "verification":
-        return t("buttons.sign_in");
+        if (this.for === "password") {
+          return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
+        }
+
+        return t("buttons.submit");
       default:
         return t("buttons.submit");
     }

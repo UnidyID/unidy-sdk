@@ -99,6 +99,8 @@ export type SendResetPasswordEmailResult =
   | ["password_not_set", ErrorResponse]
   | ["reset_password_already_sent", ErrorResponse]
   | ["sign_in_not_found", ErrorResponse]
+  | ["invalid_return_to", ErrorResponse]
+  | ["return_to_required", ErrorResponse]
   | [null, null];
 
 export type InvalidPasswordResponse = z.infer<typeof InvalidPasswordResponseSchema>;
@@ -287,7 +289,12 @@ export class AuthService {
         const error_response = ErrorSchema.parse(response.data);
 
         return [
-          error_response.error_identifier as "password_not_set" | "reset_password_already_sent" | "sign_in_not_found",
+          error_response.error_identifier as
+            | "password_not_set"
+            | "reset_password_already_sent"
+            | "sign_in_not_found"
+            | "invalid_return_to"
+            | "return_to_required",
           error_response,
         ];
       }
@@ -318,9 +325,9 @@ export class AuthService {
   }
 
   async validateResetPasswordToken(signInId: string, token: string): Promise<ValidateResetPasswordTokenResult> {
-    const response = await this.client.get<{ valid: boolean }>(`/api/sdk/v1/sign_ins/${signInId}/password_reset`, {
-      token,
-    });
+    const response = await this.client.get<{ valid: boolean }>(
+      `/api/sdk/v1/sign_ins/${signInId}/password_reset?token=${encodeURIComponent(token)}`,
+    );
 
     return this.handleResponse(response, () => {
       if (!response.success) {
