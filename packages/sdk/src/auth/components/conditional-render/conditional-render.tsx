@@ -1,4 +1,5 @@
 import { Component, h, Prop, Host } from "@stencil/core";
+<<<<<<< HEAD
 import { authState, type AuthState } from "../../store/auth-store";
 
 const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
@@ -21,17 +22,19 @@ const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
 function isTruthy(value: unknown): boolean {
   return Boolean(value);
 }
+=======
+import { authState } from "../../store/auth-store";
+>>>>>>> 9f26f62 (Revert "Merge branch 'master' into ud-2047-sdk-support-for-single-step-login")
 
 @Component({
   tag: "u-conditional-render",
   shadow: true,
 })
 export class ConditionalRender {
-  @Prop() when?: string; // condition to check
-  @Prop() is?: string; // optional value to compare against
-  @Prop() not = false;
-  @Prop() conditionFunction?: (state: AuthState) => boolean;
+  @Prop() when!: string;
+  @Prop() is!: "true" | "false";
 
+<<<<<<< HEAD
   private evaluatePredefinedState(): unknown {
     const predefinedFunction = PREDEFINED_STATES[this.when];
     if (predefinedFunction) return predefinedFunction(authState);
@@ -65,6 +68,37 @@ export class ConditionalRender {
     }
 
     return this.not ? !result : result;
+=======
+  componentDidLoad() {
+    // TODO: validate 'when' and 'is' and return error if 'expression' is invalid
+  }
+
+  private shouldRender(): boolean {
+    if (!this.when) return false;
+
+    const compareValue = this.is === "true";
+
+    let actualValue: boolean;
+
+    switch (this.when) {
+      case "magicCodeSent":
+        actualValue = authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested";
+        break;
+      case "loading":
+        actualValue = authState.loading;
+        break;
+      case "authenticated":
+        actualValue = authState.authenticated;
+        break;
+      default:
+        console.warn(`Unknown property: ${this.when}`);
+
+        // don't render in case of invalid property
+        return false;
+    }
+
+    return actualValue === compareValue;
+>>>>>>> 9f26f62 (Revert "Merge branch 'master' into ud-2047-sdk-support-for-single-step-login")
   }
 
   render() {

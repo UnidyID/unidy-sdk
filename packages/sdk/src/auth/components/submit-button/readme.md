@@ -11,7 +11,7 @@
 | -------------------- | ------------ | ----------- | ------------------------------------------ | ----------- |
 | `componentClassName` | `class-name` |             | `string`                                   | `""`        |
 | `disabled`           | `disabled`   |             | `boolean`                                  | `false`     |
-| `for`                | `for`        |             | `"email" \| "password" \| "resetPassword"` | `undefined` |
+| `for` _(required)_   | `for`        |             | `"email" \| "password" \| "resetPassword"` | `undefined` |
 
 
 ## Dependencies

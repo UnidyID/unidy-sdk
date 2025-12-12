@@ -10,7 +10,7 @@ import { t } from "../../../i18n";
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
-  @Prop() for!: "email" | "password" | "resetPassword";
+  @Prop() for!: "email" | "single-login" | "password" | "resetPassword";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -18,6 +18,8 @@ export class SubmitButton {
     switch (authState.step) {
       case "email":
         return t("buttons.continue");
+      case "single-login":
+        return t("buttons.sign_in");
       case "verification":
         if (this.for === "password") {
           return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
@@ -44,6 +46,9 @@ export class SubmitButton {
     if (authState.step === "email") {
       return this.for === "email";
     }
+    if (authState.step === "single-login") {
+      return this.for === "single-login";
+    }
     if (authState.step === "verification") {
       return this.for === "password" && authState.magicCodeStep !== "sent";
     }
@@ -62,6 +67,10 @@ export class SubmitButton {
 
     if (authState.step === "email" && this.for === "email") {
       return authState.email === "";
+    }
+
+    if (authState.step === "single-login" && this.for === "single-login") {
+      return authState.password === "" || authState.email === "";
     }
 
     if (authState.step === "verification" && this.for === "password") {

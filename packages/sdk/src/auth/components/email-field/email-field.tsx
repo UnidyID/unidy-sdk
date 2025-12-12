@@ -40,7 +40,7 @@ export class EmailField {
           value={authState.email}
           autocomplete="email"
           placeholder={placeholder}
-          disabled={this.disabled || authState.loading || authState.step === "verification"}
+          disabled={this.disabled || authState.loading || authState.step === "verification" || authState.step === "registration"}
           class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
