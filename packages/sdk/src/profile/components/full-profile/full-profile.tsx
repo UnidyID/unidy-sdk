@@ -10,8 +10,6 @@ export class FullProfile {
   @Prop() fields?: string;
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
-  @Prop() submitButtonText? = "";
-
   private list() {
     if (this.fields) {
       return this.fields
@@ -32,7 +30,7 @@ export class FullProfile {
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
         <div class="flex justify-end">
-          <u-profile-submit-button>{this.submitButtonText}</u-profile-submit-button>
+          <u-profile-submit-button>{t("button.submit")}</u-profile-submit-button>
         </div>
       </u-profile>
     );

@@ -18,21 +18,19 @@ export class SubmitButton {
     switch (authState.step) {
       case "email":
         return t("buttons.continue");
-      case "single-login":
-        return t("buttons.sign_in");
       case "verification":
         if (this.for === "password") {
-          return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
+          return t("auth.password.button_text", { defaultValue: "Sign In with Password" });
         }
         return t("buttons.submit");
       case "reset-password":
         if (this.for === "resetPassword") {
-          return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
+          return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
         }
 
         return t("buttons.submit");
       case "single-login":
-        return t("auth.single-login.buttonText", { defaultValue: "Sign in" });
+        return t("auth.single-login.button_text", { defaultValue: "Sign in" });
       default:
         return t("buttons.submit");
     }

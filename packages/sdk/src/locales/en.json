@@ -4,36 +4,42 @@
       "placeholder": "Enter your email"
     },
     "magicCode": {
-      "alreadySentText": "Magic code already sent to your email",
-      "buttonText": "Send Magic Code",
-      "sendingText": "Sending..."
+      "already_sent_text": "Magic code already sent to your email",
+      "button_text": "Send Magic Code",
+      "resend": {
+        "button_text": "Send Magic Code again"
+      },
+      "sending_text": "Sending..."
     },
     "passkey": {
-      "buttonText": "Sign in with Passkey",
-      "loadingText": "Authenticating..."
+      "button_text": "Sign in with Passkey",
+      "loading_text": "Authenticating..."
     },
     "password": {
-      "placeholder": "Enter your password",
-      "buttonText": "Sign In with Password"
+      "button_text": "Sign in with Password",
+      "confirmation": {
+        "placeholder": "Confirm your password"
+      },
+      "placeholder": "Enter your password"
     },
     "resetPassword": {
-      "buttonTextSet": "Set Password",
-      "buttonTextReset": "Reset Password",
-      "buttonTextResend": "Resend Password Reset Email",
-      "successMessage": "Password reset email sent. Please check your inbox."
+      "button_text_resend": "Resend password reset email",
+      "button_text_reset": "Reset password",
+      "button_text_set": "Save password",
+      "success_message": "Password reset email sent. Please check your inbox."
     },
     "single-login": {
-      "buttonText": "Sign in"
+      "button_text": "Sign in"
     },
     "socialLogin": {
-      "buttonText": "Continue with {{provider}}"
+      "button_text": "Continue with {{provider}}"
     }
   },
   "buttons": {
     "close": "Close",
     "continue": "Continue",
     "logout": "Logout",
-    "registration": "Register New Account",
+    "registration": "Register new account",
     "sign_in": "Sign In",
     "submit": "Submit"
   },
@@ -44,13 +50,14 @@
     "bad_request": "Bad request",
     "connection_failed": "Unable to connect to the Unidy server",
     "expired": "Expired",
-    "failedToLoadProfile": "Failed to load profile data. Please check configuration.",
+    "failed_to_load_profile": "Failed to load profile data. Please check configuration.",
     "invalid_id_token": "Invalid ID token",
     "invalid_passkey": "Invalid passkey",
     "invalid_password": "Invalid password",
     "invalid_refresh_token": "Invalid refresh token",
     "invalid_required_fields_payload": "Invalid required fields payload",
-    "invalidResponseFormat": "Invalid response format",
+    "invalid_reset_token": "Invalid reset token. Please request a new password reset email.",
+    "invalid_response_format": "Invalid response format",
     "magic_code_is_missing": "Magic code is missing",
     "magic_code_recently_created": "Magic code recently created",
     "missing_id_token": "Missing ID token",
@@ -58,37 +65,35 @@
     "missing_required_fields": "Missing required fields",
     "no_sign_in_id": "No sign in ID available",
     "not_valid": "Not valid",
-    "password_not_set": "Password not set",
     "passkey_cancelled": "Passkey authentication cancelled",
     "passkey_error": "An unknown passkey error occurred",
     "passkey_invalid_state": "Passkey invalid state",
     "passkey_not_supported": "Passkey not supported",
     "passkey_security_error": "Passkey security error",
+    "password_not_set": "Password not set",
+    "password_required": "Password is required",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Password is too short (minimum is 6 characters)",
+      "min_length": "Min length is 6 characters",
+      "mixed_case": "Must contain both uppercase and lowercase letters",
+      "number": "Must contain a number",
+      "symbol": "Must contain a symbol"
+    },
+    "passwords_do_not_match": "Passwords do not match",
     "prefix": "ERROR: ",
     "refresh_failed": "Failed to refresh token. Please sign in again.",
     "refresh_token_revoked": "Refresh token revoked",
     "required_field": "{{field}} is required",
     "reset_password_already_sent": "Reset password already sent",
-    "reset_token_missing": "Reset token is missing",
     "reset_token_expired": "Reset token has expired. Please request a new password reset email.",
-    "invalid_reset_token": "Invalid reset token. Please request a new password reset email.",
+    "reset_token_missing": "Reset token is missing",
     "schema_validation_error": "Schema validation error",
     "sign_in_expired": "Sign in expired",
     "sign_in_not_found": "Sign in not found",
     "sign_out_failed": "Failed to sign out, reason: {{reason}}",
     "unknown": "An unknown error occurred",
     "used": "Used",
-    "verification_failed": "Verification failed",
-    "password_required": "Password is required",
-    "passwords_do_not_match": "Passwords do not match",
-
-    "password_requirements": {
-      "is too short (minimum is 6 characters)": "Password is too short (minimum is 6 characters)",
-      "min_length": "Min length is 6 characters",
-      "number": "Must contain a number",
-      "symbol": "Must contain a symbol",
-      "mixed_case": "Must contain both uppercase and lowercase letters"
-    }
+    "verification_failed": "Verification failed"
   },
   "loading": "Loading...",
   "profile": {

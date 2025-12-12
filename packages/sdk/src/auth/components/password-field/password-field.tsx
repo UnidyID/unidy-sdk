@@ -106,7 +106,8 @@ export class PasswordField {
       return null;
     }
 
-    const placeholder = t("auth.password.placeholder", { defaultValue: "Enter your password" });
+    const key = this.for === "password-confirmation" ? "auth.password.confirmation.placeholder" : "auth.password.placeholder";
+    const placeholder = t(key, { defaultValue: "Enter your password" });
 
     return (
       <form onSubmit={this.handleSubmit}>

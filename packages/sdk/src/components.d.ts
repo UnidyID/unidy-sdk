@@ -164,10 +164,6 @@ export namespace Components {
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
-        /**
-          * @default ""
-         */
-        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**
@@ -818,10 +814,6 @@ declare namespace LocalJSX {
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
-        /**
-          * @default ""
-         */
-        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**

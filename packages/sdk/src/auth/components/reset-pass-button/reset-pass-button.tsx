@@ -17,7 +17,7 @@ export class ResetPasswordButton {
     await authInstance.helpers.sendResetPasswordEmail();
 
     if (authState.resetPassword.step === "sent") {
-      const successMessage = t("auth.resetPassword.successMessage", {
+      const successMessage = t("auth.resetPassword.success_message", {
         defaultValue: "Password reset email sent. Please check your inbox.",
       });
 
@@ -27,14 +27,14 @@ export class ResetPasswordButton {
 
   private getButtonText() {
     if (authState.step === "verification" && authState.availableLoginOptions && !authState.availableLoginOptions.password) {
-      return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
+      return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
     }
 
     if (authState.step === "reset-password") {
-      return t("auth.resetPassword.buttonTextResend", { defaultValue: "Resend Password Reset Email" });
+      return t("auth.resetPassword.button_text_resend", { defaultValue: "Resend Password Reset Email" });
     }
 
-    return t("auth.resetPassword.buttonTextReset", { defaultValue: "Reset Password" });
+    return t("auth.resetPassword.button_text_reset", { defaultValue: "Reset Password" });
   }
   render() {
     if (!["verification", "reset-password"].includes(authState.step)) {

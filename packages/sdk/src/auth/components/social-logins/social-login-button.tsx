@@ -96,7 +96,7 @@ export class SocialLoginButton {
     }
 
     const providerName = this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
-    const text = t("auth.socialLogin.buttonText", {
+    const text = t("auth.socialLogin.button_text", {
       defaultValue: "Continue with {{provider}}",
       provider: providerName,
     });
