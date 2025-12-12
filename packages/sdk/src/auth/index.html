@@ -744,14 +744,25 @@
         : { valid: false, message: "You must be at least 18 years old." };
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
+    function customConditionFunction(state) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(state.email);
+    }
+
+    // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
+    // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
+    window.addEventListener("appload", () => {
       const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
         field.validationFunc = dateOfBirthValidation;
       }
+
+      const customConditionEl = document.getElementById('custom-condition-example');
+      if (customConditionEl) {
+        customConditionEl.conditionFunction = customConditionFunction;
+      }
     });
   </script>
-
 </body>
 
 </html>
