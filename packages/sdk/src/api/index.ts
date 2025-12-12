@@ -51,4 +51,4 @@ function getUnidyClient(): UnidyClient {
   return instance;
 }
 
-export { getUnidyClient };
+export { getUnidyClient, ApiClient };
