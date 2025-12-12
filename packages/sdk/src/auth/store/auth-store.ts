@@ -210,6 +210,10 @@ class AuthStore {
     state.resetPassword = { ...state.resetPassword, passwordConfirmation: password };
   }
 
+  updateResetPassword(updates: Partial<AuthState["resetPassword"]>) {
+    state.resetPassword = { ...state.resetPassword, ...updates };
+  }
+
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
 
