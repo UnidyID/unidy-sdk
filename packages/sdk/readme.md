@@ -158,7 +158,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       </u-logout-button>
       <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
-    </div>    
+    </div>
     <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
    </u-signed-in>
 
@@ -849,7 +849,7 @@ For more advanced customization, you can target internal elements using CSS Shad
 **Example using `class-name`:**
 
 ```html
-<u-email-field 
+<u-email-field
   placeholder="Enter your email"
   class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
 </u-email-field>
