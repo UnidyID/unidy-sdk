@@ -7,12 +7,10 @@ import { state as profileState } from "../../store/profile-store";
   shadow: false,
 })
 export class FullProfile {
-  @Prop() language?: string;
-
   @Prop() fields?: string;
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
-  @Prop() submitButtonText = "Submit";
+  @Prop() submitButtonText? = "";
 
   private list() {
     if (this.fields) {
@@ -29,7 +27,7 @@ export class FullProfile {
 
   render() {
     return (
-      <u-profile language={this.language}>
+      <u-profile>
         {this.list().map((field) => (
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}

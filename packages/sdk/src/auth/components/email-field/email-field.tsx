@@ -1,4 +1,5 @@
 import { Component, h, Prop, Element } from "@stencil/core";
+import { t } from "../../../i18n";
 import { authStore, authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
@@ -9,9 +10,9 @@ import { getParentSigninStep } from "../helpers";
 export class EmailField {
   @Element() el!: HTMLElement;
 
-  @Prop() placeholder = "Enter your email";
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
+  @Prop() disabled = false;
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -25,13 +26,11 @@ export class EmailField {
       return;
     }
 
-    (await getParentSigninStep(this.el))?.submit();
+    await getParentSigninStep(this.el)?.submit();
   };
 
   render() {
-    if (authState.step === "verification" || authState.step === "registration") {
-      return <input id="email" type="email" value={authState.email} placeholder="Email" class={this.componentClassName} disabled={true} />;
-    }
+    const placeholder = t("auth.email.placeholder", { defaultValue: "Enter your email" });
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -40,9 +39,9 @@ export class EmailField {
           type="email"
           value={authState.email}
           autocomplete="email"
-          placeholder={this.placeholder}
-          disabled={authState.loading}
-          class={this.componentClassName}
+          placeholder={placeholder}
+          disabled={this.disabled || authState.loading || authState.step === "verification" || authState.step === "registration"}
+          class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />

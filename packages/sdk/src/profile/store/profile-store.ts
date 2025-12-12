@@ -27,7 +27,6 @@ export interface ProfileState {
   errors: Record<string, string | null>;
   configUpdateSource?: "fetch" | "submit";
   flashErrors: Record<string, string | null>;
-  language?: string;
   phoneValid: boolean;
 }
 
@@ -37,7 +36,6 @@ const initialState: ProfileState = {
   configuration: {},
   errors: {},
   flashErrors: {},
-  language: "",
   phoneValid: true,
 };
 

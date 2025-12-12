@@ -124,10 +124,12 @@ A simple component for conditional rendering based on auth state properties.
 
 ## Properties
 
-| Property            | Attribute | Description | Type                | Default     |
-| ------------------- | --------- | ----------- | ------------------- | ----------- |
-| `is` _(required)_   | `is`      |             | `"false" \| "true"` | `undefined` |
-| `when` _(required)_ | `when`    |             | `string`            | `undefined` |
+| Property            | Attribute | Description | Type                            | Default     |
+| ------------------- | --------- | ----------- | ------------------------------- | ----------- |
+| `conditionFunction` | --        |             | `(state: AuthState) => boolean` | `undefined` |
+| `is`                | `is`      |             | `string`                        | `undefined` |
+| `not`               | `not`     |             | `boolean`                       | `false`     |
+| `when`              | `when`    |             | `string`                        | `undefined` |
 
 
 ----------------------------------------------

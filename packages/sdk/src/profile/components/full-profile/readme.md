@@ -11,8 +11,7 @@
 | -------------------------- | ----------------------------- | ----------- | ------------------- | ----------- |
 | `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`   |
 | `fields`                   | `fields`                      |             | `string`            | `undefined` |
-| `language`                 | `language`                    |             | `string`            | `undefined` |
-| `submitButtonText`         | `submit-button-text`          |             | `string`            | `"Submit"`  |
+| `submitButtonText`         | `submit-button-text`          |             | `string`            | `""`        |
 
 
 ## Dependencies
@@ -21,7 +20,7 @@
 
 - [u-profile](../profile)
 - [u-field](../field)
-- [u-profile-submit-button](../unidy-submit-button)
+- [u-profile-submit-button](../submit-button)
 
 ### Graph
 ```mermaid

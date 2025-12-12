@@ -6,5 +6,5 @@
  * @returns true if the slot has content, false otherwise
  */
 export function hasSlotContent(element: HTMLElement): boolean {
-  return element.hasChildNodes() && element.textContent?.trim() !== "";
+  return element.hasChildNodes() && !!element.textContent?.trim();
 }

@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property            | Attribute       | Description | Type                                          | Default     |
-| ------------------- | --------------- | ----------- | --------------------------------------------- | ----------- |
-| `alwaysRender`      | `always-render` |             | `boolean`                                     | `false`     |
-| `name` _(required)_ | `name`          |             | `"email" \| "registration" \| "verification"` | `undefined` |
+| Property            | Attribute       | Description | Type                                                              | Default     |
+| ------------------- | --------------- | ----------- | ----------------------------------------------------------------- | ----------- |
+| `alwaysRender`      | `always-render` |             | `boolean`                                                         | `false`     |
+| `name` _(required)_ | `name`          |             | `"email" \| "reset-password" \| "registration" \| "verification"` | `undefined` |
 
 
 ## Methods
