@@ -226,10 +226,6 @@ export namespace Components {
           * @default "login"
          */
         "for": PasswordFieldFor;
-        /**
-          * @default null
-         */
-        "placeholder": any;
     }
     interface UProfile {
         /**
@@ -867,10 +863,6 @@ declare namespace LocalJSX {
           * @default "login"
          */
         "for"?: PasswordFieldFor;
-        /**
-          * @default null
-         */
-        "placeholder"?: any;
     }
     interface UProfile {
         /**
