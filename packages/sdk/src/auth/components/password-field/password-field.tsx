@@ -71,11 +71,11 @@ export class PasswordField {
         break;
       case "new-password":
         authStore.setNewPassword(target.value);
-        authStore.clearFieldError("newPassword");
+        authStore.clearFieldError("resetPassword");
         break;
       case "password-confirmation":
         authStore.setConfirmPassword(target.value);
-        authStore.clearFieldError("confirmPassword");
+        authStore.clearFieldError("resetPassword");
         break;
     }
   };

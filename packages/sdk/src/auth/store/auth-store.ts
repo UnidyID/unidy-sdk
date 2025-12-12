@@ -163,7 +163,7 @@ class AuthStore {
     return true;
   }
 
-  clearFieldError(field: string) {
+  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection") {
     state.errors = { ...state.errors, [field]: null } as Record<
       "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection",
       string | null
