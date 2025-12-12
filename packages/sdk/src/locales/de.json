@@ -19,11 +19,11 @@
       "buttonText": "Passwort zurücksetzen",
       "successMessage": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang."
     },
-    "socialLogin": {
-      "buttonText": "Weiter mit {{provider}}"
-    },
     "single-login": {
       "buttonText": "Anmelden"
+    },
+    "socialLogin": {
+      "buttonText": "Weiter mit {{provider}}"
     }
   },
   "buttons": {

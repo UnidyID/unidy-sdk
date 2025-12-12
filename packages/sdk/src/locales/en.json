@@ -22,11 +22,11 @@
       "buttonTextResend": "Resend Password Reset Email",
       "successMessage": "Password reset email sent. Please check your inbox."
     },
-    "socialLogin": {
-      "buttonText": "Continue with {{provider}}"
-    },
     "single-login": {
       "buttonText": "Sign in"
+    },
+    "socialLogin": {
+      "buttonText": "Continue with {{provider}}"
     }
   },
   "buttons": {

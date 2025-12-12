@@ -10,7 +10,7 @@ import { t } from "../../../i18n";
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
-  @Prop() for?: "email" | "password" | "resetPassword";
+  @Prop() for!: "email" | "password" | "resetPassword";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
