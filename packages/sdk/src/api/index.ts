@@ -1,11 +1,10 @@
-import { ApiClient } from "./api_client";
+import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
 
-export * from "./api_client";
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
@@ -51,4 +50,4 @@ function getUnidyClient(): UnidyClient {
   return instance;
 }
 
-export { getUnidyClient, ApiClient };
+export { getUnidyClient, ApiClient, ApiResponse };

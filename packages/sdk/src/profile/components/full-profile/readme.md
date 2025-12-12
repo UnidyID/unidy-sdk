@@ -20,7 +20,7 @@
 
 - [u-profile](../profile)
 - [u-field](../field)
-- [u-profile-submit-button](../unidy-submit-button)
+- [u-profile-submit-button](../submit-button)
 
 ### Graph
 ```mermaid
