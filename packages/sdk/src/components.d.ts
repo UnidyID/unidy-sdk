@@ -57,7 +57,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for": "email" | "password" | "resetPassword";
+        "for": "email" | "single-login" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -323,7 +323,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "reset-password" | "registration" | "single-login" | "missing-fields";
+        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -709,7 +709,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for": "email" | "password" | "resetPassword";
+        "for": "email" | "single-login" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;

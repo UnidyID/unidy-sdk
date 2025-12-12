@@ -55,9 +55,6 @@ export class SubmitButton {
     if (authState.step === "reset-password") {
       return this.for === "resetPassword";
     }
-    if (authState.step === "single-login") {
-      return true;
-    }
 
     return false;
   }
