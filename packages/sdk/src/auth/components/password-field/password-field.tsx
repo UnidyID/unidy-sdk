@@ -99,12 +99,6 @@ export class PasswordField {
   }
 
   render() {
-    console.log("[u-password-field]", {
-      step: authState.step,
-      availableLoginOptions: authState.availableLoginOptions,
-      shouldRender: this.shouldRender(),
-    });
-
     if (!this.shouldRender() && authState.step !== "single-login") {
       return null;
     }
