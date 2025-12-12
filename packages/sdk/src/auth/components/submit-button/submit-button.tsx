@@ -20,7 +20,7 @@ export class SubmitButton {
         return t("buttons.continue");
       case "verification":
         if (this.for === "password") {
-          return t("auth.password.butonText", { defaultValue: t("Sign In with Password") });
+          return t("auth.password.buttonText", { defaultValue: t("Sign In with Password") });
         }
         return t("buttons.submit");
       case "reset-password":
@@ -44,14 +44,12 @@ export class SubmitButton {
     if (authState.step === "email") {
       return this.for === "email";
     }
-
     if (authState.step === "verification") {
       return this.for === "password" && authState.magicCodeStep !== "sent";
     }
     if (authState.step === "reset-password") {
       return this.for === "resetPassword";
     }
-
     if (authState.step === "single-login") {
       return true;
     }
