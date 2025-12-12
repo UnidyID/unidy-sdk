@@ -44,7 +44,7 @@ export class AuthHelpers {
       authStore.setMagicCodeStep("sent");
       authStore.setStep("magic-code");
       authStore.setLoading(false);
-      return;
+      return [error, response] as const;
     }
     const signInResponse = response as CreateSignInResponse;
     authStore.setStep("verification");
@@ -182,9 +182,9 @@ export class AuthHelpers {
     authStore.clearErrors();
 
     if (authState.step === "single-login") {
-      this.createSignIn(authState.email, undefined, true);
+      const [error, response] = await this.createSignIn(authState.email, undefined, true);
       authStore.setLoading(false);
-      return;
+      return [error, response] as const;
     }
 
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);

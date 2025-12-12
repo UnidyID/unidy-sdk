@@ -295,7 +295,6 @@
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
       class="flex flex-col gap-2">
 
-
       <u-signin-step name="single-login">
         <u-email-field
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
@@ -314,32 +313,28 @@
 
         <u-auth-submit-button for="single-login" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
 
-        <u-conditional-render when="magicCodeEnabled">
-          <u-conditional-render when="magicCodeSent" is="false">
-            <div class="flex items-center my-4">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
+        <u-conditional-render when="magicCodeSent" is="false">
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
 
-            <u-send-magic-code-button
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
-          </u-conditional-render>
+          <u-send-magic-code-button
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
         </u-conditional-render>
 
         <u-signin-strategy type="magic-code">
           <u-conditional-render when="magicCodeSent" is="true">
             <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-          </u-conditional-render>
 
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
-            aria-describedby="magic-code-error"></u-magic-code-field>
+            <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+              aria-describedby="magic-code-error"></u-magic-code-field>
 
-          <u-error-message id="magic-code-error" for="magicCode"
-            class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+            <u-error-message id="magic-code-error" for="magicCode"
+              class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
-          <u-conditional-render when="magicCodeSent" is="true">
-            <u-send-magic-code-button text="Resend Magic Code"
+            <u-send-magic-code-button
               class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
           </u-conditional-render>
         </u-signin-strategy>

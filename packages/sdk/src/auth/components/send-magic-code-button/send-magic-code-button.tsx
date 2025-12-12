@@ -51,7 +51,7 @@ export class SendMagicCodeButton {
   }
 
   render() {
-    if (!authState.availableLoginOptions?.magic_link) {
+    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
       return null;
     }
 
