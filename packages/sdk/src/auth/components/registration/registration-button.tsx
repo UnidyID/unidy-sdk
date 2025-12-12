@@ -30,8 +30,9 @@ export class RegistrationButton {
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
+    const encodedEmail = encodeURIComponent(authState.email);
 
-    return `${baseUrl}/logins?email=${authState.email}&sdk_redirect_uri=${redirectUri}`;
+    return `${baseUrl}/logins?email=${encodedEmail}&sdk_redirect_uri=${redirectUri}`;
   }
 
   private handleClick = async (event: Event) => {
