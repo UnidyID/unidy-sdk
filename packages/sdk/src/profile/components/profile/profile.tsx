@@ -1,9 +1,11 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, Prop, State, h } from "@stencil/core";
-import { Auth } from "../../../auth/auth";
+import { t } from "../../../i18n";
+import { Auth } from "../../../auth";
+import { getUnidyClient } from "../../../api";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
-import { getUnidyClient } from "../../../auth/api-client";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
+import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
 
 @Component({
@@ -13,34 +15,44 @@ import type { ProfileRaw } from "../../store/profile-store";
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-  @Prop() language?: string;
 
   private authInstance?: Auth;
 
   @State() fetchingProfileData = false;
 
-  async componentWillLoad() {
-    profileState.language = this.language;
+  constructor() {
+    unidyOnChange("locale", async (_locale) => {
+      await this.getTokenAndFetchProfile();
+    });
+  }
 
+  async componentWillLoad() {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
-      this.authInstance = await Auth.getInstance();
-
-      const idToken = await this.authInstance?.getToken();
-
-      if (idToken && typeof idToken === "string") {
-        await this.fetchProfileData(idToken as string);
-      }
+      await this.getTokenAndFetchProfile();
     }
 
     profileState.loading = false;
   }
 
+  async getTokenAndFetchProfile() {
+    this.authInstance = await Auth.getInstance();
+
+    const idToken = await this.authInstance?.getToken();
+
+    if (idToken && typeof idToken === "string") {
+      await this.fetchProfileData(idToken as string);
+    }
+  }
+
   async fetchProfileData(idToken: string) {
+    // avoid multiple requests
+    if (this.fetchingProfileData) return;
+
     this.fetchingProfileData = true;
     try {
-      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: this.language });
+      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
 
       if (resp.success) {
         profileState.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
@@ -54,7 +66,7 @@ export class Profile {
       }
     } catch (error) {
       Sentry.captureException("Failed to fetch profile data:", error);
-      profileState.flashErrors = { error: "Failed to load profile data. Please check configuration." };
+      profileState.flashErrors = { error: t("errors.failedToLoadProfile") };
     }
     this.fetchingProfileData = false;
   }
@@ -80,16 +92,16 @@ export class Profile {
 
     if (authStore.state.authenticated) {
       return this.fetchingProfileData ? (
-        <div>Loading...</div>
+        <div>{t("loading")}</div>
       ) : (
         <Host>
           <slot />
           {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
-          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message="Profile is updated" />}
+          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={t("profile.updated")} />}
         </Host>
       );
     }
 
-    return <h2>Please sign in to view your profile</h2>;
+    return <h2>{t("profile.signInToView")}</h2>;
   }
 }

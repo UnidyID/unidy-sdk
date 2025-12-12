@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { authState } from "../../store/auth-store";
 import { GoogleLogo } from "./logos/google";
 import { LinkedInLogo } from "./logos/linkedin";
 import { AppleLogo } from "./logos/apple";
@@ -25,7 +27,6 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: true,
 })
 export class SocialLoginButton {
-  @Prop() text = "Continue with Google";
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
   @Prop() iconOnly = false;
@@ -40,6 +41,18 @@ export class SocialLoginButton {
 
   private get isUnsupportedProvider(): boolean {
     return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider) && this.provider !== "unidy";
+  }
+
+  private get isProviderEnabled(): boolean {
+    if (authState.step !== "verification") {
+      return true; // TODO: for now we show all providers on the email step since we don't have registration flow in place yet
+    }
+
+    if (!authState.availableLoginOptions?.social_logins) {
+      return false;
+    }
+
+    return authState.availableLoginOptions.social_logins.some((enabled) => enabled.startsWith(this.provider) || enabled === this.provider);
   }
 
   private getAuthUrl(): string {
@@ -78,6 +91,17 @@ export class SocialLoginButton {
   }
 
   render() {
+    if (!this.isProviderEnabled) {
+      return null;
+    }
+
+    const providerName = this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
+    const text = t("auth.socialLogin.buttonText", {
+      defaultValue: "Continue with {{provider}}",
+      provider: providerName,
+    });
+
+    // TODO: allow users to customize already used providers with custom text and icon
     return (
       <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
         <div class="flex items-center justify-center" part="social-login-button-content">
@@ -87,10 +111,10 @@ export class SocialLoginButton {
 
           {this.iconOnly ? (
             // Render the hidden text for accessibility.
-            <span class="sr-only">{this.text}</span>
+            <span class="sr-only">{text}</span>
           ) : (
             <span class={!this.isUnsupportedProvider ? "ml-4" : ""} part="social-login-button-text">
-              {this.text}
+              {text}
             </span>
           )}
         </div>

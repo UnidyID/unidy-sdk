@@ -6,7 +6,9 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
+import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -14,7 +16,9 @@ import { TokenResponse } from "./auth/api/auth";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
+export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
+export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -44,12 +48,6 @@ export namespace Components {
         "apiUrl": string;
         "componentClassName"?: string;
     }
-    interface UAuthProvider {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-    }
     interface UAuthSubmitButton {
         /**
           * @default ""
@@ -59,15 +57,16 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for"?: "email" | "password";
-        /**
-          * @default ""
-         */
-        "text": string;
+        "for"?: "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
-        "is": "true" | "false";
-        "when": string;
+        "conditionFunction"?: (state: AuthState) => boolean;
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not": boolean;
+        "when"?: string;
     }
     interface UConfig {
         /**
@@ -78,6 +77,14 @@ export namespace Components {
           * @default ""
          */
         "baseUrl": string;
+        /**
+          * @default ""
+         */
+        "customTranslations": string | Record<string, TranslationTree>;
+        /**
+          * @default "en"
+         */
+        "fallbackLocale": string;
         /**
           * @default "en"
          */
@@ -100,10 +107,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder": string;
     }
     interface UErrorMessage {
         /**
@@ -111,7 +114,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -161,11 +164,10 @@ export namespace Components {
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
-        "language"?: string;
         /**
-          * @default "Submit"
+          * @default ""
          */
-        "submitButtonText": string;
+        "submitButtonText"?: string;
     }
     interface ULogoutButton {
         /**
@@ -176,10 +178,6 @@ export namespace Components {
           * @default true
          */
         "reloadOnSuccess": boolean;
-        /**
-          * @default "Logout"
-         */
-        "text": string;
     }
     interface UMagicCodeField {
         /**
@@ -214,18 +212,10 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        /**
-          * @default "Authenticating..."
-         */
-        "loadingText": string;
-        /**
-          * @default "Sign in with Passkey"
-         */
-        "text": string;
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel": string;
         /**
@@ -233,16 +223,19 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * @default "Enter your password"
+          * @default "login"
          */
-        "placeholder": string;
+        "for": PasswordFieldFor;
+        /**
+          * @default null
+         */
+        "placeholder": any;
     }
     interface UProfile {
         /**
           * @default ""
          */
         "initialData": string | Record<string, string>;
-        "language"?: string;
         "profileId"?: string;
     }
     interface UProfileSubmitButton {
@@ -294,20 +287,8 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage": string;
-        /**
-          * @default "Reset Password"
-         */
-        "text": string;
     }
     interface USendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText": string;
         /**
           * @default ""
          */
@@ -316,10 +297,12 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+    }
+    interface USignedIn {
         /**
-          * @default "Send Magic Code"
+          * @default ""
          */
-        "text": string;
+        "componentClassName": string;
     }
     interface USigninRoot {
         /**
@@ -333,7 +316,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "single-login" | "missing-fields";
+        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -357,10 +340,6 @@ export namespace Components {
          */
         "redirectUri": string;
         /**
-          * @default "Continue with Google"
-         */
-        "text": string;
-        /**
           * @default "light"
          */
         "theme": "light" | "dark";
@@ -368,14 +347,6 @@ export namespace Components {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -385,10 +356,6 @@ export namespace Components {
           * @default 10
          */
         "limit": number;
-        /**
-          * @default "en-US"
-         */
-        "locale": string;
         /**
           * @default 1
          */
@@ -456,12 +423,6 @@ declare global {
     var HTMLSubmitButtonElement: {
         prototype: HTMLSubmitButtonElement;
         new (): HTMLSubmitButtonElement;
-    };
-    interface HTMLUAuthProviderElement extends Components.UAuthProvider, HTMLStencilElement {
-    }
-    var HTMLUAuthProviderElement: {
-        prototype: HTMLUAuthProviderElement;
-        new (): HTMLUAuthProviderElement;
     };
     interface HTMLUAuthSubmitButtonElement extends Components.UAuthSubmitButton, HTMLStencilElement {
     }
@@ -612,6 +573,12 @@ declare global {
         prototype: HTMLUSendMagicCodeButtonElement;
         new (): HTMLUSendMagicCodeButtonElement;
     };
+    interface HTMLUSignedInElement extends Components.USignedIn, HTMLStencilElement {
+    }
+    var HTMLUSignedInElement: {
+        prototype: HTMLUSignedInElement;
+        new (): HTMLUSignedInElement;
+    };
     interface HTMLUSigninRootElementEventMap {
         "authEvent": TokenResponse;
         "errorEvent": { error: string };
@@ -664,7 +631,6 @@ declare global {
         "email-field": HTMLEmailFieldElement;
         "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "submit-button": HTMLSubmitButtonElement;
-        "u-auth-provider": HTMLUAuthProviderElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
@@ -686,6 +652,7 @@ declare global {
         "u-raw-field": HTMLURawFieldElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
+        "u-signed-in": HTMLUSignedInElement;
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
         "u-signin-strategy": HTMLUSigninStrategyElement;
@@ -719,12 +686,6 @@ declare namespace LocalJSX {
         "onErrorEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
         "onSuccessEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
     }
-    interface UAuthProvider {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-    }
     interface UAuthSubmitButton {
         /**
           * @default ""
@@ -734,15 +695,16 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for"?: "email" | "password";
-        /**
-          * @default ""
-         */
-        "text"?: string;
+        "for"?: "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
-        "is": "true" | "false";
-        "when": string;
+        "conditionFunction"?: (state: AuthState) => boolean;
+        "is"?: string;
+        /**
+          * @default false
+         */
+        "not"?: boolean;
+        "when"?: string;
     }
     interface UConfig {
         /**
@@ -753,6 +715,14 @@ declare namespace LocalJSX {
           * @default ""
          */
         "baseUrl"?: string;
+        /**
+          * @default ""
+         */
+        "customTranslations"?: string | Record<string, TranslationTree>;
+        /**
+          * @default "en"
+         */
+        "fallbackLocale"?: string;
         /**
           * @default "en"
          */
@@ -777,10 +747,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * @default "Enter your email"
-         */
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
@@ -788,7 +754,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -838,9 +804,8 @@ declare namespace LocalJSX {
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
-        "language"?: string;
         /**
-          * @default "Submit"
+          * @default ""
          */
         "submitButtonText"?: string;
     }
@@ -854,10 +819,6 @@ declare namespace LocalJSX {
           * @default true
          */
         "reloadOnSuccess"?: boolean;
-        /**
-          * @default "Logout"
-         */
-        "text"?: string;
     }
     interface UMagicCodeField {
         /**
@@ -892,18 +853,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * @default "Authenticating..."
-         */
-        "loadingText"?: string;
-        /**
-          * @default "Sign in with Passkey"
-         */
-        "text"?: string;
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel"?: string;
         /**
@@ -911,16 +864,19 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * @default "Enter your password"
+          * @default "login"
          */
-        "placeholder"?: string;
+        "for"?: PasswordFieldFor;
+        /**
+          * @default null
+         */
+        "placeholder"?: any;
     }
     interface UProfile {
         /**
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
-        "language"?: string;
         "profileId"?: string;
     }
     interface UProfileSubmitButton {
@@ -972,20 +928,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
-        /**
-          * @default "Password reset email sent. Please check your inbox."
-         */
-        "successMessage"?: string;
-        /**
-          * @default "Reset Password"
-         */
-        "text"?: string;
     }
     interface USendMagicCodeButton {
-        /**
-          * @default "Magic code already sent to your email"
-         */
-        "alreadySentText"?: string;
         /**
           * @default ""
          */
@@ -994,10 +938,12 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+    }
+    interface USignedIn {
         /**
-          * @default "Send Magic Code"
+          * @default ""
          */
-        "text"?: string;
+        "componentClassName"?: string;
     }
     interface USigninRoot {
         /**
@@ -1012,7 +958,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "single-login" | "missing-fields";
+        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields";
     }
     interface USigninStrategy {
         /**
@@ -1035,10 +981,6 @@ declare namespace LocalJSX {
          */
         "redirectUri"?: string;
         /**
-          * @default "Continue with Google"
-         */
-        "text"?: string;
-        /**
           * @default "light"
          */
         "theme"?: "light" | "dark";
@@ -1046,14 +988,6 @@ declare namespace LocalJSX {
     interface USpinner {
     }
     interface UTicketableList {
-        /**
-          * @default "public-newsletter-api-key"
-         */
-        "apiKey"?: string;
-        /**
-          * @default "http://localhost:3000"
-         */
-        "baseUrl"?: string;
         "containerClass"?: string;
         /**
           * @default ""
@@ -1063,10 +997,6 @@ declare namespace LocalJSX {
           * @default 10
          */
         "limit"?: number;
-        /**
-          * @default "en-US"
-         */
-        "locale"?: string;
         /**
           * @default 1
          */
@@ -1091,7 +1021,6 @@ declare namespace LocalJSX {
         "email-field": EmailField;
         "newsletter-checkbox": NewsletterCheckbox;
         "submit-button": SubmitButton;
-        "u-auth-provider": UAuthProvider;
         "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
@@ -1113,6 +1042,7 @@ declare namespace LocalJSX {
         "u-raw-field": URawField;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
+        "u-signed-in": USignedIn;
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
         "u-signin-strategy": USigninStrategy;
@@ -1128,7 +1058,6 @@ declare module "@stencil/core" {
             "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
-            "u-auth-provider": LocalJSX.UAuthProvider & JSXBase.HTMLAttributes<HTMLUAuthProviderElement>;
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
@@ -1150,6 +1079,7 @@ declare module "@stencil/core" {
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
+            "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
