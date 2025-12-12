@@ -272,7 +272,7 @@
           }'></u-config>
 
   <u-error-message for="connection"
-    class-name="fixed bottom-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+    class-name="fixed top-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
     <div class="flex items-start gap-2">
       <div>
         <strong class="block text-yellow-800">Connection Error</strong>
@@ -348,7 +348,7 @@
         <u-email-field
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
           aria-describedby="email-error"></u-email-field>
-        <!-- <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render> -->
+        <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render>
         <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <u-auth-submit-button for="email"
