@@ -20,7 +20,7 @@ export class SubmitButton {
         return t("buttons.continue");
       case "verification":
         if (this.for === "password") {
-          return t("auth.password.buttonText", { defaultValue: t("Sign In with Password") });
+          return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
         }
         return t("buttons.submit");
       case "reset-password":
@@ -30,7 +30,7 @@ export class SubmitButton {
 
         return t("buttons.submit");
       case "single-login":
-        return "Sign In";
+        return t("auth.single-login.buttonText", { defaultValue: "Sign in" });
       default:
         return t("buttons.submit");
     }

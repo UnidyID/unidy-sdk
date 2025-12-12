@@ -21,6 +21,9 @@
     },
     "socialLogin": {
       "buttonText": "Weiter mit {{provider}}"
+    },
+    "single-login": {
+      "buttonText": "Anmelden"
     }
   },
   "buttons": {
