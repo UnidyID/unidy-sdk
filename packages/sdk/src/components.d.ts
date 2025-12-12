@@ -8,6 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
+import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -17,6 +18,7 @@ import { PaginationStore } from "./ticketable/store/pagination-store";
 export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
+export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -55,7 +57,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for": "email" | "password";
+        "for": "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -112,7 +114,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -213,13 +215,21 @@ export namespace Components {
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel": string;
         /**
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default "login"
+         */
+        "for": PasswordFieldFor;
+        /**
+          * @default null
+         */
+        "placeholder": any;
     }
     interface UProfile {
         /**
@@ -306,7 +316,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "reset-password";
         "submit": () => Promise<void>;
     }
     interface USigninStrategy {
@@ -685,7 +695,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for": "email" | "password";
+        "for": "email" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -744,7 +754,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "general" | "connection";
+        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
     }
     interface UField {
         "componentClassName"?: string;
@@ -846,13 +856,21 @@ declare namespace LocalJSX {
     }
     interface UPasswordField {
         /**
-          * @default "Password"
+          * @default ""
          */
         "ariaLabel"?: string;
         /**
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default "login"
+         */
+        "for"?: PasswordFieldFor;
+        /**
+          * @default null
+         */
+        "placeholder"?: any;
     }
     interface UProfile {
         /**
@@ -940,7 +958,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification";
+        "name": "email" | "verification" | "reset-password";
     }
     interface USigninStrategy {
         /**

@@ -4,19 +4,26 @@ import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
+export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password";
+
 export interface AuthState {
-  step: "email" | "verification" | "magic-code" | "missing-fields";
+  step: AuthStep;
   sid: string | null;
   email: string;
   password: string;
 
   magicCodeStep: null | "requested" | "sent";
-  resetPasswordStep: null | "requested" | "sent";
+  resetPassword: {
+    step: null | "requested" | "sent" | "completed";
+    token: string | null;
+    newPassword: string;
+    passwordConfirmation: string;
+  };
   missingRequiredFields?: RequiredFieldsResponse["fields"];
   availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
-  errors: Record<string, string | null>;
+  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection", string | null>;
   globalErrors: Record<string, string | null>;
 
   authenticated: boolean;
@@ -58,10 +65,22 @@ const initialState: AuthState = {
   email: "",
   password: "",
   magicCodeStep: null,
-  resetPasswordStep: null,
+  resetPassword: {
+    step: null,
+    token: null,
+    newPassword: "",
+    passwordConfirmation: "",
+  },
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
-  errors: {},
+  errors: {
+    email: null,
+    password: null,
+    magicCode: null,
+    resetPassword: null,
+    general: null,
+    connection: null,
+  },
   globalErrors: {},
   authenticated: false,
   missingRequiredFields: undefined,
@@ -96,10 +115,12 @@ class AuthStore {
 
   setEmail(email: string) {
     state.email = email;
+    state.errors.email = null;
   }
 
   setPassword(password: string) {
     state.password = password;
+    state.errors.password = null;
   }
 
   setMissingFields(fields: RequiredFieldsResponse["fields"]) {
@@ -142,17 +163,19 @@ class AuthStore {
     return true;
   }
 
-  clearFieldError(field: string) {
-    const { [field]: _, ...rest } = state.errors;
-    state.errors = rest;
+  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection") {
+    state.errors = { ...state.errors, [field]: null } as Record<
+      "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection",
+      string | null
+    >;
   }
 
   clearErrors() {
-    state.errors = {};
+    state.errors = initialState.errors;
     state.globalErrors = {};
   }
 
-  setStep(step: "email" | "verification" | "magic-code" | "missing-fields") {
+  setStep(step: AuthStep) {
     state.step = step;
   }
 
@@ -171,8 +194,24 @@ class AuthStore {
     state.magicCodeStep = step;
   }
 
-  setResetPasswordStep(step: null | "requested" | "sent") {
-    state.resetPasswordStep = step;
+  setResetPasswordStep(step: null | "requested" | "sent" | "completed") {
+    state.resetPassword = { ...state.resetPassword, step };
+  }
+
+  setResetToken(token: string | null) {
+    state.resetPassword = { ...state.resetPassword, token };
+  }
+
+  setNewPassword(password: string) {
+    state.resetPassword = { ...state.resetPassword, newPassword: password };
+  }
+
+  setConfirmPassword(password: string) {
+    state.resetPassword = { ...state.resetPassword, passwordConfirmation: password };
+  }
+
+  updateResetPassword(updates: Partial<AuthState["resetPassword"]>) {
+    state.resetPassword = { ...state.resetPassword, ...updates };
   }
 
   setAuthenticated(authenticated: boolean) {

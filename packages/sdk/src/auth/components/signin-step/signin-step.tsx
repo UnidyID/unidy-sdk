@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification";
+  @Prop() name!: "email" | "verification" | "reset-password";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -26,6 +26,8 @@ export class SigninStep {
       await authInstance.helpers.createSignIn(authState.email);
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
+    } else if (authState.step === "reset-password") {
+      await authInstance.helpers.resetPassword();
     }
   }
 
@@ -36,6 +38,8 @@ export class SigninStep {
       shouldRender = authState.step === "email";
     } else if (this.name === "verification") {
       shouldRender = authState.step === "verification" || authState.step === "magic-code";
+    } else if (this.name === "reset-password") {
+      shouldRender = authState.step === "reset-password";
     }
 
     if (!shouldRender) {

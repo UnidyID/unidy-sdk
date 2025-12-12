@@ -3,6 +3,8 @@ import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
+export type PasswordFieldFor = "login" | "new-password" | "password-confirmation";
+
 @Component({
   tag: "u-password-field",
   shadow: false,
@@ -10,12 +12,74 @@ import { getParentSigninStep } from "../helpers";
 export class PasswordField {
   @Element() el!: HTMLElement;
 
+  @Prop() for: PasswordFieldFor = "login";
+  @Prop() placeholder = null;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() ariaLabel = "Password";
+  @Prop() ariaLabel = "";
+
+  private getAriaLabel(): string {
+    if (this.ariaLabel) return this.ariaLabel;
+
+    switch (this.for) {
+      case "login":
+        return "Password";
+      case "new-password":
+        return "New Password";
+      case "password-confirmation":
+        return "Password Confirmation";
+    }
+  }
+
+  private getValue(): string {
+    switch (this.for) {
+      case "login":
+        return authState.password;
+      case "new-password":
+        return authState.resetPassword.newPassword;
+      case "password-confirmation":
+        return authState.resetPassword.passwordConfirmation;
+    }
+  }
+
+  private getAutocomplete(): string {
+    switch (this.for) {
+      case "login":
+        return "current-password";
+      case "new-password":
+      case "password-confirmation":
+        return "new-password";
+    }
+  }
+
+  private getInputName(): string {
+    switch (this.for) {
+      case "login":
+        return "password";
+      case "new-password":
+        return "new-password";
+      case "password-confirmation":
+        return "confirm-password";
+    }
+  }
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
-    authStore.setPassword(target.value);
+
+    switch (this.for) {
+      case "login":
+        authStore.setPassword(target.value);
+        break;
+      case "new-password":
+        authStore.setNewPassword(target.value);
+        authStore.clearFieldError("resetPassword");
+        authStore.clearFieldError("password");
+        break;
+      case "password-confirmation":
+        authStore.setConfirmPassword(target.value);
+        authStore.clearFieldError("resetPassword");
+        authStore.clearFieldError("password");
+        break;
+    }
   };
 
   private handleSubmit = async (event: Event) => {
@@ -24,12 +88,18 @@ export class PasswordField {
     (await getParentSigninStep(this.el))?.submit();
   };
 
-  render() {
-    if (authState.step !== "verification") {
-      return null;
+  private shouldRender(): boolean {
+    switch (this.for) {
+      case "login":
+        return authState.step === "verification" && authState.availableLoginOptions?.password;
+      case "new-password":
+      case "password-confirmation":
+        return authState.step === "reset-password";
     }
+  }
 
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password) {
+  render() {
+    if (!this.shouldRender()) {
       return null;
     }
 
@@ -38,15 +108,15 @@ export class PasswordField {
     return (
       <form onSubmit={this.handleSubmit}>
         <input
-          name="password"
+          name={this.getInputName()}
           type="password"
-          value={authState.password}
-          autocomplete="current-password"
-          placeholder={placeholder}
+          value={this.getValue()}
+          autocomplete={this.getAutocomplete()}
+          placeholder={this.placeholder || placeholder}
           disabled={authState.loading}
           class={this.componentClassName}
           onInput={this.handleInput}
-          aria-label={this.ariaLabel}
+          aria-label={this.getAriaLabel()}
         />
       </form>
     );

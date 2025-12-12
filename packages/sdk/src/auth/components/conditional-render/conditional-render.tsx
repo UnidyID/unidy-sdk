@@ -14,8 +14,8 @@ const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
   magicCodeSent: (state) => state.magicCodeStep === "sent" || state.magicCodeStep === "requested",
   magicCodeRequested: (state) => state.magicCodeStep === "requested",
 
-  resetPasswordSent: (state) => state.resetPasswordStep === "sent" || state.resetPasswordStep === "requested",
-  resetPasswordRequested: (state) => state.resetPasswordStep === "requested",
+  resetPasswordSent: (state) => state.resetPassword.step === "sent" || state.resetPassword.step === "requested",
+  resetPasswordRequested: (state) => state.resetPassword.step === "requested",
 };
 
 function isTruthy(value: unknown): boolean {

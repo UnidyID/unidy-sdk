@@ -10,7 +10,7 @@ import { hasSlotContent } from "../../../shared/component-utils";
 })
 export class ErrorMessage {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() for!: "email" | "password" | "magicCode" | "general" | "connection";
+  @Prop() for!: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
 
   // User defined messages(translations) per error code --> TODO: maybe this should be part of config component ?
   @Prop() errorMessages?: Record<string, string>;
@@ -49,6 +49,9 @@ export class ErrorMessage {
       return null;
     }
 
-    return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : this.getErrorMessage(errorCode)}</Host>;
+    const errorMessage = this.getErrorMessage(errorCode);
+    const formattedMessage = errorMessage?.includes("\n") ? <div style={{ whiteSpace: "pre-line" }}>{errorMessage}</div> : errorMessage;
+
+    return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : formattedMessage}</Host>;
   }
 }

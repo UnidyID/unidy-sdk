@@ -13,6 +13,11 @@ export const AUTH_ERROR_CODES = {
     USED: "magic_code_used",
     NOT_VALID: "magic_code_not_valid",
   },
+  PASSWORD_RESET: {
+    // TODO: figure out how to handle password requirements --> it should be same as in Unidy
+    // just a placeholder for now
+    PASSWORD_TOO_WEAK: "password_too_weak",
+  },
   GENERAL: {
     ACCOUNT_LOCKED: "account_locked",
     SIGN_IN_EXPIRED: "sign_in_expired",

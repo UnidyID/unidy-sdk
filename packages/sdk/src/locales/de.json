@@ -62,6 +62,18 @@
     "refresh_token_revoked": "Aktualisierungs-Token widerrufen",
     "required_field": "{{field}} ist erforderlich",
     "reset_password_already_sent": "Zurücksetzen des Passworts bereits gesendet",
+    "reset_token_missing": "Reset-Token fehlt",
+    "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
+    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
+    "passwords_do_not_match": "Passwörter stimmen nicht überein",
+    "password_required": "Passwort ist erforderlich",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Passwort ist zu kurz (mindestens 6 Zeichen)",
+      "min_length": "Mindestlänge ist 6 Zeichen",
+      "number": "Muss eine Zahl enthalten",
+      "symbol": "Muss ein Symbol enthalten",
+      "mixed_case": "Muss sowohl Groß- als auch Kleinbuchstaben enthalten"
+    },
     "schema_validation_error": "Schemavalidierungsfehler",
     "sign_in_expired": "Anmeldung abgelaufen",
     "sign_in_not_found": "Anmeldung nicht gefunden",

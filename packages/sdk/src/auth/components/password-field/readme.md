@@ -7,10 +7,12 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default      |
-| -------------------- | ------------ | ----------- | -------- | ------------ |
-| `ariaLabel`          | `aria-label` |             | `string` | `"Password"` |
-| `componentClassName` | `class-name` |             | `string` | `""`         |
+| Property             | Attribute     | Description | Type                                                   | Default   |
+| -------------------- | ------------- | ----------- | ------------------------------------------------------ | --------- |
+| `ariaLabel`          | `aria-label`  |             | `string`                                               | `""`      |
+| `componentClassName` | `class-name`  |             | `string`                                               | `""`      |
+| `for`                | `for`         |             | `"login" \| "new-password" \| "password-confirmation"` | `"login"` |
+| `placeholder`        | `placeholder` |             | `any`                                                  | `null`    |
 
 
 ----------------------------------------------

@@ -3,7 +3,7 @@ import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/co
 import i18n from "../../../i18n";
 import { unidyState } from "../../store/unidy-store";
 import { Auth } from "../../../auth";
-import { getUnidyClient } from "../../../api";
+import { getUnidyClient } from "../../../api/";
 
 export interface Config {
   apiKey: string;

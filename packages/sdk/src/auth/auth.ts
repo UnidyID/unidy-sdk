@@ -34,6 +34,7 @@ export class Auth {
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
     this.helpers.handleSocialAuthRedirect();
+    this.helpers.handleResetPasswordRedirect();
   }
 
   static Errors = {
