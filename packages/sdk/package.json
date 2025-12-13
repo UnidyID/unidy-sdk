@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
   "homepage": "https://sdk-demo.unidy.io",
   "type": "module",
