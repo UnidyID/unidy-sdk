@@ -4,10 +4,35 @@
   Flash of Unstyled Content (FOUC) and apply global styles.
 */
 
-email-field, newsletter-checkbox, submit-button, u-signed-in, u-auth-submit-button, u-conditional-render, u-config,
-u-email-field, u-error-message, u-field, u-flash-message, u-logout-button, u-magic-code-field, u-missing-field,
-u-missing-fields-submit-button, u-pagination-button, u-pagination-page, u-passkey, u-password-field, u-profile,
-u-profile-submit-button,u-raw-field, u-reset-password-button, u-send-magic-code-button, u-signin-root, u-signin-step,
-u-signin-strategy, u-social-login-button, u-spinner, u-ticketable-list {
-  visibility:hidden
+newsletter-checkbox,
+submit-button,
+u-signed-in,
+u-auth-submit-button,
+u-conditional-render,
+u-config,
+u-email-field,
+u-error-message,
+u-field,
+u-flash-message,
+u-logout-button,
+u-magic-code-field,
+u-missing-field,
+u-missing-fields-submit-button,
+u-newsletter-root,
+u-pagination-button,
+u-pagination-page,
+u-passkey,
+u-password-field,
+u-profile,
+u-profile-submit-button,
+u-raw-field,
+u-reset-password-button,
+u-send-magic-code-button,
+u-signin-root,
+u-signin-step,
+u-signin-strategy,
+u-social-login-button,
+u-spinner,
+u-ticketable-list {
+  visibility: hidden
 }
