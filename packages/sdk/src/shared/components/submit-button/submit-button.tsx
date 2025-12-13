@@ -101,9 +101,7 @@ export class SubmitButton {
       this.componentClassName,
       this.context === "auth" ? "flex justify-center" : "",
       "disabled:opacity-50 disabled:cursor-not-allowed",
-    ]
-
-      .join(" ");
+    ].join(" ");
 
     const buttonProps: any = {
       type: 'submit',
