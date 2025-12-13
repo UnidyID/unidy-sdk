@@ -14,7 +14,7 @@ import type { Ticket } from "../../api/tickets";
 import type { Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
-import { unidyState } from "../../../shared/store/unidy-store";
+import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -63,6 +63,7 @@ export class TicketableList {
 
   // TODO[LOGGING]: Log this to console (use shared logger)
   async componentDidLoad() {
+    await waitForConfig();
     await this.loadData();
   }
 
