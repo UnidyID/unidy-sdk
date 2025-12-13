@@ -345,7 +345,6 @@ export namespace Components {
          */
         "disabled": boolean;
         "for"?: AuthButtonFor;
-        "part"?: string;
         "text"?: string;
     }
     interface UTicketableList {
@@ -981,7 +980,6 @@ declare namespace LocalJSX {
         "for"?: AuthButtonFor;
         "onNewsletterError"?: (event: USubmitButtonCustomEvent<any>) => void;
         "onNewsletterSuccess"?: (event: USubmitButtonCustomEvent<any>) => void;
-        "part"?: string;
         "text"?: string;
     }
     interface UTicketableList {
