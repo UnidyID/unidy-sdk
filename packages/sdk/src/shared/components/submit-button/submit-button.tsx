@@ -114,29 +114,17 @@ export class SubmitButton {
       "aria-live": "polite"
     };
 
-    const buttonContent = this.getButtonContent();
+    const button = <button {...buttonProps}>{this.getButtonContent()}</button>;
 
     switch (this.context) {
       case "auth":
-        return (
-          <AuthSubmitButton for={this.for}>
-            <button {...buttonProps}>{buttonContent}</button>
-          </AuthSubmitButton>
-        );
+        return <AuthSubmitButton for={this.for}>{button}</AuthSubmitButton>;
       case "profile":
-        return (
-          <ProfileSubmitButton>
-            <button {...buttonProps}>{buttonContent}</button>
-          </ProfileSubmitButton>
-        );
+        return <ProfileSubmitButton>{button}</ProfileSubmitButton>;
       case "newsletter":
-        return (
-          <NewsletterSubmitButton>
-            <button {...buttonProps}>{buttonContent}</button>
-          </NewsletterSubmitButton>
-        );
+        return <NewsletterSubmitButton>{button}</NewsletterSubmitButton>;
       default:
-        return <button {...buttonProps}>{buttonContent}</button>;
+        return button;
     }
   }
 }
