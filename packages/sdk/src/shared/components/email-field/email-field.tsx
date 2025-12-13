@@ -1,8 +1,10 @@
 import { Component, h, Prop, Element } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authStore, authState } from "../../../auth/store/auth-store";
-import { newsletterStore } from "../../../newsletter/store/store";
+import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+
 import { getParentSigninStep } from "../../../auth/components/helpers";
+import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
 
 @Component({
   tag: "u-email-field",
@@ -12,68 +14,59 @@ export class EmailField {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() placeholder?: string;
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
 
-  private get isAuthContext(): boolean {
-    return !!this.el.closest("u-signin-root");
+  private get context(): "auth" | "newsletter" | null {
+    if (this.el.closest("u-signin-root"))
+      return "auth";
+
+    if (this.el.closest("u-newsletter-root"))
+      return "newsletter";
+
+    return null;
   }
 
-  private get isNewsletterContext(): boolean {
-    return !!this.el.closest("u-newsletter-root");
-  }
-
-  private getCurrentStore(): typeof authStore | typeof newsletterStore | null {
-    if (this.isAuthContext) {
-      return authStore;
+  private get store(): typeof authStore | typeof newsletterStore | null {
+    switch (this.context) {
+      case "auth":
+        return authStore;
+      case "newsletter":
+        return newsletterStore;
+      default:
+        throw new Error("No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.");
     }
-    if (this.isNewsletterContext) {
-      return newsletterStore;
-    }
-
-    throw new Error("No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.");
   }
-
-  private getEmailValue(): string {
-    return this.getCurrentStore().state.email
-  }
-
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
 
-    const store = this.getCurrentStore();
-    store.setEmail(target.value);
+    (this.store as { state: { email: string } }).state.email = target.value;
   };
 
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    const emailValue = this.getEmailValue();
-    if (emailValue === "") {
+    if (this.store.state.email === "")
       return;
-    }
 
-    if (this.isAuthContext) {
+    if (this.context === "auth")
       return await getParentSigninStep(this.el)?.submit();
-    }
 
-    if (this.isNewsletterContext) {
-      // newsletter submit logic here ?
-    }
+    if (this.context === "newsletter")
+      return await getParentNewsletterRoot(this.el)?.submit();
   };
 
   render() {
-    const placeholderText = this.placeholder || t("auth.email.placeholder", { defaultValue: "Enter your email" });
-    const isDisabled = this.disabled || (this.isAuthContext && (authState.loading || authState.step === "verification" || authState.step === "registration"));
+    const placeholderText = t("auth.email.placeholder", { defaultValue: "Enter your email" });
+    const isDisabled = this.disabled || (this.context === "auth" && (authState.loading || authState.step === "verification" || authState.step === "registration"));
 
     return (
       <form onSubmit={this.handleSubmit}>
         <input
           id="email"
           type="email"
-          value={ this.getEmailValue()}
+          value={this.store.state.email}
           autocomplete="email"
           placeholder={placeholderText}
           disabled={isDisabled}

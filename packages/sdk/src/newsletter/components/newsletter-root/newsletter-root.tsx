@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Method } from "@stencil/core";
-import { newsletterStore } from "../../store/store";
 import type { Submittable } from "../../../shared/interfaces/submittable";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-root",

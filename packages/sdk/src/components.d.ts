@@ -82,7 +82,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
@@ -722,7 +721,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
