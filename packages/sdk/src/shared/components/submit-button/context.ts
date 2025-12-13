@@ -1,4 +1,4 @@
-import type { AuthButtonFor } from "./auth-submit-button";
+import type { AuthButtonFor } from "../../../auth/components/submit-button/auth-submit-button";
 
 export interface SubmitButtonContext {
   init?(): Promise<void>;

@@ -16,14 +16,15 @@ export class SubmitButton {
   @Prop() text?: string;
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() part?: string;
   @Event() newsletterSuccess: EventEmitter<any>;
   @Event() newsletterError: EventEmitter<any>;
 
   private context: "auth" | "profile" | "newsletter" | "other" = "other";
   private contextModule: SubmitButtonContext = defaultContext;
+  private hasSlot = false;
 
   async componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
     this.context = this.detectContext();
 
     switch (this.context) {
@@ -70,7 +71,6 @@ export class SubmitButton {
     if (this.contextModule.getButtonText) {
       return this.contextModule.getButtonText(this.for, this.text);
     }
-
     if (this.text) {
       return this.text;
     }
@@ -85,7 +85,7 @@ export class SubmitButton {
       return <u-spinner />;
     }
 
-    if (hasSlotContent(this.el)) {
+    if (this.hasSlot) {
       return <slot />;
     }
 
@@ -107,7 +107,7 @@ export class SubmitButton {
 
     const buttonProps: any = {
       type: 'submit',
-      part: 'button',
+      part: `${this.context}-submit-button`,
       disabled: this.isDisabled() || this.isLoading(),
       class: buttonClasses,
       onClick: this.handleClick,
