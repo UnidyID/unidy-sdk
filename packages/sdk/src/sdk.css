@@ -7,7 +7,6 @@
 newsletter-checkbox,
 submit-button,
 u-signed-in,
-u-auth-submit-button,
 u-conditional-render,
 u-config,
 u-email-field,
@@ -24,7 +23,6 @@ u-pagination-page,
 u-passkey,
 u-password-field,
 u-profile,
-u-profile-submit-button,
 u-raw-field,
 u-reset-password-button,
 u-send-magic-code-button,
@@ -33,6 +31,7 @@ u-signin-step,
 u-signin-strategy,
 u-social-login-button,
 u-spinner,
+u-submit-button,
 u-ticketable-list {
   visibility: hidden
 }
