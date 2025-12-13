@@ -1,10 +1,15 @@
-import { Component, h, Prop, Element, Event, EventEmitter } from "@stencil/core";
+import { Component, h, Prop, Element, State, Event, type EventEmitter } from "@stencil/core";
 import { hasSlotContent } from "../../component-utils";
 import { t } from "../../../i18n";
-import { type AuthButtonFor, AuthSubmitButton, authContext } from "../../../auth/components/submit-button/auth-submit-button";
-import { ProfileSubmitButton, profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { NewsletterSubmitButton, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
-import { type SubmitButtonContext, defaultContext } from "./context";
+import { authState } from "../../../auth/store/auth-store";
+import { getParentSigninStep } from "../../../auth/components/helpers";
+import { getParentProfile } from "../../../profile/components/helpers";
+import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
+import type { Submittable } from "../../interfaces/submittable";
+
+export type AuthButtonFor = "email" | "password" | "resetPassword";
+
+type ParentContext = HTMLElement & Submittable;
 
 @Component({
   tag: "u-submit-button",
@@ -19,69 +24,118 @@ export class SubmitButton {
   @Event() newsletterSuccess: EventEmitter<any>;
   @Event() newsletterError: EventEmitter<any>;
 
+  @State() private loading = false;
+  @State() private submitDisabled = false;
+
   private context: "auth" | "profile" | "newsletter" | "other" = "other";
-  private contextModule: SubmitButtonContext = defaultContext;
   private hasSlot = false;
 
-  async componentWillLoad() {
+  componentWillLoad() {
     this.hasSlot = hasSlotContent(this.el);
     this.context = this.detectContext();
-
-    switch (this.context) {
-      case "auth":
-        this.contextModule = authContext;
-        break;
-      case "profile":
-        this.contextModule = profileContext;
-        break;
-      case "newsletter":
-        this.contextModule = newsletterContext;
-        break;
-      default:
-        this.contextModule = defaultContext;
-    }
   }
 
-  private detectContext(): "auth" | "profile" | "newsletter" | "other" {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
-      return "auth";
+  private detectContext() {
+    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile"))
-      return "profile";
+    if (this.el.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root"))
-      return "newsletter";
+    if (this.el.closest("u-newsletter-root")) return "newsletter";
 
-    throw new Error("No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");
+    throw new Error(
+      "No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
+    );
+  }
+
+  private getParentContext(): ParentContext {
+    switch (this.context) {
+      case "auth":
+        return getParentSigninStep(this.el);
+      case "profile":
+        return getParentProfile(this.el);
+      case "newsletter":
+        return getParentNewsletterRoot(this.el);
+      default:
+        return null;
+    }
   }
 
   private handleClick = async (event: MouseEvent) => {
-    await this.contextModule.handleClick(event, this.el);
+    event.preventDefault();
+    await this.getParentContext()?.submit();
   };
 
-  private isDisabled(): boolean {
-    return this.contextModule.isDisabled(this.for, this.disabled);
+  private async isDisabled(): Promise<boolean> {
+    if (this.disabled) return true;
+
+    const parent = this.getParentContext();
+    if (!parent) return false;
+
+    if (this.context === "auth") {
+      return (parent as HTMLUSigninStepElement).isSubmitDisabled(this.for);
+    }
+
+    return parent.isSubmitDisabled();
   }
 
-  private isLoading(): boolean {
-    return this.contextModule.isLoading();
+  private async isLoading(): Promise<boolean> {
+    const parent = this.getParentContext();
+    return parent?.isLoading() ?? false;
   }
 
   private getButtonText(): string {
-    if (this.contextModule.getButtonText) {
-      return this.contextModule.getButtonText(this.for, this.text);
-    }
-    if (this.text) {
-      return this.text;
+    if (this.text) return this.text;
+
+    if (this.context === "auth") {
+      return this.getAuthButtonText();
     }
 
     return t("buttons.submit");
   }
 
-  private getButtonContent() {
-    const loading = this.isLoading();
+  private getAuthButtonText(): string {
+    switch (authState.step) {
+      case "email":
+        return t("buttons.continue");
+      case "verification":
+        if (this.for === "password") {
+          return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
+        }
+        return t("buttons.submit");
+      case "reset-password":
+        if (this.for === "resetPassword") {
+          return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
+        }
+        return t("buttons.submit");
+      default:
+        return t("buttons.submit");
+    }
+  }
 
-    if (loading) {
+  private shouldRender(): boolean {
+    if (this.context !== "auth") return true;
+
+    if (!authState.availableLoginOptions?.password && this.for === "password") {
+      return false;
+    }
+
+    if (authState.step === "email") {
+      return this.for === "email";
+    }
+
+    if (authState.step === "verification") {
+      return this.for === "password" && authState.magicCodeStep !== "sent";
+    }
+
+    if (authState.step === "reset-password") {
+      return this.for === "resetPassword";
+    }
+
+    return false;
+  }
+
+  private getButtonContent() {
+    if (this.loading) {
       return <u-spinner />;
     }
 
@@ -92,8 +146,13 @@ export class SubmitButton {
     return this.getButtonText();
   }
 
+  async componentWillRender() {
+    this.loading = await this.isLoading();
+    this.submitDisabled = await this.isDisabled();
+  }
+
   render() {
-    if (this.contextModule.shouldRender && !this.contextModule.shouldRender(this.for)) {
+    if (!this.shouldRender()) {
       return null;
     }
 
@@ -101,30 +160,17 @@ export class SubmitButton {
       this.componentClassName,
       this.context === "auth" ? "flex justify-center" : "",
       "disabled:opacity-50 disabled:cursor-not-allowed",
-    ]
-
-      .join(" ");
+    ].join(" ");
 
     const buttonProps: any = {
-      type: 'submit',
+      type: "submit",
       part: `${this.context}-submit-button`,
-      disabled: this.isDisabled() || this.isLoading(),
+      disabled: this.submitDisabled || this.loading,
       class: buttonClasses,
       onClick: this.handleClick,
-      "aria-live": "polite"
+      "aria-live": "polite",
     };
 
-    const button = <button {...buttonProps}>{this.getButtonContent()}</button>;
-
-    switch (this.context) {
-      case "auth":
-        return <AuthSubmitButton for={this.for}>{button}</AuthSubmitButton>;
-      case "profile":
-        return <ProfileSubmitButton>{button}</ProfileSubmitButton>;
-      case "newsletter":
-        return <NewsletterSubmitButton>{button}</NewsletterSubmitButton>;
-      default:
-        return button;
-    }
+    return <button {...buttonProps}>{this.getButtonContent()}</button>;
   }
 }

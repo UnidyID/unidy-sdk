@@ -12,7 +12,8 @@ import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
-import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
+import { AuthButtonFor } from "./auth/components/signin-step/signin-step";
+import { AuthButtonFor as AuthButtonFor1 } from "./shared/components/submit-button/submit-button";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { AuthState } from "./auth/store/auth-store";
@@ -22,7 +23,8 @@ export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
-export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
+export { AuthButtonFor } from "./auth/components/signin-step/signin-step";
+export { AuthButtonFor as AuthButtonFor1 } from "./shared/components/submit-button/submit-button";
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
@@ -168,6 +170,9 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        "isLoading": () => Promise<boolean>;
+        "isSubmitDisabled": () => Promise<boolean>;
+        "submit": () => Promise<void>;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -216,7 +221,10 @@ export namespace Components {
           * @default ""
          */
         "initialData": string | Record<string, string>;
+        "isLoading": () => Promise<boolean>;
+        "isSubmitDisabled": () => Promise<boolean>;
         "profileId"?: string;
+        "submit": () => Promise<void>;
     }
     interface URawField {
         /**
@@ -305,6 +313,8 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
+        "isLoading": () => Promise<boolean>;
+        "isSubmitDisabled": (forProp?: AuthButtonFor) => Promise<boolean>;
         "name": "email" | "verification" | "reset-password" | "registration";
         "submit": () => Promise<void>;
     }
@@ -344,7 +354,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for"?: AuthButtonFor;
+        "for"?: AuthButtonFor1;
         "text"?: string;
     }
     interface UTicketableList {
@@ -977,7 +987,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for"?: AuthButtonFor;
+        "for"?: AuthButtonFor1;
         "onNewsletterError"?: (event: USubmitButtonCustomEvent<any>) => void;
         "onNewsletterSuccess"?: (event: USubmitButtonCustomEvent<any>) => void;
         "text"?: string;

@@ -1,12 +1,15 @@
 import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { Auth } from "../..";
+import type { Submittable } from "../../../shared/interfaces/submittable";
+
+export type AuthButtonFor = "email" | "password" | "resetPassword";
 
 @Component({
   tag: "u-signin-step",
   shadow: true,
 })
-export class SigninStep {
+export class SigninStep implements Submittable {
   @Element() el!: HTMLElement;
   @Prop() name!: "email" | "verification" | "reset-password" | "registration";
   @Prop() alwaysRender = false;
@@ -29,6 +32,30 @@ export class SigninStep {
     } else if (authState.step === "reset-password") {
       await authInstance.helpers.resetPassword();
     }
+  }
+
+  @Method()
+  async isSubmitDisabled(forProp?: AuthButtonFor): Promise<boolean> {
+    if (authState.loading) return true;
+
+    if (authState.step === "email" && forProp === "email") {
+      return authState.email === "";
+    }
+
+    if (authState.step === "verification" && forProp === "password") {
+      return authState.password === "";
+    }
+
+    if (authState.step === "reset-password" && forProp === "resetPassword") {
+      return !authState.resetPassword.newPassword || !authState.resetPassword.passwordConfirmation;
+    }
+
+    return false;
+  }
+
+  @Method()
+  async isLoading(): Promise<boolean> {
+    return authState.loading;
   }
 
   render() {
