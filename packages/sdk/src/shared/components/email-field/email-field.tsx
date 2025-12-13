@@ -17,7 +17,6 @@ export class EmailField {
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
 
-
   private get context(): "auth" | "newsletter" | null {
     if (!!this.el.closest("u-signin-root"))
       return "auth";
@@ -38,7 +37,6 @@ export class EmailField {
         throw new Error("No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.");
     }
   }
-
 
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
