@@ -41,26 +41,30 @@
 </body>
 
 <script>
-  const newsletterSubmit = document.querySelector("submit-button");
+  const newsletterRoot = document.querySelector("u-newsletter-root");
+  const newsletterSubmit = newsletterRoot.querySelector("u-submit-button");
   const messageContainer = document.getElementById("message-container");
-  newsletterSubmit.addEventListener("success", (e) => {
+
+  newsletterSubmit.addEventListener("newsletterSuccess", (e) => {
     messageContainer.style.color = "green";
     messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
-
   });
 
-  newsletterSubmit.addEventListener("error", (e) => {
+  newsletterSubmit.addEventListener("newsletterError", (e) => {
     messageContainer.style.color = "red";
 
-    if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
+    if (e.detail?.data?.error_identifier === 'rate_limit_exceeded') {
       messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
       return;
     }
 
-    messageContainer.innerHTML = e.detail.data.errors.map((error) => {
-      return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
-    }).join("<br>");
-
+    if (e.detail?.data?.errors) {
+      messageContainer.innerHTML = e.detail.data.errors.map((error) => {
+        return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
+      }).join("<br>");
+    } else {
+      messageContainer.innerHTML = "An error occurred. Please try again.";
+    }
   });
 </script>
 

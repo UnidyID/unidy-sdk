@@ -190,7 +190,7 @@
       background: rgba(79, 70, 229, 0.05);
     }
 
-    u-profile-submit-button::part(button),
+    button[part="profile-submit-button"],
     u-missing-fields-submit-button::part(button) {
       display: flex;
       justify-content: center;
@@ -211,11 +211,11 @@
       letter-spacing: 0.5px;
     }
 
-    u-profile-submit-button::part(button):hover {
+    button[part="profile-submit-button"]:hover {
       background: #0055fe;
     }
 
-    u-profile-submit-button,
+    button[part="profile-submit-button"],
     u-missing-fields-submit-button {
       --spinner-font-size: 30px;
       --spinner-color-primary: #fff;
@@ -241,10 +241,7 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-  <u-config
-          base-url="http://localhost:3000"
-          api-key="public-newsletter-api-key"
-          custom-translations='{
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" custom-translations='{
             "de": {
               "fields": {
                 "custom_attributes.favorite_nut": {
@@ -302,8 +299,7 @@
         <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render>
         <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-auth-submit-button for="email"
-          class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
+        <u-submit-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
 
         <div class="flex flex-col w-full space-y-4">
           <div class="flex items-center my-4">
@@ -357,8 +353,7 @@
           <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
           <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-          <u-auth-submit-button for="password"
-            class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
+          <u-submit-button for="password" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
         </u-signin-strategy>
 
         <u-conditional-render when="magicCodeEnabled">
@@ -425,8 +420,8 @@
         </div>
         <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
 
-        <u-auth-submit-button for="resetPassword"
-          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200"></u-auth-submit-button>
+        <u-submit-button for="resetPassword"
+          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200"></u-submit-button>
       </u-signin-step>
     </u-signin-root>
 
@@ -449,7 +444,8 @@
           <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
           <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
         </div>
-        <u-full-profile fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests" country-code-display-option="icon"></u-full-profile>
+        <u-full-profile fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+          country-code-display-option="icon"></u-full-profile>
         <!-- For testing -->
         <!-- <u-full-profile
           fields="first_name,last_name,custom_attributes.favorite_nut,custom_attributes.sports_interests"
