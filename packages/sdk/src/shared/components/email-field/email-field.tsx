@@ -43,8 +43,7 @@ export class EmailField {
   private handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement;
 
-    const store = this.getCurrentStore();
-    store.setEmail(target.value);
+    this.getCurrentStore().setEmail(target.value);
   };
 
   private handleSubmit = async (event: Event) => {
