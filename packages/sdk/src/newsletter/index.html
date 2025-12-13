@@ -17,7 +17,7 @@
       <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
     </div>
 
-    <email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+    <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg"></u-email-field>
 
     <div class="flex flex-col gap-2">
       <label class="text-gray-500 text-sm">Select newsletters</label>
@@ -36,27 +36,27 @@
 </body>
 
 <script>
-  const newsletterSubmit = document.querySelector("submit-button");
-  const messageContainer = document.getElementById("message-container");
-  newsletterSubmit.addEventListener("success", (e) => {
-    messageContainer.style.color = "green";
-    messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
+  // const newsletterSubmit = document.querySelector("submit-button");
+  // const messageContainer = document.getElementById("message-container");
+  // newsletterSubmit.addEventListener("success", (e) => {
+  //   messageContainer.style.color = "green";
+  //   messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
 
-  });
+  // });
 
-  newsletterSubmit.addEventListener("error", (e) => {
-    messageContainer.style.color = "red";
+  // newsletterSubmit.addEventListener("error", (e) => {
+  //   messageContainer.style.color = "red";
 
-    if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
-      messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
-      return;
-    }
+  //   if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
+  //     messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
+  //     return;
+  //   }
 
-    messageContainer.innerHTML = e.detail.data.errors.map((error) => {
-      return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
-    }).join("<br>");
+  //   messageContainer.innerHTML = e.detail.data.errors.map((error) => {
+  //     return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
+  //   }).join("<br>");
 
-  });
+  // });
 </script>
 
 </html>

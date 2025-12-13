@@ -18,10 +18,10 @@ export class EmailField {
   @Prop() disabled = false;
 
   private get context(): "auth" | "newsletter" | null {
-    if (!!this.el.closest("u-signin-root"))
+    if (this.el.closest("u-signin-root"))
       return "auth";
 
-    if (!!this.el.closest("u-newsletter-root"))
+    if (this.el.closest("u-newsletter-root"))
       return "newsletter";
 
     return null;
