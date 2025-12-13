@@ -1,5 +1,6 @@
 import type { Config } from "@stencil/core";
 import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export const config: Config = {
   namespace: "sdk",
@@ -29,6 +30,11 @@ export const config: Config = {
       ],
     },
   ],
+
+  rollupPlugins: {
+    after: [process.env.ANALYZE === "true" ? visualizer() : null],
+  },
+
   plugins: [tailwind(), tailwindHMR()],
   testing: { browserHeadless: "shell" },
   devServer: { reloadStrategy: "pageReload", openBrowser: false },
