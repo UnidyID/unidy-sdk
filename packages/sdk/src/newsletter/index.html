@@ -18,54 +18,47 @@
     </div>
 
     <u-newsletter-root>
-      <u-email-field placeholder="Enter your email"
-        class-name="px-4 py-2 border border-gray-300 rounded-lg"></u-email-field>
+      <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full"></u-email-field>
 
-      <label class="text-gray-500 text-sm">Select newsletters</label>
-      <newsletter-checkbox label="Main Newsletter" internal-name="main" checked="true"
-        class-name="flex items-center gap-2"></newsletter-checkbox>
-      <newsletter-checkbox label="Test Newsletter" internal-name="test" checked="false"
-        class-name="flex items-center gap-2"></newsletter-checkbox>
-      <u-submit-button
-        class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
-        <span>Subscribe</span>
-      </u-submit-button>
+      <div class="flex flex-col gap-2">
+        <label class="text-gray-500 text-sm">Select newsletters</label>
+        <newsletter-checkbox label="Main Newsletter" internal-name="main" checked="true"
+          class-name="flex items-center gap-2"></newsletter-checkbox>
+        <newsletter-checkbox label="Test Newsletter" internal-name="test" checked="false"
+          class-name="flex items-center gap-2"></newsletter-checkbox>
+        <submit-button api-key="public-newsletter-api-key" api-url="http://localhost:3000"
+          class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+          <span>Subscribe</span>
+        </submit-button>
+
+        <div id="message-container" class="mt-4 text-center text-sm"></div>
+      </div>
     </u-newsletter-root>
-
-    <div class="flex flex-col gap-2">
-
-
-      <div id="message-container" class="mt-4 text-center text-sm"></div>
-    </div>
   </div>
 </body>
 
 <script>
-  const newsletterRoot = document.querySelector("u-newsletter-root");
-  const newsletterSubmit = newsletterRoot.querySelector("u-submit-button");
-  const messageContainer = document.getElementById("message-container");
+  // const newsletterSubmit = document.querySelector("submit-button");
+  // const messageContainer = document.getElementById("message-container");
+  // newsletterSubmit.addEventListener("success", (e) => {
+  //   messageContainer.style.color = "green";
+  //   messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
 
-  newsletterSubmit.addEventListener("newsletterSuccess", (e) => {
-    messageContainer.style.color = "green";
-    messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
-  });
+  // });
 
-  newsletterSubmit.addEventListener("newsletterError", (e) => {
-    messageContainer.style.color = "red";
+  // newsletterSubmit.addEventListener("error", (e) => {
+  //   messageContainer.style.color = "red";
 
-    if (e.detail?.data?.error_identifier === 'rate_limit_exceeded') {
-      messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
-      return;
-    }
+  //   if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
+  //     messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
+  //     return;
+  //   }
 
-    if (e.detail?.data?.errors) {
-      messageContainer.innerHTML = e.detail.data.errors.map((error) => {
-        return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
-      }).join("<br>");
-    } else {
-      messageContainer.innerHTML = "An error occurred. Please try again.";
-    }
-  });
+  //   messageContainer.innerHTML = e.detail.data.errors.map((error) => {
+  //     return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
+  //   }).join("<br>");
+
+  // });
 </script>
 
 </html>

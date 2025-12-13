@@ -1,5 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
-import { newsletterStore } from "../../store/store";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "newsletter-checkbox",

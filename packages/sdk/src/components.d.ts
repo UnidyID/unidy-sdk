@@ -80,7 +80,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
@@ -168,6 +167,7 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        "submit": () => Promise<void>;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -712,7 +712,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "placeholder"?: string;
     }
     interface UErrorMessage {
         /**
