@@ -26,17 +26,6 @@ export { TokenResponse } from "./auth/api/auth";
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
-    interface EmailField {
-        /**
-          * @default "Email"
-         */
-        "ariaLabel": string;
-        "componentClassName"?: string;
-        /**
-          * @default "Email"
-         */
-        "placeholder": string;
-    }
     interface NewsletterCheckbox {
         "checked": boolean;
         "componentClassName"?: string;
@@ -188,6 +177,13 @@ export namespace Components {
     interface UMissingField {
     }
     interface UMissingFieldsSubmitButton {
+    }
+    interface UNewsletterRoot {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "submit": () => Promise<void>;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -405,12 +401,6 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
-    interface HTMLEmailFieldElement extends Components.EmailField, HTMLStencilElement {
-    }
-    var HTMLEmailFieldElement: {
-        prototype: HTMLEmailFieldElement;
-        new (): HTMLEmailFieldElement;
-    };
     interface HTMLNewsletterCheckboxElement extends Components.NewsletterCheckbox, HTMLStencilElement {
     }
     var HTMLNewsletterCheckboxElement: {
@@ -530,6 +520,12 @@ declare global {
         prototype: HTMLUMissingFieldsSubmitButtonElement;
         new (): HTMLUMissingFieldsSubmitButtonElement;
     };
+    interface HTMLUNewsletterRootElement extends Components.UNewsletterRoot, HTMLStencilElement {
+    }
+    var HTMLUNewsletterRootElement: {
+        prototype: HTMLUNewsletterRootElement;
+        new (): HTMLUNewsletterRootElement;
+    };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
     var HTMLUPaginationButtonElement: {
@@ -645,7 +641,6 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "email-field": HTMLEmailFieldElement;
         "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "submit-button": HTMLSubmitButtonElement;
         "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
@@ -660,6 +655,7 @@ declare global {
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
+        "u-newsletter-root": HTMLUNewsletterRootElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
@@ -680,17 +676,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface EmailField {
-        /**
-          * @default "Email"
-         */
-        "ariaLabel"?: string;
-        "componentClassName"?: string;
-        /**
-          * @default "Email"
-         */
-        "placeholder"?: string;
-    }
     interface NewsletterCheckbox {
         "checked"?: boolean;
         "componentClassName"?: string;
@@ -847,6 +832,12 @@ declare namespace LocalJSX {
     interface UMissingField {
     }
     interface UMissingFieldsSubmitButton {
+    }
+    interface UNewsletterRoot {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -1047,7 +1038,6 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
-        "email-field": EmailField;
         "newsletter-checkbox": NewsletterCheckbox;
         "submit-button": SubmitButton;
         "u-auth-submit-button": UAuthSubmitButton;
@@ -1062,6 +1052,7 @@ declare namespace LocalJSX {
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
+        "u-newsletter-root": UNewsletterRoot;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
@@ -1085,7 +1076,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "email-field": LocalJSX.EmailField & JSXBase.HTMLAttributes<HTMLEmailFieldElement>;
             "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
             "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
@@ -1100,6 +1090,7 @@ declare module "@stencil/core" {
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+            "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
