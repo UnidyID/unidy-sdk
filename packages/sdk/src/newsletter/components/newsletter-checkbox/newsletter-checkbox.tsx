@@ -25,7 +25,7 @@ export class NewsletterCheckbox {
     } else {
       newsletterStore.set(
         "checkedNewsletters",
-        newsletterStore.get("checkedNewsletters").filter((name) => name !== this.internalName),
+        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName),
       );
     }
   };

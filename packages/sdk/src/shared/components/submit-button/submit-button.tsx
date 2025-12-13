@@ -1,0 +1,142 @@
+import { Component, h, Prop, Element, Event, EventEmitter } from "@stencil/core";
+import { hasSlotContent } from "../../component-utils";
+import { t } from "../../../i18n";
+import { type AuthButtonFor, AuthSubmitButton, authContext } from "../../../auth/components/submit-button/auth-submit-button";
+import { ProfileSubmitButton, profileContext } from "../../../profile/components/submit-button/profile-submit-button";
+import { NewsletterSubmitButton, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
+import { type SubmitButtonContext, defaultContext } from "./context";
+
+@Component({
+  tag: "u-submit-button",
+  shadow: false,
+})
+export class SubmitButton {
+  @Element() el!: HTMLElement;
+  @Prop() for?: AuthButtonFor;
+  @Prop() text?: string;
+  @Prop() disabled = false;
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() part?: string;
+  @Event() newsletterSuccess: EventEmitter<any>;
+  @Event() newsletterError: EventEmitter<any>;
+
+  private context: "auth" | "profile" | "newsletter" | "other" = "other";
+  private contextModule: SubmitButtonContext = defaultContext;
+
+  async componentWillLoad() {
+    this.context = this.detectContext();
+
+    switch (this.context) {
+      case "auth":
+        this.contextModule = authContext;
+        break;
+      case "profile":
+        this.contextModule = profileContext;
+        break;
+      case "newsletter":
+        this.contextModule = newsletterContext;
+        break;
+      default:
+        this.contextModule = defaultContext;
+    }
+  }
+
+  private detectContext(): "auth" | "profile" | "newsletter" | "other" {
+    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
+      return "auth";
+
+    if (this.el.closest("u-profile"))
+      return "profile";
+
+    if (this.el.closest("u-newsletter-root"))
+      return "newsletter";
+
+    throw new Error("No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");
+  }
+
+  private handleClick = async (event: MouseEvent) => {
+    await this.contextModule.handleClick(event, this.el);
+  };
+
+  private isDisabled(): boolean {
+    return this.contextModule.isDisabled(this.for, this.disabled);
+  }
+
+  private isLoading(): boolean {
+    return this.contextModule.isLoading();
+  }
+
+  private getButtonText(): string {
+    if (this.contextModule.getButtonText) {
+      return this.contextModule.getButtonText(this.for, this.text);
+    }
+
+    if (this.text) {
+      return this.text;
+    }
+
+    return t("buttons.submit");
+  }
+
+  private getButtonContent() {
+    const loading = this.isLoading();
+
+    if (loading) {
+      return <u-spinner />;
+    }
+
+    if (hasSlotContent(this.el)) {
+      return <slot />;
+    }
+
+    return this.getButtonText();
+  }
+
+  render() {
+    if (this.contextModule.shouldRender && !this.contextModule.shouldRender(this.for)) {
+      return null;
+    }
+
+    const buttonClasses = [
+      this.componentClassName,
+      this.context === "auth" ? "flex justify-center" : "",
+      "disabled:opacity-50 disabled:cursor-not-allowed",
+    ]
+
+      .join(" ");
+
+    const buttonProps: any = {
+      type: 'submit',
+      part: 'button',
+      disabled: this.isDisabled() || this.isLoading(),
+      class: buttonClasses,
+      onClick: this.handleClick,
+      "aria-live": "polite"
+    };
+
+    const buttonContent = this.getButtonContent();
+
+    switch (this.context) {
+      case "auth":
+        return (
+          <AuthSubmitButton for={this.for}>
+            <button {...buttonProps}>{buttonContent}</button>
+          </AuthSubmitButton>
+        );
+      case "profile":
+        return (
+          <ProfileSubmitButton>
+            <button {...buttonProps}>{buttonContent}</button>
+          </ProfileSubmitButton>
+        );
+      case "newsletter":
+        return (
+          <NewsletterSubmitButton>
+            <button {...buttonProps}>{buttonContent}</button>
+          </NewsletterSubmitButton>
+        );
+      default:
+        return <button {...buttonProps}>{buttonContent}</button>;
+    }
+  }
+}

@@ -1,27 +1,25 @@
-import { Component, Element, h } from "@stencil/core";
+import { type FunctionalComponent } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { state as profileState } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
-import { hasSlotContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
-import { t } from "../../../i18n";
+import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
 
-@Component({
-  tag: "u-profile-submit-button",
-  styleUrl: "submit-button.css",
-  shadow: true,
-})
-export class SubmitButton {
-  @Element() el!: HTMLElement;
+export interface ProfileSubmitButtonProps {}
 
-  private authInstance?: Auth;
+export const ProfileSubmitButton: FunctionalComponent<ProfileSubmitButtonProps> = (_props, children) => {
+  return children;
+};
 
-  async componentWillLoad() {
-    this.authInstance = await Auth.getInstance();
-  }
+let authInstance: Auth | undefined;
 
-  private async onSubmit() {
+export const profileContext: SubmitButtonContext = {
+  async init() {
+    authInstance = await Auth.getInstance();
+  },
+
+  async handleClick() {
     profileState.loading = true;
 
     const { configuration, ...stateWithoutConfig } = profileState;
@@ -34,7 +32,7 @@ export class SubmitButton {
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
     const resp = await getUnidyClient().profile.updateProfile({
-      idToken: (await this.authInstance?.getToken()) as string,
+      idToken: (await authInstance?.getToken()) as string,
       data: updatedProfileData,
       lang: unidyState.locale,
     });
@@ -52,21 +50,17 @@ export class SubmitButton {
       }
       profileState.loading = false;
     }
-  }
+  },
 
-  render() {
+  isDisabled(_forProp, disabled?: boolean): boolean {
     return (
-      <div>
-        <button
-          type="button"
-          onClick={() => this.onSubmit()}
-          part="button"
-          aria-live="polite"
-          disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
-        >
-          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : t("buttons.submit")}
-        </button>
-      </div>
+      disabled ||
+      (profileState.errors && Object.keys(profileState.errors).length > 0) ||
+      profileState.phoneValid === false
     );
-  }
-}
+  },
+
+  isLoading(): boolean {
+    return profileState.loading;
+  },
+};

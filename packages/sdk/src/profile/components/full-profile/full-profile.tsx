@@ -32,7 +32,7 @@ export class FullProfile {
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
         <div class="flex justify-end">
-          <u-profile-submit-button>{this.submitButtonText}</u-profile-submit-button>
+          <u-submit-button>{this.submitButtonText}</u-submit-button>
         </div>
       </u-profile>
     );

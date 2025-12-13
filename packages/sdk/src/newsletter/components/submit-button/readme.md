@@ -9,8 +9,6 @@
 
 | Property             | Attribute    | Description | Type     | Default     |
 | -------------------- | ------------ | ----------- | -------- | ----------- |
-| `apiKey`             | `api-key`    |             | `string` | `undefined` |
-| `apiUrl`             | `api-url`    |             | `string` | `undefined` |
 | `componentClassName` | `class-name` |             | `string` | `undefined` |
 
 
