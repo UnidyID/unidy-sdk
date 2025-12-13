@@ -42,7 +42,7 @@ export class SubmitButton {
     }
   }
 
-  private detectContext(): "auth" | "profile" | "newsletter" | "other" {
+  private detectContext(): "auth" | "profile" | "newsletter"  {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
       return "auth";
 

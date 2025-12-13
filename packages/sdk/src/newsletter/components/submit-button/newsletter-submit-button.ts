@@ -1,5 +1,5 @@
 import { type FunctionalComponent } from "@stencil/core";
-import { newsletterStore } from "../../store/store";
+import { newsletterStore } from "../../store/newsletter-store";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
 
 export interface NewsletterSubmitButtonProps {
