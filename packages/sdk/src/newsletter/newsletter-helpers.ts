@@ -1,19 +1,9 @@
 import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
-import { newsletterStore, persist, getNewsletterTitle, type NewsletterErrorIdentifier } from "./store/newsletter-store";
+import { clearPreferenceToken, newsletterStore, persist, type NewsletterErrorIdentifier } from "./store/newsletter-store";
 
 export class NewsletterHelpers {
-  static returnToAfterConfirmationUrl(): string {
-    const baseUrl = `${location.origin}${location.pathname}`;
-    const params = new URLSearchParams(location.search);
-    for (const key of ["email", "selected", "newsletter_error"]) {
-      params.delete(key);
-    }
-    const queryString = params.toString();
-    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
-  }
-
   static async sendLoginEmail(email: string): Promise<void> {
     const response = await getUnidyClient().newsletters.sendLoginEmail({
       email,
@@ -143,11 +133,10 @@ export class NewsletterHelpers {
     }
 
     if (response.status === 204) {
-      newsletterStore.state.preferenceToken = "";
-      newsletterStore.state.existingSubscriptions = [];
-      newsletterStore.state.checkedNewsletters = [];
-      newsletterStore.state.email = "";
-      localStorage.removeItem("unidy_newsletter_preferenceToken");
+      clearPreferenceToken();
+      newsletterStore.state.checkedNewsletters = newsletterStore.state.checkedNewsletters.filter(
+        (name) => name !== internalName,
+      );
       return true;
     }
 
@@ -208,8 +197,27 @@ export class NewsletterHelpers {
     }
 
     const newsletterNames = checkedNewsletters.map(
-      (internalName) => getNewsletterTitle(internalName) || internalName
+      (internalName) => NewsletterHelpers.getNewsletterTitle(internalName) || internalName
     );
     Flash.success.addMessage(t("newsletter.subscribe_success", { newsletterName: newsletterNames.join(", ") }));
   }
+
+
+  static getNewsletterTitle(internalName: string): string | undefined {
+    const config = newsletterStore.state.newsletterConfigs.find(
+      (n) => n.internal_name === internalName
+    );
+    return config?.title;
+  }
+
+  private static returnToAfterConfirmationUrl(): string {
+    const baseUrl = `${location.origin}${location.pathname}`;
+    const params = new URLSearchParams(location.search);
+    for (const key of ["email", "selected", "newsletter_error"]) {
+      params.delete(key);
+    }
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+  }
+
 }

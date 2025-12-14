@@ -42,7 +42,8 @@ export class NewsletterSubscribeButton {
     this.subscribing = false;
 
     if (success) {
-      Flash.success.addMessage(t("newsletter.subscribe_success", { newsletterName: this.internalName }));
+      const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
+      Flash.success.addMessage(t("newsletter.subscribe_success", { newsletterName: title }));
     }
   };
 

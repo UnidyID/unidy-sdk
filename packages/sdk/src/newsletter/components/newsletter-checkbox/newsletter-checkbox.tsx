@@ -1,5 +1,6 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { newsletterStore, getNewsletterTitle } from "../../store/newsletter-store";
+import { newsletterStore } from "../../store/newsletter-store";
+import { NewsletterHelpers } from "../../newsletter-helpers";
 
 @Component({
   tag: "u-newsletter-checkbox",
@@ -37,7 +38,7 @@ export class NewsletterCheckbox {
   }
 
   private updateDisplayLabel() {
-    this.displayLabel = this.label || getNewsletterTitle(this.internalName) || this.internalName;
+    this.displayLabel = this.label || NewsletterHelpers.getNewsletterTitle(this.internalName) || this.internalName;
   }
 
   private toggle = () => {

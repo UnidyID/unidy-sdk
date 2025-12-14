@@ -36,7 +36,8 @@ export class NewsletterUnsubscribeButton {
     this.deleting = false;
 
     if (success) {
-      Flash.info.addMessage(t("newsletter.unsubscribe_success", { newsletterName: this.internalName }));
+      const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
+      Flash.info.addMessage(t("newsletter.unsubscribe_success", { newsletterName: title }));
     } else {
       Flash.error.addMessage(t("newsletter.errors.unsubscribe_failed"));
     }

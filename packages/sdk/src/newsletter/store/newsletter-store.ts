@@ -66,10 +66,3 @@ export const clearPreferenceToken = () => {
   localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
   localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
 };
-
-export const getNewsletterTitle = (internalName: string): string | undefined => {
-  const config = newsletterStore.state.newsletterConfigs.find(
-    (n) => n.internal_name === internalName
-  );
-  return config?.title;
-};
