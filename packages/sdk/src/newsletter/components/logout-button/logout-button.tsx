@@ -1,5 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
-import { clearPreferenceToken } from "../../store/newsletter-store";
+import { NewsletterHelpers } from "../../newsletter-helpers";
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 
@@ -11,7 +11,7 @@ export class LogoutButton {
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private handleLogout = () => {
-    clearPreferenceToken();
+    NewsletterHelpers.logout();
     Flash.success.addMessage(t("newsletter.logout_success"));
   };
 

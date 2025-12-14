@@ -1,9 +1,19 @@
 import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
-import { clearPreferenceToken, newsletterStore, persist, type NewsletterErrorIdentifier } from "./store/newsletter-store";
+import { newsletterStore, persist, type NewsletterErrorIdentifier } from "./store/newsletter-store";
+
+const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
 export class NewsletterHelpers {
+  static logout(): void {
+    newsletterStore.state.preferenceToken = "";
+    newsletterStore.state.email = "";
+    newsletterStore.state.existingSubscriptions = [];
+    localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
+    localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+  }
+
   static async sendLoginEmail(email: string): Promise<void> {
     const response = await getUnidyClient().newsletters.sendLoginEmail({
       email,
@@ -133,8 +143,8 @@ export class NewsletterHelpers {
     }
 
     if (response.status === 204) {
-      clearPreferenceToken();
-      newsletterStore.state.checkedNewsletters = []
+      NewsletterHelpers.logout();
+      newsletterStore.state.checkedNewsletters = [];
       return true;
     }
 

@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Method, Host, h } from "@stencil/core";
-import { newsletterStore, persist, resetErrors, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
+import { newsletterStore, persist, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
 import { NewsletterHelpers } from "../../newsletter-helpers";
 import { clearUrlParam } from "../../../shared/component-utils";
 import { waitForConfig } from "../../../shared/store/unidy-store";
@@ -41,9 +41,8 @@ export class NewsletterRoot {
 
   @Method()
   async submit() {
-    resetErrors();
-
     newsletterStore.state.loading = true;
+    newsletterStore.state.errors = {};
 
     const { email, checkedNewsletters } = newsletterStore.state;
 
