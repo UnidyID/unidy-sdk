@@ -3,6 +3,7 @@ import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, Unidy
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
 import { Flash } from "../shared/store/flash-store";
+import { clearUrlParam } from "../shared/component-utils";
 import { t } from "../i18n";
 import { authenticateWithPasskey } from "./passkey-auth";
 
@@ -285,7 +286,7 @@ export class AuthHelpers {
         passwordConfirmation: "",
       });
 
-      this.clearUrlParam("reset_password_token");
+      clearUrlParam("reset_password_token");
       Flash.success.addMessage("Password reset successfully");
     }
 
@@ -297,7 +298,7 @@ export class AuthHelpers {
   }
 
   private extractSignInIdFromQuery() {
-    const sid = this.clearUrlParam("sid");
+    const sid = clearUrlParam("sid");
 
     if (sid) {
       authStore.setSignInId(sid);
@@ -317,15 +318,4 @@ export class AuthHelpers {
     authStore.getRootComponentRef()?.onAuth(response);
   }
 
-  private clearUrlParam(param: string): string | null {
-    const url = new URL(window.location.href);
-    const value = url.searchParams.get(param);
-
-    if (value) {
-      url.searchParams.delete(param);
-      window.history.replaceState(null, "", url.toString());
-    }
-
-    return value;
-  }
 }

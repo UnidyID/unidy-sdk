@@ -10,24 +10,27 @@ export type NewsletterErrorIdentifier =
 
 interface NewsletterState {
   email: string;
-  checkedNewsletters: string[];
+  preferenceToken: string
   loading: boolean;
+  loggedInViaEmail: boolean;
 
+  checkedNewsletters: string[];
   errors: Record<string, NewsletterErrorIdentifier>;
   showSuccess: boolean;
-  resendingDoi: string[];
 
   newsletterLabels: Record<string, string>;
 }
 
 const initialState: NewsletterState = {
   email: "",
-  checkedNewsletters: [],
+  preferenceToken: "",
   loading: false,
+  loggedInViaEmail: false,
+
+  checkedNewsletters: [],
   errors: {},
 
   showSuccess: false,
-  resendingDoi: [],
 
   newsletterLabels: {},
 };

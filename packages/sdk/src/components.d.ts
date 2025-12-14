@@ -7,7 +7,6 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
-import { NewsletterErrorIdentifier } from "./newsletter/store/newsletter-store";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
@@ -18,7 +17,6 @@ import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
-export { NewsletterErrorIdentifier } from "./newsletter/store/newsletter-store";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";

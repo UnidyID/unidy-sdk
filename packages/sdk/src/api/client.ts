@@ -133,6 +133,10 @@ export class ApiClient {
     return this.request<T>("PATCH", endpoint, body, headers);
   }
 
+  async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
+    return this.request<T>("DELETE", endpoint, undefined, headers);
+  }
+
   getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
     returnSchema: z.ZodSchema<TReturn>,
     urlBuilder: (args: TArgs) => string,

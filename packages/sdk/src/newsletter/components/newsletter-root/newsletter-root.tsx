@@ -1,8 +1,8 @@
 import { Component, Host, h, Prop, Element, Method } from "@stencil/core";
 import { newsletterStore, resetErrors, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
-import { getUnidyClient } from "../../../api";
 import { authStore } from "../../../auth/store/auth-store";
-import { Flash } from "../../../shared/store/flash-store";
+import { NewsletterHelpers } from "../../newsletter-helpers";
+import { clearUrlParam } from "../../../shared/component-utils";
 import { t } from "../../../i18n";
 
 @Component({
@@ -17,15 +17,14 @@ export class NewsletterRoot {
     return t(`newsletter.errors.${errorIdentifier}`) || t("newsletter.errors.unknown");
   }
 
-  private buildReturnUrl(): string {
-    const baseUrl = `${location.origin}${location.pathname}`;
-    const params = new URLSearchParams(location.search);
-    for (const key of ["email", "selected", "newsletter_error"]) {
-      params.delete(key);
+  componentWillLoad() {
+    const preferenceToken = clearUrlParam("preference_token");
+    if (preferenceToken) {
+      newsletterStore.state.preferenceToken = preferenceToken;
+      newsletterStore.state.loggedInViaEmail = true;
     }
-    const queryString = params.toString();
-    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }
+
 
   @Method()
   async submit() {
@@ -42,41 +41,7 @@ export class NewsletterRoot {
       return;
     }
 
-    const [error, response] = await getUnidyClient().newsletters.createSubscriptions({
-      email,
-      newsletter_subscriptions: checkedNewsletters.map((newsletter) => ({
-        newsletter_internal_name: newsletter,
-        preference_identifiers: [],
-      })),
-      return_to_after_confirmation: this.buildReturnUrl(),
-    });
-
-    newsletterStore.state.loading = false;
-
-    if (error) {
-      switch (error) {
-        case "newsletter_error": {
-          const errorMap: Record<string, NewsletterErrorIdentifier> = {};
-
-          for (const err of response.data?.errors || []) {
-            errorMap[err.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
-          }
-          newsletterStore.state.errors = errorMap;
-          break;
-        }
-        case "rate_limit_exceeded":
-        case "network_error":
-        case "server_error":
-          Flash.error.addMessage(t(`newsletter.errors.${error}`));
-          break;
-        default:
-          Flash.error.addMessage(t("newsletter.errors.unknown"));
-          break;
-      }
-      return;
-    }
-
-    Flash.success.addMessage(t("newsletter.subscribe_success"));
+    await NewsletterHelpers.createSubscriptions({ email, checkedNewsletters: checkedNewsletters });
   }
 
   componentWillRender() {

@@ -8,3 +8,15 @@
 export function hasSlotContent(element: HTMLElement): boolean {
   return element.hasChildNodes() && !!element.textContent?.trim();
 }
+
+export function clearUrlParam(param: string): string | null {
+  const url = new URL(window.location.href);
+  const value = url.searchParams.get(param);
+
+  if (value) {
+    url.searchParams.delete(param);
+    window.history.replaceState(null, "", url.toString());
+  }
+
+  return value;
+}
