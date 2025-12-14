@@ -2,7 +2,6 @@ import { Component, Host, h, Prop, Element, Method } from "@stencil/core";
 import { newsletterStore, resetErrors, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
 import { getUnidyClient } from "../../../api";
 import { authStore } from "../../../auth/store/auth-store";
-import type { NewsletterSubscriptionError } from "../../api/newsletters";
 import { Flash } from "../../../shared/store/flash-store";
 import { t } from "../../../i18n";
 
