@@ -4,23 +4,35 @@
       "placeholder": "Geben Sie Ihre E-Mail-Adresse ein"
     },
     "magicCode": {
-      "alreadySentText": "Magischer Code wurde bereits an Ihre E-Mail-Adresse gesendet",
-      "buttonText": "Magischen Code senden",
-      "sendingText": "Wird gesendet..."
+      "already_sent_text": "Magischer Code wurde bereits an Ihre E-Mail-Adresse gesendet",
+      "button_text": "Magischen Code senden",
+      "resend": {
+        "button_text": "Magischen Code erneut senden"
+      },
+      "sending_text": "Wird gesendet..."
     },
     "passkey": {
-      "buttonText": "Mit Passkey anmelden",
-      "loadingText": "Authentifizierung..."
+      "button_text": "Mit Passkey anmelden",
+      "loading_text": "Authentifizierung..."
     },
     "password": {
+      "button_text": "Mit Password anmelden",
+      "confirmation": {
+        "placeholder": "Bestätigen Sie Ihr Passwort"
+      },
       "placeholder": "Geben Sie Ihr Passwort ein"
     },
     "resetPassword": {
-      "buttonText": "Passwort zurücksetzen",
-      "successMessage": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang."
+      "button_text_resend": "Mail zum Zurücksetzen des Passworts erneut senden",
+      "button_text_reset": "Passwort zurücksetzen",
+      "button_text_set": "Passwort speichern",
+      "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang."
+    },
+    "single-login": {
+      "button_text": "Anmelden"
     },
     "socialLogin": {
-      "buttonText": "Weiter mit {{provider}}"
+      "button_text": "Weiter mit {{provider}}"
     }
   },
   "buttons": {
@@ -38,13 +50,14 @@
     "bad_request": "Ungültige Anfrage",
     "connection_failed": "Verbindung zum Unidy Server nicht möglich.",
     "expired": "Abgelaufen",
-    "failedToLoadProfile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration.",
+    "failed_to_load_profile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration.",
     "invalid_id_token": "Ungültiger ID-Token",
     "invalid_passkey": "Ungültiger Passkey",
     "invalid_password": "Ungültiges Passwort",
     "invalid_refresh_token": "Ungültiger Aktualisierungs-Token",
     "invalid_required_fields_payload": "Ungültige Nutzlast für erforderliche Felder",
-    "invalidResponseFormat": "Ungültiges Antwortformat",
+    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
+    "invalid_response_format": "Ungültiges Antwortformat",
     "magic_code_is_missing": "Magischer Code fehlt",
     "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
     "missing_id_token": "Fehlender ID-Token",
@@ -52,29 +65,28 @@
     "missing_required_fields": "Fehlende Pflichtfelder",
     "no_sign_in_id": "Keine Anmelde-ID verfügbar",
     "not_valid": "Nicht gültig",
-    "password_not_set": "Passwort nicht festgelegt",
     "passkey_cancelled": "Passkey-Authentifizierung abgebrochen",
     "passkey_error": "Ein unbekannter Passkey-Fehler ist aufgetreten",
     "passkey_invalid_state": "Ungültiger Passkey-Status",
     "passkey_not_supported": "Passkey nicht unterstützt",
     "passkey_security_error": "Passkey-Sicherheitsfehler",
+    "password_not_set": "Passwort nicht festgelegt",
+    "password_required": "Passwort ist erforderlich",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Passwort ist zu kurz (mindestens 6 Zeichen)",
+      "min_length": "Mindestlänge ist 6 Zeichen",
+      "mixed_case": "Muss sowohl Groß- als auch Kleinbuchstaben enthalten",
+      "number": "Muss eine Zahl enthalten",
+      "symbol": "Muss ein Symbol enthalten"
+    },
+    "passwords_do_not_match": "Passwörter stimmen nicht überein",
     "prefix": "FEHLER: ",
     "refresh_failed": "Authorisierungstoken konnte nicht aktualisiert werden. Bitte melden Sie sich erneut an.",
     "refresh_token_revoked": "Aktualisierungs-Token widerrufen",
     "required_field": "{{field}} ist erforderlich",
     "reset_password_already_sent": "Zurücksetzen des Passworts bereits gesendet",
-    "reset_token_missing": "Reset-Token fehlt",
     "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
-    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
-    "passwords_do_not_match": "Passwörter stimmen nicht überein",
-    "password_required": "Passwort ist erforderlich",
-    "password_requirements": {
-      "is too short (minimum is 6 characters)": "Passwort ist zu kurz (mindestens 6 Zeichen)",
-      "min_length": "Mindestlänge ist 6 Zeichen",
-      "number": "Muss eine Zahl enthalten",
-      "symbol": "Muss ein Symbol enthalten",
-      "mixed_case": "Muss sowohl Groß- als auch Kleinbuchstaben enthalten"
-    },
+    "reset_token_missing": "Reset-Token fehlt",
     "schema_validation_error": "Schemavalidierungsfehler",
     "sign_in_expired": "Anmeldung abgelaufen",
     "sign_in_not_found": "Anmeldung nicht gefunden",

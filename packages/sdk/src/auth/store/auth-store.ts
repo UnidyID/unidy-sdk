@@ -4,7 +4,7 @@ import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 
-export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration";
+export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration" | "single-login";
 
 export interface AuthState {
   step: AuthStep;
@@ -61,7 +61,7 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
 };
 
 const initialState: AuthState = {
-  step: "email",
+  step: undefined,
   email: "",
   password: "",
   magicCodeStep: null,
@@ -111,6 +111,10 @@ class AuthStore {
 
   get state() {
     return state;
+  }
+
+  setInitialStep(step: AuthStep) {
+    if (state.step === undefined) state.step = step;
   }
 
   setEmail(email: string) {

@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification" | "reset-password" | "registration";
+  @Prop() name!: "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -22,8 +22,8 @@ export class SigninStep {
 
     const authInstance = await Auth.getInstance();
 
-    if (authState.step === "email") {
-      await authInstance.helpers.createSignIn(authState.email);
+    if (authState.step === "email" || authState.step === "single-login") {
+      await authInstance.helpers.createSignIn(authState.email, authState.password);
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     } else if (authState.step === "reset-password") {
@@ -42,6 +42,10 @@ export class SigninStep {
       shouldRender = authState.step === "reset-password";
     } else if (this.name === "registration") {
       shouldRender = authState.step === "registration" && authState.errors.email === "account_not_found";
+    } else if (this.name === "single-login") {
+      shouldRender = authState.step === "single-login";
+    } else if (this.name === "missing-fields") {
+      shouldRender = authState.step === "missing-fields";
     }
 
     if (!shouldRender) {

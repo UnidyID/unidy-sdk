@@ -10,7 +10,7 @@ import { t } from "../../../i18n";
 export class SubmitButton {
   @Element() el!: HTMLElement;
 
-  @Prop() for!: "email" | "password" | "resetPassword";
+  @Prop() for!: "email" | "single-login" | "password" | "resetPassword";
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -20,16 +20,17 @@ export class SubmitButton {
         return t("buttons.continue");
       case "verification":
         if (this.for === "password") {
-          return t("auth.password.buttonText", { defaultValue: "Sign In with Password" });
+          return t("auth.password.button_text", { defaultValue: "Sign In with Password" });
         }
-
         return t("buttons.submit");
       case "reset-password":
         if (this.for === "resetPassword") {
-          return t("auth.resetPassword.buttonTextSet", { defaultValue: "Set Password" });
+          return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
         }
 
         return t("buttons.submit");
+      case "single-login":
+        return t("auth.single-login.button_text", { defaultValue: "Sign in" });
       default:
         return t("buttons.submit");
     }
@@ -43,11 +44,12 @@ export class SubmitButton {
     if (authState.step === "email") {
       return this.for === "email";
     }
-
+    if (authState.step === "single-login") {
+      return this.for === "single-login";
+    }
     if (authState.step === "verification") {
       return this.for === "password" && authState.magicCodeStep !== "sent";
     }
-
     if (authState.step === "reset-password") {
       return this.for === "resetPassword";
     }
@@ -62,12 +64,20 @@ export class SubmitButton {
       return authState.email === "";
     }
 
+    if (authState.step === "single-login" && this.for === "single-login") {
+      return authState.password === "" || authState.email === "";
+    }
+
     if (authState.step === "verification" && this.for === "password") {
       return authState.password === "";
     }
 
     if (authState.step === "reset-password" && this.for === "resetPassword") {
       return !authState.resetPassword.newPassword || !authState.resetPassword.passwordConfirmation;
+    }
+
+    if (authState.step === "single-login") {
+      return authState.password === "" || authState.email === "";
     }
 
     return false;

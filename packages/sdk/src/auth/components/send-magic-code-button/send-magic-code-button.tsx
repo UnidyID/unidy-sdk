@@ -51,18 +51,19 @@ export class SendMagicCodeButton {
   }
 
   render() {
-    if (!authState.availableLoginOptions?.magic_link) {
+    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
       return null;
     }
 
-    if (authState.step !== "magic-code" && authState.step !== "verification") {
+    if (authState.step !== "magic-code" && authState.step !== "verification" && authState.step !== "single-login") {
       return null;
     }
 
-    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
-    const text = t("auth.magicCode.buttonText", { defaultValue: "Send Magic Code" });
-    const alreadySentText = t("auth.magicCode.alreadySentText", { defaultValue: "Magic code already sent to your email" });
-    const sendingText = t("auth.magicCode.sendingText", { defaultValue: "Sending..." });
+    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0 || authState.email === "";
+    const buttonTextKey = authState.step !== "magic-code" ? "auth.magicCode.button_text" : "auth.magicCode.resend.button_text";
+    const text = t(buttonTextKey, { defaultValue: "Send Magic Code" });
+    const alreadySentText = t("auth.magicCode.already_sent_text", { defaultValue: "Magic code already sent to your email" });
+    const sendingText = t("auth.magicCode.sending_text", { defaultValue: "Sending..." });
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
