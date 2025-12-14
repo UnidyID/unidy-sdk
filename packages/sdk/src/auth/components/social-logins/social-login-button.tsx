@@ -68,8 +68,6 @@ export class SocialLoginButton {
       return;
     }
 
-    console.log("getAuthUrl", this.getAuthUrl());
-
     window.location.href = this.getAuthUrl();
   };
 
