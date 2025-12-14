@@ -61,7 +61,7 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
 };
 
 const initialState: AuthState = {
-  step: "email",
+  step: undefined,
   email: "",
   password: "",
   magicCodeStep: null,
@@ -114,7 +114,7 @@ class AuthStore {
   }
 
   setInitialStep(step: AuthStep) {
-    state.step = step;
+    if (state.step === undefined) state.step = step;
   }
 
   setEmail(email: string) {
