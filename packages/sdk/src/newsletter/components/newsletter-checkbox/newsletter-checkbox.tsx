@@ -12,29 +12,29 @@ export class NewsletterCheckbox {
   @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() isSubscribed = false;
-  @State() isChecked = false;
   @State() displayLabel = "";
 
   componentWillLoad() {
-    this.isSubscribed = newsletterStore.state.existingSubscriptions.includes(this.internalName);
-    this.isChecked = this.isSubscribed || this.checked;
     this.updateDisplayLabel();
 
-    if (this.isChecked && !this.isSubscribed) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
-    }
-
-    newsletterStore.onChange("existingSubscriptions", () => {
-      this.isSubscribed = newsletterStore.state.existingSubscriptions.includes(this.internalName);
-      if (this.isSubscribed) {
-        this.isChecked = true;
+    if (this.checked && !this.isSubscribed) {
+      const checkedNewsletters = newsletterStore.state.checkedNewsletters;
+      if (!checkedNewsletters.includes(this.internalName)) {
+        newsletterStore.set("checkedNewsletters", [...checkedNewsletters, this.internalName]);
       }
-    });
+    }
 
     newsletterStore.onChange("newsletterConfigs", () => {
       this.updateDisplayLabel();
     });
+  }
+
+  private get isSubscribed(): boolean {
+    return newsletterStore.state.existingSubscriptions.includes(this.internalName);
+  }
+
+  private get isChecked(): boolean {
+    return this.isSubscribed || newsletterStore.state.checkedNewsletters.includes(this.internalName);
   }
 
   private updateDisplayLabel() {
@@ -44,15 +44,17 @@ export class NewsletterCheckbox {
   private toggle = () => {
     if (this.isSubscribed) return;
 
-    this.isChecked = !this.isChecked;
+    const currentlyChecked = newsletterStore.state.checkedNewsletters.includes(this.internalName);
 
-    if (this.isChecked) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
+    if (currentlyChecked) {
+      newsletterStore.set("checkedNewsletters",
+        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName)
+      );
     } else {
-      newsletterStore.set( "checkedNewsletters", newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName));
+      newsletterStore.set("checkedNewsletters",
+        [...newsletterStore.state.checkedNewsletters, this.internalName]
+      );
     }
-
-    console.log("newsletterStore.state.checkedNewsletters", newsletterStore.state.checkedNewsletters);
   };
 
   private handleClick = (e: Event) => {

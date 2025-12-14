@@ -134,9 +134,7 @@ export class NewsletterHelpers {
 
     if (response.status === 204) {
       clearPreferenceToken();
-      newsletterStore.state.checkedNewsletters = newsletterStore.state.checkedNewsletters.filter(
-        (name) => name !== internalName,
-      );
+      newsletterStore.state.checkedNewsletters = []
       return true;
     }
 

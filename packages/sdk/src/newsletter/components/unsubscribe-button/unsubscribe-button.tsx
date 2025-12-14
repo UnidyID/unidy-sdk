@@ -6,26 +6,16 @@ import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-newsletter-unsubscribe-button",
-  scoped: true,
-  styleUrl: "unsubscribe-button.css",
+  shadow: false,
 })
 export class NewsletterUnsubscribeButton {
   @Prop() internalName!: string;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @State() deleting = false;
-  @State() isSubscribed = false;
 
-  componentWillLoad() {
-    this.updateSubscriptionState();
-
-    newsletterStore.onChange("existingSubscriptions", () => {
-      this.updateSubscriptionState();
-    });
-  }
-
-  private updateSubscriptionState() {
-    this.isSubscribed = newsletterStore.state.existingSubscriptions.includes(this.internalName);
+  private get isSubscribed(): boolean {
+    return newsletterStore.state.existingSubscriptions.includes(this.internalName);
   }
 
   private handleClick = async () => {
