@@ -88,6 +88,21 @@
     }
   },
   "loading": "Loading...",
+  "newsletter": {
+    "subscribe_success": "You have successfully subscribed to the newsletter. Please check your inbox for the confirmation",
+    "errors": {
+      "unconfirmed": "Your email is not confirmed for this newsletter",
+      "already_subscribed": "Already subscribed",
+      "invalid_email": "Invalid email address",
+      "newsletter_not_found": "Newsletter not found",
+      "preferences_not_found": "Preference not found",
+      "unknown": "Unknown error occurred",
+      "rate_limit_exceeded": "Rate limit exceeded. Please try again later.",
+      "network_error": "Network error. Please check your connection.",
+      "server_error": "Server error. Please try again later."
+    },
+    "resend_confirmation_success": "Please check your inbox for the confirmation email."
+  },
   "profile": {
     "signInToView": "Please sign in to view your profile",
     "updated": "Profile is updated"

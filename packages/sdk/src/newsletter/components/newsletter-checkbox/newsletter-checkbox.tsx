@@ -1,4 +1,4 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
@@ -15,7 +15,13 @@ export class NewsletterCheckbox {
     if (this.checked) {
       newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
     }
+
+    newsletterStore.set("newsletterLabels", {
+      ...newsletterStore.state.newsletterLabels,
+      [this.internalName]: this.label,
+    });
   }
+
 
   private handleChange = (e: Event) => {
     const isChecked = (e.target as HTMLInputElement).checked;

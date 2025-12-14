@@ -36,7 +36,7 @@ export class FlashMessage {
             role="alert"
             aria-live="polite"
           >
-            <span class="break-all">{message.text}</span>
+            <span class="break-words">{message.text}</span>
             <button type="button" class="cursor-pointer leading-none pt-1" onClick={() => Flash.remove(message.id)} aria-label="Close">
               <CloseIcon />
             </button>

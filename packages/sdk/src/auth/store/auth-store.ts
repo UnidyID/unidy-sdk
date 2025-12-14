@@ -50,6 +50,7 @@ export const missingFieldNames = () => {
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
+  EMAIL: "unidy_email",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -61,8 +62,8 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
 };
 
 const initialState: AuthState = {
-  step: "email",
-  email: "",
+  step: 'email',
+  email: localStorage.getItem(SESSION_KEYS.EMAIL) ?? "",
   password: "",
   magicCodeStep: null,
   resetPassword: {
@@ -116,6 +117,7 @@ class AuthStore {
   setEmail(email: string) {
     state.email = email;
     state.errors.email = null;
+    saveToStorage(localStorage, SESSION_KEYS.EMAIL, email);
   }
 
   setPassword(password: string) {
@@ -226,6 +228,7 @@ class AuthStore {
   reset() {
     reset();
     saveToStorage(localStorage, SESSION_KEYS.SID, null);
+    saveToStorage(localStorage, SESSION_KEYS.EMAIL, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
   }
 }

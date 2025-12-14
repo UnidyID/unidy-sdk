@@ -84,6 +84,21 @@
     "verification_failed": "Verifizierung fehlgeschlagen"
   },
   "loading": "Wird geladen...",
+  "newsletter": {
+    "subscribe_success": "Sie haben erfolgreich zum Newsletter angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
+    "errors": {
+      "unconfirmed": "Ihre E-Mail-Adresse ist nicht bestätigt.",
+      "already_subscribed": "Bereits abonniert",
+      "invalid_email": "Ungültige E-Mail-Adresse",
+      "newsletter_not_found": "Newsletter nicht gefunden",
+      "preferences_not_found": "Präferenz nicht gefunden",
+      "unknown": "Ein unbekannter Fehler ist aufgetreten",
+      "rate_limit": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut.",
+      "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
+      "server_error": "Serverfehler. Bitte versuchen Sie es später erneut."
+    },
+    "resend_confirmation_success": "Bitte überprüfen Sie Ihren Posteingang für die Bestätigungs-E-Mail."
+  },
   "profile": {
     "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
     "updated": "Profil wurde aktualisiert"
