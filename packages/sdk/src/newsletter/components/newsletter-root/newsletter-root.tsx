@@ -1,8 +1,8 @@
-import { Component, Host, h, Prop, Element, Method } from "@stencil/core";
-import { newsletterStore, resetErrors, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
-import { authStore } from "../../../auth/store/auth-store";
+import { Component, Prop, Element, Method, Host, h } from "@stencil/core";
+import { newsletterStore, persist, resetErrors, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
 import { NewsletterHelpers } from "../../newsletter-helpers";
 import { clearUrlParam } from "../../../shared/component-utils";
+import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 
 @Component({
@@ -17,11 +17,24 @@ export class NewsletterRoot {
     return t(`newsletter.errors.${errorIdentifier}`) || t("newsletter.errors.unknown");
   }
 
-  componentWillLoad() {
+  async componentWillLoad() {
     const preferenceToken = clearUrlParam("preference_token");
-    if (preferenceToken) {
+    const email = clearUrlParam("email");
+
+
+    if (preferenceToken && email) {
       newsletterStore.state.preferenceToken = preferenceToken;
-      newsletterStore.state.loggedInViaEmail = true;
+      newsletterStore.state.email = email;
+
+      persist("preferenceToken");
+      persist("email");
+    }
+
+    await waitForConfig();
+    await NewsletterHelpers.fetchNewsletterConfigs();
+
+    if (newsletterStore.state.preferenceToken) {
+      await NewsletterHelpers.fetchSubscriptions();
     }
   }
 
@@ -31,7 +44,6 @@ export class NewsletterRoot {
     resetErrors();
 
     newsletterStore.state.loading = true;
-    newsletterStore.state.showSuccess = false;
 
     const { email, checkedNewsletters } = newsletterStore.state;
 
@@ -42,12 +54,6 @@ export class NewsletterRoot {
     }
 
     await NewsletterHelpers.createSubscriptions({ email, checkedNewsletters: checkedNewsletters });
-  }
-
-  componentWillRender() {
-    if (authStore.state.email && !newsletterStore.state.email) {
-      newsletterStore.state.email = authStore.state.email;
-    }
   }
 
   render() {

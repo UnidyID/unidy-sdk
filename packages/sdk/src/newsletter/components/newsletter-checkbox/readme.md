@@ -7,20 +7,21 @@
 
 ## Properties
 
-| Property             | Attribute       | Description | Type      | Default     |
-| -------------------- | --------------- | ----------- | --------- | ----------- |
-| `checked`            | `checked`       |             | `boolean` | `undefined` |
-| `componentClassName` | `class-name`    |             | `string`  | `undefined` |
-| `internalName`       | `internal-name` |             | `string`  | `undefined` |
-| `label`              | `label`         |             | `string`  | `undefined` |
+| Property                    | Attribute       | Description | Type      | Default     |
+| --------------------------- | --------------- | ----------- | --------- | ----------- |
+| `checked`                   | `checked`       |             | `boolean` | `false`     |
+| `componentClassName`        | `class-name`    |             | `string`  | `undefined` |
+| `internalName` _(required)_ | `internal-name` |             | `string`  | `undefined` |
+| `label`                     | `label`         |             | `string`  | `undefined` |
 
 
 ## Shadow Parts
 
-| Part      | Description |
-| --------- | ----------- |
-| `"input"` |             |
-| `"label"` |             |
+| Part           | Description |
+| -------------- | ----------- |
+| `"input"`      |             |
+| `"label"`      |             |
+| `"label-text"` |             |
 
 
 ----------------------------------------------

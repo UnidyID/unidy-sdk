@@ -5,7 +5,6 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
@@ -15,7 +14,6 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
-export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
@@ -26,14 +24,7 @@ export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
-    interface NewsletterCheckbox {
-        "checked": boolean;
-        "componentClassName"?: string;
-        "internalName": string;
-        "label": string;
-    }
     interface UConditionalRender {
-        "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
         /**
           * @default false
@@ -162,12 +153,41 @@ export namespace Components {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UNewsletterCheckbox {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+        "label"?: string;
+    }
+    interface UNewsletterLogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
     interface UNewsletterRoot {
         /**
           * @default ""
          */
         "componentClassName": string;
         "submit": () => Promise<void>;
+    }
+    interface UNewsletterSubscribeButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "internalName": string;
+    }
+    interface UNewsletterUnsubscribeButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "internalName": string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -395,12 +415,6 @@ export interface USubmitButtonCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSubmitButtonElement;
 }
 declare global {
-    interface HTMLNewsletterCheckboxElement extends Components.NewsletterCheckbox, HTMLStencilElement {
-    }
-    var HTMLNewsletterCheckboxElement: {
-        prototype: HTMLNewsletterCheckboxElement;
-        new (): HTMLNewsletterCheckboxElement;
-    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -490,11 +504,35 @@ declare global {
         prototype: HTMLUMissingFieldsSubmitButtonElement;
         new (): HTMLUMissingFieldsSubmitButtonElement;
     };
+    interface HTMLUNewsletterCheckboxElement extends Components.UNewsletterCheckbox, HTMLStencilElement {
+    }
+    var HTMLUNewsletterCheckboxElement: {
+        prototype: HTMLUNewsletterCheckboxElement;
+        new (): HTMLUNewsletterCheckboxElement;
+    };
+    interface HTMLUNewsletterLogoutButtonElement extends Components.UNewsletterLogoutButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterLogoutButtonElement: {
+        prototype: HTMLUNewsletterLogoutButtonElement;
+        new (): HTMLUNewsletterLogoutButtonElement;
+    };
     interface HTMLUNewsletterRootElement extends Components.UNewsletterRoot, HTMLStencilElement {
     }
     var HTMLUNewsletterRootElement: {
         prototype: HTMLUNewsletterRootElement;
         new (): HTMLUNewsletterRootElement;
+    };
+    interface HTMLUNewsletterSubscribeButtonElement extends Components.UNewsletterSubscribeButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterSubscribeButtonElement: {
+        prototype: HTMLUNewsletterSubscribeButtonElement;
+        new (): HTMLUNewsletterSubscribeButtonElement;
+    };
+    interface HTMLUNewsletterUnsubscribeButtonElement extends Components.UNewsletterUnsubscribeButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterUnsubscribeButtonElement: {
+        prototype: HTMLUNewsletterUnsubscribeButtonElement;
+        new (): HTMLUNewsletterUnsubscribeButtonElement;
     };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
@@ -623,7 +661,6 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -635,7 +672,11 @@ declare global {
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
+        "u-newsletter-checkbox": HTMLUNewsletterCheckboxElement;
+        "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
         "u-newsletter-root": HTMLUNewsletterRootElement;
+        "u-newsletter-subscribe-button": HTMLUNewsletterSubscribeButtonElement;
+        "u-newsletter-unsubscribe-button": HTMLUNewsletterUnsubscribeButtonElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
@@ -656,14 +697,7 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface NewsletterCheckbox {
-        "checked"?: boolean;
-        "componentClassName"?: string;
-        "internalName"?: string;
-        "label"?: string;
-    }
     interface UConditionalRender {
-        "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
         /**
           * @default false
@@ -795,11 +829,40 @@ declare namespace LocalJSX {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UNewsletterCheckbox {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+        "label"?: string;
+    }
+    interface UNewsletterLogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
     interface UNewsletterRoot {
         /**
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    interface UNewsletterSubscribeButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "internalName": string;
+    }
+    interface UNewsletterUnsubscribeButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "internalName": string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -1012,7 +1075,6 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
-        "newsletter-checkbox": NewsletterCheckbox;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1024,7 +1086,11 @@ declare namespace LocalJSX {
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
+        "u-newsletter-checkbox": UNewsletterCheckbox;
+        "u-newsletter-logout-button": UNewsletterLogoutButton;
         "u-newsletter-root": UNewsletterRoot;
+        "u-newsletter-subscribe-button": UNewsletterSubscribeButton;
+        "u-newsletter-unsubscribe-button": UNewsletterUnsubscribeButton;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
@@ -1048,7 +1114,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
@@ -1060,7 +1125,11 @@ declare module "@stencil/core" {
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+            "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
+            "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
+            "u-newsletter-subscribe-button": LocalJSX.UNewsletterSubscribeButton & JSXBase.HTMLAttributes<HTMLUNewsletterSubscribeButtonElement>;
+            "u-newsletter-unsubscribe-button": LocalJSX.UNewsletterUnsubscribeButton & JSXBase.HTMLAttributes<HTMLUNewsletterUnsubscribeButtonElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;

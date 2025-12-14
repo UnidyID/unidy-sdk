@@ -57,9 +57,21 @@ export class EmailField {
       return await getParentNewsletterRoot(this.el)?.submit();
   };
 
+  private isDisabled(): boolean {
+    if (this.disabled) return true;
+
+    if (this.context === "auth")
+      return authState.loading || authState.step === "verification" || authState.step === "registration";
+
+    if (this.context === "newsletter"){
+      return newsletterStore.state.loading || (!!newsletterStore.state.preferenceToken && !!newsletterStore.state.email);
+    }
+
+    return false;
+  }
+
   render() {
     const placeholderText = t("auth.email.placeholder", { defaultValue: "Enter your email" });
-    const isDisabled = this.disabled || (this.context === "auth" && (authState.loading || authState.step === "verification" || authState.step === "registration"));
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -69,7 +81,7 @@ export class EmailField {
           value={this.store.state.email}
           autocomplete="email"
           placeholder={placeholderText}
-          disabled={isDisabled}
+          disabled={this.isDisabled()}
           class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}

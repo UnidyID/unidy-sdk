@@ -86,6 +86,8 @@
   "loading": "Wird geladen...",
   "newsletter": {
     "subscribe_success": "Sie haben erfolgreich zum Newsletter angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
+    "unsubscribe_success": "Sie haben sich erfolgreich vom Newsletter abgemeldet",
+    "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
     "errors": {
       "unconfirmed": "Ihre E-Mail-Adresse ist nicht bestätigt.",
       "already_subscribed": "Bereits abonniert",
@@ -93,9 +95,12 @@
       "newsletter_not_found": "Newsletter nicht gefunden",
       "preferences_not_found": "Präferenz nicht gefunden",
       "unknown": "Ein unbekannter Fehler ist aufgetreten",
-      "rate_limit": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut.",
+      "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut.",
       "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
-      "server_error": "Serverfehler. Bitte versuchen Sie es später erneut."
+      "server_error": "Serverfehler. Bitte versuchen Sie es später erneut.",
+      "unsubscribe_failed": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "invalid_preference_token": "Ihre Sitzung ist abgelaufen. Bitte fordern Sie einen neuen Login-Link an.",
+      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein"
     },
     "resend_confirmation_success": "Bitte überprüfen Sie Ihren Posteingang für die Bestätigungs-E-Mail."
   },

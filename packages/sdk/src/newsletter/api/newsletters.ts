@@ -214,8 +214,11 @@ export class NewsletterService extends EventEmitter {
     );
   }
 
-  async deleteSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<null>> {
-    return this.client.delete<null>(
+  async deleteSubscription(
+    internalName: string,
+    auth: SubscriptionAuthOptions,
+  ): Promise<ApiResponse<{ new_preference_token: string } | null>> {
+    return this.client.delete<{ new_preference_token: string } | null>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildAuthHeaders(auth),
     );

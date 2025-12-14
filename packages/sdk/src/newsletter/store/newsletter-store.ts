@@ -1,4 +1,5 @@
 import { createStore } from "@stencil/store";
+import type { Newsletter } from "../api/newsletters";
 
 export type NewsletterErrorIdentifier =
   | "unconfirmed"
@@ -10,29 +11,40 @@ export type NewsletterErrorIdentifier =
 
 interface NewsletterState {
   email: string;
-  preferenceToken: string
+  preferenceToken: string;
   loading: boolean;
-  loggedInViaEmail: boolean;
+  fetchingSubscriptions: boolean;
+  fetchingConfigs: boolean;
 
+  newsletterConfigs: Newsletter[];
   checkedNewsletters: string[];
+  existingSubscriptions: string[];
   errors: Record<string, NewsletterErrorIdentifier>;
   showSuccess: boolean;
-
-  newsletterLabels: Record<string, string>;
 }
 
-const initialState: NewsletterState = {
-  email: "",
-  preferenceToken: "",
-  loading: false,
-  loggedInViaEmail: false,
+const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
+export const persist = (key: 'email' | 'preferenceToken') => {
+  localStorage.setItem(`${PERSIST_KEY_PREFIX}${key}`, newsletterStore.state[key]);
+};
+
+const getPersistedValue = (key: 'email' | 'preferenceToken') => {
+  return localStorage.getItem(`${PERSIST_KEY_PREFIX}${key}`);
+}
+const initialState: NewsletterState = {
+  email: getPersistedValue("email") ?? "",
+  preferenceToken: getPersistedValue("preferenceToken") ?? "",
+  loading: false,
+  fetchingSubscriptions: false,
+  fetchingConfigs: false,
+
+  newsletterConfigs: [],
   checkedNewsletters: [],
+  existingSubscriptions: [],
   errors: {},
 
   showSuccess: false,
-
-  newsletterLabels: {},
 };
 
 export const newsletterStore = createStore<NewsletterState>(initialState);
@@ -43,4 +55,21 @@ export const resetErrors = () => {
 
 export const reset = () => {
   newsletterStore.state = initialState;
+  localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
+  localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+};
+
+export const clearPreferenceToken = () => {
+  newsletterStore.state.preferenceToken = "";
+  newsletterStore.state.email = "";
+  newsletterStore.state.existingSubscriptions = [];
+  localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
+  localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+};
+
+export const getNewsletterTitle = (internalName: string): string | undefined => {
+  const config = newsletterStore.state.newsletterConfigs.find(
+    (n) => n.internal_name === internalName
+  );
+  return config?.title;
 };

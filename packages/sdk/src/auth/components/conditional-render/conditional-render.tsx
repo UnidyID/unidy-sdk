@@ -1,21 +1,37 @@
 import { Component, h, Prop, Host } from "@stencil/core";
 import { authState, type AuthState } from "../../store/auth-store";
+import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { profileStore, type ProfileState } from "../../../profile/store/profile-store";
 
-const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
-  // login options
-  passkeyEnabled: (state) => state.availableLoginOptions?.passkey,
-  passwordEnabled: (state) => state.availableLoginOptions?.password,
-  magicCodeEnabled: (state) => state.availableLoginOptions?.magic_link,
-  socialLoginsEnabled: (state) => (state.availableLoginOptions?.social_logins?.length ?? 0) > 0,
+type NewsletterState = typeof newsletterStore.state;
+type AnyStoreState = AuthState | NewsletterState | ProfileState;
 
-  loading: (state) => state.loading,
-  authenticated: (state) => state.authenticated,
+interface PredefinedCondition {
+  getState: () => AnyStoreState;
+  evaluate: (state: AnyStoreState) => unknown;
+}
 
-  magicCodeSent: (state) => state.magicCodeStep === "sent" || state.magicCodeStep === "requested",
-  magicCodeRequested: (state) => state.magicCodeStep === "requested",
+const PREDEFINED_CONDITIONS: Record<string, PredefinedCondition> = {
+  "auth.passkeyEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.passkey },
+  "auth.passwordEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.password },
+  "auth.magicCodeEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.magic_link },
+  "auth.socialLoginsEnabled": { getState: () => authState, evaluate: (s) => ((s as AuthState).availableLoginOptions?.social_logins?.length ?? 0) > 0 },
+  "auth.loading": { getState: () => authState, evaluate: (s) => (s as AuthState).loading },
+  "auth.authenticated": { getState: () => authState, evaluate: (s) => (s as AuthState).authenticated },
+  "auth.magicCodeSent": { getState: () => authState, evaluate: (s) => (s as AuthState).magicCodeStep === "sent" || (s as AuthState).magicCodeStep === "requested" },
+  "auth.magicCodeRequested": { getState: () => authState, evaluate: (s) => (s as AuthState).magicCodeStep === "requested" },
+  "auth.resetPasswordSent": { getState: () => authState, evaluate: (s) => (s as AuthState).resetPassword.step === "sent" || (s as AuthState).resetPassword.step === "requested" },
+  "auth.resetPasswordRequested": { getState: () => authState, evaluate: (s) => (s as AuthState).resetPassword.step === "requested" },
 
-  resetPasswordSent: (state) => state.resetPassword.step === "sent" || state.resetPassword.step === "requested",
-  resetPasswordRequested: (state) => state.resetPassword.step === "requested",
+  "newsletter.loading": { getState: () => newsletterStore.state, evaluate: (s) => (s as NewsletterState).loading },
+  "newsletter.hasCheckedNewsletters": { getState: () => newsletterStore.state, evaluate: (s) => (s as NewsletterState).checkedNewsletters.length > 0 },
+  "newsletter.hasPreferenceToken": { getState: () => newsletterStore.state, evaluate: (s) => !!(s as NewsletterState).preferenceToken },
+
+  "profile.loading": { getState: () => profileStore.state, evaluate: (s) => (s as ProfileState).loading },
+  "profile.hasErrors": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).errors).some((key) => (s as ProfileState).errors[key] !== null) },
+  "profile.hasFlashErrors": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).flashErrors).some((key) => (s as ProfileState).flashErrors[key] !== null) },
+  "profile.phoneValid": { getState: () => profileStore.state, evaluate: (s) => (s as ProfileState).phoneValid },
+  "profile.hasData": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).data).length > 0 },
 };
 
 function isTruthy(value: unknown): boolean {
@@ -30,27 +46,24 @@ export class ConditionalRender {
   @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
-  @Prop() conditionFunction?: (state: AuthState) => boolean;
 
-  private evaluatePredefinedState(): unknown {
-    const predefinedFunction = PREDEFINED_STATES[this.when];
-    if (predefinedFunction) return predefinedFunction(authState);
+  private evaluateCondition(): unknown {
+    const condition = PREDEFINED_CONDITIONS[this.when];
+    if (condition) {
+      return condition.evaluate(condition.getState());
+    }
 
-    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not a valid predefined state`);
+    const availableConditions = Object.keys(PREDEFINED_CONDITIONS).join(", ");
+    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not valid. Available: ${availableConditions}`);
   }
 
   private shouldRender(): boolean {
-    if (!this.when && !this.conditionFunction) {
-      console.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
+    if (!this.when) {
+      console.error("[u-conditional-render] 'when' prop is required");
       return false;
     }
 
-    if (this.conditionFunction) {
-      const result = this.conditionFunction(authState);
-      return this.not ? !result : result;
-    }
-
-    const value = this.evaluatePredefinedState();
+    const value = this.evaluateCondition();
 
     let result: boolean;
 
