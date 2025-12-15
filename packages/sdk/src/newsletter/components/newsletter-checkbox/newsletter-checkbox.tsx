@@ -64,6 +64,8 @@ export class NewsletterCheckbox {
 
   render() {
     return (
+      // biome-ignore lint/a11y/noLabelWithoutControl
+      // biome-ignore lint/a11y/useKeyWithClickEvents
       <label part="label" class={this.componentClassName} onClick={this.handleClick}>
         <span part="label-text">{this.displayLabel}</span>
         {!newsletterStore.state.preferenceToken && (
