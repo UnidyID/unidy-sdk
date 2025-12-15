@@ -1,4 +1,4 @@
-# newsletter-checkbox
+# u-newsletter-checkbox
 
 
 

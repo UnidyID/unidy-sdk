@@ -1,4 +1,4 @@
-# unidy-config
+# u-config
 
 
 

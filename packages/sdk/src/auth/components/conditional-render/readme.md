@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type      | Default     |
-| -------- | --------- | ----------- | --------- | ----------- |
-| `is`     | `is`      |             | `string`  | `undefined` |
-| `not`    | `not`     |             | `boolean` | `false`     |
-| `when`   | `when`    |             | `string`  | `undefined` |
+| Property            | Attribute | Description | Type                            | Default     |
+| ------------------- | --------- | ----------- | ------------------------------- | ----------- |
+| `conditionFunction` | --        |             | `(state: AuthState) => boolean` | `undefined` |
+| `is`                | `is`      |             | `string`                        | `undefined` |
+| `not`               | `not`     |             | `boolean`                       | `false`     |
+| `when`              | `when`    |             | `string`                        | `undefined` |
 
 
 ----------------------------------------------

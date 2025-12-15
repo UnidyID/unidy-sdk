@@ -322,6 +322,10 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default false
+         */
+        "not": boolean;
     }
     interface USigninRoot {
         /**
@@ -1012,6 +1016,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "not"?: boolean;
     }
     interface USigninRoot {
         /**
