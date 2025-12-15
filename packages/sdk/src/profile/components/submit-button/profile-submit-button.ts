@@ -15,11 +15,13 @@ export const ProfileSubmitButton: FunctionalComponent<ProfileSubmitButtonProps> 
 let authInstance: Auth | undefined;
 
 export const profileContext: SubmitButtonContext = {
-  async init() {
-    authInstance = await Auth.getInstance();
-  },
+  async handleClick(event: MouseEvent, _el: HTMLElement) {
+    event.preventDefault();
 
-  async handleClick() {
+    if (!authInstance) {
+      authInstance = await Auth.getInstance();
+    }
+
     profileState.loading = true;
 
     const { configuration, ...stateWithoutConfig } = profileState;
