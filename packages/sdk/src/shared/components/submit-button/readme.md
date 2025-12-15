@@ -15,14 +15,6 @@
 | `text`               | `text`       |             | `string`                                   | `undefined` |
 
 
-## Events
-
-| Event               | Description | Type               |
-| ------------------- | ----------- | ------------------ |
-| `newsletterError`   |             | `CustomEvent<any>` |
-| `newsletterSuccess` |             | `CustomEvent<any>` |
-
-
 ## Dependencies
 
 ### Used by

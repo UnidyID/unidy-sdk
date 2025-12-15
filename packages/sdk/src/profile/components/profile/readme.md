@@ -13,6 +13,19 @@
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
 
 
+## Methods
+
+### `submitProfile() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Used by
