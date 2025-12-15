@@ -2,7 +2,6 @@ import { ApiResponse, getUnidyClient, NewsletterSubscription } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
 import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
-import { authStore } from "../auth/store/auth-store";
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -76,10 +75,6 @@ export class NewsletterHelpers {
   static async fetchSubscriptions(): Promise<void> {
     const { preferenceToken } = newsletterStore.state;
 
-    if (!preferenceToken) {
-      return;
-    }
-
     newsletterStore.state.fetchingSubscriptions = true;
 
     const response = await getUnidyClient().newsletters.listSubscriptions({
@@ -101,7 +96,13 @@ export class NewsletterHelpers {
         }),
       );
 
-      console.log(newsletterStore.state.existingSubscriptions);
+      const preferenceToken = response.data.find((sub) => sub.preference_token)?.preference_token;
+      if (preferenceToken) {
+        // TODO: implement proper coupling between newsletter and auth
+        //newsletterStore.state.preferenceToken = preferenceToken;
+      }
+
+      console.log("existingSubscriptions fetch", newsletterStore.state.existingSubscriptions);
     }
   }
 
