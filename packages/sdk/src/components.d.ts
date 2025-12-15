@@ -239,6 +239,7 @@ export namespace Components {
          */
         "initialData": string | Record<string, string>;
         "profileId"?: string;
+        "submitProfile": () => Promise<void>;
     }
     interface URawField {
         /**
