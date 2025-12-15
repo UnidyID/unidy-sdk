@@ -12,15 +12,11 @@ export const ProfileSubmitButton: FunctionalComponent<ProfileSubmitButtonProps> 
   return children;
 };
 
-let authInstance: Auth | undefined;
-
 export const profileContext: SubmitButtonContext = {
   async handleClick(event: MouseEvent, _el: HTMLElement) {
     event.preventDefault();
 
-    if (!authInstance) {
-      authInstance = await Auth.getInstance();
-    }
+    const authInstance = await Auth.getInstance();
 
     profileState.loading = true;
 
@@ -34,7 +30,7 @@ export const profileContext: SubmitButtonContext = {
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
     const resp = await getUnidyClient().profile.updateProfile({
-      idToken: (await authInstance?.getToken()) as string,
+      idToken: (await authInstance.getToken()) as string,
       data: updatedProfileData,
       lang: unidyState.locale,
     });
