@@ -10,7 +10,7 @@ export class SignedIn {
   @Prop() not = false;
 
   render() {
-    if (this.not ? !authStore.state.authenticated : authStore.state.authenticated) {
+    if (this.not ? authStore.state.authenticated : !authStore.state.authenticated) {
       return null;
     }
 
