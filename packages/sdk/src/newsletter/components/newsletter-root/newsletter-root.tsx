@@ -4,6 +4,7 @@ import { NewsletterHelpers } from "../../newsletter-helpers";
 import { clearUrlParam } from "../../../shared/component-utils";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
+import { authStore } from "../../../auth/store/auth-store";
 
 @Component({
   tag: "u-newsletter-root",
@@ -30,12 +31,10 @@ export class NewsletterRoot {
       persist("email");
     }
 
+
     await waitForConfig();
     await NewsletterHelpers.fetchNewsletterConfigs();
-
-    if (newsletterStore.state.preferenceToken) {
-      await NewsletterHelpers.fetchSubscriptions();
-    }
+    await NewsletterHelpers.fetchSubscriptions();
   }
 
 

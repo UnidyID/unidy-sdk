@@ -19,6 +19,7 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "newsletter.loading": () => newsletterStore.state.loading,
   "newsletter.hasCheckedNewsletters": () => newsletterStore.state.checkedNewsletters.length > 0,
   "newsletter.hasPreferenceToken": () => !!newsletterStore.state.preferenceToken,
+  "newsletter.subscribed": (newsletterInternalName: string) => NewsletterHelpers.isSubscribed(newsletterInternalName),
   "newsletter.confirmed": (newsletterInternalName: string) => NewsletterHelpers.isConfirmed(newsletterInternalName),
 
   "profile.loading": () => profileStore.state.loading,
@@ -66,13 +67,20 @@ export class ConditionalRender {
       return false;
     }
 
+    const normalizedIs = this.is?.toString().toLowerCase();
     let result: boolean;
 
-    if (this.is === undefined) {
+    if (typeof value === "boolean") {
+      if (normalizedIs === "false" || normalizedIs === "disabled") {
+        result = !value;
+      } else {
+        result = value;
+      }
+    } else if (this.is === undefined) {
       result = isTruthy(value);
-    } else if (this.is === "enabled" || this.is === "true") {
+    } else if (normalizedIs === "enabled" || normalizedIs === "true") {
       result = isTruthy(value);
-    } else if (this.is === "disabled" || this.is === "false") {
+    } else if (normalizedIs === "disabled" || normalizedIs === "false") {
       result = !isTruthy(value);
     } else {
       result = String(value) === String(this.is); // to compare exact value

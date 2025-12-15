@@ -50,14 +50,16 @@
                 </u-newsletter-unsubscribe-button>
               </div>
             </div>
-            <u-conditional-render when="newsletter.confirmed" is="test" not>
-              <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
-                <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
-                <u-newsletter-resend-doi-button
-                  internal-name="test"
-                  class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg p-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
-                </u-newsletter-resend-doi-button>
-              </div>
+            <u-conditional-render when="newsletter.subscribed" is="test">
+              <u-conditional-render when="newsletter.confirmed" is="test" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="test"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg p-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
             </u-conditional-render>
           </div>
 
@@ -78,14 +80,16 @@
                 </u-newsletter-unsubscribe-button>
               </div>
             </div>
-            <u-conditional-render when="newsletter.confirmed" is="main" not>
-              <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
-                <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
-                <u-newsletter-resend-doi-button
-                  internal-name="main"
-                  class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
-                </u-newsletter-resend-doi-button>
-              </div>
+            <u-conditional-render when="newsletter.subscribed" is="main"></u-conditional-render>
+              <u-conditional-render when="newsletter.confirmed" is="main" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="main"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
             </u-conditional-render>
           </div>
         </div>

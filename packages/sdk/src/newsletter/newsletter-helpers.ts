@@ -1,7 +1,8 @@
-import { getUnidyClient } from "../api";
+import { ApiResponse, getUnidyClient, NewsletterSubscription } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
 import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
+import { authStore } from "../auth/store/auth-store";
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
