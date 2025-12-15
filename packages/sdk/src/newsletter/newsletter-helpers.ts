@@ -1,7 +1,7 @@
 import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
-import { newsletterStore, persist, type NewsletterErrorIdentifier } from "./store/newsletter-store";
+import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -12,6 +12,37 @@ export class NewsletterHelpers {
     newsletterStore.state.existingSubscriptions = [];
     localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
     localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+  }
+
+  static async resendDoi(internalName: string): Promise<boolean> {
+    const { preferenceToken } = newsletterStore.state;
+
+    if (!preferenceToken) {
+      return false;
+    }
+
+    newsletterStore.state.resendingDoi = [...newsletterStore.state.resendingDoi, internalName];
+
+    const response = await getUnidyClient().newsletters.resendDoi(internalName, {
+      preferenceToken,
+    });
+
+    newsletterStore.state.resendingDoi = newsletterStore.state.resendingDoi.filter(
+      (name) => name !== internalName,
+    );
+
+    if (response.status === 204) {
+      Flash.success.addMessage(t("newsletter.doi_resent"));
+      return true;
+    }
+
+    if (response.status === 401) {
+      Flash.error.addMessage(t("newsletter.errors.invalid_preference_token"));
+      return false;
+    }
+
+    Flash.error.addMessage(t("newsletter.errors.resend_doi_failed"));
+    return false;
   }
 
   static async sendLoginEmail(email: string): Promise<void> {
@@ -63,8 +94,13 @@ export class NewsletterHelpers {
 
     if (response.success && response.data) {
       newsletterStore.state.existingSubscriptions = response.data.map(
-        (sub) => sub.newsletter_internal_name,
+        (sub): ExistingSubscription => ({
+          newsletter_internal_name: sub.newsletter_internal_name,
+          confirmed: sub.confirmed_at !== null,
+        }),
       );
+
+      console.log(newsletterStore.state.existingSubscriptions);
     }
   }
 
@@ -111,7 +147,7 @@ export class NewsletterHelpers {
     if (newsletterStore.state.preferenceToken) {
       newsletterStore.state.existingSubscriptions = [
         ...newsletterStore.state.existingSubscriptions,
-        internalName,
+        { newsletter_internal_name: internalName, confirmed: false },
       ];
     }
 
@@ -137,7 +173,7 @@ export class NewsletterHelpers {
       newsletterStore.state.preferenceToken = response.data.new_preference_token;
       persist("preferenceToken");
       newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
-        (name) => name !== internalName,
+        (sub) => sub.newsletter_internal_name !== internalName,
       );
       return true;
     }
@@ -216,6 +252,23 @@ export class NewsletterHelpers {
       (n) => n.internal_name === internalName
     );
     return config?.title;
+  }
+
+  static getSubscription(internalName: string): ExistingSubscription | undefined {
+    return newsletterStore.state.existingSubscriptions.find(
+      (sub) => sub.newsletter_internal_name === internalName
+    );
+  }
+
+  static isSubscribed(internalName: string): boolean {
+    return newsletterStore.state.existingSubscriptions.some(
+      (sub) => sub.newsletter_internal_name === internalName
+    );
+  }
+
+  static isConfirmed(internalName: string): boolean {
+    const sub = NewsletterHelpers.getSubscription(internalName);
+    return sub?.confirmed ?? false;
   }
 
   private static returnToAfterConfirmationUrl(): string {

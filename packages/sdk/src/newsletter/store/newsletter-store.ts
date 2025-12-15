@@ -9,6 +9,11 @@ export type NewsletterErrorIdentifier =
   | "preferences_not_found"
   | "unknown";
 
+export interface ExistingSubscription {
+  newsletter_internal_name: string;
+  confirmed: boolean;
+}
+
 interface NewsletterState {
   email: string;
   preferenceToken: string;
@@ -16,7 +21,8 @@ interface NewsletterState {
   loading: boolean;
 
   fetchingSubscriptions: boolean;
-  existingSubscriptions: string[];
+  existingSubscriptions: ExistingSubscription[];
+  resendingDoi: string[];
 
   fetchingConfigs: boolean;
   newsletterConfigs: Newsletter[];
@@ -42,6 +48,7 @@ const initialState: NewsletterState = {
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],
+  resendingDoi: [],
 
   fetchingConfigs: false,
   newsletterConfigs: [],

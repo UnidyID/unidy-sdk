@@ -1,37 +1,31 @@
 import { Component, h, Prop, Host } from "@stencil/core";
 import { authState, type AuthState } from "../../store/auth-store";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { profileStore, type ProfileState } from "../../../profile/store/profile-store";
+import { profileStore } from "../../../profile/store/profile-store";
+import { NewsletterHelpers } from "../../../newsletter/newsletter-helpers";
 
-type NewsletterState = typeof newsletterStore.state;
-type AnyStoreState = AuthState | NewsletterState | ProfileState;
+const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
+  "auth.passkeyEnabled": () => authState.availableLoginOptions?.passkey,
+  "auth.passwordEnabled": () => authState.availableLoginOptions?.password,
+  "auth.magicCodeEnabled": () => authState.availableLoginOptions?.magic_link,
+  "auth.socialLoginsEnabled": () => authState.availableLoginOptions?.social_logins?.length ?? 0 > 0,
+  "auth.loading": () => authState.loading,
+  "auth.authenticated": () => authState.authenticated,
+  "auth.magicCodeSent": () => authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested",
+  "auth.magicCodeRequested": () => authState.magicCodeStep === "requested",
+  "auth.resetPasswordSent": () => authState.resetPassword.step === "sent" || authState.resetPassword.step === "requested",
+  "auth.resetPasswordRequested": () => authState.resetPassword.step === "requested",
 
-interface PredefinedCondition {
-  getState: () => AnyStoreState;
-  evaluate: (state: AnyStoreState) => unknown;
-}
+  "newsletter.loading": () => newsletterStore.state.loading,
+  "newsletter.hasCheckedNewsletters": () => newsletterStore.state.checkedNewsletters.length > 0,
+  "newsletter.hasPreferenceToken": () => !!newsletterStore.state.preferenceToken,
+  "newsletter.confirmed": (newsletterInternalName: string) => NewsletterHelpers.isConfirmed(newsletterInternalName),
 
-const PREDEFINED_CONDITIONS: Record<string, PredefinedCondition> = {
-  "auth.passkeyEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.passkey },
-  "auth.passwordEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.password },
-  "auth.magicCodeEnabled": { getState: () => authState, evaluate: (s) => (s as AuthState).availableLoginOptions?.magic_link },
-  "auth.socialLoginsEnabled": { getState: () => authState, evaluate: (s) => ((s as AuthState).availableLoginOptions?.social_logins?.length ?? 0) > 0 },
-  "auth.loading": { getState: () => authState, evaluate: (s) => (s as AuthState).loading },
-  "auth.authenticated": { getState: () => authState, evaluate: (s) => (s as AuthState).authenticated },
-  "auth.magicCodeSent": { getState: () => authState, evaluate: (s) => (s as AuthState).magicCodeStep === "sent" || (s as AuthState).magicCodeStep === "requested" },
-  "auth.magicCodeRequested": { getState: () => authState, evaluate: (s) => (s as AuthState).magicCodeStep === "requested" },
-  "auth.resetPasswordSent": { getState: () => authState, evaluate: (s) => (s as AuthState).resetPassword.step === "sent" || (s as AuthState).resetPassword.step === "requested" },
-  "auth.resetPasswordRequested": { getState: () => authState, evaluate: (s) => (s as AuthState).resetPassword.step === "requested" },
-
-  "newsletter.loading": { getState: () => newsletterStore.state, evaluate: (s) => (s as NewsletterState).loading },
-  "newsletter.hasCheckedNewsletters": { getState: () => newsletterStore.state, evaluate: (s) => (s as NewsletterState).checkedNewsletters.length > 0 },
-  "newsletter.hasPreferenceToken": { getState: () => newsletterStore.state, evaluate: (s) => !!(s as NewsletterState).preferenceToken },
-
-  "profile.loading": { getState: () => profileStore.state, evaluate: (s) => (s as ProfileState).loading },
-  "profile.hasErrors": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).errors).some((key) => (s as ProfileState).errors[key] !== null) },
-  "profile.hasFlashErrors": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).flashErrors).some((key) => (s as ProfileState).flashErrors[key] !== null) },
-  "profile.phoneValid": { getState: () => profileStore.state, evaluate: (s) => (s as ProfileState).phoneValid },
-  "profile.hasData": { getState: () => profileStore.state, evaluate: (s) => Object.keys((s as ProfileState).data).length > 0 },
+  "profile.loading": () => profileStore.state.loading,
+  "profile.hasErrors": () => Object.keys(profileStore.state.errors).some((key) => profileStore.state.errors[key] !== null),
+  "profile.hasFlashErrors": () => Object.keys(profileStore.state.flashErrors).some((key) => profileStore.state.flashErrors[key] !== null),
+  "profile.phoneValid": () => profileStore.state.phoneValid,
+  "profile.hasData": () => Object.keys(profileStore.state.data).length > 0,
 };
 
 function isTruthy(value: unknown): boolean {
@@ -46,24 +40,31 @@ export class ConditionalRender {
   @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
+  @Prop() conditionFunction?: (state: AuthState) => boolean;
 
   private evaluateCondition(): unknown {
-    const condition = PREDEFINED_CONDITIONS[this.when];
-    if (condition) {
-      return condition.evaluate(condition.getState());
+    const predefinedFunction = PREDEFINED_CONDITIONS[this.when];
+    if (predefinedFunction) {
+      return predefinedFunction(this.is);
     }
 
-    const availableConditions = Object.keys(PREDEFINED_CONDITIONS).join(", ");
-    throw new Error(`[u-conditional-render] 'when' prop "${this.when}" is not valid. Available: ${availableConditions}`);
+    return null
   }
 
   private shouldRender(): boolean {
-    if (!this.when) {
-      console.error("[u-conditional-render] 'when' prop is required");
-      return false;
+    if (!this.when && !this.conditionFunction) {
+      console.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
+    }
+
+    if (this.conditionFunction) {
+      const result = this.conditionFunction(authState);
+      return this.not ? !result : result;
     }
 
     const value = this.evaluateCondition();
+    if (value === null) {
+      return false;
+    }
 
     let result: boolean;
 

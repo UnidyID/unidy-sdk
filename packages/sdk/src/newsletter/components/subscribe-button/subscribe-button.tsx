@@ -15,7 +15,7 @@ export class NewsletterSubscribeButton {
   @State() subscribing = false;
 
   private get isSubscribed(): boolean {
-    return newsletterStore.state.existingSubscriptions.includes(this.internalName);
+    return newsletterStore.state.existingSubscriptions.some((subscription) => subscription.newsletter_internal_name === this.internalName);
   }
 
   private handleClick = async () => {

@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
@@ -14,6 +15,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
+export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
@@ -25,6 +27,7 @@ export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
     interface UConditionalRender {
+        "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
         /**
           * @default false
@@ -698,6 +701,7 @@ declare global {
 }
 declare namespace LocalJSX {
     interface UConditionalRender {
+        "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
         /**
           * @default false

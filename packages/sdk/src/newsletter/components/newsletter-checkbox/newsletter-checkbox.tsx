@@ -30,7 +30,7 @@ export class NewsletterCheckbox {
   }
 
   private get isSubscribed(): boolean {
-    return newsletterStore.state.existingSubscriptions.includes(this.internalName);
+    return newsletterStore.state.existingSubscriptions.some((subscription) => subscription.newsletter_internal_name === this.internalName);
   }
 
   private get isChecked(): boolean {
@@ -73,7 +73,6 @@ export class NewsletterCheckbox {
             part="input"
           />
         )}
-        <slot name={this.isSubscribed ? "subscribed" : "not-subscribed"} />
       </label>
     );
   }

@@ -232,13 +232,11 @@ export class NewsletterService extends EventEmitter {
     );
   }
 
-
   async sendLoginEmail(payload: LoginEmailPayload): Promise<ApiResponse<null>> {
     LoginEmailPayloadSchema.parse(payload);
 
     return this.client.post<null>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
   }
-
 
   async listNewsletters(): Promise<ApiResponse<NewslettersResponse>> {
     return this.client.get<NewslettersResponse>("/api/sdk/v1/newsletters");

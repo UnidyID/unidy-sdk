@@ -18,7 +18,7 @@ export class ErrorMessage {
   @Prop() errorMessages?: Record<string, string>;
   @Element() el!: HTMLElement;
 
-  private detectContext(): "auth" | "newsletter" | "profile" {
+  private detectContext(): "auth" | "newsletter" | "profile" | "other" {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
       return "auth";
 
@@ -28,10 +28,13 @@ export class ErrorMessage {
     if (this.el.closest("u-newsletter-root"))
       return "newsletter";
 
+    if (this.for == 'general ' || this.for == 'connection')
+      return "other";
+
     throw new Error("No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");
   }
 
-  private get context(): "auth" | "newsletter" | "profile" {
+  private get context(): "auth" | "newsletter" | "profile" | "other" {
     return this.detectContext();
   }
 
