@@ -1,4 +1,4 @@
-import { ApiResponse, getUnidyClient, NewsletterSubscription } from "../api";
+import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
 import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
@@ -74,6 +74,10 @@ export class NewsletterHelpers {
 
   static async fetchSubscriptions(): Promise<void> {
     const { preferenceToken } = newsletterStore.state;
+
+    if (!preferenceToken) {
+      return;
+    }
 
     newsletterStore.state.fetchingSubscriptions = true;
 
