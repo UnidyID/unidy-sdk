@@ -37,8 +37,8 @@ export class Passkey {
     }
 
     const isDisabled = this.disabled || authState.loading;
-    const text = t("auth.passkey.buttonText", { defaultValue: "Sign in with Passkey" });
-    const loadingText = t("auth.passkey.loadingText", { defaultValue: "Authenticating..." });
+    const text = t("auth.passkey.button_text", { defaultValue: "Sign in with Passkey" });
+    const loadingText = t("auth.passkey.loading_text", { defaultValue: "Authenticating..." });
 
     return (
       <Host>

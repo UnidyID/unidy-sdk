@@ -1,4 +1,5 @@
 import { Component, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
 @Component({
@@ -9,8 +10,6 @@ import { state as profileState } from "../../store/profile-store";
 export class FullProfile {
   @Prop() fields?: string;
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
-
-  @Prop() submitButtonText? = "";
 
   private list() {
     if (this.fields) {
@@ -32,7 +31,7 @@ export class FullProfile {
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
         <div class="flex justify-end">
-          <u-submit-button>{this.submitButtonText}</u-submit-button>
+          <u-submit-button>{t("buttons.submit")}</u-submit-button>
         </div>
       </u-profile>
     );

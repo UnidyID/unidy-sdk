@@ -979,3 +979,20 @@ This component is best used when you need to integrate with a design system or a
   class-name="my-custom-input-class">
 </u-raw-field>
 ```
+
+```html
+<div class="mb-4">
+  <label for="salutation" class="block text-sm font-bold mb-1">Salutation</label>
+  <u-raw-field
+    field="salutation"
+    type="select"
+    class-name="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm bg-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+    empty-option="false"
+    options='[
+      { "value": "mr",  "label": "Mr" },
+      { "value": "mrs", "label": "Mrs" },
+      { "value": "mx",  "label": "Divers" }
+    ]'
+  ></u-raw-field>
+</div>
+```

@@ -169,7 +169,7 @@ export class ApiClient {
         return {
           ...response,
           success: false,
-          error: t("errors.invalidResponseFormat", {
+          error: t("errors.invalid_response_format", {
             defaultValue: "Invalid response format",
           }),
           data: undefined,

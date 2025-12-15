@@ -26,6 +26,7 @@ const ErrorSchema = z.object({
 
 const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
+  sid: z.string().optional(),
 });
 
 const SendMagicCodeErrorSchema = z.object({
@@ -43,6 +44,7 @@ const RequiredFieldsResponseSchema = z.object({
   fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
     custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
   }),
+  sid: z.string().optional(),
 });
 
 const InvalidPasswordResponseSchema = z.object({
@@ -61,7 +63,12 @@ export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 
 type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
 
-export type CreateSignInResult = CommonErrors | ["account_not_found", ErrorResponse] | [null, CreateSignInResponse];
+export type CreateSignInResult =
+  | CommonErrors
+  | ["account_not_found", ErrorResponse]
+  | [null, CreateSignInResponse]
+  | AuthenticateWithPasswordResult
+  | SendMagicCodeResult;
 
 export type AuthenticateResultShared =
   | CommonErrors
@@ -166,13 +173,34 @@ export class AuthService {
     this.client = client;
   }
 
-  async createSignIn(email: string): Promise<CreateSignInResult> {
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email });
+  async createSignIn(email: string, password?: string, sendMagicCode?: boolean): Promise<CreateSignInResult> {
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+
+        if (missing_fields_check.success) {
+          return ["missing_required_fields", missing_fields_check.data];
+        }
         const error_response = ErrorSchema.parse(response.data);
-        return ["account_not_found", error_response];
+        return [
+          error_response.error_identifier as
+            | "account_not_found"
+            | "sign_in_not_found"
+            | "sign_in_expired"
+            | "account_locked"
+            | "invalid_password",
+          error_response,
+        ];
+      }
+
+      if (password) {
+        return [null, TokenResponseSchema.parse(response.data)];
+      }
+
+      if (sendMagicCode) {
+        return [null, SendMagicCodeResponseSchema.parse(response.data)];
       }
 
       return [null, CreateSignInResponseSchema.parse(response.data)];

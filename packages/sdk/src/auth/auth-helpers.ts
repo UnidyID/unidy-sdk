@@ -6,6 +6,8 @@ import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/component-utils";
 import { t } from "../i18n";
 import { authenticateWithPasskey } from "./passkey-auth";
+import { jwtDecode } from "jwt-decode";
+import type { TokenPayload } from "./auth";
 
 export class AuthHelpers {
   private client: UnidyClient;
@@ -14,7 +16,7 @@ export class AuthHelpers {
     this.client = client;
   }
 
-  async createSignIn(email: string) {
+  async createSignIn(email: string, password?: string, sendMagicCode?: boolean) {
     if (!email) {
       throw new Error(t("errors.required_field", { field: "Email" }));
     }
@@ -22,18 +24,34 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn(email);
+    const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
-      authStore.setFieldError("email", error);
-    } else {
-      const signInResponse = response as CreateSignInResponse;
-      authStore.setStep("verification");
-      authStore.setEmail(email);
-      authStore.setSignInId(signInResponse.sid);
-      authStore.setLoginOptions(signInResponse.login_options);
+      this.handleAuthError(error, response);
+      return;
     }
 
+    if (password) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setToken((response as TokenResponse).jwt);
+      authStore.setLoading(false);
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
+      return;
+    }
+
+    if (sendMagicCode) {
+      authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setMagicCodeStep("sent");
+      authStore.setStep("magic-code");
+      authStore.setLoading(false);
+      return [error, response] as const;
+    }
+    const signInResponse = response as CreateSignInResponse;
+    authStore.setStep("verification");
+    authStore.setEmail(email);
+    authStore.setSignInId(signInResponse.sid);
+    authStore.setLoginOptions(signInResponse.login_options);
     authStore.setLoading(false);
   }
 
@@ -51,18 +69,38 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
-    if (!error) {
+    if (error) {
+      this.handleAuthError(error, response);
+    } else {
       authStore.setLoading(false);
       this.handleAuthSuccess(response as TokenResponse);
       return;
     }
+  }
 
-    if (error === "missing_required_fields") {
-      this.handleMissingFields(response as RequiredFieldsResponse);
+  private handleAuthError(error: string, response: unknown) {
+    if (error === "account_not_found") {
+      authStore.setFieldError("email", error);
+      authStore.setLoading(false);
       return;
     }
+    if (error === "missing_required_fields") {
+      authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+      profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
 
-    authStore.setFieldError("password", error);
+      if ((response as RequiredFieldsResponse).sid) {
+        authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+      }
+
+      authStore.setStep("missing-fields");
+      authStore.setLoading(false);
+      return;
+    }
+    if (error === "account_locked") {
+      authStore.setGlobalError("auth", error);
+    } else {
+      authStore.setFieldError("password", error);
+    }
     authStore.setLoading(false);
   }
 
@@ -136,13 +174,19 @@ export class AuthHelpers {
   }
 
   async sendMagicCode() {
-    if (!authState.sid) {
+    if (!authState.sid && authState.step !== "single-login") {
       throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setMagicCodeStep("requested");
     authStore.setLoading(true);
     authStore.clearErrors();
+
+    if (authState.step === "single-login") {
+      const [error, response] = await this.createSignIn(authState.email, undefined, true);
+      authStore.setLoading(false);
+      return [error, response] as const;
+    }
 
     const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
 
