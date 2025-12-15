@@ -2,7 +2,7 @@ import type { AuthButtonFor } from "../../../auth/components/submit-button/auth-
 
 export interface SubmitButtonContext {
   init?(): Promise<void>;
-  handleClick(event: MouseEvent, el: HTMLElement): Promise<any>;
+  handleClick(event: MouseEvent, el: HTMLElement): Promise<void>;
   isDisabled(forProp?: AuthButtonFor, disabled?: boolean): boolean;
   isLoading(): boolean;
   getButtonText?(forProp?: AuthButtonFor, text?: string): string;

@@ -1,4 +1,4 @@
-import { type FunctionalComponent } from "@stencil/core";
+import type { FunctionalComponent } from "@stencil/core";
 import { authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 import { t } from "../../../i18n";

@@ -1,8 +1,8 @@
-import { type FunctionalComponent } from "@stencil/core";
+import type { FunctionalComponent } from "@stencil/core";
 import { state as profileState } from "../../store/profile-store";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
 
-export interface ProfileSubmitButtonProps {}
+export type ProfileSubmitButtonProps = Record<string, never>;
 
 export const ProfileSubmitButton: FunctionalComponent<ProfileSubmitButtonProps> = (_props, children) => {
   return children;

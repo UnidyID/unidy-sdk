@@ -417,10 +417,6 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
 }
-export interface USubmitButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLUSubmitButtonElement;
-}
 declare global {
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
@@ -649,19 +645,7 @@ declare global {
         prototype: HTMLUSpinnerElement;
         new (): HTMLUSpinnerElement;
     };
-    interface HTMLUSubmitButtonElementEventMap {
-        "newsletterSuccess": any;
-        "newsletterError": any;
-    }
     interface HTMLUSubmitButtonElement extends Components.USubmitButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLUSubmitButtonElementEventMap>(type: K, listener: (this: HTMLUSubmitButtonElement, ev: USubmitButtonCustomEvent<HTMLUSubmitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLUSubmitButtonElementEventMap>(type: K, listener: (this: HTMLUSubmitButtonElement, ev: USubmitButtonCustomEvent<HTMLUSubmitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUSubmitButtonElement: {
         prototype: HTMLUSubmitButtonElement;
@@ -1058,8 +1042,6 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         "for"?: AuthButtonFor;
-        "onNewsletterError"?: (event: USubmitButtonCustomEvent<any>) => void;
-        "onNewsletterSuccess"?: (event: USubmitButtonCustomEvent<any>) => void;
         "text"?: string;
     }
     interface UTicketableList {

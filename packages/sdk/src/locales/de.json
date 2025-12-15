@@ -97,29 +97,29 @@
   },
   "loading": "Wird geladen...",
   "newsletter": {
-    "subscribe_button": "Abonnieren",
-    "unsubscribe_button": "Abbestellen",
-    "resend_doi_button": "Bestätigung erneut senden",
-    "subscribe_success": "Sie haben erfolgreich zum Newsletter angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
-    "unsubscribe_success": "Sie haben sich erfolgreich vom Newsletter abgemeldet",
-    "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
-    "logout_success": "Sie wurden erfolgreich abgemeldet",
     "doi_resent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
     "errors": {
-      "unconfirmed": "Ihre E-Mail-Adresse ist nicht bestätigt.",
       "already_subscribed": "Bereits abonniert",
+      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein",
       "invalid_email": "Ungültige E-Mail-Adresse",
+      "invalid_preference_token": "Ihre Sitzung ist abgelaufen. Bitte fordern Sie einen neuen Login-Link an.",
+      "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
       "newsletter_not_found": "Newsletter nicht gefunden",
       "preferences_not_found": "Präferenz nicht gefunden",
-      "unknown": "Ein unbekannter Fehler ist aufgetreten",
       "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut.",
-      "network_error": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
       "server_error": "Serverfehler. Bitte versuchen Sie es später erneut.",
-      "unsubscribe_failed": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
-      "invalid_preference_token": "Ihre Sitzung ist abgelaufen. Bitte fordern Sie einen neuen Login-Link an.",
-      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein"
+      "unconfirmed": "Ihre E-Mail-Adresse ist nicht bestätigt.",
+      "unknown": "Ein unbekannter Fehler ist aufgetreten",
+      "unsubscribe_failed": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
-    "resend_confirmation_success": "Bitte überprüfen Sie Ihren Posteingang für die Bestätigungs-E-Mail."
+    "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
+    "logout_success": "Sie wurden erfolgreich abgemeldet",
+    "resend_confirmation_success": "Bitte überprüfen Sie Ihren Posteingang für die Bestätigungs-E-Mail.",
+    "resend_doi_button": "Bestätigung erneut senden",
+    "subscribe_button": "Abonnieren",
+    "subscribe_success": "Sie haben erfolgreich zum Newsletter angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
+    "unsubscribe_button": "Abbestellen",
+    "unsubscribe_success": "Sie haben sich erfolgreich vom Newsletter abgemeldet"
   },
   "profile": {
     "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",

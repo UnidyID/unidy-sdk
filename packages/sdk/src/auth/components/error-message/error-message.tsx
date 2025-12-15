@@ -2,7 +2,7 @@ import { Component, Element, h, Host, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authState } from "../../store/auth-store";
 import { unidyState } from "../../../shared/store/unidy-store";
-import { NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { hasSlotContent } from "../../../shared/component-utils";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
@@ -28,7 +28,7 @@ export class ErrorMessage {
     if (this.el.closest("u-newsletter-root"))
       return "newsletter";
 
-    if (this.for == 'general ' || this.for == 'connection')
+    if (this.for === 'general' || this.for === 'connection')
       return "other";
 
     throw new Error("No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");

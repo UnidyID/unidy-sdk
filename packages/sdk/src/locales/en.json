@@ -97,29 +97,29 @@
   },
   "loading": "Loading...",
   "newsletter": {
-    "subscribe_button": "Subscribe",
-    "unsubscribe_button": "Unsubscribe",
-    "resend_doi_button": "Resend confirmation",
-    "subscribe_success": "You have successfully subscribed to the {{newsletterName}}. Please check your inbox for the confirmation",
-    "unsubscribe_success": "You have successfully unsubscribed from the {{newsletterName}}",
-    "login_email_sent": "We sent a link to manage your existing subscription to your email address",
-    "logout_success": "You have been logged out successfully",
     "doi_resent": "Confirmation email has been sent to your email address",
     "errors": {
-      "unconfirmed": "Your email is not confirmed for this newsletter",
       "already_subscribed": "Already subscribed",
+      "email_required": "Please enter your email address",
       "invalid_email": "Invalid email address",
+      "invalid_preference_token": "Your session has expired",
+      "network_error": "Network error. Please check your connection.",
       "newsletter_not_found": "Newsletter not found",
       "preferences_not_found": "Preference not found",
-      "unknown": "Unknown error occurred",
       "rate_limit_exceeded": "Rate limit exceeded. Please try again later.",
-      "network_error": "Network error. Please check your connection.",
       "server_error": "Server error. Please try again later.",
-      "unsubscribe_failed": "Failed to unsubscribe. Please try again.",
-      "invalid_preference_token": "Your session has expired",
-      "email_required": "Please enter your email address"
+      "unconfirmed": "Your email is not confirmed for this newsletter",
+      "unknown": "Unknown error occurred",
+      "unsubscribe_failed": "Failed to unsubscribe. Please try again."
     },
-    "resend_confirmation_success": "Please check your inbox for the confirmation email."
+    "login_email_sent": "We sent a link to manage your existing subscription to your email address",
+    "logout_success": "You have been logged out successfully",
+    "resend_confirmation_success": "Please check your inbox for the confirmation email.",
+    "resend_doi_button": "Resend confirmation",
+    "subscribe_button": "Subscribe",
+    "subscribe_success": "You have successfully subscribed to the {{newsletterName}}. Please check your inbox for the confirmation",
+    "unsubscribe_button": "Unsubscribe",
+    "unsubscribe_success": "You have successfully unsubscribed from the {{newsletterName}}"
   },
   "profile": {
     "signInToView": "Please sign in to view your profile",

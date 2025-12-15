@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element, Event, EventEmitter } from "@stencil/core";
+import { Component, h, Prop, Element } from "@stencil/core";
 import { hasSlotContent } from "../../component-utils";
 import { t } from "../../../i18n";
 import { type AuthButtonFor, AuthSubmitButton, authContext } from "../../../auth/components/submit-button/auth-submit-button";
@@ -16,8 +16,6 @@ export class SubmitButton {
   @Prop() text?: string;
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Event() newsletterSuccess: EventEmitter<any>;
-  @Event() newsletterError: EventEmitter<any>;
 
   private context: "auth" | "profile" | "newsletter" | "other" = "other";
   private contextModule: SubmitButtonContext = defaultContext;
@@ -103,7 +101,7 @@ export class SubmitButton {
       "disabled:opacity-50 disabled:cursor-not-allowed",
     ].join(" ");
 
-    const buttonProps: any = {
+    const buttonProps: Record<string, unknown> = {
       type: 'submit',
       part: `${this.context}-submit-button`,
       disabled: this.isDisabled() || this.isLoading(),

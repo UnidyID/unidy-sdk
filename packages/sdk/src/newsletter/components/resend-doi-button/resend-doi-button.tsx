@@ -1,7 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { newsletterStore } from "../../store/newsletter-store";
-import { NewsletterHelpers } from "../../newsletter-helpers";
+import * as NewsletterHelpers from "../../newsletter-helpers";
 
 @Component({
   tag: "u-newsletter-resend-doi-button",

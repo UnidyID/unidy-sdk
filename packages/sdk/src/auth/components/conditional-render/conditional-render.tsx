@@ -2,13 +2,13 @@ import { Component, h, Prop, Host } from "@stencil/core";
 import { authState, type AuthState } from "../../store/auth-store";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
-import { NewsletterHelpers } from "../../../newsletter/newsletter-helpers";
+import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
 
 const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.passkeyEnabled": () => authState.availableLoginOptions?.passkey,
   "auth.passwordEnabled": () => authState.availableLoginOptions?.password,
   "auth.magicCodeEnabled": () => authState.availableLoginOptions?.magic_link,
-  "auth.socialLoginsEnabled": () => authState.availableLoginOptions?.social_logins?.length ?? 0 > 0,
+  "auth.socialLoginsEnabled": () => (authState.availableLoginOptions?.social_logins?.length ?? 0) > 0,
   "auth.loading": () => authState.loading,
   "auth.authenticated": () => authState.authenticated,
   "auth.magicCodeSent": () => authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested",
