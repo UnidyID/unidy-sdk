@@ -91,10 +91,12 @@
   "newsletter": {
     "subscribe_button": "Subscribe",
     "unsubscribe_button": "Unsubscribe",
+    "resend_doi_button": "Resend confirmation",
     "subscribe_success": "You have successfully subscribed to the {{newsletterName}}. Please check your inbox for the confirmation",
     "unsubscribe_success": "You have successfully unsubscribed from the {{newsletterName}}",
     "login_email_sent": "We sent a link to manage your existing subscription to your email address",
     "logout_success": "You have been logged out successfully",
+    "doi_resent": "Confirmation email has been sent to your email address",
     "errors": {
       "unconfirmed": "Your email is not confirmed for this newsletter",
       "already_subscribed": "Already subscribed",
