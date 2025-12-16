@@ -5,6 +5,7 @@ import { Input } from "../raw-input-fields/Input";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
 import { Select, type Option } from "../raw-input-fields/Select";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
+import { logger } from "../../../logger";
 
 @Component({
   tag: "u-raw-field",
@@ -99,7 +100,7 @@ export class RawField {
       try {
         return this.validationFunc(value);
       } catch (e) {
-        console.error("External validator (validationFunc) threw an error:", e);
+        logger.error(`[${this.constructor.name}] External validator (validationFunc) threw an error:`, e);
         return null;
       }
     }

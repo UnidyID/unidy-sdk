@@ -1,5 +1,6 @@
 import { Component, h, Prop, Host } from "@stencil/core";
 import { authState, type AuthState } from "../../store/auth-store";
+import { logger } from "../../../logger";
 
 const PREDEFINED_STATES: Record<string, (state: AuthState) => unknown> = {
   // login options
@@ -41,7 +42,7 @@ export class ConditionalRender {
 
   private shouldRender(): boolean {
     if (!this.when && !this.conditionFunction) {
-      console.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
+      logger.error(`[${this.constructor.name}] Either 'when' or 'conditionFunction' prop is required`);
       return false;
     }
 

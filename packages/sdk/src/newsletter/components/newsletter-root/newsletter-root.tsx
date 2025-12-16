@@ -1,4 +1,5 @@
 import { Component, Host, h, Prop, Element, Method } from "@stencil/core";
+import { logger } from "../../../logger";
 
 @Component({
   tag: "u-newsletter-root",
@@ -14,7 +15,7 @@ export class NewsletterRoot {
   }
 
   componentDidLoad() {
-    console.log("newsletter root loaded");
+    logger.debug(`[${this.constructor.name}] newsletter root loaded`);
   }
 
   render() {

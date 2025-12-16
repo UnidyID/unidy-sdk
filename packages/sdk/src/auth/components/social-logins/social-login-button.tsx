@@ -8,6 +8,7 @@ import { LinkedInLogo } from "./logos/linkedin";
 import { AppleLogo } from "./logos/apple";
 import { FacebookLogo } from "./logos/facebook";
 import { DiscordLogo } from "./logos/discord";
+import { logger } from "../../../logger";
 
 const SHARED_ICON_CLASSNAME = "w-5 h-5 block";
 
@@ -64,7 +65,7 @@ export class SocialLoginButton {
 
   private onClick = async () => {
     if (!unidyState.baseUrl) {
-      console.error("[u-social-login-button] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
+      logger.error(`[${this.constructor.name}] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.`);
       return;
     }
 

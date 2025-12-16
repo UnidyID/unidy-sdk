@@ -1,6 +1,7 @@
 import { Component, h, Element, Host, State, Prop } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import type { PaginationStore } from "../../store/pagination-store";
+import { logger } from "../../../logger";
 
 @Component({ tag: "u-pagination-page", shadow: false })
 export class PaginationPage {
@@ -16,7 +17,7 @@ export class PaginationPage {
   componentDidLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      console.warn("TicketableList component not found");
+      logger.warn(`[${this.constructor.name}] TicketableList component not found`);
       return;
     }
 
@@ -35,7 +36,7 @@ export class PaginationPage {
 
   render() {
     if (!this.store) {
-      console.warn("TicketableList component not found");
+      logger.warn(`[${this.constructor.name}] TicketableList component not found`);
       return null;
     }
 

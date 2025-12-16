@@ -4,6 +4,7 @@ import i18n from "../../../i18n";
 import { unidyState } from "../../store/unidy-store";
 import { Auth } from "../../../auth";
 import { getUnidyClient } from "../../../api/";
+import { logger } from "../../../logger";
 
 export interface Config {
   apiKey: string;
@@ -39,7 +40,7 @@ export class UnidyConfig {
 
   componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
-      console.error("baseUrl and apiKey are required");
+      logger.error(`[${this.constructor.name}] baseUrl and apiKey are required`);
       return;
     }
 
