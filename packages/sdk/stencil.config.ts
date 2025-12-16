@@ -23,7 +23,7 @@ export const config: Config = {
       type: "www",
       serviceWorker: null,
       copy: [
-        { src: "sdk.css", dest: "css/sdk.css" },
+        { src: "sdk.css", dest: "sdk.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
@@ -35,7 +35,7 @@ export const config: Config = {
     after: [process.env.ANALYZE === "true" ? visualizer() : null],
   },
 
-  plugins: [tailwind(), tailwindHMR()],
+  plugins: [tailwind({ injectTailwindConfiguration: (_filename) => '@import "tailwindcss" prefix(u);' }), tailwindHMR()],
   testing: { browserHeadless: "shell" },
   devServer: { reloadStrategy: "pageReload", openBrowser: false },
 };

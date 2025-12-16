@@ -30,7 +30,7 @@ export class FullProfile {
         {this.list().map((field) => (
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
-        <div class="flex justify-end">
+        <div class="u:flex u:justify-end">
           <u-profile-submit-button>{t("buttons.submit")}</u-profile-submit-button>
         </div>
       </u-profile>
