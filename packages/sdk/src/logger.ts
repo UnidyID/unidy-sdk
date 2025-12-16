@@ -1,5 +1,10 @@
-// biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
 import type { LoggerModule } from "i18next";
+
+declare global {
+  interface Window {
+    setLogLevel: (level: LogLevel) => void;
+  }
+}
 
 type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 
@@ -27,11 +32,12 @@ const setLogLevel = (level: LogLevel) => {
 };
 
 if (typeof window !== "undefined") {
-  (window as any).setLogLevel = setLogLevel;
+  window.setLogLevel = setLogLevel;
 }
 
 const canLog = (level: LogLevel) => LOG_LEVELS[getLogLevel()] >= LOG_LEVELS[level];
 
+// biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
 const log = (level: LogLevel, ...args: any[]) => {
   if (canLog(level)) {
     switch (level) {
@@ -55,27 +61,35 @@ const log = (level: LogLevel, ...args: any[]) => {
 };
 
 export const logger = {
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   error: (...args: any[]) => log("error", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   warn: (...args: any[]) => log("warn", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   info: (...args: any[]) => log("info", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   debug: (...args: any[]) => log("debug", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   trace: (...args: any[]) => log("trace", ...args),
 };
 
 export const i18nLogger: LoggerModule = {
   type: "logger",
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   error: (args: any[]) => {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
     const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
     log("error", `[${caller || "i18next"}] ${message}`);
   },
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   warn: (args: any[]) => {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
     const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
     log("warn", `[${caller || "i18next"}] ${message}`);
   },
+  // biome-ignore lint/suspicious/noExplicitAny: See above
   log: (args: any[]) => {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
