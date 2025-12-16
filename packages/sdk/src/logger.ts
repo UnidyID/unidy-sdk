@@ -1,4 +1,5 @@
-import { LoggerModule } from "i18next";
+// biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+import type { LoggerModule } from "i18next";
 
 type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 
