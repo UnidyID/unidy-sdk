@@ -18,7 +18,7 @@ export const newsletterContext: SubmitButtonContext = {
   },
 
   isDisabled(_forProp, disabled?: boolean): boolean {
-    return disabled || !newsletterStore.get("email") || newsletterStore.get("checkedNewsletters").length === 0;
+    return disabled || !newsletterStore.state.email || newsletterStore.state.checkedNewsletters.length === 0;
   },
 
   isLoading(): boolean {
