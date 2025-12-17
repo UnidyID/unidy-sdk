@@ -18,11 +18,9 @@ export class EmailField {
   @Prop() disabled = false;
 
   private get context(): "auth" | "newsletter" | null {
-    if (this.el.closest("u-signin-root"))
-      return "auth";
+    if (this.el.closest("u-signin-root")) return "auth";
 
-    if (this.el.closest("u-newsletter-root"))
-      return "newsletter";
+    if (this.el.closest("u-newsletter-root")) return "newsletter";
 
     return null;
   }
@@ -34,7 +32,9 @@ export class EmailField {
       case "newsletter":
         return newsletterStore;
       default:
-        throw new Error("No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.");
+        throw new Error(
+          "No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.",
+        );
     }
   }
 
@@ -47,19 +47,18 @@ export class EmailField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    if (this.store.state.email === "")
-      return;
+    if (this.store.state.email === "") return;
 
-    if (this.context === "auth")
-      return await getParentSigninStep(this.el)?.submit();
+    if (this.context === "auth") return await getParentSigninStep(this.el)?.submit();
 
-    if (this.context === "newsletter")
-      return await getParentNewsletterRoot(this.el)?.submit();
+    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
   };
 
   render() {
     const placeholderText = t("auth.email.placeholder", { defaultValue: "Enter your email" });
-    const isDisabled = this.disabled || (this.context === "auth" && (authState.loading || authState.step === "verification" || authState.step === "registration"));
+    const isDisabled =
+      this.disabled ||
+      (this.context === "auth" && (authState.loading || authState.step === "verification" || authState.step === "registration"));
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -70,7 +69,7 @@ export class EmailField {
           autocomplete="email"
           placeholder={placeholderText}
           disabled={isDisabled}
-          class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
+          class={`${this.componentClassName} u:disabled:opacity-40 u:disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />

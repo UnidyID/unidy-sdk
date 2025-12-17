@@ -28,16 +28,21 @@ export class FlashMessage {
     }
 
     return (
-      <div class={`flex flex-col gap-2 z-[500] min-w-64 max-w-lg ${this.componentClassName}`}>
+      <div class={`u:flex u:flex-col u:gap-2 u:z-[500] u:min-w-64 u:max-w-lg ${this.componentClassName}`}>
         {flashState.messages.map((message) => (
           <div
             key={message.id}
-            class={`flex items-start justify-between gap-3 p-3 rounded border ${variantClasses[message.variant]}`}
+            class={`u:flex u:items-start u:justify-between u:gap-3 u:p-3 u:rounded u:border ${variantClasses[message.variant]}`}
             role="alert"
             aria-live="polite"
           >
             <span class="break-all">{message.text}</span>
-            <button type="button" class="cursor-pointer leading-none pt-1" onClick={() => Flash.remove(message.id)} aria-label="Close">
+            <button
+              type="button"
+              class="u:cursor-pointer u:leading-none u:pt-1"
+              onClick={() => Flash.remove(message.id)}
+              aria-label="Close"
+            >
               <CloseIcon />
             </button>
           </div>

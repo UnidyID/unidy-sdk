@@ -95,7 +95,7 @@ export class SubmitButton {
     }
 
     const loadingContent = (
-      <div class="flex items-center gap-1">
+      <div class="u:flex u:items-center u:gap-1">
         <u-spinner /> {t("loading")}
       </div>
     );
@@ -104,7 +104,7 @@ export class SubmitButton {
       <button
         type="submit"
         disabled={this.isDisabled()}
-        class={`${this.componentClassName} flex justify-center disabled:opacity-50 disabled:cursor-not-allowed`}
+        class={`${this.componentClassName} u:flex u:justify-center u:disabled:opacity-50 u:disabled:cursor-not-allowed`}
         onClick={this.handleClick}
         aria-live="polite"
       >
