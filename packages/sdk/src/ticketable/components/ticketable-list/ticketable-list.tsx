@@ -15,7 +15,7 @@ import type { Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
-import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../logger";
 import { t } from "../../../i18n";
 
 const LOCALES: Record<string, Locale> = {
@@ -27,7 +27,7 @@ const LOCALES: Record<string, Locale> = {
 };
 
 @Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList {
+export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
@@ -64,11 +64,11 @@ export class TicketableList {
   }
 
   async componentDidLoad() {
-    logger.trace(`[${this.constructor.name}] start componentDidLoad`);
+    this.logger.trace("start componentDidLoad");
     await waitForConfig();
-    logger.trace(`[${this.constructor.name}] UnidyConfig loaded, start to load data`);
+    this.logger.trace("UnidyConfig loaded, start to load data");
     await this.loadData();
-    logger.debug(`[${this.constructor.name}] data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+    this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
   }
 
   private async loadData() {
@@ -204,7 +204,7 @@ export class TicketableList {
 
     const targetElement = document.querySelector(this.target);
     if (!targetElement) {
-      logger.warn(`[${this.constructor.name}] targetElement not found`)
+      this.logger.warn("targetElement not found");
       return;
     }
 
@@ -225,20 +225,20 @@ export class TicketableList {
         target.appendChild(this.renderFragment(template, item));
       }
     } else {
-      logger.error(`[${this.constructor.name}] failed to load content: ${this.error}`);
+      this.logger.error(`failed to load content: ${this.error}`);
       target.innerHTML = `<h1>${t('errors.prefix')} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
-      logger.error(`[${this.constructor.name}] can't render content: ${this.error}`);
+      this.logger.error(`can't render content: ${this.error}`);
       return <h1>`${t("errors.prefix")} ${this.error}`</h1>;
     }
 
     const template = this.element.querySelector("template");
     if (!template) {
-      logger.error(`[${this.constructor.name}] template not found`);
+      this.logger.error("template not found");
       return <h1>No template found - fix config</h1>;
     }
 
