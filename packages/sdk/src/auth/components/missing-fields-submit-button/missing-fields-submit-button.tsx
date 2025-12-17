@@ -37,6 +37,9 @@ export class MissingFieldsSubmitButton {
     const { jwt } = response as TokenResponse;
     profileState.loading = false;
     authStore.setToken(jwt);
+
+    // Emit authEvent to allow modal-based logins to close after successful submission
+    this.el.dispatchEvent(new CustomEvent("authEvent", { detail: { jwt }, bubbles: true, composed: true }));
   }
 
   render() {
