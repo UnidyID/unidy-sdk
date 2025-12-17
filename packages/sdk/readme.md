@@ -10,6 +10,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
   - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
   - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
   - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
+  - [Quick Start: Profile Icon](#quick-start-profile-icon)
 - [Components](#components)
   - [Core Components](#core-components)
   - [Login Flow Components](#login-flow-components)
@@ -240,6 +241,79 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 </body>
 </html>
 ```
+
+### Quick Start: Profile Icon
+
+These examples demonstrate a profile icon that displays the user’s avatar and allows the user to navigate to their profile or log out.
+
+#### Simple Profile Icon with Logout:
+
+```html
+<u-signed-in>
+  <div id="userMenu" class="flex items-center space-x-2" style="display: none;">
+    <a href="profile/index.html" class="flex items-center p-2 rounded hover:bg-gray-100 transition-colors duration-200" aria-label="My Profile" title="My Profile">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </a>
+
+    <u-logout-button></u-logout-button>
+  </div>
+</u-signed-in>
+
+<script type="module">
+  const userMenu = document.getElementById('userMenu');
+  const signinRoot = document.getElementById("sign-in-root");
+
+  signinRoot.addEventListener("authEvent", async (event) => {
+    if (userMenu) userMenu.style.display = 'flex';
+  });
+
+  document.querySelector('u-logout-button')?.addEventListener('logout', () => {
+    if (userMenu) userMenu.style.display = 'none';
+  });
+</script>
+```
+#### Profile Icon with Hover Dropdown Menu:
+
+```html
+<div id="userMenuWrapper" class="flex justify-end mb-4" style="display: none;">
+  <div id="userMenu" class="relative inline-block group">
+    <button class="flex items-center justify-center p-2 rounded-full bg-white border border-gray-300 shadow hover:bg-gray-50 focus:outline-none" aria-label="User menu">
+      <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"></path>
+      </svg>
+    </button>
+
+    <div class="absolute left-0 right-0 top-full h-2"></div>
+
+    <div class="absolute right-0 top-full z-20 mt-2 hidden w-48 rounded-lg border border-gray-300 bg-white shadow-xl group-hover:block">
+      <a href="profile/index.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+        Profile Settings
+      </a>
+
+      <div class="border-t border-gray-200"></div>
+
+      <u-logout-button class-name="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"></u-logout-button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const userMenu = document.getElementById("userMenuWrapper");
+  const signinRoot = document.getElementById("sign-in-root");
+
+  signinRoot.addEventListener("authEvent", async (event) => {
+    if (userMenu) userMenu.style.display = 'flex';
+  });
+</script>
+```  
+
+
+
 
 ## Components
 
