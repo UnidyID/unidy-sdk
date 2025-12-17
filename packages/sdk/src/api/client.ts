@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { t } from "../i18n";
 import type * as z from "zod";
-import { logger } from "../logger";
+import { createLogger } from "../logger";
 
 export interface ApiResponse<T> {
   data?: T;
@@ -28,6 +28,7 @@ export class ApiClient {
   ];
 
   private onConnectionChange?: (isConnected: boolean) => void;
+  private logger = createLogger("ApiClient");
 
   constructor(
     public baseUrl: string,
@@ -162,7 +163,7 @@ export class ApiClient {
       const parsed = returnSchema.safeParse(response.data);
 
       if (!parsed.success) {
-        logger.error(`[${this.constructor.name}] Invalid response format`, parsed.error);
+        this.logger.error("Invalid response format", parsed.error);
         return {
           ...response,
           success: false,

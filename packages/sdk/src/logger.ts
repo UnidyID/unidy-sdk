@@ -1,4 +1,5 @@
 import type { LoggerModule } from "i18next";
+import { Mixin, type MixedInCtor } from "@stencil/core";
 
 declare global {
   interface Window {
@@ -38,39 +39,108 @@ if (typeof window !== "undefined") {
 const canLog = (level: LogLevel) => LOG_LEVELS[getLogLevel()] >= LOG_LEVELS[level];
 
 // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
-const log = (level: LogLevel, ...args: any[]) => {
+const log = (level: LogLevel, prefix: string, ...args: any[]) => {
   if (canLog(level)) {
+    const prefixedArgs = prefix ? [`[${prefix}]`, ...args] : args;
     switch (level) {
       case "error":
-        console.error(...args);
+        console.error(...prefixedArgs);
         break;
       case "warn":
-        console.warn(...args);
+        console.warn(...prefixedArgs);
         break;
       case "info":
-        console.info(...args);
+        console.info(...prefixedArgs);
         break;
       case "debug":
-        console.debug(...args);
+        console.debug(...prefixedArgs);
         break;
       case "trace":
-        console.trace(...args);
+        console.trace(...prefixedArgs);
         break;
     }
   }
 };
 
-export const logger = {
+export interface Logger {
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+  error: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+  warn: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+  info: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+  debug: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+  trace: (...args: any[]) => void;
+}
+
+/**
+ * Creates a logger instance with a specific prefix (typically class/component name)
+ */
+export const createLogger = (prefix: string): Logger => ({
   // biome-ignore lint/suspicious/noExplicitAny: See above
-  error: (...args: any[]) => log("error", ...args),
+  error: (...args: any[]) => log("error", prefix, ...args),
   // biome-ignore lint/suspicious/noExplicitAny: See above
-  warn: (...args: any[]) => log("warn", ...args),
+  warn: (...args: any[]) => log("warn", prefix, ...args),
   // biome-ignore lint/suspicious/noExplicitAny: See above
-  info: (...args: any[]) => log("info", ...args),
+  info: (...args: any[]) => log("info", prefix, ...args),
   // biome-ignore lint/suspicious/noExplicitAny: See above
-  debug: (...args: any[]) => log("debug", ...args),
+  debug: (...args: any[]) => log("debug", prefix, ...args),
   // biome-ignore lint/suspicious/noExplicitAny: See above
-  trace: (...args: any[]) => log("trace", ...args),
+  trace: (...args: any[]) => log("trace", prefix, ...args),
+});
+
+/**
+ * Stencil mixin factory that adds a logger property to the component.
+ * The logger automatically uses the component's class name as the prefix.
+ */
+export const loggerFactory = <B extends MixedInCtor>(Base: B) => {
+  class LoggerMixin extends Base {
+    /** @internal */
+    __logger: Logger | null = null;
+
+    get logger(): Logger {
+      if (!this.__logger) {
+        this.__logger = createLogger(this.constructor.name);
+      }
+      return this.__logger;
+    }
+  }
+  return LoggerMixin;
+};
+
+/**
+ * Base class for Unidy Stencil components that provides logging functionality.
+ * Components extending this class get a `this.logger` property that automatically
+ * prefixes log messages with the component's class name.
+ *
+ * @example
+ * ```tsx
+ * import { UnidyComponent } from '../logger';
+ *
+ * @Component({ tag: 'my-component' })
+ * export class MyComponent extends UnidyComponent {
+ *   componentDidLoad() {
+ *     this.logger.debug('Component loaded');
+ *   }
+ * }
+ * ```
+ */
+export const UnidyComponent = Mixin(loggerFactory);
+
+// Global logger for non-class contexts (backwards compatibility)
+export const logger: Logger = {
+  // biome-ignore lint/suspicious/noExplicitAny: See above
+  error: (...args: any[]) => log("error", "", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
+  warn: (...args: any[]) => log("warn", "", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
+  info: (...args: any[]) => log("info", "", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
+  debug: (...args: any[]) => log("debug", "", ...args),
+  // biome-ignore lint/suspicious/noExplicitAny: See above
+  trace: (...args: any[]) => log("trace", "", ...args),
 };
 
 export const i18nLogger: LoggerModule = {
@@ -80,20 +150,20 @@ export const i18nLogger: LoggerModule = {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
     const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("error", `[${caller || "i18next"}] ${message}`);
+    log("error", caller || "i18next", message);
   },
   // biome-ignore lint/suspicious/noExplicitAny: See above
   warn: (args: any[]) => {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
     const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("warn", `[${caller || "i18next"}] ${message}`);
+    log("warn", caller || "i18next", message);
   },
   // biome-ignore lint/suspicious/noExplicitAny: See above
   log: (args: any[]) => {
     const [caller_action, ...messages] = args;
     const [caller, action] = caller_action.split(": ");
     const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("info", `[${caller || "i18next"}] ${message}`);
+    log("info", caller || "i18next", message);
   },
-}
+};

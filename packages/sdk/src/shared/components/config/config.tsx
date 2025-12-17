@@ -4,7 +4,7 @@ import i18n from "../../../i18n";
 import { unidyState } from "../../store/unidy-store";
 import { Auth } from "../../../auth";
 import { getUnidyClient } from "../../../api/";
-import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../logger";
 
 export interface Config {
   apiKey: string;
@@ -27,7 +27,7 @@ type TranslationTree = {
   tag: "u-config",
   shadow: false,
 })
-export class UnidyConfig {
+export class UnidyConfig extends UnidyComponent {
   @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";
@@ -40,7 +40,7 @@ export class UnidyConfig {
 
   componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
-      logger.error(`[${this.constructor.name}] baseUrl and apiKey are required`);
+      this.logger.error("baseUrl and apiKey are required");
       return;
     }
 

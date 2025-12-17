@@ -5,13 +5,13 @@ import { Input } from "../raw-input-fields/Input";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
 import { Select, type Option } from "../raw-input-fields/Select";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
-import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../logger";
 
 @Component({
   tag: "u-raw-field",
   shadow: false,
 })
-export class RawField {
+export class RawField extends UnidyComponent {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -100,7 +100,7 @@ export class RawField {
       try {
         return this.validationFunc(value);
       } catch (e) {
-        logger.error(`[${this.constructor.name}] External validator (validationFunc) threw an error:`, e);
+        this.logger.error("External validator (validationFunc) threw an error:", e);
         return null;
       }
     }

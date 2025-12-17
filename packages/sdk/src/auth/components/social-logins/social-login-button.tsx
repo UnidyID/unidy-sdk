@@ -8,7 +8,7 @@ import { LinkedInLogo } from "./logos/linkedin";
 import { AppleLogo } from "./logos/apple";
 import { FacebookLogo } from "./logos/facebook";
 import { DiscordLogo } from "./logos/discord";
-import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../logger";
 
 const SHARED_ICON_CLASSNAME = "w-5 h-5 block";
 
@@ -27,7 +27,7 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   styleUrl: "social-login-button.css",
   shadow: true,
 })
-export class SocialLoginButton {
+export class SocialLoginButton extends UnidyComponent {
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
   @Prop() iconOnly = false;
@@ -65,7 +65,7 @@ export class SocialLoginButton {
 
   private onClick = async () => {
     if (!unidyState.baseUrl) {
-      logger.error(`[${this.constructor.name}] baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.`);
+      this.logger.error("baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
       return;
     }
 

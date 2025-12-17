@@ -2,7 +2,9 @@ import { authStore, authState } from "./store/auth-store";
 import type { PasskeyOptionsResponse, TokenResponse, UnidyClient } from "../api";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
-import { logger } from "../logger";
+import { createLogger } from "../logger";
+
+const logger = createLogger("PasskeyAuth");
 
 const PASSKEY_ERRORS: Record<string, string> = {
   NotSupportedError: "passkey_not_supported",
@@ -64,7 +66,7 @@ function extractAndSetSignInId(tokenResponse: TokenResponse) {
 }
 
 function handlePasskeyError(error: unknown) {
-  logger.error(`[${this.constructor.name}] Passkey error:`, error);
+  logger.error("Passkey error:", error);
 
   let errorMessage = "passkey_error";
   if (error instanceof DOMException) {
