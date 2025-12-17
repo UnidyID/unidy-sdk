@@ -95,7 +95,8 @@ export const createLogger = (prefix: string): Logger => ({
  * Stencil mixin factory that adds a logger property to the component.
  * The logger automatically uses the component's class name as the prefix.
  */
-export const loggerFactory = <B extends MixedInCtor>(Base: B) => {
+// biome-ignore lint/suspicious/noExplicitAny: if we have no Base we have to invent one
+export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) => {
   class LoggerMixin extends Base {
     /** @internal */
     __logger: Logger | null = null;
