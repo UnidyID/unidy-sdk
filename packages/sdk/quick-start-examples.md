@@ -11,6 +11,7 @@ This section contains small, self-contained examples that demonstrate common SDK
 - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
 - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
 - [Quick Start: Profile Icon](#quick-start-profile-icon)
+- [Quick Start: Modal login](#quick-start-modal-login)
 
 
 ### Quick Start: Authentication Flow
@@ -242,4 +243,208 @@ These examples demonstrate a profile icon that displays the user’s avatar and 
     if (userMenu) userMenu.style.display = 'flex';
   });
 </script>
+```
+
+### Quick Start: Modal login
+
+This example demonstrates how to implement a modal login form using the Unidy SDK.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unidy Modal login Demo</title>
+  <!-- Load Components -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.7/dist/sdk/sdk.esm.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+
+    <!-- Configure the SDK -->
+    <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+
+    <button id="loginBtn" class="hidden fixed top-6 right-6 z-50 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">
+        Sign In
+    </button>
+
+    <div id="loginModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+      <div class="relative z-10 w-full max-w-md h-[520px] rounded-xl bg-white p-6 shadow-2xl">
+        <button id="modal_close" aria-label="Close modal" class="absolute right-4 top-4 text-2xl text-gray-400 transition hover:text-gray-600">
+          ×
+        </button>
+        <div class="h-full w-full grid place-items-center px-6 py-6">
+          <u-signin-root id="signinRoot" language="en" class="block w-full max-h-full space-y-6">
+
+            <!-- Email Step -->
+            <u-signin-step name="email">
+              <div class="flex flex-col items-center space-y-3 text-center">
+                <h2 class="text-xl font-semibold text-gray-900">Welcome</h2>
+                <p class="text-sm text-gray-500">Sign in and create a free account</p>
+              </div>
+
+              <div class="mt-6 space-y-4">
+                <u-social-login-button provider="google"></u-social-login-button>
+                <u-social-login-button provider="apple" theme="dark"></u-social-login-button>
+
+                <div class="my-4 flex items-center">
+                  <div class="flex-grow border-t border-gray-200"></div>
+                  <span class="mx-3 text-xs font-medium text-gray-400">OR</span>
+                  <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <u-email-field class-name="px-4 py-2 mt-4 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+                <u-error-message for="email"></u-error-message>
+                <u-auth-submit-button for="email" text="Weiter" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
+              </div>
+            </u-signin-step>
+
+            <!-- Registration Step -->
+            <u-signin-step name="registration">
+              <u-registration-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full">
+                <div slot="registration-content">
+                  <u-email-field class-name="px-4 py-2 mb-2 border border-gray-300 bg-gray-100 cursor-not-allowed w-full" aria-describedby="email-error"/>
+                  <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500" />
+                </div>
+              </u-registration-button>
+            </u-signin-step>
+
+            <!-- Verification Step -->
+             <u-signin-step name="verification">
+              <u-signin-strategy type="password">
+                <u-password-field placeholder="Enter your password"
+                  class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+                  aria-describedby="password-error"></u-password-field>
+                <u-reset-password-button class-name="mb-4 text-sm text-blue-500">
+                </u-reset-password-button>
+                <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+                <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+                <u-auth-submit-button for="password"
+                  class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
+              </u-signin-strategy>
+
+              <u-conditional-render when="magicCodeEnabled">
+                <u-conditional-render when="magicCodeSent" is="false">
+                <div class="my-4 flex items-center">
+                  <div class="flex-grow border-t border-gray-200"></div>
+                  <span class="mx-3 text-xs font-medium text-gray-400">OR</span>
+                  <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                  <u-send-magic-code-button
+                    class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
+                </u-conditional-render>
+              </u-conditional-render>
+
+              <u-signin-strategy type="magic-code">
+                <u-conditional-render when="magicCodeSent" is="true">
+                  <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
+                </u-conditional-render>
+
+                <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+                  aria-describedby="magic-code-error"></u-magic-code-field>
+
+                <u-error-message id="magic-code-error" for="magicCode"
+                  class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+
+                <u-conditional-render when="magicCodeSent" is="true">
+                  <u-send-magic-code-button
+                    class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
+                </u-conditional-render>
+              </u-signin-strategy>
+            </u-signin-step>
+
+            <!-- Missing Fields -->
+            <u-signin-step name="missing-fields">
+                      <div class="space-y-3 text-center">
+                <h2 class="text-xl font-semibold text-gray-900">One last step!</h2>
+                <p class="text-sm text-gray-500">Please complete your profile.</p>
+              </div>
+              <u-missing-field></u-missing-field>
+              <u-missing-fields-submit-button></u-missing-fields-submit-button>
+            </u-signin-step>
+
+          </u-signin-root>
+        </div>
+      </div>
+    </div>
+
+    <u-signed-in>
+      <div class="container">
+        <div class="mb-6">
+          <u-logout-button id="logout-button"
+            class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+          </u-logout-button>
+          <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+          <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+        </div>
+        <u-full-profile country-code-display-option="icon"></u-full-profile>
+      </div>
+    </u-signed-in>
+
+  <script type="module">
+    import { Auth } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.7/dist/sdk/index.esm.js";
+
+    const loginBtn = document.getElementById('loginBtn');
+    const loginModal = document.getElementById('loginModal');
+    const modalClose = document.getElementById('modal_close');
+    const overlay = loginModal.querySelector(".absolute.inset-0");
+    const signinRoot = document.getElementById("signinRoot");
+
+    function openModal() {
+      loginModal?.classList.remove('hidden');
+      loginModal?.classList.add('flex');
+    }
+
+    function closeModal() {
+      loginModal?.classList.remove('flex');
+      loginModal?.classList.add('hidden');
+    }
+
+    loginBtn?.addEventListener('click', openModal);
+    modalClose?.addEventListener('click', closeModal);
+    overlay.addEventListener("click", closeModal);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    signinRoot.addEventListener("authEvent", async (event) => {
+      console.log("Auth event:", event.detail);
+      loginBtn.classList.add('hidden');
+      closeModal();
+    });
+
+    async function checkAuthState() {
+      try {
+        const auth = await Auth.getInstance();
+        const isAuth = await auth.isAuthenticated();
+
+        console.log('🔐 Auth check:', isAuth ? 'authenticated' : 'not authenticated');
+
+        if (isAuth) {
+          loginBtn.classList.add('hidden');
+            closeModal();
+        } else {
+          loginBtn.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('❌ Auth check error:', error);
+        loginBtn.classList.remove('hidden');
+      }
+    }
+
+    // Initialize after DOM and Unidy SDK are ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(checkAuthState, 500);
+      });
+    } else {
+      setTimeout(checkAuthState, 500);
+    }
+  </script>
+</body>
+</html>
 ```
