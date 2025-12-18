@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, h, Prop, Element, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authStore, authState } from "../../../auth/store/auth-store";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
@@ -17,12 +17,12 @@ export class EmailField {
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
 
-  private get context(): "auth" | "newsletter" | null {
-    if (this.el.closest("u-signin-root"))
-      return "auth";
+  @State() emailValue = "";
 
-    if (this.el.closest("u-newsletter-root"))
-      return "newsletter";
+  private get context(): "auth" | "newsletter" | null {
+    if (this.el.closest("u-signin-root")) return "auth";
+
+    if (this.el.closest("u-newsletter-root")) return "newsletter";
 
     return null;
   }
@@ -34,7 +34,9 @@ export class EmailField {
       case "newsletter":
         return newsletterStore;
       default:
-        throw new Error("No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.");
+        throw new Error(
+          "No store found for email field. Make sure you are using the component within a u-signin-root or u-newsletter-root.",
+        );
     }
   }
 
@@ -47,24 +49,20 @@ export class EmailField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    if (this.store.state.email === "")
-      return;
+    if (this.store.state.email === "") return;
 
-    if (this.context === "auth")
-      return await getParentSigninStep(this.el)?.submit();
+    if (this.context === "auth") return await getParentSigninStep(this.el)?.submit();
 
-    if (this.context === "newsletter")
-      return await getParentNewsletterRoot(this.el)?.submit();
+    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
   };
 
   private isDisabled(): boolean {
     if (this.disabled) return true;
 
-    if (this.context === "auth")
-      return authState.loading || authState.step === "verification" || authState.step === "registration";
+    if (this.context === "auth") return authState.loading || authState.step === "verification" || authState.step === "registration";
 
-    if (this.context === "newsletter"){
-      return newsletterStore.state.loading || (!!newsletterStore.state.preferenceToken && !!newsletterStore.state.email);
+    if (this.context === "newsletter") {
+      return !!newsletterStore.state.preferenceToken && !!newsletterStore.state.email;
     }
 
     return false;
@@ -82,10 +80,11 @@ export class EmailField {
           autocomplete="email"
           placeholder={placeholderText}
           disabled={this.isDisabled()}
-          class={`${this.componentClassName} disabled:opacity-40 disabled:cursor-not-allowed`}
+          class={`${this.componentClassName} disabled:opacity-40 disabled:bg-gray-200 disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />
+        <slot />
       </form>
     );
   }
