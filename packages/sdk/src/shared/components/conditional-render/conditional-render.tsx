@@ -1,5 +1,5 @@
 import { Component, h, Prop, Host } from "@stencil/core";
-import { authState, type AuthState } from "../../store/auth-store";
+import { authState, type AuthState } from "../../../auth/store/auth-store";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
 import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";

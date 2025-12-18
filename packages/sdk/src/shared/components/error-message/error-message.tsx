@@ -1,9 +1,9 @@
 import { Component, Element, h, Host, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { authState } from "../../store/auth-store";
-import { unidyState } from "../../../shared/store/unidy-store";
+import { authState } from "../../../auth/store/auth-store";
+import { unidyState } from "../../store/unidy-store";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { hasSlotContent } from "../../component-utils";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
 
@@ -19,19 +19,17 @@ export class ErrorMessage {
   @Element() el!: HTMLElement;
 
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
-      return "auth";
+    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile"))
-      return "profile";
+    if (this.el.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root"))
-      return "newsletter";
+    if (this.el.closest("u-newsletter-root")) return "newsletter";
 
-    if (this.for === 'general' || this.for === 'connection')
-      return "other";
+    if (this.for === "general" || this.for === "connection") return "other";
 
-    throw new Error("No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");
+    throw new Error(
+      "No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
+    );
   }
 
   private get context(): "auth" | "newsletter" | "profile" | "other" {
@@ -51,9 +49,8 @@ export class ErrorMessage {
     return errorCode || t("errors.unknown", { defaultValue: "An error occurred" });
   }
 
-
   private getNewsletterErrorMessage(errorIdentifier: NewsletterErrorIdentifier): string {
-    return t(`newsletter.errors.${errorIdentifier}`) || t("newsletter.errors.unknown");
+    return t(`newsletter.errors.${errorIdentifier}`) || t("errors.unknown", { defaultValue: "An unknown error occurred" });
   }
 
   private getErrorMessage(errorCode: string): string | null {
@@ -82,7 +79,6 @@ export class ErrorMessage {
     const error = newsletterStore.state.errors[this.for];
     return error ?? null;
   }
-
 
   render() {
     const errorCode = this.context === "newsletter" ? this.getNewsletterErrorCode() : this.getAuthErrorCode();
