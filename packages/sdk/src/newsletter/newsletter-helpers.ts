@@ -7,7 +7,6 @@ const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
 export function newsletterLogout(): void {
   newsletterStore.state.preferenceToken = "";
-  newsletterStore.state.email = "";
   newsletterStore.state.existingSubscriptions = [];
   localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
   localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
@@ -16,31 +15,19 @@ export function newsletterLogout(): void {
 export async function resendDoi(internalName: string): Promise<boolean> {
   const { preferenceToken } = newsletterStore.state;
 
-  if (!preferenceToken) {
-    return false;
-  }
-
-  newsletterStore.state.resendingDoi = [...newsletterStore.state.resendingDoi, internalName];
-
   const response = await getUnidyClient().newsletters.resendDoi(internalName, {
     preferenceToken,
   });
 
-  newsletterStore.state.resendingDoi = newsletterStore.state.resendingDoi.filter(
-    (name) => name !== internalName,
-  );
-
   if (response.status === 204) {
-    Flash.success.addMessage(t("newsletter.doi_resent"));
     return true;
   }
 
   if (response.status === 401) {
-    Flash.error.addMessage(t("newsletter.errors.invalid_preference_token"));
+    Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     return false;
   }
 
-  Flash.error.addMessage(t("newsletter.errors.resend_doi_failed"));
   return false;
 }
 
@@ -51,30 +38,30 @@ export async function sendLoginEmail(email: string): Promise<void> {
   });
 
   if (response.status === 204) {
-    Flash.info.addMessage(t("newsletter.login_email_sent"));
+    Flash.info.addMessage(t("newsletter.success.login_email_sent"));
+  } else {
+    Flash.error.addMessage(t("newsletter.errors.unknown"));
   }
 }
 
 export async function fetchNewsletterConfigs(): Promise<void> {
-  if (newsletterStore.state.newsletterConfigs.length > 0) {
-    return; // Already fetched
-  }
-
   newsletterStore.state.fetchingConfigs = true;
-
   const response = await getUnidyClient().newsletters.listNewsletters();
-
   newsletterStore.state.fetchingConfigs = false;
 
   if (response.success && response.data?.newsletters) {
     newsletterStore.state.newsletterConfigs = response.data.newsletters;
+  } else {
+    // TODO: call logger
   }
 }
 
 export async function fetchSubscriptions(): Promise<void> {
   const { preferenceToken } = newsletterStore.state;
 
-  if (!preferenceToken) {
+  // either preference token is needed or the user must be authenticated
+  if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
+    // TODO: call logger
     return;
   }
 
@@ -87,7 +74,7 @@ export async function fetchSubscriptions(): Promise<void> {
   newsletterStore.state.fetchingSubscriptions = false;
 
   if (response.status === 401) {
-    Flash.error.addMessage(t("newsletter.errors.invalid_preference_token"));
+    Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     return;
   }
 
@@ -98,81 +85,92 @@ export async function fetchSubscriptions(): Promise<void> {
         confirmed: sub.confirmed_at !== null,
       }),
     );
-
-    const preferenceToken = response.data.find((sub) => sub.preference_token)?.preference_token;
-    if (preferenceToken) {
-      // TODO: implement proper coupling between newsletter and auth
-      //newsletterStore.state.preferenceToken = preferenceToken;
-    }
-
-    console.log("existingSubscriptions fetch", newsletterStore.state.existingSubscriptions);
   }
 }
 
-export async function subscribeToNewsletter(internalName: string, email: string): Promise<boolean> {
-  newsletterStore.state.loading = true;
-
+async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
   const [error, response] = await getUnidyClient().newsletters.createSubscriptions({
     email,
-    newsletter_subscriptions: [
-      {
-        newsletter_internal_name: internalName,
-        preference_identifiers: [],
-      },
-    ],
+    newsletter_subscriptions: internalNames.map((newsletter) => ({
+      newsletter_internal_name: newsletter,
+      preference_identifiers: [],
+    })),
     return_to_after_confirmation: returnToAfterConfirmationUrl(),
   });
 
-  newsletterStore.state.loading = false;
+  if (error === null) {
+    if (response.data?.results && response.data.results.length > 0) {
+      const newSubscriptions: ExistingSubscription[] = response.data.results.map((result) => ({
+        newsletter_internal_name: result.newsletter_internal_name,
+        confirmed: result.confirmed_at !== null,
+      }));
 
-  if (error) {
-    if (error === "newsletter_error") {
-      const errors = response.data?.errors || [];
-      const alreadySubscribed = errors.some((err) => err.error_identifier === "already_subscribed");
-
-      if (alreadySubscribed) {
-        await sendLoginEmail(email);
-        return false;
-      }
-
-      const firstError = errors[0];
-      if (firstError) {
-        newsletterStore.state.errors = {
-          [firstError.newsletter_internal_name]: firstError.error_identifier as NewsletterErrorIdentifier,
-        };
-        Flash.error.addMessage(t(`newsletter.errors.${firstError.error_identifier}`) || t("newsletter.errors.unknown"));
-      }
-    } else {
-      Flash.error.addMessage(t(`newsletter.errors.${error}`) || t("newsletter.errors.unknown"));
+      newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
     }
-    return false;
+
+    if (showSuccessMessage) {
+      const newsletterNames = internalNames.map((internalName) => getNewsletterTitle(internalName) || internalName);
+      Flash.success.addMessage(t("newsletter.success.subscribe", { newsletterName: newsletterNames.join(", ") }));
+    }
+
+    return true;
   }
 
-  // Add to existing subscriptions if we have a preference token
-  if (newsletterStore.state.preferenceToken) {
-    newsletterStore.state.existingSubscriptions = [
-      ...newsletterStore.state.existingSubscriptions,
-      { newsletter_internal_name: internalName, confirmed: false },
-    ];
+  if (error === "newsletter_error") {
+    const errors = response.data?.errors || [];
+    const alreadySubscribed = errors.some((err) => err.error_identifier === "already_subscribed");
+
+    if (alreadySubscribed) {
+      if (newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken) {
+        const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
+
+        const newSubscriptions: ExistingSubscription[] = errors
+          .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
+          .map((err) => ({
+            newsletter_internal_name: err.meta.newsletter_internal_name,
+            confirmed: null,
+          }));
+
+        if (newSubscriptions.length > 0) {
+          newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
+        }
+      } else {
+        await sendLoginEmail(email);
+      }
+    }
+
+    const errorMap: Record<string, NewsletterErrorIdentifier> = {};
+    for (const err of errors) {
+      errorMap[err.meta.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
+    }
+    newsletterStore.state.errors = errorMap;
+  } else {
+    Flash.error.addMessage(t(`newsletter.errors.${error}`) || t("newsletter.errors.unknown"));
   }
 
-  return true;
+  return false;
+}
+
+export async function subscribeToNewsletter(internalName: string, email: string): Promise<boolean> {
+  return handleCreateSubscriptionRequest(email, [internalName], false);
+}
+
+export async function createSubscriptions({ email, checkedNewsletters }: { email: string; checkedNewsletters: string[] }): Promise<void> {
+  await handleCreateSubscriptionRequest(email, checkedNewsletters, true);
 }
 
 export async function deleteSubscription(internalName: string): Promise<boolean> {
   const { preferenceToken } = newsletterStore.state;
 
-  if (!preferenceToken) {
+  // either preference token is needed or the user must be authenticated to delete a subscription
+  if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
+    // TODO: call logger
     return false;
   }
-
-  newsletterStore.state.loading = true;
 
   const response = await getUnidyClient().newsletters.deleteSubscription(internalName, {
     preferenceToken,
   });
-
-  newsletterStore.state.loading = false;
 
   if (response.status === 200 && response.data?.new_preference_token) {
     newsletterStore.state.preferenceToken = response.data.new_preference_token;
@@ -190,85 +188,29 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
   }
 
   if (response.status === 401) {
-    Flash.error.addMessage(t("newsletter.errors.invalid_preference_token"));
+    Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     return false;
   }
 
   if (response.status === 422) {
-    Flash.error.addMessage(t("newsletter.errors.unsubscribe_failed"));
-  } else {
-    Flash.error.addMessage(t("newsletter.errors.unknown"));
+    return false;
   }
 
+  Flash.error.addMessage(t("newsletter.errors.unknown"));
   return false;
 }
 
-export async function createSubscriptions({ email, checkedNewsletters }: { email: string; checkedNewsletters: string[] }): Promise<void> {
-  const [error, response] = await getUnidyClient().newsletters.createSubscriptions({
-    email,
-    newsletter_subscriptions: checkedNewsletters.map((newsletter) => ({
-      newsletter_internal_name: newsletter,
-      preference_identifiers: [],
-    })),
-    return_to_after_confirmation: returnToAfterConfirmationUrl(),
-  });
-
-  newsletterStore.state.loading = false;
-
-  if (error) {
-    switch (error) {
-      case "newsletter_error": {
-        const errors = response.data?.errors || [];
-        const alreadySubscribed = errors.some((err) => err.error_identifier === "already_subscribed");
-
-        if (alreadySubscribed) {
-          await sendLoginEmail(email);
-          return;
-        }
-
-        const errorMap: Record<string, NewsletterErrorIdentifier> = {};
-        for (const err of errors) {
-          errorMap[err.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
-        }
-        newsletterStore.state.errors = errorMap;
-        break;
-      }
-      case "rate_limit_exceeded":
-      case "network_error":
-      case "server_error":
-        Flash.error.addMessage(t(`newsletter.errors.${error}`));
-        break;
-      default:
-        Flash.error.addMessage(t("newsletter.errors.unknown"));
-        break;
-    }
-    return;
-  }
-
-  const newsletterNames = checkedNewsletters.map(
-    (internalName) => getNewsletterTitle(internalName) || internalName
-  );
-  Flash.success.addMessage(t("newsletter.subscribe_success", { newsletterName: newsletterNames.join(", ") }));
-}
-
-
 export function getNewsletterTitle(internalName: string): string | undefined {
-  const config = newsletterStore.state.newsletterConfigs.find(
-    (n) => n.internal_name === internalName
-  );
+  const config = newsletterStore.state.newsletterConfigs.find((n) => n.internal_name === internalName);
   return config?.title;
 }
 
 export function getSubscription(internalName: string): ExistingSubscription | undefined {
-  return newsletterStore.state.existingSubscriptions.find(
-    (sub) => sub.newsletter_internal_name === internalName
-  );
+  return newsletterStore.state.existingSubscriptions.find((sub) => sub.newsletter_internal_name === internalName);
 }
 
 export function isSubscribed(internalName: string): boolean {
-  return newsletterStore.state.existingSubscriptions.some(
-    (sub) => sub.newsletter_internal_name === internalName
-  );
+  return newsletterStore.state.existingSubscriptions.some((sub) => sub.newsletter_internal_name === internalName);
 }
 
 export function isConfirmed(internalName: string): boolean {
