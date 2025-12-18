@@ -61,15 +61,29 @@ export class NewsletterCheckbox {
     this.toggle();
   };
 
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      this.toggle();
+    }
+  };
+
   render() {
     const isLoggedIn = newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken !== "";
     return (
-      // biome-ignore lint/a11y/noLabelWithoutControl
-      // biome-ignore lint/a11y/useKeyWithClickEvents
-      <label part="label" class={this.componentClassName} onClick={this.handleClick}>
+      // biome-ignore lint/a11y/noLabelWithoutControl: <explanation>
+      <label
+        part="label"
+        class={this.componentClassName}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyDown}
+        tabIndex={0}
+        role={this.isSubscribed ? "text" : "checkbox"}
+        aria-checked={this.isSubscribed ? undefined : this.isChecked}
+      >
         <span part="label-text">{this.displayLabel}</span>
 
-        {!isLoggedIn && <input type="checkbox" checked={this.isChecked} part="input" />}
+        {!isLoggedIn && <input type="checkbox" checked={this.isChecked} part="input" tabIndex={-1} />}
       </label>
     );
   }
