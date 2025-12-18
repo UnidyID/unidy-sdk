@@ -9,8 +9,8 @@ const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 export function newsletterLogout(): void {
   newsletterStore.state.preferenceToken = "";
   newsletterStore.state.existingSubscriptions = [];
-  localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
-  localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+  sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
+  sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
 }
 
 export async function resendDoi(internalName: string): Promise<boolean> {
@@ -46,7 +46,7 @@ export async function sendLoginEmail(email: string): Promise<void> {
   if (response.status === 204) {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
   } else {
-    Flash.error.addMessage(t("newsletter.errors.unknown"));
+    Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }
 }
 
@@ -170,7 +170,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     }
     newsletterStore.state.errors = errorMap;
   } else {
-    Flash.error.addMessage(t(`newsletter.errors.${error}`) || t("newsletter.errors.unknown"));
+    Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }
 
   return false;
@@ -231,7 +231,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
     return false;
   }
 
-  Flash.error.addMessage(t("newsletter.errors.unknown"));
+  Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   return false;
 }
 
