@@ -116,6 +116,7 @@ export type SubscriptionAuthOptions = {
 export type CreateSubscriptionsResult =
   | ["schema_validation_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["rate_limit_exceeded", ApiResponse<CreateSubscriptionsResponse>]
+  | ["unauthorized", ApiResponse<CreateSubscriptionsResponse>]
   | ["newsletter_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["network_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["server_error", ApiResponse<CreateSubscriptionsResponse>]
@@ -143,16 +144,22 @@ export class NewsletterService extends EventEmitter {
     return Object.keys(headers).length > 0 ? headers : undefined;
   }
 
-  async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
+  async createSubscriptions(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletters/newsletter_subscription", payload);
+    const response = await this.client.post<CreateSubscriptionsResponse>(
+      "/api/sdk/v1/newsletters/newsletter_subscription",
+      payload,
+      this.buildAuthHeaders(auth),
+    );
 
     switch (response.status) {
+      case 401:
+        this.emit("unauthorized", response);
+        return ["unauthorized", response];
       case 429:
         console.warn("Rate limit exceeded");
         this.emit("rate_limit_exceeded", response);
-
         return ["rate_limit_exceeded", response];
       case 500:
         Sentry.captureException(response);
@@ -166,7 +173,6 @@ export class NewsletterService extends EventEmitter {
 
             if (validatedData.errors.length > 0) {
               this.emit("newsletter_error", response);
-
               return ["newsletter_error", response];
             }
 
