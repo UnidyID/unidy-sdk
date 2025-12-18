@@ -13,8 +13,10 @@ const NewsletterSubscriptionSchema = z.object({
 });
 
 const NewsletterSubscriptionErrorSchema = z.object({
-  newsletter_internal_name: z.string(),
   error_identifier: z.string(),
+  meta: z.object({
+    newsletter_internal_name: z.string(),
+  }),
 });
 
 const CreateSubscriptionsResponseSchema = z.object({
@@ -94,7 +96,6 @@ const NewslettersResponseSchema = z.object({
   newsletters: z.array(NewsletterSchema),
 });
 
-
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
 export type NewsletterSubscriptionError = z.infer<typeof NewsletterSubscriptionErrorSchema>;
 export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
@@ -129,7 +130,6 @@ export class NewsletterService extends EventEmitter {
     this.client = client;
   }
 
-
   private buildAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
     if (!auth) return undefined;
 
@@ -146,10 +146,7 @@ export class NewsletterService extends EventEmitter {
   async createSubscriptions(payload: CreateSubscriptionsPayload): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<CreateSubscriptionsResponse>(
-      "/api/sdk/v1/newsletters/newsletter_subscription",
-      payload,
-    );
+    const response = await this.client.post<CreateSubscriptionsResponse>("/api/sdk/v1/newsletters/newsletter_subscription", payload);
 
     switch (response.status) {
       case 429:
@@ -184,16 +181,10 @@ export class NewsletterService extends EventEmitter {
   }
 
   async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription[]>> {
-    return this.client.get<NewsletterSubscription[]>(
-      "/api/sdk/v1/newsletters/newsletter_subscription",
-      this.buildAuthHeaders(auth),
-    );
+    return this.client.get<NewsletterSubscription[]>("/api/sdk/v1/newsletters/newsletter_subscription", this.buildAuthHeaders(auth));
   }
 
-  async getSubscription(
-    internalName: string,
-    auth: SubscriptionAuthOptions,
-  ): Promise<ApiResponse<NewsletterSubscription>> {
+  async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription>> {
     return this.client.get<NewsletterSubscription>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildAuthHeaders(auth),
