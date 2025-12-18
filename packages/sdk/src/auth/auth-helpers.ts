@@ -128,6 +128,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.refreshToken(authState.sid);
 
     if (error) {
+      authStore.reset();
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
@@ -361,5 +362,4 @@ export class AuthHelpers {
     authStore.setLoading(false);
     authStore.getRootComponentRef()?.onAuth(response);
   }
-
 }
