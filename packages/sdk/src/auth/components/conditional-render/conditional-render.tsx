@@ -16,11 +16,11 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.resetPasswordSent": () => authState.resetPassword.step === "sent" || authState.resetPassword.step === "requested",
   "auth.resetPasswordRequested": () => authState.resetPassword.step === "requested",
 
-  "newsletter.loading": () => newsletterStore.state.loading,
   "newsletter.hasCheckedNewsletters": () => newsletterStore.state.checkedNewsletters.length > 0,
   "newsletter.hasPreferenceToken": () => !!newsletterStore.state.preferenceToken,
   "newsletter.subscribed": (newsletterInternalName: string) => NewsletterHelpers.isSubscribed(newsletterInternalName),
   "newsletter.confirmed": (newsletterInternalName: string) => NewsletterHelpers.isConfirmed(newsletterInternalName),
+  "newsletter.loggedIn": () => newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken !== "",
 
   "profile.loading": () => profileStore.state.loading,
   "profile.hasErrors": () => Object.keys(profileStore.state.errors).some((key) => profileStore.state.errors[key] !== null),
@@ -49,7 +49,7 @@ export class ConditionalRender {
       return predefinedFunction(this.is);
     }
 
-    return null
+    return null;
   }
 
   private shouldRender(): boolean {
