@@ -2,6 +2,7 @@ import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
 import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
+import { Auth } from "../auth/auth";
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -15,8 +16,12 @@ export function newsletterLogout(): void {
 export async function resendDoi(internalName: string): Promise<boolean> {
   const { preferenceToken } = newsletterStore.state;
 
+  const authInstance = await Auth.getInstance();
+  const idToken = await authInstance.getToken();
+
   const response = await getUnidyClient().newsletters.resendDoi(internalName, {
-    preferenceToken,
+    preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
+    idToken: typeof idToken === "string" ? idToken : "",
   });
 
   if (response.status === 204) {
@@ -25,6 +30,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 
   if (response.status === 401) {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
+    newsletterLogout();
     return false;
   }
 
@@ -65,15 +71,20 @@ export async function fetchSubscriptions(): Promise<void> {
     return;
   }
 
+  const authInstance = await Auth.getInstance();
+  const idToken = await authInstance.getToken();
+
   newsletterStore.state.fetchingSubscriptions = true;
 
   const response = await getUnidyClient().newsletters.listSubscriptions({
     preferenceToken,
+    idToken: typeof idToken === "string" ? idToken : "",
   });
 
   newsletterStore.state.fetchingSubscriptions = false;
 
   if (response.status === 401) {
+    newsletterLogout();
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     return;
   }
@@ -89,14 +100,22 @@ export async function fetchSubscriptions(): Promise<void> {
 }
 
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
-  const [error, response] = await getUnidyClient().newsletters.createSubscriptions({
-    email,
-    newsletter_subscriptions: internalNames.map((newsletter) => ({
-      newsletter_internal_name: newsletter,
-      preference_identifiers: [],
-    })),
-    return_to_after_confirmation: returnToAfterConfirmationUrl(),
-  });
+  const authInstance = await Auth.getInstance();
+  const idToken = await authInstance.getToken();
+
+  const [error, response] = await getUnidyClient().newsletters.createSubscriptions(
+    {
+      email,
+      newsletter_subscriptions: internalNames.map((newsletter) => ({
+        newsletter_internal_name: newsletter,
+        preference_identifiers: [],
+      })),
+      return_to_after_confirmation: returnToAfterConfirmationUrl(),
+    },
+    {
+      idToken: typeof idToken === "string" ? idToken : "",
+    },
+  );
 
   if (error === null) {
     if (response.data?.results && response.data.results.length > 0) {
@@ -114,6 +133,12 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     }
 
     return true;
+  }
+
+  if (error === "unauthorized") {
+    Flash.error.addMessage(t("newsletter.errors.unauthorized"));
+    newsletterLogout();
+    return false;
   }
 
   if (error === "newsletter_error") {
@@ -168,13 +193,21 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
     return false;
   }
 
+  const authInstance = await Auth.getInstance();
+  const idToken = await authInstance.getToken();
+
   const response = await getUnidyClient().newsletters.deleteSubscription(internalName, {
     preferenceToken,
+    idToken: typeof idToken === "string" ? idToken : "",
   });
 
   if (response.status === 200 && response.data?.new_preference_token) {
-    newsletterStore.state.preferenceToken = response.data.new_preference_token;
-    persist("preferenceToken");
+    // if user is not authenticated, we need to store the new preference token which is used for the next request
+    if (!newsletterStore.state.isAuthenticated) {
+      newsletterStore.state.preferenceToken = response.data.new_preference_token;
+      persist("preferenceToken");
+    }
+
     newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
       (sub) => sub.newsletter_internal_name !== internalName,
     );
@@ -183,12 +216,14 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
 
   if (response.status === 204) {
     newsletterLogout();
+
     newsletterStore.state.checkedNewsletters = [];
     return true;
   }
 
   if (response.status === 401) {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
+    newsletterLogout();
     return false;
   }
 
