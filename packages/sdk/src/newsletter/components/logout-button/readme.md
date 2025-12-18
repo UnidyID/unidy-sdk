@@ -12,6 +12,13 @@
 | `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
+## Shadow Parts
+
+| Part       | Description |
+| ---------- | ----------- |
+| `"button"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
