@@ -40,17 +40,16 @@ export class SubmitButton {
     }
   }
 
-  private detectContext(): "auth" | "profile" | "newsletter"  {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step"))
-      return "auth";
+  private detectContext(): "auth" | "profile" | "newsletter" {
+    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile"))
-      return "profile";
+    if (this.el.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root"))
-      return "newsletter";
+    if (this.el.closest("u-newsletter-root")) return "newsletter";
 
-    throw new Error("No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.");
+    throw new Error(
+      "No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
+    );
   }
 
   private handleClick = async (event: MouseEvent) => {
@@ -102,12 +101,12 @@ export class SubmitButton {
     ].join(" ");
 
     const buttonProps: Record<string, unknown> = {
-      type: 'submit',
+      type: "submit",
       part: `${this.context}-submit-button`,
       disabled: this.isDisabled() || this.isLoading(),
       class: buttonClasses,
       onClick: this.handleClick,
-      "aria-live": "polite"
+      "aria-live": "polite",
     };
 
     const button = <button {...buttonProps}>{this.getButtonContent()}</button>;
