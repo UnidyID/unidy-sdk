@@ -1,7 +1,6 @@
 import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
 import { Auth } from "../../auth";
 import { t } from "../../../i18n";
-import { newsletterLogout } from "../../../newsletter/newsletter-helpers";
 
 @Component({
   tag: "u-logout-button",

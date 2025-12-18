@@ -1,6 +1,5 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { newsletterStore } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 import { Flash } from "../../../shared/store/flash-store";
 
