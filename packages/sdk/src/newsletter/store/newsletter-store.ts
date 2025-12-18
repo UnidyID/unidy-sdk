@@ -18,48 +18,47 @@ interface NewsletterState {
   email: string;
   preferenceToken: string;
   checkedNewsletters: string[];
-  loading: boolean;
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
-  resendingDoi: string[];
 
   fetchingConfigs: boolean;
   newsletterConfigs: Newsletter[];
 
   errors: Record<string, NewsletterErrorIdentifier>;
+
+  isAuthenticated: boolean;
 }
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
-export const persist = (key: 'email' | 'preferenceToken') => {
-  localStorage.setItem(`${PERSIST_KEY_PREFIX}${key}`, newsletterStore.state[key]);
+export const persist = (key: "email" | "preferenceToken") => {
+  sessionStorage.setItem(`${PERSIST_KEY_PREFIX}${key}`, newsletterStore.state[key]);
 };
 
-const getPersistedValue = (key: 'email' | 'preferenceToken') => {
-  return localStorage.getItem(`${PERSIST_KEY_PREFIX}${key}`);
-}
+const getPersistedValue = (key: "email" | "preferenceToken") => {
+  return sessionStorage.getItem(`${PERSIST_KEY_PREFIX}${key}`);
+};
 
 const initialState: NewsletterState = {
   email: getPersistedValue("email") ?? "",
   preferenceToken: getPersistedValue("preferenceToken") ?? "",
   checkedNewsletters: [],
-  loading: false,
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],
-  resendingDoi: [],
 
   fetchingConfigs: false,
   newsletterConfigs: [],
 
   errors: {},
+  isAuthenticated: false,
 };
 
 export const newsletterStore = createStore<NewsletterState>(initialState);
 
 export const reset = () => {
+  sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
+  sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
   newsletterStore.state = initialState;
-  localStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
-  localStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
 };
