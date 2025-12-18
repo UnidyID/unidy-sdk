@@ -27,7 +27,7 @@ export class NewsletterUnsubscribeButton {
 
     if (success) {
       const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
-      Flash.info.addMessage(t("newsletter.unsubscribe_success", { newsletterName: title }));
+      Flash.info.addMessage(t("newsletter.success.unsubscribe", { newsletterName: title }));
     } else {
       Flash.error.addMessage(t("newsletter.errors.unsubscribe_failed"));
     }
@@ -35,17 +35,17 @@ export class NewsletterUnsubscribeButton {
 
   render() {
     return (
-        this.isSubscribed && (
-          <button
-            type="button"
-            onClick={this.handleClick}
-            disabled={this.deleting || newsletterStore.state.loading}
-            aria-busy={this.deleting}
-            class={this.componentClassName}
-          >
-            {t("newsletter.unsubscribe_button")}
-          </button>
-        )
+      this.isSubscribed && (
+        <button
+          type="button"
+          onClick={this.handleClick}
+          disabled={this.deleting}
+          aria-busy={this.deleting}
+          class={`${this.componentClassName} flex items-center justify-center`}
+        >
+          {this.deleting ? <u-spinner /> : t("newsletter.buttons.unsubscribe")}
+        </button>
+      )
     );
   }
 }

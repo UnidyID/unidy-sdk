@@ -34,7 +34,7 @@ export class NewsletterSubscribeButton {
 
     if (success) {
       const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
-      Flash.success.addMessage(t("newsletter.subscribe_success", { newsletterName: title }));
+      Flash.success.addMessage(t("newsletter.success.subscribe", { newsletterName: title }));
     }
   };
 
@@ -47,11 +47,11 @@ export class NewsletterSubscribeButton {
       <button
         type="button"
         onClick={this.handleClick}
-        disabled={this.subscribing || newsletterStore.state.loading}
+        disabled={this.subscribing}
         aria-busy={this.subscribing}
-        class={this.componentClassName}
+        class={`${this.componentClassName} flex items-center justify-center`}
       >
-        {t("newsletter.subscribe_button")}
+        {this.subscribing ? <u-spinner /> : t("newsletter.buttons.subscribe")}
       </button>
     );
   }
