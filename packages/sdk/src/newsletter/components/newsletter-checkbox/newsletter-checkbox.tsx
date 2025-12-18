@@ -47,13 +47,12 @@ export class NewsletterCheckbox {
     const currentlyChecked = newsletterStore.state.checkedNewsletters.includes(this.internalName);
 
     if (currentlyChecked) {
-      newsletterStore.set("checkedNewsletters",
-        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName)
+      newsletterStore.set(
+        "checkedNewsletters",
+        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName),
       );
     } else {
-      newsletterStore.set("checkedNewsletters",
-        [...newsletterStore.state.checkedNewsletters, this.internalName]
-      );
+      newsletterStore.set("checkedNewsletters", [...newsletterStore.state.checkedNewsletters, this.internalName]);
     }
   };
 
@@ -63,18 +62,14 @@ export class NewsletterCheckbox {
   };
 
   render() {
+    const isLoggedIn = newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken !== "";
     return (
       // biome-ignore lint/a11y/noLabelWithoutControl
       // biome-ignore lint/a11y/useKeyWithClickEvents
       <label part="label" class={this.componentClassName} onClick={this.handleClick}>
         <span part="label-text">{this.displayLabel}</span>
-        {!newsletterStore.state.preferenceToken && (
-          <input
-            type="checkbox"
-            checked={this.isChecked}
-            part="input"
-          />
-        )}
+
+        {!isLoggedIn && <input type="checkbox" checked={this.isChecked} part="input" />}
       </label>
     );
   }
