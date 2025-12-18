@@ -1,7 +1,8 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { newsletterStore } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
+import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-newsletter-resend-doi-button",
@@ -11,17 +12,22 @@ export class NewsletterResendDoiButton {
   @Prop() internalName!: string;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  private get isResending(): boolean {
-    return newsletterStore.state.resendingDoi.includes(this.internalName);
-  }
+  @State() isResending = false;
 
   private get shouldShow(): boolean {
     return NewsletterHelpers.isSubscribed(this.internalName) && !NewsletterHelpers.isConfirmed(this.internalName);
   }
 
   private handleClick = async () => {
-    if (this.isResending) return;
-    await NewsletterHelpers.resendDoi(this.internalName);
+    this.isResending = true;
+    const success = await NewsletterHelpers.resendDoi(this.internalName);
+    this.isResending = false;
+
+    if (success) {
+      Flash.success.addMessage(t("newsletter.success.doi_sent"));
+    } else {
+      Flash.error.addMessage(t("newsletter.errors.resend_doi_failed"));
+    }
   };
 
   render() {
@@ -33,11 +39,12 @@ export class NewsletterResendDoiButton {
       <button
         type="button"
         onClick={this.handleClick}
-        disabled={this.isResending || newsletterStore.state.loading}
+        disabled={this.isResending}
         aria-busy={this.isResending}
-        class={this.componentClassName}
+        aria-live="polite"
+        class={`${this.componentClassName} flex items-center justify-center`}
       >
-        {this.isResending ? t("loading") : t("newsletter.resend_doi_button")}
+        {this.isResending ? <u-spinner /> : t("newsletter.buttons.resend_doi")}
       </button>
     );
   }
