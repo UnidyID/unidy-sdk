@@ -55,7 +55,7 @@ export async function fetchSubscriptions(): Promise<void> {
 
   // either preference token is needed or the user must be authenticated
   if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
-    // TODO: call logger
+    this.logger.error("Preference token or authentication is required to fetch subscriptions");
     return;
   }
 
@@ -199,7 +199,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
 
   // either preference token is needed or the user must be authenticated to delete a subscription
   if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
-    // TODO: call logger
+    this.logger.error("Preference token or authentication is required to delete a subscription");
     return false;
   }
 
