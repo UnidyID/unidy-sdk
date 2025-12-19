@@ -70,6 +70,8 @@ export class ToggleNewsletterSubscriptionButton {
         onClick={this.handleClick}
         disabled={this.loading}
         aria-busy={this.loading}
+        aria-label={isSubscribed ? t("newsletter.buttons.unsubscribe") : t("newsletter.buttons.subscribe")}
+        aria-live="polite"
         data-subscribed={isSubscribed}
         class={`${this.componentClassName} ${stateClassName} flex items-center justify-center`.trim()}
       >
