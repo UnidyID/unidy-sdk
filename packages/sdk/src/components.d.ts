@@ -181,19 +181,20 @@ export namespace Components {
         "componentClassName": string;
         "submit": () => Promise<void>;
     }
-    interface UNewsletterSubscribeButton {
+    interface UNewsletterToggleSubscriptionButton {
         /**
           * @default ""
          */
         "componentClassName": string;
         "internalName": string;
-    }
-    interface UNewsletterUnsubscribeButton {
         /**
           * @default ""
          */
-        "componentClassName": string;
-        "internalName": string;
+        "subscribeClassName": string;
+        /**
+          * @default ""
+         */
+        "unsubscribeClassName": string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -531,17 +532,11 @@ declare global {
         prototype: HTMLUNewsletterRootElement;
         new (): HTMLUNewsletterRootElement;
     };
-    interface HTMLUNewsletterSubscribeButtonElement extends Components.UNewsletterSubscribeButton, HTMLStencilElement {
+    interface HTMLUNewsletterToggleSubscriptionButtonElement extends Components.UNewsletterToggleSubscriptionButton, HTMLStencilElement {
     }
-    var HTMLUNewsletterSubscribeButtonElement: {
-        prototype: HTMLUNewsletterSubscribeButtonElement;
-        new (): HTMLUNewsletterSubscribeButtonElement;
-    };
-    interface HTMLUNewsletterUnsubscribeButtonElement extends Components.UNewsletterUnsubscribeButton, HTMLStencilElement {
-    }
-    var HTMLUNewsletterUnsubscribeButtonElement: {
-        prototype: HTMLUNewsletterUnsubscribeButtonElement;
-        new (): HTMLUNewsletterUnsubscribeButtonElement;
+    var HTMLUNewsletterToggleSubscriptionButtonElement: {
+        prototype: HTMLUNewsletterToggleSubscriptionButtonElement;
+        new (): HTMLUNewsletterToggleSubscriptionButtonElement;
     };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
@@ -673,8 +668,7 @@ declare global {
         "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
         "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
         "u-newsletter-root": HTMLUNewsletterRootElement;
-        "u-newsletter-subscribe-button": HTMLUNewsletterSubscribeButtonElement;
-        "u-newsletter-unsubscribe-button": HTMLUNewsletterUnsubscribeButtonElement;
+        "u-newsletter-toggle-subscription-button": HTMLUNewsletterToggleSubscriptionButtonElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
@@ -852,19 +846,20 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
     }
-    interface UNewsletterSubscribeButton {
+    interface UNewsletterToggleSubscriptionButton {
         /**
           * @default ""
          */
         "componentClassName"?: string;
         "internalName": string;
-    }
-    interface UNewsletterUnsubscribeButton {
         /**
           * @default ""
          */
-        "componentClassName"?: string;
-        "internalName": string;
+        "subscribeClassName"?: string;
+        /**
+          * @default ""
+         */
+        "unsubscribeClassName"?: string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -1090,8 +1085,7 @@ declare namespace LocalJSX {
         "u-newsletter-logout-button": UNewsletterLogoutButton;
         "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
         "u-newsletter-root": UNewsletterRoot;
-        "u-newsletter-subscribe-button": UNewsletterSubscribeButton;
-        "u-newsletter-unsubscribe-button": UNewsletterUnsubscribeButton;
+        "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
@@ -1130,8 +1124,7 @@ declare module "@stencil/core" {
             "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
             "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
-            "u-newsletter-subscribe-button": LocalJSX.UNewsletterSubscribeButton & JSXBase.HTMLAttributes<HTMLUNewsletterSubscribeButtonElement>;
-            "u-newsletter-unsubscribe-button": LocalJSX.UNewsletterUnsubscribeButton & JSXBase.HTMLAttributes<HTMLUNewsletterUnsubscribeButtonElement>;
+            "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;

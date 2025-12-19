@@ -66,16 +66,12 @@
                 internal-name="test"
                 class-name="font-semibold text-gray-900">
               </u-newsletter-checkbox>
-              <div class="flex items-center">
-                <u-newsletter-subscribe-button
-                  internal-name="test"
-                  class-name="text-sm text-white bg-indigo-600 hover:bg-indigo-700 font-medium border border-indigo-600 rounded-lg px-3 py-1">
-                </u-newsletter-subscribe-button>
-                <u-newsletter-unsubscribe-button
-                  internal-name="test"
-                  class-name="text-sm text-red-500 hover:text-red-700 font-medium border border-red-300 rounded-lg px-3 py-1 hover:bg-red-50">
-                </u-newsletter-unsubscribe-button>
-              </div>
+              <u-newsletter-toggle-subscription-button
+                internal-name="test"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
             </div>
             <u-conditional-render when="newsletter.subscribed" is="test">
               <u-conditional-render when="newsletter.confirmed" is="test" not>
@@ -96,16 +92,12 @@
                 internal-name="main"
                 class-name="font-semibold text-gray-900">
               </u-newsletter-checkbox>
-              <div class="flex items-center">
-                <u-newsletter-subscribe-button
-                  internal-name="main"
-                  class-name="text-sm text-white bg-indigo-600 hover:bg-indigo-700 font-medium border border-indigo-600 rounded-lg px-3 py-1">
-                </u-newsletter-subscribe-button>
-                <u-newsletter-unsubscribe-button
-                  internal-name="main"
-                  class-name="text-sm text-red-500 hover:text-red-700 font-medium border border-red-300 rounded-lg px-3 py-1 hover:bg-red-50">
-                </u-newsletter-unsubscribe-button>
-              </div>
+              <u-newsletter-toggle-subscription-button
+                internal-name="main"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
             </div>
             <u-conditional-render when="newsletter.subscribed" is="main">
               <u-conditional-render when="newsletter.confirmed" is="main" not>
