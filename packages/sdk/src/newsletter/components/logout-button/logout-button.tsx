@@ -33,7 +33,7 @@ export class LogoutButton {
           part="button"
           class={this.componentClassName}
           onClick={this.handleLogout}
-          aria-label={hasContent ? "Logout" : undefined}
+          aria-label="Logout"
           aria-live="polite"
         >
           {hasContent ? <slot /> : t("newsletter.buttons.logout")}
