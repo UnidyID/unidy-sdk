@@ -1,9 +1,10 @@
 import { Component, h, Prop, Element, Host, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import type { PaginationStore } from "../../store/pagination-store";
+import { UnidyComponent } from "../../../logger";
 
 @Component({ tag: "u-pagination-button", shadow: false })
-export class PaginationButton {
+export class PaginationButton extends UnidyComponent {
   @Element() element: HTMLElement;
 
   @Prop() direction: "prev" | "next" = "next";
@@ -17,7 +18,7 @@ export class PaginationButton {
   componentDidLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
-      console.warn("TicketableList component not found");
+      this.logger.warn("TicketableList component not found");
       return;
     }
 
@@ -56,7 +57,7 @@ export class PaginationButton {
 
   render() {
     if (!this.store) {
-      console.warn("TicketableList component not found");
+      this.logger.warn("TicketableList component not found");
       return null;
     }
 

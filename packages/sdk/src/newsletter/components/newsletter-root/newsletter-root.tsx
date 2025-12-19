@@ -1,10 +1,11 @@
 import { Component, Host, h, Prop, Element, Method } from "@stencil/core";
+import { UnidyComponent } from "../../../logger";
 
 @Component({
   tag: "u-newsletter-root",
   shadow: false,
 })
-export class NewsletterRoot {
+export class NewsletterRoot extends UnidyComponent {
   @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -14,7 +15,7 @@ export class NewsletterRoot {
   }
 
   componentDidLoad() {
-    console.log("newsletter root loaded");
+    this.logger.debug("newsletter root loaded");
   }
 
   render() {

@@ -7,9 +7,11 @@ import { t } from "../i18n";
 import { authenticateWithPasskey } from "./passkey-auth";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
+import { createLogger } from "../logger";
 
 export class AuthHelpers {
   private client: UnidyClient;
+  private logger = createLogger("AuthHelpers");
 
   constructor(client: UnidyClient) {
     this.client = client;
@@ -120,7 +122,7 @@ export class AuthHelpers {
     this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
-      // call logger when we add one
+      this.logger.warn("No sign-in ID in the session");
       return;
     }
 
@@ -167,7 +169,7 @@ export class AuthHelpers {
       const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
       window.history.replaceState(null, "", cleanUrl);
     } catch (e) {
-      console.error("Failed to parse missing fields payload:", e);
+      this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
