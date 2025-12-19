@@ -14,6 +14,7 @@ const NewsletterSubscriptionSchema = z.object({
 
 const NewsletterSubscriptionErrorSchema = z.object({
   error_identifier: z.string(),
+  error_details: z.optional(z.record(z.string(), z.array(z.string()))),
   meta: z.object({
     newsletter_internal_name: z.string(),
   }),

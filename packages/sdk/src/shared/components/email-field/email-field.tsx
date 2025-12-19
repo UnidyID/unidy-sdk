@@ -1,7 +1,7 @@
 import { Component, h, Prop, Element, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authStore, authState } from "../../../auth/store/auth-store";
-import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 import { getParentSigninStep } from "../../../auth/components/helpers";
 import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
@@ -44,6 +44,13 @@ export class EmailField {
     const target = event.target as HTMLInputElement;
 
     (this.store as { state: { email: string } }).state.email = target.value;
+
+    if (this.context === "newsletter") {
+      const { email, ...restErrors } = this.store.state.errors as Record<string, NewsletterErrorIdentifier>;
+      this.store.state.errors = restErrors;
+    } else {
+      (this.store as { clearFieldError: (field: "email") => void }).clearFieldError("email");
+    }
   };
 
   private handleSubmit = async (event: Event) => {

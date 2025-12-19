@@ -87,6 +87,28 @@ export async function fetchSubscriptions(): Promise<void> {
   }
 }
 
+async function handleAlreadySubscribedError(
+  email: string,
+  errors: Array<{ error_identifier: string; meta: { newsletter_internal_name: string } }>,
+): Promise<void> {
+  if (newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken) {
+    const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
+
+    const newSubscriptions: ExistingSubscription[] = errors
+      .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
+      .map((err) => ({
+        newsletter_internal_name: err.meta.newsletter_internal_name,
+        confirmed: null,
+      }));
+
+    if (newSubscriptions.length > 0) {
+      newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
+    }
+  } else {
+    await sendLoginEmail(email);
+  }
+}
+
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
@@ -130,31 +152,32 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
 
   if (error === "newsletter_error") {
     const errors = response.data?.errors || [];
-    const alreadySubscribed = errors.some((err) => err.error_identifier === "already_subscribed");
+    const errorMap: Record<string, NewsletterErrorIdentifier> = {};
 
-    if (alreadySubscribed) {
-      if (newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken) {
-        const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
+    // special error case which is handled differently: if user is not authenticated, we send a login email, otherwise we add the
+    // already_subscribed subscriptions to the existing subscriptions
+    const hasAlreadySubscribedError = errors.some((err) => err.error_identifier === "already_subscribed");
+    if (hasAlreadySubscribedError) {
+      await handleAlreadySubscribedError(email, errors);
+    }
 
-        const newSubscriptions: ExistingSubscription[] = errors
-          .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
-          .map((err) => ({
-            newsletter_internal_name: err.meta.newsletter_internal_name,
-            confirmed: null,
-          }));
+    const newsletterNotFoundError = errors.some((err) => err.error_identifier === "newsletter_not_found");
+    if (newsletterNotFoundError) {
+      errorMap.general = "newsletter_not_found";
+    }
 
-        if (newSubscriptions.length > 0) {
-          newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
-        }
-      } else {
-        await sendLoginEmail(email);
+    const hasInvalidEmailError = errors.some(
+      (err) => err.error_identifier === "validation_error" && err.error_details && "email" in err.error_details,
+    );
+
+    if (hasInvalidEmailError) {
+      errorMap.email = "invalid_email";
+    } else {
+      for (const err of errors) {
+        errorMap[err.meta.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
       }
     }
 
-    const errorMap: Record<string, NewsletterErrorIdentifier> = {};
-    for (const err of errors) {
-      errorMap[err.meta.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
-    }
     newsletterStore.state.errors = errorMap;
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
