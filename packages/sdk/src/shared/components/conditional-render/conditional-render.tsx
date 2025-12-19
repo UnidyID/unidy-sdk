@@ -3,6 +3,7 @@ import { authState, type AuthState } from "../../../auth/store/auth-store";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
 import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
+import { UnidyComponent } from "../../../logger";
 
 const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.passkeyEnabled": () => authState.availableLoginOptions?.passkey,
@@ -37,7 +38,7 @@ function isTruthy(value: unknown): boolean {
   tag: "u-conditional-render",
   shadow: true,
 })
-export class ConditionalRender {
+export class ConditionalRender extends UnidyComponent {
   @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
@@ -54,7 +55,7 @@ export class ConditionalRender {
 
   private shouldRender(): boolean {
     if (!this.when && !this.conditionFunction) {
-      console.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
+      this.logger.error("[u-conditional-render] Either 'when' or 'conditionFunction' prop is required");
     }
 
     if (this.conditionFunction) {

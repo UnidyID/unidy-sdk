@@ -715,11 +715,11 @@
     const auth = await Auth.getInstance();
 
     signinRoot.addEventListener("authEvent", async (event) => {
-      console.log("Auth event:", event.detail);
+      console.info("Auth event:", event.detail);
     });
 
     signinRoot.addEventListener("errorEvent", (event) => {
-      console.log("Authentication error:", event.detail.error);
+      console.error("Authentication error:", event.detail.error);
 
       if (event.detail.error === Auth.Errors.ACCOUNT_NOT_FOUND) {
         setTimeout(() => {
@@ -733,7 +733,7 @@
     });
 
     logoutButton.addEventListener('logout', () => {
-      console.log('User logged out successfully');
+      console.info('User logged out successfully');
     });
 
     // Custom validation function for date_of_birth

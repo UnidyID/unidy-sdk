@@ -26,6 +26,12 @@ export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
+    interface NewsletterCheckbox {
+        "checked": boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+        "label": string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -418,6 +424,12 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
+    interface HTMLNewsletterCheckboxElement extends Components.NewsletterCheckbox, HTMLStencilElement {
+    }
+    var HTMLNewsletterCheckboxElement: {
+        prototype: HTMLNewsletterCheckboxElement;
+        new (): HTMLNewsletterCheckboxElement;
+    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -652,6 +664,7 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
+        "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -688,6 +701,12 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface NewsletterCheckbox {
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "internalName"?: string;
+        "label"?: string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -1068,6 +1087,7 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
+        "newsletter-checkbox": NewsletterCheckbox;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1107,6 +1127,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;

@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/browser";
 import * as z from "zod/mini";
 import type { ApiClient, ApiResponse } from "../../api";
 import EventEmitter from "eventemitter3";
+import { createLogger } from "../../logger";
 
 const NewsletterSubscriptionSchema = z.object({
   id: z.number(),
@@ -126,6 +127,7 @@ export type CreateSubscriptionsResult =
 
 export class NewsletterService extends EventEmitter {
   private client: ApiClient;
+  private logger = createLogger("NewsletterService");
 
   constructor(client: ApiClient) {
     super();
@@ -159,7 +161,7 @@ export class NewsletterService extends EventEmitter {
         this.emit("unauthorized", response);
         return ["unauthorized", response];
       case 429:
-        console.warn("Rate limit exceeded");
+        this.logger.warn("Rate limit exceeded");
         this.emit("rate_limit_exceeded", response);
         return ["rate_limit_exceeded", response];
       case 500:

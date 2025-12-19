@@ -5,12 +5,13 @@ import { clearUrlParam } from "../../../shared/component-utils";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 import { Auth } from "../../../auth/auth";
+import { UnidyComponent } from "../../../logger";
 
 @Component({
   tag: "u-newsletter-root",
   shadow: false,
 })
-export class NewsletterRoot {
+export class NewsletterRoot extends UnidyComponent {
   @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -36,6 +37,7 @@ export class NewsletterRoot {
 
     if (isAuthenticated) {
       const userData = await authInstance.userData();
+
       if (userData) {
         newsletterStore.state.email = userData.email;
       }
