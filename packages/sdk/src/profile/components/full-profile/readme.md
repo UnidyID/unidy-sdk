@@ -19,17 +19,17 @@
 
 - [u-profile](../profile)
 - [u-field](../field)
-- [u-profile-submit-button](../submit-button)
+- [u-submit-button](../../../shared/components/submit-button)
 
 ### Graph
 ```mermaid
 graph TD;
   u-full-profile --> u-profile
   u-full-profile --> u-field
-  u-full-profile --> u-profile-submit-button
+  u-full-profile --> u-submit-button
   u-field --> u-spinner
   u-field --> u-raw-field
-  u-profile-submit-button --> u-spinner
+  u-submit-button --> u-spinner
   style u-full-profile fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

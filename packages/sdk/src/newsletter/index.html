@@ -12,53 +12,143 @@
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white/90 shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
+  <div class="bg-slate-50 shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
+    <div class="fixed top-5 right-5">
+      <u-signed-in>
+        <u-logout-button
+        class-name="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+        </u-logout-button>
+      </u-signed-in>
+      <u-signed-in not>
+        <a
+        href="/auth"
+        class="group flex flex-col rounded-2xl border border-gray-200 bg-white/80 px-4 py-1 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all duration-200"
+        >Login</a>
+      </u-signed-in>
+    </div>
     <div class="flex flex-col items-center gap-2">
-      <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
+      <u-conditional-render when="newsletter.loggedIn">
+        <h1 class="text-3xl font-bold text-indigo-700">Your subscriptions</h1>
+      </u-conditional-render>
+      <u-conditional-render when="newsletter.loggedIn" is="false">
+        <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
+      </u-conditional-render>
     </div>
 
+    <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+
     <u-newsletter-root>
-      <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+      <u-conditional-render when="newsletter.loggedIn">
+        <div class="mb-12 relative">
+          <u-email-field class-name="px-4 py-2 pr-10 border border-gray-400 rounded-lg w-full bg-gray-50" disabled>
+            <u-newsletter-logout-button class="absolute right-3 top-1/2 -translate-y-1/2 z-10" class-name="flex items-center justify-center w-6 h-6 p-0 bg-transparent border-0 rounded-full transition-all cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-800 active:bg-gray-200">
+              <div class="flex items-center justify-center p-1 bg-gray-300 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+            </u-newsletter-logout-button>
+          </u-email-field>
 
-      <div class="flex flex-col gap-2">
-        <label class="text-gray-500 text-sm">Select newsletters</label>
-        <newsletter-checkbox label="Main Newsletter" internal-name="main" checked="true"
-          class-name="flex items-center gap-2"></newsletter-checkbox>
-        <newsletter-checkbox label="Test Newsletter" internal-name="test" checked="false"
-          class-name="flex items-center gap-2"></newsletter-checkbox>
-        <submit-button api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-          class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
-          <span>Subscribe</span>
-        </submit-button>
+          <u-signed-in>
+            <div class="flex flex-col my-2 p-2 border border-gray-200 rounded-lg bg-blue-50 text-blue-800">
+              <p>If you want to subscribe with a different email address, please logout! </p>
+            </div>
+          </u-signed-in>
+        </div>
 
-        <div id="message-container" class="mt-4 text-center text-sm"></div>
-      </div>
+        <div class="flex flex-col gap-4">
+          <p class="text-gray-600 text-sm font-medium">Manage subscriptions</p>
+          <div class="border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-gray-900">Test Newsletter</span>
+              <u-newsletter-toggle-subscription-button
+                internal-name="test"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
+            </div>
+            <u-conditional-render when="newsletter.subscribed" is="test">
+              <u-conditional-render when="newsletter.confirmed" is="test" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="test"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
+            </u-conditional-render>
+          </div>
+
+          <div class="border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-gray-900">Main Newsletter</span>
+              <u-newsletter-toggle-subscription-button
+                internal-name="main"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
+            </div>
+            <u-conditional-render when="newsletter.subscribed" is="main">
+              <u-conditional-render when="newsletter.confirmed" is="main" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="main"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
+            </u-conditional-render>
+          </div>
+        </div>
+      </u-conditional-render>
+
+      <u-conditional-render when="newsletter.loggedIn" not>
+        <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></u-email-field>
+        <u-error-message for="email" class-name="text-red-500 text-sm"></u-error-message>
+
+        <div class="flex flex-col mt-4 gap-3">
+          <p class="text-gray-600 text-sm font-medium">Select newsletters</p>
+
+          <div class="flex flex-col gap-1">
+            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+              <span>Main Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="main"
+                checked="true"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
+            <u-error-message for="main" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+              <span>Test Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="test"
+                checked="false"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
+            <u-error-message for="test" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <u-submit-button
+            class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow transition border border-indigo-600 mt-4">
+            Subscribe
+          </u-submit-button>
+          <u-error-message for="general" class-name="text-red-500 text-sm"></u-error-message>
+        </div>
+      </u-conditional-render>
+
+      <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="10"></u-flash-message>
     </u-newsletter-root>
   </div>
 </body>
-
-<script>
-  // const newsletterSubmit = document.querySelector("submit-button");
-  // const messageContainer = document.getElementById("message-container");
-  // newsletterSubmit.addEventListener("success", (e) => {
-  //   messageContainer.style.color = "green";
-  //   messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
-
-  // });
-
-  // newsletterSubmit.addEventListener("error", (e) => {
-  //   messageContainer.style.color = "red";
-
-  //   if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
-  //     messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
-  //     return;
-  //   }
-
-  //   messageContainer.innerHTML = e.detail.data.errors.map((error) => {
-  //     return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
-  //   }).join("<br>");
-
-  // });
-</script>
-
 </html>

@@ -1,4 +1,4 @@
-# unidy-profile
+# u-profile
 
 
 
@@ -11,6 +11,19 @@
 | ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
 | `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
+
+
+## Methods
+
+### `submitProfile() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 
 ## Dependencies

@@ -1,41 +1,58 @@
 import { Component, h, Prop } from "@stencil/core";
 import { newsletterStore } from "../../store/newsletter-store";
+import * as NewsletterHelpers from "../../newsletter-helpers";
 
 @Component({
-  tag: "newsletter-checkbox",
+  tag: "u-newsletter-checkbox",
   shadow: false,
 })
 export class NewsletterCheckbox {
-  @Prop() label: string;
-  @Prop() internalName: string;
-  @Prop() checked: boolean;
+  @Prop() internalName!: string;
+  @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   componentWillLoad() {
-    if (this.checked) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
+    if (this.checked && !this.isSubscribed) {
+      const checkedNewsletters = newsletterStore.state.checkedNewsletters;
+      if (!checkedNewsletters.includes(this.internalName)) {
+        newsletterStore.set("checkedNewsletters", [...checkedNewsletters, this.internalName]);
+      }
     }
   }
 
-  private handleChange = (e: Event) => {
-    const isChecked = (e.target as HTMLInputElement).checked;
+  private get isSubscribed(): boolean {
+    return NewsletterHelpers.isSubscribed(this.internalName);
+  }
 
-    if (isChecked) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
-    } else {
+  private get isChecked(): boolean {
+    return this.isSubscribed || newsletterStore.state.checkedNewsletters.includes(this.internalName);
+  }
+
+  private handleChange = () => {
+    if (this.isSubscribed) return;
+
+    const currentlyChecked = newsletterStore.state.checkedNewsletters.includes(this.internalName);
+
+    if (currentlyChecked) {
       newsletterStore.set(
         "checkedNewsletters",
-        newsletterStore.get("checkedNewsletters").filter((name) => name !== this.internalName),
+        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName),
       );
+    } else {
+      newsletterStore.set("checkedNewsletters", [...newsletterStore.state.checkedNewsletters, this.internalName]);
     }
   };
 
   render() {
     return (
-      <label htmlFor={this.internalName} part="label" class={this.componentClassName}>
-        <input id={this.internalName} type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
-        {this.label}
-      </label>
+      <input
+        type="checkbox"
+        checked={this.isChecked}
+        disabled={this.isSubscribed}
+        onChange={this.handleChange}
+        class={this.componentClassName}
+        aria-checked={this.isChecked}
+      />
     );
   }
 }

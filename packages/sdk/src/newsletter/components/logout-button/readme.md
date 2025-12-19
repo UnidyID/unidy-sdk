@@ -1,4 +1,4 @@
-# u-signin-root
+# u-newsletter-logout-button
 
 
 
@@ -12,12 +12,11 @@
 | `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
-## Events
+## Shadow Parts
 
-| Event        | Description | Type                                          |
-| ------------ | ----------- | --------------------------------------------- |
-| `authEvent`  |             | `CustomEvent<{ jwt: string; sid?: string; }>` |
-| `errorEvent` |             | `CustomEvent<{ error: string; }>`             |
+| Part       | Description |
+| ---------- | ----------- |
+| `"button"` |             |
 
 
 ----------------------------------------------
