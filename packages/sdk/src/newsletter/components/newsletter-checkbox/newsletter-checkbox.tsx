@@ -51,6 +51,7 @@ export class NewsletterCheckbox {
         disabled={this.isSubscribed}
         onChange={this.handleChange}
         class={this.componentClassName}
+        aria-checked={this.isChecked}
       />
     );
   }
