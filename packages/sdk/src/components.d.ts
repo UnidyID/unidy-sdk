@@ -159,7 +159,6 @@ export namespace Components {
         "checked": boolean;
         "componentClassName"?: string;
         "internalName": string;
-        "label"?: string;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -825,7 +824,6 @@ declare namespace LocalJSX {
         "checked"?: boolean;
         "componentClassName"?: string;
         "internalName": string;
-        "label"?: string;
     }
     interface UNewsletterLogoutButton {
         /**

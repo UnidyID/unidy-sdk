@@ -62,10 +62,7 @@
           <p class="text-gray-600 text-sm font-medium">Manage subscriptions</p>
           <div class="border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between">
-              <u-newsletter-checkbox
-                internal-name="test"
-                class-name="font-semibold text-gray-900">
-              </u-newsletter-checkbox>
+              <span class="font-semibold text-gray-900">Test Newsletter</span>
               <u-newsletter-toggle-subscription-button
                 internal-name="test"
                 class-name="text-sm font-medium rounded-lg px-3 py-1"
@@ -88,10 +85,7 @@
 
           <div class="border border-gray-200 rounded-xl p-4">
             <div class="flex items-center justify-between">
-              <u-newsletter-checkbox
-                internal-name="main"
-                class-name="font-semibold text-gray-900">
-              </u-newsletter-checkbox>
+              <span class="font-semibold text-gray-900">Main Newsletter</span>
               <u-newsletter-toggle-subscription-button
                 internal-name="main"
                 class-name="text-sm font-medium rounded-lg px-3 py-1"
@@ -121,20 +115,26 @@
           <p class="text-gray-600 text-sm font-medium">Select newsletters</p>
 
           <div class="flex flex-col gap-1">
-            <u-newsletter-checkbox
-              internal-name="main"
-              checked="true"
-              class-name="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition [&_input]:peer [&_input]:sr-only [&_input]:appearance-none [&_input]:relative [&_input]:w-11 [&_input]:h-6 [&_input]:bg-gray-300 [&_input]:rounded-full [&_input]:cursor-pointer [&_input]:transition-colors [&_input]:not-sr-only [&_input:checked]:bg-indigo-600 [&_input]:after:content-[''] [&_input]:after:absolute [&_input]:after:top-0.5 [&_input]:after:left-0.5 [&_input]:after:w-5 [&_input]:after:h-5 [&_input]:after:bg-white [&_input]:after:rounded-full [&_input]:after:shadow [&_input]:after:transition-transform [&_input:checked]:after:translate-x-5">
-            </u-newsletter-checkbox>
+            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+              <span>Main Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="main"
+                checked="true"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
             <u-error-message for="main" class-name="text-red-500 text-sm ml-3"></u-error-message>
           </div>
 
           <div class="flex flex-col gap-1">
-            <u-newsletter-checkbox
-              internal-name="test"
-              checked="false"
-              class-name="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition [&_input]:peer [&_input]:sr-only [&_input]:appearance-none [&_input]:relative [&_input]:w-11 [&_input]:h-6 [&_input]:bg-gray-300 [&_input]:rounded-full [&_input]:cursor-pointer [&_input]:transition-colors [&_input]:not-sr-only [&_input:checked]:bg-indigo-600 [&_input]:after:content-[''] [&_input]:after:absolute [&_input]:after:top-0.5 [&_input]:after:left-0.5 [&_input]:after:w-5 [&_input]:after:h-5 [&_input]:after:bg-white [&_input]:after:rounded-full [&_input]:after:shadow [&_input]:after:transition-transform [&_input:checked]:after:translate-x-5">
-            </u-newsletter-checkbox>
+            <label class="flex items-center justify-between p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+              <span>Test Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="test"
+                checked="false"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
             <u-error-message for="test" class-name="text-red-500 text-sm ml-3"></u-error-message>
           </div>
 

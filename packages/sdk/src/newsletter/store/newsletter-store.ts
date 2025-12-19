@@ -1,5 +1,4 @@
 import { createStore } from "@stencil/store";
-import type { Newsletter } from "../api/newsletters";
 
 export type NewsletterErrorIdentifier =
   | "unconfirmed"
@@ -21,9 +20,6 @@ interface NewsletterState {
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
-
-  fetchingConfigs: boolean;
-  newsletterConfigs: Newsletter[];
 
   errors: Record<string, NewsletterErrorIdentifier>;
 
@@ -47,9 +43,6 @@ const initialState: NewsletterState = {
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],
-
-  fetchingConfigs: false,
-  newsletterConfigs: [],
 
   errors: {},
   isAuthenticated: false,

@@ -44,8 +44,7 @@ export class ToggleNewsletterSubscriptionButton {
     this.loading = false;
 
     if (success) {
-      const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
-      Flash.success.addMessage(t("newsletter.success.subscribe", { newsletterName: title }));
+      Flash.success.addMessage(t("newsletter.success.subscribe"));
     }
   };
 
@@ -55,8 +54,7 @@ export class ToggleNewsletterSubscriptionButton {
     this.loading = false;
 
     if (success) {
-      const title = NewsletterHelpers.getNewsletterTitle(this.internalName) ?? this.internalName;
-      Flash.info.addMessage(t("newsletter.success.unsubscribe", { newsletterName: title }));
+      Flash.info.addMessage(t("newsletter.success.unsubscribe"));
     } else {
       Flash.error.addMessage(t("newsletter.errors.unsubscribe_failed"));
     }

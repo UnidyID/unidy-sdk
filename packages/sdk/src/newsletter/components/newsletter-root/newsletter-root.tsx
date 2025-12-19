@@ -42,7 +42,6 @@ export class NewsletterRoot {
     }
 
     await waitForConfig();
-    await NewsletterHelpers.fetchNewsletterConfigs();
     await NewsletterHelpers.fetchSubscriptions();
   }
 

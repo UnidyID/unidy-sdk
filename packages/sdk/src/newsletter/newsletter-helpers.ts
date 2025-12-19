@@ -50,18 +50,6 @@ export async function sendLoginEmail(email: string): Promise<void> {
   }
 }
 
-export async function fetchNewsletterConfigs(): Promise<void> {
-  newsletterStore.state.fetchingConfigs = true;
-  const response = await getUnidyClient().newsletters.listNewsletters();
-  newsletterStore.state.fetchingConfigs = false;
-
-  if (response.success && response.data?.newsletters) {
-    newsletterStore.state.newsletterConfigs = response.data.newsletters;
-  } else {
-    // TODO: call logger
-  }
-}
-
 export async function fetchSubscriptions(): Promise<void> {
   const { preferenceToken } = newsletterStore.state;
 
@@ -128,8 +116,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     }
 
     if (showSuccessMessage) {
-      const newsletterNames = internalNames.map((internalName) => getNewsletterTitle(internalName) || internalName);
-      Flash.success.addMessage(t("newsletter.success.subscribe", { newsletterName: newsletterNames.join(", ") }));
+      Flash.success.addMessage(t("newsletter.success.subscribe"));
     }
 
     return true;
@@ -233,11 +220,6 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
 
   Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   return false;
-}
-
-export function getNewsletterTitle(internalName: string): string | undefined {
-  const config = newsletterStore.state.newsletterConfigs.find((n) => n.internal_name === internalName);
-  return config?.title;
 }
 
 export function getSubscription(internalName: string): ExistingSubscription | undefined {
