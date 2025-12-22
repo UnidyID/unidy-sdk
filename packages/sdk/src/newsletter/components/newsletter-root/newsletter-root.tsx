@@ -51,12 +51,12 @@ export class NewsletterRoot extends UnidyComponent {
   async submit() {
     const { email, checkedNewsletters } = newsletterStore.state;
 
-    if (checkedNewsletters.length === 0) {
+    if (Object.keys(checkedNewsletters).length === 0) {
       console.error("No newsletters selected: please select at least one newsletter");
       return;
     }
 
-    await NewsletterHelpers.createSubscriptions({ email, checkedNewsletters: checkedNewsletters });
+    await NewsletterHelpers.createSubscriptions({ email });
   }
 
   render() {
