@@ -26,12 +26,6 @@ export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
-    interface NewsletterCheckbox {
-        "checked": boolean;
-        "componentClassName"?: string;
-        "internalName": string;
-        "label": string;
-    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -171,6 +165,15 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+    }
+    interface UNewsletterPreferenceCheckbox {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+        "preferenceIdentifier": string;
     }
     interface UNewsletterResendDoiButton {
         /**
@@ -424,12 +427,6 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
-    interface HTMLNewsletterCheckboxElement extends Components.NewsletterCheckbox, HTMLStencilElement {
-    }
-    var HTMLNewsletterCheckboxElement: {
-        prototype: HTMLNewsletterCheckboxElement;
-        new (): HTMLNewsletterCheckboxElement;
-    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -530,6 +527,12 @@ declare global {
     var HTMLUNewsletterLogoutButtonElement: {
         prototype: HTMLUNewsletterLogoutButtonElement;
         new (): HTMLUNewsletterLogoutButtonElement;
+    };
+    interface HTMLUNewsletterPreferenceCheckboxElement extends Components.UNewsletterPreferenceCheckbox, HTMLStencilElement {
+    }
+    var HTMLUNewsletterPreferenceCheckboxElement: {
+        prototype: HTMLUNewsletterPreferenceCheckboxElement;
+        new (): HTMLUNewsletterPreferenceCheckboxElement;
     };
     interface HTMLUNewsletterResendDoiButtonElement extends Components.UNewsletterResendDoiButton, HTMLStencilElement {
     }
@@ -664,7 +667,6 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "newsletter-checkbox": HTMLNewsletterCheckboxElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -678,6 +680,7 @@ declare global {
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
         "u-newsletter-checkbox": HTMLUNewsletterCheckboxElement;
         "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
+        "u-newsletter-preference-checkbox": HTMLUNewsletterPreferenceCheckboxElement;
         "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
         "u-newsletter-root": HTMLUNewsletterRootElement;
         "u-newsletter-toggle-subscription-button": HTMLUNewsletterToggleSubscriptionButtonElement;
@@ -701,12 +704,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface NewsletterCheckbox {
-        "checked"?: boolean;
-        "componentClassName"?: string;
-        "internalName"?: string;
-        "label"?: string;
-    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -849,6 +846,15 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    interface UNewsletterPreferenceCheckbox {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+        "preferenceIdentifier": string;
     }
     interface UNewsletterResendDoiButton {
         /**
@@ -1087,7 +1093,6 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
-        "newsletter-checkbox": NewsletterCheckbox;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1101,6 +1106,7 @@ declare namespace LocalJSX {
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
         "u-newsletter-checkbox": UNewsletterCheckbox;
         "u-newsletter-logout-button": UNewsletterLogoutButton;
+        "u-newsletter-preference-checkbox": UNewsletterPreferenceCheckbox;
         "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
         "u-newsletter-root": UNewsletterRoot;
         "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
@@ -1127,7 +1133,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
@@ -1141,6 +1146,7 @@ declare module "@stencil/core" {
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
             "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
             "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
+            "u-newsletter-preference-checkbox": LocalJSX.UNewsletterPreferenceCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterPreferenceCheckboxElement>;
             "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
             "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
