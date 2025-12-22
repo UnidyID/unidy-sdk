@@ -99,8 +99,7 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
  - [u-field](../../../profile/components/field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
  - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
- - [u-newsletter-subscribe-button](../../../newsletter/components/subscribe-button)
- - [u-newsletter-unsubscribe-button](../../../newsletter/components/unsubscribe-button)
+ - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
  - [u-submit-button](../submit-button)
 
 ### Graph
@@ -109,8 +108,7 @@ graph TD;
   u-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
   u-newsletter-resend-doi-button --> u-spinner
-  u-newsletter-subscribe-button --> u-spinner
-  u-newsletter-unsubscribe-button --> u-spinner
+  u-newsletter-toggle-subscription-button --> u-spinner
   u-submit-button --> u-spinner
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
