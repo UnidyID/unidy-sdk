@@ -1,4 +1,4 @@
-import { Component, h, Prop, State, Watch } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { newsletterStore, type ExistingSubscription } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 
@@ -20,8 +20,8 @@ export class NewsletterPreferenceCheckbox {
   private storeUnsubscribe?: () => void;
 
   componentWillLoad() {
-    this.initializeCheckedState();
     this.subscribeToStore();
+    this.initializeCheckedState();
   }
 
   disconnectedCallback() {
@@ -41,26 +41,11 @@ export class NewsletterPreferenceCheckbox {
     this.checkedPreferences = newsletterStore.state.checkedNewsletters[this.internalName] || [];
   }
 
-  @Watch("checked")
-  handleCheckedChange() {
-    this.initializeCheckedState();
-  }
-
   private initializeCheckedState() {
-    // check if this preference is already set on an existing subscription
-    const existingPreferences = NewsletterHelpers.getSubscriptionPreferences(this.internalName);
-    if (existingPreferences.includes(this.preferenceIdentifier)) {
-      this.syncToStore(true);
+    if (NewsletterHelpers.isSubscribed(this.internalName)) {
       return;
     }
 
-    // if already in store do nothing
-    const storePreferences = newsletterStore.state.checkedNewsletters[this.internalName] || [];
-    if (storePreferences.includes(this.preferenceIdentifier)) {
-      return;
-    }
-
-    // init based on the checked prop
     if (this.checked) {
       this.syncToStore(true);
     }
