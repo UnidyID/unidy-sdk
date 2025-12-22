@@ -15,6 +15,8 @@ import type { Subscription } from "../../api/subscriptions";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
+import { UnidyComponent } from "../../../logger";
+import { t } from "../../../i18n";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -25,7 +27,7 @@ const LOCALES: Record<string, Locale> = {
 };
 
 @Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList {
+export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
@@ -61,10 +63,12 @@ export class TicketableList {
     this.store = createPaginationStore();
   }
 
-  // TODO[LOGGING]: Log this to console (use shared logger)
   async componentDidLoad() {
+    this.logger.trace("start componentDidLoad");
     await waitForConfig();
+    this.logger.trace("UnidyConfig loaded, start to load data");
     await this.loadData();
+    this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
   }
 
   private async loadData() {
@@ -200,7 +204,7 @@ export class TicketableList {
 
     const targetElement = document.querySelector(this.target);
     if (!targetElement) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.warn("targetElement not found");
       return;
     }
 
@@ -221,20 +225,20 @@ export class TicketableList {
         target.appendChild(this.renderFragment(template, item));
       }
     } else {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      target.innerHTML = "<h1>Error: {this.error}</h1>";
+      this.logger.error(`failed to load content: ${this.error}`);
+      target.innerHTML = `<h1>${t('errors.prefix')} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      return <h1>Error: {this.error}</h1>;
+      this.logger.error(`can't render content: ${this.error}`);
+      return <h1>`${t("errors.prefix")} ${this.error}`</h1>;
     }
 
     const template = this.element.querySelector("template");
     if (!template) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.error("template not found");
       return <h1>No template found - fix config</h1>;
     }
 

@@ -3,13 +3,16 @@ import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, Unidy
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
 import { Flash } from "../shared/store/flash-store";
+import { clearUrlParam } from "../shared/component-utils";
 import { t } from "../i18n";
 import { authenticateWithPasskey } from "./passkey-auth";
 import { jwtDecode } from "jwt-decode";
 import type { TokenPayload } from "./auth";
+import { createLogger } from "../logger";
 
 export class AuthHelpers {
   private client: UnidyClient;
+  private logger = createLogger("AuthHelpers");
 
   constructor(client: UnidyClient) {
     this.client = client;
@@ -120,13 +123,14 @@ export class AuthHelpers {
     this.extractSignInIdFromQuery();
 
     if (!authState.sid) {
-      // call logger when we add one
+      this.logger.warn("No sign-in ID in the session");
       return;
     }
 
     const [error, response] = await this.client.auth.refreshToken(authState.sid);
 
     if (error) {
+      authStore.reset();
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
@@ -167,7 +171,7 @@ export class AuthHelpers {
       const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
       window.history.replaceState(null, "", cleanUrl);
     } catch (e) {
-      console.error("Failed to parse missing fields payload:", e);
+      this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
@@ -329,7 +333,7 @@ export class AuthHelpers {
         passwordConfirmation: "",
       });
 
-      this.clearUrlParam("reset_password_token");
+      clearUrlParam("reset_password_token");
       Flash.success.addMessage("Password reset successfully");
     }
 
@@ -341,7 +345,7 @@ export class AuthHelpers {
   }
 
   private extractSignInIdFromQuery() {
-    const sid = this.clearUrlParam("sid");
+    const sid = clearUrlParam("sid");
 
     if (sid) {
       authStore.setSignInId(sid);
@@ -359,17 +363,5 @@ export class AuthHelpers {
     authStore.setToken(response.jwt);
     authStore.setLoading(false);
     authStore.getRootComponentRef()?.onAuth(response);
-  }
-
-  private clearUrlParam(param: string): string | null {
-    const url = new URL(window.location.href);
-    const value = url.searchParams.get(param);
-
-    if (value) {
-      url.searchParams.delete(param);
-      window.history.replaceState(null, "", url.toString());
-    }
-
-    return value;
   }
 }

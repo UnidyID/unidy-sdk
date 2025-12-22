@@ -36,7 +36,7 @@ export class FlashMessage {
             role="alert"
             aria-live="polite"
           >
-            <span class="break-all">{message.text}</span>
+            <span class="u:break-words">{message.text}</span>
             <button
               type="button"
               class="u:cursor-pointer u:leading-none u:pt-1"

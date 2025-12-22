@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Host, Prop, State, h } from "@stencil/core";
+import { Component, Host, Method, Prop, State, h } from "@stencil/core";
 import { t } from "../../../i18n";
 import { Auth } from "../../../auth";
 import { getUnidyClient } from "../../../api";
@@ -7,6 +7,7 @@ import { authStore, onChange as authOnChange } from "../../../auth/store/auth-st
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
 import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
+import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 
 @Component({
   tag: "u-profile",
@@ -15,8 +16,6 @@ import type { ProfileRaw } from "../../store/profile-store";
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
-
-  private authInstance?: Auth;
 
   @State() fetchingProfileData = false;
 
@@ -37,9 +36,9 @@ export class Profile {
   }
 
   async getTokenAndFetchProfile() {
-    this.authInstance = await Auth.getInstance();
+    const authInstance = await Auth.getInstance();
 
-    const idToken = await this.authInstance?.getToken();
+    const idToken = await authInstance.getToken();
 
     if (idToken && typeof idToken === "string") {
       await this.fetchProfileData(idToken as string);
@@ -69,6 +68,42 @@ export class Profile {
       profileState.flashErrors = { error: t("errors.failed_to_load_profile") };
     }
     this.fetchingProfileData = false;
+  }
+
+  @Method()
+  async submitProfile() {
+    const authInstance = await Auth.getInstance();
+
+    profileState.loading = true;
+
+    const { configuration, ...stateWithoutConfig } = profileState;
+
+    if (!validateRequiredFieldsUnchanged(stateWithoutConfig.data)) {
+      profileState.loading = false;
+      return;
+    }
+
+    const updatedProfileData = buildPayload(stateWithoutConfig.data);
+
+    const resp = await getUnidyClient().profile.updateProfile({
+      idToken: (await authInstance.getToken()) as string,
+      data: updatedProfileData,
+      lang: unidyState.locale,
+    });
+
+    if (resp?.success) {
+      profileState.loading = false;
+      profileState.configuration = JSON.parse(JSON.stringify(resp.data));
+      profileState.configUpdateSource = "submit";
+      profileState.errors = {};
+    } else {
+      if (resp?.data && "flatErrors" in resp.data) {
+        profileState.errors = resp.data.flatErrors as Record<string, string>;
+      } else {
+        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+      }
+      profileState.loading = false;
+    }
   }
 
   componentDidLoad() {

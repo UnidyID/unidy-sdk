@@ -5,7 +5,6 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
@@ -13,9 +12,9 @@ import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
+import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
-export { CreateSubscriptionsResponse, CreateSubscriptionsResult } from "./newsletter/api/newsletters";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
@@ -23,6 +22,7 @@ export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
+export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
@@ -31,22 +31,6 @@ export namespace Components {
         "componentClassName"?: string;
         "internalName": string;
         "label": string;
-    }
-    interface SubmitButton {
-        "apiKey": string;
-        "apiUrl": string;
-        "componentClassName"?: string;
-    }
-    interface UAuthSubmitButton {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default false
-         */
-        "disabled": boolean;
-        "for": "email" | "single-login" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -103,7 +87,7 @@ export namespace Components {
          */
         "componentClassName": string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
+        "for": string;
     }
     interface UField {
         "componentClassName"?: string;
@@ -174,12 +158,48 @@ export namespace Components {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UNewsletterCheckbox {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+    }
+    interface UNewsletterLogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
+    interface UNewsletterResendDoiButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "internalName": string;
+    }
     interface UNewsletterRoot {
         /**
           * @default ""
          */
         "componentClassName": string;
         "submit": () => Promise<void>;
+    }
+    interface UNewsletterToggleSubscriptionButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        "internalName": string;
+        /**
+          * @default ""
+         */
+        "subscribeClassName": string;
+        /**
+          * @default ""
+         */
+        "unsubscribeClassName": string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -225,8 +245,7 @@ export namespace Components {
          */
         "initialData": string | Record<string, string>;
         "profileId"?: string;
-    }
-    interface UProfileSubmitButton {
+        "submitProfile": () => Promise<void>;
     }
     interface URawField {
         /**
@@ -302,6 +321,10 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default false
+         */
+        "not": boolean;
     }
     interface USigninRoot {
         /**
@@ -345,6 +368,18 @@ export namespace Components {
     }
     interface USpinner {
     }
+    interface USubmitButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "for"?: AuthButtonFor;
+        "text"?: string;
+    }
     interface UTicketableList {
         "containerClass"?: string;
         /**
@@ -376,10 +411,6 @@ export namespace Components {
         "ticketableType": "ticket" | "subscription";
     }
 }
-export interface SubmitButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLSubmitButtonElement;
-}
 export interface UConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUConfigElement;
@@ -398,30 +429,6 @@ declare global {
     var HTMLNewsletterCheckboxElement: {
         prototype: HTMLNewsletterCheckboxElement;
         new (): HTMLNewsletterCheckboxElement;
-    };
-    interface HTMLSubmitButtonElementEventMap {
-        "successEvent": CreateSubscriptionsResponse;
-        "errorEvent": CreateSubscriptionsResult[1];
-    }
-    interface HTMLSubmitButtonElement extends Components.SubmitButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLSubmitButtonElementEventMap>(type: K, listener: (this: HTMLSubmitButtonElement, ev: SubmitButtonCustomEvent<HTMLSubmitButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLSubmitButtonElementEventMap>(type: K, listener: (this: HTMLSubmitButtonElement, ev: SubmitButtonCustomEvent<HTMLSubmitButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLSubmitButtonElement: {
-        prototype: HTMLSubmitButtonElement;
-        new (): HTMLSubmitButtonElement;
-    };
-    interface HTMLUAuthSubmitButtonElement extends Components.UAuthSubmitButton, HTMLStencilElement {
-    }
-    var HTMLUAuthSubmitButtonElement: {
-        prototype: HTMLUAuthSubmitButtonElement;
-        new (): HTMLUAuthSubmitButtonElement;
     };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
@@ -512,11 +519,35 @@ declare global {
         prototype: HTMLUMissingFieldsSubmitButtonElement;
         new (): HTMLUMissingFieldsSubmitButtonElement;
     };
+    interface HTMLUNewsletterCheckboxElement extends Components.UNewsletterCheckbox, HTMLStencilElement {
+    }
+    var HTMLUNewsletterCheckboxElement: {
+        prototype: HTMLUNewsletterCheckboxElement;
+        new (): HTMLUNewsletterCheckboxElement;
+    };
+    interface HTMLUNewsletterLogoutButtonElement extends Components.UNewsletterLogoutButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterLogoutButtonElement: {
+        prototype: HTMLUNewsletterLogoutButtonElement;
+        new (): HTMLUNewsletterLogoutButtonElement;
+    };
+    interface HTMLUNewsletterResendDoiButtonElement extends Components.UNewsletterResendDoiButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterResendDoiButtonElement: {
+        prototype: HTMLUNewsletterResendDoiButtonElement;
+        new (): HTMLUNewsletterResendDoiButtonElement;
+    };
     interface HTMLUNewsletterRootElement extends Components.UNewsletterRoot, HTMLStencilElement {
     }
     var HTMLUNewsletterRootElement: {
         prototype: HTMLUNewsletterRootElement;
         new (): HTMLUNewsletterRootElement;
+    };
+    interface HTMLUNewsletterToggleSubscriptionButtonElement extends Components.UNewsletterToggleSubscriptionButton, HTMLStencilElement {
+    }
+    var HTMLUNewsletterToggleSubscriptionButtonElement: {
+        prototype: HTMLUNewsletterToggleSubscriptionButtonElement;
+        new (): HTMLUNewsletterToggleSubscriptionButtonElement;
     };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
@@ -547,12 +578,6 @@ declare global {
     var HTMLUProfileElement: {
         prototype: HTMLUProfileElement;
         new (): HTMLUProfileElement;
-    };
-    interface HTMLUProfileSubmitButtonElement extends Components.UProfileSubmitButton, HTMLStencilElement {
-    }
-    var HTMLUProfileSubmitButtonElement: {
-        prototype: HTMLUProfileSubmitButtonElement;
-        new (): HTMLUProfileSubmitButtonElement;
     };
     interface HTMLURawFieldElement extends Components.URawField, HTMLStencilElement {
     }
@@ -626,6 +651,12 @@ declare global {
         prototype: HTMLUSpinnerElement;
         new (): HTMLUSpinnerElement;
     };
+    interface HTMLUSubmitButtonElement extends Components.USubmitButton, HTMLStencilElement {
+    }
+    var HTMLUSubmitButtonElement: {
+        prototype: HTMLUSubmitButtonElement;
+        new (): HTMLUSubmitButtonElement;
+    };
     interface HTMLUTicketableListElement extends Components.UTicketableList, HTMLStencilElement {
     }
     var HTMLUTicketableListElement: {
@@ -634,8 +665,6 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "newsletter-checkbox": HTMLNewsletterCheckboxElement;
-        "submit-button": HTMLSubmitButtonElement;
-        "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -647,13 +676,16 @@ declare global {
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
+        "u-newsletter-checkbox": HTMLUNewsletterCheckboxElement;
+        "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
+        "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
         "u-newsletter-root": HTMLUNewsletterRootElement;
+        "u-newsletter-toggle-subscription-button": HTMLUNewsletterToggleSubscriptionButtonElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
-        "u-profile-submit-button": HTMLUProfileSubmitButtonElement;
         "u-raw-field": HTMLURawFieldElement;
         "u-registration-button": HTMLURegistrationButtonElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
@@ -664,6 +696,7 @@ declare global {
         "u-signin-strategy": HTMLUSigninStrategyElement;
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
+        "u-submit-button": HTMLUSubmitButtonElement;
         "u-ticketable-list": HTMLUTicketableListElement;
     }
 }
@@ -673,24 +706,6 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
         "internalName"?: string;
         "label"?: string;
-    }
-    interface SubmitButton {
-        "apiKey"?: string;
-        "apiUrl"?: string;
-        "componentClassName"?: string;
-        "onErrorEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResult[1]>) => void;
-        "onSuccessEvent"?: (event: SubmitButtonCustomEvent<CreateSubscriptionsResponse>) => void;
-    }
-    interface UAuthSubmitButton {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default false
-         */
-        "disabled"?: boolean;
-        "for": "email" | "single-login" | "password" | "resetPassword";
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -749,7 +764,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         "errorMessages"?: Record<string, string>;
-        "for": "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
+        "for": string;
     }
     interface UField {
         "componentClassName"?: string;
@@ -821,11 +836,47 @@ declare namespace LocalJSX {
     }
     interface UMissingFieldsSubmitButton {
     }
+    interface UNewsletterCheckbox {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "internalName": string;
+    }
+    interface UNewsletterLogoutButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
+    interface UNewsletterResendDoiButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "internalName": string;
+    }
     interface UNewsletterRoot {
         /**
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    interface UNewsletterToggleSubscriptionButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        "internalName": string;
+        /**
+          * @default ""
+         */
+        "subscribeClassName"?: string;
+        /**
+          * @default ""
+         */
+        "unsubscribeClassName"?: string;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -871,8 +922,6 @@ declare namespace LocalJSX {
          */
         "initialData"?: string | Record<string, string>;
         "profileId"?: string;
-    }
-    interface UProfileSubmitButton {
     }
     interface URawField {
         /**
@@ -948,6 +997,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "not"?: boolean;
     }
     interface USigninRoot {
         /**
@@ -991,6 +1044,18 @@ declare namespace LocalJSX {
     }
     interface USpinner {
     }
+    interface USubmitButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "for"?: AuthButtonFor;
+        "text"?: string;
+    }
     interface UTicketableList {
         "containerClass"?: string;
         /**
@@ -1023,8 +1088,6 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "newsletter-checkbox": NewsletterCheckbox;
-        "submit-button": SubmitButton;
-        "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1036,13 +1099,16 @@ declare namespace LocalJSX {
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
+        "u-newsletter-checkbox": UNewsletterCheckbox;
+        "u-newsletter-logout-button": UNewsletterLogoutButton;
+        "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
         "u-newsletter-root": UNewsletterRoot;
+        "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
-        "u-profile-submit-button": UProfileSubmitButton;
         "u-raw-field": URawField;
         "u-registration-button": URegistrationButton;
         "u-reset-password-button": UResetPasswordButton;
@@ -1053,6 +1119,7 @@ declare namespace LocalJSX {
         "u-signin-strategy": USigninStrategy;
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
+        "u-submit-button": USubmitButton;
         "u-ticketable-list": UTicketableList;
     }
 }
@@ -1061,8 +1128,6 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "newsletter-checkbox": LocalJSX.NewsletterCheckbox & JSXBase.HTMLAttributes<HTMLNewsletterCheckboxElement>;
-            "submit-button": LocalJSX.SubmitButton & JSXBase.HTMLAttributes<HTMLSubmitButtonElement>;
-            "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
@@ -1074,13 +1139,16 @@ declare module "@stencil/core" {
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+            "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
+            "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
+            "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
+            "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
-            "u-profile-submit-button": LocalJSX.UProfileSubmitButton & JSXBase.HTMLAttributes<HTMLUProfileSubmitButtonElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
@@ -1091,6 +1159,7 @@ declare module "@stencil/core" {
             "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
+            "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
         }
     }

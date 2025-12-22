@@ -1,7 +1,7 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, h, Prop, Element, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authStore, authState } from "../../../auth/store/auth-store";
-import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 import { getParentSigninStep } from "../../../auth/components/helpers";
 import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
@@ -16,6 +16,8 @@ export class EmailField {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
+
+  @State() emailValue = "";
 
   private get context(): "auth" | "newsletter" | null {
     if (this.el.closest("u-signin-root")) return "auth";
@@ -42,6 +44,13 @@ export class EmailField {
     const target = event.target as HTMLInputElement;
 
     (this.store as { state: { email: string } }).state.email = target.value;
+
+    if (this.context === "newsletter") {
+      const { email, ...restErrors } = this.store.state.errors as Record<string, NewsletterErrorIdentifier>;
+      this.store.state.errors = restErrors;
+    } else {
+      (this.store as { clearFieldError: (field: "email") => void }).clearFieldError("email");
+    }
   };
 
   private handleSubmit = async (event: Event) => {
@@ -54,11 +63,20 @@ export class EmailField {
     if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
   };
 
+  private isDisabled(): boolean {
+    if (this.disabled) return true;
+
+    if (this.context === "auth") return authState.loading || authState.step === "verification" || authState.step === "registration";
+
+    if (this.context === "newsletter") {
+      return !!newsletterStore.state.preferenceToken && !!newsletterStore.state.email;
+    }
+
+    return false;
+  }
+
   render() {
     const placeholderText = t("auth.email.placeholder", { defaultValue: "Enter your email" });
-    const isDisabled =
-      this.disabled ||
-      (this.context === "auth" && (authState.loading || authState.step === "verification" || authState.step === "registration"));
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -68,11 +86,12 @@ export class EmailField {
           value={this.store.state.email}
           autocomplete="email"
           placeholder={placeholderText}
-          disabled={isDisabled}
-          class={`${this.componentClassName} u:disabled:opacity-40 u:disabled:cursor-not-allowed`}
+          disabled={this.isDisabled()}
+          class={`${this.componentClassName} u:disabled:opacity-40 u:disabled:bg-gray-200 u:disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />
+        <slot />
       </form>
     );
   }

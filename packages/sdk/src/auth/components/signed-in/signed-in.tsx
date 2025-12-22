@@ -7,9 +7,10 @@ import { authStore } from "../../store/auth-store";
 })
 export class SignedIn {
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop() not = false;
 
   render() {
-    if (!authStore.state.authenticated) {
+    if (this.not ? authStore.state.authenticated : !authStore.state.authenticated) {
       return null;
     }
 

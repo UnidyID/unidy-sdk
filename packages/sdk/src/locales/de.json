@@ -96,6 +96,32 @@
     "verification_failed": "Verifizierung fehlgeschlagen"
   },
   "loading": "Wird geladen...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Bestätigung erneut senden",
+      "subscribe": "Abonnieren",
+      "unsubscribe": "Abbestellen"
+    },
+    "errors": {
+      "already_subscribed": "Bereits abonniert",
+      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+      "invalid_email": "Ungültige E-Mail-Adresse",
+      "unauthorized": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
+      "newsletter_not_found": "Newsletter nicht gefunden",
+      "preferences_not_found": "Präferenz nicht gefunden",
+      "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut",
+      "unconfirmed": "Ihre E-Mail-Adresse ist für diesen Newsletter nicht bestätigt",
+      "unsubscribe_failed": "Abmeldung fehlgeschlagen"
+    },
+    "success": {
+      "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
+      "logout": "Sie wurden erfolgreich abgemeldet",
+      "doi_sent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
+      "subscribe": "Sie haben sich erfolgreich für {{newsletterName}} angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
+      "unsubscribe": "Sie haben sich erfolgreich von {{newsletterName}} abgemeldet"
+    }
+  },
   "profile": {
     "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
     "updated": "Profil wurde aktualisiert"

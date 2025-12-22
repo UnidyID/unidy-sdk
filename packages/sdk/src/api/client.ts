@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { t } from "../i18n";
 import type * as z from "zod";
+import { createLogger } from "../logger";
 
 export interface ApiResponse<T> {
   data?: T;
@@ -27,6 +28,7 @@ export class ApiClient {
   ];
 
   private onConnectionChange?: (isConnected: boolean) => void;
+  private logger = createLogger("ApiClient");
 
   constructor(
     public baseUrl: string,
@@ -133,6 +135,10 @@ export class ApiClient {
     return this.request<T>("PATCH", endpoint, body, headers);
   }
 
+  async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
+    return this.request<T>("DELETE", endpoint, undefined, headers);
+  }
+
   getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
     returnSchema: z.ZodSchema<TReturn>,
     urlBuilder: (args: TArgs) => string,
@@ -161,7 +167,7 @@ export class ApiClient {
       const parsed = returnSchema.safeParse(response.data);
 
       if (!parsed.success) {
-        console.log(parsed.error);
+        this.logger.error("Invalid response format", parsed.error);
         return {
           ...response,
           success: false,

@@ -6,5 +6,24 @@
  * @returns true if the slot has content, false otherwise
  */
 export function hasSlotContent(element: HTMLElement): boolean {
-  return element.hasChildNodes() && !!element.textContent?.trim();
+  if (!element.hasChildNodes()) return false;
+
+  for (const child of Array.from(element.childNodes)) {
+    if (child.nodeType === Node.ELEMENT_NODE) return true;
+    if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) return true;
+  }
+
+  return false;
+}
+
+export function clearUrlParam(param: string): string | null {
+  const url = new URL(window.location.href);
+  const value = url.searchParams.get(param);
+
+  if (value) {
+    url.searchParams.delete(param);
+    window.history.replaceState(null, "", url.toString());
+  }
+
+  return value;
 }
