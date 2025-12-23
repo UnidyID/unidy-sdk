@@ -26,7 +26,7 @@
       "button_text_resend": "Mail zum Zurücksetzen des Passworts erneut senden",
       "button_text_reset": "Passwort zurücksetzen",
       "button_text_set": "Passwort speichern",
-      "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang."
+      "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang"
     },
     "single-login": {
       "button_text": "Anmelden"
@@ -48,15 +48,15 @@
     "account_not_found": "Konto nicht gefunden",
     "authentication_failed": "Authentifizierung fehlgeschlagen",
     "bad_request": "Ungültige Anfrage",
-    "connection_failed": "Verbindung zum Unidy Server nicht möglich.",
+    "connection_failed": "Verbindung zum Unidy Server nicht möglich",
     "expired": "Abgelaufen",
-    "failed_to_load_profile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration.",
+    "failed_to_load_profile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration",
     "invalid_id_token": "Ungültiger ID-Token",
     "invalid_passkey": "Ungültiger Passkey",
     "invalid_password": "Ungültiges Passwort",
     "invalid_refresh_token": "Ungültiger Aktualisierungs-Token",
     "invalid_required_fields_payload": "Ungültige Nutzlast für erforderliche Felder",
-    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
+    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
     "invalid_response_format": "Ungültiges Antwortformat",
     "magic_code_is_missing": "Magischer Code fehlt",
     "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
@@ -81,11 +81,11 @@
     },
     "passwords_do_not_match": "Passwörter stimmen nicht überein",
     "prefix": "FEHLER: ",
-    "refresh_failed": "Authorisierungstoken konnte nicht aktualisiert werden. Bitte melden Sie sich erneut an.",
+    "refresh_failed": "Authorisierungstoken konnte nicht aktualisiert werden. Bitte melden Sie sich erneut an",
     "refresh_token_revoked": "Aktualisierungs-Token widerrufen",
     "required_field": "{{field}} ist erforderlich",
     "reset_password_already_sent": "Zurücksetzen des Passworts bereits gesendet",
-    "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an.",
+    "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
     "reset_token_missing": "Reset-Token fehlt",
     "schema_validation_error": "Schemavalidierungsfehler",
     "sign_in_expired": "Anmeldung abgelaufen",
@@ -119,8 +119,8 @@
       "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
       "logout": "Sie wurden erfolgreich abgemeldet",
       "preferences_updated": "Ihre Präferenzen wurden erfolgreich aktualisiert",
-      "subscribe": "Sie haben sich erfolgreich für {{newsletterName}} angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
-      "unsubscribe": "Sie haben sich erfolgreich von {{newsletterName}} abgemeldet"
+      "subscribe": "Sie haben sich erfolgreich abonniert",
+      "unsubscribe": "Sie haben sich erfolgreich abbestellt"
     }
   },
   "profile": {

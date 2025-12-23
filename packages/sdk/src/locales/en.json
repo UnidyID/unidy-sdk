@@ -81,7 +81,7 @@
     },
     "passwords_do_not_match": "Passwords do not match",
     "prefix": "ERROR: ",
-    "refresh_failed": "Failed to refresh token. Please sign in again.",
+    "refresh_failed": "Failed to refresh token. Please sign in again",
     "refresh_token_revoked": "Refresh token revoked",
     "required_field": "{{field}} is required",
     "reset_password_already_sent": "Reset password already sent",
@@ -119,8 +119,8 @@
       "login_email_sent": "We sent a link to manage your existing subscription to your email address",
       "logout": "You have been logged out successfully",
       "preferences_updated": "Your preferences have been updated successfully",
-      "subscribe": "You have successfully subscribed to the {{newsletterName}}. Please check your inbox for the confirmation",
-      "unsubscribe": "You have successfully unsubscribed from the {{newsletterName}}"
+      "subscribe": "You have successfully subscribed",
+      "unsubscribe": "You have successfully unsubscribed"
     }
   },
   "profile": {
