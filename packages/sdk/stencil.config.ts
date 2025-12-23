@@ -14,7 +14,6 @@ export const config: Config = {
       esmLoaderPath: "../loader",
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
-        { src: "output.css", dest: "output.css" },
         { src: "locales", dest: "locales" },
       ],
     },
@@ -25,7 +24,6 @@ export const config: Config = {
       serviceWorker: null,
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
-        { src: "output.css", dest: "output.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },

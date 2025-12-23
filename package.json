@@ -12,6 +12,7 @@
     "build": "bun --filter './packages/*' build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.6"
+    "@biomejs/biome": "^2.3.6",
+    "@tailwindcss/cli": "^4.1.18"
   }
 }

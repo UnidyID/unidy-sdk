@@ -63,7 +63,7 @@
     },
     "packages/sdk": {
       "name": "@unidy.io/sdk",
-      "version": "1.0.0-alpha.7",
+      "version": "1.0.0-alpha.10",
       "dependencies": {
         "@sentry/browser": "^10.26.0",
         "@stencil/store": "^2.2.1",

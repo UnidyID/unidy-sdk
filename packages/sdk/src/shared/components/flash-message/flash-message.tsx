@@ -3,9 +3,9 @@ import { flashState, Flash } from "../../store/flash-store";
 import { CloseIcon } from "./close-icon";
 
 const variantClasses = {
-  error: "bg-red-50 border-red-300 text-red-800",
-  success: "bg-green-50 border-green-400 text-green-800",
-  info: "bg-blue-50 border-blue-300 text-blue-800",
+  error: "u:bg-red-50 u:border-red-300 u:text-red-800",
+  success: "u:bg-green-50 u:border-green-400 u:text-green-800",
+  info: "u:bg-blue-50 u:border-blue-300 u:text-blue-800",
 };
 
 @Component({
