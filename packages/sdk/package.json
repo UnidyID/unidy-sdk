@@ -11,7 +11,7 @@
   "files": ["dist/", "loader/"],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build": "bun run clean && bun run build:css && stencil build",
+    "build": "bun run clean && stencil build",
     "dev:stencil": "stencil build --dev --watch --serve",
     "dev:css": "tailwindcss -i ./src/demo.css -o ./www/demo.css --content './src/**/*.{html}' --watch",
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",
