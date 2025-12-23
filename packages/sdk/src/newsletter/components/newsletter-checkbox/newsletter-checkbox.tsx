@@ -14,8 +14,11 @@ export class NewsletterCheckbox {
   componentWillLoad() {
     if (this.checked && !this.isSubscribed) {
       const checkedNewsletters = newsletterStore.state.checkedNewsletters;
-      if (!checkedNewsletters.includes(this.internalName)) {
-        newsletterStore.set("checkedNewsletters", [...checkedNewsletters, this.internalName]);
+      if (!(this.internalName in checkedNewsletters)) {
+        newsletterStore.set("checkedNewsletters", {
+          ...checkedNewsletters,
+          [this.internalName]: [],
+        });
       }
     }
   }
@@ -25,21 +28,22 @@ export class NewsletterCheckbox {
   }
 
   private get isChecked(): boolean {
-    return this.isSubscribed || newsletterStore.state.checkedNewsletters.includes(this.internalName);
+    return this.isSubscribed || this.internalName in newsletterStore.state.checkedNewsletters;
   }
 
   private handleChange = () => {
     if (this.isSubscribed) return;
 
-    const currentlyChecked = newsletterStore.state.checkedNewsletters.includes(this.internalName);
+    const currentlyChecked = this.internalName in newsletterStore.state.checkedNewsletters;
 
     if (currentlyChecked) {
-      newsletterStore.set(
-        "checkedNewsletters",
-        newsletterStore.state.checkedNewsletters.filter((name) => name !== this.internalName),
-      );
+      const { [this.internalName]: _, ...rest } = newsletterStore.state.checkedNewsletters;
+      newsletterStore.set("checkedNewsletters", rest);
     } else {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.state.checkedNewsletters, this.internalName]);
+      newsletterStore.set("checkedNewsletters", {
+        ...newsletterStore.state.checkedNewsletters,
+        [this.internalName]: [],
+      });
     }
   };
 

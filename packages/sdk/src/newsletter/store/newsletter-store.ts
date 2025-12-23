@@ -8,15 +8,21 @@ export type NewsletterErrorIdentifier =
   | "preferences_not_found"
   | "unknown";
 
+export type NewsletterInternalName = string;
+export type PreferenceIdentifier = string;
+
 export interface ExistingSubscription {
-  newsletter_internal_name: string;
+  newsletter_internal_name: NewsletterInternalName;
   confirmed: boolean;
+  preference_identifiers: PreferenceIdentifier[];
 }
+
+export type CheckedNewsletters = Record<NewsletterInternalName, PreferenceIdentifier[]>;
 
 interface NewsletterState {
   email: string;
   preferenceToken: string;
-  checkedNewsletters: string[];
+  checkedNewsletters: CheckedNewsletters;
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
@@ -39,7 +45,7 @@ const getPersistedValue = (key: "email" | "preferenceToken") => {
 const initialState: NewsletterState = {
   email: getPersistedValue("email") ?? "",
   preferenceToken: getPersistedValue("preferenceToken") ?? "",
-  checkedNewsletters: [],
+  checkedNewsletters: {},
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],
