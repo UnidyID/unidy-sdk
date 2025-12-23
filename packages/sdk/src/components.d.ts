@@ -26,17 +26,6 @@ export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export namespace Components {
-    interface UAuthSubmitButton {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        /**
-          * @default false
-         */
-        "disabled": boolean;
-        "for": "email" | "single-login" | "password" | "resetPassword";
-    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -429,12 +418,6 @@ export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUSigninRootElement;
 }
 declare global {
-    interface HTMLUAuthSubmitButtonElement extends Components.UAuthSubmitButton, HTMLStencilElement {
-    }
-    var HTMLUAuthSubmitButtonElement: {
-        prototype: HTMLUAuthSubmitButtonElement;
-        new (): HTMLUAuthSubmitButtonElement;
-    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -669,7 +652,6 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "u-auth-submit-button": HTMLUAuthSubmitButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -706,17 +688,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface UAuthSubmitButton {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        /**
-          * @default false
-         */
-        "disabled"?: boolean;
-        "for": "email" | "single-login" | "password" | "resetPassword";
-    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -1097,7 +1068,6 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
-        "u-auth-submit-button": UAuthSubmitButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1137,7 +1107,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "u-auth-submit-button": LocalJSX.UAuthSubmitButton & JSXBase.HTMLAttributes<HTMLUAuthSubmitButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
