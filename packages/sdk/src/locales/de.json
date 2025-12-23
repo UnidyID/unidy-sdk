@@ -107,20 +107,20 @@
       "already_subscribed": "Bereits abonniert",
       "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein",
       "invalid_email": "Ungültige E-Mail-Adresse",
-      "unauthorized": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
       "newsletter_not_found": "Newsletter nicht gefunden",
       "preferences_not_found": "Präferenz nicht gefunden",
       "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut",
+      "unauthorized": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
       "unconfirmed": "Ihre E-Mail-Adresse ist für diesen Newsletter nicht bestätigt",
       "unsubscribe_failed": "Abmeldung fehlgeschlagen"
     },
     "success": {
+      "doi_sent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
       "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
       "logout": "Sie wurden erfolgreich abgemeldet",
-      "doi_sent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
+      "preferences_updated": "Ihre Präferenzen wurden erfolgreich aktualisiert",
       "subscribe": "Sie haben sich erfolgreich für {{newsletterName}} angemeldet. Bitte überprüfen Sie Ihren Posteingang für die Bestätigung",
-      "unsubscribe": "Sie haben sich erfolgreich von {{newsletterName}} abgemeldet",
-      "preferences_updated": "Ihre Präferenzen wurden erfolgreich aktualisiert"
+      "unsubscribe": "Sie haben sich erfolgreich von {{newsletterName}} abgemeldet"
     }
   },
   "profile": {
