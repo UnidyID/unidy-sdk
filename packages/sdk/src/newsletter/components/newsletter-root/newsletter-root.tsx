@@ -5,7 +5,7 @@ import { clearUrlParam } from "../../../shared/component-utils";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 import { Auth } from "../../../auth/auth";
-import { UnidyComponent } from "../../../logger";
+import { logger, UnidyComponent } from "../../../logger";
 
 @Component({
   tag: "u-newsletter-root",
@@ -52,7 +52,7 @@ export class NewsletterRoot extends UnidyComponent {
     const { email, checkedNewsletters } = newsletterStore.state;
 
     if (Object.keys(checkedNewsletters).length === 0) {
-      console.error("No newsletters selected: please select at least one newsletter");
+      logger.error("No newsletters selected: please select at least one newsletter");
       return;
     }
 
