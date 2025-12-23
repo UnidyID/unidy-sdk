@@ -12,16 +12,6 @@
 | `checked`                   | `checked`       |             | `boolean` | `false`     |
 | `componentClassName`        | `class-name`    |             | `string`  | `undefined` |
 | `internalName` _(required)_ | `internal-name` |             | `string`  | `undefined` |
-| `label`                     | `label`         |             | `string`  | `undefined` |
-
-
-## Shadow Parts
-
-| Part           | Description |
-| -------------- | ----------- |
-| `"input"`      |             |
-| `"label"`      |             |
-| `"label-text"` |             |
 
 
 ----------------------------------------------
