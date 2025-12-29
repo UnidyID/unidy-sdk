@@ -81,7 +81,7 @@ export class ToggleNewsletterSubscriptionButton {
         aria-label={isSubscribed ? t("newsletter.buttons.unsubscribe") : t("newsletter.buttons.subscribe")}
         aria-live="polite"
         data-subscribed={isSubscribed}
-        class={`${this.componentClassName} ${stateClassName} flex items-center justify-center`.trim()}
+        class={`${this.componentClassName} ${stateClassName} flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed`.trim()}
       >
         {this.loading ? <u-spinner /> : isSubscribed ? t("newsletter.buttons.unsubscribe") : t("newsletter.buttons.subscribe")}
       </button>
