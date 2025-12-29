@@ -112,7 +112,8 @@
       "rate_limit_exceeded": "Rate limit exceeded. Please try again later",
       "unauthorized": "Your session has expired. Please login again",
       "unconfirmed": "Your email is not confirmed for this newsletter",
-      "unsubscribe_failed": "Failed to unsubscribe"
+      "unsubscribe_failed": "Failed to unsubscribe",
+      "invalid_preference_token": "Invalid preference token. Enter your email address to receive a new link."
     },
     "success": {
       "doi_sent": "Confirmation email has been sent to your email address",

@@ -46,8 +46,7 @@ export class EmailField {
     (this.store as { state: { email: string } }).state.email = target.value;
 
     if (this.context === "newsletter") {
-      const { email, ...restErrors } = this.store.state.errors as Record<string, NewsletterErrorIdentifier>;
-      this.store.state.errors = restErrors;
+      this.store.state.errors = {};
     } else {
       (this.store as { clearFieldError: (field: "email") => void }).clearFieldError("email");
     }

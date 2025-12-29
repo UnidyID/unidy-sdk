@@ -6,6 +6,7 @@ export type NewsletterErrorIdentifier =
   | "invalid_email"
   | "newsletter_not_found"
   | "preferences_not_found"
+  | "invalid_preference_token"
   | "unknown";
 
 export type NewsletterInternalName = string;
