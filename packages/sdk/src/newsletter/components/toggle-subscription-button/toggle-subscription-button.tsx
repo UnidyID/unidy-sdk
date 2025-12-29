@@ -35,7 +35,7 @@ export class ToggleNewsletterSubscriptionButton {
       onBlock: (blocked) => {
         this.isBlocked = blocked;
       },
-      thresholdMs: 2000,
+      thresholdMs: 1000,
     },
   );
 
