@@ -27,3 +27,52 @@ export function clearUrlParam(param: string): string | null {
 
   return value;
 }
+
+export interface ThrottleOptions {
+  thresholdMs?: number;
+  onBlock?: (blocked: boolean) => void;
+}
+
+export function createThrottledHandler<T extends (...args: never[]) => Promise<void>>(handler: T, options: ThrottleOptions = {}): T {
+  const { thresholdMs = 500, onBlock } = options;
+
+  let lastCall = 0;
+  let isExecuting = false;
+  let blockTimer: ReturnType<typeof setTimeout> | null = null;
+
+  return (async (...args: Parameters<T>) => {
+    const now = Date.now();
+
+    // Block if executing or within period defined by threshold
+    if (isExecuting || now - lastCall < thresholdMs) {
+      return;
+    }
+
+    if (blockTimer) {
+      clearTimeout(blockTimer);
+      blockTimer = null;
+    }
+
+    lastCall = now;
+    isExecuting = true;
+    onBlock?.(true);
+
+    try {
+      await handler(...args);
+    } finally {
+      isExecuting = false;
+
+      const elapsed = Date.now() - lastCall;
+      const remaining = thresholdMs - elapsed;
+
+      if (remaining > 0) {
+        blockTimer = setTimeout(() => {
+          onBlock?.(false);
+          blockTimer = null;
+        }, remaining);
+      } else {
+        onBlock?.(false);
+      }
+    }
+  }) as T;
+}

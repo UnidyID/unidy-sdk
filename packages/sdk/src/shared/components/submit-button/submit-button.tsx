@@ -1,5 +1,5 @@
-import { Component, h, Prop, Element } from "@stencil/core";
-import { hasSlotContent } from "../../component-utils";
+import { Component, h, Prop, Element, State } from "@stencil/core";
+import { hasSlotContent, createThrottledHandler } from "../../component-utils";
 import { t } from "../../../i18n";
 import { type AuthButtonFor, AuthSubmitButton, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { ProfileSubmitButton, profileContext } from "../../../profile/components/submit-button/profile-submit-button";
@@ -16,6 +16,8 @@ export class SubmitButton {
   @Prop() text?: string;
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  @State() isBlocked = false;
 
   private context: "auth" | "profile" | "newsletter" | "other" = "other";
   private contextModule: SubmitButtonContext = defaultContext;
@@ -52,12 +54,19 @@ export class SubmitButton {
     );
   }
 
-  private handleClick = async (event: MouseEvent) => {
-    await this.contextModule.handleClick(event, this.el);
-  };
+  private handleClick = createThrottledHandler(
+    async (event: MouseEvent) => {
+      await this.contextModule.handleClick(event, this.el);
+    },
+    {
+      onBlock: (blocked) => {
+        this.isBlocked = blocked;
+      },
+    },
+  );
 
   private isDisabled(): boolean {
-    return this.contextModule.isDisabled(this.for, this.disabled);
+    return this.contextModule.isDisabled(this.for, this.disabled) || this.isBlocked || this.isLoading();
   }
 
   private isLoading(): boolean {
@@ -103,7 +112,7 @@ export class SubmitButton {
     const buttonProps: Record<string, unknown> = {
       type: "submit",
       part: `${this.context}-submit-button`,
-      disabled: this.isDisabled() || this.isLoading(),
+      disabled: this.isDisabled(),
       class: buttonClasses,
       onClick: this.handleClick,
       "aria-live": "polite",

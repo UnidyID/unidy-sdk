@@ -3,6 +3,7 @@ import { t } from "../../../i18n";
 import { newsletterStore } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 import { Flash } from "../../../shared/store/flash-store";
+import { createThrottledHandler } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-newsletter-toggle-subscription-button",
@@ -16,20 +17,27 @@ export class ToggleNewsletterSubscriptionButton {
   @Prop({ attribute: "unsubscribe-class-name" }) unsubscribeClassName = "";
 
   @State() loading = false;
+  @State() isBlocked = false;
 
   private get isSubscribed(): boolean {
     return NewsletterHelpers.isSubscribed(this.internalName);
   }
 
-  private handleClick = async () => {
-    if (this.loading) return;
-
-    if (this.isSubscribed) {
-      await this.handleUnsubscribe();
-    } else {
-      await this.handleSubscribe();
-    }
-  };
+  private handleClick = createThrottledHandler(
+    async () => {
+      if (this.isSubscribed) {
+        await this.handleUnsubscribe();
+      } else {
+        await this.handleSubscribe();
+      }
+    },
+    {
+      onBlock: (blocked) => {
+        this.isBlocked = blocked;
+      },
+      thresholdMs: 2000,
+    },
+  );
 
   private handleSubscribe = async () => {
     const { email } = newsletterStore.state;
@@ -68,7 +76,7 @@ export class ToggleNewsletterSubscriptionButton {
       <button
         type="button"
         onClick={this.handleClick}
-        disabled={this.loading}
+        disabled={this.isBlocked || this.loading}
         aria-busy={this.loading}
         aria-label={isSubscribed ? t("newsletter.buttons.unsubscribe") : t("newsletter.buttons.subscribe")}
         aria-live="polite"
