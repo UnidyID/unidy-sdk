@@ -6,6 +6,7 @@ import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 import { Auth } from "../../../auth/auth";
 import { logger, UnidyComponent } from "../../../logger";
+import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-newsletter-root",
@@ -20,8 +21,13 @@ export class NewsletterRoot extends UnidyComponent {
   }
 
   async componentWillLoad() {
+    const newsletterError = clearUrlParam("newsletter_error");
     const preferenceToken = clearUrlParam("preference_token");
     const email = clearUrlParam("email");
+
+    if (newsletterError) {
+      Flash.error.addMessage(this.getErrorText(newsletterError as NewsletterErrorIdentifier));
+    }
 
     if (preferenceToken && email) {
       newsletterStore.state.preferenceToken = preferenceToken;

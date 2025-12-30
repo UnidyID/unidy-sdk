@@ -112,7 +112,8 @@
       "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut",
       "unauthorized": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
       "unconfirmed": "Ihre E-Mail-Adresse ist für diesen Newsletter nicht bestätigt",
-      "unsubscribe_failed": "Abmeldung fehlgeschlagen"
+      "unsubscribe_failed": "Abmeldung fehlgeschlagen",
+      "invalid_preference_token": "Ungültiges Präferenz-Token. Geben Sie Ihre E-Mail-Adresse ein, um einen neuen Link zu erhalten."
     },
     "success": {
       "doi_sent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
