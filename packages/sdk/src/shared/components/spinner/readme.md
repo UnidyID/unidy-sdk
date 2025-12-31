@@ -25,7 +25,7 @@ The recommended way to style the spinner is by using CSS Custom Properties. This
 **Example: A 20px white spinner for a dark button**
 
 ```css
-u-profile-submit-button {
+u-submit-button {
   --u-spinner-font-size: 20px;
   --spinner-color-primary: #fff;
   --spinner-color-secondary: rgba(255, 255, 255, 0.4);
@@ -54,7 +54,7 @@ As an alternative to the `--u-spinner-font-size` custom property, you can contro
 
 ```css
 /* This will result in a 30px spinner with a 3px border */
-u-profile-submit-button::part(spinner) {
+u-submit-button::part(spinner) {
   font-size: 30px;
 }
 ```
