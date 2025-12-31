@@ -1,7 +1,7 @@
 import { Component, h, Prop, Element, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authStore, authState } from "../../../auth/store/auth-store";
-import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 import { getParentSigninStep } from "../../../auth/components/helpers";
 import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
