@@ -51,7 +51,7 @@ const CreateSubscriptionsPayloadSchema = z.object({
       preference_identifiers: z.optional(z.array(z.string())),
     }),
   ),
-  return_to_after_confirmation: z.optional(z.string()),
+  redirect_to_after_confirmation: z.optional(z.string()),
 });
 
 const UpdateSubscriptionPayloadSchema = z.object({
@@ -61,6 +61,10 @@ const UpdateSubscriptionPayloadSchema = z.object({
 const LoginEmailPayloadSchema = z.object({
   email: z.string(),
   redirect_uri: z.string(),
+});
+
+const ResendDoiPayloadSchema = z.object({
+  redirect_to_after_confirmation: z.optional(z.string()),
 });
 
 const PreferenceSchema = z.object({
@@ -105,6 +109,7 @@ export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPaylo
 export type AdditionalFields = z.infer<typeof AdditionalFieldsSchema>;
 export type UpdateSubscriptionPayload = z.infer<typeof UpdateSubscriptionPayloadSchema>;
 export type LoginEmailPayload = z.infer<typeof LoginEmailPayloadSchema>;
+export type ResendDoiPayload = z.infer<typeof ResendDoiPayloadSchema>;
 export type Newsletter = z.infer<typeof NewsletterSchema>;
 export type NewslettersResponse = z.infer<typeof NewslettersResponseSchema>;
 export type Preference = z.infer<typeof PreferenceSchema>;
@@ -224,10 +229,12 @@ export class NewsletterService extends EventEmitter {
     );
   }
 
-  async resendDoi(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<null>> {
+  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<ApiResponse<null>> {
+    ResendDoiPayloadSchema.parse(payload);
+
     return this.client.post<null>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
-      {},
+      payload,
       this.buildAuthHeaders(auth),
     );
   }

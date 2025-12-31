@@ -28,10 +28,14 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
 
-  const response = await getUnidyClient().newsletters.resendDoi(internalName, {
-    preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
-    idToken: typeof idToken === "string" ? idToken : "",
-  });
+  const response = await getUnidyClient().newsletters.resendDoi(
+    internalName,
+    { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
+    {
+      preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
+      idToken: typeof idToken === "string" ? idToken : "",
+    },
+  );
 
   if (response.status === 204) {
     return true;
@@ -49,7 +53,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 export async function sendLoginEmail(email: string): Promise<void> {
   const response = await getUnidyClient().newsletters.sendLoginEmail({
     email,
-    redirect_uri: returnToAfterConfirmationUrl(),
+    redirect_uri: redirectToAfterConfirmationUrl(),
   });
 
   if (response.status === 204) {
@@ -139,7 +143,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
         newsletter_internal_name: newsletter,
         preference_identifiers: checkedNewsletters[newsletter] || [],
       })),
-      return_to_after_confirmation: returnToAfterConfirmationUrl(),
+      redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
     },
     {
       idToken: typeof idToken === "string" ? idToken : "",
@@ -279,10 +283,10 @@ export function isConfirmed(internalName: string): boolean {
   return sub?.confirmed ?? false;
 }
 
-function returnToAfterConfirmationUrl(): string {
+function redirectToAfterConfirmationUrl(): string {
   const baseUrl = `${location.origin}${location.pathname}`;
   const params = new URLSearchParams(location.search);
-  for (const key of ["email", "selected", "newsletter_error"]) {
+  for (const key of ["email", "newsletter_error"]) {
     params.delete(key);
   }
   const queryString = params.toString();
