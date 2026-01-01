@@ -81,7 +81,7 @@
     },
     "passwords_do_not_match": "Passwords do not match",
     "prefix": "ERROR: ",
-    "refresh_failed": "Failed to refresh token. Please sign in again.",
+    "refresh_failed": "Failed to refresh token. Please sign in again",
     "refresh_token_revoked": "Refresh token revoked",
     "required_field": "{{field}} is required",
     "reset_password_already_sent": "Reset password already sent",
@@ -107,19 +107,21 @@
       "already_subscribed": "Already subscribed",
       "email_required": "Please enter your email address",
       "invalid_email": "Invalid email address",
-      "unauthorized": "Your session has expired. Please login again",
       "newsletter_not_found": "Newsletter not found",
       "preferences_not_found": "Preference not found",
       "rate_limit_exceeded": "Rate limit exceeded. Please try again later",
+      "unauthorized": "Your session has expired. Please login again",
       "unconfirmed": "Your email is not confirmed for this newsletter",
-      "unsubscribe_failed": "Failed to unsubscribe"
+      "unsubscribe_failed": "Failed to unsubscribe",
+      "invalid_preference_token": "Invalid preference token. Enter your email address to receive a new link."
     },
     "success": {
+      "doi_sent": "Confirmation email has been sent to your email address",
       "login_email_sent": "We sent a link to manage your existing subscription to your email address",
       "logout": "You have been logged out successfully",
-      "doi_sent": "Confirmation email has been sent to your email address",
-      "subscribe": "You have successfully subscribed to the {{newsletterName}}. Please check your inbox for the confirmation",
-      "unsubscribe": "You have successfully unsubscribed from the {{newsletterName}}"
+      "preferences_updated": "Your preferences have been updated successfully",
+      "subscribe": "You have successfully subscribed",
+      "unsubscribe": "You have successfully unsubscribed"
     }
   },
   "profile": {

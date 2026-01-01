@@ -17,7 +17,7 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.resetPasswordSent": () => authState.resetPassword.step === "sent" || authState.resetPassword.step === "requested",
   "auth.resetPasswordRequested": () => authState.resetPassword.step === "requested",
 
-  "newsletter.hasCheckedNewsletters": () => newsletterStore.state.checkedNewsletters.length > 0,
+  "newsletter.hasCheckedNewsletters": () => Object.keys(newsletterStore.state.checkedNewsletters).length > 0,
   "newsletter.hasPreferenceToken": () => !!newsletterStore.state.preferenceToken,
   "newsletter.subscribed": (newsletterInternalName: string) => NewsletterHelpers.isSubscribed(newsletterInternalName),
   "newsletter.confirmed": (newsletterInternalName: string) => NewsletterHelpers.isConfirmed(newsletterInternalName),

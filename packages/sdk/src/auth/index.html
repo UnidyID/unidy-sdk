@@ -308,7 +308,7 @@
         <u-error-message id="password-error" for="password"
           class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-auth-submit-button for="single-login" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
+        <u-submit-button for="single-login" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
 
         <u-conditional-render when="magicCodeSent" is="false">
           <div class="flex items-center my-4">
@@ -382,8 +382,7 @@
       <u-signin-step name="registration">
         <u-registration-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full">
           <div slot="registration-content">
-            <u-email-field class-name="px-4 py-2 mb-2 border border-gray-300 bg-gray-100 cursor-not-allowed w-full" aria-describedby="email-error"/>
-            <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500" />
+            <u-error-message for="email" class-name="mb-4 text-sm text-red-500" />
           </div>
         </u-registration-button>
       </u-signin-step>
@@ -519,7 +518,7 @@
             render-default-label="true"></u-field>
           <u-field field="custom_attributes.first_name" render-default-label="true"></u-field>
           <u-field field="custom_attributes.self_description" render-default-label="true"></u-field>
-          <u-profile-submit-button>Submit</u-profile-submit-button>
+          <u-submit-button>Submit</u-submit-button>
 
           <h2>Raw Field Examples</h2>
           <div class="mb-4 mt-4">

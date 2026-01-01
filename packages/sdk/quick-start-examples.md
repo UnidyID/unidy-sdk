@@ -4,14 +4,17 @@
 
 This section contains small, self-contained examples that demonstrate common SDK use cases and can be used as a starting point for your own implementation.
 
+Table of Contents
 
-## Table of Contents
+- [Quick Start: Examples](#quick-start-examples)
+    - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+    - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
+    - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
+    - [Quick Start: Profile Icon](#quick-start-profile-icon)
+      - [Simple Profile Icon with Logout:](#simple-profile-icon-with-logout)
+      - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
+    - [Quick Start: Modal login](#quick-start-modal-login)
 
-- [Quick Start: Authentication Flow](#quick-start-authentication-flow)
-- [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
-- [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
-- [Quick Start: Profile Icon](#quick-start-profile-icon)
-- [Quick Start: Modal login](#quick-start-modal-login)
 
 
 ### Quick Start: Authentication Flow
@@ -36,7 +39,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   <u-signin-root>
     <u-signin-step name="email">
       <u-email-field placeholder="Enter your email"></u-email-field>
-      <u-auth-submit-button for="email" text="Continue"></u-auth-submit-button>
+      <u-submit-button for="email" text="Continue"></u-submit-button>
     </u-signin-step>
     <div class="flex flex-col w-full space-y-4">
       <div class="flex items-center my-4">
@@ -54,7 +57,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     <u-signin-step name="verification">
       <u-signin-strategy type="password">
         <u-password-field placeholder="Enter your password"></u-password-field>
-        <u-auth-submit-button for="password" text="Sign In"></u-auth-submit-button>
+        <u-submit-button for="password" text="Sign In"></u-submit-button>
       </u-signin-strategy>
     </u-signin-step>
   </u-signin-root>
@@ -65,7 +68,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     <u-profile>
       <u-field field="first_name" render-default-label="true"></u-field>
       <u-field field="last_name" render-default-label="true"></u-field>
-      <u-profile-submit-button>Save Changes</u-profile-submit-button>
+      <u-submit-button>Save Changes</u-submit-button>
     </u-profile>
     <u-logout-button>Sign Out</u-logout-button>
   </u-signed-in>
@@ -75,25 +78,27 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   <!-- 3.1 Full Profile Component: You can define specific fields. -->
   <u-signed-in>
     <div class="mb-6">
-      <u-logout-button text="Logout"
+      <u-logout-button
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+        Logout
       </u-logout-button>
       <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
-    <u-full-profile language="en" fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
+    <u-full-profile fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
   </u-signed-in>
 
   <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
    <u-signed-in>
     <div class="mb-6">
-      <u-logout-button text="Logout"
+      <u-logout-button
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+        Logout
       </u-logout-button>
       <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
-    <u-full-profile language="en" country-code-display-option="icon"></u-full-profile>
+    <u-full-profile country-code-display-option="icon"></u-full-profile>
    </u-signed-in>
 
 </body>
@@ -117,24 +122,29 @@ This example demonstrates how to implement a newsletter subscription form using 
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+  <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+
   <div class="bg-white/90 shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
     <div class="flex flex-col items-center gap-2">
       <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
     </div>
 
-    <email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
+    <u-newsletter-root>
+      <u-email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg"></u-email-field>
 
-    <div class="flex flex-col gap-2">
-      <label class="text-gray-500 text-sm">Select newsletters</label>
-      <newsletter-checkbox label="Newsletter" internal-name="internal-name-for-newsletter" checked="true"
-        class-name="flex items-center gap-2"></newsletter-checkbox>
-      <submit-button api-key="your-api-key" api-url="https://your-unidy-instance.com"
-        class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
-        <span>Subscribe</span>
-      </submit-button>
+      <div class="flex flex-col gap-2">
+        <label class="text-gray-500 text-sm">Select newsletters</label>
+        <u-newsletter-checkbox internal-name="internal-name-for-newsletter" checked="true"
+          class-name="flex items-center gap-2"></u-newsletter-checkbox>
+        <u-submit-button
+          class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+          Subscribe
+        </u-submit-button>
 
-      <div id="message-container" class="mt-4 text-center text-sm"></div>
-    </div>
+        <div id="message-container" class="mt-4 text-center text-sm"></div>
+      </div>
+    </u-newsletter-root>
+  </div>
 </body>
 </html>
 ```
@@ -296,7 +306,7 @@ This example demonstrates how to implement a modal login form using the Unidy SD
 
                 <u-email-field class-name="px-4 py-2 mt-4 mb-2 border border-gray-300 rounded-lg w-full"></u-email-field>
                 <u-error-message for="email"></u-error-message>
-                <u-auth-submit-button for="email" text="Weiter" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-auth-submit-button>
+                <u-submit-button for="email" text="Weiter" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
               </div>
             </u-signin-step>
 
@@ -321,8 +331,8 @@ This example demonstrates how to implement a modal login form using the Unidy SD
                 <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
                 <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-                <u-auth-submit-button for="password"
-                  class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-auth-submit-button>
+                <u-submit-button for="password"
+                  class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
               </u-signin-strategy>
 
               <u-conditional-render when="magicCodeEnabled">

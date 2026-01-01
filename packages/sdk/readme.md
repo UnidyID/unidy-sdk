@@ -91,6 +91,11 @@ This required component configures the SDK with your Unidy instance details.
 -   `fallback-locale`: The fallback language to use if a translation is not available in the current locale. Defaults to `en`.
 -   `custom-translations`: A JSON string or object containing custom translations. See the [Internationalization (i18n)](#internationalization-i18n) section for more details.
 
+**Events:**
+
+-   `unidyInitialized`: Fired when the SDK is successfully initialized. `event.detail` contains the config object with `apiKey`, `baseUrl`, `locale`, and `mode`.
+-   `configChange`: Fired when the configuration changes. `event.detail` contains the updated configuration.
+
 #### `<u-signed-in>`
 
 This component acts as a gatekeeper for authenticated content. It automatically renders its child elements if the user has a valid session, and hides them otherwise. All components that require an authenticated context, such as `<u-profile>`, must be placed inside it.
@@ -233,6 +238,20 @@ Renders a button that initiates the password reset flow.
 -   `success-message`: The message to display after the password reset email has been sent. Defaults to "Password reset email sent. Please check your inbox".
 -   `class-name`: A string of classes to pass to the button.
 
+#### `<u-registration-button>`
+
+Renders a button that redirects users to the Unidy registration page. This button is automatically shown when an email is not found in Unidy (i.e., when the `account_not_found` error is triggered).
+
+**Attributes:**
+
+-   `for` (required): The step the button is for. Currently only supports `email`.
+-   `redirect-uri`: The URL to redirect to after successful registration. Defaults to the current page URL.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+
+-   `registration-content`: A slot for displaying content before the registration button (e.g., explanatory text).
+
 #### `<u-social-login-button>`
 
 Renders a button for logging in with a social provider.
@@ -249,16 +268,6 @@ Renders a button for logging in with a social provider.
 
 -   `icon`: Allows you to provide a custom SVG or `<img>` tag to be used as the button's icon. This is useful for custom providers.
 
-#### `<u-auth-submit-button>`
-
-Renders a button to submit the current sign-in step.
-
-**Attributes:**
-
-- `for` (required): The step the button is for (`email` or `password`).
-- `text`: The text to display on the button.
-- `disabled`: If set to `true`, the button will be disabled.
-- `class-name`: A string of classes to pass to the button.
 
 #### `<u-conditional-render>`
 
@@ -332,10 +341,8 @@ This component renders a complete profile form that allows users to view and edi
 
 **Attributes:**
 
-- `language`: The language to use for profile data.
 - `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
 - `fields`: A comma-separated string specifying which fields should be returned instead of the full profile.
-- `submit-button-text`: The button text for the button.
 
 
 #### `<u-profile>`
@@ -402,25 +409,14 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 
 -   `label`: Allows you to provide a custom label for the field.
 
-#### `<u-profile-submit-button>`
-
-Renders a button to submit changes made in the parent `<u-profile>` component. It must be placed inside a `<u-profile>` element.
-
-**Attributes:**
-
-- `disabled`: If set to `true`, the button will be disabled.
-
-**Slots:**
-
-- The default slot allows you to provide the button's text content.
+**Note:** To submit profile changes, use the `<u-submit-button>` component within the `<u-profile>` element. See the [`<u-submit-button>`](#u-submit-button) documentation for details.
 
 #### `<u-logout-button>`
 
-This component renders a button that, when clicked, logs the user out.
+This component renders a button that, when clicked, logs the user out. It works with authenticated sessions created via the auth flow.
 
 **Attributes:**
 
-- `text`: The text to display on the button. Defaults to "Logout".
 - `class-name`: A string of classes to pass to the button.
 - `reload-on-success`: If set to `true`, the page will reload after a successful logout. Defaults to `true`.
 
@@ -428,35 +424,98 @@ This component renders a button that, when clicked, logs the user out.
 
 - `logout`: Fired on successful logout.
 
+**Slots:**
+
+-   The default slot allows you to provide custom button text. If not provided, default translation will be used
+
 ### Newsletter Components
 
-#### `<email-field>`
+Newsletter components allow you to create newsletter subscription and preference management forms. All newsletter components must be placed inside a `<u-newsletter-root>` component.
 
-Renders a pre-configured input for the user's email address.
+#### `<u-newsletter-root>`
+
+The root component for newsletter subscription forms. This component handles initialization, authentication, and subscription management. It must wrap all other newsletter components.
+
+**Attributes:**
+-   `class-name`: A string of classes to pass to the host element.
+
+**Methods:**
+-   `submit()`: Programmatically submit the newsletter form. This is called internally by `<u-submit-button>` or `<u-email-field>` when used within the newsletter context.
+
+**Slots:**
+-   The default slot allows you to provide the newsletter form content.
+
+#### `<u-email-field>`
+
+Renders a pre-configured input for the user's email address. This component works in both auth and newsletter contexts, automatically detecting its parent container.
 
 **Attributes:**
 -   `placeholder`: The placeholder text for the input field. Defaults to `Enter your email`.
 -   `class-name`: A string of classes to pass to the input field.
+-   `disabled`: If set to `true`, the input will be disabled. Defaults to `false`.
+-   `aria-label`: The aria-label for accessibility. Defaults to `Email`.
 
-#### `<newsletter-checkbox>`
+#### `<u-newsletter-checkbox>`
 
-Renders a checkbox for subscribing to a specific newsletter.
+Renders a checkbox for subscribing to a specific newsletter. When checked, the newsletter is added to the subscription list for submission.
 
 **Attributes:**
--   `label` (required): The label to display next to the checkbox.
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
--   `checked` (required): If set to `true`, the checkbox will be checked by default.
--   `class-name`: A string of classes to pass to the checkbox container.
+-   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the checkbox.
 
+#### `<u-newsletter-preference-checkbox>`
 
-#### `<submit-button>`
+Renders a checkbox for managing newsletter preferences. Used within a newsletter to subscribe to specific topics or preferences. If the user is already subscribed and confirmed, changes are persisted immediately.
 
-Renders a button to submit the newsletter subscription form.
+**Attributes:**
+-   `internal-name` (required): The internal name of the newsletter in Unidy.
+-   `preference-identifier` (required): The preference identifier for this checkbox.
+-   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the checkbox.
 
-**Attributes**
--   `api-url` (required): `"https://your-unidy-instance.com"`
--   `api-key` (required): `"your-api-key"`
+#### `<u-newsletter-toggle-subscription-button>`
+
+Renders a button that toggles subscription status for a specific newsletter. The button text and behavior change based on whether the user is already subscribed.
+
+**Attributes:**
+-   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `class-name`: A string of classes to pass to the button.
+-   `subscribe-class-name`: Additional classes to apply when the user is not subscribed.
+-   `unsubscribe-class-name`: Additional classes to apply when the user is subscribed.
+
+#### `<u-newsletter-resend-doi-button>`
+
+Renders a button to resend the double opt-in (DOI) confirmation email. This button only appears for subscribed but unconfirmed newsletters.
+
+**Attributes:**
+-   `internal-name` (required): The internal name of the newsletter in Unidy.
+-   `class-name`: A string of classes to pass to the button.
+
+#### `<u-newsletter-logout-button>`
+
+Renders a logout button for newsletter preference management sessions. This button is only visible when the user is logged in via preference token (not authenticated users).
+
+**Attributes:**
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+-   The default slot allows you to provide custom button content. If not provided, defaults to "x".
+
+#### `<u-submit-button>`
+
+A universal submit button that works across different contexts (auth, newsletter, profile). The button automatically adapts its behavior based on its parent container (`<u-signin-root>`, `<u-newsletter-root>`, or `<u-profile>`).
+
+**Attributes:**
+-   `for`: The step or context the button is for (e.g., `email`, `password` for auth context). Optional for newsletter and profile contexts.
+-   `text`: The text to display on the button.
+-   `disabled`: If set to `true`, the button will be disabled. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+-   The default slot allows you to provide custom button content.
+
+**Note:** In the newsletter context, the button is automatically disabled if no email is entered or no newsletters are selected.
 
 ### Ticket & Subscription Components
 
@@ -486,9 +545,36 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 
 -   `<ticketable-value>`: This component is used inside the template to display a value from the ticket or subscription object.
     -   `name` (required): The name of the attribute to display (e.g., `title`, `starts_at`).
-    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`).
+    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`).
     -   `format`: A string to format the value (e.g., `Price: {{value}}`).
     -   `default`: A default value to display if the attribute is not present.
+
+-   `unidy-attr`: A special attribute that can be applied to any HTML element within the template to dynamically set attributes based on ticket/subscription data.
+    -   Add `unidy-attr` to the element
+    -   Use `unidy-attr-{attributeName}` to specify which attribute to set (e.g., `unidy-attr-href`, `unidy-attr-src`)
+    -   Use `{{propertyName}}` in the attribute value to reference ticket/subscription properties
+
+**Example:**
+
+```html
+<u-ticketable-list ticketable-type="ticket">
+  <template>
+    <div>
+      <h2><ticketable-value name="title"></ticketable-value></h2>
+      <p>
+        <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
+      </p>
+      <p>
+        <ticketable-value name="price" format="Price: {{value}}"></ticketable-value>
+      </p>
+      <!-- Dynamic href using unidy-attr -->
+      <a unidy-attr unidy-attr-href="{{button_cta_url}}" class="button">
+        View Details
+      </a>
+    </div>
+  </template>
+</u-ticketable-list>
+```
 
 #### `<u-pagination-page>`
 
@@ -722,7 +808,9 @@ u-field::part(input_field) {
 |                             | `select_field--<field-name>`      | A field-specific `<select>` element. e.g. `select_field--country_code` |
 |                             | `textarea_field`                  | The `<textarea>` element.                                              |
 | `<u-magic-code-field>`      | `digit-input`                     | An individual digit input field.                                       |
-| `<u-profile-submit-button>` | `unidy-button`                    | The button element itself.                                             |
+| `<u-submit-button>`         | `auth-submit-button`              | The submit button when used in auth context (part attribute).          |
+|                             | `profile-submit-button`           | The submit button when used in profile context (part attribute).       |
+|                             | `newsletter-submit-button`        | The submit button when used in newsletter context (part attribute).    |
 | `<u-social-login-button>`   | `social-login-button`             | The button element itself.                                             |
 |                             | `social-login-button-content`     | The container for the button's content.                                |
 |                             | `social-login-button-text`        | The text within the button.                                            |

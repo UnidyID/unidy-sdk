@@ -1,8 +1,17 @@
 import { getUnidyClient } from "../api";
 import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
-import { newsletterStore, persist, type NewsletterErrorIdentifier, type ExistingSubscription } from "./store/newsletter-store";
+import {
+  newsletterStore,
+  persist,
+  type NewsletterErrorIdentifier,
+  type ExistingSubscription,
+  type CheckedNewsletters,
+} from "./store/newsletter-store";
 import { Auth } from "../auth/auth";
+import { createLogger } from "../logger";
+
+const logger = createLogger("NewsletterHelpers");
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -19,10 +28,14 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
 
-  const response = await getUnidyClient().newsletters.resendDoi(internalName, {
-    preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
-    idToken: typeof idToken === "string" ? idToken : "",
-  });
+  const response = await getUnidyClient().newsletters.resendDoi(
+    internalName,
+    { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
+    {
+      preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
+      idToken: typeof idToken === "string" ? idToken : "",
+    },
+  );
 
   if (response.status === 204) {
     return true;
@@ -40,7 +53,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 export async function sendLoginEmail(email: string): Promise<void> {
   const response = await getUnidyClient().newsletters.sendLoginEmail({
     email,
-    redirect_uri: returnToAfterConfirmationUrl(),
+    redirect_uri: redirectToAfterConfirmationUrl(),
   });
 
   if (response.status === 204) {
@@ -55,7 +68,7 @@ export async function fetchSubscriptions(): Promise<void> {
 
   // either preference token is needed or the user must be authenticated
   if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
-    this.logger.error("Preference token or authentication is required to fetch subscriptions");
+    logger.error("Preference token or authentication is required to fetch subscriptions");
     return;
   }
 
@@ -82,8 +95,16 @@ export async function fetchSubscriptions(): Promise<void> {
       (sub): ExistingSubscription => ({
         newsletter_internal_name: sub.newsletter_internal_name,
         confirmed: sub.confirmed_at !== null,
+        preference_identifiers: sub.preference_identifiers || [],
       }),
     );
+
+    // init checked newsletters and preferences
+    const checkedNewsletters: CheckedNewsletters = { ...newsletterStore.state.checkedNewsletters };
+    for (const sub of response.data) {
+      checkedNewsletters[sub.newsletter_internal_name] = [...(sub.preference_identifiers || [])];
+    }
+    newsletterStore.state.checkedNewsletters = checkedNewsletters;
   }
 }
 
@@ -99,6 +120,7 @@ async function handleAlreadySubscribedError(
       .map((err) => ({
         newsletter_internal_name: err.meta.newsletter_internal_name,
         confirmed: null,
+        preference_identifiers: [],
       }));
 
     if (newSubscriptions.length > 0) {
@@ -112,15 +134,16 @@ async function handleAlreadySubscribedError(
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
+  const { checkedNewsletters } = newsletterStore.state;
 
   const [error, response] = await getUnidyClient().newsletters.createSubscriptions(
     {
       email,
       newsletter_subscriptions: internalNames.map((newsletter) => ({
         newsletter_internal_name: newsletter,
-        preference_identifiers: [],
+        preference_identifiers: checkedNewsletters[newsletter] || [],
       })),
-      return_to_after_confirmation: returnToAfterConfirmationUrl(),
+      redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
     },
     {
       idToken: typeof idToken === "string" ? idToken : "",
@@ -132,6 +155,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       const newSubscriptions: ExistingSubscription[] = response.data.results.map((result) => ({
         newsletter_internal_name: result.newsletter_internal_name,
         confirmed: result.confirmed_at !== null,
+        preference_identifiers: result.preference_identifiers || [],
       }));
 
       newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
@@ -190,8 +214,9 @@ export async function subscribeToNewsletter(internalName: string, email: string)
   return handleCreateSubscriptionRequest(email, [internalName], false);
 }
 
-export async function createSubscriptions({ email, checkedNewsletters }: { email: string; checkedNewsletters: string[] }): Promise<void> {
-  await handleCreateSubscriptionRequest(email, checkedNewsletters, true);
+export async function createSubscriptions({ email }: { email: string }): Promise<void> {
+  const internalNames = Object.keys(newsletterStore.state.checkedNewsletters);
+  await handleCreateSubscriptionRequest(email, internalNames, true);
 }
 
 export async function deleteSubscription(internalName: string): Promise<boolean> {
@@ -199,7 +224,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
 
   // either preference token is needed or the user must be authenticated to delete a subscription
   if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
-    this.logger.error("Preference token or authentication is required to delete a subscription");
+    logger.error("Preference token or authentication is required to delete a subscription");
     return false;
   }
 
@@ -227,7 +252,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
   if (response.status === 204) {
     newsletterLogout();
 
-    newsletterStore.state.checkedNewsletters = [];
+    newsletterStore.state.checkedNewsletters = {};
     return true;
   }
 
@@ -258,12 +283,73 @@ export function isConfirmed(internalName: string): boolean {
   return sub?.confirmed ?? false;
 }
 
-function returnToAfterConfirmationUrl(): string {
+function redirectToAfterConfirmationUrl(): string {
   const baseUrl = `${location.origin}${location.pathname}`;
   const params = new URLSearchParams(location.search);
-  for (const key of ["email", "selected", "newsletter_error"]) {
+  for (const key of ["email", "newsletter_error"]) {
     params.delete(key);
   }
   const queryString = params.toString();
   return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+}
+
+export function getSubscriptionPreferences(internalName: string): string[] {
+  const subscription = getSubscription(internalName);
+  return subscription?.preference_identifiers || [];
+}
+
+export async function updateSubscriptionPreferences(internalName: string): Promise<boolean> {
+  const { preferenceToken } = newsletterStore.state;
+
+  // Either preference token is needed or the user must be authenticated
+  if (!preferenceToken && !newsletterStore.state.isAuthenticated) {
+    logger.error("Preference token or authentication is required to update subscription preferences");
+    return false;
+  }
+
+  // Check if the subscription exists
+  if (!isSubscribed(internalName)) {
+    logger.error(`Cannot update preferences: not subscribed to newsletter '${internalName}'`);
+    return false;
+  }
+
+  const authInstance = await Auth.getInstance();
+  const idToken = await authInstance.getToken();
+
+  const preferenceIdentifiers = newsletterStore.state.checkedNewsletters[internalName] || [];
+
+  const response = await getUnidyClient().newsletters.updateSubscription(
+    internalName,
+    { preference_identifiers: preferenceIdentifiers },
+    {
+      preferenceToken,
+      idToken: typeof idToken === "string" ? idToken : "",
+    },
+  );
+
+  if (response.status === 401) {
+    Flash.error.addMessage(t("newsletter.errors.unauthorized"));
+    newsletterLogout();
+    return false;
+  }
+
+  if (response.success && response.data) {
+    // Update the local subscription with the new preferences
+    const subscriptionIndex = newsletterStore.state.existingSubscriptions.findIndex((sub) => sub.newsletter_internal_name === internalName);
+
+    if (subscriptionIndex !== -1) {
+      const updatedSubscriptions = [...newsletterStore.state.existingSubscriptions];
+      updatedSubscriptions[subscriptionIndex] = {
+        ...updatedSubscriptions[subscriptionIndex],
+        preference_identifiers: response.data.preference_identifiers || [],
+      };
+      newsletterStore.state.existingSubscriptions = updatedSubscriptions;
+    }
+
+    Flash.success.addMessage(t("newsletter.success.preferences_updated"));
+    return true;
+  }
+
+  Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
+  return false;
 }

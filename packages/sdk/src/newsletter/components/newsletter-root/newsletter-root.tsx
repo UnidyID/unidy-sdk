@@ -5,7 +5,8 @@ import { clearUrlParam } from "../../../shared/component-utils";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 import { Auth } from "../../../auth/auth";
-import { UnidyComponent } from "../../../logger";
+import { logger, UnidyComponent } from "../../../logger";
+import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-newsletter-root",
@@ -20,8 +21,13 @@ export class NewsletterRoot extends UnidyComponent {
   }
 
   async componentWillLoad() {
+    const newsletterError = clearUrlParam("newsletter_error");
     const preferenceToken = clearUrlParam("preference_token");
     const email = clearUrlParam("email");
+
+    if (newsletterError) {
+      Flash.error.addMessage(this.getErrorText(newsletterError as NewsletterErrorIdentifier));
+    }
 
     if (preferenceToken && email) {
       newsletterStore.state.preferenceToken = preferenceToken;
@@ -51,12 +57,12 @@ export class NewsletterRoot extends UnidyComponent {
   async submit() {
     const { email, checkedNewsletters } = newsletterStore.state;
 
-    if (checkedNewsletters.length === 0) {
-      console.error("No newsletters selected: please select at least one newsletter");
+    if (Object.keys(checkedNewsletters).length === 0) {
+      logger.error("No newsletters selected: please select at least one newsletter");
       return;
     }
 
-    await NewsletterHelpers.createSubscriptions({ email, checkedNewsletters: checkedNewsletters });
+    await NewsletterHelpers.createSubscriptions({ email });
   }
 
   render() {
