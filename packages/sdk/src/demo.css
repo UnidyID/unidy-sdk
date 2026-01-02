@@ -1,0 +1,6 @@
+/*
+  Demo pages use unprefixed Tailwind for local development styling.
+  SDK components use the u: prefix (configured in stencil.config.ts) to avoid
+  conflicts with host application styles.
+*/
+@import "tailwindcss";

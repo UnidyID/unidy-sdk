@@ -41,7 +41,7 @@ export class NewsletterResendDoiButton {
         disabled={this.isResending}
         aria-busy={this.isResending}
         aria-live="polite"
-        class={`${this.componentClassName} flex items-center justify-center`}
+        class={`${this.componentClassName} u:flex u:items-center u:justify-center`}
       >
         {this.isResending ? <u-spinner /> : t("newsletter.buttons.resend_doi")}
       </button>

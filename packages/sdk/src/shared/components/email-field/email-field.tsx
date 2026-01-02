@@ -86,7 +86,7 @@ export class EmailField {
           autocomplete="email"
           placeholder={placeholderText}
           disabled={this.isDisabled()}
-          class={`${this.componentClassName} disabled:opacity-40 disabled:bg-gray-200 disabled:cursor-not-allowed`}
+          class={`${this.componentClassName} u:disabled:opacity-40 u:disabled:bg-gray-200 u:disabled:cursor-not-allowed`}
           onInput={this.handleInput}
           aria-label={this.ariaLabel}
         />
