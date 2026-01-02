@@ -7,7 +7,6 @@
     "format": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
-    "install": "bun install",
     "build": "bun run build --filter './packages/sdk'"
   },
   "devDependencies": {
