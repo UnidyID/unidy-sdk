@@ -24,5 +24,5 @@ unidyOnChange("locale", (locale) => i18n.changeLanguage(locale));
 
 export default i18n;
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: i18next options are dynamic
 export const t = (key: string, opts: any = {}) => i18n.t(key, opts, { lng: unidyState.locale });

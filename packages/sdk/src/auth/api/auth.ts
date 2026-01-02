@@ -249,7 +249,7 @@ export class AuthService {
     });
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: user fields are dynamic
   async updateMissingFields(signInId: string, user: Record<string, any>): Promise<AuthenticateResultShared> {
     const response = await this.client.patch<unknown>(`/api/sdk/v1/sign_ins/${signInId}/update_required_fields`, {
       user,

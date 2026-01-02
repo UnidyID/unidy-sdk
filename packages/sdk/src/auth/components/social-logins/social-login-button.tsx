@@ -41,7 +41,7 @@ export class SocialLoginButton extends UnidyComponent {
   }
 
   private get isUnsupportedProvider(): boolean {
-    return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider) && this.provider !== "unidy";
+    return !Object.hasOwn(ICON_MAP, this.provider) && this.provider !== "unidy";
   }
 
   private get isProviderEnabled(): boolean {

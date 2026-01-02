@@ -87,7 +87,7 @@ export class MagicCodeField {
       <div class={`u:flex u:gap-0.5 u:w-full u:justify-center ${this.componentClassName}`}>
         {this.codeDigits.map((digit, index) => (
           <input
-            // biome-ignore lint/suspicious/noArrayIndexKey:
+            // biome-ignore lint/suspicious/noArrayIndexKey: digits are fixed position inputs
             key={index}
             ref={(el) => {
               if (el) this.inputRefs[index] = el;

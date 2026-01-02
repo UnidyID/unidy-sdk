@@ -8,7 +8,7 @@
 
   <script type="module" src="/build/sdk.esm.js"></script>
   <script nomodule src="/build/sdk.js"></script>
-  <link rel="stylesheet" href="/sdk.css"></link>
+  <link rel="stylesheet" href="/sdk.css">
   <link rel="stylesheet" href="/demo.css">
 
   <style>
@@ -725,7 +725,7 @@
           const shouldRedirect = confirm("Would you like to register?");
 
           if (shouldRedirect) {
-            window.location = "http://localhost:3000/logins?email=" + auth.getEmail();
+            window.location = `http://localhost:3000/logins?email=${auth.getEmail()}`;
           }
         }, 100);
       }

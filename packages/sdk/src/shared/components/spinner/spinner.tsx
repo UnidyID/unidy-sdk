@@ -9,7 +9,8 @@ export class Spinner {
   render() {
     return (
       <Host class="u:inline-flex u:items-center u:justify-center">
-        <div class="spinner-inner u:w-[1em] u:h-[1em] u:rounded-[50%] u:animate-spin" part="spinner" aria-label="Loading" />
+        {/* biome-ignore lint/a11y/useSemanticElements: spinner is a visual element, output tag not appropriate */}
+        <div class="spinner-inner u:w-[1em] u:h-[1em] u:rounded-[50%] u:animate-spin" part="spinner" role="status" aria-label="Loading" />
       </Host>
     );
   }

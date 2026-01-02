@@ -91,7 +91,7 @@ export class UnidyConfig extends UnidyComponent {
         const translations = typeof this.customTranslations === "string" ? JSON.parse(this.customTranslations) : this.customTranslations;
 
         for (const lang in translations) {
-          if (Object.prototype.hasOwnProperty.call(translations, lang)) {
+          if (Object.hasOwn(translations, lang)) {
             i18n.addResourceBundle(lang, "translation", translations[lang], true, true);
           }
         }

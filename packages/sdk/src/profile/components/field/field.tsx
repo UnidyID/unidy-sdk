@@ -71,16 +71,16 @@ export class Field {
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
-    Array.isArray(fieldData.value)
-      ? fieldData.value.map((val: string) => {
-          // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
-          const match = fieldData.options?.find((opt: any) => opt.value === val);
-          const optionTranslationKey = `fields.${this.field}.options.${val}`;
-          const translatedOptionLabel = t(optionTranslationKey);
-          const optionLabel = translatedOptionLabel !== optionTranslationKey ? translatedOptionLabel : match?.label;
-          multiselectMatches.push(optionLabel ?? val);
-        })
-      : [];
+    if (Array.isArray(fieldData.value)) {
+      for (const val of fieldData.value) {
+        // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
+        const match = fieldData.options?.find((opt: any) => opt.value === val);
+        const optionTranslationKey = `fields.${this.field}.options.${val}`;
+        const translatedOptionLabel = t(optionTranslationKey);
+        const optionLabel = translatedOptionLabel !== optionTranslationKey ? translatedOptionLabel : match?.label;
+        multiselectMatches.push(optionLabel ?? val);
+      }
+    }
     return multiselectMatches;
   };
 

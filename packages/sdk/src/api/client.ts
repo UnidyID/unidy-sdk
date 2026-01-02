@@ -64,7 +64,9 @@ export class ApiClient {
   private mergeHeaders(base: Headers, extra?: HeadersInit): Headers {
     const out = new Headers(base);
     if (extra) {
-      new Headers(extra).forEach((v, k) => out.set(k, v));
+      new Headers(extra).forEach((v, k) => {
+        out.set(k, v);
+      });
     }
     return out;
   }
@@ -83,7 +85,7 @@ export class ApiClient {
       let data: T | undefined;
       try {
         data = await res.json();
-      } catch (e) {
+      } catch {
         data = undefined;
       }
 
