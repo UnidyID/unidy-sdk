@@ -1,64 +1,39 @@
-import * as z from "zod";
-
 import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
-import { UserProfileSchema } from "../../profile";
+import {
+  CreateSignInResponseSchema,
+  ErrorSchema,
+  PasskeyOptionsResponseSchema,
+  RequiredFieldsResponseSchema,
+  SendMagicCodeErrorSchema,
+  SendMagicCodeResponseSchema,
+  TokenResponseSchema,
+  type CreateSignInResponse,
+  type ErrorResponse,
+  type InvalidPasswordResponse,
+  type PasskeyCredential,
+  type PasskeyOptionsResponse,
+  type RequiredFieldsResponse,
+  type SendMagicCodeError,
+  type SendMagicCodeResponse,
+  type TokenResponse,
+} from "./schemas";
 
-const LoginOptionsSchema = z.object({
-  magic_link: z.boolean(),
-  password: z.boolean(),
-  social_logins: z.array(z.string()),
-  passkey: z.boolean(),
-});
+// Re-export types for external use
+export type {
+  ErrorResponse,
+  CreateSignInResponse,
+  TokenResponse,
+  SendMagicCodeResponse,
+  RequiredFieldsResponse,
+  SendMagicCodeError,
+  InvalidPasswordResponse,
+  PasskeyOptionsResponse,
+  PasskeyCredential,
+} from "./schemas";
 
-const CreateSignInResponseSchema = z.object({
-  sid: z.string(),
-  status: z.enum(["pending_verification", "authenticated", "completed"]),
-  email: z.string(),
-  expired: z.boolean(),
-  login_options: LoginOptionsSchema,
-});
+export type { LoginOptions } from "./schemas";
 
-const ErrorSchema = z.object({
-  error_identifier: z.string(),
-});
-
-const SendMagicCodeResponseSchema = z.object({
-  enable_resend_after: z.number(),
-  sid: z.string().optional(),
-});
-
-const SendMagicCodeErrorSchema = z.object({
-  error_identifier: z.string(),
-  enable_resend_after: z.number(),
-});
-
-const TokenResponseSchema = z.object({
-  jwt: z.string(),
-  sid: z.string().optional(),
-});
-
-const RequiredFieldsResponseSchema = z.object({
-  error_identifier: z.literal("missing_required_fields"),
-  fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
-    custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
-  }),
-  sid: z.string().optional(),
-});
-
-const InvalidPasswordResponseSchema = z.object({
-  error_details: z.object({
-    password: z.array(z.string()),
-  }),
-});
-
-export type ErrorResponse = z.infer<typeof ErrorSchema>;
-export type LoginOptions = z.infer<typeof LoginOptionsSchema>;
-export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
-export type TokenResponse = z.infer<typeof TokenResponseSchema>;
-export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
-export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
-export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
-
+// Result types
 export type CreateSignInResult =
   | CommonErrors
   | ["account_not_found", ErrorResponse]
@@ -106,8 +81,6 @@ export type SendResetPasswordEmailResult =
   | ["return_to_required", ErrorResponse]
   | [null, null];
 
-export type InvalidPasswordResponse = z.infer<typeof InvalidPasswordResponseSchema>;
-
 export type ResetPasswordResult =
   | CommonErrors
   | ["reset_token_missing", ErrorResponse]
@@ -129,28 +102,6 @@ export type SignOutResult =
   | ["missing_id_token", ErrorResponse]
   | ["invalid_id_token", ErrorResponse]
   | [null, null];
-
-const PasskeyOptionsResponseSchema = z.object({
-  challenge: z.string(),
-  timeout: z.number(),
-  rpId: z.string(),
-  userVerification: z.string(),
-  allowCredentials: z.array(z.any()),
-});
-
-const PasskeyCredentialSchema = z.object({
-  id: z.string(),
-  rawId: z.string(),
-  response: z.object({
-    authenticatorData: z.string(),
-    clientDataJSON: z.string(),
-    signature: z.string(),
-  }),
-  type: z.string(),
-});
-
-export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema>;
-export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;
 
 export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
 

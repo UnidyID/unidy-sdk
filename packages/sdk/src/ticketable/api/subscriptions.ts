@@ -1,48 +1,15 @@
-import * as z from "zod";
-import { TicketableListParamsBaseSchema } from "./schemas";
-import { type ApiClientInterface, PaginationMetaSchema, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
+import {
+  SubscriptionSchema,
+  SubscriptionsListParamsSchema,
+  SubscriptionsListResponseSchema,
+  type Subscription,
+  type SubscriptionsListParams,
+  type SubscriptionsListResponse,
+} from "./schemas";
 
-// Date transformer for ISO8601 strings
-const dateTransformer = z.coerce.date();
-const nullableDateTransformer = z.coerce.date().nullable();
-
-// Subscription types based on SubscriptionSerializer
-const SubscriptionSchema = z.object({
-  id: z.uuid(), // unidy_id
-  title: z.string(),
-  text: z.string(),
-  payment_frequency: z.string().nullable(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
-  wallet_export: z.record(z.string(), z.unknown()).nullable(),
-  state: z.string(),
-  reference: z.string(),
-  payment_state: z.string().nullable(),
-  currency: z.string().nullable(),
-  button_cta_url: z.string().nullable(),
-  created_at: dateTransformer, // ISO8601(3) -> Date
-  updated_at: dateTransformer, // ISO8601(3) -> Date
-  starts_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  next_payment_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  price: z.number(), // decimal(8, 2) -> float
-  user_id: z.uuid(),
-  subscription_category_id: z.uuid(),
-});
-
-export type Subscription = z.infer<typeof SubscriptionSchema>;
-
-// List response
-const SubscriptionsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(SubscriptionSchema),
-});
-
-export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
-
-// Query params schema with validations
-const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ subscription_category_id: z.string().uuid() }).partial();
-
-export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
+// Re-export types for external use
+export type { Subscription, SubscriptionsListResponse, SubscriptionsListParams } from "./schemas";
 
 // Result types using tuples
 export type ListTicketableSubscriptionsResult = CommonErrors | ["invalid_response", null] | [null, SubscriptionsListResponse];
