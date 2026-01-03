@@ -1,6 +1,5 @@
-import * as Sentry from "@sentry/browser";
-import type { ApiClient, ApiResponse } from "../../api";
 import * as z from "zod";
+import { type ApiClient, type ApiResponse, BaseService } from "../../api";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
 
@@ -128,38 +127,38 @@ declare global {
 type FetchProfileArgs = { idToken: string; lang?: string };
 type UpdateProfileArgs = { idToken: string; data: unknown; lang?: string };
 
-export class ProfileService {
-  constructor(private client: ApiClient) {}
+export class ProfileService extends BaseService {
+  constructor(client: ApiClient) {
+    super(client, "ProfileService");
+  }
 
   async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<ApiResponse<ProfileResult>> {
     if (!idToken) {
       return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
     }
 
-    try {
-      const resp = await this.client.get<unknown>(`/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`, { "X-ID-Token": idToken });
+    const resp = await this.client.get<unknown>(
+      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+      this.buildAuthHeaders({ "X-ID-Token": idToken }),
+    );
 
-      const parsed = ProfileResultSchema.safeParse(resp.data);
-      if (!parsed.success) {
-        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
-      }
-
-      const data = parsed.data;
-
-      if ("error_identifier" in data) {
-        return { ...resp, data, error: data.error_identifier };
-      }
-
-      return { ...resp, data };
-    } catch (error) {
-      Sentry.captureException(error);
-      return {
-        status: error instanceof TypeError ? 0 : 500,
-        success: false,
-        headers: new Headers(),
-        error: error instanceof Error ? error.message : String(error),
-      };
+    if (resp.connectionError) {
+      return { status: 0, success: false, headers: new Headers(), error: "connection_failed", connectionError: true };
     }
+
+    const parsed = ProfileResultSchema.safeParse(resp.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid profile data", parsed.error);
+      return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
+    }
+
+    const data = parsed.data;
+
+    if ("error_identifier" in data) {
+      return { ...resp, data, error: data.error_identifier };
+    }
+
+    return { ...resp, data };
   }
 
   async updateProfile({ idToken, data, lang }: UpdateProfileArgs): Promise<ApiResponse<ProfileResult>> {
@@ -169,37 +168,32 @@ export class ProfileService {
 
     const payload = data as object;
 
-    try {
-      const resp = await this.client.patch<unknown>(
-        `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
-        { ...payload },
-        { "X-ID-Token": idToken },
-      );
+    const resp = await this.client.patch<unknown>(
+      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+      { ...payload },
+      this.buildAuthHeaders({ "X-ID-Token": idToken }),
+    );
 
-      const parsed = ProfileResultSchema.safeParse(resp.data);
-      if (!parsed.success) {
-        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
-      }
-
-      const result = parsed.data;
-
-      if ("errors" in result) {
-        return { ...resp, data: result };
-      }
-
-      if ("error_identifier" in result) {
-        return { ...resp, data: result, error: result.error_identifier };
-      }
-
-      return { ...resp, data: result };
-    } catch (error) {
-      Sentry.captureException(error);
-      return {
-        status: error instanceof TypeError ? 0 : 500,
-        success: false,
-        headers: new Headers(),
-        error: error instanceof Error ? error.message : String(error),
-      };
+    if (resp.connectionError) {
+      return { status: 0, success: false, headers: new Headers(), error: "connection_failed", connectionError: true };
     }
+
+    const parsed = ProfileResultSchema.safeParse(resp.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid profile data", parsed.error);
+      return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
+    }
+
+    const result = parsed.data;
+
+    if ("errors" in result) {
+      return { ...resp, data: result };
+    }
+
+    if ("error_identifier" in result) {
+      return { ...resp, data: result, error: result.error_identifier };
+    }
+
+    return { ...resp, data: result };
   }
 }

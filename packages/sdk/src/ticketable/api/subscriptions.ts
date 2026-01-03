@@ -1,7 +1,6 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
-import { getWithSchema } from "./get-with-schema";
-import { type ApiClient, type ApiResponse, PaginationMetaSchema } from "../../api";
+import { type ApiClient, type ApiResponse, PaginationMetaSchema, BaseService } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -45,18 +44,28 @@ const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ su
 
 export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
 
-export class SubscriptionsService {
-  list: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
-  get: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
+export class SubscriptionsService extends BaseService {
+  private listFn: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
+  private getFn: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
 
-  constructor(private client: ApiClient) {
-    this.list = getWithSchema(
-      this.client,
+  constructor(client: ApiClient) {
+    super(client, "SubscriptionsService");
+    this.listFn = this.client.getWithSchema(
       SubscriptionsListResponseSchema,
-      (_args: unknown) => "/api/sdk/v1/subscriptions",
+      () => "/api/sdk/v1/subscriptions",
       SubscriptionsListParamsSchema,
     );
+    this.getFn = this.client.getWithSchema(
+      SubscriptionSchema,
+      (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`,
+    );
+  }
 
-    this.get = getWithSchema(this.client, SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
+  async list(params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>> {
+    return this.listFn({}, params);
+  }
+
+  async get(id: string): Promise<ApiResponse<Subscription>> {
+    return this.getFn({ id });
   }
 }

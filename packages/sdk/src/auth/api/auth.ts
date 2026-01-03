@@ -1,9 +1,7 @@
-import * as Sentry from "@sentry/browser";
 import * as z from "zod";
 
-import { type ApiClient, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
+import { type ApiClient, BaseService, type CommonErrors } from "../../api";
 import { UserProfileSchema } from "../../profile";
-import { unidyState } from "../../shared/store/unidy-store";
 
 const LoginOptionsSchema = z.object({
   magic_link: z.boolean(),
@@ -60,8 +58,6 @@ export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
 export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
 export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
-
-type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
 
 export type CreateSignInResult =
   | CommonErrors
@@ -166,11 +162,9 @@ export type AuthenticateWithPasskeyResult =
   | ["bad_request", ErrorResponse]
   | [null, TokenResponse];
 
-export class AuthService {
-  private client: ApiClient;
-
+export class AuthService extends BaseService {
   constructor(client: ApiClient) {
-    this.client = client;
+    super(client, "AuthService");
   }
 
   async createSignIn(email: string, password?: string, sendMagicCode?: boolean): Promise<CreateSignInResult> {
@@ -411,24 +405,5 @@ export class AuthService {
 
       return [null, TokenResponseSchema.parse(response.data)];
     });
-  }
-
-  private handleResponse<T>(
-    // biome-ignore lint/suspicious/noExplicitAny: generic handler for all responses
-    response: any,
-    handler: () => T,
-  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
-    if (response.connectionError) {
-      unidyState.backendConnected = false;
-
-      return ["connection_failed", null];
-    }
-
-    try {
-      return handler();
-    } catch (error) {
-      Sentry.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
-    }
   }
 }

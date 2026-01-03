@@ -9,6 +9,7 @@ export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
 export * from "./shared";
+export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
 

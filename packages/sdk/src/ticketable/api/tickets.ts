@@ -1,8 +1,7 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
-import { getWithSchema } from "./get-with-schema";
 import { PaginationMetaSchema } from "../../api/shared";
-import type { ApiClient, ApiResponse } from "../../api";
+import { type ApiClient, type ApiResponse, BaseService } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -47,13 +46,28 @@ const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_c
 
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
-export class TicketsService {
-  list: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
-  get: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
+export class TicketsService extends BaseService {
+  private listFn: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
+  private getFn: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
-  constructor(private client: ApiClient) {
-    this.list = getWithSchema(this.client, TicketsListResponseSchema, (_args: unknown) => "/api/sdk/v1/tickets", TicketsListParamsSchema);
+  constructor(client: ApiClient) {
+    super(client, "TicketsService");
+    this.listFn = this.client.getWithSchema(
+      TicketsListResponseSchema,
+      () => "/api/sdk/v1/tickets",
+      TicketsListParamsSchema,
+    );
+    this.getFn = this.client.getWithSchema(
+      TicketSchema,
+      (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`,
+    );
+  }
 
-    this.get = getWithSchema(this.client, TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
+  async list(params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>> {
+    return this.listFn({}, params);
+  }
+
+  async get(id: string): Promise<ApiResponse<Ticket>> {
+    return this.getFn({ id });
   }
 }

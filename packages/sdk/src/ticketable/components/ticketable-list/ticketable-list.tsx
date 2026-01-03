@@ -90,14 +90,11 @@ export class TicketableList extends UnidyComponent {
       const unidyClient = await getUnidyClient();
       const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
-      const response = await service.list(
-        {},
-        {
-          page: this.page,
-          limit: this.limit,
-          ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
-        },
-      );
+      const response = await service.list({
+        page: this.page,
+        limit: this.limit,
+        ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
+      });
 
       if (!response.success || !response.data) {
         this.error =

@@ -1,8 +1,6 @@
 import * as Sentry from "@sentry/browser";
-import * as z from "zod/mini";
-import type { ApiClient, ApiResponse } from "../../api";
-import EventEmitter from "eventemitter3";
-import { createLogger } from "../../logger";
+import * as z from "zod";
+import { type ApiClient, type ApiResponse, BaseService } from "../../api";
 
 const NewsletterSubscriptionSchema = z.object({
   id: z.number(),
@@ -121,35 +119,26 @@ export type SubscriptionAuthOptions = {
 };
 
 export type CreateSubscriptionsResult =
+  | ["connection_failed", null]
   | ["schema_validation_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["rate_limit_exceeded", ApiResponse<CreateSubscriptionsResponse>]
   | ["unauthorized", ApiResponse<CreateSubscriptionsResponse>]
   | ["newsletter_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["network_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["server_error", ApiResponse<CreateSubscriptionsResponse>]
   | ["error", ApiResponse<CreateSubscriptionsResponse>]
   | [null, ApiResponse<CreateSubscriptionsResponse>];
 
-export class NewsletterService extends EventEmitter {
-  private client: ApiClient;
-  private logger = createLogger("NewsletterService");
-
+export class NewsletterService extends BaseService {
   constructor(client: ApiClient) {
-    super();
-    this.client = client;
+    super(client, "NewsletterService");
   }
 
-  private buildAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
+  private buildSubscriptionAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
     if (!auth) return undefined;
-
-    const headers: Record<string, string> = {};
-    if (auth.idToken) {
-      headers["X-ID-Token"] = auth.idToken;
-    }
-    if (auth.preferenceToken) {
-      headers["X-Preference-Token"] = auth.preferenceToken;
-    }
-    return Object.keys(headers).length > 0 ? headers : undefined;
+    return this.buildAuthHeaders({
+      "X-ID-Token": auth.idToken,
+      "X-Preference-Token": auth.preferenceToken,
+    });
   }
 
   async createSubscriptions(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<CreateSubscriptionsResult> {
@@ -158,34 +147,34 @@ export class NewsletterService extends EventEmitter {
     const response = await this.client.post<CreateSubscriptionsResponse>(
       "/api/sdk/v1/newsletters/newsletter_subscription",
       payload,
-      this.buildAuthHeaders(auth),
+      this.buildSubscriptionAuthHeaders(auth),
     );
+
+    if (response.connectionError) {
+      return ["connection_failed", null];
+    }
 
     switch (response.status) {
       case 401:
-        this.emit("unauthorized", response);
         return ["unauthorized", response];
       case 429:
         this.logger.warn("Rate limit exceeded");
-        this.emit("rate_limit_exceeded", response);
         return ["rate_limit_exceeded", response];
       case 500:
         Sentry.captureException(response);
         return ["server_error", response];
-      case 0:
-        return ["network_error", response];
       default:
         if (response.data) {
           try {
             const validatedData = CreateSubscriptionsResponseSchema.parse(response.data);
 
             if (validatedData.errors.length > 0) {
-              this.emit("newsletter_error", response);
               return ["newsletter_error", response];
             }
 
             return [null, response];
           } catch (validationError) {
+            this.logger.error("Schema validation error", validationError);
             return ["schema_validation_error", response];
           }
         }
@@ -195,13 +184,16 @@ export class NewsletterService extends EventEmitter {
   }
 
   async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription[]>> {
-    return this.client.get<NewsletterSubscription[]>("/api/sdk/v1/newsletters/newsletter_subscription", this.buildAuthHeaders(auth));
+    return this.client.get<NewsletterSubscription[]>(
+      "/api/sdk/v1/newsletters/newsletter_subscription",
+      this.buildSubscriptionAuthHeaders(auth),
+    );
   }
 
   async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription>> {
     return this.client.get<NewsletterSubscription>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildAuthHeaders(auth),
+      this.buildSubscriptionAuthHeaders(auth),
     );
   }
 
@@ -215,7 +207,7 @@ export class NewsletterService extends EventEmitter {
     return this.client.patch<NewsletterSubscription>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       payload,
-      this.buildAuthHeaders(auth),
+      this.buildSubscriptionAuthHeaders(auth),
     );
   }
 
@@ -225,7 +217,7 @@ export class NewsletterService extends EventEmitter {
   ): Promise<ApiResponse<{ new_preference_token: string } | null>> {
     return this.client.delete<{ new_preference_token: string } | null>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildAuthHeaders(auth),
+      this.buildSubscriptionAuthHeaders(auth),
     );
   }
 
@@ -235,7 +227,7 @@ export class NewsletterService extends EventEmitter {
     return this.client.post<null>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
       payload,
-      this.buildAuthHeaders(auth),
+      this.buildSubscriptionAuthHeaders(auth),
     );
   }
 
@@ -251,36 +243,5 @@ export class NewsletterService extends EventEmitter {
 
   async getNewsletter(internalName: string): Promise<ApiResponse<Newsletter>> {
     return this.client.get<Newsletter>(`/api/sdk/v1/newsletters/${internalName}`);
-  }
-
-  onError(
-    callback: (errors: z.infer<typeof NewsletterSubscriptionErrorSchema>[]) => void,
-    errorIdentifier?: "unconfirmed" | "already_subscribed" | "invalid_email",
-  ): void {
-    this.on("newsletter_error", (response: ApiResponse<CreateSubscriptionsResponse>) => {
-      if (!response.data?.errors) {
-        return;
-      }
-
-      const errors = errorIdentifier
-        ? response.data.errors.filter(
-            (error: {
-              error_identifier: string;
-            }) => error.error_identifier === errorIdentifier,
-          )
-        : response.data.errors;
-
-      if (errors.length > 0) {
-        callback(errors);
-      }
-    });
-  }
-
-  onRateLimitError(callback: () => void): void {
-    this.on("rate_limit_exceeded", (response: ApiResponse<CreateSubscriptionsResponse>) => {
-      if (response.status === 429) {
-        callback();
-      }
-    });
   }
 }

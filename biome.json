@@ -17,7 +17,9 @@
       "!**/tsconfig.*.json",
       "!**/tsconfig.json",
       "!examples",
-      "!development-target.tsx"
+      "!development-target.tsx",
+      "!packages/sdk-react/lib/components/stencil-generated/components.ts",
+      "!packages/sdk-react/lib/components/stencil-generated/components.server.ts"
     ]
   },
   "formatter": {
