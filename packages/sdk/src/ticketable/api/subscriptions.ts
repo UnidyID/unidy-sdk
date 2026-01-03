@@ -45,24 +45,42 @@ const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ su
 export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
 
 export class SubscriptionsService extends BaseService {
-  private listFn: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
-  private getFn: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
-
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "SubscriptionsService", deps);
-    this.listFn = this.client.getWithSchema(
-      SubscriptionsListResponseSchema,
-      () => "/api/sdk/v1/subscriptions",
-      SubscriptionsListParamsSchema,
-    );
-    this.getFn = this.client.getWithSchema(SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
   }
 
   async list(params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>> {
-    return this.listFn({}, params);
+    const validatedParams = params ? SubscriptionsListParamsSchema.parse(params) : undefined;
+    const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
+
+    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions${queryString}`);
+
+    if (!response.success || !response.data) {
+      return response as ApiResponse<SubscriptionsListResponse>;
+    }
+
+    const parsed = SubscriptionsListResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid response format", parsed.error);
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
+
+    return { ...response, data: parsed.data };
   }
 
   async get(id: string): Promise<ApiResponse<Subscription>> {
-    return this.getFn({ id });
+    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions/${id}`);
+
+    if (!response.success || !response.data) {
+      return response as ApiResponse<Subscription>;
+    }
+
+    const parsed = SubscriptionSchema.safeParse(response.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid response format", parsed.error);
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
+
+    return { ...response, data: parsed.data };
   }
 }

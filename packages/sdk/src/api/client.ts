@@ -1,7 +1,4 @@
 import * as Sentry from "@sentry/browser";
-import { t } from "../i18n";
-import type * as z from "zod";
-import { createLogger } from "../logger";
 
 export interface ApiResponse<T> {
   data?: T;
@@ -28,7 +25,6 @@ export class ApiClient {
   ];
 
   private onConnectionChange?: (isConnected: boolean) => void;
-  private logger = createLogger("ApiClient");
 
   constructor(
     public baseUrl: string,
@@ -139,53 +135,5 @@ export class ApiClient {
 
   async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
     return this.request<T>("DELETE", endpoint, undefined, headers);
-  }
-
-  getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
-    returnSchema: z.ZodSchema<TReturn>,
-    urlBuilder: (args: TArgs) => string,
-    paramSchema?: z.ZodSchema<TParams>,
-  ): TParams extends undefined
-    ? (args: TArgs) => Promise<ApiResponse<TReturn>>
-    : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {
-    const fn = async (args: TArgs, params?: TParams) => {
-      // Build URL
-      const baseUrl = urlBuilder(args);
-
-      // Validate and parse params with Zod if provided
-      let queryString = "";
-      if (paramSchema && params) {
-        const validatedParams = paramSchema.parse(params);
-        queryString = `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}`;
-      }
-
-      const fullUrl = `${baseUrl}${queryString}`;
-      const response = await this.get<unknown>(fullUrl);
-
-      if (!response.success || !response.data) {
-        return response as ApiResponse<TReturn>;
-      }
-
-      const parsed = returnSchema.safeParse(response.data);
-
-      if (!parsed.success) {
-        this.logger.error("Invalid response format", parsed.error);
-        return {
-          ...response,
-          success: false,
-          error: t("errors.invalid_response_format", {
-            defaultValue: "Invalid response format",
-          }),
-          data: undefined,
-        };
-      }
-
-      return {
-        ...response,
-        data: parsed.data,
-      };
-    };
-    // biome-ignore lint/suspicious/noExplicitAny: fn can literally be any function
-    return fn as any;
   }
 }

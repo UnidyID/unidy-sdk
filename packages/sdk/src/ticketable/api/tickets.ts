@@ -47,20 +47,42 @@ const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_c
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
 export class TicketsService extends BaseService {
-  private listFn: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
-  private getFn: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
-
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketsService", deps);
-    this.listFn = this.client.getWithSchema(TicketsListResponseSchema, () => "/api/sdk/v1/tickets", TicketsListParamsSchema);
-    this.getFn = this.client.getWithSchema(TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
   }
 
   async list(params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>> {
-    return this.listFn({}, params);
+    const validatedParams = params ? TicketsListParamsSchema.parse(params) : undefined;
+    const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
+
+    const response = await this.client.get<unknown>(`/api/sdk/v1/tickets${queryString}`);
+
+    if (!response.success || !response.data) {
+      return response as ApiResponse<TicketsListResponse>;
+    }
+
+    const parsed = TicketsListResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid response format", parsed.error);
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
+
+    return { ...response, data: parsed.data };
   }
 
   async get(id: string): Promise<ApiResponse<Ticket>> {
-    return this.getFn({ id });
+    const response = await this.client.get<unknown>(`/api/sdk/v1/tickets/${id}`);
+
+    if (!response.success || !response.data) {
+      return response as ApiResponse<Ticket>;
+    }
+
+    const parsed = TicketSchema.safeParse(response.data);
+    if (!parsed.success) {
+      this.logger.error("Invalid response format", parsed.error);
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
+
+    return { ...response, data: parsed.data };
   }
 }

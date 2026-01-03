@@ -1,4 +1,3 @@
-import type * as z from "zod";
 import type { ApiResponse } from "./client";
 import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
 
@@ -43,13 +42,6 @@ export interface ApiClientInterface {
   post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
   patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
   delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
-  getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
-    returnSchema: z.ZodSchema<TReturn>,
-    urlBuilder: (args: TArgs) => string,
-    paramSchema?: z.ZodSchema<TParams>,
-  ): TParams extends undefined
-    ? (args: TArgs) => Promise<ApiResponse<TReturn>>
-    : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>>;
 }
 
 export type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];

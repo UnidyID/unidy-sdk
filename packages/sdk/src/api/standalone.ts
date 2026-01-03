@@ -27,8 +27,6 @@
  * ```
  */
 
-import type * as z from "zod";
-
 // Re-export service classes
 export { AuthService } from "../auth/api/auth";
 export { NewsletterService } from "../newsletter/api/newsletters";
@@ -204,49 +202,6 @@ export class StandaloneApiClient {
 
   async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
     return this.request<T>("DELETE", endpoint, undefined, headers);
-  }
-
-  getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
-    returnSchema: z.ZodSchema<TReturn>,
-    urlBuilder: (args: TArgs) => string,
-    paramSchema?: z.ZodSchema<TParams>,
-  ): TParams extends undefined
-    ? (args: TArgs) => Promise<ApiResponse<TReturn>>
-    : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>> {
-    const fn = async (args: TArgs, params?: TParams) => {
-      const baseUrl = urlBuilder(args);
-
-      let queryString = "";
-      if (paramSchema && params) {
-        const validatedParams = paramSchema.parse(params);
-        queryString = `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}`;
-      }
-
-      const fullUrl = `${baseUrl}${queryString}`;
-      const response = await this.get<unknown>(fullUrl);
-
-      if (!response.success || !response.data) {
-        return response as ApiResponse<TReturn>;
-      }
-
-      const parsed = returnSchema.safeParse(response.data);
-
-      if (!parsed.success) {
-        return {
-          ...response,
-          success: false,
-          error: "Invalid response format",
-          data: undefined,
-        };
-      }
-
-      return {
-        ...response,
-        data: parsed.data,
-      };
-    };
-    // biome-ignore lint/suspicious/noExplicitAny: fn can literally be any function
-    return fn as any;
   }
 }
 
