@@ -77,7 +77,7 @@ export async function fetchSubscriptions(): Promise<void> {
 
   newsletterStore.state.fetchingSubscriptions = true;
 
-  const [error, data] = await getUnidyClient().newsletters.listSubscriptions({
+  const [error, data] = await getUnidyClient().newsletters.list({
     preferenceToken,
     idToken: typeof idToken === "string" ? idToken : "",
   });
@@ -136,7 +136,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
   const idToken = await authInstance.getToken();
   const { checkedNewsletters } = newsletterStore.state;
 
-  const [error, response] = await getUnidyClient().newsletters.createSubscriptions(
+  const [error, response] = await getUnidyClient().newsletters.create(
     {
       email,
       newsletter_subscriptions: internalNames.map((newsletter) => ({
@@ -231,7 +231,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
 
-  const [error, data] = await getUnidyClient().newsletters.deleteSubscription(internalName, {
+  const [error, data] = await getUnidyClient().newsletters.delete(internalName, {
     preferenceToken,
     idToken: typeof idToken === "string" ? idToken : "",
   });
@@ -318,7 +318,7 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
 
   const preferenceIdentifiers = newsletterStore.state.checkedNewsletters[internalName] || [];
 
-  const [error, data] = await getUnidyClient().newsletters.updateSubscription(
+  const [error, data] = await getUnidyClient().newsletters.update(
     internalName,
     { preference_identifiers: preferenceIdentifiers },
     {

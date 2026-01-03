@@ -15,14 +15,14 @@ export { UserProfileSchema } from "./schemas";
 export type { UserProfileData, ProfileErrorResponse, UserProfileFormError } from "./schemas";
 
 // Result types using tuples
-export type FetchProfileResult =
+export type ProfileGetResult =
   | CommonErrors
   | ["missing_id_token", null]
   | ["unauthorized", ProfileErrorResponse]
   | ["invalid_profile_data", null]
   | [null, UserProfileData];
 
-export type UpdateProfileResult =
+export type ProfileUpdateResult =
   | CommonErrors
   | ["missing_id_token", null]
   | ["unauthorized", ProfileErrorResponse]
@@ -35,7 +35,7 @@ export class ProfileService extends BaseService {
     super(client, "ProfileService", deps);
   }
 
-  async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<FetchProfileResult> {
+  async get({ idToken, lang }: FetchProfileArgs): Promise<ProfileGetResult> {
     if (!idToken) {
       return ["missing_id_token", null];
     }
@@ -67,7 +67,7 @@ export class ProfileService extends BaseService {
     });
   }
 
-  async updateProfile({ idToken, data, lang }: UpdateProfileArgs): Promise<UpdateProfileResult> {
+  async update({ idToken, data, lang }: UpdateProfileArgs): Promise<ProfileUpdateResult> {
     if (!idToken) {
       return ["missing_id_token", null];
     }

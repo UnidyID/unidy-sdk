@@ -51,7 +51,7 @@ export class Profile {
 
     this.fetchingProfileData = true;
     try {
-      const [error, data] = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
+      const [error, data] = await getUnidyClient().profile.get({ idToken, lang: unidyState.locale });
 
       if (error === null && data) {
         profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
@@ -85,7 +85,7 @@ export class Profile {
 
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
-    const [error, data] = await getUnidyClient().profile.updateProfile({
+    const [error, data] = await getUnidyClient().profile.update({
       idToken: (await authInstance.getToken()) as string,
       data: updatedProfileData,
       lang: unidyState.locale,

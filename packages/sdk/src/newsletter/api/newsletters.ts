@@ -42,7 +42,7 @@ export type {
 } from "./schemas";
 
 // Result types using tuples - following AuthService pattern
-export type CreateSubscriptionsResult =
+export type NewsletterCreateResult =
   | CommonErrors
   | ["rate_limit_exceeded", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
@@ -50,38 +50,38 @@ export type CreateSubscriptionsResult =
   | ["newsletter_error", CreateSubscriptionsResponse]
   | [null, CreateSubscriptionsResponse];
 
-export type ListSubscriptionsResult = CommonErrors | ["unauthorized", NewsletterErrorResponse] | [null, NewsletterSubscription[]];
+export type NewsletterListResult = CommonErrors | ["unauthorized", NewsletterErrorResponse] | [null, NewsletterSubscription[]];
 
-export type GetSubscriptionResult =
+export type NewsletterGetResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | [null, NewsletterSubscription];
 
-export type UpdateSubscriptionResult =
+export type NewsletterUpdateResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | [null, NewsletterSubscription];
 
-export type DeleteSubscriptionResult =
+export type NewsletterDeleteResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | [null, { new_preference_token: string } | null];
 
-export type ResendDoiResult =
+export type NewsletterResendDoiResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | ["already_confirmed", NewsletterErrorResponse]
   | [null, null];
 
-export type SendLoginEmailResult = CommonErrors | ["rate_limit_exceeded", NewsletterErrorResponse] | [null, null];
+export type NewsletterSendLoginEmailResult = CommonErrors | ["rate_limit_exceeded", NewsletterErrorResponse] | [null, null];
 
-export type ListNewslettersResult = CommonErrors | [null, NewslettersResponse];
+export type NewsletterListAllResult = CommonErrors | [null, NewslettersResponse];
 
-export type GetNewsletterResult = CommonErrors | ["not_found", NewsletterErrorResponse] | [null, Newsletter];
+export type NewsletterGetByNameResult = CommonErrors | ["not_found", NewsletterErrorResponse] | [null, Newsletter];
 
 export class NewsletterService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -96,7 +96,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async createSubscriptions(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<CreateSubscriptionsResult> {
+  /**
+   * Create newsletter subscriptions for a user
+   */
+  async create(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<NewsletterCreateResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
     const response = await this.client.post<unknown>(
@@ -130,7 +133,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ListSubscriptionsResult> {
+  /**
+   * List all subscriptions for the authenticated user
+   */
+  async list(auth: SubscriptionAuthOptions): Promise<NewsletterListResult> {
     const response = await this.client.get<unknown>(
       "/api/sdk/v1/newsletters/newsletter_subscription",
       this.buildSubscriptionAuthHeaders(auth),
@@ -150,7 +156,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<GetSubscriptionResult> {
+  /**
+   * Get a specific subscription by newsletter internal name
+   */
+  async get(internalName: string, auth: SubscriptionAuthOptions): Promise<NewsletterGetResult> {
     const response = await this.client.get<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildSubscriptionAuthHeaders(auth),
@@ -173,11 +182,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async updateSubscription(
-    internalName: string,
-    payload: UpdateSubscriptionPayload,
-    auth: SubscriptionAuthOptions,
-  ): Promise<UpdateSubscriptionResult> {
+  /**
+   * Update a subscription's preferences
+   */
+  async update(internalName: string, payload: UpdateSubscriptionPayload, auth: SubscriptionAuthOptions): Promise<NewsletterUpdateResult> {
     UpdateSubscriptionPayloadSchema.parse(payload);
 
     const response = await this.client.patch<unknown>(
@@ -203,7 +211,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async deleteSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<DeleteSubscriptionResult> {
+  /**
+   * Delete a subscription
+   */
+  async delete(internalName: string, auth: SubscriptionAuthOptions): Promise<NewsletterDeleteResult> {
     const response = await this.client.delete<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildSubscriptionAuthHeaders(auth),
@@ -226,7 +237,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<ResendDoiResult> {
+  /**
+   * Resend double opt-in confirmation email
+   */
+  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<NewsletterResendDoiResult> {
     ResendDoiPayloadSchema.parse(payload);
 
     const response = await this.client.post<unknown>(
@@ -254,7 +268,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async sendLoginEmail(payload: LoginEmailPayload): Promise<SendLoginEmailResult> {
+  /**
+   * Send a login email for newsletter management
+   */
+  async sendLoginEmail(payload: LoginEmailPayload): Promise<NewsletterSendLoginEmailResult> {
     LoginEmailPayloadSchema.parse(payload);
 
     const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
@@ -272,7 +289,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async listNewsletters(): Promise<ListNewslettersResult> {
+  /**
+   * List all available newsletters
+   */
+  async listAll(): Promise<NewsletterListAllResult> {
     const response = await this.client.get<unknown>("/api/sdk/v1/newsletters");
 
     return this.handleResponse(response, () => {
@@ -285,7 +305,10 @@ export class NewsletterService extends BaseService {
     });
   }
 
-  async getNewsletter(internalName: string): Promise<GetNewsletterResult> {
+  /**
+   * Get a newsletter by its internal name
+   */
+  async getByName(internalName: string): Promise<NewsletterGetByNameResult> {
     const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}`);
 
     return this.handleResponse(response, () => {
