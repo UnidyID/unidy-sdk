@@ -90,27 +90,24 @@ export class TicketableList extends UnidyComponent {
       const unidyClient = await getUnidyClient();
       const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
-      const response = await service.list({
+      const [error, data] = await service.list({
         page: this.page,
         limit: this.limit,
         ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
       });
 
-      if (!response.success || !response.data) {
-        this.error =
-          response.error instanceof Error
-            ? response.error.message
-            : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
+      if (error !== null || !data || !("results" in data)) {
+        this.error = error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
         this.loading = false;
         return;
       }
 
-      this.items = response.data.results;
-      this.paginationMeta = response.data.meta;
+      this.items = data.results;
+      this.paginationMeta = data.meta;
 
       // Update the store with pagination data
       if (this.store) {
-        this.store.state.paginationMeta = response.data.meta;
+        this.store.state.paginationMeta = data.meta;
       }
 
       this.loading = false;
@@ -223,14 +220,18 @@ export class TicketableList extends UnidyComponent {
       }
     } else {
       this.logger.error(`failed to load content: ${this.error}`);
-      target.innerHTML = `<h1>${t('errors.prefix')} ${this.error}</h1>`;
+      target.innerHTML = `<h1>${t("errors.prefix")} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
       this.logger.error(`can't render content: ${this.error}`);
-      return <h1>`${t("errors.prefix")} ${this.error}`</h1>;
+      return (
+        <h1>
+          `${t("errors.prefix")} ${this.error}`
+        </h1>
+      );
     }
 
     const template = this.element.querySelector("template");

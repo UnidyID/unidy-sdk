@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
 
 const NewsletterSubscriptionSchema = z.object({
   id: z.number(),
@@ -99,6 +99,16 @@ const NewslettersResponseSchema = z.object({
   newsletters: z.array(NewsletterSchema),
 });
 
+const DeleteSubscriptionResponseSchema = z
+  .object({
+    new_preference_token: z.string(),
+  })
+  .nullable();
+
+const NewsletterErrorResponseSchema = z.object({
+  error_identifier: z.string(),
+});
+
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
 export type NewsletterSubscriptionError = z.infer<typeof NewsletterSubscriptionErrorSchema>;
 export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
@@ -111,21 +121,54 @@ export type Newsletter = z.infer<typeof NewsletterSchema>;
 export type NewslettersResponse = z.infer<typeof NewslettersResponseSchema>;
 export type Preference = z.infer<typeof PreferenceSchema>;
 export type PreferenceGroup = z.infer<typeof PreferenceGroupSchema>;
+export type NewsletterErrorResponse = z.infer<typeof NewsletterErrorResponseSchema>;
 
 export type SubscriptionAuthOptions = {
   idToken?: string;
   preferenceToken?: string;
 };
 
+// Result types using tuples - following AuthService pattern
 export type CreateSubscriptionsResult =
-  | ["connection_failed", null]
-  | ["schema_validation_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["rate_limit_exceeded", ApiResponse<CreateSubscriptionsResponse>]
-  | ["unauthorized", ApiResponse<CreateSubscriptionsResponse>]
-  | ["newsletter_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["server_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["error", ApiResponse<CreateSubscriptionsResponse>]
-  | [null, ApiResponse<CreateSubscriptionsResponse>];
+  | CommonErrors
+  | ["rate_limit_exceeded", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | ["newsletter_error", CreateSubscriptionsResponse]
+  | [null, CreateSubscriptionsResponse];
+
+export type ListSubscriptionsResult = CommonErrors | ["unauthorized", NewsletterErrorResponse] | [null, NewsletterSubscription[]];
+
+export type GetSubscriptionResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | [null, NewsletterSubscription];
+
+export type UpdateSubscriptionResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | [null, NewsletterSubscription];
+
+export type DeleteSubscriptionResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | [null, { new_preference_token: string } | null];
+
+export type ResendDoiResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["already_confirmed", NewsletterErrorResponse]
+  | [null, null];
+
+export type SendLoginEmailResult = CommonErrors | ["rate_limit_exceeded", NewsletterErrorResponse] | [null, null];
+
+export type ListNewslettersResult = CommonErrors | [null, NewslettersResponse];
+
+export type GetNewsletterResult = CommonErrors | ["not_found", NewsletterErrorResponse] | [null, Newsletter];
 
 export class NewsletterService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -143,104 +186,206 @@ export class NewsletterService extends BaseService {
   async createSubscriptions(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<CreateSubscriptionsResult> {
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<CreateSubscriptionsResponse>(
+    const response = await this.client.post<unknown>(
       "/api/sdk/v1/newsletters/newsletter_subscription",
       payload,
       this.buildSubscriptionAuthHeaders(auth),
     );
 
-    if (response.connectionError) {
-      return ["connection_failed", null];
-    }
-
-    switch (response.status) {
-      case 401:
-        return ["unauthorized", response];
-      case 429:
-        this.logger.warn("Rate limit exceeded");
-        return ["rate_limit_exceeded", response];
-      case 500:
-        this.errorReporter.captureException(response);
-        return ["server_error", response];
-      default:
-        if (response.data) {
-          try {
-            const validatedData = CreateSubscriptionsResponseSchema.parse(response.data);
-
-            if (validatedData.errors.length > 0) {
-              return ["newsletter_error", response];
-            }
-
-            return [null, response];
-          } catch (validationError) {
-            this.logger.error("Schema validation error", validationError);
-            return ["schema_validation_error", response];
-          }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        switch (response.status) {
+          case 401:
+            return ["unauthorized", error];
+          case 429:
+            this.logger.warn("Rate limit exceeded");
+            return ["rate_limit_exceeded", error];
+          case 500:
+            this.errorReporter.captureException(response);
+            return ["server_error", error];
+          default:
+            return ["server_error", error];
         }
+      }
 
-        return ["error", response];
-    }
+      const data = CreateSubscriptionsResponseSchema.parse(response.data);
+      if (data.errors.length > 0) {
+        return ["newsletter_error", data];
+      }
+      return [null, data];
+    });
   }
 
-  async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription[]>> {
-    return this.client.get<NewsletterSubscription[]>(
+  async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ListSubscriptionsResult> {
+    const response = await this.client.get<unknown>(
       "/api/sdk/v1/newsletters/newsletter_subscription",
       this.buildSubscriptionAuthHeaders(auth),
     );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      const data = z.array(NewsletterSubscriptionSchema).parse(response.data);
+      return [null, data];
+    });
   }
 
-  async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription>> {
-    return this.client.get<NewsletterSubscription>(
+  async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<GetSubscriptionResult> {
+    const response = await this.client.get<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildSubscriptionAuthHeaders(auth),
     );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      const data = NewsletterSubscriptionSchema.parse(response.data);
+      return [null, data];
+    });
   }
 
   async updateSubscription(
     internalName: string,
     payload: UpdateSubscriptionPayload,
     auth: SubscriptionAuthOptions,
-  ): Promise<ApiResponse<NewsletterSubscription>> {
+  ): Promise<UpdateSubscriptionResult> {
     UpdateSubscriptionPayloadSchema.parse(payload);
 
-    return this.client.patch<NewsletterSubscription>(
+    const response = await this.client.patch<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       payload,
       this.buildSubscriptionAuthHeaders(auth),
     );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      const data = NewsletterSubscriptionSchema.parse(response.data);
+      return [null, data];
+    });
   }
 
-  async deleteSubscription(
-    internalName: string,
-    auth: SubscriptionAuthOptions,
-  ): Promise<ApiResponse<{ new_preference_token: string } | null>> {
-    return this.client.delete<{ new_preference_token: string } | null>(
+  async deleteSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<DeleteSubscriptionResult> {
+    const response = await this.client.delete<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
       this.buildSubscriptionAuthHeaders(auth),
     );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      const data = DeleteSubscriptionResponseSchema.parse(response.data);
+      return [null, data];
+    });
   }
 
-  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<ApiResponse<null>> {
+  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<ResendDoiResult> {
     ResendDoiPayloadSchema.parse(payload);
 
-    return this.client.post<null>(
+    const response = await this.client.post<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
       payload,
       this.buildSubscriptionAuthHeaders(auth),
     );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        if (error.error_identifier === "already_confirmed") {
+          return ["already_confirmed", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      return [null, null];
+    });
   }
 
-  async sendLoginEmail(payload: LoginEmailPayload): Promise<ApiResponse<null>> {
+  async sendLoginEmail(payload: LoginEmailPayload): Promise<SendLoginEmailResult> {
     LoginEmailPayloadSchema.parse(payload);
 
-    return this.client.post<null>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
+    const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 429) {
+          return ["rate_limit_exceeded", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      return [null, null];
+    });
   }
 
-  async listNewsletters(): Promise<ApiResponse<NewslettersResponse>> {
-    return this.client.get<NewslettersResponse>("/api/sdk/v1/newsletters");
+  async listNewsletters(): Promise<ListNewslettersResult> {
+    const response = await this.client.get<unknown>("/api/sdk/v1/newsletters");
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        throw new Error("Failed to fetch newsletters");
+      }
+
+      const data = NewslettersResponseSchema.parse(response.data);
+      return [null, data];
+    });
   }
 
-  async getNewsletter(internalName: string): Promise<ApiResponse<Newsletter>> {
-    return this.client.get<Newsletter>(`/api/sdk/v1/newsletters/${internalName}`);
+  async getNewsletter(internalName: string): Promise<GetNewsletterResult> {
+    const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}`);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = NewsletterErrorResponseSchema.parse(response.data);
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        throw new Error(`Unexpected error: ${error.error_identifier}`);
+      }
+
+      const data = NewsletterSchema.parse(response.data);
+      return [null, data];
+    });
   }
 }

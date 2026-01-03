@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
 
@@ -82,7 +82,7 @@ export const UserProfileSchema = z.object({
   custom_attributes: z.record(z.string(), CustomFieldSchema),
 });
 
-const UserProfileErrorSchema = z
+const ProfileErrorResponseSchema = z
   .object({
     error_identifier: z.string(),
   })
@@ -111,12 +111,8 @@ const UserProfileFormErrorSchema = z
   });
 
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
-export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
+export type ProfileErrorResponse = z.infer<typeof ProfileErrorResponseSchema>;
 export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
-
-const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
-
-export type ProfileResult = UserProfileData | UserProfileError | UserProfileFormError | Record<string, string>;
 
 declare global {
   interface Window {
@@ -127,73 +123,99 @@ declare global {
 type FetchProfileArgs = { idToken: string; lang?: string };
 type UpdateProfileArgs = { idToken: string; data: unknown; lang?: string };
 
+// Result types using tuples
+export type FetchProfileResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["unauthorized", ProfileErrorResponse]
+  | ["invalid_profile_data", null]
+  | [null, UserProfileData];
+
+export type UpdateProfileResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["unauthorized", ProfileErrorResponse]
+  | ["invalid_profile_data", null]
+  | ["validation_error", UserProfileFormError]
+  | [null, UserProfileData];
+
 export class ProfileService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "ProfileService", deps);
   }
 
-  async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<ApiResponse<ProfileResult>> {
+  async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<FetchProfileResult> {
     if (!idToken) {
-      return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
+      return ["missing_id_token", null];
     }
 
-    const resp = await this.client.get<unknown>(
+    const response = await this.client.get<unknown>(
       `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
 
-    if (resp.connectionError) {
-      return { status: 0, success: false, headers: new Headers(), error: "connection_failed", connectionError: true };
-    }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error = ProfileErrorResponseSchema.safeParse(response.data);
+        if (error.success) {
+          if (response.status === 401) {
+            return ["unauthorized", error.data];
+          }
+          throw new Error(`Unexpected error: ${error.data.error_identifier}`);
+        }
+        throw new Error("Failed to parse error response");
+      }
 
-    const parsed = ProfileResultSchema.safeParse(resp.data);
-    if (!parsed.success) {
-      this.logger.error("Invalid profile data", parsed.error);
-      return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
-    }
+      const parsed = UserProfileSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid profile data", parsed.error);
+        return ["invalid_profile_data", null];
+      }
 
-    const data = parsed.data;
-
-    if ("error_identifier" in data) {
-      return { ...resp, data, error: data.error_identifier };
-    }
-
-    return { ...resp, data };
+      return [null, parsed.data];
+    });
   }
 
-  async updateProfile({ idToken, data, lang }: UpdateProfileArgs): Promise<ApiResponse<ProfileResult>> {
+  async updateProfile({ idToken, data, lang }: UpdateProfileArgs): Promise<UpdateProfileResult> {
     if (!idToken) {
-      return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
+      return ["missing_id_token", null];
     }
 
     const payload = data as object;
 
-    const resp = await this.client.patch<unknown>(
+    const response = await this.client.patch<unknown>(
       `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
       { ...payload },
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
 
-    if (resp.connectionError) {
-      return { status: 0, success: false, headers: new Headers(), error: "connection_failed", connectionError: true };
-    }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        // Check for form validation errors first
+        const formErrors = UserProfileFormErrorSchema.safeParse(response.data);
+        if (formErrors.success) {
+          return ["validation_error", formErrors.data];
+        }
 
-    const parsed = ProfileResultSchema.safeParse(resp.data);
-    if (!parsed.success) {
-      this.logger.error("Invalid profile data", parsed.error);
-      return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
-    }
+        // Check for API error response
+        const error = ProfileErrorResponseSchema.safeParse(response.data);
+        if (error.success) {
+          if (response.status === 401) {
+            return ["unauthorized", error.data];
+          }
+          throw new Error(`Unexpected error: ${error.data.error_identifier}`);
+        }
 
-    const result = parsed.data;
+        throw new Error("Failed to parse error response");
+      }
 
-    if ("errors" in result) {
-      return { ...resp, data: result };
-    }
+      const parsed = UserProfileSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid profile data", parsed.error);
+        return ["invalid_profile_data", null];
+      }
 
-    if ("error_identifier" in result) {
-      return { ...resp, data: result, error: result.error_identifier };
-    }
-
-    return { ...resp, data: result };
+      return [null, parsed.data];
+    });
   }
 }

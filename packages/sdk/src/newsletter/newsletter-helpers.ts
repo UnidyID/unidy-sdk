@@ -28,7 +28,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
 
-  const response = await getUnidyClient().newsletters.resendDoi(
+  const [error] = await getUnidyClient().newsletters.resendDoi(
     internalName,
     { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
     {
@@ -37,11 +37,11 @@ export async function resendDoi(internalName: string): Promise<boolean> {
     },
   );
 
-  if (response.status === 204) {
+  if (error === null) {
     return true;
   }
 
-  if (response.status === 401) {
+  if (error === "unauthorized") {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     newsletterLogout();
     return false;
@@ -51,12 +51,12 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 }
 
 export async function sendLoginEmail(email: string): Promise<void> {
-  const response = await getUnidyClient().newsletters.sendLoginEmail({
+  const [error] = await getUnidyClient().newsletters.sendLoginEmail({
     email,
     redirect_uri: redirectToAfterConfirmationUrl(),
   });
 
-  if (response.status === 204) {
+  if (error === null) {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
@@ -77,21 +77,21 @@ export async function fetchSubscriptions(): Promise<void> {
 
   newsletterStore.state.fetchingSubscriptions = true;
 
-  const response = await getUnidyClient().newsletters.listSubscriptions({
+  const [error, data] = await getUnidyClient().newsletters.listSubscriptions({
     preferenceToken,
     idToken: typeof idToken === "string" ? idToken : "",
   });
 
   newsletterStore.state.fetchingSubscriptions = false;
 
-  if (response.status === 401) {
+  if (error === "unauthorized") {
     newsletterLogout();
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     return;
   }
 
-  if (response.success && response.data) {
-    newsletterStore.state.existingSubscriptions = response.data.map(
+  if (error === null && data && Array.isArray(data)) {
+    newsletterStore.state.existingSubscriptions = data.map(
       (sub): ExistingSubscription => ({
         newsletter_internal_name: sub.newsletter_internal_name,
         confirmed: sub.confirmed_at !== null,
@@ -101,7 +101,7 @@ export async function fetchSubscriptions(): Promise<void> {
 
     // init checked newsletters and preferences
     const checkedNewsletters: CheckedNewsletters = { ...newsletterStore.state.checkedNewsletters };
-    for (const sub of response.data) {
+    for (const sub of data) {
       checkedNewsletters[sub.newsletter_internal_name] = [...(sub.preference_identifiers || [])];
     }
     newsletterStore.state.checkedNewsletters = checkedNewsletters;
@@ -119,7 +119,7 @@ async function handleAlreadySubscribedError(
       .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
       .map((err) => ({
         newsletter_internal_name: err.meta.newsletter_internal_name,
-        confirmed: null,
+        confirmed: false, // We don't know the confirmation status for already_subscribed errors
         preference_identifiers: [],
       }));
 
@@ -150,9 +150,9 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     },
   );
 
-  if (error === null) {
-    if (response.data?.results && response.data.results.length > 0) {
-      const newSubscriptions: ExistingSubscription[] = response.data.results.map((result) => ({
+  if (error === null && response && "results" in response) {
+    if (response.results.length > 0) {
+      const newSubscriptions: ExistingSubscription[] = response.results.map((result) => ({
         newsletter_internal_name: result.newsletter_internal_name,
         confirmed: result.confirmed_at !== null,
         preference_identifiers: result.preference_identifiers || [],
@@ -174,8 +174,8 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     return false;
   }
 
-  if (error === "newsletter_error") {
-    const errors = response.data?.errors || [];
+  if (error === "newsletter_error" && response) {
+    const errors = response.errors || [];
     const errorMap: Record<string, NewsletterErrorIdentifier> = {};
 
     // special error case which is handled differently: if user is not authenticated, we send a login email, otherwise we add the
@@ -231,38 +231,38 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
   const authInstance = await Auth.getInstance();
   const idToken = await authInstance.getToken();
 
-  const response = await getUnidyClient().newsletters.deleteSubscription(internalName, {
+  const [error, data] = await getUnidyClient().newsletters.deleteSubscription(internalName, {
     preferenceToken,
     idToken: typeof idToken === "string" ? idToken : "",
   });
 
-  if (response.status === 200 && response.data?.new_preference_token) {
-    // if user is not authenticated, we need to store the new preference token which is used for the next request
-    if (!newsletterStore.state.isAuthenticated) {
-      newsletterStore.state.preferenceToken = response.data.new_preference_token;
-      persist("preferenceToken");
+  if (error === null) {
+    if (data && "new_preference_token" in data) {
+      // if user is not authenticated, we need to store the new preference token which is used for the next request
+      if (!newsletterStore.state.isAuthenticated) {
+        newsletterStore.state.preferenceToken = data.new_preference_token;
+        persist("preferenceToken");
+      }
+
+      newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
+        (sub) => sub.newsletter_internal_name !== internalName,
+      );
+      return true;
     }
 
-    newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
-      (sub) => sub.newsletter_internal_name !== internalName,
-    );
-    return true;
-  }
-
-  if (response.status === 204) {
+    // data is null - last subscription was deleted
     newsletterLogout();
-
     newsletterStore.state.checkedNewsletters = {};
     return true;
   }
 
-  if (response.status === 401) {
+  if (error === "unauthorized") {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     newsletterLogout();
     return false;
   }
 
-  if (response.status === 422) {
+  if (error === "not_found") {
     return false;
   }
 
@@ -318,7 +318,7 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
 
   const preferenceIdentifiers = newsletterStore.state.checkedNewsletters[internalName] || [];
 
-  const response = await getUnidyClient().newsletters.updateSubscription(
+  const [error, data] = await getUnidyClient().newsletters.updateSubscription(
     internalName,
     { preference_identifiers: preferenceIdentifiers },
     {
@@ -327,13 +327,13 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
     },
   );
 
-  if (response.status === 401) {
+  if (error === "unauthorized") {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));
     newsletterLogout();
     return false;
   }
 
-  if (response.success && response.data) {
+  if (error === null && data && "preference_identifiers" in data) {
     // Update the local subscription with the new preferences
     const subscriptionIndex = newsletterStore.state.existingSubscriptions.findIndex((sub) => sub.newsletter_internal_name === internalName);
 
@@ -341,7 +341,7 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
       const updatedSubscriptions = [...newsletterStore.state.existingSubscriptions];
       updatedSubscriptions[subscriptionIndex] = {
         ...updatedSubscriptions[subscriptionIndex],
-        preference_identifiers: response.data.preference_identifiers || [],
+        preference_identifiers: data.preference_identifiers || [],
       };
       newsletterStore.state.existingSubscriptions = updatedSubscriptions;
     }

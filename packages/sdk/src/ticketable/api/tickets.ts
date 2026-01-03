@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { PaginationMetaSchema } from "../../api/shared";
-import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -46,43 +46,55 @@ const TicketsListParamsSchema = TicketableListParamsBaseSchema.extend({ ticket_c
 
 export type TicketsListParams = z.input<typeof TicketsListParamsSchema>;
 
+// Result types using tuples
+export type ListTicketsResult = CommonErrors | ["invalid_response", null] | [null, TicketsListResponse];
+
+export type GetTicketResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Ticket];
+
 export class TicketsService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketsService", deps);
   }
 
-  async list(params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>> {
+  async list(params?: TicketsListParams): Promise<ListTicketsResult> {
     const validatedParams = params ? TicketsListParamsSchema.parse(params) : undefined;
     const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
 
     const response = await this.client.get<unknown>(`/api/sdk/v1/tickets${queryString}`);
 
-    if (!response.success || !response.data) {
-      return response as ApiResponse<TicketsListResponse>;
-    }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        throw new Error("Failed to fetch tickets");
+      }
 
-    const parsed = TicketsListResponseSchema.safeParse(response.data);
-    if (!parsed.success) {
-      this.logger.error("Invalid response format", parsed.error);
-      return { ...response, success: false, error: "Invalid response format", data: undefined };
-    }
+      const parsed = TicketsListResponseSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid response format", parsed.error);
+        return ["invalid_response", null];
+      }
 
-    return { ...response, data: parsed.data };
+      return [null, parsed.data];
+    });
   }
 
-  async get(id: string): Promise<ApiResponse<Ticket>> {
+  async get(id: string): Promise<GetTicketResult> {
     const response = await this.client.get<unknown>(`/api/sdk/v1/tickets/${id}`);
 
-    if (!response.success || !response.data) {
-      return response as ApiResponse<Ticket>;
-    }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        if (response.status === 404) {
+          return ["not_found", null];
+        }
+        throw new Error("Failed to fetch ticket");
+      }
 
-    const parsed = TicketSchema.safeParse(response.data);
-    if (!parsed.success) {
-      this.logger.error("Invalid response format", parsed.error);
-      return { ...response, success: false, error: "Invalid response format", data: undefined };
-    }
+      const parsed = TicketSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid response format", parsed.error);
+        return ["invalid_response", null];
+      }
 
-    return { ...response, data: parsed.data };
+      return [null, parsed.data];
+    });
   }
 }

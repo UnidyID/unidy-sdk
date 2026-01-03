@@ -51,20 +51,20 @@ export class Profile {
 
     this.fetchingProfileData = true;
     try {
-      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
+      const [error, data] = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
 
-      if (resp.success) {
-        profileState.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+      if (error === null && data) {
+        profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
         profileState.configUpdateSource = "fetch";
         profileState.errors = {};
         profileState.flashErrors = {};
 
-        profileState.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+        profileState.data = JSON.parse(JSON.stringify(data)) as ProfileRaw;
       } else {
-        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        profileState.flashErrors = { error: error || "unknown_error" };
       }
-    } catch (error) {
-      Sentry.captureException("Failed to fetch profile data:", error);
+    } catch (err) {
+      Sentry.captureException(err);
       profileState.flashErrors = { error: t("errors.failed_to_load_profile") };
     }
     this.fetchingProfileData = false;
@@ -85,23 +85,22 @@ export class Profile {
 
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
-    const resp = await getUnidyClient().profile.updateProfile({
+    const [error, data] = await getUnidyClient().profile.updateProfile({
       idToken: (await authInstance.getToken()) as string,
       data: updatedProfileData,
       lang: unidyState.locale,
     });
 
-    if (resp?.success) {
+    if (error === null && data) {
       profileState.loading = false;
-      profileState.configuration = JSON.parse(JSON.stringify(resp.data));
+      profileState.configuration = JSON.parse(JSON.stringify(data));
       profileState.configUpdateSource = "submit";
       profileState.errors = {};
+    } else if (error === "validation_error" && data && "flatErrors" in data) {
+      profileState.errors = data.flatErrors as Record<string, string>;
+      profileState.loading = false;
     } else {
-      if (resp?.data && "flatErrors" in resp.data) {
-        profileState.errors = resp.data.flatErrors as Record<string, string>;
-      } else {
-        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
-      }
+      profileState.flashErrors = { error: error || "unknown_error" };
       profileState.loading = false;
     }
   }
