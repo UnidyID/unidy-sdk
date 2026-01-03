@@ -1,6 +1,5 @@
-import * as Sentry from "@sentry/browser";
 import * as z from "zod";
-import { type ApiClient, type ApiResponse, BaseService } from "../../api";
+import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
 
 const NewsletterSubscriptionSchema = z.object({
   id: z.number(),
@@ -129,8 +128,8 @@ export type CreateSubscriptionsResult =
   | [null, ApiResponse<CreateSubscriptionsResponse>];
 
 export class NewsletterService extends BaseService {
-  constructor(client: ApiClient) {
-    super(client, "NewsletterService");
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "NewsletterService", deps);
   }
 
   private buildSubscriptionAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
@@ -161,7 +160,7 @@ export class NewsletterService extends BaseService {
         this.logger.warn("Rate limit exceeded");
         return ["rate_limit_exceeded", response];
       case 500:
-        Sentry.captureException(response);
+        this.errorReporter.captureException(response);
         return ["server_error", response];
       default:
         if (response.data) {

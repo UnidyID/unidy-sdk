@@ -1,9 +1,12 @@
+import * as Sentry from "@sentry/browser";
 import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
+import { createLogger } from "../logger";
+import type { ServiceDependencies } from "./base-service";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
@@ -12,6 +15,16 @@ export * from "./shared";
 export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
+
+/** Default browser dependencies using Sentry and the SDK logger */
+function createBrowserDeps(serviceName: string): ServiceDependencies {
+  return {
+    logger: createLogger(serviceName),
+    errorReporter: {
+      captureException: (error, context) => Sentry.captureException(error, { extra: context }),
+    },
+  };
+}
 
 export class UnidyClient {
   private apiClient: ApiClient;
@@ -27,11 +40,12 @@ export class UnidyClient {
       unidyState.backendConnected = isConnected;
     });
 
-    this.newsletters = new NewsletterService(this.apiClient);
-    this.profile = new ProfileService(this.apiClient);
-    this.auth = new AuthService(this.apiClient);
-    this.tickets = new TicketsService(this.apiClient);
-    this.subscriptions = new SubscriptionsService(this.apiClient);
+    // Initialize services with browser-specific dependencies
+    this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));
+    this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
+    this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
+    this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
+    this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
   }
 }
 

@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { type ApiClient, BaseService, type CommonErrors } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
 import { UserProfileSchema } from "../../profile";
 
 const LoginOptionsSchema = z.object({
@@ -163,8 +163,8 @@ export type AuthenticateWithPasskeyResult =
   | [null, TokenResponse];
 
 export class AuthService extends BaseService {
-  constructor(client: ApiClient) {
-    super(client, "AuthService");
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "AuthService", deps);
   }
 
   async createSignIn(email: string, password?: string, sendMagicCode?: boolean): Promise<CreateSignInResult> {

@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { type ApiClient, type ApiResponse, BaseService } from "../../api";
+import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
 
@@ -128,8 +128,8 @@ type FetchProfileArgs = { idToken: string; lang?: string };
 type UpdateProfileArgs = { idToken: string; data: unknown; lang?: string };
 
 export class ProfileService extends BaseService {
-  constructor(client: ApiClient) {
-    super(client, "ProfileService");
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "ProfileService", deps);
   }
 
   async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<ApiResponse<ProfileResult>> {

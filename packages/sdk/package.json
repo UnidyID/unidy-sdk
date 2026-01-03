@@ -8,7 +8,10 @@
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
-  "files": ["dist/", "loader/"],
+  "files": [
+    "dist/",
+    "loader/"
+  ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
     "build": "bun run clean && stencil build",
@@ -110,6 +113,10 @@
     "./ticketable": {
       "import": "./dist/ticketable/sdk.esm.js",
       "require": "./dist/ticketable/sdk.cjs.js"
+    },
+    "./standalone": {
+      "import": "./dist/collection/api/standalone.js",
+      "types": "./dist/types/api/standalone.d.ts"
     }
   }
 }

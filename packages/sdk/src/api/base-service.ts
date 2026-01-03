@@ -1,7 +1,56 @@
-import * as Sentry from "@sentry/browser";
-import type { ApiClient, ApiResponse } from "./client";
+import type * as z from "zod";
+import type { ApiResponse } from "./client";
 import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
-import { createLogger, type Logger } from "../logger";
+
+/**
+ * Minimal logger interface that services depend on
+ */
+export interface Logger {
+  // biome-ignore lint/suspicious/noExplicitAny: Logger accepts any args
+  error: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: Logger accepts any args
+  warn: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: Logger accepts any args
+  info: (...args: any[]) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: Logger accepts any args
+  debug: (...args: any[]) => void;
+}
+
+/**
+ * Error reporter interface for capturing exceptions
+ */
+export interface ErrorReporter {
+  captureException: (error: unknown, context?: Record<string, unknown>) => void;
+}
+
+/**
+ * Dependencies that can be injected into services
+ */
+export interface ServiceDependencies {
+  /** Logger instance - defaults to console */
+  logger?: Logger;
+  /** Error reporter (e.g., Sentry) - defaults to no-op */
+  errorReporter?: ErrorReporter;
+}
+
+/**
+ * API Client interface that services depend on
+ */
+export interface ApiClientInterface {
+  baseUrl: string;
+  api_key: string;
+  get<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
+  post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
+  patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
+  delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
+  getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
+    returnSchema: z.ZodSchema<TReturn>,
+    urlBuilder: (args: TArgs) => string,
+    paramSchema?: z.ZodSchema<TParams>,
+  ): TParams extends undefined
+    ? (args: TArgs) => Promise<ApiResponse<TReturn>>
+    : (args: TArgs, params?: TParams) => Promise<ApiResponse<TReturn>>;
+}
 
 export type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
 
@@ -10,14 +59,41 @@ export type ServiceResult<TSuccess, TError extends string = never> =
   | (TError extends never ? never : [TError, { error_identifier: string; [key: string]: unknown }])
   | [null, TSuccess];
 
+/** Default no-op error reporter */
+const noopErrorReporter: ErrorReporter = {
+  captureException: () => {},
+};
+
+/** Default console logger */
+const consoleLogger: Logger = {
+  error: console.error.bind(console),
+  warn: console.warn.bind(console),
+  info: console.info.bind(console),
+  debug: console.debug.bind(console),
+};
+
 export abstract class BaseService {
   protected logger: Logger;
+  protected errorReporter: ErrorReporter;
 
   constructor(
-    protected client: ApiClient,
+    protected client: ApiClientInterface,
     serviceName: string,
+    deps?: ServiceDependencies,
   ) {
-    this.logger = createLogger(serviceName);
+    // Use injected dependencies or defaults
+    this.logger = deps?.logger ?? consoleLogger;
+    this.errorReporter = deps?.errorReporter ?? noopErrorReporter;
+
+    // Prefix logger if using console
+    if (!deps?.logger) {
+      this.logger = {
+        error: (...args) => console.error(`[${serviceName}]`, ...args),
+        warn: (...args) => console.warn(`[${serviceName}]`, ...args),
+        info: (...args) => console.info(`[${serviceName}]`, ...args),
+        debug: (...args) => console.debug(`[${serviceName}]`, ...args),
+      };
+    }
   }
 
   protected handleResponse<T>(
@@ -32,7 +108,7 @@ export abstract class BaseService {
       return handler();
     } catch (error) {
       this.logger.error("Schema validation error", error);
-      Sentry.captureException(error);
+      this.errorReporter.captureException(error);
       return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
     }
   }

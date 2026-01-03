@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
-import { type ApiClient, type ApiResponse, PaginationMetaSchema, BaseService } from "../../api";
+import { type ApiClientInterface, type ApiResponse, PaginationMetaSchema, BaseService, type ServiceDependencies } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -48,17 +48,14 @@ export class SubscriptionsService extends BaseService {
   private listFn: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
   private getFn: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
 
-  constructor(client: ApiClient) {
-    super(client, "SubscriptionsService");
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "SubscriptionsService", deps);
     this.listFn = this.client.getWithSchema(
       SubscriptionsListResponseSchema,
       () => "/api/sdk/v1/subscriptions",
       SubscriptionsListParamsSchema,
     );
-    this.getFn = this.client.getWithSchema(
-      SubscriptionSchema,
-      (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`,
-    );
+    this.getFn = this.client.getWithSchema(SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
   }
 
   async list(params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>> {

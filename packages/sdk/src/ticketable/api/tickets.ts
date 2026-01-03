@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { PaginationMetaSchema } from "../../api/shared";
-import { type ApiClient, type ApiResponse, BaseService } from "../../api";
+import { type ApiClientInterface, type ApiResponse, BaseService, type ServiceDependencies } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -50,17 +50,10 @@ export class TicketsService extends BaseService {
   private listFn: (args: object, params?: TicketsListParams) => Promise<ApiResponse<TicketsListResponse>>;
   private getFn: (args: { id: string }) => Promise<ApiResponse<Ticket>>;
 
-  constructor(client: ApiClient) {
-    super(client, "TicketsService");
-    this.listFn = this.client.getWithSchema(
-      TicketsListResponseSchema,
-      () => "/api/sdk/v1/tickets",
-      TicketsListParamsSchema,
-    );
-    this.getFn = this.client.getWithSchema(
-      TicketSchema,
-      (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`,
-    );
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "TicketsService", deps);
+    this.listFn = this.client.getWithSchema(TicketsListResponseSchema, () => "/api/sdk/v1/tickets", TicketsListParamsSchema);
+    this.getFn = this.client.getWithSchema(TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
   }
 
   async list(params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>> {
