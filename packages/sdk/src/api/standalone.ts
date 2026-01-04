@@ -1,3 +1,10 @@
+import { AuthService } from "../auth/api/auth";
+import { NewsletterService } from "../newsletter/api/newsletters";
+import { ProfileService } from "../profile/api/profile";
+import { TicketsService } from "../ticketable/api/tickets";
+import { SubscriptionsService } from "../ticketable/api/subscriptions";
+import type { ServiceDependencies } from "./base-service";
+
 /**
  * Standalone API client and services for use outside of Stencil components.
  * This module can be used in Node.js or any other JavaScript environment.
@@ -225,13 +232,6 @@ export class StandaloneApiClient {
  * const signIn = await client.auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
-import { AuthService } from "../auth/api/auth";
-import { NewsletterService } from "../newsletter/api/newsletters";
-import { ProfileService } from "../profile/api/profile";
-import { TicketsService } from "../ticketable/api/tickets";
-import { SubscriptionsService } from "../ticketable/api/subscriptions";
-import type { ServiceDependencies } from "./base-service";
-
 export interface StandaloneUnidyClientConfig extends StandaloneClientConfig {
   /** Optional dependencies to inject into all services */
   deps?: ServiceDependencies;

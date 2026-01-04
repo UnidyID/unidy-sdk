@@ -4,6 +4,7 @@ import {
   UserProfileFormErrorSchema,
   UserProfileSchema,
   type ProfileErrorResponse,
+  type UserProfileData,
   type UserProfileFormError,
 } from "./schemas";
 
@@ -23,7 +24,8 @@ export type ProfileGetResult =
   | ["missing_id_token", null]
   | ["unauthorized", ProfileErrorResponse]
   | ["invalid_profile_data", null]
-  | [null, import("./schemas").UserProfileData];
+  | ["server_error", ProfileErrorResponse | null]
+  | [null, UserProfileData];
 
 export type ProfileUpdateResult =
   | CommonErrors
@@ -31,7 +33,8 @@ export type ProfileUpdateResult =
   | ["unauthorized", ProfileErrorResponse]
   | ["invalid_profile_data", null]
   | ["validation_error", UserProfileFormError]
-  | [null, import("./schemas").UserProfileData];
+  | ["server_error", ProfileErrorResponse | null]
+  | [null, UserProfileData];
 
 export class ProfileService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -57,9 +60,9 @@ export class ProfileService extends BaseService {
           if (response.status === 401) {
             return ["unauthorized", error.data];
           }
-          throw new Error(`Unexpected error: ${error.data.error_identifier}`);
+          return ["server_error", error.data];
         }
-        throw new Error("Failed to parse error response");
+        return ["server_error", null];
       }
 
       const parsed = UserProfileSchema.safeParse(response.data);
@@ -101,10 +104,10 @@ export class ProfileService extends BaseService {
           if (response.status === 401) {
             return ["unauthorized", error.data];
           }
-          throw new Error(`Unexpected error: ${error.data.error_identifier}`);
+          return ["server_error", error.data];
         }
 
-        throw new Error("Failed to parse error response");
+        return ["server_error", null];
       }
 
       const parsed = UserProfileSchema.safeParse(response.data);

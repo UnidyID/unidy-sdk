@@ -42,7 +42,7 @@ export const TextFieldSchema = BaseFieldDataSchema.extend({
 
 // Phone field schema
 export const PhoneFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string().nullable()]),
+  value: z.string().nullable(),
   type: z.enum(["tel"]),
 }).strict();
 

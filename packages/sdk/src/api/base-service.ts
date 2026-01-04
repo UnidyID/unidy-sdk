@@ -113,7 +113,12 @@ export abstract class BaseService {
     } catch (error) {
       this.logger.error("Schema validation error", error);
       this.errorReporter.captureException(error);
-      return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+      // Use safeParse to avoid throwing if response.data doesn't match the schema
+      const parsed = SchemaValidationErrorSchema.safeParse(response.data);
+      const schemaError: SchemaValidationError = parsed.success
+        ? parsed.data
+        : { error_identifier: "schema_validation_error", errors: [String(error)] };
+      return ["schema_validation_error", schemaError];
     }
   }
 

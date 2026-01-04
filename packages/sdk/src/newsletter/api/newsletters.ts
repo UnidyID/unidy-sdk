@@ -61,24 +61,31 @@ export type NewsletterCreateResult =
   | ["newsletter_error", CreateSubscriptionsResponse]
   | [null, CreateSubscriptionsResponse];
 
-export type NewsletterListResult = CommonErrors | ["unauthorized", NewsletterErrorResponse] | [null, NewsletterSubscription[]];
+export type NewsletterListResult =
+  | CommonErrors
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, NewsletterSubscription[]];
 
 export type NewsletterGetResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
   | [null, NewsletterSubscription];
 
 export type NewsletterUpdateResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
   | [null, NewsletterSubscription];
 
 export type NewsletterDeleteResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
   | [null, { new_preference_token: string } | null];
 
 export type NewsletterResendDoiResult =
@@ -86,13 +93,22 @@ export type NewsletterResendDoiResult =
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | ["already_confirmed", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
   | [null, null];
 
-export type NewsletterSendLoginEmailResult = CommonErrors | ["rate_limit_exceeded", NewsletterErrorResponse] | [null, null];
+export type NewsletterSendLoginEmailResult =
+  | CommonErrors
+  | ["rate_limit_exceeded", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, null];
 
-export type NewsletterListAllResult = CommonErrors | [null, NewslettersResponse];
+export type NewsletterListAllResult = CommonErrors | ["server_error", null] | [null, NewslettersResponse];
 
-export type NewsletterGetByNameResult = CommonErrors | ["not_found", NewsletterErrorResponse] | [null, Newsletter];
+export type NewsletterGetByNameResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, Newsletter];
 
 export class NewsletterService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -101,22 +117,10 @@ export class NewsletterService extends BaseService {
 
   private async buildNewsletterAuthHeaders(options?: Partial<NewsletterOptions>): Promise<HeadersInit | undefined> {
     const idToken = await this.getIdToken();
-    const headers: Record<string, string | undefined> = {
+    return this.buildAuthHeaders({
       "X-ID-Token": idToken ?? undefined,
       "X-Preference-Token": options?.preferenceToken,
-    };
-
-    const filtered = Object.entries(headers).reduce(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = value;
-        }
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-
-    return Object.keys(filtered).length > 0 ? filtered : undefined;
+    });
   }
 
   /**
@@ -167,7 +171,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 401) {
           return ["unauthorized", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       const data = z.array(NewsletterSubscriptionSchema).parse(response.data);
@@ -192,7 +196,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 404) {
           return ["not_found", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       const data = NewsletterSubscriptionSchema.parse(response.data);
@@ -219,7 +223,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 404) {
           return ["not_found", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       const data = NewsletterSubscriptionSchema.parse(response.data);
@@ -244,7 +248,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 404) {
           return ["not_found", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       const data = DeleteSubscriptionResponseSchema.parse(response.data);
@@ -278,7 +282,7 @@ export class NewsletterService extends BaseService {
         if (error.error_identifier === "already_confirmed") {
           return ["already_confirmed", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       return [null, null];
@@ -300,7 +304,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 429) {
           return ["rate_limit_exceeded", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       return [null, null];
@@ -315,7 +319,7 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        throw new Error("Failed to fetch newsletters");
+        return ["server_error", null];
       }
 
       const data = NewslettersResponseSchema.parse(response.data);
@@ -336,7 +340,7 @@ export class NewsletterService extends BaseService {
         if (response.status === 404) {
           return ["not_found", error];
         }
-        throw new Error(`Unexpected error: ${error.error_identifier}`);
+        return ["server_error", error];
       }
 
       const data = NewsletterSchema.parse(response.data);
