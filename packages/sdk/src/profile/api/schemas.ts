@@ -1,7 +1,19 @@
 import * as z from "zod";
+import { BaseErrorSchema } from "../../api/shared";
 
 // Field type enum
-export const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
+export const FieldTypeEnum = z.enum([
+  "text",
+  "textarea",
+  "number",
+  "boolean",
+  "select",
+  "radio",
+  "date",
+  "datetime-local",
+  "checkbox",
+  "tel",
+]);
 
 // Base field data schema
 export const BaseFieldDataSchema = z
@@ -34,42 +46,48 @@ export const RadioOptionSchema = z
   })
   .strict();
 
+// Text field type enum
+const TextFieldTypeEnum = z.enum(["text", "textarea"]);
+
 // Text field schema
 export const TextFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null()]),
-  type: z.enum(["text", "textarea"]),
+  value: z.string().nullable(),
+  type: TextFieldTypeEnum,
 }).strict();
 
 // Phone field schema
 export const PhoneFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
-  type: z.enum(["tel"]),
+  type: z.literal("tel"),
 }).strict();
 
 // Radio field schema
 export const RadioFieldSchema = BaseFieldDataSchema.extend({
   value: RadioValue,
-  type: z.enum(["radio"]),
+  type: z.literal("radio"),
   radio_options: z.array(RadioOptionSchema),
 }).strict();
 
 // Select field schema
 export const SelectFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
-  type: z.enum(["select"]),
+  type: z.literal("select"),
   options: z.array(SelectOptionSchema),
 }).strict();
 
+// Date field type enum
+const DateFieldTypeEnum = z.enum(["date", "datetime-local"]);
+
 // Date field schema
 export const DateFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null()]),
-  type: z.enum(["date", "datetime-local"]),
+  value: z.string().nullable(),
+  type: DateFieldTypeEnum,
 }).strict();
 
 // Custom field schema
 export const CustomFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
-  type: FieldType,
+  value: z.union([z.string(), z.boolean(), z.number(), z.array(z.string())]).nullable(),
+  type: FieldTypeEnum,
   readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional(),
@@ -93,12 +111,8 @@ export const UserProfileSchema = z.object({
   custom_attributes: z.record(z.string(), CustomFieldSchema),
 });
 
-// Profile error response schema
-export const ProfileErrorResponseSchema = z
-  .object({
-    error_identifier: z.string(),
-  })
-  .strict();
+// Profile error response schema extends base error
+export const ProfileErrorResponseSchema = BaseErrorSchema;
 
 // Form errors value type
 export const FormErrorsValue = z.union([z.array(z.string()), z.array(z.tuple([z.number(), z.array(z.string())]))]);
@@ -126,6 +140,7 @@ export const UserProfileFormErrorSchema = z
   });
 
 // Export types
+export type FieldType = z.infer<typeof FieldTypeEnum>;
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type ProfileErrorResponse = z.infer<typeof ProfileErrorResponseSchema>;
 export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
@@ -136,7 +151,3 @@ declare global {
     UNIDY?: { auth?: { id_token?: string } };
   }
 }
-
-// Function argument types
-export type FetchProfileArgs = { idToken: string; lang?: string };
-export type UpdateProfileArgs = { idToken: string; data: unknown; lang?: string };

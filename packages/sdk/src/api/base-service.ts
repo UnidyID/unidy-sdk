@@ -1,4 +1,4 @@
-import type { ApiResponse } from "./client";
+import type { ApiResponse, QueryParams } from "./base-client";
 import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
 
 /**
@@ -46,7 +46,7 @@ export type Options<T> = { options?: Partial<T> };
 export interface ApiClientInterface {
   baseUrl: string;
   api_key: string;
-  get<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
+  get<T>(endpoint: string, headers?: HeadersInit, params?: QueryParams): Promise<ApiResponse<T>>;
   post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
   patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>>;
   delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;

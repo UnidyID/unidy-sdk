@@ -1,5 +1,9 @@
 import * as z from "zod";
+import { BaseErrorSchema } from "../../api/shared";
 import { UserProfileSchema } from "../../profile";
+
+// Sign-in status enum
+export const SignInStatusEnum = z.enum(["pending_verification", "authenticated", "completed"]);
 
 // Login options for sign-in response
 export const LoginOptionsSchema = z.object({
@@ -12,16 +16,14 @@ export const LoginOptionsSchema = z.object({
 // Sign-in creation response
 export const CreateSignInResponseSchema = z.object({
   sid: z.string(),
-  status: z.enum(["pending_verification", "authenticated", "completed"]),
+  status: SignInStatusEnum,
   email: z.string(),
   expired: z.boolean(),
   login_options: LoginOptionsSchema,
 });
 
-// Generic error response
-export const ErrorSchema = z.object({
-  error_identifier: z.string(),
-});
+// Generic error response (re-export of base error for backwards compatibility)
+export const ErrorSchema = BaseErrorSchema;
 
 // Magic code response
 export const SendMagicCodeResponseSchema = z.object({
@@ -29,9 +31,8 @@ export const SendMagicCodeResponseSchema = z.object({
   sid: z.string().optional(),
 });
 
-// Magic code error (includes resend timing)
-export const SendMagicCodeErrorSchema = z.object({
-  error_identifier: z.string(),
+// Magic code error extends base error with resend timing
+export const SendMagicCodeErrorSchema = BaseErrorSchema.extend({
   enable_resend_after: z.number(),
 });
 
@@ -41,8 +42,8 @@ export const TokenResponseSchema = z.object({
   sid: z.string().optional(),
 });
 
-// Missing required fields response
-export const RequiredFieldsResponseSchema = z.object({
+// Missing required fields response extends base error with specific error_identifier
+export const RequiredFieldsResponseSchema = BaseErrorSchema.extend({
   error_identifier: z.literal("missing_required_fields"),
   fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
     custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
@@ -79,6 +80,7 @@ export const PasskeyCredentialSchema = z.object({
 });
 
 // Export types
+export type SignInStatus = z.infer<typeof SignInStatusEnum>;
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
 export type LoginOptions = z.infer<typeof LoginOptionsSchema>;
 export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;

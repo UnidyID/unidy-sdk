@@ -3,6 +3,7 @@ import { NewsletterService } from "../newsletter/api/newsletters";
 import { ProfileService } from "../profile/api/profile";
 import { TicketsService } from "../ticketable/api/tickets";
 import { SubscriptionsService } from "../ticketable/api/subscriptions";
+import { BaseApiClient } from "./base-client";
 import type { ServiceDependencies } from "./base-service";
 
 /**
@@ -56,28 +57,7 @@ export type {
   ServiceDependencies,
   ApiClientInterface,
 } from "./base-service";
-
-/**
- * Configuration options for the standalone API client
- */
-export interface StandaloneClientConfig {
-  baseUrl: string;
-  apiKey: string;
-  /** Optional callback when connection status changes */
-  onConnectionChange?: (isConnected: boolean) => void;
-}
-
-/**
- * API Response type
- */
-export interface ApiResponse<T> {
-  data?: T;
-  success: boolean;
-  status: number;
-  headers: Headers;
-  error?: Error | string;
-  connectionError?: boolean;
-}
+export type { ApiResponse, ApiClientConfig, QueryParams } from "./base-client";
 
 /**
  * Standalone API client without browser-specific dependencies.
@@ -98,119 +78,18 @@ export interface ApiResponse<T> {
  * const result = await auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
-export class StandaloneApiClient {
-  private static readonly CONNECTION_ERROR_MESSAGES = [
-    "Failed to fetch",
-    "NetworkError",
-    "ERR_CONNECTION_REFUSED",
-    "ERR_NETWORK",
-    "ERR_INTERNET_DISCONNECTED",
-    "ECONNREFUSED",
-    "ENOTFOUND",
-    "EAI_AGAIN",
-  ];
-
-  private onConnectionChange?: (isConnected: boolean) => void;
-
-  public baseUrl: string;
-  public api_key: string;
-
-  constructor(config: StandaloneClientConfig) {
-    this.baseUrl = config.baseUrl;
-    this.api_key = config.apiKey;
-    this.onConnectionChange = config.onConnectionChange;
+export class StandaloneApiClient extends BaseApiClient {
+  protected getRequestOptions(): RequestInit {
+    // No browser-specific options for standalone client
+    return {};
   }
 
-  private isConnectionError(error: unknown): boolean {
-    if (error instanceof Error) {
-      return StandaloneApiClient.CONNECTION_ERROR_MESSAGES.some((msg) => error.message.includes(msg));
-    }
-    return false;
-  }
-
-  private setConnectionStatus(isConnected: boolean) {
-    if (this.onConnectionChange) {
-      this.onConnectionChange(isConnected);
-    }
-  }
-
-  private baseHeaders(): Headers {
-    const h = new Headers();
-    h.set("Content-Type", "application/json");
-    h.set("Accept", "application/json");
-    h.set("Authorization", `Bearer ${this.api_key}`);
-    return h;
-  }
-
-  private mergeHeaders(base: Headers, extra?: HeadersInit): Headers {
-    const out = new Headers(base);
-    if (extra) {
-      new Headers(extra).forEach((v, k) => {
-        out.set(k, v);
-      });
-    }
-    return out;
-  }
-
-  private async request<T>(method: string, endpoint: string, body?: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    let res: Response | null = null;
-    try {
-      res = await fetch(`${this.baseUrl}${endpoint}`, {
-        method,
-        headers: this.mergeHeaders(this.baseHeaders(), headers),
-        body: body ? JSON.stringify(body) : undefined,
-      });
-
-      let data: T | undefined;
-      try {
-        data = await res.json();
-      } catch {
-        data = undefined;
-      }
-
-      this.setConnectionStatus(true);
-
-      return {
-        data,
-        status: res.status,
-        headers: res.headers,
-        success: res.ok,
-        connectionError: false,
-      };
-    } catch (error) {
-      const connectionFailed = this.isConnectionError(error);
-
-      if (connectionFailed) {
-        this.setConnectionStatus(false);
-      }
-
-      return {
-        status: res ? res.status : connectionFailed ? 0 : 500,
-        error: error instanceof Error ? error.message : String(error),
-        headers: res ? res.headers : new Headers(),
-        success: false,
-        data: undefined,
-        connectionError: connectionFailed,
-      };
-    }
-  }
-
-  async get<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("GET", endpoint, undefined, headers);
-  }
-
-  async post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("POST", endpoint, body, headers);
-  }
-
-  async patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("PATCH", endpoint, body, headers);
-  }
-
-  async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("DELETE", endpoint, undefined, headers);
+  protected handleConnectionError(_error: unknown, _endpoint: string, _method: string): void {
+    // No-op for standalone client - users can inject their own error reporter via ServiceDependencies
   }
 }
+
+import type { ApiClientConfig } from "./base-client";
 
 /**
  * Creates a standalone Unidy client with all services for use outside of Stencil.
@@ -232,7 +111,7 @@ export class StandaloneApiClient {
  * const signIn = await client.auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
-export interface StandaloneUnidyClientConfig extends StandaloneClientConfig {
+export interface StandaloneUnidyClientConfig extends ApiClientConfig {
   /** Optional dependencies to inject into all services */
   deps?: ServiceDependencies;
 }

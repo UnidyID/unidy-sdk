@@ -1,4 +1,8 @@
 import * as z from "zod";
+import { BaseErrorSchema } from "../../api/shared";
+
+// Salutation enum
+export const SalutationEnum = z.enum(["mr", "mrs", "mx"]);
 
 // Newsletter subscription from API
 export const NewsletterSubscriptionSchema = z.object({
@@ -7,13 +11,12 @@ export const NewsletterSubscriptionSchema = z.object({
   newsletter_internal_name: z.string(),
   preference_identifiers: z.array(z.string()),
   preference_token: z.string(),
-  confirmed_at: z.union([z.string(), z.null()]),
+  confirmed_at: z.string().nullable(),
 });
 
-// Newsletter subscription error with meta info
-export const NewsletterSubscriptionErrorSchema = z.object({
-  error_identifier: z.string(),
-  error_details: z.optional(z.record(z.string(), z.array(z.string()))),
+// Newsletter subscription error extends base error with typed meta
+export const NewsletterSubscriptionErrorSchema = BaseErrorSchema.extend({
+  error_details: z.record(z.string(), z.array(z.string())).optional(),
   meta: z.object({
     newsletter_internal_name: z.string(),
   }),
@@ -25,22 +28,24 @@ export const CreateSubscriptionsResponseSchema = z.object({
   errors: z.array(NewsletterSubscriptionErrorSchema),
 });
 
-// Additional fields for subscription creation
-export const AdditionalFieldsSchema = z.object({
-  first_name: z.optional(z.union([z.string(), z.null()])),
-  last_name: z.optional(z.union([z.string(), z.null()])),
-  salutation: z.optional(z.union([z.literal("mr"), z.literal("mrs"), z.literal("mx"), z.null()])),
-  phone_number: z.optional(z.union([z.string(), z.null()])),
-  date_of_birth: z.optional(z.union([z.string(), z.null()])),
-  company_name: z.optional(z.union([z.string(), z.null()])),
-  address_line_1: z.optional(z.union([z.string(), z.null()])),
-  address_line_2: z.optional(z.union([z.string(), z.null()])),
-  city: z.optional(z.union([z.string(), z.null()])),
-  postal_code: z.optional(z.union([z.string(), z.null()])),
-  country_code: z.optional(z.union([z.string(), z.null()])),
-  preferred_language: z.optional(z.union([z.string(), z.null()])),
-  custom_attributes: z.optional(z.union([z.record(z.string(), z.unknown()), z.null()])),
-});
+// Additional fields for subscription creation - using .partial() for all optional fields
+export const AdditionalFieldsSchema = z
+  .object({
+    first_name: z.string().nullable(),
+    last_name: z.string().nullable(),
+    salutation: SalutationEnum.nullable(),
+    phone_number: z.string().nullable(),
+    date_of_birth: z.string().nullable(),
+    company_name: z.string().nullable(),
+    address_line_1: z.string().nullable(),
+    address_line_2: z.string().nullable(),
+    city: z.string().nullable(),
+    postal_code: z.string().nullable(),
+    country_code: z.string().nullable(),
+    preferred_language: z.string().nullable(),
+    custom_attributes: z.record(z.string(), z.unknown()).nullable(),
+  })
+  .partial();
 
 // Create subscriptions payload
 export const CreateSubscriptionsPayloadSchema = z.object({
@@ -67,16 +72,18 @@ export const LoginEmailPayloadSchema = z.object({
 });
 
 // Resend DOI payload
-export const ResendDoiPayloadSchema = z.object({
-  redirect_to_after_confirmation: z.optional(z.string()),
-});
+export const ResendDoiPayloadSchema = z
+  .object({
+    redirect_to_after_confirmation: z.string(),
+  })
+  .partial();
 
 // Preference schema
 export const PreferenceSchema = z.object({
   id: z.number(),
   name: z.string(),
-  description: z.union([z.string(), z.null()]),
-  plugin_identifier: z.union([z.string(), z.null()]),
+  description: z.string().nullable(),
+  plugin_identifier: z.string().nullable(),
   position: z.number(),
   default: z.boolean(),
   hidden: z.boolean(),
@@ -99,7 +106,7 @@ export const NewsletterSchema = z.object({
   position: z.number(),
   opt_in_type: z.string(),
   title: z.string(),
-  description: z.union([z.string(), z.null()]),
+  description: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   preference_groups: z.array(PreferenceGroupSchema),
@@ -117,12 +124,11 @@ export const DeleteSubscriptionResponseSchema = z
   })
   .nullable();
 
-// Generic newsletter error response
-export const NewsletterErrorResponseSchema = z.object({
-  error_identifier: z.string(),
-});
+// Generic newsletter error response (extends base error)
+export const NewsletterErrorResponseSchema = BaseErrorSchema;
 
 // Export types
+export type Salutation = z.infer<typeof SalutationEnum>;
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
 export type NewsletterSubscriptionError = z.infer<typeof NewsletterSubscriptionErrorSchema>;
 export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
@@ -136,9 +142,3 @@ export type NewslettersResponse = z.infer<typeof NewslettersResponseSchema>;
 export type Preference = z.infer<typeof PreferenceSchema>;
 export type PreferenceGroup = z.infer<typeof PreferenceGroupSchema>;
 export type NewsletterErrorResponse = z.infer<typeof NewsletterErrorResponseSchema>;
-
-// Auth options for subscription requests
-export type SubscriptionAuthOptions = {
-  idToken?: string;
-  preferenceToken?: string;
-};

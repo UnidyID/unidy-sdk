@@ -1,114 +1,32 @@
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
-import {
-  SubscriptionSchema,
-  SubscriptionsListParamsSchema,
-  SubscriptionsListResponseSchema,
-  type Subscription,
-  type SubscriptionsListResponse,
-} from "./schemas";
+import type { ApiClientInterface, ServiceDependencies } from "../../api";
+import { SubscriptionSchema, SubscriptionsListResponseSchema, type Subscription, type SubscriptionsListResponse } from "./schemas";
+import { TicketableService, type TicketableListArgs, type TicketableListResult, type TicketableGetResult } from "./ticketable-service";
 
 // Re-export types for external use
 export type { Subscription, SubscriptionsListResponse } from "./schemas";
 
-// Argument types for unified interface
-export type SubscriptionsListArgs = {
-  page?: number;
-  perPage?: number;
-  state?: string;
-  paymentState?: string;
-  orderBy?: "starts_at" | "ends_at" | "reference" | "created_at";
-  orderDirection?: "asc" | "desc";
-  serviceId?: number;
+// Argument types extending base ticketable args
+export interface SubscriptionsListArgs extends TicketableListArgs {
   subscriptionCategoryId?: string;
-};
+}
 export type SubscriptionsGetArgs = { id: string };
 
-// Result types using tuples
-export type SubscriptionsListResult =
-  | CommonErrors
-  | ["server_error", null]
-  | ["invalid_response", null]
-  | [null, SubscriptionsListResponse];
+// Result types
+export type SubscriptionsListResult = TicketableListResult<SubscriptionsListResponse>;
+export type SubscriptionsGetResult = TicketableGetResult<Subscription>;
 
-export type SubscriptionsGetResult =
-  | CommonErrors
-  | ["server_error", null]
-  | ["not_found", null]
-  | ["invalid_response", null]
-  | [null, Subscription];
-
-export class SubscriptionsService extends BaseService {
+export class SubscriptionsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "SubscriptionsService", deps);
   }
 
-  async list(args?: SubscriptionsListArgs): Promise<SubscriptionsListResult> {
-    // Build params object with correct field names for schema validation
-    const params = args
-      ? {
-          page: args.page,
-          limit: args.perPage,
-          state: args.state,
-          payment_state: args.paymentState,
-          order_by: args.orderBy,
-          order_direction: args.orderDirection,
-          service_id: args.serviceId,
-          subscription_category_id: args.subscriptionCategoryId,
-        }
-      : undefined;
-
-    // Validate params against schema (expects numbers for page/limit)
-    const validatedParams = params ? SubscriptionsListParamsSchema.safeParse(params) : undefined;
-    const validParams = validatedParams?.success ? validatedParams.data : params;
-
-    // Filter out undefined values and convert to strings for URL
-    const queryParams = validParams
-      ? Object.fromEntries(
-          Object.entries(validParams)
-            .filter(([_, v]) => v !== undefined && v !== null)
-            .map(([k, v]) => [k, String(v)]),
-        )
-      : undefined;
-    const queryString = queryParams && Object.keys(queryParams).length > 0 ? `?${new URLSearchParams(queryParams).toString()}` : "";
-
-    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions${queryString}`);
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        this.logger.error("Failed to fetch subscriptions", response);
-        return ["server_error", null];
-      }
-
-      const parsed = SubscriptionsListResponseSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid response format", parsed.error);
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+  async list(args: SubscriptionsListArgs = {}): Promise<SubscriptionsListResult> {
+    const params = this.buildListParams(args, "subscription_category_id", args.subscriptionCategoryId);
+    const queryString = this.toQueryString(params);
+    return this.handleList("/api/sdk/v1/subscriptions", queryString, SubscriptionsListResponseSchema, "subscriptions");
   }
 
   async get(args: SubscriptionsGetArgs): Promise<SubscriptionsGetResult> {
-    const { id } = args;
-    const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions/${id}`);
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        if (response.status === 404) {
-          return ["not_found", null];
-        }
-        this.logger.error("Failed to fetch subscription", response);
-        return ["server_error", null];
-      }
-
-      const parsed = SubscriptionSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid response format", parsed.error);
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+    return this.handleGet(`/api/sdk/v1/subscriptions/${args.id}`, SubscriptionSchema, "subscription");
   }
 }

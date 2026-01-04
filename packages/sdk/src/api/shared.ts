@@ -1,7 +1,19 @@
 import * as z from "zod";
 
-export const SchemaValidationErrorSchema = z.object({
-  error_identifier: z.string(), // unprocessable entity etc. TODO we can define enum later
+/**
+ * Base error schema that all API errors extend from.
+ * Contains the common error_identifier field.
+ */
+export const BaseErrorSchema = z.object({
+  error_identifier: z.string(),
+});
+
+export type BaseError = z.infer<typeof BaseErrorSchema>;
+
+/**
+ * Schema validation error extends base error with an array of error messages.
+ */
+export const SchemaValidationErrorSchema = BaseErrorSchema.extend({
   errors: z.array(z.string()),
 });
 

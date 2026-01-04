@@ -1,139 +1,28 @@
 import * as Sentry from "@sentry/browser";
+import { BaseApiClient } from "./base-client";
 
-export interface ApiResponse<T> {
-  data?: T;
-  success: boolean;
-  status: number;
-  headers: Headers;
-  error?: Error | string;
-  connectionError?: boolean; // when backend is unreachable (network error, connection refused, etc.)
-}
+// Re-export types from base-client for backwards compatibility
+export type { ApiResponse, ApiClientConfig, QueryParams } from "./base-client";
 
-export type ApiConfig = {
-  baseUrl: string;
-  apiKey: string;
-  onConnectionChange?: (isConnected: boolean) => void;
-};
-
-export class ApiClient {
-  private static readonly CONNECTION_ERROR_MESSAGES = [
-    "Failed to fetch",
-    "NetworkError",
-    "ERR_CONNECTION_REFUSED",
-    "ERR_NETWORK",
-    "ERR_INTERNET_DISCONNECTED",
-  ];
-
-  private onConnectionChange?: (isConnected: boolean) => void;
-
-  constructor(
-    public baseUrl: string,
-    public api_key: string,
-    onConnectionChange?: (isConnected: boolean) => void,
-  ) {
-    this.api_key = api_key;
-    this.onConnectionChange = onConnectionChange;
+/**
+ * Browser-specific API client with CORS mode and Sentry error reporting.
+ */
+export class ApiClient extends BaseApiClient {
+  constructor(baseUrl: string, apiKey: string, onConnectionChange?: (isConnected: boolean) => void) {
+    super({ baseUrl, apiKey, onConnectionChange });
   }
 
-  private isConnectionError(error: unknown): boolean {
-    if (error instanceof Error) {
-      return ApiClient.CONNECTION_ERROR_MESSAGES.some((msg) => error.message.includes(msg));
-    }
-
-    return false;
+  protected getRequestOptions(): RequestInit {
+    return {
+      mode: "cors",
+      credentials: "include",
+    };
   }
 
-  private setConnectionStatus(isConnected: boolean) {
-    if (this.onConnectionChange) {
-      this.onConnectionChange(isConnected);
-    }
-  }
-
-  private baseHeaders(): Headers {
-    const h = new Headers();
-    h.set("Content-Type", "application/json");
-    h.set("Accept", "application/json");
-    h.set("Authorization", `Bearer ${this.api_key}`);
-    return h;
-  }
-
-  private mergeHeaders(base: Headers, extra?: HeadersInit): Headers {
-    const out = new Headers(base);
-    if (extra) {
-      new Headers(extra).forEach((v, k) => {
-        out.set(k, v);
-      });
-    }
-    return out;
-  }
-
-  private async request<T>(method: string, endpoint: string, body?: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    let res: Response | null = null;
-    try {
-      res = await fetch(`${this.baseUrl}${endpoint}`, {
-        method,
-        mode: "cors",
-        credentials: "include",
-        headers: this.mergeHeaders(this.baseHeaders(), headers),
-        body: JSON.stringify(body) || undefined,
-      });
-
-      let data: T | undefined;
-      try {
-        data = await res.json();
-      } catch {
-        data = undefined;
-      }
-
-      this.setConnectionStatus(true);
-
-      const response: ApiResponse<T> = {
-        data,
-        status: res.status,
-        headers: res.headers,
-        success: res.ok,
-        connectionError: false,
-      };
-
-      return response;
-    } catch (error) {
-      const connectionFailed = this.isConnectionError(error);
-
-      if (connectionFailed) {
-        this.setConnectionStatus(false);
-
-        Sentry.captureException(error, {
-          tags: { error_type: "connection_error" },
-          extra: { endpoint, method },
-        });
-      }
-
-      const response: ApiResponse<T> = {
-        status: res ? res.status : connectionFailed ? 0 : 500,
-        error: error instanceof Error ? error.message : String(error),
-        headers: res ? res.headers : new Headers(),
-        success: false,
-        data: undefined,
-        connectionError: connectionFailed,
-      };
-
-      return response;
-    }
-  }
-
-  async get<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("GET", endpoint, undefined, headers);
-  }
-
-  async post<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("POST", endpoint, body, headers);
-  }
-
-  async patch<T>(endpoint: string, body: object, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("PATCH", endpoint, body, headers);
-  }
-
-  async delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>> {
-    return this.request<T>("DELETE", endpoint, undefined, headers);
+  protected handleConnectionError(error: unknown, endpoint: string, method: string): void {
+    Sentry.captureException(error, {
+      tags: { error_type: "connection_error" },
+      extra: { endpoint, method },
+    });
   }
 }
