@@ -11,7 +11,16 @@ import {
 export type { Subscription, SubscriptionsListResponse } from "./schemas";
 
 // Argument types for unified interface
-export type SubscriptionsListArgs = { page?: number; perPage?: number };
+export type SubscriptionsListArgs = {
+  page?: number;
+  perPage?: number;
+  state?: string;
+  paymentState?: string;
+  orderBy?: "starts_at" | "ends_at" | "reference" | "created_at";
+  orderDirection?: "asc" | "desc";
+  serviceId?: number;
+  subscriptionCategoryId?: string;
+};
 export type SubscriptionsGetArgs = { id: string };
 
 // Result types using tuples
@@ -25,9 +34,26 @@ export class SubscriptionsService extends BaseService {
   }
 
   async list(args?: SubscriptionsListArgs): Promise<SubscriptionsListResult> {
-    const params = args ? { page: args.page?.toString(), per_page: args.perPage?.toString() } : undefined;
+    const params = args
+      ? {
+          page: args.page?.toString(),
+          per_page: args.perPage?.toString(),
+          state: args.state,
+          payment_state: args.paymentState,
+          order_by: args.orderBy,
+          order_direction: args.orderDirection,
+          service_id: args.serviceId?.toString(),
+          subscription_category_id: args.subscriptionCategoryId,
+        }
+      : undefined;
     const validatedParams = params ? SubscriptionsListParamsSchema.parse(params) : undefined;
-    const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
+    const filteredParams = validatedParams
+      ? Object.fromEntries(Object.entries(validatedParams).filter(([_, v]) => v !== undefined))
+      : undefined;
+    const queryString =
+      filteredParams && Object.keys(filteredParams).length > 0
+        ? `?${new URLSearchParams(filteredParams as Record<string, string>).toString()}`
+        : "";
 
     const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions${queryString}`);
 

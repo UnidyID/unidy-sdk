@@ -23,7 +23,7 @@
  * });
  *
  * // Use the services
- * const result = await auth.createSignIn('user@example.com');
+ * const result = await auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
 
@@ -88,7 +88,7 @@ export interface ApiResponse<T> {
  * });
  *
  * const auth = new AuthService(client);
- * const result = await auth.createSignIn('user@example.com');
+ * const result = await auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
 export class StandaloneApiClient {
@@ -222,7 +222,7 @@ export class StandaloneApiClient {
  *   },
  * });
  *
- * const signIn = await client.auth.createSignIn('user@example.com');
+ * const signIn = await client.auth.createSignIn({ payload: { email: 'user@example.com' } });
  * ```
  */
 import { AuthService } from "../auth/api/auth";

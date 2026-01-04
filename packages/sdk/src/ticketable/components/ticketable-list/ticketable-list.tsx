@@ -90,11 +90,25 @@ export class TicketableList extends UnidyComponent {
       const unidyClient = await getUnidyClient();
       const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
+      // Parse filter string into typed args
+      const filterArgs: Record<string, string> = Object.fromEntries(
+        (this.filter || "")
+          .split(";")
+          .filter(Boolean)
+          .map((pair) => pair.split("=")),
+      );
+
       const [error, data] = await service.list({
         page: this.page,
-        limit: this.limit,
-        ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
-      });
+        perPage: this.limit,
+        state: filterArgs.state,
+        paymentState: filterArgs.payment_state,
+        orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
+        orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
+        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
+        ticketCategoryId: filterArgs.ticket_category_id,
+        subscriptionCategoryId: filterArgs.subscription_category_id,
+      } as any); // Use 'as any' since tickets and subscriptions have slightly different args
 
       if (error !== null || !data || !("results" in data)) {
         this.error = error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
