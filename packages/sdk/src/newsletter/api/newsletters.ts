@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies, type Payload, type Options } from "../../api";
 import {
   CreateSubscriptionsPayloadSchema,
   CreateSubscriptionsResponseSchema,
@@ -19,7 +19,6 @@ import {
   type NewsletterSubscription,
   type NewslettersResponse,
   type ResendDoiPayload,
-  type SubscriptionAuthOptions,
   type UpdateSubscriptionPayload,
 } from "./schemas";
 
@@ -38,10 +37,22 @@ export type {
   Preference,
   PreferenceGroup,
   NewsletterErrorResponse,
-  SubscriptionAuthOptions,
 } from "./schemas";
 
-// Result types using tuples - following AuthService pattern
+// Options type for newsletter methods (only preferenceToken can be passed per-call)
+export type NewsletterOptions = { preferenceToken: string };
+
+// Argument types for unified interface
+export type NewsletterCreateArgs = Payload<CreateSubscriptionsPayload> & Options<NewsletterOptions>;
+export type NewsletterListArgs = Options<NewsletterOptions>;
+export type NewsletterGetArgs = { internalName: string } & Options<NewsletterOptions>;
+export type NewsletterUpdateArgs = { internalName: string } & Payload<UpdateSubscriptionPayload> & Options<NewsletterOptions>;
+export type NewsletterDeleteArgs = { internalName: string } & Options<NewsletterOptions>;
+export type NewsletterResendDoiArgs = { internalName: string } & Payload<ResendDoiPayload> & Options<NewsletterOptions>;
+export type NewsletterSendLoginEmailArgs = Payload<LoginEmailPayload>;
+export type NewsletterGetByNameArgs = { internalName: string };
+
+// Result types using tuples
 export type NewsletterCreateResult =
   | CommonErrors
   | ["rate_limit_exceeded", NewsletterErrorResponse]
@@ -88,25 +99,35 @@ export class NewsletterService extends BaseService {
     super(client, "NewsletterService", deps);
   }
 
-  private buildSubscriptionAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
-    if (!auth) return undefined;
-    return this.buildAuthHeaders({
-      "X-ID-Token": auth.idToken,
-      "X-Preference-Token": auth.preferenceToken,
-    });
+  private async buildNewsletterAuthHeaders(options?: Partial<NewsletterOptions>): Promise<HeadersInit | undefined> {
+    const idToken = await this.getIdToken();
+    const headers: Record<string, string | undefined> = {
+      "X-ID-Token": idToken ?? undefined,
+      "X-Preference-Token": options?.preferenceToken,
+    };
+
+    const filtered = Object.entries(headers).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    return Object.keys(filtered).length > 0 ? filtered : undefined;
   }
 
   /**
    * Create newsletter subscriptions for a user
    */
-  async create(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<NewsletterCreateResult> {
+  async create(args: NewsletterCreateArgs): Promise<NewsletterCreateResult> {
+    const { payload, options } = args;
     CreateSubscriptionsPayloadSchema.parse(payload);
 
-    const response = await this.client.post<unknown>(
-      "/api/sdk/v1/newsletters/newsletter_subscription",
-      payload,
-      this.buildSubscriptionAuthHeaders(auth),
-    );
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", payload, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -136,11 +157,9 @@ export class NewsletterService extends BaseService {
   /**
    * List all subscriptions for the authenticated user
    */
-  async list(auth: SubscriptionAuthOptions): Promise<NewsletterListResult> {
-    const response = await this.client.get<unknown>(
-      "/api/sdk/v1/newsletters/newsletter_subscription",
-      this.buildSubscriptionAuthHeaders(auth),
-    );
+  async list(args?: NewsletterListArgs): Promise<NewsletterListResult> {
+    const headers = await this.buildNewsletterAuthHeaders(args?.options);
+    const response = await this.client.get<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -159,11 +178,10 @@ export class NewsletterService extends BaseService {
   /**
    * Get a specific subscription by newsletter internal name
    */
-  async get(internalName: string, auth: SubscriptionAuthOptions): Promise<NewsletterGetResult> {
-    const response = await this.client.get<unknown>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildSubscriptionAuthHeaders(auth),
-    );
+  async get(args: NewsletterGetArgs): Promise<NewsletterGetResult> {
+    const { internalName, options } = args;
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -185,14 +203,12 @@ export class NewsletterService extends BaseService {
   /**
    * Update a subscription's preferences
    */
-  async update(internalName: string, payload: UpdateSubscriptionPayload, auth: SubscriptionAuthOptions): Promise<NewsletterUpdateResult> {
+  async update(args: NewsletterUpdateArgs): Promise<NewsletterUpdateResult> {
+    const { internalName, payload, options } = args;
     UpdateSubscriptionPayloadSchema.parse(payload);
 
-    const response = await this.client.patch<unknown>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      payload,
-      this.buildSubscriptionAuthHeaders(auth),
-    );
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.patch<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, payload, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -214,11 +230,10 @@ export class NewsletterService extends BaseService {
   /**
    * Delete a subscription
    */
-  async delete(internalName: string, auth: SubscriptionAuthOptions): Promise<NewsletterDeleteResult> {
-    const response = await this.client.delete<unknown>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildSubscriptionAuthHeaders(auth),
-    );
+  async delete(args: NewsletterDeleteArgs): Promise<NewsletterDeleteResult> {
+    const { internalName, options } = args;
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.delete<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -240,13 +255,15 @@ export class NewsletterService extends BaseService {
   /**
    * Resend double opt-in confirmation email
    */
-  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<NewsletterResendDoiResult> {
+  async resendDoi(args: NewsletterResendDoiArgs): Promise<NewsletterResendDoiResult> {
+    const { internalName, payload, options } = args;
     ResendDoiPayloadSchema.parse(payload);
 
+    const headers = await this.buildNewsletterAuthHeaders(options);
     const response = await this.client.post<unknown>(
       `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
       payload,
-      this.buildSubscriptionAuthHeaders(auth),
+      headers,
     );
 
     return this.handleResponse(response, () => {
@@ -271,7 +288,8 @@ export class NewsletterService extends BaseService {
   /**
    * Send a login email for newsletter management
    */
-  async sendLoginEmail(payload: LoginEmailPayload): Promise<NewsletterSendLoginEmailResult> {
+  async sendLoginEmail(args: NewsletterSendLoginEmailArgs): Promise<NewsletterSendLoginEmailResult> {
+    const { payload } = args;
     LoginEmailPayloadSchema.parse(payload);
 
     const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
@@ -308,7 +326,8 @@ export class NewsletterService extends BaseService {
   /**
    * Get a newsletter by its internal name
    */
-  async getByName(internalName: string): Promise<NewsletterGetByNameResult> {
+  async getByName(args: NewsletterGetByNameArgs): Promise<NewsletterGetByNameResult> {
+    const { internalName } = args;
     const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}`);
 
     return this.handleResponse(response, () => {

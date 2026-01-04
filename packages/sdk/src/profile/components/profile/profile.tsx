@@ -5,7 +5,7 @@ import { Auth } from "../../../auth";
 import { getUnidyClient } from "../../../api";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
-import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
+import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
 import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
 
@@ -21,7 +21,7 @@ export class Profile {
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
-      await this.getTokenAndFetchProfile();
+      await this.fetchProfileData();
     });
   }
 
@@ -29,29 +29,23 @@ export class Profile {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
     } else {
-      await this.getTokenAndFetchProfile();
+      await this.fetchProfileData();
     }
 
     profileState.loading = false;
   }
 
-  async getTokenAndFetchProfile() {
-    const authInstance = await Auth.getInstance();
-
-    const idToken = await authInstance.getToken();
-
-    if (idToken && typeof idToken === "string") {
-      await this.fetchProfileData(idToken as string);
-    }
-  }
-
-  async fetchProfileData(idToken: string) {
+  async fetchProfileData() {
     // avoid multiple requests
     if (this.fetchingProfileData) return;
 
+    const authInstance = await Auth.getInstance();
+    const isAuthenticated = await authInstance.isAuthenticated();
+    if (!isAuthenticated) return;
+
     this.fetchingProfileData = true;
     try {
-      const [error, data] = await getUnidyClient().profile.get({ idToken, lang: unidyState.locale });
+      const [error, data] = await getUnidyClient().profile.get();
 
       if (error === null && data) {
         profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
@@ -72,8 +66,6 @@ export class Profile {
 
   @Method()
   async submitProfile() {
-    const authInstance = await Auth.getInstance();
-
     profileState.loading = true;
 
     const { configuration, ...stateWithoutConfig } = profileState;
@@ -86,9 +78,7 @@ export class Profile {
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
 
     const [error, data] = await getUnidyClient().profile.update({
-      idToken: (await authInstance.getToken()) as string,
-      data: updatedProfileData,
-      lang: unidyState.locale,
+      payload: updatedProfileData,
     });
 
     if (error === null && data) {
@@ -111,10 +101,8 @@ export class Profile {
     });
 
     authOnChange("token", (newToken: string | null) => {
-      const token = newToken ?? "";
-
-      if (token) {
-        this.fetchProfileData(token);
+      if (newToken) {
+        this.fetchProfileData();
       }
     });
   }

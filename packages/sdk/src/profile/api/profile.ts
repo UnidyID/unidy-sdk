@@ -1,12 +1,9 @@
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies, type Payload } from "../../api";
 import {
   ProfileErrorResponseSchema,
   UserProfileFormErrorSchema,
   UserProfileSchema,
-  type FetchProfileArgs,
   type ProfileErrorResponse,
-  type UpdateProfileArgs,
-  type UserProfileData,
   type UserProfileFormError,
 } from "./schemas";
 
@@ -14,13 +11,19 @@ import {
 export { UserProfileSchema } from "./schemas";
 export type { UserProfileData, ProfileErrorResponse, UserProfileFormError } from "./schemas";
 
+// Payload type for update (flexible object)
+export type UpdateProfilePayload = Record<string, unknown>;
+
+// Argument types for unified interface
+export type ProfileUpdateArgs = Payload<UpdateProfilePayload>;
+
 // Result types using tuples
 export type ProfileGetResult =
   | CommonErrors
   | ["missing_id_token", null]
   | ["unauthorized", ProfileErrorResponse]
   | ["invalid_profile_data", null]
-  | [null, UserProfileData];
+  | [null, import("./schemas").UserProfileData];
 
 export type ProfileUpdateResult =
   | CommonErrors
@@ -28,18 +31,20 @@ export type ProfileUpdateResult =
   | ["unauthorized", ProfileErrorResponse]
   | ["invalid_profile_data", null]
   | ["validation_error", UserProfileFormError]
-  | [null, UserProfileData];
+  | [null, import("./schemas").UserProfileData];
 
 export class ProfileService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "ProfileService", deps);
   }
 
-  async get({ idToken, lang }: FetchProfileArgs): Promise<ProfileGetResult> {
+  async get(): Promise<ProfileGetResult> {
+    const idToken = await this.getIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
 
+    const lang = this.getLocale();
     const response = await this.client.get<unknown>(
       `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
@@ -67,12 +72,14 @@ export class ProfileService extends BaseService {
     });
   }
 
-  async update({ idToken, data, lang }: UpdateProfileArgs): Promise<ProfileUpdateResult> {
+  async update(args: ProfileUpdateArgs): Promise<ProfileUpdateResult> {
+    const idToken = await this.getIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
 
-    const payload = data as object;
+    const { payload } = args;
+    const lang = this.getLocale();
 
     const response = await this.client.patch<unknown>(
       `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,

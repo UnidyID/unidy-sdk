@@ -1,27 +1,25 @@
 import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
-import {
-  TicketSchema,
-  TicketsListParamsSchema,
-  TicketsListResponseSchema,
-  type Ticket,
-  type TicketsListParams,
-  type TicketsListResponse,
-} from "./schemas";
+import { TicketSchema, TicketsListParamsSchema, TicketsListResponseSchema, type Ticket, type TicketsListResponse } from "./schemas";
 
 // Re-export types for external use
-export type { Ticket, TicketsListResponse, TicketsListParams } from "./schemas";
+export type { Ticket, TicketsListResponse } from "./schemas";
+
+// Argument types for unified interface
+export type TicketsListArgs = { page?: number; perPage?: number };
+export type TicketsGetArgs = { id: string };
 
 // Result types using tuples
-export type ListTicketsResult = CommonErrors | ["invalid_response", null] | [null, TicketsListResponse];
+export type TicketsListResult = CommonErrors | ["invalid_response", null] | [null, TicketsListResponse];
 
-export type GetTicketResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Ticket];
+export type TicketsGetResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Ticket];
 
 export class TicketsService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketsService", deps);
   }
 
-  async list(params?: TicketsListParams): Promise<ListTicketsResult> {
+  async list(args?: TicketsListArgs): Promise<TicketsListResult> {
+    const params = args ? { page: args.page?.toString(), per_page: args.perPage?.toString() } : undefined;
     const validatedParams = params ? TicketsListParamsSchema.parse(params) : undefined;
     const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
 
@@ -42,7 +40,8 @@ export class TicketsService extends BaseService {
     });
   }
 
-  async get(id: string): Promise<GetTicketResult> {
+  async get(args: TicketsGetArgs): Promise<TicketsGetResult> {
+    const { id } = args;
     const response = await this.client.get<unknown>(`/api/sdk/v1/tickets/${id}`);
 
     return this.handleResponse(response, () => {

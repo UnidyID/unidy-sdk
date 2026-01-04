@@ -30,7 +30,15 @@ export interface ServiceDependencies {
   logger?: Logger;
   /** Error reporter (e.g., Sentry) - defaults to no-op */
   errorReporter?: ErrorReporter;
+  /** Get the current ID token for authenticated requests */
+  getIdToken?: () => Promise<string | null>;
+  /** Get the current locale for i18n */
+  getLocale?: () => string;
 }
+
+// Helper types for unified method interfaces
+export type Payload<T> = { payload: T };
+export type Options<T> = { options?: Partial<T> };
 
 /**
  * API Client interface that services depend on
@@ -67,6 +75,8 @@ const consoleLogger: Logger = {
 export abstract class BaseService {
   protected logger: Logger;
   protected errorReporter: ErrorReporter;
+  protected getIdToken: () => Promise<string | null>;
+  protected getLocale: () => string;
 
   constructor(
     protected client: ApiClientInterface,
@@ -76,6 +86,8 @@ export abstract class BaseService {
     // Use injected dependencies or defaults
     this.logger = deps?.logger ?? consoleLogger;
     this.errorReporter = deps?.errorReporter ?? noopErrorReporter;
+    this.getIdToken = deps?.getIdToken ?? (async () => null);
+    this.getLocale = deps?.getLocale ?? (() => "en");
 
     // Prefix logger if using console
     if (!deps?.logger) {

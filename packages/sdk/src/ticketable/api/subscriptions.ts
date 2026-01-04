@@ -4,24 +4,28 @@ import {
   SubscriptionsListParamsSchema,
   SubscriptionsListResponseSchema,
   type Subscription,
-  type SubscriptionsListParams,
   type SubscriptionsListResponse,
 } from "./schemas";
 
 // Re-export types for external use
-export type { Subscription, SubscriptionsListResponse, SubscriptionsListParams } from "./schemas";
+export type { Subscription, SubscriptionsListResponse } from "./schemas";
+
+// Argument types for unified interface
+export type SubscriptionsListArgs = { page?: number; perPage?: number };
+export type SubscriptionsGetArgs = { id: string };
 
 // Result types using tuples
-export type ListTicketableSubscriptionsResult = CommonErrors | ["invalid_response", null] | [null, SubscriptionsListResponse];
+export type SubscriptionsListResult = CommonErrors | ["invalid_response", null] | [null, SubscriptionsListResponse];
 
-export type GetTicketableSubscriptionResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Subscription];
+export type SubscriptionsGetResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Subscription];
 
 export class SubscriptionsService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "SubscriptionsService", deps);
   }
 
-  async list(params?: SubscriptionsListParams): Promise<ListTicketableSubscriptionsResult> {
+  async list(args?: SubscriptionsListArgs): Promise<SubscriptionsListResult> {
+    const params = args ? { page: args.page?.toString(), per_page: args.perPage?.toString() } : undefined;
     const validatedParams = params ? SubscriptionsListParamsSchema.parse(params) : undefined;
     const queryString = validatedParams ? `?${new URLSearchParams(validatedParams as Record<string, string>).toString()}` : "";
 
@@ -42,7 +46,8 @@ export class SubscriptionsService extends BaseService {
     });
   }
 
-  async get(id: string): Promise<GetTicketableSubscriptionResult> {
+  async get(args: SubscriptionsGetArgs): Promise<SubscriptionsGetResult> {
+    const { id } = args;
     const response = await this.client.get<unknown>(`/api/sdk/v1/subscriptions/${id}`);
 
     return this.handleResponse(response, () => {

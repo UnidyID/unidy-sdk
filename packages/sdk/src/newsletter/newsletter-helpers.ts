@@ -8,7 +8,6 @@ import {
   type ExistingSubscription,
   type CheckedNewsletters,
 } from "./store/newsletter-store";
-import { Auth } from "../auth/auth";
 import { createLogger } from "../logger";
 
 const logger = createLogger("NewsletterHelpers");
@@ -25,17 +24,11 @@ export function newsletterLogout(): void {
 export async function resendDoi(internalName: string): Promise<boolean> {
   const { preferenceToken } = newsletterStore.state;
 
-  const authInstance = await Auth.getInstance();
-  const idToken = await authInstance.getToken();
-
-  const [error] = await getUnidyClient().newsletters.resendDoi(
+  const [error] = await getUnidyClient().newsletters.resendDoi({
     internalName,
-    { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
-    {
-      preferenceToken: typeof preferenceToken === "string" ? preferenceToken : "",
-      idToken: typeof idToken === "string" ? idToken : "",
-    },
-  );
+    payload: { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
+    options: { preferenceToken },
+  });
 
   if (error === null) {
     return true;
@@ -52,8 +45,10 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 
 export async function sendLoginEmail(email: string): Promise<void> {
   const [error] = await getUnidyClient().newsletters.sendLoginEmail({
-    email,
-    redirect_uri: redirectToAfterConfirmationUrl(),
+    payload: {
+      email,
+      redirect_uri: redirectToAfterConfirmationUrl(),
+    },
   });
 
   if (error === null) {
@@ -72,14 +67,10 @@ export async function fetchSubscriptions(): Promise<void> {
     return;
   }
 
-  const authInstance = await Auth.getInstance();
-  const idToken = await authInstance.getToken();
-
   newsletterStore.state.fetchingSubscriptions = true;
 
   const [error, data] = await getUnidyClient().newsletters.list({
-    preferenceToken,
-    idToken: typeof idToken === "string" ? idToken : "",
+    options: { preferenceToken },
   });
 
   newsletterStore.state.fetchingSubscriptions = false;
@@ -132,12 +123,10 @@ async function handleAlreadySubscribedError(
 }
 
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
-  const authInstance = await Auth.getInstance();
-  const idToken = await authInstance.getToken();
   const { checkedNewsletters } = newsletterStore.state;
 
-  const [error, response] = await getUnidyClient().newsletters.create(
-    {
+  const [error, response] = await getUnidyClient().newsletters.create({
+    payload: {
       email,
       newsletter_subscriptions: internalNames.map((newsletter) => ({
         newsletter_internal_name: newsletter,
@@ -145,10 +134,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
     },
-    {
-      idToken: typeof idToken === "string" ? idToken : "",
-    },
-  );
+  });
 
   if (error === null && response && "results" in response) {
     if (response.results.length > 0) {
@@ -228,12 +214,9 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
     return false;
   }
 
-  const authInstance = await Auth.getInstance();
-  const idToken = await authInstance.getToken();
-
-  const [error, data] = await getUnidyClient().newsletters.delete(internalName, {
-    preferenceToken,
-    idToken: typeof idToken === "string" ? idToken : "",
+  const [error, data] = await getUnidyClient().newsletters.delete({
+    internalName,
+    options: { preferenceToken },
   });
 
   if (error === null) {
@@ -313,19 +296,13 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
     return false;
   }
 
-  const authInstance = await Auth.getInstance();
-  const idToken = await authInstance.getToken();
-
   const preferenceIdentifiers = newsletterStore.state.checkedNewsletters[internalName] || [];
 
-  const [error, data] = await getUnidyClient().newsletters.update(
+  const [error, data] = await getUnidyClient().newsletters.update({
     internalName,
-    { preference_identifiers: preferenceIdentifiers },
-    {
-      preferenceToken,
-      idToken: typeof idToken === "string" ? idToken : "",
-    },
-  );
+    payload: { preference_identifiers: preferenceIdentifiers },
+    options: { preferenceToken },
+  });
 
   if (error === "unauthorized") {
     Flash.error.addMessage(t("newsletter.errors.unauthorized"));

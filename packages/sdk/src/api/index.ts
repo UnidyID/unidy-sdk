@@ -7,6 +7,7 @@ import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
 import { createLogger } from "../logger";
 import type { ServiceDependencies } from "./base-service";
+import { Auth } from "../auth/auth";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
@@ -23,6 +24,12 @@ function createBrowserDeps(serviceName: string): ServiceDependencies {
     errorReporter: {
       captureException: (error, context) => Sentry.captureException(error, { extra: context }),
     },
+    getIdToken: async () => {
+      const auth = await Auth.getInstance();
+      const token = await auth.getToken();
+      return typeof token === "string" ? token : null;
+    },
+    getLocale: () => unidyState.locale,
   };
 }
 
