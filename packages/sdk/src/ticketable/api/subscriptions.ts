@@ -24,9 +24,18 @@ export type SubscriptionsListArgs = {
 export type SubscriptionsGetArgs = { id: string };
 
 // Result types using tuples
-export type SubscriptionsListResult = CommonErrors | ["invalid_response", null] | [null, SubscriptionsListResponse];
+export type SubscriptionsListResult =
+  | CommonErrors
+  | ["server_error", null]
+  | ["invalid_response", null]
+  | [null, SubscriptionsListResponse];
 
-export type SubscriptionsGetResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Subscription];
+export type SubscriptionsGetResult =
+  | CommonErrors
+  | ["server_error", null]
+  | ["not_found", null]
+  | ["invalid_response", null]
+  | [null, Subscription];
 
 export class SubscriptionsService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -66,7 +75,8 @@ export class SubscriptionsService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        throw new Error("Failed to fetch subscriptions");
+        this.logger.error("Failed to fetch subscriptions", response);
+        return ["server_error", null];
       }
 
       const parsed = SubscriptionsListResponseSchema.safeParse(response.data);
@@ -88,7 +98,8 @@ export class SubscriptionsService extends BaseService {
         if (response.status === 404) {
           return ["not_found", null];
         }
-        throw new Error("Failed to fetch subscription");
+        this.logger.error("Failed to fetch subscription", response);
+        return ["server_error", null];
       }
 
       const parsed = SubscriptionSchema.safeParse(response.data);

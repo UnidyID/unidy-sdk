@@ -18,9 +18,9 @@ export type TicketsListArgs = {
 export type TicketsGetArgs = { id: string };
 
 // Result types using tuples
-export type TicketsListResult = CommonErrors | ["invalid_response", null] | [null, TicketsListResponse];
+export type TicketsListResult = CommonErrors | ["server_error", null] | ["invalid_response", null] | [null, TicketsListResponse];
 
-export type TicketsGetResult = CommonErrors | ["not_found", null] | ["invalid_response", null] | [null, Ticket];
+export type TicketsGetResult = CommonErrors | ["server_error", null] | ["not_found", null] | ["invalid_response", null] | [null, Ticket];
 
 export class TicketsService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -60,7 +60,8 @@ export class TicketsService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        throw new Error("Failed to fetch tickets");
+        this.logger.error("Failed to fetch tickets", response);
+        return ["server_error", null];
       }
 
       const parsed = TicketsListResponseSchema.safeParse(response.data);
@@ -82,7 +83,8 @@ export class TicketsService extends BaseService {
         if (response.status === 404) {
           return ["not_found", null];
         }
-        throw new Error("Failed to fetch ticket");
+        this.logger.error("Failed to fetch ticket", response);
+        return ["server_error", null];
       }
 
       const parsed = TicketSchema.safeParse(response.data);

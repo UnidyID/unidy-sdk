@@ -24,19 +24,19 @@ import {
 
 // Re-export types for external use
 export type {
+  AdditionalFields,
+  CreateSubscriptionsPayload,
+  CreateSubscriptionsResponse,
+  LoginEmailPayload,
+  Newsletter,
+  NewsletterErrorResponse,
   NewsletterSubscription,
   NewsletterSubscriptionError,
-  CreateSubscriptionsResponse,
-  CreateSubscriptionsPayload,
-  AdditionalFields,
-  UpdateSubscriptionPayload,
-  LoginEmailPayload,
-  ResendDoiPayload,
-  Newsletter,
   NewslettersResponse,
   Preference,
   PreferenceGroup,
-  NewsletterErrorResponse,
+  ResendDoiPayload,
+  UpdateSubscriptionPayload,
 } from "./schemas";
 
 // Options type for newsletter methods (only preferenceToken can be passed per-call)

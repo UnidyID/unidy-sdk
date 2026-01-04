@@ -88,7 +88,6 @@ export class TicketableList extends UnidyComponent {
 
     try {
       const unidyClient = await getUnidyClient();
-      const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
       // Parse filter string into typed args
       const filterArgs: Record<string, string> = Object.fromEntries(
@@ -98,7 +97,8 @@ export class TicketableList extends UnidyComponent {
           .map((pair) => pair.split("=")),
       );
 
-      const [error, data] = await service.list({
+      // Common args for both services
+      const commonArgs = {
         page: this.page,
         perPage: this.limit,
         state: filterArgs.state,
@@ -106,9 +106,19 @@ export class TicketableList extends UnidyComponent {
         orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
         serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
-        ticketCategoryId: filterArgs.ticket_category_id,
-        subscriptionCategoryId: filterArgs.subscription_category_id,
-      } as any); // Use 'as any' since tickets and subscriptions have slightly different args
+      };
+
+      // Call the appropriate service with type-safe args
+      const [error, data] =
+        this.ticketableType === "ticket"
+          ? await unidyClient.tickets.list({
+              ...commonArgs,
+              ticketCategoryId: filterArgs.ticket_category_id,
+            })
+          : await unidyClient.subscriptions.list({
+              ...commonArgs,
+              subscriptionCategoryId: filterArgs.subscription_category_id,
+            });
 
       if (error !== null || !data || !("results" in data)) {
         this.error = error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
@@ -243,7 +253,7 @@ export class TicketableList extends UnidyComponent {
       this.logger.error(`can't render content: ${this.error}`);
       return (
         <h1>
-          `${t("errors.prefix")} ${this.error}`
+          {t("errors.prefix")} {this.error}
         </h1>
       );
     }
