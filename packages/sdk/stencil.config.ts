@@ -24,6 +24,7 @@ export const config: Config = {
       serviceWorker: null,
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
+        { src: "demo-build.css", dest: "demo.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
