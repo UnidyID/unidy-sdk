@@ -820,7 +820,7 @@ u-field::part(input_field) {
 
 The SDK uses `i18next` for internationalization. You can provide your own translations for any text in the SDK by using the `custom-translations` attribute on the `<u-config>` component.
 
-The value of this attribute can be a JSON string or a JavaScript object. The keys of the object should be language codes (e.g., "en", "de"), and the values should be nested objects representing the translation keys.
+The value of this attribute can be a JSON string or a JavaScript object. The keys of the object should be language codes (e.g., "en", "de", "fr", "it", "nl_be", "ro"), and the values should be nested objects representing the translation keys.
 
 **Example:**
 

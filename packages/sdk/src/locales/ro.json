@@ -1,0 +1,131 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Introduceți adresa dvs. de e-mail"
+    },
+    "magicCode": {
+      "already_sent_text": "Cod magic trimis deja la adresa dvs. de e-mail",
+      "button_text": "Trimite cod magic",
+      "resend": {
+        "button_text": "Trimite din nou codul magic"
+      },
+      "sending_text": "Se trimite..."
+    },
+    "passkey": {
+      "button_text": "Conectați-vă cu cheie de acces",
+      "loading_text": "Autentificare..."
+    },
+    "password": {
+      "button_text": "Conectați-vă cu parolă",
+      "confirmation": {
+        "placeholder": "Confirmați parola"
+      },
+      "placeholder": "Introduceți parola"
+    },
+    "resetPassword": {
+      "button_text_resend": "Retrimite e-mail pentru resetarea parolei",
+      "button_text_reset": "Resetează parola",
+      "button_text_set": "Salvează parola",
+      "success_message": "E-mail pentru resetarea parolei trimis. Vă rugăm să verificați inbox-ul"
+    },
+    "single-login": {
+      "button_text": "Conectare"
+    },
+    "socialLogin": {
+      "button_text": "Continuă cu {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Închide",
+    "continue": "Continuă",
+    "logout": "Deconectare",
+    "registration": "Înregistrează cont nou",
+    "sign_in": "Conectare",
+    "submit": "Trimite"
+  },
+  "errors": {
+    "account_locked": "Cont blocat",
+    "account_not_found": "Cont negăsit",
+    "authentication_failed": "Autentificare eșuată",
+    "bad_request": "Cerere invalidă",
+    "connection_failed": "Nu se poate conecta la serverul Unidy",
+    "expired": "Expirat",
+    "failed_to_load_profile": "Încărcarea datelor profilului a eșuat. Vă rugăm să verificați configurația",
+    "invalid_id_token": "Token ID invalid",
+    "invalid_passkey": "Cheie de acces invalidă",
+    "invalid_password": "Parolă invalidă",
+    "invalid_refresh_token": "Token de reîmprospătare invalid",
+    "invalid_required_fields_payload": "Payload invalid pentru câmpurile obligatorii",
+    "invalid_reset_token": "Token de resetare invalid. Vă rugăm să solicitați un nou e-mail pentru resetarea parolei",
+    "invalid_response_format": "Format de răspuns invalid",
+    "magic_code_is_missing": "Cod magic lipsă",
+    "magic_code_recently_created": "Cod magic creat recent",
+    "missing_id_token": "Token ID lipsă",
+    "missing_refresh_token": "Niciun token de reîmprospătare prezent",
+    "missing_required_fields": "Câmpuri obligatorii lipsă",
+    "no_sign_in_id": "Niciun ID de conectare disponibil",
+    "not_valid": "Invalid",
+    "passkey_cancelled": "Autentificare cu cheie de acces anulată",
+    "passkey_error": "A apărut o eroare necunoscută a cheii de acces",
+    "passkey_invalid_state": "Stare invalidă a cheii de acces",
+    "passkey_not_supported": "Cheie de acces nesuportată",
+    "passkey_security_error": "Eroare de securitate a cheii de acces",
+    "password_not_set": "Parola nu este setată",
+    "password_required": "Parola este obligatorie",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Parola este prea scurtă (minimum 6 caractere)",
+      "min_length": "Lungimea minimă este de 6 caractere",
+      "mixed_case": "Trebuie să conțină atât litere mari, cât și litere mici",
+      "number": "Trebuie să conțină o cifră",
+      "symbol": "Trebuie să conțină un simbol"
+    },
+    "passwords_do_not_match": "Parolele nu se potrivesc",
+    "prefix": "EROARE: ",
+    "refresh_failed": "Reîmprospătarea token-ului a eșuat. Vă rugăm să vă conectați din nou",
+    "refresh_token_revoked": "Token de reîmprospătare revocat",
+    "required_field": "{{field}} este obligatoriu",
+    "reset_password_already_sent": "Resetare parolă deja trimisă",
+    "reset_token_expired": "Token-ul de resetare a expirat. Vă rugăm să solicitați un nou e-mail pentru resetarea parolei",
+    "reset_token_missing": "Token de resetare lipsă",
+    "schema_validation_error": "Eroare de validare a schemei",
+    "sign_in_expired": "Conectare expirată",
+    "sign_in_not_found": "Conectare negăsită",
+    "sign_out_failed": "Deconectare eșuată, motiv: {{reason}}",
+    "unknown": "A apărut o eroare necunoscută",
+    "used": "Folosit",
+    "verification_failed": "Verificare eșuată"
+  },
+  "loading": "Se încarcă...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Retrimite confirmarea",
+      "subscribe": "Abonare",
+      "unsubscribe": "Dezabonare"
+    },
+    "errors": {
+      "already_subscribed": "Deja abonat",
+      "email_required": "Vă rugăm să introduceți adresa dvs. de e-mail",
+      "invalid_email": "Adresă de e-mail invalidă",
+      "newsletter_not_found": "Newsletter negăsit",
+      "preferences_not_found": "Preferință negăsită",
+      "rate_limit_exceeded": "Limita de rată depășită. Vă rugăm să încercați din nou mai târziu",
+      "unauthorized": "Sesiunea dvs. a expirat. Vă rugăm să vă conectați din nou",
+      "unconfirmed": "E-mailul dvs. nu este confirmat pentru acest newsletter",
+      "unsubscribe_failed": "Dezabonare eșuată",
+      "invalid_preference_token": "Token de preferință invalid. Introduceți adresa dvs. de e-mail pentru a primi un link nou."
+    },
+    "success": {
+      "doi_sent": "E-mail de confirmare trimis la adresa dvs. de e-mail",
+      "login_email_sent": "Am trimis un link pentru a vă gestiona abonamentul existent la adresa dvs. de e-mail",
+      "logout": "V-ați deconectat cu succes",
+      "preferences_updated": "Preferințele dvs. au fost actualizate cu succes",
+      "subscribe": "V-ați abonat cu succes",
+      "unsubscribe": "V-ați dezabonat cu succes"
+    }
+  },
+  "profile": {
+    "signInToView": "Vă rugăm să vă conectați pentru a vă vedea profilul",
+    "updated": "Profilul a fost actualizat"
+  }
+}
