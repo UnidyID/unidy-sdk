@@ -19,11 +19,7 @@ export const profileContext: SubmitButtonContext = {
   },
 
   isDisabled(_forProp, disabled?: boolean): boolean {
-    return (
-      disabled ||
-      (profileState.errors && Object.keys(profileState.errors).length > 0) ||
-      profileState.phoneValid === false
-    );
+    return disabled || (profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false;
   },
 
   isLoading(): boolean {

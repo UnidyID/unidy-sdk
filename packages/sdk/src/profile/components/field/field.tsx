@@ -101,7 +101,9 @@ export class Field {
     const placeholder = t(placeholderTranslationKey, { defaultValue: this.placeholder ? this.placeholder : "" });
 
     const readonlyPlaceholderTranslationKey = `fields.${this.field}.readonlyPlaceholder`;
-    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, { defaultValue: this.readonlyPlaceholder ? this.readonlyPlaceholder : "" });
+    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, {
+      defaultValue: this.readonlyPlaceholder ? this.readonlyPlaceholder : "",
+    });
 
     const translatedOptions = (fieldData.options || []).map((opt) => {
       const translationKey = `fields.${this.field}.options.${opt.value}`;
