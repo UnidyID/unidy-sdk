@@ -31,7 +31,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "^2.3.11",
     "@rollup/plugin-alias": "^5.1.1",
     "@stencil/core": "^4.38.3",
     "@stencil/react-output-target": "^1.2.0",

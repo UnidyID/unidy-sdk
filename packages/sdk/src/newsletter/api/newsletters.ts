@@ -185,7 +185,7 @@ export class NewsletterService extends EventEmitter {
             }
 
             return [null, response];
-          } catch (validationError) {
+          } catch (_validationError) {
             return ["schema_validation_error", response];
           }
         }
