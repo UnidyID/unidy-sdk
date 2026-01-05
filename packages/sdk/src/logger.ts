@@ -42,23 +42,7 @@ const canLog = (level: LogLevel) => LOG_LEVELS[getLogLevel()] >= LOG_LEVELS[leve
 const log = (level: LogLevel, prefix: string, ...args: any[]) => {
   if (canLog(level)) {
     const prefixedArgs = prefix ? [`[${prefix}]`, ...args] : args;
-    switch (level) {
-      case "error":
-        console.error(...prefixedArgs);
-        break;
-      case "warn":
-        console.warn(...prefixedArgs);
-        break;
-      case "info":
-        console.info(...prefixedArgs);
-        break;
-      case "debug":
-        console.debug(...prefixedArgs);
-        break;
-      case "trace":
-        console.trace(...prefixedArgs);
-        break;
-    }
+    console[level](...prefixedArgs);
   }
 };
 
@@ -75,21 +59,18 @@ export interface Logger {
   trace: (...args: any[]) => void;
 }
 
+const LOG_METHODS: LogLevel[] = ["error", "warn", "info", "debug", "trace"];
+
 /**
  * Creates a logger instance with a specific prefix (typically class/component name)
  */
-export const createLogger = (prefix: string): Logger => ({
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  error: (...args: any[]) => log("error", prefix, ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  warn: (...args: any[]) => log("warn", prefix, ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  info: (...args: any[]) => log("info", prefix, ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  debug: (...args: any[]) => log("debug", prefix, ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  trace: (...args: any[]) => log("trace", prefix, ...args),
-});
+export const createLogger = (prefix: string): Logger => {
+  return LOG_METHODS.reduce((logger, level) => {
+    // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+    logger[level] = (...args: any[]) => log(level, prefix, ...args);
+    return logger;
+  }, {} as Logger);
+};
 
 /**
  * Stencil mixin factory that adds a logger property to the component.
@@ -131,40 +112,31 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
 export const UnidyComponent = Mixin(loggerFactory);
 
 // Global logger for non-class contexts (backwards compatibility)
-export const logger: Logger = {
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  error: (...args: any[]) => log("error", "", ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  warn: (...args: any[]) => log("warn", "", ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  info: (...args: any[]) => log("info", "", ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  debug: (...args: any[]) => log("debug", "", ...args),
-  // biome-ignore lint/suspicious/noExplicitAny: See above
-  trace: (...args: any[]) => log("trace", "", ...args),
+export const logger = createLogger("");
+
+// biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
+const formatI18nMessage = (args: any[]): { prefix: string; message: string } => {
+  const [caller_action, ...messages] = args;
+  const [caller, action] = caller_action.split(": ");
+  const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
+  return { prefix: caller || "i18next", message };
 };
 
 export const i18nLogger: LoggerModule = {
   type: "logger",
-  // biome-ignore lint/suspicious/noExplicitAny: See above
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
   error: (args: any[]) => {
-    const [caller_action, ...messages] = args;
-    const [caller, action] = caller_action.split(": ");
-    const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("error", caller || "i18next", message);
+    const { prefix, message } = formatI18nMessage(args);
+    log("error", prefix, message);
   },
-  // biome-ignore lint/suspicious/noExplicitAny: See above
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
   warn: (args: any[]) => {
-    const [caller_action, ...messages] = args;
-    const [caller, action] = caller_action.split(": ");
-    const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("warn", caller || "i18next", message);
+    const { prefix, message } = formatI18nMessage(args);
+    log("warn", prefix, message);
   },
-  // biome-ignore lint/suspicious/noExplicitAny: See above
+  // biome-ignore lint/suspicious/noExplicitAny: External interfaces require the use of any in this case
   log: (args: any[]) => {
-    const [caller_action, ...messages] = args;
-    const [caller, action] = caller_action.split(": ");
-    const message = typeof messages[0] === "object" ? action : `${action}: ${messages.join(" ")}`;
-    log("info", caller || "i18next", message);
+    const { prefix, message } = formatI18nMessage(args);
+    log("info", prefix, message);
   },
 };
