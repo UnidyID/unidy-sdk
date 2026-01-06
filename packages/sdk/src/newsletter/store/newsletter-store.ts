@@ -63,10 +63,11 @@ export const newsletterStore = createStore<NewsletterState>(initialState);
 
 export const storeDefaultPreference = (internalName: NewsletterInternalName, preferenceIdentifier: PreferenceIdentifier) => {
   const current = newsletterStore.state.defaultPreferences[internalName] ?? new Set();
-  current.add(preferenceIdentifier);
+  const updated = new Set(current);
+  updated.add(preferenceIdentifier);
   newsletterStore.state.defaultPreferences = {
     ...newsletterStore.state.defaultPreferences,
-    [internalName]: current,
+    [internalName]: updated,
   };
 };
 

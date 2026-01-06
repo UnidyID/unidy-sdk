@@ -41,7 +41,7 @@ export class NewsletterCheckbox {
       newsletterStore.set("checkedNewsletters", rest);
     } else {
       const prefs = newsletterStore.state.defaultPreferences[this.internalName];
-      const defaultPrefs: string[] = Array.isArray(prefs) ? prefs : prefs instanceof Set ? Array.from(prefs) : [];
+      const defaultPrefs: string[] = prefs ? Array.from(prefs) : [];
 
       newsletterStore.set("checkedNewsletters", {
         ...newsletterStore.state.checkedNewsletters,
