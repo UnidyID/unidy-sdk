@@ -3,7 +3,6 @@ import { getParentSigninStep } from "../../../auth/components/helpers";
 import { authState, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
-import type { NewsletterButtonFor } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 @Component({
