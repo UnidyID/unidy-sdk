@@ -176,6 +176,14 @@ export namespace Components {
         "componentClassName"?: string;
         "internalName": string;
         "preferenceIdentifier": string;
+        /**
+          * Public method to set the checkbox state programmatically
+         */
+        "setChecked": (checked: boolean) => Promise<void>;
+        /**
+          * Public method to toggle the checkbox programmatically
+         */
+        "toggle": () => Promise<void>;
     }
     interface UNewsletterResendDoiButton {
         /**
