@@ -1,8 +1,8 @@
-import { authStore, authState } from "./store/auth-store";
-import type { PasskeyOptionsResponse, TokenResponse, UnidyClient } from "../api";
 import { jwtDecode } from "jwt-decode";
-import type { TokenPayload } from "./auth";
+import type { PasskeyOptionsResponse, TokenResponse, UnidyClient } from "../api";
 import { createLogger } from "../logger";
+import type { TokenPayload } from "./auth";
+import { authState, authStore } from "./store/auth-store";
 
 const logger = createLogger("PasskeyAuth");
 
@@ -47,9 +47,7 @@ function formatCredentialForServer(credential: PublicKeyCredential) {
 }
 
 function extractAndSetSignInId(tokenResponse: TokenResponse) {
-  // @ts-expect-error - sid may exist on response
   if (tokenResponse.sid) {
-    // @ts-expect-error
     authStore.setSignInId(tokenResponse.sid);
     return;
   }

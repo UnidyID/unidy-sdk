@@ -14,9 +14,15 @@
 
 ## Methods
 
-### `submit() => Promise<void>`
+### `submit(forType?: NewsletterButtonFor) => Promise<void>`
 
 
+
+#### Parameters
+
+| Name      | Type                  | Description |
+| --------- | --------------------- | ----------- |
+| `forType` | `"login" \| "create"` |             |
 
 #### Returns
 

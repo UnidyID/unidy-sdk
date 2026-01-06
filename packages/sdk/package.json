@@ -20,7 +20,8 @@
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",
     "test": "stencil test --spec --e2e && jest",
     "test.watch": "stencil test --spec --e2e --watchAll",
-    "generate": "stencil generate"
+    "generate": "stencil generate",
+    "type": "tsc --noEmit"
   },
   "dependencies": {
     "@sentry/browser": "^10.26.0",
