@@ -76,7 +76,9 @@ export class PaginationButton extends UnidyComponent {
           aria-label={isPrev ? "Previous page" : "Next page"}
           class={this.customClass}
         >
-          <slot name="icon"><span aria-hidden="true">{icon}</span></slot>
+          <slot name="icon">
+            <span aria-hidden="true">{icon}</span>
+          </slot>
         </button>
       </Host>
     );

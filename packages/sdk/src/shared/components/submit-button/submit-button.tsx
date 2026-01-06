@@ -1,10 +1,10 @@
-import { Component, h, Prop, Element } from "@stencil/core";
-import { hasSlotContent } from "../../component-utils";
+import { Component, Element, h, Prop } from "@stencil/core";
+import { type AuthButtonFor, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { t } from "../../../i18n";
-import { type AuthButtonFor, AuthSubmitButton, authContext } from "../../../auth/components/submit-button/auth-submit-button";
-import { ProfileSubmitButton, profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { NewsletterSubmitButton, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
-import { type SubmitButtonContext, defaultContext } from "./context";
+import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
+import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
+import { hasSlotContent } from "../../component-utils";
+import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
   tag: "u-submit-button",
@@ -12,7 +12,7 @@ import { type SubmitButtonContext, defaultContext } from "./context";
 })
 export class SubmitButton {
   @Element() el!: HTMLElement;
-  @Prop() for?: AuthButtonFor;
+  @Prop() for?: AuthButtonFor | NewsletterButtonFor;
   @Prop() text?: string;
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -109,17 +109,6 @@ export class SubmitButton {
       "aria-live": "polite",
     };
 
-    const button = <button {...buttonProps}>{this.getButtonContent()}</button>;
-
-    switch (this.context) {
-      case "auth":
-        return <AuthSubmitButton for={this.for}>{button}</AuthSubmitButton>;
-      case "profile":
-        return <ProfileSubmitButton>{button}</ProfileSubmitButton>;
-      case "newsletter":
-        return <NewsletterSubmitButton>{button}</NewsletterSubmitButton>;
-      default:
-        return button;
-    }
+    return <button {...buttonProps}>{this.getButtonContent()}</button>;
   }
 }

@@ -1,20 +1,11 @@
-import type { FunctionalComponent } from "@stencil/core";
-import { authState } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 import { t } from "../../../i18n";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
+import { authState } from "../../store/auth-store";
+import { getParentSigninStep } from "../helpers";
 
 export type AuthButtonFor = "email" | "password" | "resetPassword";
 
-export interface AuthSubmitButtonProps {
-  for?: AuthButtonFor;
-}
-
-export const AuthSubmitButton: FunctionalComponent<AuthSubmitButtonProps> = (_props, children) => {
-  return children;
-};
-
-export const authContext: SubmitButtonContext = {
+export const authContext: SubmitButtonContext<AuthButtonFor> = {
   handleClick: async (event: MouseEvent, el: HTMLElement) => {
     event.preventDefault();
     await getParentSigninStep(el)?.submit();

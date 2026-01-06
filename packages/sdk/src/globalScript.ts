@@ -4,7 +4,8 @@ import { createLogger } from "./logger";
 
 const logger = createLogger("globalScript");
 
-export default function() { // or export default async function()
+export default function () {
+  // or export default async function()
   logger.info("Logger initialized. You can set the log level in the browser console, e.g., setLogLevel('debug').");
   if (!Build.isDev) {
     logger.info("Initializing Sentry...");

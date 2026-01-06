@@ -1,12 +1,5 @@
-import type { FunctionalComponent } from "@stencil/core";
-import { state as profileState } from "../../store/profile-store";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
-
-export type ProfileSubmitButtonProps = Record<string, never>;
-
-export const ProfileSubmitButton: FunctionalComponent<ProfileSubmitButtonProps> = (_props, children) => {
-  return children;
-};
+import { state as profileState } from "../../store/profile-store";
 
 function getParentProfile(el: HTMLElement) {
   return el.closest("u-profile") as HTMLUProfileElement | null;
@@ -19,11 +12,7 @@ export const profileContext: SubmitButtonContext = {
   },
 
   isDisabled(_forProp, disabled?: boolean): boolean {
-    return (
-      disabled ||
-      (profileState.errors && Object.keys(profileState.errors).length > 0) ||
-      profileState.phoneValid === false
-    );
+    return disabled || (profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false;
   },
 
   isLoading(): boolean {

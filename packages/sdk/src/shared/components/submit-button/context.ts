@@ -1,19 +1,16 @@
-import type { AuthButtonFor } from "../../../auth/components/submit-button/auth-submit-button";
-
-export interface SubmitButtonContext {
+export interface SubmitButtonContext<ForContext = string> {
   init?(): Promise<void>;
   handleClick(event: MouseEvent, el: HTMLElement): Promise<void>;
-  isDisabled(forProp?: AuthButtonFor, disabled?: boolean): boolean;
+  isDisabled(forProp?: ForContext, disabled?: boolean): boolean;
   isLoading(): boolean;
-  getButtonText?(forProp?: AuthButtonFor, text?: string): string;
-  shouldRender?(forProp?: AuthButtonFor): boolean;
+  getButtonText?(forProp?: ForContext, text?: string): string;
+  shouldRender?(forProp?: ForContext): boolean;
 }
 
 export const defaultContext: SubmitButtonContext = {
-  async handleClick() {
-  },
+  async handleClick() {},
 
-  isDisabled(_forProp, disabled?: boolean): boolean {
+  isDisabled(_forProp, disabled = false): boolean {
     return disabled || false;
   },
 
@@ -21,4 +18,3 @@ export const defaultContext: SubmitButtonContext = {
     return false;
   },
 };
-

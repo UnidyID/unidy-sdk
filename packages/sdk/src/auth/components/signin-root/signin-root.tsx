@@ -1,4 +1,4 @@
-import {Component, Host, h, Prop, Event, type EventEmitter, Element} from "@stencil/core";
+import { Component, Host, h, Prop, Event, type EventEmitter, Element } from "@stencil/core";
 import type { TokenResponse } from "../../api/auth";
 import { authStore } from "../../store/auth-store";
 

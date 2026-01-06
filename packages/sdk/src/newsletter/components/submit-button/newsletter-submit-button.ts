@@ -1,23 +1,21 @@
-import type { FunctionalComponent } from "@stencil/core";
-import { newsletterStore } from "../../store/newsletter-store";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
+import { newsletterStore } from "../../store/newsletter-store";
 import { getParentNewsletterRoot } from "../helpers";
 
-export interface NewsletterSubmitButtonProps {
-  onClick?: (event: MouseEvent) => void;
-}
+export type NewsletterButtonFor = "login" | "create";
 
-export const NewsletterSubmitButton: FunctionalComponent<NewsletterSubmitButtonProps> = (_props, children) => {
-  return children;
-};
-
-export const newsletterContext: SubmitButtonContext = {
+export const newsletterContext: SubmitButtonContext<NewsletterButtonFor> = {
   handleClick: async (event: MouseEvent, el: HTMLElement) => {
     event.preventDefault();
-    return await getParentNewsletterRoot(el)?.submit();
+    const forAttr = el.closest("u-submit-button")?.getAttribute("for") as NewsletterButtonFor | null;
+    return await getParentNewsletterRoot(el)?.submit(forAttr === "login" ? "login" : undefined);
   },
 
-  isDisabled(_forProp, disabled?: boolean): boolean {
+  isDisabled(forProp, disabled?: boolean): boolean {
+    if (forProp === "login") {
+      return disabled || !newsletterStore.state.email;
+    }
+
     return disabled || !newsletterStore.state.email || Object.keys(newsletterStore.state.checkedNewsletters).length === 0;
   },
 
