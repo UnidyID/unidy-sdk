@@ -6,7 +6,7 @@ import { getParentSigninStep } from "../helpers";
 export type AuthButtonFor = "email" | "password" | "resetPassword";
 
 export const authContext: SubmitButtonContext<AuthButtonFor> = {
-  handleClick: async (event: MouseEvent, el: HTMLElement) => {
+  handleClick: async (event: MouseEvent, el: HTMLElement, _forProp?: AuthButtonFor) => {
     event.preventDefault();
     await getParentSigninStep(el)?.submit();
   },

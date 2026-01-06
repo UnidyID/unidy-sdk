@@ -53,7 +53,7 @@ export class SubmitButton {
   }
 
   private handleClick = async (event: MouseEvent) => {
-    await this.contextModule.handleClick(event, this.el);
+    await this.contextModule.handleClick(event, this.el, this.for);
   };
 
   private isDisabled(): boolean {

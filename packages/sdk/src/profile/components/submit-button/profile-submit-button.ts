@@ -6,7 +6,7 @@ function getParentProfile(el: HTMLElement) {
 }
 
 export const profileContext: SubmitButtonContext = {
-  async handleClick(event: MouseEvent, el: HTMLElement) {
+  async handleClick(event: MouseEvent, el: HTMLElement, _forProp?: string) {
     event.preventDefault();
     await getParentProfile(el)?.submitProfile();
   },
