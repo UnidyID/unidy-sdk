@@ -41,7 +41,11 @@ export class Profile {
 
     const authInstance = await Auth.getInstance();
     const isAuthenticated = await authInstance.isAuthenticated();
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      // Handle unauthenticated state the same as an unauthorized error from backend
+      profileState.flashErrors = { error: t("errors.unauthorized") };
+      return;
+    }
 
     this.fetchingProfileData = true;
     try {

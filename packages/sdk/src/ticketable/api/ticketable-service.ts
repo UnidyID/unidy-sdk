@@ -1,5 +1,5 @@
 import type { ZodSchema } from "zod";
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api";
+import { BaseService, type CommonErrors } from "../../api";
 
 /** Common list arguments for ticketable services */
 export interface TicketableListArgs {
@@ -23,10 +23,6 @@ export type TicketableGetResult<T> = CommonErrors | ["server_error", null] | ["n
  * Handles common query parameter building and response parsing.
  */
 export abstract class TicketableService extends BaseService {
-  constructor(client: ApiClientInterface, serviceName: string, deps?: ServiceDependencies) {
-    super(client, serviceName, deps);
-  }
-
   /**
    * Builds query params from args, mapping camelCase to snake_case.
    * Returns undefined values filtered out.

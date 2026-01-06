@@ -25,15 +25,26 @@ export type QueryParams = Record<string, string | number | boolean | undefined |
  * Provides shared functionality for making HTTP requests.
  */
 export abstract class BaseApiClient {
+  /**
+   * Error messages that indicate a connection failure rather than a server error.
+   * Grouped by source/environment.
+   */
   protected static readonly CONNECTION_ERROR_MESSAGES = [
-    "Failed to fetch",
-    "NetworkError",
-    "ERR_CONNECTION_REFUSED",
-    "ERR_NETWORK",
-    "ERR_INTERNET_DISCONNECTED",
-    "ECONNREFUSED",
-    "ENOTFOUND",
-    "EAI_AGAIN",
+    // Browser fetch API errors
+    "Failed to fetch", // Generic browser fetch failure (Chrome)
+    "NetworkError", // Firefox network error
+    "Load failed", // Safari network error
+    "The network connection was lost", // Safari connection lost
+
+    // Chromium/V8 error codes (used by Node.js and Chrome)
+    "ERR_CONNECTION_REFUSED", // Server not accepting connections
+    "ERR_NETWORK", // General network error
+    "ERR_INTERNET_DISCONNECTED", // No internet connection
+
+    // Node.js system error codes
+    "ECONNREFUSED", // Connection refused by server
+    "ENOTFOUND", // DNS lookup failed
+    "EAI_AGAIN", // Temporary DNS failure
   ];
 
   protected onConnectionChange?: (isConnected: boolean) => void;

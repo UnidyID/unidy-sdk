@@ -43,13 +43,21 @@ export const TokenResponseSchema = z.object({
 });
 
 // Missing required fields response extends base error with specific error_identifier
-export const RequiredFieldsResponseSchema = BaseErrorSchema.extend({
-  error_identifier: z.literal("missing_required_fields"),
-  fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
-    custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
-  }),
-  sid: z.string().optional(),
-});
+export const RequiredFieldsResponseSchema = z
+  .object({
+    error_identifier: z.literal("missing_required_fields"),
+    meta: z.object({
+      fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
+        custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
+      }),
+      sid: z.string().optional(),
+    }),
+  })
+  .transform(({ error_identifier, meta }) => ({
+    error_identifier,
+    fields: meta.fields,
+    sid: meta.sid,
+  }));
 
 // Invalid password response with field-level errors
 export const InvalidPasswordResponseSchema = z.object({

@@ -64,7 +64,15 @@ const noopErrorReporter: ErrorReporter = {
   captureException: () => {},
 };
 
-/** Default console logger */
+/**
+ * Default console logger for services.
+ *
+ * Note: This intentionally doesn't use the logger.ts module because:
+ * 1. Services need to work in non-browser environments (standalone/Node.js)
+ * 2. logger.ts is designed for Stencil components with browser-specific features
+ *    (localStorage-based log levels, UnidyComponent mixin)
+ * 3. Services allow dependency injection of custom loggers for flexibility
+ */
 const consoleLogger: Logger = {
   error: console.error.bind(console),
   warn: console.warn.bind(console),

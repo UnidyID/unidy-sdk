@@ -135,7 +135,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         switch (response.status) {
           case 401:
             return ["unauthorized", error];
@@ -167,7 +168,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 401) {
           return ["unauthorized", error];
         }
@@ -189,7 +191,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 401) {
           return ["unauthorized", error];
         }
@@ -216,7 +219,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 401) {
           return ["unauthorized", error];
         }
@@ -241,7 +245,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 401) {
           return ["unauthorized", error];
         }
@@ -272,7 +277,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 401) {
           return ["unauthorized", error];
         }
@@ -300,7 +306,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 429) {
           return ["rate_limit_exceeded", error];
         }
@@ -336,7 +343,8 @@ export class NewsletterService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error = NewsletterErrorResponseSchema.parse(response.data);
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 404) {
           return ["not_found", error];
         }
