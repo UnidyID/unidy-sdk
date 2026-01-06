@@ -1,6 +1,6 @@
-import { Component, h, Prop, State } from "@stencil/core";
-import { newsletterStore, type ExistingSubscription } from "../../store/newsletter-store";
-import * as NewsletterHelpers from "../../newsletter-helpers";
+import { type ExistingSubscription, newsletterStore } from""
+import * as NewsletterHelpers from "..helpers/../store/newsletter-store";
+import { Component, Element, h, Method, Prop, State } from  @stencil/core";../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-preference-checkbox",
@@ -11,6 +11,8 @@ export class NewsletterPreferenceCheckbox {
   @Prop() preferenceIdentifier!: string;
   @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+
+  @Element() el!: HTMLElement;
 
   @State() loading = false;
 
@@ -89,19 +91,36 @@ export class NewsletterPreferenceCheckbox {
     }
   }
 
-  private handleChange = async () => {
-    if (this.isDisabled) return;
-
-    const currentlyChecked = this.isChecked;
-    this.syncToStore(!currentlyChecked);
-
-    // If subscribed and confirmed persist the change to the API
+  private async persistIfSubscribed() {
     if (this.isSubscribed && this.isConfirmed) {
       this.loading = true;
       await NewsletterHelpers.updateSubscriptionPreferences(this.internalName);
       this.loading = false;
     }
+  }
+
+  private handleChange = async () => {
+    if (this.isDisabled) return;
+
+    this.syncToStore(!this.isChecked);
+    await this.persistIfSubscribed();
   };
+
+  /** Public method to toggle the checkbox programmatically */
+  @Method()
+  async toggle() {
+    await this.handleChange();
+  }
+
+  /** Public method to set the checkbox state programmatically */
+  @Method()
+  async setChecked(checked: boolean) {
+    if (this.isDisabled) return;
+    if (checked !== this.isChecked) {
+      this.syncToStore(checked);
+      await this.persistIfSubscribed();
+    }
+  }
 
   render() {
     return (
