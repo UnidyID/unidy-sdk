@@ -107,6 +107,7 @@
       "already_subscribed": "Déjà abonné",
       "email_required": "Veuillez entrer votre adresse e-mail",
       "invalid_email": "Adresse e-mail invalide",
+      "login_email_not_found": "L'abonnement avec cet e-mail n'existe pas",
       "newsletter_not_found": "Newsletter introuvable",
       "preferences_not_found": "Préférence introuvable",
       "rate_limit_exceeded": "Limite de débit dépassée. Veuillez réessayer plus tard",

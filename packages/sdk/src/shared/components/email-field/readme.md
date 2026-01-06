@@ -7,12 +7,11 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type                  | Default     |
-| -------------------- | ------------ | ----------- | --------------------- | ----------- |
-| `ariaLabel`          | `aria-label` |             | `string`              | `"Email"`   |
-| `componentClassName` | `class-name` |             | `string`              | `""`        |
-| `disabled`           | `disabled`   |             | `boolean`             | `false`     |
-| `for`                | `for`        |             | `"create" \| "login"` | `undefined` |
+| Property             | Attribute    | Description | Type      | Default   |
+| -------------------- | ------------ | ----------- | --------- | --------- |
+| `ariaLabel`          | `aria-label` |             | `string`  | `"Email"` |
+| `componentClassName` | `class-name` |             | `string`  | `""`      |
+| `disabled`           | `disabled`   |             | `boolean` | `false`   |
 
 
 ----------------------------------------------

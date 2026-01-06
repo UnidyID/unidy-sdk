@@ -1,15 +1,15 @@
 import { getUnidyClient } from "../api";
-import { Flash } from "../shared/store/flash-store";
+import { Auth } from "../auth/auth";
 import { t } from "../i18n";
+import { createLogger } from "../logger";
+import { Flash } from "../shared/store/flash-store";
 import {
+  type CheckedNewsletters,
+  type ExistingSubscription,
+  type NewsletterErrorIdentifier,
   newsletterStore,
   persist,
-  type NewsletterErrorIdentifier,
-  type ExistingSubscription,
-  type CheckedNewsletters,
 } from "./store/newsletter-store";
-import { Auth } from "../auth/auth";
-import { createLogger } from "../logger";
 
 const logger = createLogger("NewsletterHelpers");
 
@@ -58,6 +58,8 @@ export async function sendLoginEmail(email: string): Promise<void> {
 
   if (response.status === 204) {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
+  } else if (response.status === 404) {
+    Flash.error.addMessage(t("newsletter.errors.login_email_not_found"));
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }

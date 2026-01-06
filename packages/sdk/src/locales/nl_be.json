@@ -107,6 +107,7 @@
       "already_subscribed": "Al geabonneerd",
       "email_required": "Voer uw e-mailadres in",
       "invalid_email": "Ongeldig e-mailadres",
+      "login_email_not_found": "Abonnement met dit e-mailadres bestaat niet",
       "newsletter_not_found": "Nieuwsbrief niet gevonden",
       "preferences_not_found": "Voorkeur niet gevonden",
       "rate_limit_exceeded": "Snelheidslimiet overschreden. Probeer het later opnieuw",

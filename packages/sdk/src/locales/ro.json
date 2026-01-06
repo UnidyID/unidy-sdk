@@ -107,6 +107,7 @@
       "already_subscribed": "Deja abonat",
       "email_required": "Vă rugăm să introduceți adresa dvs. de e-mail",
       "invalid_email": "Adresă de e-mail invalidă",
+      "login_email_not_found": "Abonamentul cu această adresă de e-mail nu există",
       "newsletter_not_found": "Newsletter negăsit",
       "preferences_not_found": "Preferință negăsită",
       "rate_limit_exceeded": "Limita de rată depășită. Vă rugăm să încercați din nou mai târziu",
