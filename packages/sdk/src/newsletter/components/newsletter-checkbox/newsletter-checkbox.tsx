@@ -1,6 +1,6 @@
 import { Component, h, Prop } from "@stencil/core";
-import { newsletterStore } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-checkbox",
@@ -40,9 +40,12 @@ export class NewsletterCheckbox {
       const { [this.internalName]: _, ...rest } = newsletterStore.state.checkedNewsletters;
       newsletterStore.set("checkedNewsletters", rest);
     } else {
+      const prefs = newsletterStore.state.defaultPreferences[this.internalName];
+      const defaultPrefs: string[] = Array.isArray(prefs) ? prefs : prefs instanceof Set ? Array.from(prefs) : [];
+
       newsletterStore.set("checkedNewsletters", {
         ...newsletterStore.state.checkedNewsletters,
-        [this.internalName]: [],
+        [this.internalName]: defaultPrefs,
       });
     }
   };
