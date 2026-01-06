@@ -8,6 +8,7 @@ import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
   tag: "u-submit-button",
+  styleUrl: "submit-button.css",
   shadow: false,
 })
 export class SubmitButton {

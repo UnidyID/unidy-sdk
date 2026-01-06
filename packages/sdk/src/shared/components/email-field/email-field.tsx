@@ -8,6 +8,7 @@ import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 @Component({
   tag: "u-email-field",
+  styleUrl: "email-field.css",
   shadow: false,
 })
 export class EmailField {

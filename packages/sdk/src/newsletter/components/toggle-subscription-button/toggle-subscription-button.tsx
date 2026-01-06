@@ -1,11 +1,12 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { newsletterStore } from "../../store/newsletter-store";
-import * as NewsletterHelpers from "../../newsletter-helpers";
 import { Flash } from "../../../shared/store/flash-store";
+import * as NewsletterHelpers from "../../newsletter-helpers";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-toggle-subscription-button",
+  styleUrl: "toggle-subscription-button.css",
   shadow: false,
 })
 export class ToggleNewsletterSubscriptionButton {
