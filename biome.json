@@ -17,7 +17,10 @@
       "!**/tsconfig.*.json",
       "!**/tsconfig.json",
       "!examples",
-      "!development-target.tsx"
+      "!development-target.tsx",
+      "!**/components.css",
+      "!**/components-build.css",
+      "!**/demo-build.css"
     ]
   },
   "formatter": {
