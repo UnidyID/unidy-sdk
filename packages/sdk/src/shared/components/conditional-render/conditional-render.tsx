@@ -1,9 +1,9 @@
-import { Component, h, Prop, Host } from "@stencil/core";
-import { authState, type AuthState } from "../../../auth/store/auth-store";
+import { Component, Host, h, Prop } from "@stencil/core";
+import { type AuthState, authState } from "../../../auth/store/auth-store";
+import { UnidyComponent } from "../../../logger";
+import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
-import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
-import { UnidyComponent } from "../../../logger";
 
 const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.passkeyEnabled": () => authState.availableLoginOptions?.passkey,
@@ -19,6 +19,7 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
 
   "newsletter.hasCheckedNewsletters": () => Object.keys(newsletterStore.state.checkedNewsletters).length > 0,
   "newsletter.hasPreferenceToken": () => !!newsletterStore.state.preferenceToken,
+  "newsletter.hasEmail": () => !!newsletterStore.state.email,
   "newsletter.subscribed": (newsletterInternalName: string) => NewsletterHelpers.isSubscribed(newsletterInternalName),
   "newsletter.confirmed": (newsletterInternalName: string) => NewsletterHelpers.isConfirmed(newsletterInternalName),
   "newsletter.loggedIn": () => newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken !== "",
