@@ -1,5 +1,5 @@
-import { Component, Prop, h } from "@stencil/core";
-import { flashState, Flash } from "../../store/flash-store";
+import { Component, h, Prop } from "@stencil/core";
+import { Flash, flashState } from "../../store/flash-store";
 import { CloseIcon } from "./close-icon";
 
 const variantClasses = {

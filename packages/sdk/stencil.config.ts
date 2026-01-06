@@ -1,6 +1,6 @@
 import type { Config } from "@stencil/core";
-import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
   namespace: "sdk",
@@ -25,6 +25,7 @@ export const config: Config = {
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
         { src: "demo-build.css", dest: "demo.css" },
+        { src: "components-build.css", dest: "components.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
