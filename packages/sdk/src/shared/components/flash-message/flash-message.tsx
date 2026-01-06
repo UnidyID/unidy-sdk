@@ -10,6 +10,7 @@ const variantClasses = {
 
 @Component({
   tag: "u-flash-message",
+  styleUrl: "flash-message.css",
   shadow: false,
 })
 export class FlashMessage {
