@@ -7,7 +7,7 @@ import { authStore, onChange as authOnChange } from "../../../auth/store/auth-st
 import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import type { ProfileRaw } from "../../store/profile-store";
-import { validateRequiredFieldsUnchanged, buildPayload } from "../../../shared/components/u-fields-submit-button-logic/submit-button-logic";
+import { validateRequiredFieldsUnchanged, buildPayload } from "../../profile-helpers";
 
 @Component({
   tag: "u-profile",

@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
+import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
@@ -17,6 +18,7 @@ import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
+export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
@@ -74,6 +76,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        "for"?: NewsletterButtonFor;
     }
     interface UErrorMessage {
         /**
@@ -187,7 +190,7 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
-        "submit": () => Promise<void>;
+        "submit": (forType?: NewsletterButtonFor) => Promise<void>;
     }
     interface UNewsletterToggleSubscriptionButton {
         /**
@@ -380,7 +383,7 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for"?: AuthButtonFor;
+        "for"?: AuthButtonFor | NewsletterButtonFor;
         "text"?: string;
     }
     interface UTicketableList {
@@ -754,6 +757,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        "for"?: NewsletterButtonFor;
     }
     interface UErrorMessage {
         /**
@@ -1059,7 +1063,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for"?: AuthButtonFor;
+        "for"?: AuthButtonFor | NewsletterButtonFor;
         "text"?: string;
     }
     interface UTicketableList {

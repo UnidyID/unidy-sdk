@@ -1,12 +1,13 @@
-import { Component, Prop, Element, Method, Host, h } from "@stencil/core";
-import { newsletterStore, persist, type NewsletterErrorIdentifier } from "../../store/newsletter-store";
-import * as NewsletterHelpers from "../../newsletter-helpers";
-import { clearUrlParam } from "../../../shared/component-utils";
-import { waitForConfig } from "../../../shared/store/unidy-store";
-import { t } from "../../../i18n";
+import { Component, Element, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
+import { t } from "../../../i18n";
 import { logger, UnidyComponent } from "../../../logger";
+import { clearUrlParam } from "../../../shared/component-utils";
 import { Flash } from "../../../shared/store/flash-store";
+import { waitForConfig } from "../../../shared/store/unidy-store";
+import * as NewsletterHelpers from "../../newsletter-helpers";
+import { type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
+import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-button";
 
 @Component({
   tag: "u-newsletter-root",
@@ -54,8 +55,16 @@ export class NewsletterRoot extends UnidyComponent {
   }
 
   @Method()
-  async submit() {
+  async submit(forType?: NewsletterButtonFor) {
     const { email, checkedNewsletters } = newsletterStore.state;
+
+    if (forType === "login") {
+      if (!email) {
+        logger.error("Email is required for login");
+        return;
+      }
+      return await NewsletterHelpers.sendLoginEmail(email);
+    }
 
     if (Object.keys(checkedNewsletters).length === 0) {
       logger.error("No newsletters selected: please select at least one newsletter");
