@@ -17,7 +17,7 @@ export class SubmitButton {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  private context: "auth" | "profile" | "newsletter" | "other" = "other";
+  private context: "auth" | "profile" | "newsletter" = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
   private hasSlot = false;
 

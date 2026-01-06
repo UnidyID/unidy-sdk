@@ -59,6 +59,10 @@ export class NewsletterRoot extends UnidyComponent {
     const { email, checkedNewsletters } = newsletterStore.state;
 
     if (forType === "login") {
+      if (!email) {
+        logger.error("Email is required for login");
+        return;
+      }
       return await NewsletterHelpers.sendLoginEmail(email);
     }
 
