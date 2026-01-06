@@ -47,10 +47,11 @@ export const MultiSelect: FunctionalComponent<MultiSelectProps> = (props) => {
   return (
     <div
       part={`multi-select-group_field ${props.specificPartKey ? `multi-select-group_field--${props.specificPartKey}` : ""}`}
-      title={props.title} aria-describedby={props.ariaDescribedBy || undefined}
+      title={props.title}
+      aria-describedby={props.ariaDescribedBy || undefined}
     >
       {props.options.map((opt) => (
-        <label 
+        <label
           key={opt.value}
           htmlFor={`${props.specificPartKey}-${opt.value}`}
           part={`multi-select-item_label ${props.specificPartKey ? `multi-select-item_label--${props.specificPartKey}` : ""}`}

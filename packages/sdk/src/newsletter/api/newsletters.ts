@@ -263,11 +263,7 @@ export class NewsletterService extends EventEmitter {
       }
 
       const errors = errorIdentifier
-        ? response.data.errors.filter(
-            (error: {
-              error_identifier: string;
-            }) => error.error_identifier === errorIdentifier,
-          )
+        ? response.data.errors.filter((error: { error_identifier: string }) => error.error_identifier === errorIdentifier)
         : response.data.errors;
 
       if (errors.length > 0) {

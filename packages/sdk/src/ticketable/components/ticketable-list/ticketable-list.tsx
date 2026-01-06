@@ -226,14 +226,18 @@ export class TicketableList extends UnidyComponent {
       }
     } else {
       this.logger.error(`failed to load content: ${this.error}`);
-      target.innerHTML = `<h1>${t('errors.prefix')} ${this.error}</h1>`;
+      target.innerHTML = `<h1>${t("errors.prefix")} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
       this.logger.error(`can't render content: ${this.error}`);
-      return <h1>`${t("errors.prefix")} ${this.error}`</h1>;
+      return (
+        <h1>
+          `${t("errors.prefix")} ${this.error}`
+        </h1>
+      );
     }
 
     const template = this.element.querySelector("template");
