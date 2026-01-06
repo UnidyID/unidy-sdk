@@ -10,8 +10,7 @@ export interface SubmitButtonContext {
 }
 
 export const defaultContext: SubmitButtonContext = {
-  async handleClick() {
-  },
+  async handleClick() {},
 
   isDisabled(_forProp, disabled?: boolean): boolean {
     return disabled || false;
@@ -21,4 +20,3 @@ export const defaultContext: SubmitButtonContext = {
     return false;
   },
 };
-
