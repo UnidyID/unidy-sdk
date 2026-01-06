@@ -47,9 +47,9 @@ function formatCredentialForServer(credential: PublicKeyCredential) {
 }
 
 function extractAndSetSignInId(tokenResponse: TokenResponse) {
-  // @ts-ignore - sid may exist on response
+  // @ts-expect-error - sid may exist on response
   if (tokenResponse.sid) {
-    // @ts-ignore
+    // @ts-expect-error
     authStore.setSignInId(tokenResponse.sid);
     return;
   }
