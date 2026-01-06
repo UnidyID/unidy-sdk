@@ -60,7 +60,7 @@ export class NewsletterRoot extends UnidyComponent {
 
     if (forType === "login") {
       if (!email) {
-        Flash.error.addMessage(t("newsletter.errors.emailRequired", { defaultValue: "Email is required for login" }));
+        Flash.error.addMessage(t("newsletter.errors.email_required"));
         return;
       }
       return await NewsletterHelpers.sendLoginEmail(email);
