@@ -2,6 +2,8 @@ import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
+const EXCLUDED_FIELDS = ['custom_attributes', 'email', 'preferred_language']
+
 @Component({
   tag: "u-full-profile",
   styleUrl: "full-profile.css",
@@ -18,8 +20,9 @@ export class FullProfile {
         .map((field) => field.trim())
         .filter(Boolean);
     }
+
     return [
-      ...Object.keys(profileState.data || {}).filter((field) => field !== "custom_attributes" && field !== "email"),
+      ...Object.keys(profileState.data || {}).filter((field) => !EXCLUDED_FIELDS.includes(field)),
       ...Object.keys(profileState.data?.custom_attributes || {}).map((field) => `custom_attributes.${field}`),
     ];
   }
