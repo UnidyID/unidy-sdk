@@ -81,36 +81,34 @@ export class AuthHelpers {
   }
 
   private handleAuthError(error: string, response: unknown) {
-    switch (true) {
-      case error === "account_not_found": {
-        authStore.setFieldError("email", error);
-        break;
-      }
+    if (error.includes("password")) {
+      authStore.setFieldError("password", error);
+    } else {
+      switch (error) {
+        case "account_not_found":
+          authStore.setFieldError("email", error);
+          break;
 
-      case error === "missing_required_fields": {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+        case "missing_required_fields": {
+          authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+          profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
 
-        if ((response as RequiredFieldsResponse).sid) {
-          authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+          if ((response as RequiredFieldsResponse).sid) {
+            authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+          }
+
+          authStore.setStep("missing-fields");
+          break;
         }
 
-        authStore.setStep("missing-fields");
-        break;
-      }
+        case "account_locked":
+        case "internal_server_error":
+          authStore.setGlobalError("auth", error);
+          break;
 
-      case error === "account_locked":
-      case error === "internal_server_error": {
-        authStore.setGlobalError("auth", error);
-        break;
-      }
-      case error.includes("password"): {
-        authStore.setFieldError("password", error);
-        break;
-      }
-      default: {
-        authStore.setGlobalError("auth", error);
-        break;
+        default:
+          authStore.setGlobalError("auth", error);
+          break;
       }
     }
 
