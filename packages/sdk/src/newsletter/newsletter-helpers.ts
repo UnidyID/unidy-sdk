@@ -216,9 +216,9 @@ export async function subscribeToNewsletter(internalName: string, email: string)
   return handleCreateSubscriptionRequest(email, [internalName], false);
 }
 
-export async function createSubscriptions({ email }: { email: string }): Promise<void> {
+export async function createSubscriptions({ email }: { email: string }): Promise<boolean> {
   const internalNames = Object.keys(newsletterStore.state.checkedNewsletters);
-  await handleCreateSubscriptionRequest(email, internalNames, true);
+  return handleCreateSubscriptionRequest(email, internalNames, true);
 }
 
 export async function deleteSubscription(internalName: string): Promise<boolean> {

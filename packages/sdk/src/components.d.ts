@@ -440,6 +440,10 @@ export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLULogoutButtonElement;
 }
+export interface UNewsletterRootCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUNewsletterRootElement;
+}
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
@@ -558,7 +562,19 @@ declare global {
         prototype: HTMLUNewsletterResendDoiButtonElement;
         new (): HTMLUNewsletterResendDoiButtonElement;
     };
+    interface HTMLUNewsletterRootElementEventMap {
+        "uNewsletterSuccess": { email: string; newsletters: string[] };
+        "uNewsletterError": { email: string; error: string };
+    }
     interface HTMLUNewsletterRootElement extends Components.UNewsletterRoot, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUNewsletterRootElementEventMap>(type: K, listener: (this: HTMLUNewsletterRootElement, ev: UNewsletterRootCustomEvent<HTMLUNewsletterRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUNewsletterRootElementEventMap>(type: K, listener: (this: HTMLUNewsletterRootElement, ev: UNewsletterRootCustomEvent<HTMLUNewsletterRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUNewsletterRootElement: {
         prototype: HTMLUNewsletterRootElement;
@@ -886,6 +902,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        "onUNewsletterError"?: (event: UNewsletterRootCustomEvent<{ email: string; error: string }>) => void;
+        "onUNewsletterSuccess"?: (event: UNewsletterRootCustomEvent<{ email: string; newsletters: string[] }>) => void;
     }
     interface UNewsletterToggleSubscriptionButton {
         /**
