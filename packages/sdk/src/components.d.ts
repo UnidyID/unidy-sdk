@@ -76,7 +76,6 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
-        "for"?: NewsletterButtonFor;
     }
     interface UErrorMessage {
         /**
@@ -757,7 +756,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
-        "for"?: NewsletterButtonFor;
     }
     interface UErrorMessage {
         /**

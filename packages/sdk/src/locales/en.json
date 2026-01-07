@@ -107,6 +107,7 @@
       "already_subscribed": "Already subscribed",
       "email_required": "Please enter your email address",
       "invalid_email": "Invalid email address",
+      "login_email_not_found": "Subscription with this email does not exist",
       "newsletter_not_found": "Newsletter not found",
       "preferences_not_found": "Preference not found",
       "rate_limit_exceeded": "Rate limit exceeded. Please try again later",

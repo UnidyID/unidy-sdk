@@ -19,7 +19,6 @@ export const newsletterContext: SubmitButtonContext<NewsletterButtonFor> = {
   },
 
   isLoading(): boolean {
-    // newsletter sdk doesn't have loading state yet
     return false;
   },
 };

@@ -1,14 +1,14 @@
 import { getUnidyClient } from "../api";
-import { Flash } from "../shared/store/flash-store";
 import { t } from "../i18n";
+import { createLogger } from "../logger";
+import { Flash } from "../shared/store/flash-store";
 import {
+  type CheckedNewsletters,
+  type ExistingSubscription,
+  type NewsletterErrorIdentifier,
   newsletterStore,
   persist,
-  type NewsletterErrorIdentifier,
-  type ExistingSubscription,
-  type CheckedNewsletters,
 } from "./store/newsletter-store";
-import { createLogger } from "../logger";
 
 const logger = createLogger("NewsletterHelpers");
 
@@ -53,6 +53,8 @@ export async function sendLoginEmail(email: string): Promise<void> {
 
   if (error === null) {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
+  } else if (error === "rate_limit_exceeded") {
+    Flash.error.addMessage(t("newsletter.errors.rate_limit_exceeded", { defaultValue: "Too many requests. Please try again later." }));
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }

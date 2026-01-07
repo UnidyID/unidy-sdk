@@ -1,14 +1,14 @@
-import { authStore, authState } from "../auth/store/auth-store";
+import { jwtDecode } from "jwt-decode";
 import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
+import { authState, authStore } from "../auth/store/auth-store";
+import { t } from "../i18n";
+import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
-import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/component-utils";
-import { t } from "../i18n";
-import { authenticateWithPasskey } from "./passkey-auth";
-import { jwtDecode } from "jwt-decode";
+import { Flash } from "../shared/store/flash-store";
 import type { TokenPayload } from "./auth";
-import { createLogger } from "../logger";
+import { authenticateWithPasskey } from "./passkey-auth";
 
 export class AuthHelpers {
   private client: UnidyClient;
