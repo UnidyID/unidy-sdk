@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Invalid required fields payload",
     "invalid_reset_token": "Invalid reset token. Please request a new password reset email",
     "invalid_response_format": "Invalid response format",
+    "internal_server_error": "Internal server error",
     "magic_code_is_missing": "Magic code is missing",
     "magic_code_recently_created": "Magic code recently created",
     "missing_id_token": "Missing ID token",

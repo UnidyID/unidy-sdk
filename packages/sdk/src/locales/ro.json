@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Payload invalid pentru câmpurile obligatorii",
     "invalid_reset_token": "Token de resetare invalid. Vă rugăm să solicitați un nou e-mail pentru resetarea parolei",
     "invalid_response_format": "Format de răspuns invalid",
+    "internal_server_error": "Eroare internă a serverului",
     "magic_code_is_missing": "Cod magic lipsă",
     "magic_code_recently_created": "Cod magic creat recent",
     "missing_id_token": "Token ID lipsă",

@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Ongeldige payload voor verplichte velden",
     "invalid_reset_token": "Ongeldige reset-token. Vraag een nieuwe e-mail voor wachtwoordherstel aan",
     "invalid_response_format": "Ongeldig antwoordformaat",
+    "internal_server_error": "Interne serverfout",
     "magic_code_is_missing": "Magische code ontbreekt",
     "magic_code_recently_created": "Magische code recent aangemaakt",
     "missing_id_token": "Ontbrekende ID-token",
