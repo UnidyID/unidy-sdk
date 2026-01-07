@@ -1,10 +1,11 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import * as NewsletterHelpers from "../../newsletter-helpers";
 import { Flash } from "../../../shared/store/flash-store";
+import * as NewsletterHelpers from "../../newsletter-helpers";
 
 @Component({
   tag: "u-newsletter-resend-doi-button",
+  styleUrl: "resend-doi-button.css",
   shadow: false,
 })
 export class NewsletterResendDoiButton {

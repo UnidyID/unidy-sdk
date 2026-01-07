@@ -1,6 +1,6 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { newsletterStore, type ExistingSubscription } from "../../store/newsletter-store";
 import * as NewsletterHelpers from "../../newsletter-helpers";
+import { type ExistingSubscription, newsletterStore, storeDefaultPreference } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-preference-checkbox",
@@ -22,6 +22,10 @@ export class NewsletterPreferenceCheckbox {
   componentWillLoad() {
     this.subscribeToStore();
     this.initializeCheckedState();
+
+    if (this.checked) {
+      storeDefaultPreference(this.internalName, this.preferenceIdentifier);
+    }
   }
 
   disconnectedCallback() {

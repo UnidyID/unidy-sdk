@@ -3,18 +3,17 @@ import { getParentSigninStep } from "../../../auth/components/helpers";
 import { authState, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
-import type { NewsletterButtonFor } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 
 @Component({
   tag: "u-email-field",
+  styleUrl: "email-field.css",
   shadow: false,
 })
 export class EmailField {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() for?: NewsletterButtonFor;
   @Prop() ariaLabel = "Email";
   @Prop() disabled = false;
 
@@ -60,7 +59,7 @@ export class EmailField {
 
     if (this.context === "auth") return await getParentSigninStep(this.el)?.submit();
 
-    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit(this.for);
+    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
   };
 
   private isDisabled(): boolean {

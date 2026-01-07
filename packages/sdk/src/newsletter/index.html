@@ -164,6 +164,16 @@
         <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></u-email-field>
         <u-error-message for="email" class-name="text-red-500 text-sm"></u-error-message>
 
+        <u-conditional-render when="newsletter.hasEmail">
+          <div class="flex items-center gap-3 mt-2">
+            <u-submit-button
+              for="login"
+              class-name="text-indigo-600 hover:text-indigo-800 text-sm font-medium hover:underline transition-colors">
+              Already subscribed? Click here to manage your subscriptions
+            </u-submit-button>
+          </div>
+        </u-conditional-render>
+
         <div class="flex flex-col mt-4 gap-3">
           <p class="text-gray-600 text-sm font-medium">Select newsletters</p>
           <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-3">

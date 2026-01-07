@@ -108,6 +108,7 @@
       "already_subscribed": "Già iscritto",
       "email_required": "Inserisci il tuo indirizzo email",
       "invalid_email": "Indirizzo email non valido",
+      "login_email_not_found": "L'abbonamento con questa email non esiste",
       "newsletter_not_found": "Newsletter non trovata",
       "preferences_not_found": "Preferenza non trovata",
       "rate_limit_exceeded": "Limite di richieste superato. Riprova più tardi",
