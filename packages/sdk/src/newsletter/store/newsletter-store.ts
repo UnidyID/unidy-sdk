@@ -20,10 +20,13 @@ export interface ExistingSubscription {
 
 export type CheckedNewsletters = Record<NewsletterInternalName, PreferenceIdentifier[]>;
 
+export type DefaultPreferences = Record<NewsletterInternalName, Set<PreferenceIdentifier>>;
+
 interface NewsletterState {
   email: string;
   preferenceToken: string;
   checkedNewsletters: CheckedNewsletters;
+  defaultPreferences: DefaultPreferences;
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
@@ -47,6 +50,7 @@ const initialState: NewsletterState = {
   email: getPersistedValue("email") ?? "",
   preferenceToken: getPersistedValue("preferenceToken") ?? "",
   checkedNewsletters: {},
+  defaultPreferences: {},
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],
@@ -56,6 +60,16 @@ const initialState: NewsletterState = {
 };
 
 export const newsletterStore = createStore<NewsletterState>(initialState);
+
+export const storeDefaultPreference = (internalName: NewsletterInternalName, preferenceIdentifier: PreferenceIdentifier) => {
+  const current = newsletterStore.state.defaultPreferences[internalName] ?? new Set();
+  const updated = new Set(current);
+  updated.add(preferenceIdentifier);
+  newsletterStore.state.defaultPreferences = {
+    ...newsletterStore.state.defaultPreferences,
+    [internalName]: updated,
+  };
+};
 
 export const reset = () => {
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
