@@ -21,7 +21,7 @@ export class Profile {
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
-      await this.getTokenAndFetchProfile();
+      if (authStore.state.authenticated) await this.getTokenAndFetchProfile();
     });
   }
 
