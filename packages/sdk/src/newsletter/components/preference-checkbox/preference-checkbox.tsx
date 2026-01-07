@@ -1,4 +1,4 @@
-import { Component, Element, h, Method, Prop, State } from "@stencil/core";
+import { Component, h, Method, Prop, State } from "@stencil/core";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 import { type ExistingSubscription, newsletterStore } from "../../store/newsletter-store";
 
@@ -11,8 +11,6 @@ export class NewsletterPreferenceCheckbox {
   @Prop() preferenceIdentifier!: string;
   @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
-
-  @Element() el!: HTMLElement;
 
   @State() loading = false;
 
