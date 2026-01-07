@@ -1,13 +1,13 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Host, Method, Prop, State, h } from "@stencil/core";
-import { t } from "../../../i18n";
-import { Auth } from "../../../auth";
+import { Component, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
-import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
-import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
-import { unidyState, onChange as unidyOnChange } from "../../../shared/store/unidy-store";
+import { Auth } from "../../../auth";
+import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
+import { t } from "../../../i18n";
+import { onChange as unidyOnChange, unidyState } from "../../../shared/store/unidy-store";
+import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
-import { validateRequiredFieldsUnchanged, buildPayload } from "../../profile-helpers";
+import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 
 @Component({
   tag: "u-profile",
@@ -16,6 +16,9 @@ import { validateRequiredFieldsUnchanged, buildPayload } from "../../profile-hel
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
+
+  @Event() uProfileSuccess!: EventEmitter<void>;
+  @Event() uProfileError!: EventEmitter<{ error: string }>;
 
   @State() fetchingProfileData = false;
 
@@ -96,11 +99,14 @@ export class Profile {
       profileState.configuration = JSON.parse(JSON.stringify(resp.data));
       profileState.configUpdateSource = "submit";
       profileState.errors = {};
+      this.uProfileSuccess.emit();
     } else {
       if (resp?.data && "flatErrors" in resp.data) {
         profileState.errors = resp.data.flatErrors as Record<string, string>;
+        this.uProfileError.emit({ error: "profile_update_field_errors" });
       } else {
         profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        this.uProfileError.emit({ error: "profile_update_failed" });
       }
       profileState.loading = false;
     }

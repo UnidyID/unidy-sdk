@@ -424,6 +424,10 @@ export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLULogoutButtonElement;
 }
+export interface UProfileCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUProfileElement;
+}
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
@@ -578,7 +582,19 @@ declare global {
         prototype: HTMLUPasswordFieldElement;
         new (): HTMLUPasswordFieldElement;
     };
+    interface HTMLUProfileElementEventMap {
+        "uProfileSuccess": void;
+        "uProfileError": { error: string };
+    }
     interface HTMLUProfileElement extends Components.UProfile, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUProfileElement: {
         prototype: HTMLUProfileElement;
@@ -929,6 +945,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "onUProfileError"?: (event: UProfileCustomEvent<{ error: string }>) => void;
+        "onUProfileSuccess"?: (event: UProfileCustomEvent<void>) => void;
         "profileId"?: string;
     }
     interface URawField {

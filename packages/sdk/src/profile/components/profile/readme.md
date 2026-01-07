@@ -13,6 +13,14 @@
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
 
 
+## Events
+
+| Event             | Description | Type                              |
+| ----------------- | ----------- | --------------------------------- |
+| `uProfileError`   |             | `CustomEvent<{ error: string; }>` |
+| `uProfileSuccess` |             | `CustomEvent<void>`               |
+
+
 ## Methods
 
 ### `submitProfile() => Promise<void>`
