@@ -2,6 +2,7 @@ import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDe
 import {
   CreateSignInResponseSchema,
   ErrorSchema,
+  InvalidPasswordResponseSchema,
   PasskeyOptionsResponseSchema,
   RequiredFieldsResponseSchema,
   SendMagicCodeErrorSchema,
@@ -133,6 +134,12 @@ export class AuthService extends BaseService {
     super(client, "AuthService", deps);
   }
 
+  /** Safely parse error response, returning a fallback if parsing fails */
+  private parseErrorResponse(data: unknown): ErrorResponse {
+    const parsed = ErrorSchema.safeParse(data);
+    return parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+  }
+
   async createSignIn(args: CreateSignInArgs): Promise<CreateSignInResult> {
     const { email, password, sendMagicCode } = args.payload;
     const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
@@ -144,7 +151,7 @@ export class AuthService extends BaseService {
         if (missing_fields_check.success) {
           return ["missing_required_fields", missing_fields_check.data];
         }
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
         return [
           error_response.error_identifier as
             | "account_not_found"
@@ -174,13 +181,12 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        try {
-          const error_response = SendMagicCodeErrorSchema.parse(response.data);
-          return ["magic_code_recently_created", error_response];
-        } catch {
-          const error_response = ErrorSchema.parse(response.data);
-          return [error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
+        const magicCodeError = SendMagicCodeErrorSchema.safeParse(response.data);
+        if (magicCodeError.success) {
+          return ["magic_code_recently_created", magicCodeError.data];
         }
+        const error_response = this.parseErrorResponse(response.data);
+        return [error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
       }
 
       return [null, SendMagicCodeResponseSchema.parse(response.data)];
@@ -200,7 +206,7 @@ export class AuthService extends BaseService {
         if (missing_fields_check.success) {
           return ["missing_required_fields", missing_fields_check.data];
         }
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [
           error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password",
@@ -225,7 +231,7 @@ export class AuthService extends BaseService {
           return ["missing_required_fields", missing_fields_check.data];
         }
 
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
       }
@@ -248,7 +254,7 @@ export class AuthService extends BaseService {
           return ["missing_required_fields", missing_fields_check.data];
         }
 
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [
           error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "not_valid" | "used" | "expired",
@@ -265,7 +271,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [error_response.error_identifier as "invalid_refresh_token" | "refresh_token_revoked" | "sign_in_not_found", error_response];
       }
@@ -282,7 +288,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [
           error_response.error_identifier as
@@ -309,12 +315,14 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        // invalid_password has a different response shape (error_details.password)
+        const invalidPasswordParsed = InvalidPasswordResponseSchema.safeParse(response.data);
+        if (invalidPasswordParsed.success) {
+          return ["invalid_password", invalidPasswordParsed.data];
+        }
 
-        return [
-          error_response.error_identifier as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired" | "invalid_password",
-          response.data,
-        ];
+        const error_response = this.parseErrorResponse(response.data);
+        return [error_response.error_identifier as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired", error_response];
       }
 
       return [null, null];
@@ -329,7 +337,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
         return [error_response.error_identifier as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired", error_response];
       }
 
@@ -343,7 +351,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
 
         return [error_response.error_identifier as "sign_in_not_found" | "missing_id_token" | "invalid_id_token", error_response];
       }
@@ -359,7 +367,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
         return ["bad_request", error_response];
       }
 
@@ -375,7 +383,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
         return [
           error_response.error_identifier as "invalid_passkey" | "verification_failed" | "authentication_failed" | "bad_request",
           error_response,
