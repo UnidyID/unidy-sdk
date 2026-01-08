@@ -370,7 +370,7 @@ export class AuthService {
   }
 
   async signOut(signInId: string, useSso = false): Promise<SignOutResult> {
-    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { useSso: useSso.toString() });
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { useSso });
 
     return this.handleResponse(response, () => {
       if (!response.success) {

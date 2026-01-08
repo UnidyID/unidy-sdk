@@ -142,7 +142,7 @@ export class AuthHelpers {
   }
 
   async singleSignOn() {
-    if (authState.authenticated) return
+    if (authState.authenticated) return;
 
     const [error, response] = await this.client.auth.singleSignOn();
 
@@ -151,6 +151,8 @@ export class AuthHelpers {
       return;
     }
 
+    // we only assume that sso was used when there isn't an existing sid in the session as setting the sid is the first
+    // step in any login flow, and we should not log out users unintentionally
     if (!authState.sid) {
       const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
       authStore.setSignInId(token.sid);
