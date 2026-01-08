@@ -107,7 +107,7 @@ export class AuthHelpers {
   }
 
   async logout() {
-    const [error, _] = await this.client.auth.signOut(authState.sid as string);
+    const [error, _] = await this.client.auth.signOut(authState.sid as string, authState.useSso);
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -139,6 +139,24 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
     }
+  }
+
+  async singleSignOn() {
+    if (authState.authenticated) return
+
+    const [error, response] = await this.client.auth.singleSignOn();
+
+    if (error) {
+      // Silent fail
+      return;
+    }
+
+    if (!authState.sid) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setUseSso(true);
+    }
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendMagicCode() {

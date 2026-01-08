@@ -34,6 +34,7 @@ export class UnidyConfig extends UnidyComponent {
   @Prop() customTranslations: string | Record<string, TranslationTree> = "";
   @Prop() fallbackLocale = "en";
   @Prop() locale = "en";
+  @Prop() checkSso = false;
 
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
@@ -61,7 +62,11 @@ export class UnidyConfig extends UnidyComponent {
     this.loadCustomTranslations();
     unidyState.locale = this.locale;
 
-    await Auth.initialize(getUnidyClient());
+    const auth = await Auth.initialize(getUnidyClient());
+
+    if (this.checkSso) {
+      auth.helpers.singleSignOn();
+    }
   }
 
   // extend the list of properties that should be watched when new properties are added to the Config
