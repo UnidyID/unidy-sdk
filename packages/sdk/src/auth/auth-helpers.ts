@@ -1,18 +1,25 @@
-import { authStore, authState } from "../auth/store/auth-store";
+import { jwtDecode } from "jwt-decode";
 import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
+import { authState, authStore } from "../auth/store/auth-store";
+import { t } from "../i18n";
+import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
-import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/component-utils";
-import { t } from "../i18n";
-import { authenticateWithPasskey } from "./passkey-auth";
-import { jwtDecode } from "jwt-decode";
+import { Flash } from "../shared/store/flash-store";
 import type { TokenPayload } from "./auth";
-import { createLogger } from "../logger";
+import { authenticateWithPasskey } from "./passkey-auth";
 
 export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
+
+  private static readonly PASSWORD_ERROR_IDENTIFIERS = [
+    "invalid_password",
+    "password_required",
+    "password_not_set",
+    "passwords_do_not_match",
+  ];
 
   constructor(client: UnidyClient) {
     this.client = client;
@@ -81,28 +88,33 @@ export class AuthHelpers {
   }
 
   private handleAuthError(error: string, response: unknown) {
-    if (error === "account_not_found") {
-      authStore.setFieldError("email", error);
-      authStore.setLoading(false);
-      return;
-    }
-    if (error === "missing_required_fields") {
-      authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-      profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+    switch (error) {
+      case "account_not_found":
+        authStore.setFieldError("email", error);
+        break;
 
-      if ((response as RequiredFieldsResponse).sid) {
-        authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+      case "missing_required_fields": {
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+
+        if ((response as RequiredFieldsResponse).sid) {
+          authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
+        }
+
+        authStore.setStep("missing-fields");
+        break;
       }
 
-      authStore.setStep("missing-fields");
-      authStore.setLoading(false);
-      return;
+      default:
+        if (AuthHelpers.PASSWORD_ERROR_IDENTIFIERS.includes(error)) {
+          authStore.setFieldError("password", error);
+        } else {
+          // e.g. "account_locked", "internal_server_error"
+          authStore.setGlobalError("auth", error);
+        }
+        break;
     }
-    if (error === "account_locked") {
-      authStore.setGlobalError("auth", error);
-    } else {
-      authStore.setFieldError("password", error);
-    }
+
     authStore.setLoading(false);
   }
 

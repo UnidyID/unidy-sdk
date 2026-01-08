@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Charge utile des champs obligatoires invalide",
     "invalid_reset_token": "Jeton de réinitialisation invalide. Veuillez demander un nouvel e-mail de réinitialisation du mot de passe",
     "invalid_response_format": "Format de réponse invalide",
+    "internal_server_error": "Erreur interne du serveur",
     "magic_code_is_missing": "Code magique manquant",
     "magic_code_recently_created": "Code magique récemment créé",
     "missing_id_token": "Jeton d'identification manquant",

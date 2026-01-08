@@ -1,8 +1,8 @@
 import { createStore } from "@stencil/store";
-import type { SigninRoot } from "../components/signin-root/signin-root";
-import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
+import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
+import type { SigninRoot } from "../components/signin-root/signin-root";
 
 export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration" | "single-login";
 
@@ -23,7 +23,7 @@ export interface AuthState {
   availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
-  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection", string | null>;
+  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
 
   authenticated: boolean;
@@ -81,6 +81,7 @@ const initialState: AuthState = {
     resetPassword: null,
     general: null,
     connection: null,
+    passkey: null,
   },
   globalErrors: {},
   authenticated: false,
@@ -169,9 +170,9 @@ class AuthStore {
     return true;
   }
 
-  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection") {
+  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey") {
     state.errors = { ...state.errors, [field]: null } as Record<
-      "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection",
+      "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey",
       string | null
     >;
   }
