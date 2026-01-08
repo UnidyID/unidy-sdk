@@ -1,11 +1,11 @@
-import { Component, Element, h, Host, Prop } from "@stencil/core";
-import { t } from "../../../i18n";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
-import { unidyState } from "../../store/unidy-store";
+import { t } from "../../../i18n";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { hasSlotContent } from "../../component-utils";
+import { unidyState } from "../../store/unidy-store";
 
-export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection";
+export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
 
 @Component({
   tag: "u-error-message",

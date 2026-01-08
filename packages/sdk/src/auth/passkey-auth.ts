@@ -71,7 +71,7 @@ function handlePasskeyError(error: unknown) {
     errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
   }
 
-  authStore.setGlobalError("auth", errorMessage);
+  authStore.setFieldError("passkey", errorMessage);
   authStore.setLoading(false);
 }
 
@@ -80,7 +80,7 @@ export async function authenticateWithPasskey(client: UnidyClient, onSuccess: (r
   authStore.clearErrors();
 
   if (!window.PublicKeyCredential) {
-    authStore.setGlobalError("auth", "passkey_not_supported");
+    authStore.setFieldError("passkey", "passkey_not_supported");
     authStore.setLoading(false);
     return;
   }
@@ -89,7 +89,7 @@ export async function authenticateWithPasskey(client: UnidyClient, onSuccess: (r
     const [optionsError, options] = await client.auth.getPasskeyOptions(authState.sid || undefined);
 
     if (optionsError || !options) {
-      authStore.setGlobalError("auth", optionsError || "bad_request");
+      authStore.setFieldError("passkey", optionsError || "bad_request");
       authStore.setLoading(false);
       return;
     }
@@ -101,7 +101,7 @@ export async function authenticateWithPasskey(client: UnidyClient, onSuccess: (r
     })) as PublicKeyCredential | null;
 
     if (!credential) {
-      authStore.setGlobalError("auth", "passkey_cancelled");
+      authStore.setFieldError("passkey", "passkey_cancelled");
       authStore.setLoading(false);
       return;
     }
