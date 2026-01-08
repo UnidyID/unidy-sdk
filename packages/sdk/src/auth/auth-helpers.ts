@@ -14,6 +14,13 @@ export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
 
+  private static readonly PASSWORD_ERROR_IDENTIFIERS = [
+    "invalid_password",
+    "password_required",
+    "password_not_set",
+    "passwords_do_not_match",
+  ];
+
   constructor(client: UnidyClient) {
     this.client = client;
   }
@@ -81,35 +88,31 @@ export class AuthHelpers {
   }
 
   private handleAuthError(error: string, response: unknown) {
-    if (error.includes("password")) {
-      authStore.setFieldError("password", error);
-    } else {
-      switch (error) {
-        case "account_not_found":
-          authStore.setFieldError("email", error);
-          break;
+    switch (error) {
+      case "account_not_found":
+        authStore.setFieldError("email", error);
+        break;
 
-        case "missing_required_fields": {
-          authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-          profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
+      case "missing_required_fields": {
+        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
+        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
 
-          if ((response as RequiredFieldsResponse).sid) {
-            authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
-          }
-
-          authStore.setStep("missing-fields");
-          break;
+        if ((response as RequiredFieldsResponse).sid) {
+          authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
         }
 
-        case "account_locked":
-        case "internal_server_error":
-          authStore.setGlobalError("auth", error);
-          break;
-
-        default:
-          authStore.setGlobalError("auth", error);
-          break;
+        authStore.setStep("missing-fields");
+        break;
       }
+
+      default:
+        if (AuthHelpers.PASSWORD_ERROR_IDENTIFIERS.includes(error)) {
+          authStore.setFieldError("password", error);
+        } else {
+          // e.g. "account_locked", "internal_server_error"
+          authStore.setGlobalError("auth", error);
+        }
+        break;
     }
 
     authStore.setLoading(false);
