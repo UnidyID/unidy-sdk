@@ -10,6 +10,7 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.passwordEnabled": () => authState.availableLoginOptions?.password,
   "auth.magicCodeEnabled": () => authState.availableLoginOptions?.magic_link,
   "auth.socialLoginsEnabled": () => (authState.availableLoginOptions?.social_logins?.length ?? 0) > 0,
+  "auth.hasSocialLogin": (provider: string) => authState.availableLoginOptions?.social_logins?.includes(provider) ?? false,
   "auth.loading": () => authState.loading,
   "auth.authenticated": () => authState.authenticated,
   "auth.magicCodeSent": () => authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested",
@@ -92,12 +93,8 @@ export class ConditionalRender extends UnidyComponent {
   }
 
   render() {
-    if (!this.shouldRender()) {
-      return null;
-    }
-
     return (
-      <Host aria-live="polite">
+      <Host style={{ display: this.shouldRender() ? "block" : "none" }} aria-live="polite">
         <slot />
       </Host>
     );
