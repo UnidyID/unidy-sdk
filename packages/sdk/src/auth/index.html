@@ -280,7 +280,7 @@
     </div>
   </u-error-message>
 
-  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="10"></u-flash-message>
+  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="20"></u-flash-message>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Login Components Demo</h1>
@@ -291,6 +291,7 @@
 
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
       class="flex flex-col gap-2">
+      <u-error-message id="general-error" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
       <!-- u-signin-step name="single-login">
         <u-email-field
@@ -375,7 +376,7 @@
         <u-passkey
           class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
           aria-describedby="passkey-error-email"></u-passkey>
-        <u-error-message id="passkey-error-email" for="general"
+        <u-error-message id="passkey-error-email" for="passkey"
           class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
       </u-signin-step>
 
@@ -440,7 +441,7 @@
           <u-passkey
             class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
             aria-describedby="passkey-error-email"></u-passkey>
-          <u-error-message id="passkey-error-email" for="general"
+          <u-error-message id="passkey-error-email" for="passkey"
             class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
         </u-conditional-render>
       </u-signin-step>

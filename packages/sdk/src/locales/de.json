@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Ungültige Nutzlast für erforderliche Felder",
     "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
     "invalid_response_format": "Ungültiges Antwortformat",
+    "internal_server_error": "Interner Serverfehler",
     "magic_code_is_missing": "Magischer Code fehlt",
     "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
     "missing_id_token": "Fehlender ID-Token",
