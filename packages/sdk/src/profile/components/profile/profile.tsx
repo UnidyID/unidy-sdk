@@ -17,8 +17,16 @@ export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
 
-  @Event() uProfileSuccess!: EventEmitter<void>;
-  @Event() uProfileError!: EventEmitter<{ error: string }>;
+  @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
+  @Event() uProfileError!: EventEmitter<{
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  }>;
 
   @State() fetchingProfileData = false;
 
@@ -99,14 +107,20 @@ export class Profile {
       profileState.configuration = JSON.parse(JSON.stringify(resp.data));
       profileState.configUpdateSource = "submit";
       profileState.errors = {};
-      this.uProfileSuccess.emit();
+      this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: resp.data as ProfileRaw });
     } else {
       if (resp?.data && "flatErrors" in resp.data) {
         profileState.errors = resp.data.flatErrors as Record<string, string>;
-        this.uProfileError.emit({ error: "profile_update_field_errors" });
+        this.uProfileError.emit({
+          error: "profile_update_field_errors",
+          details: { fieldErrors: profileState.errors, httpStatus: resp?.status, responseData: resp?.data },
+        });
       } else {
         profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
-        this.uProfileError.emit({ error: "profile_update_failed" });
+        this.uProfileError.emit({
+          error: "profile_update_failed",
+          details: { flashErrors: profileState.flashErrors, httpStatus: resp?.status, responseData: resp?.data },
+        });
       }
       profileState.loading = false;
     }

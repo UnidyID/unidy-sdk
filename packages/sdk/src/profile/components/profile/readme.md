@@ -15,10 +15,10 @@
 
 ## Events
 
-| Event             | Description | Type                              |
-| ----------------- | ----------- | --------------------------------- |
-| `uProfileError`   |             | `CustomEvent<{ error: string; }>` |
-| `uProfileSuccess` |             | `CustomEvent<void>`               |
+| Event             | Description | Type                                                                                                                                                                     |
+| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `uProfileError`   |             | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; flashErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
+| `uProfileSuccess` |             | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                                                                 |
 
 
 ## Methods
