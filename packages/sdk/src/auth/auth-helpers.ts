@@ -94,14 +94,8 @@ export class AuthHelpers {
         break;
 
       case "missing_required_fields": {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
-
-        if ((response as RequiredFieldsResponse).sid) {
-          authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
-        }
-
-        authStore.setStep("missing-fields");
+        const { fields, sid } = response as RequiredFieldsResponse;
+        this.handleMissingFields(fields, sid);
         break;
       }
 
@@ -150,38 +144,38 @@ export class AuthHelpers {
   }
 
   handleSocialAuthRedirect(): void {
-    // missing required fields flow
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const error = params.get("error");
 
+    // Not a social auth redirect (normal page load)
+    if (!error && !params.has("sid")) {
+      return;
+    }
+
+    // Handle successful social auth redirect
+    if (!error && params.has("sid") && params.has("id_token")) {
+      this.extractSignInIdFromQuery();
+      authStore.setToken(params.get("id_token") as string);
+      this.clearUrlParams();
+      return;
+    }
+
+    // Handle missing required fields
     if (error !== "missing_required_fields") {
+      this.logger.error("Social auth redirect error:", error);
       return;
     }
 
     const fieldsFromUrl = params.get("fields");
-    if (!fieldsFromUrl) {
-      return;
-    }
-
-    const signInId = params.get("sid");
-    if (signInId) {
-      authStore.setSignInId(signInId);
-    } else {
+    if (!fieldsFromUrl || !params.has("sid")) {
       return;
     }
 
     try {
       const fields = JSON.parse(fieldsFromUrl);
-
-      authStore.setMissingFields(fields);
-      profileState.data = fields as ProfileRaw;
-      authStore.setStep("missing-fields");
-
-      params.delete("error");
-      params.delete("fields");
-      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
-      window.history.replaceState(null, "", cleanUrl);
+      this.handleMissingFields(fields);
+      this.clearUrlParams();
     } catch (e) {
       this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
@@ -244,7 +238,7 @@ export class AuthHelpers {
     }
 
     if (error === "missing_required_fields") {
-      this.handleMissingFields(response as RequiredFieldsResponse);
+      this.handleMissingFields((response as RequiredFieldsResponse).fields);
       return;
     }
 
@@ -364,9 +358,12 @@ export class AuthHelpers {
     }
   }
 
-  private handleMissingFields(response: RequiredFieldsResponse) {
-    authStore.setMissingFields(response.fields);
-    profileState.data = response.fields as ProfileRaw;
+  private handleMissingFields(fields: RequiredFieldsResponse["fields"], signInId?: string) {
+    authStore.setMissingFields(fields);
+    profileState.data = fields as ProfileRaw;
+    if (signInId) {
+      authStore.setSignInId(signInId);
+    }
     authStore.setStep("missing-fields");
     authStore.setLoading(false);
   }
@@ -375,5 +372,11 @@ export class AuthHelpers {
     authStore.setToken(response.jwt);
     authStore.setLoading(false);
     authStore.getRootComponentRef()?.onAuth(response);
+  }
+
+  private clearUrlParams(): void {
+    const url = new URL(window.location.href);
+    const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
+    window.history.replaceState(null, "", cleanUrl);
   }
 }
