@@ -95,7 +95,8 @@ export class AuthHelpers {
 
       case "missing_required_fields": {
         const { fields, sid } = response as RequiredFieldsResponse;
-        this.handleMissingFields(fields, sid);
+        this.handleMissingFields(fields);
+        authStore.setSignInId(sid);
         break;
       }
 
@@ -126,7 +127,11 @@ export class AuthHelpers {
     if (authState.step === "missing-fields") {
       return;
     }
-    this.extractSignInIdFromQuery();
+
+    const sid = clearUrlParam("sid");
+    if (sid) {
+      authStore.setSignInId(sid);
+    }
 
     if (!authState.sid) {
       this.logger.warn("No sign-in ID in the session");
@@ -155,9 +160,16 @@ export class AuthHelpers {
 
     // Handle successful social auth redirect
     if (!error && params.has("sid") && params.has("id_token")) {
-      this.extractSignInIdFromQuery();
-      authStore.setToken(params.get("id_token") as string);
-      this.clearUrlParams();
+      authStore.setSignInId(clearUrlParam("sid"));
+
+      const idToken = clearUrlParam("id_token");
+
+      if (idToken) {
+        authStore.setToken(idToken);
+      } else {
+        this.logger.error("No ID token found in the URL on social auth redirect");
+      }
+
       return;
     }
 
@@ -174,8 +186,12 @@ export class AuthHelpers {
 
     try {
       const fields = JSON.parse(fieldsFromUrl);
+      authStore.setSignInId(clearUrlParam("sid"));
+
       this.handleMissingFields(fields);
-      this.clearUrlParams();
+
+      clearUrlParam("fields");
+      clearUrlParam("error");
     } catch (e) {
       this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
@@ -350,20 +366,9 @@ export class AuthHelpers {
     return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
   }
 
-  private extractSignInIdFromQuery() {
-    const sid = clearUrlParam("sid");
-
-    if (sid) {
-      authStore.setSignInId(sid);
-    }
-  }
-
-  private handleMissingFields(fields: RequiredFieldsResponse["fields"], signInId?: string) {
+  private handleMissingFields(fields: RequiredFieldsResponse["fields"]) {
     authStore.setMissingFields(fields);
     profileState.data = fields as ProfileRaw;
-    if (signInId) {
-      authStore.setSignInId(signInId);
-    }
     authStore.setStep("missing-fields");
     authStore.setLoading(false);
   }
@@ -372,11 +377,5 @@ export class AuthHelpers {
     authStore.setToken(response.jwt);
     authStore.setLoading(false);
     authStore.getRootComponentRef()?.onAuth(response);
-  }
-
-  private clearUrlParams(): void {
-    const url = new URL(window.location.href);
-    const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
-    window.history.replaceState(null, "", cleanUrl);
   }
 }
