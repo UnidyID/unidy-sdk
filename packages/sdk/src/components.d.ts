@@ -9,6 +9,7 @@ import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
+import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -22,6 +23,7 @@ export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
+export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -428,6 +430,10 @@ export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLULogoutButtonElement;
 }
+export interface UProfileCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUProfileElement;
+}
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
@@ -586,7 +592,27 @@ declare global {
         prototype: HTMLUPasswordFieldElement;
         new (): HTMLUPasswordFieldElement;
     };
+    interface HTMLUProfileElementEventMap {
+        "uProfileSuccess": { message: string; payload: ProfileRaw };
+        "uProfileError": {
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  };
+    }
     interface HTMLUProfileElement extends Components.UProfile, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUProfileElement: {
         prototype: HTMLUProfileElement;
@@ -956,6 +982,16 @@ declare namespace LocalJSX {
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "onUProfileError"?: (event: UProfileCustomEvent<{
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  }>) => void;
+        "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
         "profileId"?: string;
     }
     interface URawField {
