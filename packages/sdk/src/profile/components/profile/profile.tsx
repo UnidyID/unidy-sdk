@@ -24,14 +24,14 @@ export class Profile {
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
-      await this.getTokenAndFetchProfile();
+      if (authStore.state.authenticated) await this.getTokenAndFetchProfile();
     });
   }
 
   async componentWillLoad() {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
-    } else {
+    } else if (authStore.state.authenticated) {
       await this.getTokenAndFetchProfile();
     }
 
