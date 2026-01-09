@@ -8,6 +8,7 @@ import { nlBE } from "date-fns/locale/nl-BE";
 import { ro } from "date-fns/locale/ro";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
+import { Auth } from "../../../auth";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
@@ -76,8 +77,15 @@ export class TicketableList extends UnidyComponent {
     this.logger.trace("start componentDidLoad");
     await waitForConfig();
     this.logger.trace("UnidyConfig loaded, start to load data");
-    await this.loadData();
-    this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+
+    const authInstance = await Auth.getInstance();
+
+    if (await authInstance.isAuthenticated()) {
+      await this.loadData();
+      this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+    } else {
+      this.logger.debug("user is not authenticated, skipping data load");
+    }
   }
 
   private async loadData() {
