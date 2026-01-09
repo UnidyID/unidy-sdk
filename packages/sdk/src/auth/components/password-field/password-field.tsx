@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";

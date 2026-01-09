@@ -29,7 +29,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
-      this.handleAuthError(error, response, "email");
+      this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
 
