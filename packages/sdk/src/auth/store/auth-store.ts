@@ -23,7 +23,7 @@ export interface AuthState {
   availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
-  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey", string | null>;
+  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
 
   authenticated: boolean;

@@ -348,6 +348,8 @@ export class AuthHelpers {
           authStore.setFieldError("password", error);
         } else if (fallbackField === "magicCode") {
           authStore.setFieldError("magicCode", error);
+        } else if (fallbackField === "email") {
+          authStore.setFieldError("email", error);
         } else {
           // e.g. "account_locked", "internal_server_error"
           authStore.setGlobalError("auth", error);
