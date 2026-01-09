@@ -29,7 +29,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
-      this.handleAuthError(error, response);
+      this.handleAuthError(error, response, "email");
       return;
     }
 
@@ -72,7 +72,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
-      this.handleAuthError(error, response);
+      this.handleAuthError(error, response, "password");
     } else {
       authStore.setLoading(false);
       this.handleAuthSuccess(response as TokenResponse);
@@ -295,6 +295,7 @@ export class AuthHelpers {
 
       if (idToken) {
         authStore.setToken(idToken);
+        this.handleAuthSuccess({ jwt: idToken } as TokenResponse);
       } else {
         this.logger.error("No ID token found in the URL on social auth redirect");
       }
@@ -327,7 +328,7 @@ export class AuthHelpers {
     }
   }
 
-  private handleAuthError(error: string, response: unknown, flow?: "password" | "magic-code") {
+  private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);
@@ -336,14 +337,16 @@ export class AuthHelpers {
       case "missing_required_fields": {
         const { fields, sid } = response as RequiredFieldsResponse;
         this.handleMissingFields(fields);
-        authStore.setSignInId(sid);
+        if (sid) {
+          authStore.setSignInId(sid);
+        }
         break;
       }
 
       default:
-        if (flow === "password") {
+        if (fallbackField === "password") {
           authStore.setFieldError("password", error);
-        } else if (flow === "magic-code") {
+        } else if (fallbackField === "magicCode") {
           authStore.setFieldError("magicCode", error);
         } else {
           // e.g. "account_locked", "internal_server_error"
