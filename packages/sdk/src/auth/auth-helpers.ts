@@ -14,13 +14,6 @@ export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
 
-  private static readonly PASSWORD_ERROR_IDENTIFIERS = [
-    "invalid_password",
-    "password_required",
-    "password_not_set",
-    "passwords_do_not_match",
-  ];
-
   constructor(client: UnidyClient) {
     this.client = client;
   }
@@ -36,7 +29,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
-      this.handleAuthError(error, response);
+      this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
 
@@ -79,7 +72,7 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
 
     if (error) {
-      this.handleAuthError(error, response);
+      this.handleAuthError(error, response, "password");
     } else {
       authStore.setLoading(false);
       this.handleAuthSuccess(response as TokenResponse);
@@ -87,35 +80,30 @@ export class AuthHelpers {
     }
   }
 
-  private handleAuthError(error: string, response: unknown) {
-    switch (error) {
-      case "account_not_found":
-        authStore.setFieldError("email", error);
-        break;
-
-      case "missing_required_fields": {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
-
-        if ((response as RequiredFieldsResponse).sid) {
-          authStore.setSignInId((response as RequiredFieldsResponse).sid as string);
-        }
-
-        authStore.setStep("missing-fields");
-        break;
-      }
-
-      default:
-        if (AuthHelpers.PASSWORD_ERROR_IDENTIFIERS.includes(error)) {
-          authStore.setFieldError("password", error);
-        } else {
-          // e.g. "account_locked", "internal_server_error"
-          authStore.setGlobalError("auth", error);
-        }
-        break;
+  async authenticateWithMagicCode(code: string) {
+    if (!authState.sid) {
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
-    authStore.setLoading(false);
+    if (!code) {
+      throw new Error(t("errors.magic_code_is_missing"));
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
+
+    if (error) {
+      this.handleAuthError(error, response, "magicCode");
+      return;
+    }
+
+    this.handleAuthSuccess(response as TokenResponse);
+  }
+
+  authenticateWithPasskey() {
+    return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
   }
 
   async logout() {
@@ -132,7 +120,11 @@ export class AuthHelpers {
     if (authState.step === "missing-fields") {
       return;
     }
-    this.extractSignInIdFromQuery();
+
+    const sid = clearUrlParam("sid");
+    if (sid) {
+      authStore.setSignInId(sid);
+    }
 
     if (!authState.sid) {
       this.logger.warn("No sign-in ID in the session");
@@ -146,45 +138,6 @@ export class AuthHelpers {
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
-    }
-  }
-
-  handleSocialAuthRedirect(): void {
-    // missing required fields flow
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
-    const error = params.get("error");
-
-    if (error !== "missing_required_fields") {
-      return;
-    }
-
-    const fieldsFromUrl = params.get("fields");
-    if (!fieldsFromUrl) {
-      return;
-    }
-
-    const signInId = params.get("sid");
-    if (signInId) {
-      authStore.setSignInId(signInId);
-    } else {
-      return;
-    }
-
-    try {
-      const fields = JSON.parse(fieldsFromUrl);
-
-      authStore.setMissingFields(fields);
-      profileState.data = fields as ProfileRaw;
-      authStore.setStep("missing-fields");
-
-      params.delete("error");
-      params.delete("fields");
-      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
-      window.history.replaceState(null, "", cleanUrl);
-    } catch (e) {
-      this.logger.error("Failed to parse missing fields payload:", e);
-      authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
 
@@ -224,34 +177,6 @@ export class AuthHelpers {
     return [error, response] as const;
   }
 
-  async authenticateWithMagicCode(code: string) {
-    if (!authState.sid) {
-      throw new Error(t("errors.no_sign_in_id"));
-    }
-
-    if (!code) {
-      throw new Error(t("errors.magic_code_is_missing"));
-    }
-
-    authStore.setLoading(true);
-    authStore.clearErrors();
-
-    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
-
-    if (!error) {
-      this.handleAuthSuccess(response as TokenResponse);
-      return;
-    }
-
-    if (error === "missing_required_fields") {
-      this.handleMissingFields(response as RequiredFieldsResponse);
-      return;
-    }
-
-    authStore.setLoading(false);
-    authStore.setFieldError("magicCode", error);
-  }
-
   async sendResetPasswordEmail() {
     if (!authState.sid) {
       throw new Error(t("errors.no_sign_in_id"));
@@ -270,35 +195,6 @@ export class AuthHelpers {
     }
 
     authStore.setLoading(false);
-  }
-
-  async handleResetPasswordRedirect(): Promise<boolean> {
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
-    const resetToken = params.get("reset_password_token");
-
-    if (!resetToken) {
-      return false;
-    }
-
-    if (authState.sid) {
-      authStore.setLoading(true);
-
-      const [error] = await this.client.auth.validateResetPasswordToken(authState.sid, resetToken);
-
-      if (error) {
-        authStore.setFieldError("resetPassword", error);
-        authStore.setStep("reset-password");
-        authStore.setLoading(false);
-        return false;
-      }
-    }
-
-    authStore.setResetToken(resetToken);
-    authStore.setStep("reset-password");
-    authStore.setLoading(false);
-
-    return true;
   }
 
   async resetPassword() {
@@ -352,21 +248,119 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
-  authenticateWithPasskey() {
-    return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
+  async handleResetPasswordRedirect() {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const resetToken = params.get("reset_password_token");
+
+    if (!resetToken) {
+      return;
+    }
+
+    if (authState.sid) {
+      authStore.setLoading(true);
+
+      const [error] = await this.client.auth.validateResetPasswordToken(authState.sid, resetToken);
+
+      if (error) {
+        authStore.setFieldError("resetPassword", error);
+        authStore.setStep("reset-password");
+        authStore.setLoading(false);
+        return;
+      }
+    }
+
+    authStore.setResetToken(resetToken);
+    authStore.setStep("reset-password");
+    authStore.setLoading(false);
   }
 
-  private extractSignInIdFromQuery() {
-    const sid = clearUrlParam("sid");
+  handleSocialAuthRedirect(): void {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const error = params.get("error");
 
-    if (sid) {
+    // Not a social auth redirect (normal page load)
+    if (!error && !params.has("sid")) {
+      return;
+    }
+
+    // Handle successful social auth redirect
+    if (!error && params.has("sid") && params.has("id_token")) {
+      authStore.setSignInId(clearUrlParam("sid"));
+
+      const idToken = clearUrlParam("id_token");
+
+      if (idToken) {
+        authStore.setToken(idToken);
+        this.handleAuthSuccess({ jwt: idToken } as TokenResponse);
+      } else {
+        this.logger.error("No ID token found in the URL on social auth redirect");
+      }
+
+      return;
+    }
+
+    // Handle missing required fields
+    if (error !== "missing_required_fields") {
+      this.logger.error("Social auth redirect error:", error);
+      return;
+    }
+
+    const fieldsFromUrl = clearUrlParam("fields");
+    const sid = clearUrlParam("sid");
+    clearUrlParam("error");
+
+    if (!fieldsFromUrl || !sid) {
+      return;
+    }
+
+    try {
+      const fields = JSON.parse(fieldsFromUrl);
       authStore.setSignInId(sid);
+
+      this.handleMissingFields(fields);
+    } catch (e) {
+      this.logger.error("Failed to parse missing fields payload:", e);
+      authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
 
-  private handleMissingFields(response: RequiredFieldsResponse) {
-    authStore.setMissingFields(response.fields);
-    profileState.data = response.fields as ProfileRaw;
+  private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
+    switch (error) {
+      case "account_not_found":
+        authStore.setFieldError("email", error);
+        break;
+
+      case "missing_required_fields": {
+        const { fields, sid } = response as RequiredFieldsResponse;
+        this.handleMissingFields(fields);
+        if (sid) {
+          authStore.setSignInId(sid);
+        }
+        break;
+      }
+
+      default:
+        if (fallbackField === "password") {
+          authStore.setFieldError("password", error);
+        } else if (fallbackField === "magicCode") {
+          authStore.setFieldError("magicCode", error);
+        } else if (fallbackField === "email") {
+          authStore.setFieldError("email", error);
+        } else {
+          // e.g. "account_locked", "internal_server_error"
+          authStore.setGlobalError("auth", error);
+        }
+        break;
+    }
+
+    authStore.setLoading(false);
+  }
+
+  private handleMissingFields(fields: RequiredFieldsResponse["fields"]) {
+    authStore.setMissingFields(fields);
+    profileState.data = fields as ProfileRaw;
     authStore.setStep("missing-fields");
     authStore.setLoading(false);
   }
