@@ -93,8 +93,15 @@ export class ConditionalRender extends UnidyComponent {
   }
 
   render() {
+    const visible = this.shouldRender();
+
     return (
-      <Host style={{ display: this.shouldRender() ? "block" : "none" }} aria-live="polite">
+      <Host
+        hidden={!visible}
+        style={{ display: visible ? "contents" : undefined }}
+        aria-hidden={!visible ? "true" : null}
+        aria-live="polite"
+      >
         <slot />
       </Host>
     );
