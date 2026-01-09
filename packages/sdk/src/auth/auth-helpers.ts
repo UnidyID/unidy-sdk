@@ -14,13 +14,6 @@ export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
 
-  private static readonly PASSWORD_ERROR_IDENTIFIERS = [
-    "invalid_password",
-    "password_required",
-    "password_not_set",
-    "passwords_do_not_match",
-  ];
-
   constructor(client: UnidyClient) {
     this.client = client;
   }
@@ -87,7 +80,7 @@ export class AuthHelpers {
     }
   }
 
-  private handleAuthError(error: string, response: unknown) {
+  private handleAuthError(error: string, response: unknown, flow?: "password" | "magic-code") {
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);
@@ -101,8 +94,10 @@ export class AuthHelpers {
       }
 
       default:
-        if (AuthHelpers.PASSWORD_ERROR_IDENTIFIERS.includes(error)) {
+        if (flow === "password") {
           authStore.setFieldError("password", error);
+        } else if (flow === "magic-code") {
+          authStore.setFieldError("magicCode", error);
         } else {
           // e.g. "account_locked", "internal_server_error"
           authStore.setGlobalError("auth", error);
@@ -248,18 +243,12 @@ export class AuthHelpers {
 
     const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
 
-    if (!error) {
-      this.handleAuthSuccess(response as TokenResponse);
+    if (error) {
+      this.handleAuthError(error, response, "magicCode");
       return;
     }
 
-    if (error === "missing_required_fields") {
-      this.handleMissingFields((response as RequiredFieldsResponse).fields);
-      return;
-    }
-
-    authStore.setLoading(false);
-    authStore.setFieldError("magicCode", error);
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendResetPasswordEmail() {
