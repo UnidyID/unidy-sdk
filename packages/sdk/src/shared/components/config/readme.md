@@ -11,6 +11,7 @@
 | -------------------- | --------------------- | ----------- | --------------------------------------------- | -------------- |
 | `apiKey`             | `api-key`             |             | `string`                                      | `""`           |
 | `baseUrl`            | `base-url`            |             | `string`                                      | `""`           |
+| `checkSignedIn`      | `check-signed-in`     |             | `boolean`                                     | `false`        |
 | `customTranslations` | `custom-translations` |             | `string \| { [x: string]: TranslationTree; }` | `""`           |
 | `fallbackLocale`     | `fallback-locale`     |             | `string`                                      | `"en"`         |
 | `locale`             | `locale`              |             | `string`                                      | `"en"`         |
