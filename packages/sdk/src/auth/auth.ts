@@ -72,7 +72,9 @@ export class Auth {
     }
 
     Auth.instance = new Auth(client);
-    Auth.instance.initializeRedirectHandlers();
+
+    Auth.instance.helpers.handleSocialAuthRedirect();
+    await Auth.instance.helpers.handleResetPasswordRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
@@ -83,11 +85,6 @@ export class Auth {
 
   static isInitialized(): boolean {
     return !!Auth.instance;
-  }
-
-  private async initializeRedirectHandlers(): Promise<void> {
-    this.helpers.handleSocialAuthRedirect();
-    await this.helpers.handleResetPasswordRedirect();
   }
 
   isTokenValid(token: string | TokenPayload | null): boolean {
