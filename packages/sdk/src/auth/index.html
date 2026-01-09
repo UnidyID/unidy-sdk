@@ -265,32 +265,33 @@
   </header>
 
   <main class="flex-1 p-8">
-  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" check-sso="true" custom-translations='{
-            "de": {
-              "fields": {
-                "custom_attributes.favorite_nut": {
-                  "label": "Lieblingsnussi",
-                  "options": {
-                    "peanut": "Erdnussi",
-                    "hazelnut": "Haselnussi",
-                    "walnut": "Walnussi"
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" check-signed-in="true"
+            custom-translations='{
+              "de": {
+                "fields": {
+                  "custom_attributes.favorite_nut": {
+                    "label": "Lieblingsnussi",
+                    "options": {
+                      "peanut": "Erdnussi",
+                      "hazelnut": "Haselnussi",
+                      "walnut": "Walnussi"
+                    }
+                  }
+                }
+              },
+              "en": {
+                "fields": {
+                  "custom_attributes.favorite_nut": {
+                    "label": "Favorite Nut",
+                    "options": {
+                      "peanut": "Peanut",
+                      "hazelnut": "Hazelnut",
+                      "walnut": "Walnut"
+                    }
                   }
                 }
               }
-            },
-            "en": {
-              "fields": {
-                "custom_attributes.favorite_nut": {
-                  "label": "Favorite Nut",
-                  "options": {
-                    "peanut": "Peanut",
-                    "hazelnut": "Hazelnut",
-                    "walnut": "Walnut"
-                  }
-                }
-              }
-            }
-          }'></u-config>
+            }'></u-config>
 
   <u-error-message for="connection"
     class-name="fixed top-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">

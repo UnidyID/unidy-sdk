@@ -134,7 +134,7 @@ export type SignOutResult =
   | ["invalid_id_token", ErrorResponse]
   | [null, null];
 
-export type SingleSignOnResult = CommonErrors | ["not_found", ErrorResponse] | [null, TokenResponse];
+export type SignedInResult = CommonErrors | ["not_found", ErrorResponse] | [null, TokenResponse];
 
 const PasskeyOptionsResponseSchema = z.object({
   challenge: z.string(),
@@ -369,8 +369,8 @@ export class AuthService {
     });
   }
 
-  async signOut(signInId: string, useSso = false): Promise<SignOutResult> {
-    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { useSso });
+  async signOut(signInId: string, globalLogout = false): Promise<SignOutResult> {
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { globalLogout });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -383,8 +383,8 @@ export class AuthService {
     });
   }
 
-  async singleSignOn(): Promise<SingleSignOnResult> {
-    const response = await this.client.get<TokenResponse>("/api/sdk/v1/sign_ins/single_sign_on");
+  async signedIn(): Promise<SignedInResult> {
+    const response = await this.client.get<TokenResponse>("/api/sdk/v1/sign_ins/signed_in");
 
     return this.handleResponse(response, () => {
       if (!response.success) {

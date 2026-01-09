@@ -34,7 +34,7 @@ export class UnidyConfig extends UnidyComponent {
   @Prop() customTranslations: string | Record<string, TranslationTree> = "";
   @Prop() fallbackLocale = "en";
   @Prop() locale = "en";
-  @Prop() checkSso = false;
+  @Prop() checkSignedIn = false;
 
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
@@ -64,8 +64,8 @@ export class UnidyConfig extends UnidyComponent {
 
     const auth = await Auth.initialize(getUnidyClient());
 
-    if (this.checkSso) {
-      auth.helpers.singleSignOn();
+    if (this.checkSignedIn) {
+      auth.helpers.checkSignedIn();
     }
   }
 

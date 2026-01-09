@@ -28,7 +28,7 @@ export interface AuthState {
 
   authenticated: boolean;
   token: string | null;
-  useSso: boolean;
+  backendSignedIn: boolean;
 }
 
 const missingRequiredUserDefaultFields = () => {
@@ -92,7 +92,7 @@ const initialState: AuthState = {
     passkey: true,
   },
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
-  useSso: false,
+  backendSignedIn: false,
 };
 
 const store = createStore<AuthState>(initialState);
@@ -191,8 +191,8 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
   }
 
-  setUseSso(useSso: boolean) {
-    state.useSso = useSso;
+  setBackendSignedIn(backendSignedIn: boolean) {
+    state.backendSignedIn = backendSignedIn;
   }
 
   setToken(token: string) {

@@ -55,7 +55,7 @@ export namespace Components {
         /**
           * @default false
          */
-        "checkSso": boolean;
+        "checkSignedIn": boolean;
         /**
           * @default ""
          */
@@ -800,7 +800,7 @@ declare namespace LocalJSX {
         /**
           * @default false
          */
-        "checkSso"?: boolean;
+        "checkSignedIn"?: boolean;
         /**
           * @default ""
          */
