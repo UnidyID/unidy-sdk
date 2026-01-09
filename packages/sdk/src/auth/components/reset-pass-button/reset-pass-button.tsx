@@ -1,8 +1,8 @@
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { Flash } from "../../../shared/store/flash-store";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
-import { Flash } from "../../../shared/store/flash-store";
 
 @Component({
   tag: "u-reset-password-button",
@@ -26,7 +26,11 @@ export class ResetPasswordButton {
   };
 
   private getButtonText() {
-    if (authState.step === "verification" && authState.availableLoginOptions && !authState.availableLoginOptions.password) {
+    if (
+      ["verification", "single-login"].includes(authState.step) &&
+      authState.availableLoginOptions &&
+      !authState.availableLoginOptions.password
+    ) {
       return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
     }
 
@@ -37,7 +41,7 @@ export class ResetPasswordButton {
     return t("auth.resetPassword.button_text_reset", { defaultValue: "Reset Password" });
   }
   render() {
-    if (!["verification", "reset-password"].includes(authState.step)) {
+    if (!["verification", "reset-password", "single-login"].includes(authState.step)) {
       return null;
     }
 
