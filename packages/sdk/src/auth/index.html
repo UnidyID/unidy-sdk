@@ -528,16 +528,6 @@
       </u-signin-step>
     </u-signin-root>
 
-    <div id="userSection" class="bg-white rounded-xl shadow-xl p-8 border border-gray-100" style="display: none;">
-      <div class="text-center mb-6">
-        <h3 id="message" class="text-2xl font-semibold mb-4"></h3>
-        <div id="payloadOutput"
-          class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm font-mono text-gray-700 max-h-48 text-left overflow-y-auto">
-        </div>
-        <div id="lastRefreshed" class="text-xs text-gray-500 mt-2"></div>
-      </div>
-    </div>
-
     <u-signed-in>
       <div class="container">
         <div class="mb-6">
@@ -733,34 +723,12 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // The 'appload' event is fired by Stencil when the app is fully loaded and hydrated.
-      window.addEventListener('appload', () => {
-        const spinner = document.getElementById('sdk-initial-spinner');
-        if (spinner) {
-          spinner.remove();
-        }
-      });
-    });
-
-    function changeLocale(locale) {
-      const config = document.querySelector('u-config');
-      config.setAttribute('locale', locale);
-    }
-  </script>
-
   <script type="module">
     import { Auth, Flash } from "/build/index.esm.js";
 
     window.Flash = Flash;
 
-    const userSection = document.getElementById("userSection");
-    const payloadOutput = document.getElementById("payloadOutput");
-    const message = document.getElementById("message");
     const signinRoot = document.getElementById("sign-in-root");
-    const logoutButton = document.getElementById('logout-button');
-
     const auth = await Auth.getInstance();
 
     signinRoot.addEventListener("authEvent", async (event) => {
@@ -769,20 +737,6 @@
 
     signinRoot.addEventListener("errorEvent", (event) => {
       console.error("Authentication error:", event.detail.error);
-
-      if (event.detail.error === Auth.Errors.ACCOUNT_NOT_FOUND) {
-        setTimeout(() => {
-          const shouldRedirect = confirm("Would you like to register?");
-
-          if (shouldRedirect) {
-            window.location = `http://localhost:3000/logins?email=${auth.getEmail()}`;
-          }
-        }, 100);
-      }
-    });
-
-    logoutButton.addEventListener('logout', () => {
-      console.info('User logged out successfully');
     });
 
     // Custom validation function for date_of_birth
@@ -817,7 +771,17 @@
       if (customConditionEl) {
         customConditionEl.conditionFunction = customConditionFunction;
       }
+
+      const spinner = document.getElementById('sdk-initial-spinner');
+      if (spinner) {
+        spinner.remove();
+      }
     });
+
+    function changeLocale(locale) {
+      const config = document.querySelector('u-config');
+      config.setAttribute('locale', locale);
+    }
   </script>
   </main>
 
