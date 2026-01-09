@@ -90,7 +90,8 @@ export class PasswordField {
   private shouldRender(): boolean {
     switch (this.for) {
       case "login":
-        if ((authState.step === "single-login" || authState.step === "verification") && authState.availableLoginOptions?.password) {
+        if (authState.step === "single-login") return true;
+        if (authState.step === "verification" && authState.availableLoginOptions?.password) {
           return true;
         }
         return false;
