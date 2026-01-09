@@ -401,6 +401,40 @@
           <u-submit-button for="password" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
         </u-signin-strategy>
 
+        <u-conditional-render when="auth.socialLoginsEnabled">
+          <div class="flex flex-col w-full gap-4">
+            <div class="flex items-center my-4">
+              <div class="flex-1 border-t border-gray-300"></div>
+              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+              <div class="flex-1 border-t border-gray-300"></div>
+            </div>
+            <u-conditional-render when="auth.hasSocialLogin" is="google">
+              <u-social-login-button provider="google" theme="dark"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="linkedin">
+              <u-social-login-button provider="linkedin"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="apple">
+              <u-social-login-button provider="apple" theme="dark"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="facebook">
+              <u-social-login-button provider="facebook"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="discord">
+              <u-social-login-button provider="discord" icon-only="true"
+                theme="dark"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="some-provider">
+              <u-social-login-button provider="some-provider"></u-social-login-button>
+            </u-conditional-render>
+            <u-conditional-render when="auth.hasSocialLogin" is="unidy">
+              <u-social-login-button provider="unidy" theme="dark" icon-only="true">
+                <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
+              </u-social-login-button>
+            </u-conditional-render>
+          </div>
+        </u-conditional-render>
+
         <u-conditional-render when="auth.magicCodeEnabled">
           <u-conditional-render when="auth.magicCodeSent" is="false">
             <div class="flex items-center my-4">
