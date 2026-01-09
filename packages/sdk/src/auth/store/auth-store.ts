@@ -23,7 +23,7 @@ export interface AuthState {
   availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
-  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey", string | null>;
+  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
 
   authenticated: boolean;
@@ -79,8 +79,6 @@ const initialState: AuthState = {
     password: null,
     magicCode: null,
     resetPassword: null,
-    general: null,
-    connection: null,
     passkey: null,
   },
   globalErrors: {},
@@ -142,7 +140,7 @@ class AuthStore {
     state.loading = loading;
   }
 
-  setFieldError(field: string, error: string | null) {
+  setFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey", error: string | null) {
     if (!this.handleError(error)) return;
 
     state.errors = { ...state.errors, [field]: error };
@@ -170,9 +168,9 @@ class AuthStore {
     return true;
   }
 
-  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey") {
+  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey") {
     state.errors = { ...state.errors, [field]: null } as Record<
-      "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey",
+      "email" | "password" | "magicCode" | "resetPassword" | "passkey",
       string | null
     >;
   }
