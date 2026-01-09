@@ -248,13 +248,13 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
-  async handleResetPasswordRedirect(): Promise<boolean> {
+  async handleResetPasswordRedirect() {
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const resetToken = params.get("reset_password_token");
 
     if (!resetToken) {
-      return false;
+      return;
     }
 
     if (authState.sid) {
@@ -266,15 +266,13 @@ export class AuthHelpers {
         authStore.setFieldError("resetPassword", error);
         authStore.setStep("reset-password");
         authStore.setLoading(false);
-        return false;
+        return;
       }
     }
 
     authStore.setResetToken(resetToken);
     authStore.setStep("reset-password");
     authStore.setLoading(false);
-
-    return true;
   }
 
   handleSocialAuthRedirect(): void {
