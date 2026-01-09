@@ -25,6 +25,14 @@ export class ResetPasswordButton {
     }
   };
 
+  private shouldRender(): boolean {
+    if (["verification", "reset-password"].includes(authState.step)) return true;
+
+    if (authState.step === "single-login" && authState.sid !== null) return true;
+
+    return false;
+  }
+
   private getButtonText() {
     if (
       ["verification", "single-login"].includes(authState.step) &&
@@ -41,7 +49,7 @@ export class ResetPasswordButton {
     return t("auth.resetPassword.button_text_reset", { defaultValue: "Reset Password" });
   }
   render() {
-    if (!["verification", "reset-password", "single-login"].includes(authState.step)) {
+    if (!this.shouldRender()) {
       return null;
     }
 
