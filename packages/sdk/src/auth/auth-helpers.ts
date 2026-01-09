@@ -309,19 +309,19 @@ export class AuthHelpers {
       return;
     }
 
-    const fieldsFromUrl = params.get("fields");
-    if (!fieldsFromUrl || !params.has("sid")) {
+    const fieldsFromUrl = clearUrlParam("fields");
+    const sid = clearUrlParam("sid");
+    clearUrlParam("error");
+
+    if (!fieldsFromUrl || !sid) {
       return;
     }
 
     try {
       const fields = JSON.parse(fieldsFromUrl);
-      authStore.setSignInId(clearUrlParam("sid"));
+      authStore.setSignInId(sid);
 
       this.handleMissingFields(fields);
-
-      clearUrlParam("fields");
-      clearUrlParam("error");
     } catch (e) {
       this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
