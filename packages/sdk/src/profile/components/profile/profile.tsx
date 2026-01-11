@@ -1,13 +1,13 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Host, Method, Prop, State, h } from "@stencil/core";
-import { t } from "../../../i18n";
-import { Auth } from "../../../auth";
+import { Component, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
+import { Auth } from "../../../auth";
 import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
-import { state as profileState, onChange as profileOnChange } from "../../store/profile-store";
+import { t } from "../../../i18n";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
+import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
-import { validateRequiredFieldsUnchanged, buildPayload } from "../../profile-helpers";
+import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 
 @Component({
   tag: "u-profile",
@@ -17,18 +17,29 @@ export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
 
+  @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
+  @Event() uProfileError!: EventEmitter<{
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  }>;
+
   @State() fetchingProfileData = false;
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
-      await this.fetchProfileData();
+      if (authStore.state.authenticated) await this.fetchProfileData();
     });
   }
 
   async componentWillLoad() {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
-    } else {
+    } else if (authStore.state.authenticated) {
       await this.fetchProfileData();
     }
 
@@ -90,12 +101,21 @@ export class Profile {
       profileState.configuration = JSON.parse(JSON.stringify(data));
       profileState.configUpdateSource = "submit";
       profileState.errors = {};
+      this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: data as ProfileRaw });
     } else if (error === "validation_error" && data && "flatErrors" in data) {
       profileState.errors = data.flatErrors as Record<string, string>;
       profileState.loading = false;
+      this.uProfileError.emit({
+        error: "profile_update_field_errors",
+        details: { fieldErrors: profileState.errors, responseData: data },
+      });
     } else {
       profileState.flashErrors = { error: error || "unknown_error" };
       profileState.loading = false;
+      this.uProfileError.emit({
+        error: "profile_update_failed",
+        details: { flashErrors: profileState.flashErrors },
+      });
     }
   }
 

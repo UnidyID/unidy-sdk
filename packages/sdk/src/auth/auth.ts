@@ -1,11 +1,11 @@
 import * as Sentry from "@sentry/browser";
-import type { UnidyClient } from "../api";
-import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
-import { AuthHelpers } from "./auth-helpers";
-import { waitForConfig } from "../shared/store/unidy-store";
+import type { UnidyClient } from "../api";
 import { getUnidyClient } from "../api";
 import { t } from "../i18n";
+import { waitForConfig } from "../shared/store/unidy-store";
+import { AuthHelpers } from "./auth-helpers";
+import { authState, authStore } from "./store/auth-store";
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -33,8 +33,6 @@ export class Auth {
 
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
-    this.helpers.handleSocialAuthRedirect();
-    this.helpers.handleResetPasswordRedirect();
   }
 
   static Errors = {
@@ -68,8 +66,15 @@ export class Auth {
     return Auth.instance;
   }
 
-  static initialize(client: UnidyClient): Auth {
+  static async initialize(client: UnidyClient): Promise<Auth> {
+    if (Auth.instance) {
+      return Auth.instance;
+    }
+
     Auth.instance = new Auth(client);
+
+    Auth.instance.helpers.handleSocialAuthRedirect();
+    await Auth.instance.helpers.handleResetPasswordRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);

@@ -235,7 +235,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
       return true;
     }
 
-    // data is null - last subscription was deleted
+    // data is null - last subscription was deleted, user is logged out
     newsletterLogout();
     newsletterStore.state.checkedNewsletters = {};
     return true;

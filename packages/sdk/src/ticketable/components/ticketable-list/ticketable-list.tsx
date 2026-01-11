@@ -1,22 +1,21 @@
-import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { getUnidyClient } from "../../../api";
-
-import type { PaginationMeta } from "../../../api";
+import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
-import { enUS } from "date-fns/locale/en-US";
 import { de } from "date-fns/locale/de";
+import { enUS } from "date-fns/locale/en-US";
 import { fr } from "date-fns/locale/fr";
 import { nlBE } from "date-fns/locale/nl-BE";
 import { ro } from "date-fns/locale/ro";
-
-import type { Ticket } from "../../api/tickets";
-import type { Subscription } from "../../api/subscriptions";
-import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
-import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
-import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
-import { UnidyComponent } from "../../../logger";
+import type { PaginationMeta } from "../../../api";
+import { getUnidyClient } from "../../../api";
+import { Auth } from "../../../auth";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
+import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
+import type { Subscription } from "../../api/subscriptions";
+import type { Ticket } from "../../api/tickets";
+import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -59,6 +58,17 @@ export class TicketableList extends UnidyComponent {
 
   @Prop() store: PaginationStore | null = null;
 
+  @Event() uTicketableListSuccess!: EventEmitter<{
+    ticketableType: "ticket" | "subscription";
+    items: Subscription[] | Ticket[];
+    paginationMeta: PaginationMeta | null;
+  }>;
+
+  @Event() uTicketableListError!: EventEmitter<{
+    ticketableType?: "ticket" | "subscription";
+    error: string;
+  }>;
+
   async componentWillLoad() {
     this.store = createPaginationStore();
   }
@@ -67,8 +77,15 @@ export class TicketableList extends UnidyComponent {
     this.logger.trace("start componentDidLoad");
     await waitForConfig();
     this.logger.trace("UnidyConfig loaded, start to load data");
-    await this.loadData();
-    this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+
+    const authInstance = await Auth.getInstance();
+
+    if (await authInstance.isAuthenticated()) {
+      await this.loadData();
+      this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+    } else {
+      this.logger.debug("user is not authenticated, skipping data load");
+    }
   }
 
   private async loadData() {
@@ -77,12 +94,14 @@ export class TicketableList extends UnidyComponent {
     if (!this.ticketableType) {
       this.error = "[u-ticketable-list] ticketable-type attribute is required";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
       this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
@@ -123,6 +142,7 @@ export class TicketableList extends UnidyComponent {
       if (error !== null || !data || !("results" in data)) {
         this.error = error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
         this.loading = false;
+        this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
@@ -135,9 +155,12 @@ export class TicketableList extends UnidyComponent {
       }
 
       this.loading = false;
+
+      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
       this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
     }
   }
 
