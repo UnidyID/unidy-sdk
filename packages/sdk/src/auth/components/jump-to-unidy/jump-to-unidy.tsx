@@ -4,7 +4,6 @@ import { authState, onChange } from "../../store/auth-store";
 import { getUnidyClient } from "../../api-client";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-jump-to-unidy",
@@ -30,14 +29,8 @@ export class JumpToUnidy {
    */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  /**
-   * The text displayed on the button. If not provided, renders slot content instead.
-   */
-  @Prop() text?: string;
-
   @State() loading = false;
   private unsubscribe?: () => void;
-  private hasSlot = false;
 
   /**
    * Validates that the path prop is valid (not empty and starts with "/").
@@ -48,7 +41,6 @@ export class JumpToUnidy {
   }
 
   componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);
     }
@@ -133,9 +125,10 @@ export class JumpToUnidy {
   }
 
   render() {
+    const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {this.loading ? <u-spinner /> : this.text ? this.text : this.hasSlot ? <slot /> : t("buttons.jump_to_unidy")}
+        {this.loading ? <u-spinner /> : hasSlot ? <slot /> : t("buttons.jump_to_unidy")}
       </button>
     );
   }

@@ -4,7 +4,6 @@ import { authState, onChange } from "../../store/auth-store";
 import { getUnidyClient } from "../../api-client";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-jump-to-service",
@@ -30,11 +29,6 @@ export class JumpToService {
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   /**
-   * The text displayed on the button. If not provided, renders slot content instead.
-   */
-  @Prop() text?: string;
-
-  /**
    * Optional redirect URI for the OAuth flow.
    * Must match one of the application's allowed redirect URIs.
    */
@@ -56,11 +50,6 @@ export class JumpToService {
 
   // TODO: Figure out a way to share this across components
   private unsubscribe?: () => void;
-  private hasSlot = false;
-
-  componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   connectedCallback() {
     this.unsubscribe = onChange("authenticated", () => {
@@ -148,9 +137,10 @@ export class JumpToService {
   }
 
   render() {
+    const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {this.loading ? <u-spinner /> : this.text ? this.text : this.hasSlot ? <slot /> : t("buttons.jump_to_service")}
+        {this.loading ? <u-spinner /> : hasSlot ? <slot /> : t("buttons.jump_to_service")}
       </button>
     );
   }

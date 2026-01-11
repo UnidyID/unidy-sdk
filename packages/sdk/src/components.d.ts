@@ -156,10 +156,6 @@ export namespace Components {
           * @default false
          */
         "skipOauthAuthorization": boolean;
-        /**
-          * @default "Jump to Service"
-         */
-        "text": string;
     }
     interface UJumpToUnidy {
         /**
@@ -171,10 +167,6 @@ export namespace Components {
          */
         "newtab": boolean;
         "path": string;
-        /**
-          * @default "Jump to Unidy"
-         */
-        "text": string;
     }
     interface ULogoutButton {
         /**
@@ -949,10 +941,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "skipOauthAuthorization"?: boolean;
-        /**
-          * @default "Jump to Service"
-         */
-        "text"?: string;
     }
     interface UJumpToUnidy {
         /**
@@ -964,10 +952,6 @@ declare namespace LocalJSX {
          */
         "newtab"?: boolean;
         "path": string;
-        /**
-          * @default "Jump to Unidy"
-         */
-        "text"?: string;
     }
     interface ULogoutButton {
         /**
