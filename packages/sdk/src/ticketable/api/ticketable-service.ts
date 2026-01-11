@@ -1,5 +1,5 @@
 import type { ZodSchema } from "zod";
-import { BaseService, type CommonErrors } from "../../api";
+import { BaseService, type CommonErrors } from "../../api/base-service";
 
 /** Common list arguments for ticketable services */
 export interface TicketableListArgs {

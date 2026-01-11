@@ -1,4 +1,4 @@
-import type { ApiClientInterface, ServiceDependencies } from "../../api";
+import type { ApiClientInterface, ServiceDependencies } from "../../api/base-service";
 import { TicketSchema, TicketsListResponseSchema, type Ticket, type TicketsListResponse } from "./schemas";
 import { TicketableService, type TicketableListArgs, type TicketableListResult, type TicketableGetResult } from "./ticketable-service";
 

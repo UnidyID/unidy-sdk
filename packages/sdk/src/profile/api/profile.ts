@@ -1,4 +1,4 @@
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies, type Payload } from "../../api";
+import { BaseService, type ApiClientInterface, type CommonErrors, type ServiceDependencies, type Payload } from "../../api/base-service";
 import {
   ProfileErrorResponseSchema,
   UserProfileFormErrorSchema,

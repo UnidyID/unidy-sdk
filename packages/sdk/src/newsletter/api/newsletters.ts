@@ -1,5 +1,12 @@
 import * as z from "zod";
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies, type Payload, type Options } from "../../api";
+import {
+  BaseService,
+  type ApiClientInterface,
+  type CommonErrors,
+  type ServiceDependencies,
+  type Payload,
+  type Options,
+} from "../../api/base-service";
 import {
   CreateSubscriptionsPayloadSchema,
   CreateSubscriptionsResponseSchema,
