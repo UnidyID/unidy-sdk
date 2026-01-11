@@ -58,6 +58,7 @@
     "invalid_required_fields_payload": "Payload dei campi obbligatori non valido",
     "invalid_reset_token": "Token di reimpostazione non valido. Richiedi una nuova email di reimpostazione password",
     "invalid_response_format": "Formato di risposta non valido",
+    "internal_server_error": "Errore interno del server",
     "magic_code_is_missing": "Codice magico mancante",
     "magic_code_recently_created": "Codice magico creato di recente",
     "missing_id_token": "Token ID mancante",

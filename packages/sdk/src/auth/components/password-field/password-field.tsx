@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { authState, authStore } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
@@ -90,7 +90,11 @@ export class PasswordField {
   private shouldRender(): boolean {
     switch (this.for) {
       case "login":
-        return (authState.step === "verification" && authState.availableLoginOptions?.password) || authState.step === "single-login";
+        if (authState.step === "single-login") return true;
+        if (authState.step === "verification" && authState.availableLoginOptions?.password) {
+          return true;
+        }
+        return false;
       case "new-password":
       case "password-confirmation":
         return authState.step === "reset-password";
@@ -99,10 +103,6 @@ export class PasswordField {
 
   render() {
     if (!this.shouldRender()) {
-      return null;
-    }
-
-    if (authState.availableLoginOptions && !authState.availableLoginOptions.password && authState.step !== "single-login") {
       return null;
     }
 

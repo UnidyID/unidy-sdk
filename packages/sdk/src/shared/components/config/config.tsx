@@ -1,10 +1,10 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Prop, Watch, Event, type EventEmitter, h } from "@stencil/core";
-import i18n from "../../../i18n";
-import { unidyState } from "../../store/unidy-store";
-import { Auth } from "../../../auth";
+import { Component, Event, type EventEmitter, h, Prop, Watch } from "@stencil/core";
 import { getUnidyClient } from "../../../api/";
+import { Auth } from "../../../auth";
+import i18n from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
+import { unidyState } from "../../store/unidy-store";
 
 export interface Config {
   apiKey: string;
@@ -38,7 +38,7 @@ export class UnidyConfig extends UnidyComponent {
   @Event() unidyInitialized!: EventEmitter<Config>;
   @Event() configChange!: EventEmitter<ConfigChange>;
 
-  componentWillLoad() {
+  async componentWillLoad() {
     if (!this.baseUrl || !this.apiKey) {
       this.logger.error("baseUrl and apiKey are required");
       return;
@@ -61,7 +61,7 @@ export class UnidyConfig extends UnidyComponent {
     this.loadCustomTranslations();
     unidyState.locale = this.locale;
 
-    Auth.initialize(getUnidyClient());
+    await Auth.initialize(getUnidyClient());
   }
 
   // extend the list of properties that should be watched when new properties are added to the Config

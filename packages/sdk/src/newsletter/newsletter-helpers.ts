@@ -248,6 +248,14 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
     newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
       (sub) => sub.newsletter_internal_name !== internalName,
     );
+
+    // Reset checked preferences to defaults (preferences marked with checked='true')
+    const defaultPrefs = newsletterStore.state.defaultPreferences[internalName];
+    newsletterStore.state.checkedNewsletters = {
+      ...newsletterStore.state.checkedNewsletters,
+      [internalName]: defaultPrefs ? [...defaultPrefs] : [],
+    };
+
     return true;
   }
 
