@@ -13,6 +13,14 @@
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
 
 
+## Events
+
+| Event             | Description | Type                                                                                                                                                                     |
+| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `uProfileError`   |             | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; flashErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
+| `uProfileSuccess` |             | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                                                                 |
+
+
 ## Methods
 
 ### `submitProfile() => Promise<void>`

@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.1.1-alpha3",
+  "version": "1.1.7",
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
   "homepage": "https://sdk-demo.unidy.io",
   "type": "module",
@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build": "bun run clean && stencil build",
+    "build": "bun run clean && touch src/demo-build.css && stencil build",
     "dev:stencil": "stencil build --dev --watch --serve",
     "dev:css": "tailwindcss -i ./src/demo.css -o ./src/demo-build.css --content './src/**/*.{html}' --watch",
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",

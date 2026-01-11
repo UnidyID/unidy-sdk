@@ -1,5 +1,5 @@
-import { Component, Prop, h } from "@stencil/core";
-import { flashState, Flash } from "../../store/flash-store";
+import { Component, h, Prop } from "@stencil/core";
+import { Flash, flashState } from "../../store/flash-store";
 import { CloseIcon } from "./close-icon";
 
 const variantClasses = {
@@ -29,15 +29,15 @@ export class FlashMessage {
     }
 
     return (
-      <div class={`u:flex u:flex-col u:gap-2 u:z-[500] u:min-w-64 u:max-w-lg ${this.componentClassName}`}>
+      <div class={`u:flex u:flex-col u:gap-2 u:z-[500] u:min-w-64 u:max-w-xl ${this.componentClassName}`}>
         {flashState.messages.map((message) => (
           <div
             key={message.id}
-            class={`u:flex u:items-start u:justify-between u:gap-3 u:p-3 u:rounded u:border ${variantClasses[message.variant]}`}
+            class={`u:flex u:items-start u:justify-between u:gap-3 u:p-3 u:rounded u:border u:border-solid ${variantClasses[message.variant]}`}
             role="alert"
             aria-live="polite"
           >
-            <span class="u:break-words">{message.text}</span>
+            <span class="u:break-words u:mr-1">{message.text}</span>
             <button
               type="button"
               class="u:cursor-pointer u:leading-none u:pt-1"

@@ -9,6 +9,7 @@ import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
+import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./profile/components/raw-input-fields/Select";
 import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -16,10 +17,13 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
+import { Subscription } from "./ticketable/api/subscriptions";
+import { Ticket } from "./ticketable/api/tickets";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
+export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./profile/components/raw-input-fields/Select";
 export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
@@ -27,6 +31,8 @@ export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
+export { Subscription } from "./ticketable/api/subscriptions";
+export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -444,9 +450,17 @@ export interface UNewsletterRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUNewsletterRootElement;
 }
+export interface UProfileCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUProfileElement;
+}
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
+}
+export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTicketableListElement;
 }
 declare global {
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
@@ -610,7 +624,27 @@ declare global {
         prototype: HTMLUPasswordFieldElement;
         new (): HTMLUPasswordFieldElement;
     };
+    interface HTMLUProfileElementEventMap {
+        "uProfileSuccess": { message: string; payload: ProfileRaw };
+        "uProfileError": {
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  };
+    }
     interface HTMLUProfileElement extends Components.UProfile, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUProfileElement: {
         prototype: HTMLUProfileElement;
@@ -694,7 +728,26 @@ declare global {
         prototype: HTMLUSubmitButtonElement;
         new (): HTMLUSubmitButtonElement;
     };
+    interface HTMLUTicketableListElementEventMap {
+        "uTicketableListSuccess": {
+    ticketableType: "ticket" | "subscription";
+    items: Subscription[] | Ticket[];
+    paginationMeta: PaginationMeta | null;
+  };
+        "uTicketableListError": {
+    ticketableType?: "ticket" | "subscription";
+    error: string;
+  };
+    }
     interface HTMLUTicketableListElement extends Components.UTicketableList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTicketableListElementEventMap>(type: K, listener: (this: HTMLUTicketableListElement, ev: UTicketableListCustomEvent<HTMLUTicketableListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTicketableListElementEventMap>(type: K, listener: (this: HTMLUTicketableListElement, ev: UTicketableListCustomEvent<HTMLUTicketableListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUTicketableListElement: {
         prototype: HTMLUTicketableListElement;
@@ -963,6 +1016,16 @@ declare namespace LocalJSX {
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "onUProfileError"?: (event: UProfileCustomEvent<{
+    error: string;
+    details: {
+      fieldErrors?: Record<string, string>;
+      flashErrors?: Record<string, string>;
+      httpStatus?: number;
+      responseData?: unknown;
+    };
+  }>) => void;
+        "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
         "profileId"?: string;
     }
     interface URawField {
@@ -1108,6 +1171,15 @@ declare namespace LocalJSX {
           * @default 10
          */
         "limit"?: number;
+        "onUTicketableListError"?: (event: UTicketableListCustomEvent<{
+    ticketableType?: "ticket" | "subscription";
+    error: string;
+  }>) => void;
+        "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
+    ticketableType: "ticket" | "subscription";
+    items: Subscription[] | Ticket[];
+    paginationMeta: PaginationMeta | null;
+  }>) => void;
         /**
           * @default 1
          */

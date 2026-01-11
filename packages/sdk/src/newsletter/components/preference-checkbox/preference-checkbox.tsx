@@ -22,6 +22,10 @@ export class NewsletterPreferenceCheckbox {
   componentWillLoad() {
     this.subscribeToStore();
     this.initializeCheckedState();
+
+    if (this.checked) {
+      storeDefaultPreference(this.internalName, this.preferenceIdentifier);
+    }
   }
 
   disconnectedCallback() {

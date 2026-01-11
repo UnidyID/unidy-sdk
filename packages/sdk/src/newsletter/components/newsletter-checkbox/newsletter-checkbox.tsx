@@ -33,9 +33,12 @@ export class NewsletterCheckbox {
 
   private syncToStore(checked: boolean) {
     if (checked) {
+      const prefs = newsletterStore.state.defaultPreferences[this.internalName];
+      const defaultPrefs: string[] = prefs ? Array.from(prefs) : [];
+
       newsletterStore.set("checkedNewsletters", {
         ...newsletterStore.state.checkedNewsletters,
-        [this.internalName]: [],
+        [this.internalName]: defaultPrefs,
       });
     } else {
       const { [this.internalName]: _, ...rest } = newsletterStore.state.checkedNewsletters;
