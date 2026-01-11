@@ -15,7 +15,7 @@ export class LogoutButton {
   @Event() logout!: EventEmitter<void>;
   private hasSlot = false;
 
-  async componentWillLoad() {
+  componentWillLoad() {
     this.hasSlot = hasSlotContent(this.el);
   }
 
