@@ -1,8 +1,11 @@
 import * as Sentry from "@sentry/browser";
-import type { UnidyClient } from "../api";
-import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
+import type { UnidyClient } from "../api";
+import { getUnidyClient } from "../api";
+import { t } from "../i18n";
+import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
+import { authState, authStore } from "./store/auth-store";
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -54,15 +57,24 @@ export class Auth {
   } as const;
 
   static async getInstance(): Promise<Auth> {
-    while (!Auth.isInitialized()) {
-      await new Promise((r) => setTimeout(r, 10));
+    if (!Auth.isInitialized()) {
+      await waitForConfig();
+
+      return Auth.initialize(getUnidyClient());
     }
 
     return Auth.instance;
   }
 
-  static initialize(client: UnidyClient): Auth {
+  static async initialize(client: UnidyClient): Promise<Auth> {
+    if (Auth.instance) {
+      return Auth.instance;
+    }
+
     Auth.instance = new Auth(client);
+
+    Auth.instance.helpers.handleSocialAuthRedirect();
+    await Auth.instance.helpers.handleResetPasswordRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
@@ -110,7 +122,7 @@ export class Auth {
     await this.helpers.refreshToken();
 
     if (authState.globalErrors.auth || !authState.token) {
-      return this.createAuthError("Failed to refresh token. Please sign in again.", "REFRESH_FAILED", true);
+      return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 
     return authState.token as string;
@@ -139,7 +151,7 @@ export class Auth {
     const [error, _] = await this.helpers.logout();
 
     if (error) {
-      return this.createAuthError(`Failed to sign out, reason: ${error}`, "SIGN_OUT_FAILED", false);
+      return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
 
     authStore.reset();

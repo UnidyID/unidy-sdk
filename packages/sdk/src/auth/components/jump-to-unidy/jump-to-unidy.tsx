@@ -1,14 +1,18 @@
-import { Component, h, Prop, State, forceUpdate } from "@stencil/core";
+import { Component, h, Prop, State, forceUpdate, Element } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState, onChange } from "../../store/auth-store";
 import { getUnidyClient } from "../../api-client";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { t } from "../../../i18n";
+import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-jump-to-unidy",
   shadow: false,
 })
 export class JumpToUnidy {
+  @Element() el!: HTMLElement;
+
   /**
    * The Unidy path to redirect to. Must start with "/".
    * @example "/subscriptions"
@@ -33,6 +37,7 @@ export class JumpToUnidy {
 
   @State() loading = false;
   private unsubscribe?: () => void;
+  private hasSlot = false;
 
   /**
    * Validates that the path prop is valid (not empty and starts with "/").
@@ -43,6 +48,7 @@ export class JumpToUnidy {
   }
 
   componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);
     }
@@ -128,8 +134,8 @@ export class JumpToUnidy {
 
   render() {
     return (
-      <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick}>
-        {this.loading ? "Loading..." : this.text ? this.text : <slot />}
+      <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
+        {this.loading ? <u-spinner /> : this.text ? this.text : this.hasSlot ? <slot /> : t("buttons.jump_to_unidy")}
       </button>
     );
   }

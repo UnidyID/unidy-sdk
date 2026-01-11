@@ -1,4 +1,4 @@
-# unidy-profile
+# u-profile
 
 
 
@@ -9,12 +9,43 @@
 
 | Property      | Attribute      | Description | Type                                 | Default     |
 | ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
-| `apiKey`      | `api-key`      |             | `string`                             | `undefined` |
-| `apiUrl`      | `api-url`      |             | `string`                             | `undefined` |
 | `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
-| `language`    | `language`     |             | `string`                             | `undefined` |
 | `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
 
+
+## Events
+
+| Event             | Description | Type                                                                                                                                                                     |
+| ----------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `uProfileError`   |             | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; flashErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
+| `uProfileSuccess` |             | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                                                                 |
+
+
+## Methods
+
+### `submitProfile() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
+## Dependencies
+
+### Used by
+
+ - [u-full-profile](../full-profile)
+
+### Graph
+```mermaid
+graph TD;
+  u-full-profile --> u-profile
+  style u-profile fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

@@ -1,4 +1,4 @@
-# unidy-field
+# u-field
 
 
 
@@ -7,17 +7,20 @@
 
 ## Properties
 
-| Property                   | Attribute                     | Description | Type                | Default                                |
-| -------------------------- | ----------------------------- | ----------- | ------------------- | -------------------------------------- |
-| `componentClassName`       | `class-name`                  |             | `string`            | `undefined`                            |
-| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`                              |
-| `emptyOption`              | `empty-option`                |             | `boolean`           | `true`                                 |
-| `field` _(required)_       | `field`                       |             | `string`            | `undefined`                            |
-| `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`            | `"Please enter a valid phone number."` |
-| `placeholder`              | `placeholder`                 |             | `string`            | `undefined`                            |
-| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`            | `""`                                   |
-| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`           | `false`                                |
-| `required`                 | `required`                    |             | `boolean`           | `false`                                |
+| Property                   | Attribute                     | Description | Type                                                                   | Default                                |
+| -------------------------- | ----------------------------- | ----------- | ---------------------------------------------------------------------- | -------------------------------------- |
+| `componentClassName`       | `class-name`                  |             | `string`                                                               | `undefined`                            |
+| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"`                                                    | `"label"`                              |
+| `emptyOption`              | `empty-option`                |             | `boolean`                                                              | `true`                                 |
+| `field` _(required)_       | `field`                       |             | `string`                                                               | `undefined`                            |
+| `invalidPhoneMessage`      | `invalid-phone-message`       |             | `string`                                                               | `"Please enter a valid phone number."` |
+| `pattern`                  | `pattern`                     |             | `string`                                                               | `undefined`                            |
+| `patternErrorMessage`      | `pattern-error-message`       |             | `string`                                                               | `undefined`                            |
+| `placeholder`              | `placeholder`                 |             | `string`                                                               | `undefined`                            |
+| `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                                                               | `"No information"`                     |
+| `renderDefaultLabel`       | `render-default-label`        |             | `boolean`                                                              | `true`                                 |
+| `required`                 | `required`                    |             | `boolean`                                                              | `false`                                |
+| `validationFunc`           | --                            |             | `(value: string \| string[]) => { valid: boolean; message?: string; }` | `undefined`                            |
 
 
 ## Shadow Parts
@@ -46,16 +49,20 @@
 
 ### Used by
 
+ - [u-full-profile](../full-profile)
  - [u-missing-field](../../../auth/components/missing-field)
 
 ### Depends on
 
+- [u-spinner](../../../shared/components/spinner)
 - [u-raw-field](../raw-field)
 
 ### Graph
 ```mermaid
 graph TD;
+  u-field --> u-spinner
   u-field --> u-raw-field
+  u-full-profile --> u-field
   u-missing-field --> u-field
   style u-field fill:#f9f,stroke:#333,stroke-width:4px
 ```

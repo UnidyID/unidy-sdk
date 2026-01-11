@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
-import type { ApiClient, ApiResponse } from "../../api";
 import * as z from "zod";
+import type { ApiClient, ApiResponse } from "../../api";
 
 const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
 
@@ -111,11 +111,24 @@ const UserProfileFormErrorSchema = z
     return { errors, flatErrors };
   });
 
+const UserProfileRailsFormErrorSchema = z
+  .object({
+    error_details: FormErrorsRawSchema,
+  })
+  .loose()
+  .transform(({ error_details }) => ({ errors: error_details }))
+  .pipe(UserProfileFormErrorSchema);
+
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
 export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
 
-const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
+const ProfileResultSchema = z.union([
+  UserProfileSchema,
+  UserProfileErrorSchema,
+  UserProfileFormErrorSchema,
+  UserProfileRailsFormErrorSchema,
+]);
 
 export type ProfileResult = UserProfileData | UserProfileError | UserProfileFormError | Record<string, string>;
 

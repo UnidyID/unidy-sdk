@@ -1,17 +1,21 @@
-import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { ApiClient, type PaginationMeta } from "../../../api";
+import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
-import { enUS } from "date-fns/locale/en-US";
 import { de } from "date-fns/locale/de";
+import { enUS } from "date-fns/locale/en-US";
 import { fr } from "date-fns/locale/fr";
 import { nlBE } from "date-fns/locale/nl-BE";
 import { ro } from "date-fns/locale/ro";
-
-import { type Ticket, TicketsService } from "../../api/tickets";
-import { type Subscription, SubscriptionsService } from "../../api/subscriptions";
-import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
+import type { PaginationMeta } from "../../../api";
+import { getUnidyClient } from "../../../api";
+import { Auth } from "../../../auth";
+import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
+import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
+import type { Subscription } from "../../api/subscriptions";
+import type { Ticket } from "../../api/tickets";
 import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 
 const LOCALES: Record<string, Locale> = {
   "en-US": enUS,
@@ -22,7 +26,7 @@ const LOCALES: Record<string, Locale> = {
 };
 
 @Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList {
+export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
@@ -30,13 +34,6 @@ export class TicketableList {
   @State() loading = true;
   @State() error: string | null = null;
   @Prop() paginationMeta: PaginationMeta | null = null;
-
-  // TODO: pull from config
-  @Prop() baseUrl?: string = "http://localhost:3000";
-  // TODO: pull from config
-  @Prop() apiKey?: string = "public-newsletter-api-key";
-  // TODO: pull from config
-  @Prop() locale = "en-US";
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
@@ -61,39 +58,56 @@ export class TicketableList {
 
   @Prop() store: PaginationStore | null = null;
 
+  @Event() uTicketableListSuccess!: EventEmitter<{
+    ticketableType: "ticket" | "subscription";
+    items: Subscription[] | Ticket[];
+    paginationMeta: PaginationMeta | null;
+  }>;
+
+  @Event() uTicketableListError!: EventEmitter<{
+    ticketableType?: "ticket" | "subscription";
+    error: string;
+  }>;
+
   async componentWillLoad() {
     this.store = createPaginationStore();
   }
 
-  // TODO[LOGGING]: Log this to console (use shared logger)
   async componentDidLoad() {
-    await this.loadData();
+    this.logger.trace("start componentDidLoad");
+    await waitForConfig();
+    this.logger.trace("UnidyConfig loaded, start to load data");
+
+    const authInstance = await Auth.getInstance();
+
+    if (await authInstance.isAuthenticated()) {
+      await this.loadData();
+      this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+    } else {
+      this.logger.debug("user is not authenticated, skipping data load");
+    }
   }
 
   private async loadData() {
     this.loading = true;
 
-    if (!this.baseUrl || !this.apiKey) {
-      this.error = "[u-ticketable-list] baseUrl and apiKey are required";
-      this.loading = false;
-      return;
-    }
-
     if (!this.ticketableType) {
       this.error = "[u-ticketable-list] ticketable-type attribute is required";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
       this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     try {
-      const apiClient = new ApiClient(this.baseUrl, this.apiKey);
-      const service = this.ticketableType === "ticket" ? new TicketsService(apiClient) : new SubscriptionsService(apiClient);
+      const unidyClient = await getUnidyClient();
+      const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
       const response = await service.list(
         {},
@@ -110,6 +124,7 @@ export class TicketableList {
             ? response.error.message
             : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
         this.loading = false;
+        this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
@@ -122,9 +137,12 @@ export class TicketableList {
       }
 
       this.loading = false;
+
+      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
       this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
     }
   }
 
@@ -169,9 +187,9 @@ export class TicketableList {
         let finalValue: string;
 
         if (typeof value === "object" && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[this.locale] || de });
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || de });
         } else if (typeof value === "number" && key === "price") {
-          finalValue = new Intl.NumberFormat(this.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
+          finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
           finalValue = value.toFixed(2);
         } else if (value != null) {
@@ -209,7 +227,7 @@ export class TicketableList {
 
     const targetElement = document.querySelector(this.target);
     if (!targetElement) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.warn("targetElement not found");
       return;
     }
 
@@ -230,20 +248,24 @@ export class TicketableList {
         target.appendChild(this.renderFragment(template, item));
       }
     } else {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      target.innerHTML = "<h1>Error: {this.error}</h1>";
+      this.logger.error(`failed to load content: ${this.error}`);
+      target.innerHTML = `<h1>${t("errors.prefix")} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      return <h1>Error: {this.error}</h1>;
+      this.logger.error(`can't render content: ${this.error}`);
+      return (
+        <h1>
+          `${t("errors.prefix")} ${this.error}`
+        </h1>
+      );
     }
 
     const template = this.element.querySelector("template");
     if (!template) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.error("template not found");
       return <h1>No template found - fix config</h1>;
     }
 

@@ -1,20 +1,3 @@
-export const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  account_not_found: "Account not found",
-
-  invalid_password: "Invalid password",
-  password_not_set: "Password not set",
-  reset_password_already_sent: "Reset password already sent",
-
-  magic_code_recently_created: "Magic code already sent. If you didn't receive one, please try again in a minute",
-  magic_code_expired: "Magic code expired",
-  magic_code_used: "Magic code used",
-  magic_code_not_valid: "Magic code not valid",
-
-  // Global (flash?) error messages
-  account_locked: "Account locked because of too many failed attempts. Try again later",
-  sign_in_expired: "Sign in expired. Please go back and enter your email again",
-};
-
 export const AUTH_ERROR_CODES = {
   EMAIL: {
     NOT_FOUND: "account_not_found",
@@ -29,6 +12,11 @@ export const AUTH_ERROR_CODES = {
     EXPIRED: "magic_code_expired",
     USED: "magic_code_used",
     NOT_VALID: "magic_code_not_valid",
+  },
+  PASSWORD_RESET: {
+    // TODO: figure out how to handle password requirements --> it should be same as in Unidy
+    // just a placeholder for now
+    PASSWORD_TOO_WEAK: "password_too_weak",
   },
   GENERAL: {
     ACCOUNT_LOCKED: "account_locked",

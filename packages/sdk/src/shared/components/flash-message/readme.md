@@ -1,4 +1,4 @@
-# error-message
+# u-flash-message
 
 
 
@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property  | Attribute | Description | Type                             | Default  |
-| --------- | --------- | ----------- | -------------------------------- | -------- |
-| `message` | `message` |             | `string`                         | `""`     |
-| `variant` | `variant` |             | `"error" \| "info" \| "success"` | `"info"` |
+| Property             | Attribute              | Description | Type     | Default |
+| -------------------- | ---------------------- | ----------- | -------- | ------- |
+| `componentClassName` | `class-name`           |             | `string` | `""`    |
+| `removeAfterSeconds` | `remove-after-seconds` |             | `number` | `null`  |
 
 
 ----------------------------------------------

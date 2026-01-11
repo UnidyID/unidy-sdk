@@ -1,23 +1,26 @@
-import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
+import { Component, h, Prop, type EventEmitter, Event, Element } from "@stencil/core";
 import { Auth } from "../../auth";
+import { t } from "../../../i18n";
+import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-logout-button",
   shadow: false,
 })
 export class LogoutButton {
-  @Prop() text = "Logout";
+  @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
   @Event() logout!: EventEmitter<void>;
+  private hasSlot = false;
+
+  componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();
-    if (!authInstance) {
-      console.error("Auth service not initialized");
-      return;
-    }
 
     const result = await authInstance.logout();
 
@@ -33,7 +36,7 @@ export class LogoutButton {
   render() {
     return (
       <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
-        {this.text}
+        {this.hasSlot ? <slot /> : t("buttons.logout")}
       </button>
     );
   }

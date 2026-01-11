@@ -1,4 +1,4 @@
-# google-login-button
+# u-social-login-button
 
 
 
@@ -7,13 +7,12 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type                                                                      | Default                  |
-| ------------- | -------------- | ----------- | ------------------------------------------------------------------------- | ------------------------ |
-| `iconOnly`    | `icon-only`    |             | `boolean`                                                                 | `false`                  |
-| `provider`    | `provider`     |             | `"apple" \| "discord" \| "facebook" \| "google" \| "linkedin" \| "unidy"` | `"google"`               |
-| `redirectUri` | `redirect-uri` |             | `string`                                                                  | `window.location.href`   |
-| `text`        | `text`         |             | `string`                                                                  | `"Continue with Google"` |
-| `theme`       | `theme`        |             | `"dark" \| "light"`                                                       | `"light"`                |
+| Property      | Attribute      | Description | Type                                                                      | Default                |
+| ------------- | -------------- | ----------- | ------------------------------------------------------------------------- | ---------------------- |
+| `iconOnly`    | `icon-only`    |             | `boolean`                                                                 | `false`                |
+| `provider`    | `provider`     |             | `"apple" \| "discord" \| "facebook" \| "google" \| "linkedin" \| "unidy"` | `"google"`             |
+| `redirectUri` | `redirect-uri` |             | `string`                                                                  | `window.location.href` |
+| `theme`       | `theme`        |             | `"dark" \| "light"`                                                       | `"light"`              |
 
 
 ## Shadow Parts

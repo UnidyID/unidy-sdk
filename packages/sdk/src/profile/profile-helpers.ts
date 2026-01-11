@@ -1,0 +1,37 @@
+import { type ProfileRaw, state as profileState } from "./store/profile-store";
+import { t } from "../i18n";
+
+export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
+  for (const key of Object.keys(sWC)) {
+    if (key === "custom_attributes") continue;
+    const field = sWC[key];
+    if (field.required === true && (field.value === "" || field.value === null)) {
+      profileState.errors = { [key]: t("errors.required_field", { field: key }) };
+      return false;
+    }
+  }
+
+  for (const key of Object.keys(sWC.custom_attributes ?? {})) {
+    const field = sWC.custom_attributes?.[key];
+    const fieldDisplayName = `custom_attributes.${key}`;
+    if (field?.required === true && (field.value === "" || field.value === null)) {
+      profileState.errors = { [fieldDisplayName]: t("errors.required_field", { field: fieldDisplayName }) };
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function buildPayload(stateData: ProfileRaw) {
+  return {
+    ...Object.fromEntries(
+      Object.entries(stateData)
+        .filter(([k]) => k !== "custom_attributes")
+        .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
+    ),
+    custom_attributes: Object.fromEntries(
+      Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
+    ),
+  };
+}

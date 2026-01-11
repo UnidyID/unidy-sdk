@@ -1,7 +1,8 @@
 import * as z from "zod";
 import { TicketableListParamsBaseSchema } from "./schemas";
 import { getWithSchema } from "./get-with-schema";
-import { type ApiClient, type ApiResponse, type PaginationMeta, PaginationMetaSchema } from "../../api";
+import { PaginationMetaSchema } from "../../api/shared";
+import type { ApiClient, ApiResponse } from "../../api";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -32,9 +33,6 @@ const TicketSchema = z.object({
 });
 
 export type Ticket = z.infer<typeof TicketSchema>;
-
-// Re-export PaginationMeta for convenience
-export type { PaginationMeta };
 
 // List response
 const TicketsListResponseSchema = z.object({

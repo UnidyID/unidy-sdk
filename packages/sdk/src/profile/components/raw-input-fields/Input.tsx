@@ -11,7 +11,6 @@ type InputProps = {
   placeholder?: string;
   specificPartKey?: string;
   onChange: (value: string) => void;
-  onInput: (e: Event) => void;
   onBlur?: (e: Event) => void;
   ariaDescribedBy?: string;
 };
@@ -28,7 +27,6 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
     title={props.title}
     placeholder={props.placeholder}
     onChange={(e) => props.onChange((e.target as HTMLInputElement).value)}
-    onInput={(e) => props.onInput(e)}
     onBlur={(e) => props.onBlur?.(e)}
     aria-describedby={props.ariaDescribedBy || undefined}
   />

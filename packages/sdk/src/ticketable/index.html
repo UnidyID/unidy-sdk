@@ -3,146 +3,191 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <title>Stencil Component Starter</title>
+    <title>Unidy Tickets &amp; Subscriptions Demo</title>
 
-    <script type="module" src="/build/ticketable.esm.js"></script>
-    <script nomodule src="/build/ticketable.js"></script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="/build/sdk.esm.js"></script>
+    <script nomodule src="/build/sdk.js"></script>
+    <link rel="stylesheet" href="/demo.css">
   </head>
 
-  <body class="p-8 bg-gray-50 min-h-screen">
-    <h1 class="text-4xl font-bold text-gray-900 mb-8">My Tickets</h1>
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+    <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
+      <div class="logo">
+        <a href="/">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 494" class="w-6 h-10">
+            <path d="M0 0 C24.75 0 49.5 0 75 0 C75.02578125 11.37597656 75.0515625 22.75195312 75.078125 34.47265625 C75.10330268 41.69598057 75.129481 48.91927852 75.16015625 56.14257812 C75.20861937 67.59806106 75.25309317 79.05345628 75.27099609 90.5090332 C75.28405643 98.85391555 75.3111321 107.19861849 75.35461307 115.54339975 C75.37712988 119.95655298 75.3929166 124.36948573 75.39188385 128.78270149 C75.3911314 132.9483894 75.40931347 137.11359175 75.44116783 141.27915382 C75.44958997 142.79669728 75.45146997 144.31429571 75.44580269 145.83185196 C75.38218637 165.50887947 80.8773945 183.49990817 94.78515625 197.859375 C95.51605469 198.56578125 96.24695313 199.2721875 97 200 C97.65871094 200.64453125 98.31742187 201.2890625 98.99609375 201.953125 C114.30183401 216.11940372 133.07744885 219.87928895 153.32763672 219.17041016 C171.34938846 218.02120655 186.88418598 209.00799473 199 196 C212.38082539 180.40035755 216.45609575 163.03116875 216.43237305 142.9284668 C216.441412 141.36005899 216.45174436 139.7916582 216.46325684 138.2232666 C216.49060286 134.00720953 216.50008054 129.7912873 216.50611091 125.57515311 C216.51555351 121.15354912 216.5417612 116.73204356 216.56611633 112.3105011 C216.6096242 103.95632708 216.63826733 95.60217234 216.66143972 87.24791986 C216.69366003 75.94565157 216.74910703 64.64349806 216.80318546 53.34131718 C216.88765413 35.56091246 216.94131831 17.78055185 217 0 C241.75 0 266.5 0 292 0 C292.1209091 41.86589632 292.1209091 41.86589632 292.14648438 59.50195312 C292.16423788 71.6462792 292.18503066 83.79054252 292.22631836 95.93481445 C292.25638258 104.78211557 292.27561308 113.62936543 292.28226548 122.47671622 C292.28614914 127.15381611 292.29516439 131.83076948 292.31719017 136.50782204 C292.3378255 140.92617116 292.34378031 145.34431593 292.33932304 149.76270866 C292.34013634 151.36890912 292.34593872 152.97511772 292.35761642 154.58127594 C292.46074389 169.52110298 290.90803288 184.55375636 286.4375 198.875 C286.0650415 200.08736328 286.0650415 200.08736328 285.68505859 201.32421875 C279.39643042 220.78421611 269.23810681 237.5283989 256 253 C255.31808594 253.80566406 254.63617188 254.61132812 253.93359375 255.44140625 C231.06635061 281.88864832 197.3674151 297.68662511 163 302 C137.1964021 303.4142391 111.8448994 301.81411273 88 291 C87.34773438 290.70754395 86.69546875 290.41508789 86.0234375 290.11376953 C50.43748822 273.89227866 22.43749212 244.67305501 8.39526367 208.08544922 C3.35886984 194.18506187 -0.13108748 179.32767652 -0.12025452 164.50817871 C-0.12110894 163.79897231 -0.12196337 163.0897659 -0.12284368 162.35906839 C-0.12447737 160.00693051 -0.11901205 157.65486558 -0.11352539 155.30273438 C-0.11324304 153.60699465 -0.1134022 151.91125479 -0.1139679 150.21551514 C-0.11425399 145.62934748 -0.10838769 141.04320616 -0.10139394 136.4570446 C-0.09512905 131.6577658 -0.09455412 126.85848636 -0.09336853 122.0592041 C-0.09026445 112.97881071 -0.08206352 103.8984294 -0.07201904 94.81804132 C-0.05873558 82.5422459 -0.05335054 70.26644716 -0.04751682 57.99064636 C-0.038123 38.66042186 -0.01819791 19.33022286 0 0 Z " fill="#0055FF" transform="translate(0,192)"/>
+            <path d="M0 0 C0.73959961 0.19303711 1.47919922 0.38607422 2.24121094 0.58496094 C20.47361558 5.46992989 38.67767024 14.68505189 53 27 C53.82886719 27.70382813 54.65773437 28.40765625 55.51171875 29.1328125 C58.06354503 31.36816425 60.53622647 33.66807979 63 36 C63.94617188 36.87011719 64.89234375 37.74023438 65.8671875 38.63671875 C90.88480136 62.15671294 103.80655244 94.4524195 108 128 C108 133.94 108 139.88 108 146 C83.25 146 58.5 146 33 146 C32.01 140.72 31.02 135.44 30 130 C23.75080328 111.07882105 12.53451825 95.90348033 -5.16796875 86.27734375 C-22.54131093 77.82937449 -42.09232325 75.90659375 -60.671875 81.73828125 C-69.79676301 85.19759912 -77.6720651 89.53809377 -85 96 C-85.75023438 96.65613281 -86.50046875 97.31226562 -87.2734375 97.98828125 C-101.50765484 111.27517013 -106.31186062 127.18302432 -109 146 C-133.75 146 -158.5 146 -184 146 C-184 120.43405512 -184 120.43405512 -181 108 C-180.83371094 107.30986816 -180.66742188 106.61973633 -180.49609375 105.90869141 C-171.37955935 69.46787752 -147.8021217 36.72365174 -115.66015625 17.125 C-81.13116533 -3.2399247 -39.0678293 -10.76513278 0 0 Z " fill="#0055FF" transform="translate(184,4)"/>
+            <path d="M0 0 C6.64873272 6.22025883 8.81256324 12.63711965 9.12863445 21.68044758 C9.13537955 23.07831638 9.1367376 24.47621793 9.13371277 25.87409973 C9.13597833 26.64875114 9.13824388 27.42340254 9.14057809 28.22152823 C9.14688936 30.80761292 9.14609058 33.39364481 9.14526367 35.97973633 C9.14825696 37.83791674 9.15165988 39.69609654 9.15544128 41.55427551 C9.16426833 46.59568937 9.16661886 51.63708625 9.16725707 56.67850709 C9.16796832 59.8301392 9.17010407 62.98176701 9.17275429 66.13339806 C9.1820035 77.13393808 9.18608971 88.13446599 9.18530273 99.13500977 C9.18470209 109.3800974 9.19525238 119.62513235 9.2110464 129.87020665 C9.22413331 138.67379498 9.22948614 147.4773661 9.22884732 156.28096408 C9.22859267 161.5355268 9.23142588 166.7900427 9.24202538 172.04459572 C9.25172566 176.98826549 9.25177228 181.93184385 9.24450874 186.87551689 C9.2434653 188.68586994 9.2458115 190.49622874 9.2518692 192.30657196 C9.32666457 216.21516967 9.32666457 216.21516967 1 225 C-4.73698663 229.73924982 -10.69789078 231.31828484 -18 230.9375 C-25.75188238 229.90312306 -30.78782682 225.72081527 -35.7734375 219.94140625 C-38.97841332 214.86856235 -39.29167257 209.66858515 -39.26742554 203.82218933 C-39.27195665 203.01486951 -39.27648776 202.20754968 -39.28115618 201.37576562 C-39.29378453 198.67908126 -39.29218083 195.98259927 -39.29052734 193.28588867 C-39.29651357 191.34888958 -39.30331934 189.41189287 -39.31088257 187.47489929 C-39.32854022 182.21860681 -39.33323786 176.96237945 -39.33451414 171.70606017 C-39.33593644 168.4204152 -39.34020754 165.13478675 -39.34550858 161.84914589 C-39.36400815 150.3817604 -39.37217928 138.9144214 -39.37060547 127.44702148 C-39.36940412 116.76561885 -39.39050535 106.08441831 -39.4220928 95.40306681 C-39.44826305 86.22580141 -39.45897245 77.04860199 -39.45769465 67.87129956 C-39.45718523 62.39311798 -39.46285726 56.91511601 -39.48405075 51.43697166 C-39.50344562 46.28309993 -39.50354892 41.12957892 -39.48901749 35.97569466 C-39.48692985 34.08793499 -39.49162759 32.2001533 -39.5037384 30.31243134 C-39.62055372 10.8375304 -39.62055372 10.8375304 -33.17578125 2.6953125 C-23.2455442 -5.67356653 -11.11433781 -7.94221994 0 0 Z " fill="#0055FF" transform="translate(161,134)"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="flex gap-2 items-center">
+        <a href="/"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
+        <a href="/auth"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth
+          & Profile</a>
+        <a href="/newsletter"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
+        <a href="/ticketable"
+          class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Tickets</a>
+      </nav>
 
-    <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0;state=inactive" container-class="grid grid-cols-2 gap-4" limit="1">
-      <template>
-        <div class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-          <div class="flex items-start justify-between p-6">
-            <div class="flex-1">
-              <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                <ticketable-value name="title"></ticketable-value>
-              </h2>
+      <div>
+        <u-signed-in>
+          <u-logout-button
+            class-name="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+          </u-logout-button>
+        </u-signed-in>
+        <u-signed-in not>
+          <a href="/auth"
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200">Login</a>
+        </u-signed-in>
+      </div>
+    </header>
 
-              <div class="space-y-3">
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium text-gray-500">Starts:</span>
-                  <span class="text-base text-gray-700">
-                    <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
-                  </span>
-                </div>
+    <main class="flex-1 p-5 max-w-4xl mx-auto w-full ">
+    <u-config
+    base-url="http://localhost:3000"
+    api-key="public-newsletter-api-key"></u-config>
 
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium text-gray-500">Ends:</span>
-                  <span class="text-base text-gray-700">
-                    <ticketable-value name="ends_at" date-format="dd.MM.yyyy"></ticketable-value>
-                  </span>
-                </div>
+    <u-signed-in not>
+      <h1>You need to sign in to view your tickets</h1>
+    </u-signed-in>
 
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium text-gray-500">Price:</span>
-                  <span class="text-lg font-semibold text-blue-600">
-                    <ticketable-value name="price" format="Price -> {{value}}"></ticketable-value>
-                  </span>
+    <u-signed-in>
+      <h1 class="text-4xl font-bold text-gray-900 mb-8">My Tickets</h1>
+
+      <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0;state=inactive" container-class="grid grid-cols-2 gap-4" limit="1">
+        <template>
+          <div class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+            <div class="flex items-start justify-between p-6">
+              <div class="flex-1">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                  <ticketable-value name="title"></ticketable-value>
+                </h2>
+
+                <div class="space-y-3">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Starts:</span>
+                    <span class="text-base text-gray-700">
+                      <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Ends:</span>
+                    <span class="text-base text-gray-700">
+                      <ticketable-value name="ends_at" date-format="dd.MM.yyyy"></ticketable-value>
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Price:</span>
+                    <span class="text-lg font-semibold text-blue-600">
+                      <ticketable-value name="price" format="Price -> {{value}}"></ticketable-value>
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              <a
+                unidy-attr
+                unidy-attr-href="{{button_cta_url}}"
+                class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+              >
+                View Details
+              </a>
             </div>
-
-            <a
-              unidy-attr
-              unidy-attr-href="{{button_cta_url}}"
-              class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
-            >
-              View Details
-            </a>
           </div>
-        </div>
-      </template>
-    </u-ticketable-list>
+        </template>
+      </u-ticketable-list>
 
-    <div class="flex items-center justify-between mt-12 mb-6">
-      <h2 class="text-3xl font-bold text-gray-900">My Tickets (Table View)</h2>
-      <select
-        id="state-filter"
-        class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      >
-        <option value="">All States</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-    </div>
-
-    <u-ticketable-list
-      id="tickets-list"
-      ticketable-type="ticket"
-      filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0"
-      target="#tickets-table-body"
-      limit="10"
-      skeleton-all-text="true"
-    >
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Title</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Starts</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Ends</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Action</th>
-            </tr>
-          </thead>
-
-          <tbody id="tickets-table-body" class="divide-y divide-gray-200"></tbody>
-        </table>
-
-        <div class="flex items-center gap-2 mt-4">
-          <u-pagination-button
-            direction="prev"
-            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-          >
-            <span slot="icon">⬅️</span>
-          </u-pagination-button>
-          <u-pagination-page custom-class="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
-          <u-pagination-button
-            direction="next"
-            custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-          ></u-pagination-button>
-        </div>
+      <div class="flex items-center justify-between mt-12 mb-6">
+        <h2 class="text-3xl font-bold text-gray-900">My Tickets (Table View)</h2>
+        <select
+          id="state-filter"
+          class="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">All States</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
 
-      <template>
-        <tr class="hover:bg-gray-50 transition-colors duration-150">
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-base font-semibold text-gray-900">
-              <ticketable-value name="title"></ticketable-value>
-            </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-700">
-              <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
-            </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-sm text-gray-700">
-              <ticketable-value name="ends_at" date-format="dd.MM.yyyy"></ticketable-value>
-            </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <div class="text-lg font-semibold text-blue-600">
-              <ticketable-value name="price"></ticketable-value>
-            </div>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-            <a
-              unidy-attr
-              unidy-attr-href="{{button_cta_url}}"
-              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+      <u-ticketable-list
+        id="tickets-list"
+        ticketable-type="ticket"
+        filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0"
+        target="#tickets-table-body"
+        limit="10"
+        skeleton-all-text="true"
+      >
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Title</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Starts</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Ends</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Price</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="tickets-table-body" class="divide-y divide-gray-200"></tbody>
+          </table>
+
+          <div class="flex items-center gap-2 mt-4">
+            <u-pagination-button
+              direction="prev"
+              custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
             >
-              View Details
-            </a>
-          </td>
-        </tr>
-      </template>
-    </u-ticketable-list>
+              <span slot="icon">⬅️</span>
+            </u-pagination-button>
+            <u-pagination-page custom-class="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
+            <u-pagination-button
+              direction="next"
+              custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+            ></u-pagination-button>
+          </div>
+        </div>
+
+        <template>
+          <tr class="hover:bg-gray-50 transition-colors duration-150">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-base font-semibold text-gray-900">
+                <ticketable-value name="title"></ticketable-value>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-700">
+                <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-700">
+                <ticketable-value name="ends_at" date-format="dd.MM.yyyy"></ticketable-value>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-lg font-semibold text-blue-600">
+                <ticketable-value name="price"></ticketable-value>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <a
+                unidy-attr
+                unidy-attr-href="{{button_cta_url}}"
+                class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+              >
+                View Details
+              </a>
+            </td>
+          </tr>
+        </template>
+      </u-ticketable-list>
+    </u-signed-in>
 
     <script>
       document.getElementById('state-filter').addEventListener('change', e => {
@@ -157,5 +202,13 @@
         list.setAttribute('filter', params.toString().replace(/&/g, ';'));
       });
     </script>
+    </main>
+
+    <footer class="text-center py-5 mt-8 bg-gray-800 text-white text-sm">
+      <p>&copy; <span id="year"></span> Unidy. All rights reserved.</p>
+      <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+      </script>
+    </footer>
   </body>
 </html>

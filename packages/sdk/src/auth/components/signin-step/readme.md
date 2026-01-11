@@ -1,4 +1,4 @@
-# signin-step
+# u-signin-step
 
 
 
@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property            | Attribute       | Description | Type                        | Default     |
-| ------------------- | --------------- | ----------- | --------------------------- | ----------- |
-| `alwaysRender`      | `always-render` |             | `boolean`                   | `false`     |
-| `name` _(required)_ | `name`          |             | `"email" \| "verification"` | `undefined` |
+| Property            | Attribute       | Description | Type                                                                                                    | Default     |
+| ------------------- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------- | ----------- |
+| `alwaysRender`      | `always-render` |             | `boolean`                                                                                               | `false`     |
+| `name` _(required)_ | `name`          |             | `"email" \| "missing-fields" \| "registration" \| "reset-password" \| "single-login" \| "verification"` | `undefined` |
 
 
 ## Methods
