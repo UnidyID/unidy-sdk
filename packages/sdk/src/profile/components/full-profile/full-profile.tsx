@@ -2,7 +2,7 @@ import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
-const EXCLUDED_FIELDS = ['custom_attributes', 'email', 'preferred_language']
+const EXCLUDED_FIELDS = ["custom_attributes", "email", "preferred_language"];
 
 @Component({
   tag: "u-full-profile",
