@@ -1,7 +1,7 @@
-import {Component, h, Prop, type EventEmitter, Event, Element} from "@stencil/core";
+import { Component, h, Prop, type EventEmitter, Event, Element } from "@stencil/core";
 import { Auth } from "../../auth";
 import { t } from "../../../i18n";
-import {hasSlotContent} from "../../../shared/component-utils";
+import { hasSlotContent } from "../../../shared/component-utils";
 
 @Component({
   tag: "u-logout-button",
