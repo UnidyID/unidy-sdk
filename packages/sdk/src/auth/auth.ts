@@ -87,7 +87,7 @@ export class Auth {
     return !!Auth.instance;
   }
 
-  isTokenValid(token: string | TokenPayload | null): boolean {
+  isTokenValid(token: string | TokenPayload | null, expirationBuffer = 5): boolean {
     try {
       let decoded: TokenPayload | null;
 
@@ -100,7 +100,7 @@ export class Auth {
       if (!decoded) return false;
 
       const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
+      return decoded.exp > currentTime + expirationBuffer;
     } catch (error) {
       Sentry.captureException(error);
       return false;
