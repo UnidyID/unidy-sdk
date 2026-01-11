@@ -143,10 +143,10 @@ export class NewsletterService extends EventEmitter {
     if (!auth) return undefined;
 
     const headers: Record<string, string> = {};
-    if (auth.idToken) {
+    if (auth.idToken && auth.idToken !== "") {
       headers["X-ID-Token"] = auth.idToken;
     }
-    if (auth.preferenceToken) {
+    if (auth.preferenceToken && auth.preferenceToken !== "") {
       headers["X-Preference-Token"] = auth.preferenceToken;
     }
     return Object.keys(headers).length > 0 ? headers : undefined;
