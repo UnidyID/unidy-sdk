@@ -1,6 +1,6 @@
 import type { Config } from "@stencil/core";
-import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 import { visualizer } from "rollup-plugin-visualizer";
+import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
   namespace: "sdk",
