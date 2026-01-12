@@ -20,10 +20,8 @@ export class SubmitButton {
 
   private context: "auth" | "profile" | "newsletter" = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
-  private hasSlot = false;
 
   async componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
     this.context = this.detectContext();
 
     switch (this.context) {
@@ -83,7 +81,7 @@ export class SubmitButton {
       return <u-spinner />;
     }
 
-    if (this.hasSlot) {
+    if (hasSlotContent(this.el)) {
       return <slot />;
     }
 
