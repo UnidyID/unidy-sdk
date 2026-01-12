@@ -98,7 +98,7 @@ export class Auth {
    * @throws Error if expirationBuffer is not positive number
    */
   isTokenValid(token: string | TokenPayload | null, expirationBuffer = DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS): boolean {
-    if (!Number.isFinite(expirationBuffer) || expirationBuffer < 0) {
+    if (!Number.isFinite(expirationBuffer) || expirationBuffer <= 0) {
       throw new Error("expirationBuffer must be a positive finite number");
     }
 
