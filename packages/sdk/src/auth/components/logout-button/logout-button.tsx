@@ -1,7 +1,7 @@
-import { Component, h, Prop, type EventEmitter, Event, Element } from "@stencil/core";
-import { Auth } from "../../auth";
+import { Component, Element, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { hasSlotContent } from "../../../shared/component-utils";
+import { Auth } from "../../auth";
 
 @Component({
   tag: "u-logout-button",
@@ -13,11 +13,6 @@ export class LogoutButton {
   @Prop() reloadOnSuccess = true;
 
   @Event() logout!: EventEmitter<void>;
-  private hasSlot = false;
-
-  componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();
@@ -36,7 +31,7 @@ export class LogoutButton {
   render() {
     return (
       <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
-        {this.hasSlot ? <slot /> : t("buttons.logout")}
+        {hasSlotContent(this.el) ? <slot /> : t("buttons.logout")}
       </button>
     );
   }
