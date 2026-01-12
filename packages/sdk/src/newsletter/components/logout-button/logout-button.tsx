@@ -1,9 +1,9 @@
-import { Component, h, Prop, Element, Host } from "@stencil/core";
-import { newsletterLogout } from "../../newsletter-helpers";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { Flash } from "../../../shared/store/flash-store";
-import { newsletterStore } from "../../store/newsletter-store";
 import { hasSlotContent } from "../../../shared/component-utils";
+import { Flash } from "../../../shared/store/flash-store";
+import { newsletterLogout } from "../../newsletter-helpers";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-logout-button",
@@ -24,8 +24,6 @@ export class LogoutButton {
       return <Host style={{ display: "none" }} />;
     }
 
-    const hasContent = hasSlotContent(this.el);
-
     return (
       <Host>
         <button
@@ -36,7 +34,7 @@ export class LogoutButton {
           aria-label="Logout"
           aria-live="polite"
         >
-          {hasContent ? <slot /> : t("newsletter.buttons.logout")}
+          {hasSlotContent(this.el) ? <slot /> : t("newsletter.buttons.logout")}
         </button>
       </Host>
     );
