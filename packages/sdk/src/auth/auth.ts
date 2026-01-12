@@ -87,7 +87,19 @@ export class Auth {
     return !!Auth.instance;
   }
 
-  isTokenValid(token: string | TokenPayload | null, expirationBuffer = 5): boolean {
+  /**
+   * Checks whether a JWT token is valid and not expired.
+   *
+   * @param token - The JWT token to validate. Can be a raw JWT string, a decoded TokenPayload, or null.
+   * @param expirationBuffer - Number of seconds before actual expiration to consider the token invalid, used to prevent race conditions with preemptive token refresh. Defaults to 10 seconds.
+   * @returns `true` if the token is valid and won't expire within the buffer period, `false` otherwise.
+   * @throws Error if expirationBuffer is not positive number
+   */
+  isTokenValid(token: string | TokenPayload | null, expirationBuffer = 10): boolean {
+    if (!Number.isFinite(expirationBuffer) || expirationBuffer < 0) {
+      throw new Error("expirationBuffer must be a positive finite number");
+    }
+
     try {
       let decoded: TokenPayload | null;
 
