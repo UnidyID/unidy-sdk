@@ -7,6 +7,8 @@ import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
 import { authState, authStore } from "./store/auth-store";
 
+const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
+
 export interface TokenPayload {
   sub: string; // unidy id
   sid: string; // sign-in id
@@ -95,7 +97,7 @@ export class Auth {
    * @returns `true` if the token is valid and won't expire within the buffer period, `false` otherwise.
    * @throws Error if expirationBuffer is not positive number
    */
-  isTokenValid(token: string | TokenPayload | null, expirationBuffer = 10): boolean {
+  isTokenValid(token: string | TokenPayload | null, expirationBuffer = DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS): boolean {
     if (!Number.isFinite(expirationBuffer) || expirationBuffer < 0) {
       throw new Error("expirationBuffer must be a positive finite number");
     }
@@ -110,6 +112,10 @@ export class Auth {
       }
 
       if (!decoded) return false;
+
+      if (typeof decoded.exp !== "number" || !Number.isFinite(decoded.exp)) {
+        return false;
+      }
 
       const currentTime = Date.now() / 1000;
       return decoded.exp > currentTime + expirationBuffer;
