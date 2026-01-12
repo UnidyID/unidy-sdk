@@ -85,10 +85,6 @@ export class Field {
   };
 
   render() {
-    if (profileState.loading) {
-      return <u-spinner />;
-    }
-
     const fieldData = this.getFieldData();
     if (!fieldData) {
       return null;
