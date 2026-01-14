@@ -47,8 +47,6 @@ export class Field {
       : profileState.data[this.field];
   }
 
-  componentWillLoad() {}
-
   componentDidRender() {
     const fieldErrors = profileState.errors;
 
@@ -154,7 +152,7 @@ export class Field {
             radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
             multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
             required={fieldData.required || this.required}
-            disabled={isLocked}
+            disabled={isLocked || profileState.loading}
             tooltip={isLocked ? lockedText : undefined}
             placeholder={placeholder}
             componentClassName={this.componentClassName}
