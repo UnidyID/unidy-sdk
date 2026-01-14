@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
+import EventEmitter from "eventemitter3";
 import * as z from "zod/mini";
 import type { ApiClient, ApiResponse } from "../../api";
-import EventEmitter from "eventemitter3";
 import { createLogger } from "../../logger";
 
 const NewsletterSubscriptionSchema = z.object({

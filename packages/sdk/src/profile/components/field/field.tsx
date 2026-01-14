@@ -1,4 +1,4 @@
-import { Component, Prop, State, h, Element } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 /**
