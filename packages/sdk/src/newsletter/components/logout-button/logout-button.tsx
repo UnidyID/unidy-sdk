@@ -14,6 +14,14 @@ export class LogoutButton {
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
+  private hasSlot = false;
+
+  async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
+    this.hasSlot = hasSlotContent(this.el);
+  }
+
   private handleLogout = () => {
     newsletterLogout();
     Flash.success.addMessage(t("newsletter.success.logout"));
@@ -34,7 +42,7 @@ export class LogoutButton {
           aria-label="Logout"
           aria-live="polite"
         >
-          {hasSlotContent(this.el) ? <slot /> : t("newsletter.buttons.logout")}
+          {this.hasSlot ? <slot /> : t("newsletter.buttons.logout")}
         </button>
       </Host>
     );

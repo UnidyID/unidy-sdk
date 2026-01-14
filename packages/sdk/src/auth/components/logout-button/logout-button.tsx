@@ -14,6 +14,14 @@ export class LogoutButton {
 
   @Event() logout!: EventEmitter<void>;
 
+  private hasSlot = false;
+
+  async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
+    this.hasSlot = hasSlotContent(this.el);
+  }
+
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();
 
@@ -31,7 +39,7 @@ export class LogoutButton {
   render() {
     return (
       <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
-        {hasSlotContent(this.el) ? <slot /> : t("buttons.logout")}
+        {this.hasSlot ? <slot /> : t("buttons.logout")}
       </button>
     );
   }
