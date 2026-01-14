@@ -64,7 +64,8 @@
     "typescript": "^5.0.0"
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest",
+    "access": "public"
   },
   "repository": {
     "type": "git",
