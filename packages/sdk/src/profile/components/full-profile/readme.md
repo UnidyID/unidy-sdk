@@ -27,7 +27,6 @@ graph TD;
   u-full-profile --> u-profile
   u-full-profile --> u-field
   u-full-profile --> u-submit-button
-  u-field --> u-spinner
   u-field --> u-raw-field
   u-submit-button --> u-spinner
   style u-full-profile fill:#f9f,stroke:#333,stroke-width:4px
