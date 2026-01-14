@@ -1,0 +1,15 @@
+{
+  "packageFiles": [
+    {
+      "filename": "packages/sdk/package.json",
+      "type": "json"
+    }
+  ],
+  "bumpFiles": [
+    {
+      "filename": "packages/sdk/package.json",
+      "type": "json"
+    }
+  ],
+  "infile": "packages/sdk/CHANGELOG.md"
+}
