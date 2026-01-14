@@ -9,4 +9,6 @@ test.describe("Auth - Social login", () => {
   test("shows social login button", async ({ page }) => {
     await expect(page.getByRole("button", { name: /Continue with Google/i })).toBeVisible();
   });
+
+  // TODO: Find a way to test social login flow in e2e tests, since google blocks automated logins.
 });
