@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { routes } from "../../config";
+import { routes } from "../../../config";
 
 test.describe("Auth - Social login", () => {
   test.beforeEach(async ({ page }) => {
