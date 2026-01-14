@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
-import { t } from "../i18n";
 import type * as z from "zod";
+import { t } from "../i18n";
 import { createLogger } from "../logger";
 
 export interface ApiResponse<T> {

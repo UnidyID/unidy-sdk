@@ -1,5 +1,5 @@
-import { PaginationParamsSchema } from "../../api/shared";
 import * as z from "zod";
+import { PaginationParamsSchema } from "../../api/shared";
 
 export const TicketableListParamsBaseSchema = z
   .object({

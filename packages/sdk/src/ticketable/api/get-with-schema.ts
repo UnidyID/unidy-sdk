@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
-import type { ApiClient, ApiResponse } from "../../api";
 import type * as z from "zod";
+import type { ApiClient, ApiResponse } from "../../api";
 
 export function getWithSchema<TReturn, TArgs extends object, TParams = undefined>(
   client: ApiClient,
