@@ -18,8 +18,8 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
       return authState.email === "";
     }
 
-    if (authState.step === "single-login" && this.for === "single-login") {
-      return authState.password === "" || authState.email === "";
+    if (authState.step === "single-login" && forProp === "single-login") {
+      return authState.email === "" || authState.password === "";
     }
 
     if (authState.step === "verification" && forProp === "password") {
@@ -28,10 +28,6 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
 
     if (authState.step === "reset-password" && forProp === "resetPassword") {
       return !authState.resetPassword.newPassword || !authState.resetPassword.passwordConfirmation;
-    }
-
-    if (authState.step === "single-login" && forProp === "single-login") {
-      return authState.email === "" || authState.password === "";
     }
 
     return false;
