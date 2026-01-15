@@ -1,14 +1,14 @@
 import * as Sentry from "@sentry/browser";
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { authState } from "../../store/auth-store";
+import { AppleLogo } from "./logos/apple";
+import { DiscordLogo } from "./logos/discord";
+import { FacebookLogo } from "./logos/facebook";
 import { GoogleLogo } from "./logos/google";
 import { LinkedInLogo } from "./logos/linkedin";
-import { AppleLogo } from "./logos/apple";
-import { FacebookLogo } from "./logos/facebook";
-import { DiscordLogo } from "./logos/discord";
-import { UnidyComponent } from "../../../logger";
 
 const SHARED_ICON_CLASSNAME = "u:w-5 u:h-5 u:block";
 

@@ -1,16 +1,16 @@
-import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
+import { ApiClient, ApiResponse } from "./client";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
-export * from "./shared";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
+export * from "./shared";
 
 export class UnidyClient {
   private apiClient: ApiClient;

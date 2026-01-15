@@ -20,8 +20,13 @@ export class SubmitButton {
 
   private context: "auth" | "profile" | "newsletter" = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
+  private hasSlot = false;
 
   async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
+    this.hasSlot = hasSlotContent(this.el);
+
     this.context = this.detectContext();
 
     switch (this.context) {
@@ -81,7 +86,7 @@ export class SubmitButton {
       return <u-spinner />;
     }
 
-    if (hasSlotContent(this.el)) {
+    if (this.hasSlot) {
       return <slot />;
     }
 

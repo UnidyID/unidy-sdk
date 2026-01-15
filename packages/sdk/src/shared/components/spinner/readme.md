@@ -96,7 +96,6 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
 ### Used by
 
- - [u-field](../../../profile/components/field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
  - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
  - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
@@ -105,7 +104,6 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 ### Graph
 ```mermaid
 graph TD;
-  u-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
   u-newsletter-resend-doi-button --> u-spinner
   u-newsletter-toggle-subscription-button --> u-spinner

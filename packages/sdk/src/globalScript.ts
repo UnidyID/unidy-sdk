@@ -1,5 +1,5 @@
-import { Build } from "@stencil/core";
 import * as Sentry from "@sentry/browser";
+import { Build } from "@stencil/core";
 import { createLogger } from "./logger";
 
 const logger = createLogger("globalScript");

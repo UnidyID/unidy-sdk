@@ -107,7 +107,7 @@ export class AuthHelpers {
   }
 
   async logout() {
-    const [error, _] = await this.client.auth.signOut(authState.sid as string);
+    const [error, _] = await this.client.auth.signOut(authState.sid as string, authState.backendSignedIn);
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -139,6 +139,26 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
     }
+  }
+
+  async checkSignedIn() {
+    if (authState.authenticated) return;
+
+    const [error, response] = await this.client.auth.signedIn();
+
+    if (error) {
+      // Silent fail
+      return;
+    }
+
+    // we only assume that "sso" was used when there isn't an existing sid in the session as setting the sid is the
+    // first step in any login flow, and we should not log out users unintentionally
+    if (!authState.sid) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setBackendSignedIn(true);
+    }
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendMagicCode() {
