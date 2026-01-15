@@ -29,32 +29,6 @@
       letter-spacing: -1px;
     }
 
-    .sdk-loading-spinner-wrapper {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-    }
-
-    .sdk-loading-spinner {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      vertical-align: -0.125em;
-      border-radius: 50%;
-      animation: sdk-loading-spin 1s linear infinite;
-
-      border: 0.1em solid #ccc;
-      border-top-color: #333;
-    }
-
-    @keyframes sdk-loading-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
     u-profile {
       display: block;
       margin-bottom: 36px;
@@ -316,8 +290,8 @@
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Profile Components Demo</h1>
 
-    <div id="sdk-initial-spinner" class="sdk-loading-spinner-wrapper">
-      <div class="sdk-loading-spinner" style="font-size: 50px" aria-label="Loading"></div>
+    <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
     </div>
 
     <u-signed-in>

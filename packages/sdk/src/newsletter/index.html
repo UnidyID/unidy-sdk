@@ -49,6 +49,10 @@
   </header>
 
   <main class="flex-1 p-8 flex items-center justify-center">
+  <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+    <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+  </div>
+
   <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
     <div class="flex flex-col items-center gap-2">
       <u-conditional-render when="newsletter.loggedIn">
@@ -288,5 +292,14 @@
       document.getElementById("year").textContent = new Date().getFullYear();
     </script>
   </footer>
+
+  <script>
+    window.addEventListener("appload", () => {
+      const spinner = document.getElementById('sdk-initial-spinner');
+      if (spinner) {
+        spinner.remove();
+      }
+    });
+  </script>
 </body>
 </html>
