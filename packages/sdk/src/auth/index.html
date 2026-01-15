@@ -10,33 +10,6 @@
   <script nomodule src="/build/sdk.js"></script>
   <link rel="stylesheet" href="/sdk.css">
   <link rel="stylesheet" href="/demo.css">
-
-  <style>
-    .sdk-loading-spinner-wrapper {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-    }
-
-    .sdk-loading-spinner {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      vertical-align: -0.125em;
-      border-radius: 50%;
-      animation: sdk-loading-spin 1s linear infinite;
-      border: 0.1em solid #ccc;
-      border-top-color: #333;
-    }
-
-    @keyframes sdk-loading-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
 </head>
 
   <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
@@ -126,8 +99,8 @@
         class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-gray-300 border-b-2 border-transparent -mb-px transition-all duration-200">Single-Step</a>
     </div>
 
-    <div id="sdk-initial-spinner" class="sdk-loading-spinner-wrapper">
-      <div class="sdk-loading-spinner" style="font-size: 50px" aria-label="Loading"></div>
+    <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
     </div>
 
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
