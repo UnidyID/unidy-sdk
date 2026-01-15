@@ -133,20 +133,10 @@
         </div>
 
         <u-send-magic-code-button
-          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
+          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full hover:cursor-pointer"></u-send-magic-code-button>
 
-        <u-conditional-render when="auth.magicCodeEnabled">
-          <u-conditional-render when="auth.magicCodeSent" is="false">
-            <div class="flex items-center my-4">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
-
-            <u-send-magic-code-button
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
-          </u-conditional-render>
-        </u-conditional-render>
+          <u-error-message id="magic-code-error" for="magicCode"
+          class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
       </u-signin-step>
 
       <u-signin-step name="magic-code">
@@ -159,7 +149,7 @@
           class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
         <u-send-magic-code-button
-          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
+          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full hover:cursor-pointer"></u-send-magic-code-button>
       </u-signin-step>
 
       <u-signin-step name="missing-fields">

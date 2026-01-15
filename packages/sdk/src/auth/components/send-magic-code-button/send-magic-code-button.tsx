@@ -1,4 +1,4 @@
-import { Component, h, Prop, render, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { Auth } from "../../auth";
 import { authState, authStore } from "../../store/auth-store";
@@ -19,10 +19,15 @@ export class SendMagicCodeButton {
 
     const authInstance = await Auth.getInstance();
 
-    const [_error, response] = await authInstance.helpers.sendMagicCode();
+    const [error, response] = await authInstance.helpers.sendMagicCode();
 
     if (response && "enable_resend_after" in response) {
       this.startCountdown(response.enable_resend_after);
+    }
+
+    if (error === "magic_code_recently_created") {
+      authStore.setStep("magic-code");
+      authStore.setMagicCodeStep("sent");
     }
   };
 
@@ -56,10 +61,6 @@ export class SendMagicCodeButton {
     }
 
     if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
-      return false;
-    }
-
-    if (authState.step === "single-login" && authState.magicCodeStep === "sent") {
       return false;
     }
 
