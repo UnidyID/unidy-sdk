@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, render, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { Auth } from "../../auth";
 import { authState, authStore } from "../../store/auth-store";
@@ -50,12 +50,24 @@ export class SendMagicCodeButton {
     this.clearCountdown();
   }
 
-  render() {
-    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
-      return null;
+  private shouldRender(): boolean {
+    if (!["magic-code", "verification", "single-login"].includes(authState.step)) {
+      return false;
     }
 
-    if (authState.step !== "magic-code" && authState.step !== "verification" && authState.step !== "single-login") {
+    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
+      return false;
+    }
+
+    if (authState.step === "single-login" && authState.magicCodeStep === "sent") {
+      return false;
+    }
+
+    return true;
+  }
+
+  render() {
+    if (!this.shouldRender()) {
       return null;
     }
 
