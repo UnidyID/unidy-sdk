@@ -27,6 +27,11 @@ const ErrorSchema = z.object({
 const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
   sid: z.string().optional(),
+  login_options: z
+    .object({
+      magic_link: z.boolean(),
+    })
+    .optional(),
 });
 
 const SendMagicCodeErrorSchema = z.object({
@@ -39,13 +44,17 @@ const TokenResponseSchema = z.object({
   sid: z.string().optional(),
 });
 
-const RequiredFieldsResponseSchema = z.object({
-  error_identifier: z.literal("missing_required_fields"),
-  fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
-    custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
-  }),
-  sid: z.string().optional(),
-});
+const RequiredFieldsResponseSchema = z
+  .object({
+    error_identifier: z.literal("missing_required_fields"),
+    meta: z.object({
+      fields: UserProfileSchema.omit({ custom_attributes: true })
+        .partial()
+        .extend({ custom_attributes: UserProfileSchema.shape.custom_attributes?.optional() }),
+      sid: z.string().optional(),
+    }),
+  })
+  .transform(({ error_identifier, meta }) => ({ error_identifier, fields: meta.fields, sid: meta.sid }));
 
 const InvalidPasswordResponseSchema = z.object({
   error_details: z.object({

@@ -44,6 +44,15 @@ export class AuthHelpers {
 
     if (sendMagicCode) {
       authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setLoginOptions((response as CreateSignInResponse).login_options);
+
+      if ((response as CreateSignInResponse).login_options?.magic_link === false) {
+        authStore.setGlobalError("auth", "magic_link_not_enabled");
+        authStore.setLoading(false);
+
+        return ["magic_link_not_enabled", response] as const;
+      }
+
       authStore.setMagicCodeStep("sent");
       authStore.setStep("magic-code");
       authStore.setLoading(false);

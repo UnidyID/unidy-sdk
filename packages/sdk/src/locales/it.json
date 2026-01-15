@@ -61,6 +61,7 @@
     "internal_server_error": "Errore interno del server",
     "magic_code_is_missing": "Codice magico mancante",
     "magic_code_recently_created": "Codice magico creato di recente",
+    "magic_link_not_enabled": "L'accesso tramite link magico non è abilitato per questo account",
     "missing_id_token": "Token ID mancante",
     "missing_refresh_token": "Nessun token di aggiornamento presente",
     "missing_required_fields": "Campi obbligatori mancanti",

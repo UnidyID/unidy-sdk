@@ -61,6 +61,7 @@
     "internal_server_error": "Internal server error",
     "magic_code_is_missing": "Magic code is missing",
     "magic_code_recently_created": "Magic code recently created",
+    "magic_link_not_enabled": "Magic link sign-in is not enabled for this account",
     "missing_id_token": "Missing ID token",
     "missing_refresh_token": "No refresh token present",
     "missing_required_fields": "Missing required fields",
