@@ -11,6 +11,7 @@
   </head>
 
   <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+
     <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
       <div class="logo">
         <a href="/">
@@ -25,8 +26,9 @@
         <a href="/"
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
         <a href="/auth"
-          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth
-          & Profile</a>
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
+        <a href="/auth/profile.html"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Profile</a>
         <a href="/newsletter"
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
         <a href="/ticketable"
@@ -51,8 +53,10 @@
     base-url="http://localhost:3000"
     api-key="public-newsletter-api-key"></u-config>
 
+
     <u-signed-in not>
-      <h1>You need to sign in to view your tickets</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Tickets Demo</h1>
+      <p class="text-center text-gray-600 text-sm">You need to sign in to view your tickets</p>
     </u-signed-in>
 
     <u-signed-in>

@@ -121,9 +121,9 @@
     <!-- Auth Flow Tabs -->
     <div class="flex justify-center mb-8 border-b border-gray-200">
       <a href="/auth"
-        class="px-6 py-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 -mb-px">Multi-Step</a>
+        class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-gray-300 border-b-2 border-transparent -mb-px transition-all duration-200">Multi-Step</a>
       <a href="/auth/single-step.html"
-        class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-gray-300 border-b-2 border-transparent -mb-px transition-all duration-200">Single-Step</a>
+        class="px-6 py-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 -mb-px">Single-Step</a>
     </div>
 
     <div id="sdk-initial-spinner" class="sdk-loading-spinner-wrapper">
@@ -134,34 +134,23 @@
       class="flex flex-col gap-2">
       <u-error-message id="general-error" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-      <u-signin-step name="email">
+      <u-signin-step name="single-login">
         <u-email-field
           class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
           aria-describedby="email-error"></u-email-field>
-        <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render>
         <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <u-submit-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
+        <u-password-field
+          class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+          aria-describedby="password-error"></u-password-field>
+        <u-error-message id="password-error" for="password"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-        <div class="flex flex-col w-full space-y-4">
-          <div class="flex items-center my-4">
-            <div class="flex-1 border-t border-gray-300"></div>
-            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-            <div class="flex-1 border-t border-gray-300"></div>
-          </div>
+        <u-reset-password-button text="Reset Password"
+          class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+        <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-          <u-social-login-button provider="google" theme="dark"></u-social-login-button>
-          <u-social-login-button provider="linkedin"></u-social-login-button>
-          <u-social-login-button provider="apple" theme="dark"></u-social-login-button>
-          <u-social-login-button provider="facebook"></u-social-login-button>
-          <u-social-login-button provider="discord" icon-only="true"
-            theme="dark"></u-social-login-button>
-          <u-social-login-button provider="some-provider"></u-social-login-button>
-
-          <u-social-login-button provider="unidy" theme="dark" icon-only="true">
-            <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
-          </u-social-login-button>
-        </div>
+        <u-submit-button for="single-login" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
 
         <div class="flex items-center my-4">
           <div class="flex-1 border-t border-gray-300"></div>
@@ -169,71 +158,8 @@
           <div class="flex-1 border-t border-gray-300"></div>
         </div>
 
-        <u-passkey
-          class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-          aria-describedby="passkey-error-email"></u-passkey>
-        <u-error-message id="passkey-error-email" for="passkey"
-          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-      </u-signin-step>
-
-      <u-signin-step name="registration">
-        <u-registration-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full">
-          <div slot="registration-content">
-            <u-error-message for="email" class-name="mb-4 text-sm text-red-500" />
-          </div>
-        </u-registration-button>
-      </u-signin-step>
-
-      <u-signin-step name="verification">
-        <u-signin-strategy type="password">
-          <u-conditional-render when="auth.passwordEnabled">
-            <u-password-field placeholder="Enter your password"
-            class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
-            aria-describedby="password-error"></u-password-field>
-            <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
-            <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-            <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-
-            <u-submit-button for="password" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
-          </u-conditional-render>
-        </u-signin-strategy>
-
-        <u-conditional-render when="auth.passwordEnabled">
-          <div class="flex items-center my-4">
-            <div class="flex-1 border-t border-gray-300"></div>
-            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-            <div class="flex-1 border-t border-gray-300"></div>
-          </div>
-        </u-conditional-render>
-
-        <u-conditional-render when="auth.socialLoginsEnabled">
-          <div class="flex flex-col w-full gap-4">
-            <u-conditional-render when="auth.hasSocialLogin" is="google">
-              <u-social-login-button provider="google" theme="dark"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="linkedin">
-              <u-social-login-button provider="linkedin"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="apple">
-              <u-social-login-button provider="apple" theme="dark"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="facebook">
-              <u-social-login-button provider="facebook"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="discord">
-              <u-social-login-button provider="discord" icon-only="true"
-                theme="dark"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="some-provider">
-              <u-social-login-button provider="some-provider"></u-social-login-button>
-            </u-conditional-render>
-            <u-conditional-render when="auth.hasSocialLogin" is="unidy">
-              <u-social-login-button provider="unidy" theme="dark" icon-only="true">
-                <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
-              </u-social-login-button>
-            </u-conditional-render>
-          </div>
-        </u-conditional-render>
+        <u-send-magic-code-button
+          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
 
         <u-conditional-render when="auth.magicCodeEnabled">
           <u-conditional-render when="auth.magicCodeSent" is="false">
@@ -247,46 +173,23 @@
               class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
           </u-conditional-render>
         </u-conditional-render>
-
-        <u-signin-strategy type="magic-code">
-          <u-conditional-render when="auth.magicCodeSent" is="true">
-            <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-          </u-conditional-render>
-
-          <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
-            aria-describedby="magic-code-error"></u-magic-code-field>
-
-          <u-error-message id="magic-code-error" for="magicCode"
-            class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
-
-          <u-conditional-render when="auth.magicCodeSent" is="true">
-            <u-send-magic-code-button
-              class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
-          </u-conditional-render>
-        </u-signin-strategy>
-
-        <u-conditional-render when="auth.passkeyEnabled">
-          <div class="flex items-center my-4">
-            <div class="flex-1 border-t border-gray-300"></div>
-            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-            <div class="flex-1 border-t border-gray-300"></div>
-          </div>
-
-          <u-passkey
-            class-name="px-4 py-2 mb-4 border text-white bg-purple-600 hover:bg-purple-700 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"
-            aria-describedby="passkey-error-email"></u-passkey>
-          <u-error-message id="passkey-error-email" for="passkey"
-            class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-        </u-conditional-render>
-
-        <u-conditional-render when="auth.passwordEnabled" not>
-          <u-reset-password-button class-name="mb-4 text-sm text-blue-500 hover:cursor-pointer">
-            Or click here to set your password
-          </u-reset-password-button>
-          <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-
-        </u-conditional-render>
       </u-signin-step>
+      <u-signin-strategy type="magic-code">
+        <u-conditional-render when="auth.magicCodeSent" is="true">
+            <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
+        </u-conditional-render>
+
+        <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+          aria-describedby="magic-code-error"></u-magic-code-field>
+
+        <u-error-message id="magic-code-error" for="magicCode"
+          class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+
+        <u-conditional-render when="auth.magicCodeSent" is="true">
+          <u-send-magic-code-button
+            class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
+        </u-conditional-render>
+      </u-signin-strategy>
 
       <u-signin-step name="missing-fields">
         <u-missing-field></u-missing-field>
@@ -338,39 +241,9 @@
       console.error("Authentication error:", event.detail.error);
     });
 
-    // Custom validation function for date_of_birth
-    function dateOfBirthValidation(value) {
-      const today = new Date();
-      const dob = new Date(value);
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age--;
-      }
-
-      return age >= 18
-        ? { valid: true, message: "" }
-        : { valid: false, message: "You must be at least 18 years old." };
-    }
-
-    function customConditionFunction(state) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(state.email);
-    }
-
     // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
     // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
     window.addEventListener("appload", () => {
-      const field = document.querySelector('u-field[field="date_of_birth"]');
-      if (field) {
-        field.validationFunc = dateOfBirthValidation;
-      }
-
-      const customConditionEl = document.getElementById('custom-condition-example');
-      if (customConditionEl) {
-        customConditionEl.conditionFunction = customConditionFunction;
-      }
-
       const spinner = document.getElementById('sdk-initial-spinner');
       if (spinner) {
         spinner.remove();

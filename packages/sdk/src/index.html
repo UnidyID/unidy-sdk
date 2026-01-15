@@ -27,8 +27,9 @@
         <a href="/"
           class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Home</a>
         <a href="/auth"
-          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth
-          & Profile</a>
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
+        <a href="/auth/profile.html"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Profile</a>
         <a href="/newsletter"
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
         <a href="/ticketable"
@@ -55,7 +56,7 @@
         </h1>
 
         <main class="grid gap-6 md:grid-cols-3">
-          <!-- Auth / Profile -->
+          <!-- Auth -->
           <a
             href="/auth"
             class="group flex flex-col rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all duration-200"
@@ -66,15 +67,39 @@
               <span class="text-xl">🔐</span>
             </div>
             <h2 class="text-lg font-semibold text-gray-900 mb-1">
-              Auth & Profile Demo
+              Auth Demo
             </h2>
             <p class="text-sm text-gray-600 mb-3">
-              Sign-in flow with Passkey, Magic Code, Social Login, Password, and Profile.
+              Sign-in flows with Passkey, Magic Code, Social Login, Password
             </p>
             <span
               class="mt-auto inline-flex items-center text-sm font-medium text-indigo-600 group-hover:text-indigo-700"
             >
               Go to Auth Demo
+              <span class="ml-1 group-hover:translate-x-0.5 transition-transform">→</span>
+            </span>
+          </a>
+
+          <!-- Profile -->
+          <a
+            href="/auth/profile.html"
+            class="group flex flex-col rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm hover:shadow-md hover:border-indigo-400 transition-all duration-200"
+          >
+            <div
+              class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 mb-4 group-hover:bg-indigo-200"
+            >
+              <span class="text-xl">👤</span>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900 mb-1">
+              Profile Demo
+            </h2>
+            <p class="text-sm text-gray-600 mb-3">
+              Profile management with fields, validations and more
+            </p>
+            <span
+              class="mt-auto inline-flex items-center text-sm font-medium text-indigo-600 group-hover:text-indigo-700"
+            >
+              Go to Profile Demo
               <span class="ml-1 group-hover:translate-x-0.5 transition-transform">→</span>
             </span>
           </a>
@@ -90,10 +115,10 @@
               <span class="text-xl">📧</span>
             </div>
             <h2 class="text-lg font-semibold text-gray-900 mb-1">
-              Newsletter Signup
+              Newsletters
             </h2>
             <p class="text-sm text-gray-600 mb-3">
-              Email field, newsletter selection, and submit button with success/error handling.
+              Newsletter subscription form and preference management
             </p>
             <span
               class="mt-auto inline-flex items-center text-sm font-medium text-indigo-600 group-hover:text-indigo-700"
