@@ -18,6 +18,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
       return authState.email === "";
     }
 
+    if (authState.step === "single-login" && this.for === "single-login") {
+      return authState.password === "" || authState.email === "";
+    }
+
     if (authState.step === "verification" && forProp === "password") {
       return authState.password === "";
     }
@@ -49,6 +53,8 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
           return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
         }
         return t("buttons.submit");
+      case "single-login":
+        return t("auth.single-login.button_text", { defaultValue: "Sign in" });
       default:
         return t("buttons.submit");
     }
@@ -61,6 +67,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
 
     if (authState.step === "email") {
       return forProp === "email";
+    }
+
+    if (authState.step === "single-login") {
+      return this.for === "single-login";
     }
 
     if (authState.step === "verification") {
