@@ -54,7 +54,7 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
         return t("buttons.submit");
       case "reset-password":
         if (forProp === "resetPassword") {
-          return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
+          return t("auth.resetPassword.save_new_password", { defaultValue: "Set Password" });
         }
         return t("buttons.submit");
       case "single-login":

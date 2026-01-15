@@ -186,24 +186,28 @@
 
       <u-signin-step name="verification">
         <u-signin-strategy type="password">
-          <u-password-field placeholder="Enter your password"
+          <u-conditional-render when="auth.passwordEnabled">
+            <u-password-field placeholder="Enter your password"
             class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
             aria-describedby="password-error"></u-password-field>
-          <u-reset-password-button class-name="mb-4 text-sm text-blue-500">
-          </u-reset-password-button>
-          <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
-          <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+            <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+            <u-error-message id="password-error" for="password" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+            <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
-          <u-submit-button for="password" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
+            <u-submit-button for="password" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
+          </u-conditional-render>
         </u-signin-strategy>
+
+        <u-conditional-render when="auth.passwordEnabled">
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+        </u-conditional-render>
 
         <u-conditional-render when="auth.socialLoginsEnabled">
           <div class="flex flex-col w-full gap-4">
-            <div class="flex items-center my-4">
-              <div class="flex-1 border-t border-gray-300"></div>
-              <h3 class="px-3 text-gray-600 font-medium">OR</h3>
-              <div class="flex-1 border-t border-gray-300"></div>
-            </div>
             <u-conditional-render when="auth.hasSocialLogin" is="google">
               <u-social-login-button provider="google" theme="dark"></u-social-login-button>
             </u-conditional-render>
@@ -273,6 +277,14 @@
             aria-describedby="passkey-error-email"></u-passkey>
           <u-error-message id="passkey-error-email" for="passkey"
             class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+        </u-conditional-render>
+
+        <u-conditional-render when="auth.passwordEnabled" not>
+          <u-reset-password-button class-name="mb-4 text-sm text-blue-500 hover:cursor-pointer">
+            Or click here to set your password
+          </u-reset-password-button>
+          <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
         </u-conditional-render>
       </u-signin-step>
 
