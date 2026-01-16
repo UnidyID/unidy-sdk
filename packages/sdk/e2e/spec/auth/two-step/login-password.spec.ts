@@ -10,6 +10,8 @@ test.describe("Auth - Password step", () => {
     await email.press("Enter");
 
     await expect(page.getByRole("textbox", { name: "Password" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign in with Password" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign in with Password" })).toBeDisabled();
   });
 
   test("user can login with valid password", async ({ page }) => {
@@ -19,6 +21,7 @@ test.describe("Auth - Password step", () => {
     await password.press("Enter");
 
     await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
+    await page.context().storageState({ path: "playwright/.auth/user.json" });
   });
 
   test("wrong password shows error", async ({ page }) => {
