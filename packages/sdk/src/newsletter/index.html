@@ -204,10 +204,11 @@
 
         <div class="flex flex-col mt-4 gap-3">
           <p class="text-gray-600 text-sm font-medium">Select newsletters</p>
-          <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-3">
+          <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-3" data-testid="nl.group.main">
             <label class="flex items-center justify-between cursor-pointer p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
               <span>Main Newsletter</span>
               <u-newsletter-checkbox
+                data-testid="nl.group.main.switch"
                 internal-name="main"
                 checked="true"
                 class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
@@ -216,6 +217,7 @@
             <div class="flex flex-col gap-2 mt-2 ml-2">
               <label class="flex items-center gap-3 cursor-pointer">
                 <u-newsletter-preference-checkbox
+                  data-testid="nl.group.main.pref.player_news"
                   internal-name="main"
                   preference-identifier="player_news"
                   class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
@@ -224,6 +226,7 @@
               </label>
               <label class="flex items-center gap-3 cursor-pointer">
                 <u-newsletter-preference-checkbox
+                  data-testid="nl.group.main.pref.club_news"
                   internal-name="main"
                   preference-identifier="club_news"
                   checked="true"
@@ -233,6 +236,7 @@
               </label>
               <label class="flex items-center gap-3 cursor-pointer">
                 <u-newsletter-preference-checkbox
+                  data-testid="nl.group.main.pref.random_news"
                   internal-name="main"
                   preference-identifier="random_news"
                   class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
