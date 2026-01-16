@@ -20,7 +20,9 @@ test.describe("Auth - Password step", () => {
     await password.fill(userLogin.password);
     await password.press("Enter");
 
-    await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
+    await expect(page.getByText("You are already signed in")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
+
     await page.context().storageState({ path: "playwright/.auth/user.json" });
   });
 
