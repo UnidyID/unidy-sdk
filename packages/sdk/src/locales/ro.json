@@ -61,6 +61,7 @@
     "internal_server_error": "Eroare internă a serverului",
     "magic_code_is_missing": "Cod magic lipsă",
     "magic_code_recently_created": "Cod magic creat recent",
+    "magic_link_not_enabled": "Autentificarea prin link magic nu este activată pentru acest cont",
     "missing_id_token": "Token ID lipsă",
     "missing_refresh_token": "Niciun token de reîmprospătare prezent",
     "missing_required_fields": "Câmpuri obligatorii lipsă",
