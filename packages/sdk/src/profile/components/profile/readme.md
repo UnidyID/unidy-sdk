@@ -40,14 +40,9 @@ Type: `Promise<void>`
 
  - [u-full-profile](../full-profile)
 
-### Depends on
-
-- [u-flash-message](../../../shared/components/flash-message)
-
 ### Graph
 ```mermaid
 graph TD;
-  u-profile --> u-flash-message
   u-full-profile --> u-profile
   style u-profile fill:#f9f,stroke:#333,stroke-width:4px
 ```

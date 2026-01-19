@@ -66,6 +66,7 @@ export class Profile {
       if (error) {
         Flash.error.addMessage(String(error));
       } else {
+        Flash.clear("error");
         profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
         profileState.configUpdateSource = "fetch";
         profileState.errors = {};
@@ -90,7 +91,7 @@ export class Profile {
     }
 
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
-    const [error, data] = await getUnidyClient().profile.update({ payload: updatedProfileData });
+    const [error, data, responseInfo] = await getUnidyClient().profile.update({ payload: updatedProfileData });
 
     if (error) {
       Flash.error.addMessage(String(error));
@@ -99,13 +100,19 @@ export class Profile {
         profileState.errors = data.flatErrors as Record<string, string>;
         this.uProfileError.emit({
           error: "profile_update_field_errors",
-          details: { fieldErrors: profileState.errors },
+          details: {
+            fieldErrors: profileState.errors,
+            httpStatus: responseInfo?.httpStatus,
+            responseData: responseInfo?.responseData,
+          },
         });
       } else {
-        Flash.error.addMessage(String(error));
         this.uProfileError.emit({
           error: "profile_update_failed",
-          details: {},
+          details: {
+            httpStatus: responseInfo?.httpStatus,
+            responseData: responseInfo?.responseData,
+          },
         });
       }
       profileState.loading = false;

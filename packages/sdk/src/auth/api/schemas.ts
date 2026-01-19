@@ -29,6 +29,11 @@ export const ErrorSchema = BaseErrorSchema;
 export const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
   sid: z.string().optional(),
+  login_options: z
+    .object({
+      magic_link: z.boolean(),
+    })
+    .optional(),
 });
 
 // Magic code error extends base error with resend timing

@@ -23,7 +23,7 @@ export class TicketsService extends TicketableService {
   async list(args: TicketsListArgs = {}): Promise<TicketsListResult> {
     const params = this.buildListParams(args, "ticket_category_id", args.ticketCategoryId);
     const queryString = this.toQueryString(params);
-    return this.handleList("/api/sdk/v1/tickets", queryString, TicketsListResponseSchema, "tickets");
+    return this.handleList("/api/sdk/v1/tickets", queryString, TicketsListResponseSchema, "tickets", args);
   }
 
   async get(args: TicketsGetArgs): Promise<TicketsGetResult> {

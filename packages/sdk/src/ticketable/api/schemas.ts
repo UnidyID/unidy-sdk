@@ -1,6 +1,17 @@
 import * as z from "zod";
 import { PaginationMetaSchema } from "../../api/shared";
 
+// Input validation schemas for ticketable list parameters
+export const TicketableListParamsSchema = z.object({
+  page: z.number().int().positive().optional(),
+  perPage: z.number().int().positive().max(100).optional(),
+  state: z.string().optional(),
+  paymentState: z.string().optional(),
+  orderBy: z.enum(["starts_at", "ends_at", "reference", "created_at"]).optional(),
+  orderDirection: z.enum(["asc", "desc"]).optional(),
+  serviceId: z.number().int().positive().optional(),
+});
+
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
@@ -70,3 +81,5 @@ export type TicketsListResponse = z.infer<typeof TicketsListResponseSchema>;
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
+
+export type TicketableListParams = z.infer<typeof TicketableListParamsSchema>;

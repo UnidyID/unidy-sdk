@@ -55,6 +55,8 @@ export async function sendLoginEmail(email: string): Promise<void> {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
   } else if (error === "rate_limit_exceeded") {
     Flash.error.addMessage(t("newsletter.errors.rate_limit_exceeded", { defaultValue: "Too many requests. Please try again later." }));
+  } else if (error === "not_found") {
+    Flash.error.addMessage(t("newsletter.errors.login_email_not_found", { defaultValue: "Email address not found" }));
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }
@@ -232,6 +234,14 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
       newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
         (sub) => sub.newsletter_internal_name !== internalName,
       );
+
+      // Reset checked preferences to defaults (preferences marked with checked='true')
+      const defaultPrefs = newsletterStore.state.defaultPreferences[internalName];
+      newsletterStore.state.checkedNewsletters = {
+        ...newsletterStore.state.checkedNewsletters,
+        [internalName]: defaultPrefs ? [...defaultPrefs] : [],
+      };
+
       return true;
     }
 

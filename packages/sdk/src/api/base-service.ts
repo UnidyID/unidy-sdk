@@ -1,5 +1,7 @@
+import * as z from "zod";
 import type { ApiResponse, QueryParams } from "./base-client";
 import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
+import { unidyState } from "../shared/store/unidy-store";
 
 /**
  * Minimal logger interface that services depend on
@@ -52,7 +54,10 @@ export interface ApiClientInterface {
   delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
 }
 
-export type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
+export type CommonErrors =
+  | ["connection_failed", null]
+  | ["schema_validation_error", SchemaValidationError]
+  | ["internal_error", null];
 
 export type ServiceResult<TSuccess, TError extends string = never> =
   | CommonErrors
@@ -111,22 +116,31 @@ export abstract class BaseService {
   protected handleResponse<T>(
     response: ApiResponse<unknown>,
     handler: () => T,
-  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
+  ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] | ["internal_error", null] {
     if (response.connectionError) {
+      unidyState.backendConnected = false;
       return ["connection_failed", null];
     }
 
     try {
       return handler();
     } catch (error) {
-      this.logger.error("Schema validation error", error);
+      // Only treat Zod errors as schema validation errors
+      if (error instanceof z.ZodError) {
+        this.logger.error("Schema validation error", error);
+        this.errorReporter.captureException(error);
+        // Use safeParse to avoid throwing if response.data doesn't match the schema
+        const parsed = SchemaValidationErrorSchema.safeParse(response.data);
+        const schemaError: SchemaValidationError = parsed.success
+          ? parsed.data
+          : { error_identifier: "schema_validation_error", errors: [String(error)] };
+        return ["schema_validation_error", schemaError];
+      }
+
+      // Non-Zod errors are internal errors (bugs) - don't mask them
+      this.logger.error("Internal error in response handler", error);
       this.errorReporter.captureException(error);
-      // Use safeParse to avoid throwing if response.data doesn't match the schema
-      const parsed = SchemaValidationErrorSchema.safeParse(response.data);
-      const schemaError: SchemaValidationError = parsed.success
-        ? parsed.data
-        : { error_identifier: "schema_validation_error", errors: [String(error)] };
-      return ["schema_validation_error", schemaError];
+      return ["internal_error", null];
     }
   }
 

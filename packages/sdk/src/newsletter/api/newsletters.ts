@@ -106,6 +106,7 @@ export type NewsletterResendDoiResult =
 export type NewsletterSendLoginEmailResult =
   | CommonErrors
   | ["rate_limit_exceeded", NewsletterErrorResponse]
+  | ["not_found", NewsletterErrorResponse]
   | ["server_error", NewsletterErrorResponse]
   | [null, null];
 
@@ -135,7 +136,11 @@ export class NewsletterService extends BaseService {
    */
   async create(args: NewsletterCreateArgs): Promise<NewsletterCreateResult> {
     const { payload, options } = args;
-    CreateSubscriptionsPayloadSchema.parse(payload);
+    const validatedPayload = CreateSubscriptionsPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for create", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
 
     const headers = await this.buildNewsletterAuthHeaders(options);
     const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", payload, headers);
@@ -219,7 +224,11 @@ export class NewsletterService extends BaseService {
    */
   async update(args: NewsletterUpdateArgs): Promise<NewsletterUpdateResult> {
     const { internalName, payload, options } = args;
-    UpdateSubscriptionPayloadSchema.parse(payload);
+    const validatedPayload = UpdateSubscriptionPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for update", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
 
     const headers = await this.buildNewsletterAuthHeaders(options);
     const response = await this.client.patch<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, payload, headers);
@@ -277,7 +286,11 @@ export class NewsletterService extends BaseService {
    */
   async resendDoi(args: NewsletterResendDoiArgs): Promise<NewsletterResendDoiResult> {
     const { internalName, payload, options } = args;
-    ResendDoiPayloadSchema.parse(payload);
+    const validatedPayload = ResendDoiPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for resendDoi", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
 
     const headers = await this.buildNewsletterAuthHeaders(options);
     const response = await this.client.post<unknown>(
@@ -311,7 +324,11 @@ export class NewsletterService extends BaseService {
    */
   async sendLoginEmail(args: NewsletterSendLoginEmailArgs): Promise<NewsletterSendLoginEmailResult> {
     const { payload } = args;
-    LoginEmailPayloadSchema.parse(payload);
+    const validatedPayload = LoginEmailPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for sendLoginEmail", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
 
     const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
 
@@ -321,6 +338,9 @@ export class NewsletterService extends BaseService {
         const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
         if (response.status === 429) {
           return ["rate_limit_exceeded", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
         }
         return ["server_error", error];
       }

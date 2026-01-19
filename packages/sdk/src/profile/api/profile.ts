@@ -1,7 +1,9 @@
+import type { ApiResponse } from "../../api/base-client";
 import { BaseService, type ApiClientInterface, type CommonErrors, type ServiceDependencies, type Payload } from "../../api/base-service";
 import {
   ProfileErrorResponseSchema,
   UserProfileFormErrorSchema,
+  UserProfileRailsFormErrorSchema,
   UserProfileSchema,
   type ProfileErrorResponse,
   type UserProfileData,
@@ -18,27 +20,41 @@ export type UpdateProfilePayload = Record<string, unknown>;
 // Argument types for unified interface
 export type ProfileUpdateArgs = Payload<UpdateProfilePayload>;
 
-// Result types using tuples
+// Response info type for error diagnostics
+export type ResponseInfo = {
+  httpStatus?: number;
+  responseData?: unknown;
+};
+
+// Result types using tuples - 3rd element is optional response info for error diagnostics
 export type ProfileGetResult =
-  | CommonErrors
-  | ["missing_id_token", null]
-  | ["unauthorized", ProfileErrorResponse]
-  | ["invalid_profile_data", null]
-  | ["server_error", ProfileErrorResponse | null]
-  | [null, UserProfileData];
+  | [...CommonErrors, ResponseInfo?]
+  | ["missing_id_token", null, ResponseInfo?]
+  | ["unauthorized", ProfileErrorResponse, ResponseInfo?]
+  | ["invalid_profile_data", null, ResponseInfo?]
+  | ["server_error", ProfileErrorResponse | null, ResponseInfo?]
+  | [null, UserProfileData, ResponseInfo?];
 
 export type ProfileUpdateResult =
-  | CommonErrors
-  | ["missing_id_token", null]
-  | ["unauthorized", ProfileErrorResponse]
-  | ["invalid_profile_data", null]
-  | ["validation_error", UserProfileFormError]
-  | ["server_error", ProfileErrorResponse | null]
-  | [null, UserProfileData];
+  | [...CommonErrors, ResponseInfo?]
+  | ["missing_id_token", null, ResponseInfo?]
+  | ["unauthorized", ProfileErrorResponse, ResponseInfo?]
+  | ["invalid_profile_data", null, ResponseInfo?]
+  | ["validation_error", UserProfileFormError, ResponseInfo?]
+  | ["server_error", ProfileErrorResponse | null, ResponseInfo?]
+  | [null, UserProfileData, ResponseInfo?];
 
 export class ProfileService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "ProfileService", deps);
+  }
+
+  /** Build response info for error diagnostics */
+  private buildResponseInfo(response: ApiResponse<unknown>): ResponseInfo {
+    return {
+      httpStatus: response.status,
+      responseData: response.data,
+    };
   }
 
   async get(): Promise<ProfileGetResult> {
@@ -53,26 +69,34 @@ export class ProfileService extends BaseService {
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
 
-    return this.handleResponse(response, () => {
+    const responseInfo = this.buildResponseInfo(response);
+
+    const result = this.handleResponse(response, (): ProfileGetResult => {
       if (!response.success) {
         const error = ProfileErrorResponseSchema.safeParse(response.data);
         if (error.success) {
           if (response.status === 401) {
-            return ["unauthorized", error.data];
+            return ["unauthorized", error.data, responseInfo];
           }
-          return ["server_error", error.data];
+          return ["server_error", error.data, responseInfo];
         }
-        return ["server_error", null];
+        return ["server_error", null, responseInfo];
       }
 
       const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid profile data", parsed.error);
-        return ["invalid_profile_data", null];
+        return ["invalid_profile_data", null, responseInfo];
       }
 
-      return [null, parsed.data];
+      return [null, parsed.data, responseInfo];
     });
+
+    // If handleResponse returned a common error (connection_failed, etc), add response info
+    if (Array.isArray(result) && result.length === 2) {
+      return [...result, responseInfo] as ProfileGetResult;
+    }
+    return result;
   }
 
   async update(args: ProfileUpdateArgs): Promise<ProfileUpdateResult> {
@@ -90,33 +114,47 @@ export class ProfileService extends BaseService {
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
 
-    return this.handleResponse(response, () => {
+    const responseInfo = this.buildResponseInfo(response);
+
+    const result = this.handleResponse(response, (): ProfileUpdateResult => {
       if (!response.success) {
-        // Check for form validation errors first
+        // Check for form validation errors first (standard format: { errors: {...} })
         const formErrors = UserProfileFormErrorSchema.safeParse(response.data);
         if (formErrors.success) {
-          return ["validation_error", formErrors.data];
+          return ["validation_error", formErrors.data, responseInfo];
+        }
+
+        // Check for Rails-style form errors (format: { error_details: {...} })
+        const railsFormErrors = UserProfileRailsFormErrorSchema.safeParse(response.data);
+        if (railsFormErrors.success) {
+          return ["validation_error", railsFormErrors.data, responseInfo];
         }
 
         // Check for API error response
         const error = ProfileErrorResponseSchema.safeParse(response.data);
         if (error.success) {
           if (response.status === 401) {
-            return ["unauthorized", error.data];
+            return ["unauthorized", error.data, responseInfo];
           }
-          return ["server_error", error.data];
+          return ["server_error", error.data, responseInfo];
         }
 
-        return ["server_error", null];
+        return ["server_error", null, responseInfo];
       }
 
       const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid profile data", parsed.error);
-        return ["invalid_profile_data", null];
+        return ["invalid_profile_data", null, responseInfo];
       }
 
-      return [null, parsed.data];
+      return [null, parsed.data, responseInfo];
     });
+
+    // If handleResponse returned a common error (connection_failed, etc), add response info
+    if (Array.isArray(result) && result.length === 2) {
+      return [...result, responseInfo] as ProfileUpdateResult;
+    }
+    return result;
   }
 }

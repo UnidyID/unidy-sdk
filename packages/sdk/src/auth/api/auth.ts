@@ -367,7 +367,7 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const error_response = ErrorSchema.parse(response.data);
+        const error_response = this.parseErrorResponse(response.data);
         return ["not_found", error_response];
       }
 

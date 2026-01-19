@@ -139,6 +139,16 @@ export const UserProfileFormErrorSchema = z
     return { errors, flatErrors };
   });
 
+// Rails-style form error schema (error_details instead of errors)
+// This handles the format: { error_details: { field: ["error1", "error2"] } }
+export const UserProfileRailsFormErrorSchema = z
+  .object({
+    error_details: FormErrorsRawSchema,
+  })
+  .passthrough()
+  .transform(({ error_details }) => ({ errors: error_details }))
+  .pipe(UserProfileFormErrorSchema);
+
 // Export types
 export type FieldType = z.infer<typeof FieldTypeEnum>;
 export type UserProfileData = z.infer<typeof UserProfileSchema>;

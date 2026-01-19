@@ -1,5 +1,6 @@
 import type { ZodSchema } from "zod";
 import { BaseService, type CommonErrors } from "../../api/base-service";
+import { TicketableListParamsSchema } from "./schemas";
 
 /** Common list arguments for ticketable services */
 export interface TicketableListArgs {
@@ -68,6 +69,19 @@ export abstract class TicketableService extends BaseService {
   }
 
   /**
+   * Validates list arguments before making API request.
+   * Uses Zod for input validation.
+   */
+  protected validateListArgs(args: TicketableListArgs): boolean {
+    const result = TicketableListParamsSchema.safeParse(args);
+    if (!result.success) {
+      this.logger.error("Invalid list parameters", result.error);
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Generic list handler with schema validation.
    */
   protected async handleList<T>(
@@ -75,7 +89,13 @@ export abstract class TicketableService extends BaseService {
     queryString: string,
     schema: ZodSchema<T>,
     resourceName: string,
+    args: TicketableListArgs = {},
   ): Promise<TicketableListResult<T>> {
+    // Validate input parameters
+    if (!this.validateListArgs(args)) {
+      return ["invalid_response", null]; // Invalid input treated same as invalid response
+    }
+
     const idToken = await this.getIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
@@ -92,6 +112,7 @@ export abstract class TicketableService extends BaseService {
       const parsed = schema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid response format", parsed.error);
+        this.errorReporter.captureException(parsed.error, { resourceName, endpoint });
         return ["invalid_response", null];
       }
 
@@ -122,6 +143,7 @@ export abstract class TicketableService extends BaseService {
       const parsed = schema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid response format", parsed.error);
+        this.errorReporter.captureException(parsed.error, { resourceName, endpoint });
         return ["invalid_response", null];
       }
 
