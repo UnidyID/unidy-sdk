@@ -29,6 +29,14 @@ export class AuthHelpers {
     const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
 
     if (error) {
+      if (error === "magic_code_recently_created") {
+        authStore.setMagicCodeStep("sent");
+        authStore.setStep("magic-code");
+        authStore.setLoading(false);
+        authStore.setFieldError("magicCode", error);
+        return [error, response] as const;
+      }
+
       this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
