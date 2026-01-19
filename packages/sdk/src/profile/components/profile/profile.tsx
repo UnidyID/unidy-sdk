@@ -75,8 +75,9 @@ export class Profile {
     } catch (error) {
       Sentry.captureException("Failed to fetch profile data:", error);
       Flash.error.addMessage(t("errors.failed_to_load_profile"));
+    } finally {
+      this.fetchingProfileData = false;
     }
-    this.fetchingProfileData = false;
   }
 
   @Method()
