@@ -1,32 +1,32 @@
 import * as z from "zod";
 import {
-  BaseService,
   type ApiClientInterface,
+  BaseService,
   type CommonErrors,
-  type ServiceDependencies,
-  type Payload,
   type Options,
+  type Payload,
+  type ServiceDependencies,
 } from "../../api/base-service";
 import {
+  type CreateSubscriptionsPayload,
   CreateSubscriptionsPayloadSchema,
+  type CreateSubscriptionsResponse,
   CreateSubscriptionsResponseSchema,
   DeleteSubscriptionResponseSchema,
-  LoginEmailPayloadSchema,
-  NewsletterErrorResponseSchema,
-  NewsletterSchema,
-  NewsletterSubscriptionSchema,
-  NewslettersResponseSchema,
-  ResendDoiPayloadSchema,
-  UpdateSubscriptionPayloadSchema,
-  type CreateSubscriptionsPayload,
-  type CreateSubscriptionsResponse,
   type LoginEmailPayload,
+  LoginEmailPayloadSchema,
   type Newsletter,
   type NewsletterErrorResponse,
+  NewsletterErrorResponseSchema,
+  NewsletterSchema,
   type NewsletterSubscription,
+  NewsletterSubscriptionSchema,
   type NewslettersResponse,
+  NewslettersResponseSchema,
   type ResendDoiPayload,
+  ResendDoiPayloadSchema,
   type UpdateSubscriptionPayload,
+  UpdateSubscriptionPayloadSchema,
 } from "./schemas";
 
 // Re-export types for external use
@@ -261,6 +261,10 @@ export class NewsletterService extends BaseService {
           return ["not_found", error];
         }
         return ["server_error", error];
+      }
+
+      if(response.status === 204) {
+        return [null, null];
       }
 
       const data = DeleteSubscriptionResponseSchema.parse(response.data);
