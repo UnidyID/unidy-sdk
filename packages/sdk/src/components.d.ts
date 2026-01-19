@@ -622,7 +622,6 @@ declare global {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };
@@ -1011,7 +1010,6 @@ declare namespace LocalJSX {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };

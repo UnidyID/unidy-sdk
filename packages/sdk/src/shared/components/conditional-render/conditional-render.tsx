@@ -4,6 +4,7 @@ import { UnidyComponent } from "../../../logger";
 import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
+import { flashState } from "../../store/flash-store";
 
 const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.passkeyEnabled": () => authState.availableLoginOptions?.passkey,
@@ -27,7 +28,7 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
 
   "profile.loading": () => profileStore.state.loading,
   "profile.hasErrors": () => Object.keys(profileStore.state.errors).some((key) => profileStore.state.errors[key] !== null),
-  "profile.hasFlashErrors": () => Object.keys(profileStore.state.flashErrors).some((key) => profileStore.state.flashErrors[key] !== null),
+  "profile.hasFlashErrors": () => flashState.messages.some((m) => m.variant === "error"),
   "profile.phoneValid": () => profileStore.state.phoneValid,
   "profile.hasData": () => Object.keys(profileStore.state.data).length > 0,
 };
