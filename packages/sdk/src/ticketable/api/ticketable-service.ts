@@ -13,10 +13,21 @@ export interface TicketableListArgs {
 }
 
 /** Result type for list operations */
-export type TicketableListResult<T> = CommonErrors | ["server_error", null] | ["invalid_response", null] | [null, T];
+export type TicketableListResult<T> =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["server_error", null]
+  | ["invalid_response", null]
+  | [null, T];
 
 /** Result type for get operations */
-export type TicketableGetResult<T> = CommonErrors | ["server_error", null] | ["not_found", null] | ["invalid_response", null] | [null, T];
+export type TicketableGetResult<T> =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["server_error", null]
+  | ["not_found", null]
+  | ["invalid_response", null]
+  | [null, T];
 
 /**
  * Base service for ticketable resources (tickets and subscriptions).
@@ -65,7 +76,12 @@ export abstract class TicketableService extends BaseService {
     schema: ZodSchema<T>,
     resourceName: string,
   ): Promise<TicketableListResult<T>> {
-    const response = await this.client.get<unknown>(`${endpoint}${queryString}`);
+    const idToken = await this.getIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const response = await this.client.get<unknown>(`${endpoint}${queryString}`, this.buildAuthHeaders({ "X-ID-Token": idToken }));
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -87,7 +103,12 @@ export abstract class TicketableService extends BaseService {
    * Generic get handler with schema validation.
    */
   protected async handleGet<T>(endpoint: string, schema: ZodSchema<T>, resourceName: string): Promise<TicketableGetResult<T>> {
-    const response = await this.client.get<unknown>(endpoint);
+    const idToken = await this.getIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const response = await this.client.get<unknown>(endpoint, this.buildAuthHeaders({ "X-ID-Token": idToken }));
 
     return this.handleResponse(response, () => {
       if (!response.success) {

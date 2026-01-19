@@ -1,7 +1,10 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.2.0-alpha4",
-  "publishConfig": { "tag": "alpha", "access": "public" },
+  "version": "1.2.0-alpha5",
+  "publishConfig": {
+    "tag": "alpha",
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
