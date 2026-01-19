@@ -1,4 +1,4 @@
-import { Component, h, Method, Prop, State } from "@stencil/core";
+import { Component, h, Method, Prop } from "@stencil/core";
 import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
@@ -8,19 +8,23 @@ import { newsletterStore } from "../../store/newsletter-store";
 export class NewsletterConsentCheckbox {
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() isChecked = false;
+  private get isChecked() {
+    return newsletterStore.state.consentGiven;
+  }
 
-  componentWillLoad() {
-    this.isChecked = newsletterStore.state.consentGiven;
+  private clearConsentError() {
+    if (newsletterStore.state.errors.consent) {
+      const { consent: _, ...rest } = newsletterStore.state.errors;
+      newsletterStore.state.errors = rest;
+    }
   }
 
   private handleChange = () => {
     const newValue = !this.isChecked;
     newsletterStore.state.consentGiven = newValue;
 
-    if (newValue && newsletterStore.state.errors.consent) {
-      const { consent: _, ...rest } = newsletterStore.state.errors;
-      newsletterStore.state.errors = rest;
+    if (newValue) {
+      this.clearConsentError();
     }
   };
 
@@ -34,9 +38,8 @@ export class NewsletterConsentCheckbox {
     if (checked !== this.isChecked) {
       newsletterStore.state.consentGiven = checked;
 
-      if (checked && newsletterStore.state.errors.consent) {
-        const { consent: _, ...rest } = newsletterStore.state.errors;
-        newsletterStore.state.errors = rest;
+      if (checked) {
+        this.clearConsentError();
       }
     }
   }
