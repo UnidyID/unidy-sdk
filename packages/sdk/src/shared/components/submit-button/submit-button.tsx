@@ -100,8 +100,7 @@ export class SubmitButton {
 
     const buttonClasses = [
       this.componentClassName,
-      this.context === "auth" ? "u:flex u:justify-center" : "",
-      "u:disabled:opacity-50 u:disabled:cursor-not-allowed",
+      "u:flex u:justify-center u:cursor-pointer u:disabled:opacity-50 u:disabled:cursor-not-allowed ",
     ].join(" ");
 
     const buttonProps: Record<string, unknown> = {

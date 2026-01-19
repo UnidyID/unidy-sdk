@@ -10,6 +10,7 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
 @Component({
   tag: "u-error-message",
   shadow: true,
+  styleUrl: "error-message.css",
 })
 export class ErrorMessage {
   @Prop({ attribute: "class-name" }) componentClassName = "";
