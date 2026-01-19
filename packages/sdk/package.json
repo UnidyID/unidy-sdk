@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.2.0-alpha6",
+  "version": "1.2.0-alpha7",
   "publishConfig": {
     "tag": "alpha",
     "access": "public"
