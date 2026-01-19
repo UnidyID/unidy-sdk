@@ -108,6 +108,7 @@
     },
     "errors": {
       "already_subscribed": "Already subscribed",
+      "consent_required": "Please accept the terms and conditions to subscribe",
       "email_required": "Please enter your email address",
       "invalid_email": "Invalid email address",
       "login_email_not_found": "Subscription with this email does not exist",

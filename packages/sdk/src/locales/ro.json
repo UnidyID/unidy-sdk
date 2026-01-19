@@ -107,6 +107,7 @@
     },
     "errors": {
       "already_subscribed": "Deja abonat",
+      "consent_required": "Vă rugăm să acceptați termenii și condițiile pentru a vă abona",
       "email_required": "Vă rugăm să introduceți adresa dvs. de e-mail",
       "invalid_email": "Adresă de e-mail invalidă",
       "login_email_not_found": "Abonamentul cu această adresă de e-mail nu există",
