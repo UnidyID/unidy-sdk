@@ -108,12 +108,9 @@ export class TicketableList extends UnidyComponent {
     try {
       const unidyClient = await getUnidyClient();
 
-      // Parse filter string into typed args
+      // Parse filter string into typed args using URLSearchParams (treats ; as separator)
       const filterArgs: Record<string, string> = Object.fromEntries(
-        (this.filter || "")
-          .split(";")
-          .filter(Boolean)
-          .map((pair) => pair.split("=")),
+        new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries(),
       );
 
       // Common args for both services
@@ -140,7 +137,7 @@ export class TicketableList extends UnidyComponent {
             });
 
       if (error !== null || !data || !("results" in data)) {
-        this.error = error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
+        this.error = this.getTranslatedError(error);
         this.loading = false;
         this.uTicketableListError.emit({ error: this.error });
         return;
@@ -162,6 +159,24 @@ export class TicketableList extends UnidyComponent {
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
     }
+  }
+
+  private getTranslatedError(error: string | null): string {
+    if (!error) {
+      return t("ticketable.errors.fetch_failed", { defaultValue: "Failed to load data" });
+    }
+
+    const errorMessages: Record<string, string> = {
+      connection_failed: t("errors.connection_failed", { defaultValue: "Connection failed. Please check your internet connection." }),
+      schema_validation_error: t("errors.schema_validation", { defaultValue: "Invalid data received from server." }),
+      internal_error: t("errors.internal", { defaultValue: "An internal error occurred." }),
+      missing_id_token: t("errors.unauthorized", { defaultValue: "You must be logged in to view this content." }),
+      unauthorized: t("errors.unauthorized", { defaultValue: "You are not authorized to view this content." }),
+      server_error: t("errors.server", { defaultValue: "A server error occurred. Please try again later." }),
+      invalid_response: t("errors.invalid_response", { defaultValue: "Invalid response from server." }),
+    };
+
+    return errorMessages[error] || t("errors.unknown", { defaultValue: "An unknown error occurred." });
   }
 
   private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {

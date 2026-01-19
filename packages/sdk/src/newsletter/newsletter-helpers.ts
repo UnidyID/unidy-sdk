@@ -27,7 +27,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   const [error] = await getUnidyClient().newsletters.resendDoi({
     internalName,
     payload: { redirect_to_after_confirmation: redirectToAfterConfirmationUrl() },
-    options: { preferenceToken },
+    options: preferenceToken ? { preferenceToken } : undefined,
   });
 
   if (error === null) {
@@ -74,7 +74,7 @@ export async function fetchSubscriptions(): Promise<void> {
   newsletterStore.state.fetchingSubscriptions = true;
 
   const [error, data] = await getUnidyClient().newsletters.list({
-    options: { preferenceToken },
+    options: preferenceToken ? { preferenceToken } : undefined,
   });
 
   newsletterStore.state.fetchingSubscriptions = false;
@@ -220,7 +220,7 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
 
   const [error, data] = await getUnidyClient().newsletters.delete({
     internalName,
-    options: { preferenceToken },
+    options: preferenceToken ? { preferenceToken } : undefined,
   });
 
   if (error === null) {
@@ -258,6 +258,11 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
   }
 
   if (error === "not_found") {
+    return false;
+  }
+
+  // 422 Unprocessable Entity - silently fail (e.g., trying to delete something that can't be deleted)
+  if (error === "unprocessable_entity") {
     return false;
   }
 
@@ -313,7 +318,7 @@ export async function updateSubscriptionPreferences(internalName: string): Promi
   const [error, data] = await getUnidyClient().newsletters.update({
     internalName,
     payload: { preference_identifiers: preferenceIdentifiers },
-    options: { preferenceToken },
+    options: preferenceToken ? { preferenceToken } : undefined,
   });
 
   if (error === "unauthorized") {

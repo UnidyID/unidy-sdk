@@ -69,22 +69,6 @@ const noopErrorReporter: ErrorReporter = {
   captureException: () => {},
 };
 
-/**
- * Default console logger for services.
- *
- * Note: This intentionally doesn't use the logger.ts module because:
- * 1. Services need to work in non-browser environments (standalone/Node.js)
- * 2. logger.ts is designed for Stencil components with browser-specific features
- *    (localStorage-based log levels, UnidyComponent mixin)
- * 3. Services allow dependency injection of custom loggers for flexibility
- */
-const consoleLogger: Logger = {
-  error: console.error.bind(console),
-  warn: console.warn.bind(console),
-  info: console.info.bind(console),
-  debug: console.debug.bind(console),
-};
-
 export abstract class BaseService {
   protected logger: Logger;
   protected errorReporter: ErrorReporter;
@@ -97,20 +81,17 @@ export abstract class BaseService {
     deps?: ServiceDependencies,
   ) {
     // Use injected dependencies or defaults
-    this.logger = deps?.logger ?? consoleLogger;
     this.errorReporter = deps?.errorReporter ?? noopErrorReporter;
     this.getIdToken = deps?.getIdToken ?? (async () => null);
     this.getLocale = deps?.getLocale ?? (() => "en");
 
-    // Prefix logger if using console
-    if (!deps?.logger) {
-      this.logger = {
-        error: (...args) => console.error(`[${serviceName}]`, ...args),
-        warn: (...args) => console.warn(`[${serviceName}]`, ...args),
-        info: (...args) => console.info(`[${serviceName}]`, ...args),
-        debug: (...args) => console.debug(`[${serviceName}]`, ...args),
-      };
-    }
+    // Use injected logger or create a prefixed console logger
+    this.logger = deps?.logger ?? {
+      error: (...args) => console.error(`[${serviceName}]`, ...args),
+      warn: (...args) => console.warn(`[${serviceName}]`, ...args),
+      info: (...args) => console.info(`[${serviceName}]`, ...args),
+      debug: (...args) => console.debug(`[${serviceName}]`, ...args),
+    };
   }
 
   protected handleResponse<T>(

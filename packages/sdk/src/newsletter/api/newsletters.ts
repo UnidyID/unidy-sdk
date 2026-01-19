@@ -92,6 +92,7 @@ export type NewsletterDeleteResult =
   | CommonErrors
   | ["not_found", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
+  | ["unprocessable_entity", NewsletterErrorResponse]
   | ["server_error", NewsletterErrorResponse]
   | [null, { new_preference_token: string } | null];
 
@@ -269,10 +270,13 @@ export class NewsletterService extends BaseService {
         if (response.status === 404) {
           return ["not_found", error];
         }
+        if (response.status === 422) {
+          return ["unprocessable_entity", error];
+        }
         return ["server_error", error];
       }
 
-      if(response.status === 204) {
+      if (response.status === 204) {
         return [null, null];
       }
 
