@@ -1,7 +1,7 @@
-import { Component, Host, h, Prop, Element } from "@stencil/core";
-import { authState, authStore } from "../../store/auth-store";
-import { unidyState } from "../../../shared/store/unidy-store";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { unidyState } from "../../../shared/store/unidy-store";
+import { authState, authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-registration-button",

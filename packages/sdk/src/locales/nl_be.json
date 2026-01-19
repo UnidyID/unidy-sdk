@@ -61,6 +61,7 @@
     "internal_server_error": "Interne serverfout",
     "magic_code_is_missing": "Magische code ontbreekt",
     "magic_code_recently_created": "Magische code recent aangemaakt",
+    "magic_link_not_enabled": "Aanmelden via magische link is niet ingeschakeld voor dit account",
     "missing_id_token": "Ontbrekende ID-token",
     "missing_refresh_token": "Geen vernieuwingstoken aanwezig",
     "missing_required_fields": "Ontbrekende verplichte velden",

@@ -45,7 +45,7 @@ export type RefreshTokenArgs = { signInId: string };
 export type SendResetPasswordEmailArgs = { signInId: string } & Payload<{ returnTo: string }>;
 export type ResetPasswordArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string }>;
 export type ValidateResetPasswordTokenArgs = { signInId: string; token: string };
-export type SignOutArgs = { signInId: string };
+export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
 export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredential }>;
 
@@ -118,6 +118,8 @@ export type SignOutResult =
   | ["missing_id_token", ErrorResponse]
   | ["invalid_id_token", ErrorResponse]
   | [null, null];
+
+export type SignedInResult = CommonErrors | ["not_found", ErrorResponse] | [null, TokenResponse];
 
 export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
 
@@ -346,8 +348,8 @@ export class AuthService extends BaseService {
   }
 
   async signOut(args: SignOutArgs): Promise<SignOutResult> {
-    const { signInId } = args;
-    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, {});
+    const { signInId, globalLogout = false } = args;
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { globalLogout });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -357,6 +359,19 @@ export class AuthService extends BaseService {
       }
 
       return [null, null];
+    });
+  }
+
+  async signedIn(): Promise<SignedInResult> {
+    const response = await this.client.get<TokenResponse>("/api/sdk/v1/sign_ins/signed_in");
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const error_response = ErrorSchema.parse(response.data);
+        return ["not_found", error_response];
+      }
+
+      return [null, TokenResponseSchema.parse(response.data)];
     });
   }
 

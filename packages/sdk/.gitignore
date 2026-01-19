@@ -205,3 +205,10 @@ UserInterfaceState.xcuserstate
 .env
 
 src/demo-build.css
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

@@ -39,8 +39,13 @@ export class Profile {
   async componentWillLoad() {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
-    } else if (authStore.state.authenticated) {
-      await this.fetchProfileData();
+    } else {
+      // Ensure auth is initialized before checking authenticated state
+      await Auth.getInstance();
+
+      if (authStore.state.authenticated) {
+        await this.fetchProfileData();
+      }
     }
 
     profileState.loading = false;

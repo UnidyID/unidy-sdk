@@ -7,6 +7,8 @@ import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
 import { authState, authStore } from "./store/auth-store";
 
+const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
+
 export interface TokenPayload {
   sub: string; // unidy id
   sid: string; // sign-in id
@@ -87,7 +89,19 @@ export class Auth {
     return !!Auth.instance;
   }
 
-  isTokenValid(token: string | TokenPayload | null): boolean {
+  /**
+   * Checks whether a JWT token is valid and not expired.
+   *
+   * @param token - The JWT token to validate. Can be a raw JWT string, a decoded TokenPayload, or null.
+   * @param expirationBuffer - Number of seconds before actual expiration to consider the token invalid, used to prevent race conditions with preemptive token refresh. Defaults to 10 seconds.
+   * @returns `true` if the token is valid and won't expire within the buffer period, `false` otherwise.
+   * @throws Error if expirationBuffer is not positive number
+   */
+  isTokenValid(token: string | TokenPayload | null, expirationBuffer = DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS): boolean {
+    if (!Number.isFinite(expirationBuffer) || expirationBuffer <= 0) {
+      throw new Error("expirationBuffer must be a positive finite number");
+    }
+
     try {
       let decoded: TokenPayload | null;
 
@@ -99,8 +113,12 @@ export class Auth {
 
       if (!decoded) return false;
 
+      if (typeof decoded.exp !== "number" || !Number.isFinite(decoded.exp)) {
+        return false;
+      }
+
       const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
+      return decoded.exp > currentTime + expirationBuffer;
     } catch (error) {
       Sentry.captureException(error);
       return false;

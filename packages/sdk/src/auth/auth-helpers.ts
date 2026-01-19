@@ -44,6 +44,15 @@ export class AuthHelpers {
 
     if (sendMagicCode) {
       authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setLoginOptions((response as CreateSignInResponse).login_options);
+
+      if ((response as CreateSignInResponse).login_options?.magic_link === false) {
+        authStore.setGlobalError("auth", "magic_link_not_enabled");
+        authStore.setLoading(false);
+
+        return ["magic_link_not_enabled", response] as const;
+      }
+
       authStore.setMagicCodeStep("sent");
       authStore.setStep("magic-code");
       authStore.setLoading(false);
@@ -113,7 +122,10 @@ export class AuthHelpers {
   }
 
   async logout() {
-    const [error, _] = await this.client.auth.signOut({ signInId: authState.sid as string });
+    const [error, _] = await this.client.auth.signOut({
+      signInId: authState.sid as string,
+      globalLogout: authState.backendSignedIn,
+    });
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -145,6 +157,26 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
     }
+  }
+
+  async checkSignedIn() {
+    if (authState.authenticated) return;
+
+    const [error, response] = await this.client.auth.signedIn();
+
+    if (error) {
+      // Silent fail
+      return;
+    }
+
+    // we only assume that "sso" was used when there isn't an existing sid in the session as setting the sid is the
+    // first step in any login flow, and we should not log out users unintentionally
+    if (!authState.sid) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setBackendSignedIn(true);
+    }
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendMagicCode() {

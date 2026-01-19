@@ -1,7 +1,7 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { authState, authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-send-magic-code-button",

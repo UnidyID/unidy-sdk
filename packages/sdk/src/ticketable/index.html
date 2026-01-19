@@ -11,6 +11,7 @@
   </head>
 
   <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+
     <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
       <div class="logo">
         <a href="/">
@@ -25,8 +26,9 @@
         <a href="/"
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
         <a href="/auth"
-          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth
-          & Profile</a>
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
+        <a href="/auth/profile.html"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Profile</a>
         <a href="/newsletter"
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
         <a href="/ticketable"
@@ -47,12 +49,18 @@
     </header>
 
     <main class="flex-1 p-5 max-w-4xl mx-auto w-full ">
+    <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+    </div>
+
     <u-config
     base-url="http://localhost:3000"
     api-key="public-newsletter-api-key"></u-config>
 
+
     <u-signed-in not>
-      <h1>You need to sign in to view your tickets</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Tickets Demo</h1>
+      <p class="text-center text-gray-600 text-sm">You need to sign in to view your tickets</p>
     </u-signed-in>
 
     <u-signed-in>
@@ -200,6 +208,13 @@
         }
 
         list.setAttribute('filter', params.toString().replace(/&/g, ';'));
+      });
+
+      window.addEventListener("appload", () => {
+        const spinner = document.getElementById('sdk-initial-spinner');
+        if (spinner) {
+          spinner.remove();
+        }
       });
     </script>
     </main>

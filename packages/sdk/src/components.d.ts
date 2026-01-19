@@ -53,6 +53,10 @@ export namespace Components {
          */
         "baseUrl": string;
         /**
+          * @default false
+         */
+        "checkSignedIn": boolean;
+        /**
           * @default ""
          */
         "customTranslations": string | Record<string, TranslationTree>;
@@ -793,6 +797,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "baseUrl"?: string;
+        /**
+          * @default false
+         */
+        "checkSignedIn"?: boolean;
         /**
           * @default ""
          */

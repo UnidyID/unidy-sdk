@@ -61,6 +61,7 @@
     "internal_server_error": "Erreur interne du serveur",
     "magic_code_is_missing": "Code magique manquant",
     "magic_code_recently_created": "Code magique récemment créé",
+    "magic_link_not_enabled": "La connexion par lien magique n'est pas activée pour ce compte",
     "missing_id_token": "Jeton d'identification manquant",
     "missing_refresh_token": "Aucun jeton de rafraîchissement présent",
     "missing_required_fields": "Champs obligatoires manquants",

@@ -1,4 +1,4 @@
-import { Component, Prop, State, h, Element } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 /**
@@ -47,8 +47,6 @@ export class Field {
       : profileState.data[this.field];
   }
 
-  componentWillLoad() {}
-
   componentDidRender() {
     const fieldErrors = profileState.errors;
 
@@ -85,10 +83,6 @@ export class Field {
   };
 
   render() {
-    if (profileState.loading) {
-      return <u-spinner />;
-    }
-
     const fieldData = this.getFieldData();
     if (!fieldData) {
       return null;
@@ -158,7 +152,7 @@ export class Field {
             radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
             multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
             required={fieldData.required || this.required}
-            disabled={isLocked}
+            disabled={isLocked || profileState.loading}
             tooltip={isLocked ? lockedText : undefined}
             placeholder={placeholder}
             componentClassName={this.componentClassName}

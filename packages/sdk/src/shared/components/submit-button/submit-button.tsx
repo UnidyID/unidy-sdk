@@ -23,7 +23,10 @@ export class SubmitButton {
   private hasSlot = false;
 
   async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
     this.hasSlot = hasSlotContent(this.el);
+
     this.context = this.detectContext();
 
     switch (this.context) {

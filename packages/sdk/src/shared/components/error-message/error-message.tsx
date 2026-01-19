@@ -17,7 +17,6 @@ export class ErrorMessage {
 
   @Prop() errorMessages?: Record<string, string>;
   @Element() el!: HTMLElement;
-
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 
