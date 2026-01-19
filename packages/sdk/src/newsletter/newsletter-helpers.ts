@@ -230,24 +230,19 @@ export async function deleteSubscription(internalName: string): Promise<boolean>
         newsletterStore.state.preferenceToken = data.new_preference_token;
         persist("preferenceToken");
       }
-
-      newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
-        (sub) => sub.newsletter_internal_name !== internalName,
-      );
-
-      // Reset checked preferences to defaults (preferences marked with checked='true')
-      const defaultPrefs = newsletterStore.state.defaultPreferences[internalName];
-      newsletterStore.state.checkedNewsletters = {
-        ...newsletterStore.state.checkedNewsletters,
-        [internalName]: defaultPrefs ? [...defaultPrefs] : [],
-      };
-
-      return true;
     }
 
-    // data is null - last subscription was deleted, user is logged out
-    newsletterLogout();
-    newsletterStore.state.checkedNewsletters = {};
+    newsletterStore.state.existingSubscriptions = newsletterStore.state.existingSubscriptions.filter(
+      (sub) => sub.newsletter_internal_name !== internalName,
+    );
+
+    // Reset checked preferences to defaults (preferences marked with checked='true')
+    const defaultPrefs = newsletterStore.state.defaultPreferences[internalName];
+    newsletterStore.state.checkedNewsletters = {
+      ...newsletterStore.state.checkedNewsletters,
+      [internalName]: defaultPrefs ? [...defaultPrefs] : [],
+    };
+
     return true;
   }
 
