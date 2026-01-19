@@ -1,8 +1,14 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.2.0-alpha3",
+  "version": "1.2.0-alpha4",
+  "publishConfig": { "tag": "alpha", "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
+  },
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
   "homepage": "https://sdk-demo.unidy.io",
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -63,15 +69,6 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "publishConfig": {
-    "tag": "latest",
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
-  },
-  "license": "MIT",
   "keywords": [
     "web-components",
     "unidy",
