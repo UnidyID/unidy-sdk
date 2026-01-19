@@ -34,6 +34,7 @@ interface NewsletterState {
 
   errors: Record<string, NewsletterErrorIdentifier>;
   consentGiven: boolean;
+  consentRequired: boolean;
 
   isAuthenticated: boolean;
 }
@@ -59,6 +60,7 @@ const initialState: NewsletterState = {
 
   errors: {},
   consentGiven: false,
+  consentRequired: false,
 
   isAuthenticated: false,
 };

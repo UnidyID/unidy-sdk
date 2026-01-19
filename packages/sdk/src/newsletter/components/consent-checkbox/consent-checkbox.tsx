@@ -8,6 +8,10 @@ import { newsletterStore } from "../../store/newsletter-store";
 export class NewsletterConsentCheckbox {
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
+  componentWillLoad() {
+    newsletterStore.state.consentRequired = true;
+  }
+
   private get isChecked() {
     return newsletterStore.state.consentGiven;
   }

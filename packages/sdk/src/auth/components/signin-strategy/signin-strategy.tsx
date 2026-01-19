@@ -3,7 +3,7 @@ import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-strategy",
-  shadow: false,
+  shadow: true,
 })
 export class SigninStrategy {
   @Prop() type!: "password" | "magic-code";
