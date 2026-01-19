@@ -98,7 +98,10 @@ export class SubmitButton {
       return null;
     }
 
-    const buttonClasses = [this.componentClassName, "u:disabled:opacity-50 u:disabled:cursor-not-allowed cursor-pointer"].join(" ");
+    const buttonClasses = [
+      this.componentClassName,
+      "u:flex u:justify-center u:cursor-pointer u:disabled:opacity-50 u:disabled:cursor-not-allowed ",
+    ].join(" ");
 
     const buttonProps: Record<string, unknown> = {
       type: "submit",

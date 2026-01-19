@@ -80,5 +80,7 @@ export const storeDefaultPreference = (internalName: NewsletterInternalName, pre
 export const reset = () => {
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+  const consentRequired = newsletterStore.state.consentRequired;
   newsletterStore.state = initialState;
+  newsletterStore.state.consentRequired = consentRequired;
 };
