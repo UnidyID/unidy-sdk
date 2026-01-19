@@ -374,15 +374,8 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
         "submit": () => Promise<void>;
-    }
-    interface USigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        "type": "password" | "magic-code";
     }
     interface USocialLoginButton {
         /**
@@ -703,12 +696,6 @@ declare global {
         prototype: HTMLUSigninStepElement;
         new (): HTMLUSigninStepElement;
     };
-    interface HTMLUSigninStrategyElement extends Components.USigninStrategy, HTMLStencilElement {
-    }
-    var HTMLUSigninStrategyElement: {
-        prototype: HTMLUSigninStrategyElement;
-        new (): HTMLUSigninStrategyElement;
-    };
     interface HTMLUSocialLoginButtonElement extends Components.USocialLoginButton, HTMLStencilElement {
     }
     var HTMLUSocialLoginButtonElement: {
@@ -783,7 +770,6 @@ declare global {
         "u-signed-in": HTMLUSignedInElement;
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
-        "u-signin-strategy": HTMLUSigninStrategyElement;
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
         "u-submit-button": HTMLUSubmitButtonElement;
@@ -1125,14 +1111,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
-    }
-    interface USigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "type": "password" | "magic-code";
+        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
     }
     interface USocialLoginButton {
         /**
@@ -1236,7 +1215,6 @@ declare namespace LocalJSX {
         "u-signed-in": USignedIn;
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
-        "u-signin-strategy": USigninStrategy;
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
         "u-submit-button": USubmitButton;
@@ -1277,7 +1255,6 @@ declare module "@stencil/core" {
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
-            "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
