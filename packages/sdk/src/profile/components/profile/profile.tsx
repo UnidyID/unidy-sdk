@@ -154,7 +154,6 @@ export class Profile {
       ) : (
         <Host>
           <slot />
-          <u-flash-message />
         </Host>
       );
     }
