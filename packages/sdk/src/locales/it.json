@@ -107,6 +107,7 @@
     },
     "errors": {
       "already_subscribed": "Già iscritto",
+      "consent_required": "Accetta i termini e le condizioni per iscriverti",
       "email_required": "Inserisci il tuo indirizzo email",
       "invalid_email": "Indirizzo email non valido",
       "login_email_not_found": "L'abbonamento con questa email non esiste",
