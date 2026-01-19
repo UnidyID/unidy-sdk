@@ -16,6 +16,8 @@ export * from "./shared";
 export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
+export { StandaloneApiClient, StandaloneUnidyClient, createStandaloneClient } from "./standalone";
+export type { StandaloneUnidyClientConfig } from "./standalone";
 
 /** Default browser dependencies using Sentry and the SDK logger */
 function createBrowserDeps(serviceName: string): ServiceDependencies {
@@ -43,9 +45,7 @@ export class UnidyClient {
   subscriptions: SubscriptionsService;
 
   constructor(baseUrl: string, apiKey: string) {
-    this.apiClient = new ApiClient(baseUrl, apiKey, (isConnected) => {
-      unidyState.backendConnected = isConnected;
-    });
+    this.apiClient = new ApiClient(baseUrl, apiKey);
 
     // Initialize services with browser-specific dependencies
     this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));

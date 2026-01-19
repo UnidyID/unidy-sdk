@@ -95,8 +95,6 @@ export class Profile {
     const [error, data, responseInfo] = await getUnidyClient().profile.update({ payload: updatedProfileData });
 
     if (error) {
-      Flash.error.addMessage(String(error));
-
       if (data && "flatErrors" in data) {
         profileState.errors = data.flatErrors as Record<string, string>;
         this.uProfileError.emit({
@@ -108,6 +106,7 @@ export class Profile {
           },
         });
       } else {
+        Flash.error.addMessage(String(error));
         this.uProfileError.emit({
           error: "profile_update_failed",
           details: {

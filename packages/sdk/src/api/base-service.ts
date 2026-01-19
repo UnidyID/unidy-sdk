@@ -1,7 +1,6 @@
 import * as z from "zod";
 import type { ApiResponse, QueryParams } from "./base-client";
 import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
-import { unidyState } from "../shared/store/unidy-store";
 
 /**
  * Minimal logger interface that services depend on
@@ -99,7 +98,6 @@ export abstract class BaseService {
     handler: () => T,
   ): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] | ["internal_error", null] {
     if (response.connectionError) {
-      unidyState.backendConnected = false;
       return ["connection_failed", null];
     }
 

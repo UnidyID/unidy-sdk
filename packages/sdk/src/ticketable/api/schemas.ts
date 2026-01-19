@@ -4,7 +4,7 @@ import { PaginationMetaSchema } from "../../api/shared";
 // Input validation schemas for ticketable list parameters
 export const TicketableListParamsSchema = z.object({
   page: z.number().int().positive().optional(),
-  perPage: z.number().int().positive().max(100).optional(),
+  perPage: z.number().int().positive().max(250).optional(),
   state: z.string().optional(),
   paymentState: z.string().optional(),
   orderBy: z.enum(["starts_at", "ends_at", "reference", "created_at"]).optional(),
