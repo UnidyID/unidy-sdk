@@ -161,15 +161,6 @@ Renders a button that initiates passkey authentication.
 -   `loading-text`: The text to display on the button while authenticating. Defaults to "Authenticating..."
 -   `class-name`: A string of classes to pass to the button.
 
-#### `<u-signin-strategy>`
-
-Defines a specific authentication method within a `verification` step.
-
-**Attributes:**
-
--   `type` (required): The strategy type (`password` or `magic-code`).
--   `class-name`: A string of classes to pass to the host element.
-
 #### `<u-email-field>`
 
 Renders a pre-configured input for the user's email address.

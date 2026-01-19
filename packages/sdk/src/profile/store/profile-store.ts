@@ -26,7 +26,6 @@ export interface ProfileState {
   configuration: ProfileRaw;
   errors: Record<string, string | null>;
   configUpdateSource?: "fetch" | "submit";
-  flashErrors: Record<string, string | null>;
   phoneValid: boolean;
 }
 
@@ -35,7 +34,6 @@ const initialState: ProfileState = {
   data: {},
   configuration: {},
   errors: {},
-  flashErrors: {},
   phoneValid: true,
 };
 
