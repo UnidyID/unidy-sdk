@@ -2,8 +2,9 @@ import * as Sentry from "@sentry/browser";
 import { Component, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
-import { authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
+import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
+import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
@@ -22,7 +23,6 @@ export class Profile {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };
@@ -32,7 +32,7 @@ export class Profile {
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
-      if (authStore.state.authenticated) await this.fetchProfileData();
+      if (authStore.state.authenticated) await this.getTokenAndFetchProfile();
     });
   }
 
@@ -44,42 +44,36 @@ export class Profile {
       await Auth.getInstance();
 
       if (authStore.state.authenticated) {
-        await this.fetchProfileData();
+        await this.getTokenAndFetchProfile();
       }
     }
 
     profileState.loading = false;
   }
 
+  async getTokenAndFetchProfile() {
+    await this.fetchProfileData();
+  }
+
   async fetchProfileData() {
     // avoid multiple requests
     if (this.fetchingProfileData) return;
-
-    const authInstance = await Auth.getInstance();
-    const isAuthenticated = await authInstance.isAuthenticated();
-    if (!isAuthenticated) {
-      // Handle unauthenticated state the same as an unauthorized error from backend
-      profileState.flashErrors = { error: t("errors.unauthorized") };
-      return;
-    }
 
     this.fetchingProfileData = true;
     try {
       const [error, data] = await getUnidyClient().profile.get();
 
-      if (error === null && data) {
+      if (error) {
+        Flash.error.addMessage(String(error));
+      } else {
         profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
         profileState.configUpdateSource = "fetch";
         profileState.errors = {};
-        profileState.flashErrors = {};
-
         profileState.data = JSON.parse(JSON.stringify(data)) as ProfileRaw;
-      } else {
-        profileState.flashErrors = { error: error || "unknown_error" };
       }
-    } catch (err) {
-      Sentry.captureException(err);
-      profileState.flashErrors = { error: t("errors.failed_to_load_profile") };
+    } catch (error) {
+      Sentry.captureException("Failed to fetch profile data:", error);
+      Flash.error.addMessage(t("errors.failed_to_load_profile"));
     }
     this.fetchingProfileData = false;
   }
@@ -96,31 +90,33 @@ export class Profile {
     }
 
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
+    const [error, data] = await getUnidyClient().profile.update({ payload: updatedProfileData });
 
-    const [error, data] = await getUnidyClient().profile.update({
-      payload: updatedProfileData,
-    });
+    if (error) {
+      Flash.error.addMessage(String(error));
 
-    if (error === null && data) {
+      if (data && "flatErrors" in data) {
+        profileState.errors = data.flatErrors as Record<string, string>;
+        this.uProfileError.emit({
+          error: "profile_update_field_errors",
+          details: { fieldErrors: profileState.errors },
+        });
+      } else {
+        Flash.error.addMessage(String(error));
+        this.uProfileError.emit({
+          error: "profile_update_failed",
+          details: {},
+        });
+      }
+      profileState.loading = false;
+    } else {
       profileState.loading = false;
       profileState.configuration = JSON.parse(JSON.stringify(data));
       profileState.configUpdateSource = "submit";
       profileState.errors = {};
+      Flash.clear("error");
+      Flash.success.addMessage(t("profile.updated"));
       this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: data as ProfileRaw });
-    } else if (error === "validation_error" && data && "flatErrors" in data) {
-      profileState.errors = data.flatErrors as Record<string, string>;
-      profileState.loading = false;
-      this.uProfileError.emit({
-        error: "profile_update_field_errors",
-        details: { fieldErrors: profileState.errors, responseData: data },
-      });
-    } else {
-      profileState.flashErrors = { error: error || "unknown_error" };
-      profileState.loading = false;
-      this.uProfileError.emit({
-        error: "profile_update_failed",
-        details: { flashErrors: profileState.flashErrors },
-      });
     }
   }
 
@@ -130,25 +126,21 @@ export class Profile {
     });
 
     authOnChange("token", (newToken: string | null) => {
-      if (newToken) {
+      const token = newToken ?? "";
+
+      if (token) {
         this.fetchProfileData();
       }
     });
   }
 
   render() {
-    const hasFieldErrors = Object.values(profileState.errors).some(Boolean);
-    const errorMsg = Object.values(profileState.flashErrors).filter(Boolean).join(", ");
-    const wasSubmit = profileState.configUpdateSource === "submit";
-
     if (authStore.state.authenticated) {
       return this.fetchingProfileData ? (
         <div>{t("loading")}</div>
       ) : (
         <Host>
           <slot />
-          {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
-          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={t("profile.updated")} />}
         </Host>
       );
     }

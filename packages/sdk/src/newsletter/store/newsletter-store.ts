@@ -3,6 +3,7 @@ import { createStore } from "@stencil/store";
 export type NewsletterErrorIdentifier =
   | "unconfirmed"
   | "already_subscribed"
+  | "consent_required"
   | "invalid_email"
   | "newsletter_not_found"
   | "preferences_not_found"
@@ -32,6 +33,8 @@ interface NewsletterState {
   existingSubscriptions: ExistingSubscription[];
 
   errors: Record<string, NewsletterErrorIdentifier>;
+  consentGiven: boolean;
+  consentRequired: boolean;
 
   isAuthenticated: boolean;
 }
@@ -56,6 +59,9 @@ const initialState: NewsletterState = {
   existingSubscriptions: [],
 
   errors: {},
+  consentGiven: false,
+  consentRequired: false,
+
   isAuthenticated: false,
 };
 
@@ -74,5 +80,7 @@ export const storeDefaultPreference = (internalName: NewsletterInternalName, pre
 export const reset = () => {
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
+  const consentRequired = newsletterStore.state.consentRequired;
   newsletterStore.state = initialState;
+  newsletterStore.state.consentRequired = consentRequired;
 };

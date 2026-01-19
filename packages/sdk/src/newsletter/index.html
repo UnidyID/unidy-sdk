@@ -273,6 +273,19 @@
             <u-error-message for="test" class-name="text-red-500 text-sm"></u-error-message>
           </div>
 
+          <div class="flex flex-col gap-2 mt-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <u-newsletter-consent-checkbox
+                class-name="w-4 h-4 mt-0.5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              </u-newsletter-consent-checkbox>
+              <div class="text-sm text-gray-700">
+                I want to receive the newsletter of the brand with information about their entertainment offers and specials via email. My data will not be passed along to third-persons. My consent can at any time be revoked via Email to info@unidy.io.
+                <div class="text-sm text-gray-700 mt-1">I accept the <a href="https://demo.unidy.de/data_protection" class="text-indigo-600 hover:underline">data protection terms</a> and <a href="https://demo.unidy.de/terms_of_use" class="text-indigo-600 hover:underline">terms of use</a>.</div>
+              </div>
+            </label>
+            <u-error-message for="consent" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
           <u-submit-button
             class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow transition border border-indigo-600 mt-4">
             Subscribe
