@@ -3,6 +3,7 @@ import { createStore } from "@stencil/store";
 export type NewsletterErrorIdentifier =
   | "unconfirmed"
   | "already_subscribed"
+  | "consent_required"
   | "invalid_email"
   | "newsletter_not_found"
   | "preferences_not_found"
@@ -32,6 +33,7 @@ interface NewsletterState {
   existingSubscriptions: ExistingSubscription[];
 
   errors: Record<string, NewsletterErrorIdentifier>;
+  consentGiven: boolean;
 
   isAuthenticated: boolean;
 }
@@ -56,6 +58,8 @@ const initialState: NewsletterState = {
   existingSubscriptions: [],
 
   errors: {},
+  consentGiven: false,
+
   isAuthenticated: false,
 };
 
