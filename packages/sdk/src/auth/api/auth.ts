@@ -3,6 +3,12 @@ import {
   CreateSignInResponseSchema,
   ErrorSchema,
   InvalidPasswordResponseSchema,
+  JumpToServiceErrorSchema,
+  JumpToServiceRequestSchema,
+  JumpToServiceResponseSchema,
+  JumpToUnidyErrorSchema,
+  JumpToUnidyRequestSchema,
+  JumpToUnidyResponseSchema,
   PasskeyOptionsResponseSchema,
   RequiredFieldsResponseSchema,
   SendMagicCodeErrorSchema,
@@ -11,6 +17,8 @@ import {
   type CreateSignInResponse,
   type ErrorResponse,
   type InvalidPasswordResponse,
+  type JumpToServiceRequest,
+  type JumpToUnidyRequest,
   type PasskeyCredential,
   type PasskeyOptionsResponse,
   type RequiredFieldsResponse,
@@ -130,6 +138,20 @@ export type AuthenticateWithPasskeyResult =
   | ["authentication_failed", ErrorResponse]
   | ["bad_request", ErrorResponse]
   | [null, TokenResponse];
+
+export type JumpToServiceResult =
+  | CommonErrors
+  | ["user_not_found", ErrorResponse]
+  | ["application_not_found", ErrorResponse]
+  | ["invalid_redirect_uri", ErrorResponse]
+  | ["invalid_scope", ErrorResponse]
+  | [null, string];
+
+export type JumpToUnidyResult =
+  | CommonErrors
+  | ["user_not_found", ErrorResponse]
+  | ["invalid_path", ErrorResponse]
+  | [null, string];
 
 export class AuthService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -406,6 +428,59 @@ export class AuthService extends BaseService {
       }
 
       return [null, TokenResponseSchema.parse(response.data)];
+    });
+  }
+
+  async jumpToService(serviceId: string, request: JumpToServiceRequest): Promise<JumpToServiceResult> {
+    const validatedRequest = JumpToServiceRequestSchema.parse(request);
+
+    const response = await this.client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const errorParse = JumpToServiceErrorSchema.safeParse(response.data);
+        if (errorParse.success) {
+          const errorIdentifier = errorParse.data.error_identifier;
+          return [
+            errorIdentifier as "user_not_found" | "application_not_found" | "invalid_redirect_uri" | "invalid_scope",
+            { error_identifier: errorIdentifier },
+          ];
+        }
+
+        return ["user_not_found", { error_identifier: "unknown_error" }];
+      }
+
+      const parsed = JumpToServiceResponseSchema.safeParse(response.data);
+      if (!parsed.success) {
+        return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }];
+      }
+
+      return [null, parsed.data.token];
+    });
+  }
+
+  async jumpToUnidy(request: JumpToUnidyRequest): Promise<JumpToUnidyResult> {
+    const validatedRequest = JumpToUnidyRequestSchema.parse(request);
+
+    const response = await this.client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const errorParse = JumpToUnidyErrorSchema.safeParse(response.data);
+        if (errorParse.success) {
+          const errorIdentifier = errorParse.data.error_identifier;
+          return [errorIdentifier as "user_not_found" | "invalid_path", { error_identifier: errorIdentifier }];
+        }
+
+        return ["user_not_found", { error_identifier: "unknown_error" }];
+      }
+
+      const parsed = JumpToUnidyResponseSchema.safeParse(response.data);
+      if (!parsed.success) {
+        return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }];
+      }
+
+      return [null, parsed.data.token];
     });
   }
 }

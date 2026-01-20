@@ -92,6 +92,37 @@ export const PasskeyCredentialSchema = z.object({
   type: z.string(),
 });
 
+// Jump to service/unidy schemas
+export const JumpToServiceErrorSchema = z.object({
+  error_identifier: z.string(),
+});
+
+export const JumpToUnidyErrorSchema = z.object({
+  error_identifier: z.string(),
+});
+
+export const JumpToServiceRequestSchema = z.object({
+  email: z.string(),
+  redirect_uri: z.string().optional(),
+  scopes: z.array(z.string()).optional(),
+  skip_oauth_authorization: z.boolean().optional(),
+});
+
+export const JumpToUnidyRequestSchema = z.object({
+  email: z.string(),
+  path: z.string().refine((val) => val.startsWith("/"), {
+    message: "Path must start with '/'",
+  }),
+});
+
+export const JumpToServiceResponseSchema = z.object({
+  token: z.string(),
+});
+
+export const JumpToUnidyResponseSchema = z.object({
+  token: z.string(),
+});
+
 // Export types
 export type SignInStatus = z.infer<typeof SignInStatusEnum>;
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
@@ -104,3 +135,7 @@ export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
 export type InvalidPasswordResponse = z.infer<typeof InvalidPasswordResponseSchema>;
 export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema>;
 export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;
+export type JumpToServiceRequest = z.infer<typeof JumpToServiceRequestSchema>;
+export type JumpToServiceResponse = z.infer<typeof JumpToServiceResponseSchema>;
+export type JumpToUnidyRequest = z.infer<typeof JumpToUnidyRequestSchema>;
+export type JumpToUnidyResponse = z.infer<typeof JumpToUnidyResponseSchema>;

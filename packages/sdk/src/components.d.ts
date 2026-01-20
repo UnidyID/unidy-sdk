@@ -144,6 +144,60 @@ export namespace Components {
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
     }
+    interface UJumpToService {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab": boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
+        "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
+        "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
+        "serviceId": string;
+        /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
+          * @default false
+         */
+        "skipOauthAuthorization": boolean;
+    }
+    interface UJumpToUnidy {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab": boolean;
+        /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth": boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
+        "path": string;
+    }
     interface ULogoutButton {
         /**
           * @default ""
@@ -519,6 +573,18 @@ declare global {
         prototype: HTMLUFullProfileElement;
         new (): HTMLUFullProfileElement;
     };
+    interface HTMLUJumpToServiceElement extends Components.UJumpToService, HTMLStencilElement {
+    }
+    var HTMLUJumpToServiceElement: {
+        prototype: HTMLUJumpToServiceElement;
+        new (): HTMLUJumpToServiceElement;
+    };
+    interface HTMLUJumpToUnidyElement extends Components.UJumpToUnidy, HTMLStencilElement {
+    }
+    var HTMLUJumpToUnidyElement: {
+        prototype: HTMLUJumpToUnidyElement;
+        new (): HTMLUJumpToUnidyElement;
+    };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
@@ -762,6 +828,8 @@ declare global {
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
         "u-full-profile": HTMLUFullProfileElement;
+        "u-jump-to-service": HTMLUJumpToServiceElement;
+        "u-jump-to-unidy": HTMLUJumpToUnidyElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
@@ -903,6 +971,60 @@ declare namespace LocalJSX {
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
+    }
+    interface UJumpToService {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab"?: boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
+        "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
+        "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
+        "serviceId": string;
+        /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
+          * @default false
+         */
+        "skipOauthAuthorization"?: boolean;
+    }
+    interface UJumpToUnidy {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab"?: boolean;
+        /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth"?: boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
+        "path": string;
     }
     interface ULogoutButton {
         /**
@@ -1208,6 +1330,8 @@ declare namespace LocalJSX {
         "u-field": UField;
         "u-flash-message": UFlashMessage;
         "u-full-profile": UFullProfile;
+        "u-jump-to-service": UJumpToService;
+        "u-jump-to-unidy": UJumpToUnidy;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
@@ -1248,6 +1372,8 @@ declare module "@stencil/core" {
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
             "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
+            "u-jump-to-service": LocalJSX.UJumpToService & JSXBase.HTMLAttributes<HTMLUJumpToServiceElement>;
+            "u-jump-to-unidy": LocalJSX.UJumpToUnidy & JSXBase.HTMLAttributes<HTMLUJumpToUnidyElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;

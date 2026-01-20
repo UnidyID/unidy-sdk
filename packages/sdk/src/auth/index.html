@@ -278,7 +278,14 @@
     </u-signin-root>
 
     <u-signed-in>
-      <p class="text-center text-gray-600 text-sm">You are already signed in</p>
+      <div class="bg-white rounded-xl shadow-xl p-8 border border-gray-100 text-center">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">You're signed in!</h3>
+        <p class="text-gray-600 text-sm mb-6">Manage your profile and settings on the profile page.</p>
+        <a href="/auth/profile.html"
+          class="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors">
+          Go to Profile
+        </a>
+      </div>
     </u-signed-in>
 
     <div class="flex gap-2 mb-2 fixed bottom-0 right-0 mx-4 items-center">

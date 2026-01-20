@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Închide",
     "continue": "Continuă",
+    "jump_to_service": "Mergi la serviciu",
+    "jump_to_unidy": "Mergi la Unidy",
     "logout": "Deconectare",
     "registration": "Înregistrează cont nou",
     "sign_in": "Conectare",
