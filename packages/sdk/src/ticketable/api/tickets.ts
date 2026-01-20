@@ -2,7 +2,7 @@ import * as z from "zod";
 import type { ApiClient, ApiResponse } from "../../api";
 import { PaginationMetaSchema } from "../../api/shared";
 import { getWithSchema } from "./get-with-schema";
-import { TicketableListParamsBaseSchema } from "./schemas";
+import { type ExportFormat, type ExportLinkResponse, ExportLinkResponseSchema, TicketableListParamsBaseSchema } from "./schemas";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -16,6 +16,7 @@ const TicketSchema = z.object({
   reference: z.string(),
   metadata: z.record(z.string(), z.unknown()).nullable(),
   wallet_export: z.record(z.string(), z.unknown()).nullable(),
+  exportable_to_wallet: z.boolean(),
   state: z.string(),
   payment_state: z.string().nullable(),
   button_cta_url: z.string().nullable(),
@@ -55,5 +56,23 @@ export class TicketsService {
     this.list = getWithSchema(this.client, TicketsListResponseSchema, (_args: unknown) => "/api/sdk/v1/tickets", TicketsListParamsSchema);
 
     this.get = getWithSchema(this.client, TicketSchema, (args: { id: string }) => `/api/sdk/v1/tickets/${args.id}`);
+  }
+
+  async getExportLink(args: { id: string; format: ExportFormat }, idToken: string): Promise<ApiResponse<ExportLinkResponse>> {
+    const response = await this.client.post<unknown>(`/api/sdk/v1/tickets/${args.id}/export_link`, { format: args.format }, { "X-ID-Token": idToken });
+
+    return this.handleResponse(response, () => ExportLinkResponseSchema.parse(response.data));
+  }
+
+  private handleResponse<T>(response: ApiResponse<unknown>, parser: () => T): ApiResponse<T> {
+    if (!response.success || !response.data) {
+      return response as ApiResponse<T>;
+    }
+
+    try {
+      return { ...response, data: parser() };
+    } catch {
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
   }
 }

@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { type ApiClient, type ApiResponse, PaginationMetaSchema } from "../../api";
 import { getWithSchema } from "./get-with-schema";
-import { TicketableListParamsBaseSchema } from "./schemas";
+import { type ExportFormat, type ExportLinkResponse, ExportLinkResponseSchema, TicketableListParamsBaseSchema } from "./schemas";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
@@ -15,6 +15,7 @@ const SubscriptionSchema = z.object({
   payment_frequency: z.string().nullable(),
   metadata: z.record(z.string(), z.unknown()).nullable(),
   wallet_export: z.record(z.string(), z.unknown()).nullable(),
+  exportable_to_wallet: z.boolean(),
   state: z.string(),
   reference: z.string(),
   payment_state: z.string().nullable(),
@@ -58,5 +59,23 @@ export class SubscriptionsService {
     );
 
     this.get = getWithSchema(this.client, SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
+  }
+
+  async getExportLink(args: { id: string; format: ExportFormat }, idToken: string): Promise<ApiResponse<ExportLinkResponse>> {
+    const response = await this.client.post<unknown>(`/api/sdk/v1/subscriptions/${args.id}/export_link`, { format: args.format }, { "X-ID-Token": idToken });
+
+    return this.handleResponse(response, () => ExportLinkResponseSchema.parse(response.data));
+  }
+
+  private handleResponse<T>(response: ApiResponse<unknown>, parser: () => T): ApiResponse<T> {
+    if (!response.success || !response.data) {
+      return response as ApiResponse<T>;
+    }
+
+    try {
+      return { ...response, data: parser() };
+    } catch {
+      return { ...response, success: false, error: "Invalid response format", data: undefined };
+    }
   }
 }
