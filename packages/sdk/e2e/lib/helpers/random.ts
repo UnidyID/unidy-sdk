@@ -6,5 +6,5 @@ export const randomEmail = (args: Partial<{ address: string; domain: string; raw
     return `${address}@${domain}`;
   }
 
-  return `${address}+${randomUUID()}-SDK@${domain}`;
+  return `${address}+${randomUUID()}-sdk@${domain}`;
 };

@@ -5,7 +5,7 @@ import { EmailAssert } from "../../lib/assert/emails";
 import { Database } from "../../lib/database";
 import { randomEmail } from "../../lib/helpers/random";
 
-test.describe("Newsletter", () => {
+test.describe("Newsletter (logged out)", () => {
   const newsletterSubscriptions = new Database("NewsletterSubscription");
   test.beforeEach(async ({ page }) => {
     await page.goto(routes.newsletter);
@@ -30,7 +30,7 @@ test.describe("Newsletter", () => {
     const emailInput = page.getByRole("textbox", { name: "Email" });
     const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
 
-    await emailInput.fill(userLogin.email);
+    await emailInput.fill(randomEmail());
     await expect(subscribeButton).toBeEnabled();
     await expect(page.getByRole("button", { name: "Already subscribed? Click" })).toBeVisible();
   });
@@ -54,26 +54,44 @@ test.describe("Newsletter", () => {
     await nl_sub.toHaveChangedBy(1);
   });
 
-  test("shows error message when already subscribed and sends email", async ({ page }) => {
-    const userEmails = await EmailAssert.init({ to: userLogin.email });
+  test("already subscribed flow: shows error, sends email with manage link, navigates to manage subscription page", async ({ page }) => {
+    const email = randomEmail();
+
+    const newsletters = new Database("Newsletter");
+    const main = await newsletters.getBy({ internal_name: "main" });
+    if (!main) throw new Error("Newsletter 'main' not found");
+
+    const preferences = new Database("NewsletterPreference");
+    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" } as any);
+    if (!prefClubNews) throw new Error("Preference 'club_news' not found");
+
+    const subscription = await newsletterSubscriptions.create({
+      email: email,
+      newsletter_id: main.id,
+    });
+    if (!subscription) throw new Error("Failed to create newsletter subscription");
+
+    const preferenceSubscriptions = new Database("NewsletterPreferenceSubscription");
+    await preferenceSubscriptions.create({
+      newsletter_subscription_id: subscription.id,
+      newsletter_preference_id: prefClubNews.id,
+    });
+
+    const userEmails = await EmailAssert.init({ to: email });
     const emailInput = page.getByRole("textbox", { name: "Email" });
     const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
 
-    await emailInput.fill(userLogin.email);
+    await emailInput.fill(email);
     await subscribeButton.click();
 
     await expect(page.getByTestId("nl.group.main").locator("u-error-message")).toBeVisible();
     await expect(page.getByText("We sent a link to manage your")).toBeVisible();
+
     await userEmails.toHaveReceived(1);
 
     const lastEmail = await userEmails.ensureLast();
 
     console.log("Last email content:", lastEmail.body);
-  });
-
-  test("email link navigates to manage subscription page", async ({ page }) => {
-    const userEmails = await EmailAssert.init({ to: userLogin.email });
-    const lastEmail = await userEmails.ensureLast();
 
     const manageSubscriptionLinkMatch = lastEmail.body.match(/href="(http[^"]*\/newsletter[^"]*)"/);
     const manageSubscriptionLink = manageSubscriptionLinkMatch?.[1]?.replace(/&amp;/g, "&");
