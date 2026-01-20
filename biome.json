@@ -17,7 +17,8 @@
       "!**/tsconfig.*.json",
       "!**/tsconfig.json",
       "!examples",
-      "!development-target.tsx"
+      "!development-target.tsx",
+      "!packages/sdk/src/demo-build.css"
     ]
   },
   "formatter": {
