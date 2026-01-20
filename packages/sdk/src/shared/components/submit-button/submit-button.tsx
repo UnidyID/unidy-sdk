@@ -82,12 +82,17 @@ export class SubmitButton {
   private getButtonContent() {
     const loading = this.isLoading();
 
-    if (loading) {
-      return <u-spinner />;
+    if (this.hasSlot) {
+      return [
+        loading && <u-spinner key="spinner" />,
+        <span key="slot" style={{ display: loading ? "none" : "contents" }}>
+          <slot />
+        </span>,
+      ];
     }
 
-    if (this.hasSlot) {
-      return <slot />;
+    if (loading) {
+      return <u-spinner />;
     }
 
     return this.getButtonText();

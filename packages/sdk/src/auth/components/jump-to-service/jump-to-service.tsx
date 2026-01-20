@@ -1,9 +1,9 @@
-import { Component, h, Prop, State, forceUpdate, Element } from "@stencil/core";
+import { Component, Element, forceUpdate, h, Prop, State } from "@stencil/core";
+import { getUnidyClient } from "../../../api";
+import { t } from "../../../i18n";
+import { unidyState } from "../../../shared/store/unidy-store";
 import { Auth } from "../../auth";
 import { authState, onChange } from "../../store/auth-store";
-import { getUnidyClient } from "../../../api";
-import { unidyState } from "../../../shared/store/unidy-store";
-import { t } from "../../../i18n";
 
 @Component({
   tag: "u-jump-to-service",
@@ -135,7 +135,18 @@ export class JumpToService {
     const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {this.loading ? <u-spinner /> : hasSlot ? <slot /> : t("buttons.jump_to_service")}
+        {hasSlot ? (
+          [
+            this.loading && <u-spinner key="spinner" />,
+            <span key="slot" style={{ display: this.loading ? "none" : "contents" }}>
+              <slot />
+            </span>,
+          ]
+        ) : this.loading ? (
+          <u-spinner />
+        ) : (
+          t("buttons.jump_to_service")
+        )}
       </button>
     );
   }
