@@ -1,4 +1,4 @@
-import { Component, Element, Host, h, Method, Prop } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { t } from "../../../i18n";
 import { logger, UnidyComponent } from "../../../logger";
@@ -16,6 +16,9 @@ import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-but
 export class NewsletterRoot extends UnidyComponent {
   @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  @Event() uNewsletterSuccess!: EventEmitter<{ email: string; newsletters: string[] }>;
+  @Event() uNewsletterError!: EventEmitter<{ email: string; error: string }>;
 
   getErrorText(errorIdentifier: NewsletterErrorIdentifier): string {
     return t(`newsletter.errors.${errorIdentifier}`) || t("errors.unknown", { defaultValue: "An unknown error occurred" });
@@ -56,22 +59,49 @@ export class NewsletterRoot extends UnidyComponent {
 
   @Method()
   async submit(forType?: NewsletterButtonFor) {
-    const { email, checkedNewsletters } = newsletterStore.state;
+    const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
+    const newsletters = Object.keys(checkedNewsletters);
 
-    if (forType === "login") {
-      if (!email) {
-        Flash.error.addMessage(t("newsletter.errors.email_required"));
-        return;
-      }
-      return await NewsletterHelpers.sendLoginEmail(email);
-    }
-
-    if (Object.keys(checkedNewsletters).length === 0) {
-      logger.error("No newsletters selected: please select at least one newsletter");
+    // Check email first for better UX
+    if (!email) {
+      logger.error("Email is required");
+      Flash.error.addMessage(t("newsletter.errors.email_required"));
+      this.uNewsletterError.emit({ email: "", error: "email_required" });
       return;
     }
 
-    await NewsletterHelpers.createSubscriptions({ email });
+    if (forType === "login") {
+      const result = await NewsletterHelpers.sendLoginEmail(email);
+      if (result.success === true) {
+        this.uNewsletterSuccess.emit({ email, newsletters: [] });
+      } else if (result.success === false) {
+        this.uNewsletterError.emit({ email, error: `login_${result.error}` });
+      }
+      return;
+    }
+
+    if (newsletters.length === 0) {
+      logger.error("No newsletters selected: please select at least one newsletter");
+      this.uNewsletterError.emit({ email, error: "no_newsletters_selected" });
+      return;
+    }
+
+    if (consentRequired && !consentGiven) {
+      newsletterStore.state.errors = {
+        ...newsletterStore.state.errors,
+        consent: "consent_required",
+      };
+      this.uNewsletterError.emit({ email, error: "consent_required" });
+      return;
+    }
+
+    const success = await NewsletterHelpers.createSubscriptions({ email });
+
+    if (success) {
+      this.uNewsletterSuccess.emit({ email, newsletters });
+    } else {
+      this.uNewsletterError.emit({ email, error: "subscription_failed" });
+    }
   }
 
   render() {

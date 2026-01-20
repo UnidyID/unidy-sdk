@@ -54,11 +54,12 @@ This example demonstrates a complete authentication flow. The SDK automatically 
         <img slot="icon" src="https://www.unidy.io/unidy-logo-white.svg" alt="Unidy Logo" class="w-20 h-6" />
       </u-social-login-button>
     </div>
+
     <u-signin-step name="verification">
-      <u-signin-strategy type="password">
+      <u-conditional-render when="auth.passwordEnabled">
         <u-password-field placeholder="Enter your password"></u-password-field>
         <u-submit-button for="password" text="Sign In"></u-submit-button>
-      </u-signin-strategy>
+      </u-conditional-render>
     </u-signin-step>
   </u-signin-root>
 
@@ -321,8 +322,8 @@ This example demonstrates how to implement a modal login form using the Unidy SD
             </u-signin-step>
 
             <!-- Verification Step -->
-             <u-signin-step name="verification">
-              <u-signin-strategy type="password">
+            <u-signin-step name="verification">
+              <u-conditional-render when="auth.passwordEnabled">
                 <u-password-field placeholder="Enter your password"
                   class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
                   aria-describedby="password-error"></u-password-field>
@@ -333,37 +334,34 @@ This example demonstrates how to implement a modal login form using the Unidy SD
 
                 <u-submit-button for="password"
                   class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full"></u-submit-button>
-              </u-signin-strategy>
+              </u-conditional-render>
 
-              <u-conditional-render when="magicCodeEnabled">
-                <u-conditional-render when="magicCodeSent" is="false">
-                <div class="my-4 flex items-center">
-                  <div class="flex-grow border-t border-gray-200"></div>
-                  <span class="mx-3 text-xs font-medium text-gray-400">OR</span>
-                  <div class="flex-grow border-t border-gray-200"></div>
-                </div>
+              <u-conditional-render when="auth.magicCodeEnabled">
+                <u-conditional-render when="auth.magicCodeSent" is="false">
+                  <div class="my-4 flex items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="mx-3 text-xs font-medium text-gray-400">OR</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                  </div>
 
                   <u-send-magic-code-button
                     class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center w-full"></u-send-magic-code-button>
                 </u-conditional-render>
               </u-conditional-render>
+            </u-signin-step>
 
-              <u-signin-strategy type="magic-code">
-                <u-conditional-render when="magicCodeSent" is="true">
-                  <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
-                </u-conditional-render>
+            <!-- Magic Code Step -->
+            <u-signin-step name="magic-code">
+              <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
 
-                <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
-                  aria-describedby="magic-code-error"></u-magic-code-field>
+              <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+                aria-describedby="magic-code-error"></u-magic-code-field>
 
-                <u-error-message id="magic-code-error" for="magicCode"
-                  class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+              <u-error-message id="magic-code-error" for="magicCode"
+                class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
 
-                <u-conditional-render when="magicCodeSent" is="true">
-                  <u-send-magic-code-button
-                    class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
-                </u-conditional-render>
-              </u-signin-strategy>
+              <u-send-magic-code-button
+                class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full"></u-send-magic-code-button>
             </u-signin-step>
 
             <!-- Missing Fields -->

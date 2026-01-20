@@ -1,8 +1,17 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.1.10",
+  "version": "1.2.0-alpha9",
+  "publishConfig": {
+    "tag": "alpha",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
+  },
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
   "homepage": "https://sdk-demo.unidy.io",
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -14,7 +23,9 @@
   ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build": "bun run clean && touch src/demo-build.css && stencil build",
+    "build": "bun run clean && touch src/demo-build.css && stencil build && bun run build:standalone",
+    "build:standalone": "bun build ./src/api/standalone.ts --outdir ./dist/collection/api --format esm && bun run build:standalone:types",
+    "build:standalone:types": "tsc -p tsconfig.standalone.json",
     "dev:stencil": "stencil build --dev --watch --serve",
     "dev:css": "tailwindcss -i ./src/demo.css -o ./src/demo-build.css --content './src/**/*.{html}' --watch",
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",
@@ -51,6 +62,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^24.10.8",
     "@types/react": "^19.2.8",
+    "baseline-browser-mapping": "^2.9.15",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.3",
     "eventemitter3": "^5.0.1",
@@ -64,15 +76,6 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "publishConfig": {
-    "tag": "latest",
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
-  },
-  "license": "MIT",
   "keywords": [
     "web-components",
     "unidy",
@@ -120,6 +123,10 @@
     "./ticketable": {
       "import": "./dist/ticketable/sdk.esm.js",
       "require": "./dist/ticketable/sdk.cjs.js"
+    },
+    "./standalone": {
+      "import": "./dist/collection/api/standalone.js",
+      "types": "./dist/types/api/standalone.d.ts"
     }
   }
 }

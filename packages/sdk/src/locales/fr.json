@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Fermer",
     "continue": "Continuer",
+    "jump_to_service": "Aller au service",
+    "jump_to_unidy": "Aller à Unidy",
     "logout": "Se déconnecter",
     "registration": "Créer un nouveau compte",
     "sign_in": "Se connecter",
@@ -107,6 +109,7 @@
     },
     "errors": {
       "already_subscribed": "Déjà abonné",
+      "consent_required": "Veuillez accepter les conditions générales pour vous abonner",
       "email_required": "Veuillez entrer votre adresse e-mail",
       "invalid_email": "Adresse e-mail invalide",
       "login_email_not_found": "L'abonnement avec cet e-mail n'existe pas",

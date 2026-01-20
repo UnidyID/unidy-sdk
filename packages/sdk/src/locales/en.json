@@ -39,6 +39,8 @@
   "buttons": {
     "close": "Close",
     "continue": "Continue",
+    "jump_to_service": "Jump to Service",
+    "jump_to_unidy": "Jump to Unidy",
     "logout": "Logout",
     "registration": "Register new account",
     "sign_in": "Sign In",
@@ -60,6 +62,7 @@
     "invalid_reset_token": "Invalid reset token. Please request a new password reset email",
     "invalid_response_format": "Invalid response format",
     "internal_server_error": "Internal server error",
+    "magic_code_not_valid": "Magic code is not valid",
     "magic_code_is_missing": "Magic code is missing",
     "magic_code_recently_created": "Magic code recently created",
     "magic_link_not_enabled": "Magic link sign-in is not enabled for this account",
@@ -108,6 +111,7 @@
     },
     "errors": {
       "already_subscribed": "Already subscribed",
+      "consent_required": "Please accept the terms and conditions to subscribe",
       "email_required": "Please enter your email address",
       "invalid_email": "Invalid email address",
       "login_email_not_found": "Subscription with this email does not exist",

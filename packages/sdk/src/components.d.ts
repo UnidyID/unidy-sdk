@@ -144,6 +144,60 @@ export namespace Components {
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
     }
+    interface UJumpToService {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab": boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
+        "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
+        "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
+        "serviceId": string;
+        /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
+          * @default false
+         */
+        "skipOauthAuthorization": boolean;
+    }
+    interface UJumpToUnidy {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab": boolean;
+        /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth": boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
+        "path": string;
+    }
     interface ULogoutButton {
         /**
           * @default ""
@@ -178,6 +232,11 @@ export namespace Components {
         /**
           * Public method to toggle the checkbox programmatically
          */
+        "toggle": () => Promise<void>;
+    }
+    interface UNewsletterConsentCheckbox {
+        "componentClassName"?: string;
+        "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
     }
     interface UNewsletterLogoutButton {
@@ -369,15 +428,8 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
         "submit": () => Promise<void>;
-    }
-    interface USigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        "type": "password" | "magic-code";
     }
     interface USocialLoginButton {
         /**
@@ -450,6 +502,10 @@ export interface ULogoutButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLULogoutButtonElement;
 }
+export interface UNewsletterRootCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUNewsletterRootElement;
+}
 export interface UProfileCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUProfileElement;
@@ -517,6 +573,18 @@ declare global {
         prototype: HTMLUFullProfileElement;
         new (): HTMLUFullProfileElement;
     };
+    interface HTMLUJumpToServiceElement extends Components.UJumpToService, HTMLStencilElement {
+    }
+    var HTMLUJumpToServiceElement: {
+        prototype: HTMLUJumpToServiceElement;
+        new (): HTMLUJumpToServiceElement;
+    };
+    interface HTMLUJumpToUnidyElement extends Components.UJumpToUnidy, HTMLStencilElement {
+    }
+    var HTMLUJumpToUnidyElement: {
+        prototype: HTMLUJumpToUnidyElement;
+        new (): HTMLUJumpToUnidyElement;
+    };
     interface HTMLULogoutButtonElementEventMap {
         "logout": void;
     }
@@ -558,6 +626,12 @@ declare global {
         prototype: HTMLUNewsletterCheckboxElement;
         new (): HTMLUNewsletterCheckboxElement;
     };
+    interface HTMLUNewsletterConsentCheckboxElement extends Components.UNewsletterConsentCheckbox, HTMLStencilElement {
+    }
+    var HTMLUNewsletterConsentCheckboxElement: {
+        prototype: HTMLUNewsletterConsentCheckboxElement;
+        new (): HTMLUNewsletterConsentCheckboxElement;
+    };
     interface HTMLUNewsletterLogoutButtonElement extends Components.UNewsletterLogoutButton, HTMLStencilElement {
     }
     var HTMLUNewsletterLogoutButtonElement: {
@@ -576,7 +650,19 @@ declare global {
         prototype: HTMLUNewsletterResendDoiButtonElement;
         new (): HTMLUNewsletterResendDoiButtonElement;
     };
+    interface HTMLUNewsletterRootElementEventMap {
+        "uNewsletterSuccess": { email: string; newsletters: string[] };
+        "uNewsletterError": { email: string; error: string };
+    }
     interface HTMLUNewsletterRootElement extends Components.UNewsletterRoot, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUNewsletterRootElementEventMap>(type: K, listener: (this: HTMLUNewsletterRootElement, ev: UNewsletterRootCustomEvent<HTMLUNewsletterRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUNewsletterRootElementEventMap>(type: K, listener: (this: HTMLUNewsletterRootElement, ev: UNewsletterRootCustomEvent<HTMLUNewsletterRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLUNewsletterRootElement: {
         prototype: HTMLUNewsletterRootElement;
@@ -618,7 +704,6 @@ declare global {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };
@@ -692,12 +777,6 @@ declare global {
         prototype: HTMLUSigninStepElement;
         new (): HTMLUSigninStepElement;
     };
-    interface HTMLUSigninStrategyElement extends Components.USigninStrategy, HTMLStencilElement {
-    }
-    var HTMLUSigninStrategyElement: {
-        prototype: HTMLUSigninStrategyElement;
-        new (): HTMLUSigninStrategyElement;
-    };
     interface HTMLUSocialLoginButtonElement extends Components.USocialLoginButton, HTMLStencilElement {
     }
     var HTMLUSocialLoginButtonElement: {
@@ -749,11 +828,14 @@ declare global {
         "u-field": HTMLUFieldElement;
         "u-flash-message": HTMLUFlashMessageElement;
         "u-full-profile": HTMLUFullProfileElement;
+        "u-jump-to-service": HTMLUJumpToServiceElement;
+        "u-jump-to-unidy": HTMLUJumpToUnidyElement;
         "u-logout-button": HTMLULogoutButtonElement;
         "u-magic-code-field": HTMLUMagicCodeFieldElement;
         "u-missing-field": HTMLUMissingFieldElement;
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
         "u-newsletter-checkbox": HTMLUNewsletterCheckboxElement;
+        "u-newsletter-consent-checkbox": HTMLUNewsletterConsentCheckboxElement;
         "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
         "u-newsletter-preference-checkbox": HTMLUNewsletterPreferenceCheckboxElement;
         "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
@@ -771,7 +853,6 @@ declare global {
         "u-signed-in": HTMLUSignedInElement;
         "u-signin-root": HTMLUSigninRootElement;
         "u-signin-step": HTMLUSigninStepElement;
-        "u-signin-strategy": HTMLUSigninStrategyElement;
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
         "u-submit-button": HTMLUSubmitButtonElement;
@@ -891,6 +972,60 @@ declare namespace LocalJSX {
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
     }
+    interface UJumpToService {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab"?: boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
+        "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
+        "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
+        "serviceId": string;
+        /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
+          * @default false
+         */
+        "skipOauthAuthorization"?: boolean;
+    }
+    interface UJumpToUnidy {
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, opens the URL in a new tab. Defaults to false.
+          * @default false
+         */
+        "newtab"?: boolean;
+        /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth"?: boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
+        "path": string;
+    }
     interface ULogoutButton {
         /**
           * @default ""
@@ -920,6 +1055,9 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
         "internalName": string;
     }
+    interface UNewsletterConsentCheckbox {
+        "componentClassName"?: string;
+    }
     interface UNewsletterLogoutButton {
         /**
           * @default ""
@@ -947,6 +1085,8 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        "onUNewsletterError"?: (event: UNewsletterRootCustomEvent<{ email: string; error: string }>) => void;
+        "onUNewsletterSuccess"?: (event: UNewsletterRootCustomEvent<{ email: string; newsletters: string[] }>) => void;
     }
     interface UNewsletterToggleSubscriptionButton {
         /**
@@ -1010,7 +1150,6 @@ declare namespace LocalJSX {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };
@@ -1110,14 +1249,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "reset-password" | "single-login" | "missing-fields" | "registration";
-    }
-    interface USigninStrategy {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "type": "password" | "magic-code";
+        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
     }
     interface USocialLoginButton {
         /**
@@ -1198,11 +1330,14 @@ declare namespace LocalJSX {
         "u-field": UField;
         "u-flash-message": UFlashMessage;
         "u-full-profile": UFullProfile;
+        "u-jump-to-service": UJumpToService;
+        "u-jump-to-unidy": UJumpToUnidy;
         "u-logout-button": ULogoutButton;
         "u-magic-code-field": UMagicCodeField;
         "u-missing-field": UMissingField;
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
         "u-newsletter-checkbox": UNewsletterCheckbox;
+        "u-newsletter-consent-checkbox": UNewsletterConsentCheckbox;
         "u-newsletter-logout-button": UNewsletterLogoutButton;
         "u-newsletter-preference-checkbox": UNewsletterPreferenceCheckbox;
         "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
@@ -1220,7 +1355,6 @@ declare namespace LocalJSX {
         "u-signed-in": USignedIn;
         "u-signin-root": USigninRoot;
         "u-signin-step": USigninStep;
-        "u-signin-strategy": USigninStrategy;
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
         "u-submit-button": USubmitButton;
@@ -1238,11 +1372,14 @@ declare module "@stencil/core" {
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
             "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
             "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
+            "u-jump-to-service": LocalJSX.UJumpToService & JSXBase.HTMLAttributes<HTMLUJumpToServiceElement>;
+            "u-jump-to-unidy": LocalJSX.UJumpToUnidy & JSXBase.HTMLAttributes<HTMLUJumpToUnidyElement>;
             "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
             "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
             "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
             "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
+            "u-newsletter-consent-checkbox": LocalJSX.UNewsletterConsentCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterConsentCheckboxElement>;
             "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
             "u-newsletter-preference-checkbox": LocalJSX.UNewsletterPreferenceCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterPreferenceCheckboxElement>;
             "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
@@ -1260,7 +1397,6 @@ declare module "@stencil/core" {
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
             "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
             "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
-            "u-signin-strategy": LocalJSX.USigninStrategy & JSXBase.HTMLAttributes<HTMLUSigninStrategyElement>;
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;

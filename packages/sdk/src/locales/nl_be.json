@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Sluiten",
     "continue": "Doorgaan",
+    "jump_to_service": "Naar dienst gaan",
+    "jump_to_unidy": "Naar Unidy gaan",
     "logout": "Afmelden",
     "registration": "Nieuw account registreren",
     "sign_in": "Aanmelden",
@@ -107,6 +109,7 @@
     },
     "errors": {
       "already_subscribed": "Al geabonneerd",
+      "consent_required": "Accepteer de algemene voorwaarden om u te abonneren",
       "email_required": "Voer uw e-mailadres in",
       "invalid_email": "Ongeldig e-mailadres",
       "login_email_not_found": "Abonnement met dit e-mailadres bestaat niet",
