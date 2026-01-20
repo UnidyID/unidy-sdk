@@ -60,26 +60,29 @@ export class NewsletterRoot extends UnidyComponent {
   @Method()
   async submit(forType?: NewsletterButtonFor) {
     const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
-
-    if (forType === "login") {
-      if (!email) {
-        Flash.error.addMessage(t("newsletter.errors.email_required"));
-        return;
-      }
-      return await NewsletterHelpers.sendLoginEmail(email);
-    }
-
     const newsletters = Object.keys(checkedNewsletters);
 
-    if (newsletters.length === 0) {
-      logger.error("No newsletters selected: please select at least one newsletter");
-      this.uNewsletterError.emit({ email: email || "", error: "no_newsletters_selected" });
+    // Check email first for better UX
+    if (!email) {
+      logger.error("Email is required");
+      Flash.error.addMessage(t("newsletter.errors.email_required"));
+      this.uNewsletterError.emit({ email: "", error: "email_required" });
       return;
     }
 
-    if (!email) {
-      logger.error("Email is required");
-      this.uNewsletterError.emit({ email: "", error: "email_required" });
+    if (forType === "login") {
+      const result = await NewsletterHelpers.sendLoginEmail(email);
+      if (result.success === true) {
+        this.uNewsletterSuccess.emit({ email, newsletters: [] });
+      } else if (result.success === false) {
+        this.uNewsletterError.emit({ email, error: `login_${result.error}` });
+      }
+      return;
+    }
+
+    if (newsletters.length === 0) {
+      logger.error("No newsletters selected: please select at least one newsletter");
+      this.uNewsletterError.emit({ email, error: "no_newsletters_selected" });
       return;
     }
 
@@ -88,7 +91,7 @@ export class NewsletterRoot extends UnidyComponent {
         ...newsletterStore.state.errors,
         consent: "consent_required",
       };
-
+      this.uNewsletterError.emit({ email, error: "consent_required" });
       return;
     }
 

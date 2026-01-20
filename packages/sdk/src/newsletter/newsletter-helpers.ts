@@ -43,7 +43,11 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   return false;
 }
 
-export async function sendLoginEmail(email: string): Promise<void> {
+export type LoginEmailResult =
+  | { success: true }
+  | { success: false; error: "rate_limit_exceeded" | "not_found" | "unknown" };
+
+export async function sendLoginEmail(email: string): Promise<LoginEmailResult> {
   const [error] = await getUnidyClient().newsletters.sendLoginEmail({
     payload: {
       email,
@@ -53,12 +57,16 @@ export async function sendLoginEmail(email: string): Promise<void> {
 
   if (error === null) {
     Flash.info.addMessage(t("newsletter.success.login_email_sent"));
+    return { success: true };
   } else if (error === "rate_limit_exceeded") {
     Flash.error.addMessage(t("newsletter.errors.rate_limit_exceeded", { defaultValue: "Too many requests. Please try again later." }));
+    return { success: false, error: "rate_limit_exceeded" };
   } else if (error === "not_found") {
     Flash.error.addMessage(t("newsletter.errors.login_email_not_found", { defaultValue: "Email address not found" }));
+    return { success: false, error: "not_found" };
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
+    return { success: false, error: "unknown" };
   }
 }
 
