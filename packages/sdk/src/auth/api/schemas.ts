@@ -28,7 +28,7 @@ export const ErrorSchema = BaseErrorSchema;
 // Magic code response
 export const SendMagicCodeResponseSchema = z.object({
   enable_resend_after: z.number(),
-  sid: z.string().optional(),
+  sid: z.string().nullish(),
   login_options: z
     .object({
       magic_link: z.boolean(),
@@ -44,7 +44,7 @@ export const SendMagicCodeErrorSchema = BaseErrorSchema.extend({
 // JWT token response
 export const TokenResponseSchema = z.object({
   jwt: z.string(),
-  sid: z.string().optional(),
+  sid: z.string().nullish(),
 });
 
 // Missing required fields response extends base error with specific error_identifier
@@ -55,7 +55,7 @@ export const RequiredFieldsResponseSchema = z
       fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
         custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
       }),
-      sid: z.string().optional(),
+      sid: z.string().nullish(),
     }),
   })
   .transform(({ error_identifier, meta }) => ({
@@ -103,8 +103,8 @@ export const JumpToUnidyErrorSchema = z.object({
 
 export const JumpToServiceRequestSchema = z.object({
   email: z.string(),
-  redirect_uri: z.string().optional(),
-  scopes: z.array(z.string()).optional(),
+  redirect_uri: z.string().nullish(),
+  scopes: z.array(z.string()).nullish(),
   skip_oauth_authorization: z.boolean().optional(),
 });
 
