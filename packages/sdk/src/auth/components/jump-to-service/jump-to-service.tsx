@@ -1,8 +1,8 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
+import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
 import { createAuthSubscription } from "../../../shared/utils/auth-subscription";
-import { renderButtonContent } from "../../../shared/utils/button-content";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -51,6 +51,11 @@ export class JumpToService {
   @State() loading = false;
 
   private unsubscribe?: () => void;
+  private hasSlot = false;
+
+  componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   connectedCallback() {
     this.unsubscribe = createAuthSubscription(this);
@@ -116,10 +121,9 @@ export class JumpToService {
   }
 
   render() {
-    const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {renderButtonContent(hasSlot, this.loading, t("buttons.jump_to_service"))}
+        {renderButtonContent(this.hasSlot, this.loading, t("buttons.jump_to_service"))}
       </button>
     );
   }
