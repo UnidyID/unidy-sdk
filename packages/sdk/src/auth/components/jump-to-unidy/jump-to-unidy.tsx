@@ -3,7 +3,6 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
-import { createAuthSubscription } from "../../../shared/utils/auth-subscription";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -40,7 +39,6 @@ export class JumpToUnidy {
 
   @State() loading = false;
 
-  private unsubscribe?: () => void;
   private hasSlot = false;
 
   private isValidPath(): boolean {
@@ -53,14 +51,6 @@ export class JumpToUnidy {
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);
     }
-  }
-
-  connectedCallback() {
-    this.unsubscribe = createAuthSubscription(this);
-  }
-
-  disconnectedCallback() {
-    this.unsubscribe?.();
   }
 
   private handleClick = async (event: Event) => {

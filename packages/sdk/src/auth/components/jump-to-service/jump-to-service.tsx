@@ -2,7 +2,6 @@ import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
-import { createAuthSubscription } from "../../../shared/utils/auth-subscription";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -50,19 +49,10 @@ export class JumpToService {
 
   @State() loading = false;
 
-  private unsubscribe?: () => void;
   private hasSlot = false;
 
   componentWillLoad() {
     this.hasSlot = hasSlotContent(this.el);
-  }
-
-  connectedCallback() {
-    this.unsubscribe = createAuthSubscription(this);
-  }
-
-  disconnectedCallback() {
-    this.unsubscribe?.();
   }
 
   private handleClick = async (event: Event) => {
@@ -104,8 +94,7 @@ export class JumpToService {
       }
 
       redirectWithToken({
-        // @ts-expect-error - TOKEN IS A STRING, BUT we need to enable strict for it to work
-        token,
+        token: token as string,
         newTab: this.newtab,
         extraParams: this.redirectUri ? { redirect_uri: this.redirectUri } : undefined,
       });

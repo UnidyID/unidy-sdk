@@ -65,10 +65,9 @@ export function clearUrlParam(param: string): string | null {
  * @example
  * ```tsx
  * render() {
- *   const hasSlot = this.el.childNodes.length > 0;
  *   return (
  *     <button>
- *       {renderButtonContent(hasSlot, this.loading, t("buttons.submit"))}
+ *       {renderButtonContent(this.hasSlot, this.loading, t("buttons.submit"))}
  *     </button>
  *   );
  * }
