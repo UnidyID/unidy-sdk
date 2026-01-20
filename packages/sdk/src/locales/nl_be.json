@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Sluiten",
     "continue": "Doorgaan",
+    "jump_to_service": "Naar dienst gaan",
+    "jump_to_unidy": "Naar Unidy gaan",
     "logout": "Afmelden",
     "registration": "Nieuw account registreren",
     "sign_in": "Aanmelden",

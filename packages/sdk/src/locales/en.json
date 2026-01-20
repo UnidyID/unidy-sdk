@@ -39,6 +39,8 @@
   "buttons": {
     "close": "Close",
     "continue": "Continue",
+    "jump_to_service": "Jump to Service",
+    "jump_to_unidy": "Jump to Unidy",
     "logout": "Logout",
     "registration": "Register new account",
     "sign_in": "Sign In",

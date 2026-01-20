@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Schließen",
     "continue": "Weiter",
+    "jump_to_service": "Zum Dienst wechseln",
+    "jump_to_unidy": "Zu Unidy wechseln",
     "logout": "Abmelden",
     "registration": "Neues Konto registrieren",
     "sign_in": "Anmelden",

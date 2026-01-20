@@ -38,6 +38,8 @@
   "buttons": {
     "close": "Chiudi",
     "continue": "Continua",
+    "jump_to_service": "Vai al servizio",
+    "jump_to_unidy": "Vai a Unidy",
     "logout": "Esci",
     "registration": "Registra nuovo account",
     "sign_in": "Accedi",
