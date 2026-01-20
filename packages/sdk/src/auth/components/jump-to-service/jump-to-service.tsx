@@ -1,7 +1,7 @@
 import { Component, h, Prop, State, forceUpdate, Element } from "@stencil/core";
 import { Auth } from "../../auth";
 import { authState, onChange } from "../../store/auth-store";
-import { getUnidyClient } from "../../api-client";
+import { getUnidyClient } from "../../../api";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { t } from "../../../i18n";
 
@@ -68,11 +68,6 @@ export class JumpToService {
 
     if (!this.serviceId) {
       console.error("[u-jump-to-service] service-id is required");
-      return;
-    }
-
-    if (!unidyState.baseUrl) {
-      console.error("baseUrl is not set. Make sure <u-config> is rendered with a valid base-url.");
       return;
     }
 
