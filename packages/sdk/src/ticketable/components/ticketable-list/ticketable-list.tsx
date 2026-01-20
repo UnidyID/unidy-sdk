@@ -24,6 +24,7 @@ const LOCALES: Record<string, Locale> = {};
  *   - "metadata.foo.bar.[1]" -> item.metadata.foo.bar[1]
  *   - "wallet_export.[0].address" -> item.wallet_export[0].address
  */
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic nested property access requires any
 function getNestedValue(obj: any, path: string): any {
   if (!path || !obj) return undefined;
 
