@@ -1,0 +1,137 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Entrez votre adresse e-mail"
+    },
+    "magicCode": {
+      "already_sent_text": "Code magique déjà envoyé à votre adresse e-mail",
+      "button_text": "Envoyer le code magique",
+      "resend": {
+        "button_text": "Renvoyer le code magique"
+      },
+      "sending_text": "Envoi en cours..."
+    },
+    "passkey": {
+      "button_text": "Se connecter avec une clé d'accès",
+      "loading_text": "Authentification..."
+    },
+    "password": {
+      "button_text": "Se connecter avec un mot de passe",
+      "confirmation": {
+        "placeholder": "Confirmez votre mot de passe"
+      },
+      "placeholder": "Entrez votre mot de passe"
+    },
+    "resetPassword": {
+      "button_text_resend": "Renvoyer l'e-mail de réinitialisation du mot de passe",
+      "button_text_reset": "Réinitialiser le mot de passe",
+      "button_text_set": "Enregistrer le mot de passe",
+      "success_message": "E-mail de réinitialisation du mot de passe envoyé. Veuillez vérifier votre boîte de réception"
+    },
+    "single-login": {
+      "button_text": "Se connecter"
+    },
+    "socialLogin": {
+      "button_text": "Continuer avec {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Fermer",
+    "continue": "Continuer",
+    "jump_to_service": "Aller au service",
+    "jump_to_unidy": "Aller à Unidy",
+    "logout": "Se déconnecter",
+    "registration": "Créer un nouveau compte",
+    "sign_in": "Se connecter",
+    "submit": "Soumettre"
+  },
+  "errors": {
+    "account_locked": "Compte verrouillé",
+    "account_not_found": "Compte introuvable",
+    "authentication_failed": "Échec de l'authentification",
+    "bad_request": "Mauvaise requête",
+    "connection_failed": "Impossible de se connecter au serveur Unidy",
+    "expired": "Expiré",
+    "failed_to_load_profile": "Échec du chargement des données du profil. Veuillez vérifier la configuration",
+    "invalid_id_token": "Jeton d'identification invalide",
+    "invalid_passkey": "Clé d'accès invalide",
+    "invalid_password": "Mot de passe invalide",
+    "invalid_refresh_token": "Jeton de rafraîchissement invalide",
+    "invalid_required_fields_payload": "Charge utile des champs obligatoires invalide",
+    "invalid_reset_token": "Jeton de réinitialisation invalide. Veuillez demander un nouvel e-mail de réinitialisation du mot de passe",
+    "invalid_response_format": "Format de réponse invalide",
+    "internal_server_error": "Erreur interne du serveur",
+    "magic_code_is_missing": "Code magique manquant",
+    "magic_code_recently_created": "Code magique récemment créé",
+    "magic_link_not_enabled": "La connexion par lien magique n'est pas activée pour ce compte",
+    "missing_id_token": "Jeton d'identification manquant",
+    "missing_refresh_token": "Aucun jeton de rafraîchissement présent",
+    "missing_required_fields": "Champs obligatoires manquants",
+    "no_sign_in_id": "Aucun identifiant de connexion disponible",
+    "not_valid": "Non valide",
+    "passkey_cancelled": "Authentification par clé d'accès annulée",
+    "passkey_error": "Une erreur inconnue de clé d'accès s'est produite",
+    "passkey_invalid_state": "État de clé d'accès invalide",
+    "passkey_not_supported": "Clé d'accès non prise en charge",
+    "passkey_security_error": "Erreur de sécurité de clé d'accès",
+    "password_not_set": "Mot de passe non défini",
+    "password_required": "Mot de passe requis",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Le mot de passe est trop court (minimum 6 caractères)",
+      "min_length": "La longueur minimale est de 6 caractères",
+      "mixed_case": "Doit contenir des majuscules et des minuscules",
+      "number": "Doit contenir un chiffre",
+      "symbol": "Doit contenir un symbole"
+    },
+    "passwords_do_not_match": "Les mots de passe ne correspondent pas",
+    "prefix": "ERREUR : ",
+    "refresh_failed": "Échec du rafraîchissement du jeton. Veuillez vous reconnecter",
+    "refresh_token_revoked": "Jeton de rafraîchissement révoqué",
+    "required_field": "{{field}} est requis",
+    "reset_password_already_sent": "Réinitialisation du mot de passe déjà envoyée",
+    "reset_token_expired": "Le jeton de réinitialisation a expiré. Veuillez demander un nouvel e-mail de réinitialisation du mot de passe",
+    "reset_token_missing": "Jeton de réinitialisation manquant",
+    "schema_validation_error": "Erreur de validation du schéma",
+    "sign_in_expired": "Connexion expirée",
+    "sign_in_not_found": "Connexion introuvable",
+    "sign_out_failed": "Échec de la déconnexion, raison : {{reason}}",
+    "unknown": "Une erreur inconnue s'est produite",
+    "used": "Utilisé",
+    "verification_failed": "Échec de la vérification"
+  },
+  "loading": "Chargement...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Renvoyer la confirmation",
+      "subscribe": "S'abonner",
+      "unsubscribe": "Se désabonner"
+    },
+    "errors": {
+      "already_subscribed": "Déjà abonné",
+      "consent_required": "Veuillez accepter les conditions générales pour vous abonner",
+      "email_required": "Veuillez entrer votre adresse e-mail",
+      "invalid_email": "Adresse e-mail invalide",
+      "login_email_not_found": "L'abonnement avec cet e-mail n'existe pas",
+      "newsletter_not_found": "Newsletter introuvable",
+      "preferences_not_found": "Préférence introuvable",
+      "rate_limit_exceeded": "Limite de débit dépassée. Veuillez réessayer plus tard",
+      "unauthorized": "Votre session a expiré. Veuillez vous reconnecter",
+      "unconfirmed": "Votre e-mail n'est pas confirmé pour cette newsletter",
+      "unsubscribe_failed": "Échec du désabonnement",
+      "invalid_preference_token": "Jeton de préférence invalide. Entrez votre adresse e-mail pour recevoir un nouveau lien."
+    },
+    "success": {
+      "doi_sent": "E-mail de confirmation envoyé à votre adresse e-mail",
+      "login_email_sent": "Nous avons envoyé un lien pour gérer votre abonnement existant à votre adresse e-mail",
+      "logout": "Vous avez été déconnecté avec succès",
+      "preferences_updated": "Vos préférences ont été mises à jour avec succès",
+      "subscribe": "Vous vous êtes abonné avec succès",
+      "unsubscribe": "Vous vous êtes désabonné avec succès"
+    }
+  },
+  "profile": {
+    "signInToView": "Veuillez vous connecter pour voir votre profil",
+    "updated": "Le profil a été mis à jour"
+  }
+}

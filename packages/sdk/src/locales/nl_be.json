@@ -1,0 +1,137 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Voer uw e-mailadres in"
+    },
+    "magicCode": {
+      "already_sent_text": "Magische code al naar uw e-mail verzonden",
+      "button_text": "Magische code verzenden",
+      "resend": {
+        "button_text": "Magische code opnieuw verzenden"
+      },
+      "sending_text": "Verzenden..."
+    },
+    "passkey": {
+      "button_text": "Aanmelden met toegangssleutel",
+      "loading_text": "Authenticatie..."
+    },
+    "password": {
+      "button_text": "Aanmelden met wachtwoord",
+      "confirmation": {
+        "placeholder": "Bevestig uw wachtwoord"
+      },
+      "placeholder": "Voer uw wachtwoord in"
+    },
+    "resetPassword": {
+      "button_text_resend": "E-mail voor wachtwoordherstel opnieuw verzenden",
+      "button_text_reset": "Wachtwoord opnieuw instellen",
+      "button_text_set": "Wachtwoord opslaan",
+      "success_message": "E-mail voor wachtwoordherstel verzonden. Controleer uw inbox"
+    },
+    "single-login": {
+      "button_text": "Aanmelden"
+    },
+    "socialLogin": {
+      "button_text": "Doorgaan met {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Sluiten",
+    "continue": "Doorgaan",
+    "jump_to_service": "Naar dienst gaan",
+    "jump_to_unidy": "Naar Unidy gaan",
+    "logout": "Afmelden",
+    "registration": "Nieuw account registreren",
+    "sign_in": "Aanmelden",
+    "submit": "Verzenden"
+  },
+  "errors": {
+    "account_locked": "Account vergrendeld",
+    "account_not_found": "Account niet gevonden",
+    "authentication_failed": "Authenticatie mislukt",
+    "bad_request": "Ongeldige aanvraag",
+    "connection_failed": "Kan geen verbinding maken met de Unidy-server",
+    "expired": "Verlopen",
+    "failed_to_load_profile": "Kan profielgegevens niet laden. Controleer de configuratie",
+    "invalid_id_token": "Ongeldige ID-token",
+    "invalid_passkey": "Ongeldige toegangssleutel",
+    "invalid_password": "Ongeldig wachtwoord",
+    "invalid_refresh_token": "Ongeldig vernieuwingstoken",
+    "invalid_required_fields_payload": "Ongeldige payload voor verplichte velden",
+    "invalid_reset_token": "Ongeldige reset-token. Vraag een nieuwe e-mail voor wachtwoordherstel aan",
+    "invalid_response_format": "Ongeldig antwoordformaat",
+    "internal_server_error": "Interne serverfout",
+    "magic_code_is_missing": "Magische code ontbreekt",
+    "magic_code_recently_created": "Magische code recent aangemaakt",
+    "magic_link_not_enabled": "Aanmelden via magische link is niet ingeschakeld voor dit account",
+    "missing_id_token": "Ontbrekende ID-token",
+    "missing_refresh_token": "Geen vernieuwingstoken aanwezig",
+    "missing_required_fields": "Ontbrekende verplichte velden",
+    "no_sign_in_id": "Geen aanmeldings-ID beschikbaar",
+    "not_valid": "Niet geldig",
+    "passkey_cancelled": "Toegangssleutelauthenticatie geannuleerd",
+    "passkey_error": "Er is een onbekende toegangssleutelfout opgetreden",
+    "passkey_invalid_state": "Ongeldige toegangssleutelstatus",
+    "passkey_not_supported": "Toegangssleutel niet ondersteund",
+    "passkey_security_error": "Beveiligingsfout toegangssleutel",
+    "password_not_set": "Wachtwoord niet ingesteld",
+    "password_required": "Wachtwoord is verplicht",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Wachtwoord is te kort (minimaal 6 tekens)",
+      "min_length": "Minimale lengte is 6 tekens",
+      "mixed_case": "Moet zowel hoofdletters als kleine letters bevatten",
+      "number": "Moet een cijfer bevatten",
+      "symbol": "Moet een symbool bevatten"
+    },
+    "passwords_do_not_match": "Wachtwoorden komen niet overeen",
+    "prefix": "FOUT: ",
+    "refresh_failed": "Kan token niet vernieuwen. Meld u opnieuw aan",
+    "refresh_token_revoked": "Vernieuwingstoken ingetrokken",
+    "required_field": "{{field}} is verplicht",
+    "reset_password_already_sent": "Wachtwoordherstel al verzonden",
+    "reset_token_expired": "Reset-token is verlopen. Vraag een nieuwe e-mail voor wachtwoordherstel aan",
+    "reset_token_missing": "Reset-token ontbreekt",
+    "schema_validation_error": "Schema-validatiefout",
+    "sign_in_expired": "Aanmelding verlopen",
+    "sign_in_not_found": "Aanmelding niet gevonden",
+    "sign_out_failed": "Afmelden mislukt, reden: {{reason}}",
+    "unknown": "Er is een onbekende fout opgetreden",
+    "used": "Gebruikt",
+    "verification_failed": "Verificatie mislukt"
+  },
+  "loading": "Laden...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Bevestiging opnieuw verzenden",
+      "subscribe": "Abonneren",
+      "unsubscribe": "Uitschrijven"
+    },
+    "errors": {
+      "already_subscribed": "Al geabonneerd",
+      "consent_required": "Accepteer de algemene voorwaarden om u te abonneren",
+      "email_required": "Voer uw e-mailadres in",
+      "invalid_email": "Ongeldig e-mailadres",
+      "login_email_not_found": "Abonnement met dit e-mailadres bestaat niet",
+      "newsletter_not_found": "Nieuwsbrief niet gevonden",
+      "preferences_not_found": "Voorkeur niet gevonden",
+      "rate_limit_exceeded": "Snelheidslimiet overschreden. Probeer het later opnieuw",
+      "unauthorized": "Uw sessie is verlopen. Meld u opnieuw aan",
+      "unconfirmed": "Uw e-mail is niet bevestigd voor deze nieuwsbrief",
+      "unsubscribe_failed": "Uitschrijven mislukt",
+      "invalid_preference_token": "Ongeldig voorkeurstoken. Voer uw e-mailadres in om een nieuwe link te ontvangen."
+    },
+    "success": {
+      "doi_sent": "Bevestigings-e-mail is verzonden naar uw e-mailadres",
+      "login_email_sent": "We hebben een link om uw bestaande abonnement te beheren naar uw e-mailadres gestuurd",
+      "logout": "U bent succesvol afgemeld",
+      "preferences_updated": "Uw voorkeuren zijn succesvol bijgewerkt",
+      "subscribe": "U bent succesvol geabonneerd",
+      "unsubscribe": "U bent succesvol uitgeschreven"
+    }
+  },
+  "profile": {
+    "signInToView": "Meld u aan om uw profiel te bekijken",
+    "updated": "Profiel is bijgewerkt"
+  }
+}

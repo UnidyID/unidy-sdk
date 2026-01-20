@@ -9,6 +9,5 @@
  */
 
 export * from "./api/profile";
-export { profileStore, state as profileState } from "./store/profile-store";
-export { onChange as onProfileChange } from "./store/profile-store";
-export type { ProfileState, ProfileRaw, ProfileNode } from "./store/profile-store";
+export type { ProfileNode, ProfileRaw, ProfileState } from "./store/profile-store";
+export { onChange as onProfileChange, profileStore, state as profileState } from "./store/profile-store";

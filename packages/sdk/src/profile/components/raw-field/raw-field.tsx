@@ -1,16 +1,17 @@
-import { Component, Element, Prop, State, h } from "@stencil/core";
-import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
-import { Textarea } from "../raw-input-fields/Textarea";
-import { Input } from "../raw-input-fields/Input";
+import { Component, Element, h, Prop, State } from "@stencil/core";
+import { UnidyComponent } from "../../../logger";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
-import { Select, type Option } from "../raw-input-fields/Select";
+import { Input } from "../raw-input-fields/Input";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
+import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
+import { type Option, Select } from "../raw-input-fields/Select";
+import { Textarea } from "../raw-input-fields/Textarea";
 
 @Component({
   tag: "u-raw-field",
   shadow: false,
 })
-export class RawField {
+export class RawField extends UnidyComponent {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -99,7 +100,7 @@ export class RawField {
       try {
         return this.validationFunc(value);
       } catch (e) {
-        console.error("External validator (validationFunc) threw an error:", e);
+        this.logger.error("External validator (validationFunc) threw an error:", e);
         return null;
       }
     }

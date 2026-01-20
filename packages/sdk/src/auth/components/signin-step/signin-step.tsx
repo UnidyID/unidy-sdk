@@ -1,6 +1,6 @@
-import { Component, Host, h, Prop, Method, Element } from "@stencil/core";
-import { authState } from "../../store/auth-store";
+import { Component, Element, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../..";
+import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-step",
@@ -8,7 +8,7 @@ import { Auth } from "../..";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification";
+  @Prop() name!: "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
   @Prop() alwaysRender = false;
 
   @Method()
@@ -22,10 +22,12 @@ export class SigninStep {
 
     const authInstance = await Auth.getInstance();
 
-    if (authState.step === "email") {
-      await authInstance.helpers.createSignIn(authState.email);
+    if (authState.step === "email" || authState.step === "single-login") {
+      await authInstance.helpers.createSignIn(authState.email, authState.password);
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
+    } else if (authState.step === "reset-password") {
+      await authInstance.helpers.resetPassword();
     }
   }
 
@@ -35,7 +37,17 @@ export class SigninStep {
     if (this.name === "email") {
       shouldRender = authState.step === "email";
     } else if (this.name === "verification") {
-      shouldRender = authState.step === "verification" || authState.step === "magic-code";
+      shouldRender = authState.step === "verification";
+    } else if (this.name === "magic-code") {
+      shouldRender = authState.step === "magic-code";
+    } else if (this.name === "reset-password") {
+      shouldRender = authState.step === "reset-password";
+    } else if (this.name === "registration") {
+      shouldRender = authState.step === "registration" && authState.errors.email === "account_not_found";
+    } else if (this.name === "single-login") {
+      shouldRender = authState.step === "single-login";
+    } else if (this.name === "missing-fields") {
+      shouldRender = authState.step === "missing-fields";
     }
 
     if (!shouldRender) {

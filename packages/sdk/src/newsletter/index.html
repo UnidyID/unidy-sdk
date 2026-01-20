@@ -8,55 +8,311 @@
 
   <script type="module" src="/build/sdk.esm.js"></script>
   <script nomodule src="/build/sdk.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/demo.css">
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white/90 shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
-    <div class="flex flex-col items-center gap-2">
-      <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
+    <div class="logo">
+      <a href="/">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 494" class="w-6 h-10">
+          <path d="M0 0 C24.75 0 49.5 0 75 0 C75.02578125 11.37597656 75.0515625 22.75195312 75.078125 34.47265625 C75.10330268 41.69598057 75.129481 48.91927852 75.16015625 56.14257812 C75.20861937 67.59806106 75.25309317 79.05345628 75.27099609 90.5090332 C75.28405643 98.85391555 75.3111321 107.19861849 75.35461307 115.54339975 C75.37712988 119.95655298 75.3929166 124.36948573 75.39188385 128.78270149 C75.3911314 132.9483894 75.40931347 137.11359175 75.44116783 141.27915382 C75.44958997 142.79669728 75.45146997 144.31429571 75.44580269 145.83185196 C75.38218637 165.50887947 80.8773945 183.49990817 94.78515625 197.859375 C95.51605469 198.56578125 96.24695313 199.2721875 97 200 C97.65871094 200.64453125 98.31742187 201.2890625 98.99609375 201.953125 C114.30183401 216.11940372 133.07744885 219.87928895 153.32763672 219.17041016 C171.34938846 218.02120655 186.88418598 209.00799473 199 196 C212.38082539 180.40035755 216.45609575 163.03116875 216.43237305 142.9284668 C216.441412 141.36005899 216.45174436 139.7916582 216.46325684 138.2232666 C216.49060286 134.00720953 216.50008054 129.7912873 216.50611091 125.57515311 C216.51555351 121.15354912 216.5417612 116.73204356 216.56611633 112.3105011 C216.6096242 103.95632708 216.63826733 95.60217234 216.66143972 87.24791986 C216.69366003 75.94565157 216.74910703 64.64349806 216.80318546 53.34131718 C216.88765413 35.56091246 216.94131831 17.78055185 217 0 C241.75 0 266.5 0 292 0 C292.1209091 41.86589632 292.1209091 41.86589632 292.14648438 59.50195312 C292.16423788 71.6462792 292.18503066 83.79054252 292.22631836 95.93481445 C292.25638258 104.78211557 292.27561308 113.62936543 292.28226548 122.47671622 C292.28614914 127.15381611 292.29516439 131.83076948 292.31719017 136.50782204 C292.3378255 140.92617116 292.34378031 145.34431593 292.33932304 149.76270866 C292.34013634 151.36890912 292.34593872 152.97511772 292.35761642 154.58127594 C292.46074389 169.52110298 290.90803288 184.55375636 286.4375 198.875 C286.0650415 200.08736328 286.0650415 200.08736328 285.68505859 201.32421875 C279.39643042 220.78421611 269.23810681 237.5283989 256 253 C255.31808594 253.80566406 254.63617188 254.61132812 253.93359375 255.44140625 C231.06635061 281.88864832 197.3674151 297.68662511 163 302 C137.1964021 303.4142391 111.8448994 301.81411273 88 291 C87.34773438 290.70754395 86.69546875 290.41508789 86.0234375 290.11376953 C50.43748822 273.89227866 22.43749212 244.67305501 8.39526367 208.08544922 C3.35886984 194.18506187 -0.13108748 179.32767652 -0.12025452 164.50817871 C-0.12110894 163.79897231 -0.12196337 163.0897659 -0.12284368 162.35906839 C-0.12447737 160.00693051 -0.11901205 157.65486558 -0.11352539 155.30273438 C-0.11324304 153.60699465 -0.1134022 151.91125479 -0.1139679 150.21551514 C-0.11425399 145.62934748 -0.10838769 141.04320616 -0.10139394 136.4570446 C-0.09512905 131.6577658 -0.09455412 126.85848636 -0.09336853 122.0592041 C-0.09026445 112.97881071 -0.08206352 103.8984294 -0.07201904 94.81804132 C-0.05873558 82.5422459 -0.05335054 70.26644716 -0.04751682 57.99064636 C-0.038123 38.66042186 -0.01819791 19.33022286 0 0 Z " fill="#0055FF" transform="translate(0,192)"/>
+          <path d="M0 0 C0.73959961 0.19303711 1.47919922 0.38607422 2.24121094 0.58496094 C20.47361558 5.46992989 38.67767024 14.68505189 53 27 C53.82886719 27.70382813 54.65773437 28.40765625 55.51171875 29.1328125 C58.06354503 31.36816425 60.53622647 33.66807979 63 36 C63.94617188 36.87011719 64.89234375 37.74023438 65.8671875 38.63671875 C90.88480136 62.15671294 103.80655244 94.4524195 108 128 C108 133.94 108 139.88 108 146 C83.25 146 58.5 146 33 146 C32.01 140.72 31.02 135.44 30 130 C23.75080328 111.07882105 12.53451825 95.90348033 -5.16796875 86.27734375 C-22.54131093 77.82937449 -42.09232325 75.90659375 -60.671875 81.73828125 C-69.79676301 85.19759912 -77.6720651 89.53809377 -85 96 C-85.75023438 96.65613281 -86.50046875 97.31226562 -87.2734375 97.98828125 C-101.50765484 111.27517013 -106.31186062 127.18302432 -109 146 C-133.75 146 -158.5 146 -184 146 C-184 120.43405512 -184 120.43405512 -181 108 C-180.83371094 107.30986816 -180.66742188 106.61973633 -180.49609375 105.90869141 C-171.37955935 69.46787752 -147.8021217 36.72365174 -115.66015625 17.125 C-81.13116533 -3.2399247 -39.0678293 -10.76513278 0 0 Z " fill="#0055FF" transform="translate(184,4)"/>
+          <path d="M0 0 C6.64873272 6.22025883 8.81256324 12.63711965 9.12863445 21.68044758 C9.13537955 23.07831638 9.1367376 24.47621793 9.13371277 25.87409973 C9.13597833 26.64875114 9.13824388 27.42340254 9.14057809 28.22152823 C9.14688936 30.80761292 9.14609058 33.39364481 9.14526367 35.97973633 C9.14825696 37.83791674 9.15165988 39.69609654 9.15544128 41.55427551 C9.16426833 46.59568937 9.16661886 51.63708625 9.16725707 56.67850709 C9.16796832 59.8301392 9.17010407 62.98176701 9.17275429 66.13339806 C9.1820035 77.13393808 9.18608971 88.13446599 9.18530273 99.13500977 C9.18470209 109.3800974 9.19525238 119.62513235 9.2110464 129.87020665 C9.22413331 138.67379498 9.22948614 147.4773661 9.22884732 156.28096408 C9.22859267 161.5355268 9.23142588 166.7900427 9.24202538 172.04459572 C9.25172566 176.98826549 9.25177228 181.93184385 9.24450874 186.87551689 C9.2434653 188.68586994 9.2458115 190.49622874 9.2518692 192.30657196 C9.32666457 216.21516967 9.32666457 216.21516967 1 225 C-4.73698663 229.73924982 -10.69789078 231.31828484 -18 230.9375 C-25.75188238 229.90312306 -30.78782682 225.72081527 -35.7734375 219.94140625 C-38.97841332 214.86856235 -39.29167257 209.66858515 -39.26742554 203.82218933 C-39.27195665 203.01486951 -39.27648776 202.20754968 -39.28115618 201.37576562 C-39.29378453 198.67908126 -39.29218083 195.98259927 -39.29052734 193.28588867 C-39.29651357 191.34888958 -39.30331934 189.41189287 -39.31088257 187.47489929 C-39.32854022 182.21860681 -39.33323786 176.96237945 -39.33451414 171.70606017 C-39.33593644 168.4204152 -39.34020754 165.13478675 -39.34550858 161.84914589 C-39.36400815 150.3817604 -39.37217928 138.9144214 -39.37060547 127.44702148 C-39.36940412 116.76561885 -39.39050535 106.08441831 -39.4220928 95.40306681 C-39.44826305 86.22580141 -39.45897245 77.04860199 -39.45769465 67.87129956 C-39.45718523 62.39311798 -39.46285726 56.91511601 -39.48405075 51.43697166 C-39.50344562 46.28309993 -39.50354892 41.12957892 -39.48901749 35.97569466 C-39.48692985 34.08793499 -39.49162759 32.2001533 -39.5037384 30.31243134 C-39.62055372 10.8375304 -39.62055372 10.8375304 -33.17578125 2.6953125 C-23.2455442 -5.67356653 -11.11433781 -7.94221994 0 0 Z " fill="#0055FF" transform="translate(161,134)"/>
+        </svg>
+      </a>
     </div>
+    <nav class="flex gap-2 items-center">
+      <a href="/"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
+      <a href="/auth"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
+      <a href="/auth/profile.html"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Profile</a>
+      <a href="/newsletter"
+        class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Newsletters</a>
+      <a href="/ticketable"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Tickets</a>
+    </nav>
 
-    <email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg"></email-field>
-
-    <div class="flex flex-col gap-2">
-      <label class="text-gray-500 text-sm">Select newsletters</label>
-      <newsletter-checkbox label="Main Newsletter" internal-name="main" checked="true"
-        class-name="flex items-center gap-2"></newsletter-checkbox>
-      <newsletter-checkbox label="Test Newsletter" internal-name="test" checked="false"
-        class-name="flex items-center gap-2"></newsletter-checkbox>
-      <submit-button api-key="public-newsletter-api-key" api-url="http://localhost:3000"
-        class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
-        <span>Subscribe</span>
-      </submit-button>
-
-      <div id="message-container" class="mt-4 text-center text-sm"></div>
+    <div>
+      <u-signed-in>
+        <u-logout-button
+          class-name="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+        </u-logout-button>
+      </u-signed-in>
+      <u-signed-in not>
+        <a href="/auth"
+          class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200">Login</a>
+      </u-signed-in>
     </div>
+  </header>
+
+  <main class="flex-1 p-8 flex items-center justify-center">
+  <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+    <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
   </div>
+
+  <div class="bg-white shadow-xl rounded-xl p-8 w-full max-w-2xl flex flex-col gap-6 border border-gray-200">
+    <div class="flex flex-col items-center gap-2">
+      <u-conditional-render when="newsletter.loggedIn">
+        <h1 class="text-3xl font-bold text-indigo-700">Your subscriptions</h1>
+      </u-conditional-render>
+      <u-conditional-render when="newsletter.loggedIn" is="false">
+        <h1 class="text-3xl font-bold text-indigo-700">Subscribe to our Newsletter</h1>
+      </u-conditional-render>
+    </div>
+
+    <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+
+    <u-newsletter-root>
+      <u-conditional-render when="newsletter.loggedIn">
+        <div class="mb-12 relative">
+          <u-email-field class-name="px-4 py-2 pr-10 border border-gray-400 rounded-lg w-full bg-gray-50" disabled>
+            <u-newsletter-logout-button class="absolute right-3 top-1/2 -translate-y-1/2 z-10" class-name="flex items-center justify-center w-6 h-6 p-0 bg-transparent border-0 rounded-full transition-all cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-800 active:bg-gray-200">
+              <div class="flex items-center justify-center p-1 bg-gray-300 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+            </u-newsletter-logout-button>
+          </u-email-field>
+
+          <u-signed-in>
+            <div class="flex flex-col my-2 p-2 border border-gray-200 rounded-lg bg-blue-50 text-blue-800">
+              <p>If you want to subscribe with a different email address, please logout! </p>
+            </div>
+          </u-signed-in>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <p class="text-gray-600 text-sm font-medium">Manage subscriptions</p>
+          <div class="border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-gray-900">Test Newsletter</span>
+              <u-newsletter-toggle-subscription-button
+                internal-name="test"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
+            </div>
+            <u-conditional-render when="newsletter.subscribed" is="test">
+              <u-conditional-render when="newsletter.confirmed" is="test" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="test"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
+            </u-conditional-render>
+
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <p class="text-sm text-gray-600 font-medium mb-3">Preferences</p>
+              <div class="flex flex-col gap-2">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <u-newsletter-preference-checkbox
+                    internal-name="test"
+                    preference-identifier="captain1"
+                    class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  </u-newsletter-preference-checkbox>
+                  <span class="text-sm text-gray-700">Captain News</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <u-newsletter-preference-checkbox
+                    internal-name="test"
+                    preference-identifier="choco2"
+                    class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  </u-newsletter-preference-checkbox>
+                  <span class="text-sm text-gray-700">Chocolate News</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-gray-900">Main Newsletter</span>
+              <u-newsletter-toggle-subscription-button
+                internal-name="main"
+                class-name="text-sm font-medium rounded-lg px-3 py-1"
+                subscribe-class-name="text-white bg-indigo-600 hover:bg-indigo-700 border border-indigo-600"
+                unsubscribe-class-name="text-red-500 hover:text-red-700 border border-red-300 hover:bg-red-50">
+              </u-newsletter-toggle-subscription-button>
+            </div>
+            <u-conditional-render when="newsletter.subscribed" is="main">
+              <u-conditional-render when="newsletter.confirmed" is="main" not>
+                <div class="mt-3 bg-amber-100 text-amber-800 text-sm rounded-lg px-4 py-3 flex items-center justify-between">
+                  <span>Please confirm that you want to receive newsletter from us. We have sent you an email about this.</span>
+                  <u-newsletter-resend-doi-button
+                    internal-name="main"
+                    class-name="text-sm text-amber-700 hover:text-amber-900 font-medium border border-amber-400 rounded-lg px-3 py-1 hover:bg-amber-200 ml-3 whitespace-nowrap">
+                  </u-newsletter-resend-doi-button>
+                </div>
+              </u-conditional-render>
+            </u-conditional-render>
+
+            <div class="mt-4 pt-4 border-t border-gray-200">
+              <p class="text-sm text-gray-600 font-medium mb-3">Preferences</p>
+              <div class="flex flex-col gap-2">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <u-newsletter-preference-checkbox
+                    internal-name="main"
+                    preference-identifier="player_news"
+                    class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  </u-newsletter-preference-checkbox>
+                  <span class="text-sm text-gray-700">Player News</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <u-newsletter-preference-checkbox
+                    internal-name="main"
+                    preference-identifier="club_news"
+                    class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  </u-newsletter-preference-checkbox>
+                  <span class="text-sm text-gray-700">Club News</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <u-newsletter-preference-checkbox
+                    internal-name="main"
+                    preference-identifier="random_news"
+                    class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                  </u-newsletter-preference-checkbox>
+                  <span class="text-sm text-gray-700">Random News</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </u-conditional-render>
+
+      <u-conditional-render when="newsletter.loggedIn" not>
+        <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></u-email-field>
+        <u-error-message for="email" class-name="text-red-500 text-sm"></u-error-message>
+
+        <u-conditional-render when="newsletter.hasEmail">
+          <div class="flex items-center gap-3 mt-2">
+            <u-submit-button
+              for="login"
+              class-name="text-indigo-600 hover:text-indigo-800 text-sm font-medium hover:underline transition-colors">
+              Already subscribed? Click here to manage your subscriptions
+            </u-submit-button>
+          </div>
+        </u-conditional-render>
+
+        <div class="flex flex-col mt-4 gap-3">
+          <p class="text-gray-600 text-sm font-medium">Select newsletters</p>
+          <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-3">
+            <label class="flex items-center justify-between cursor-pointer p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
+              <span>Main Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="main"
+                checked="true"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
+            <div class="flex flex-col gap-2 mt-2 ml-2">
+              <label class="flex items-center gap-3 cursor-pointer">
+                <u-newsletter-preference-checkbox
+                  internal-name="main"
+                  preference-identifier="player_news"
+                  class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                </u-newsletter-preference-checkbox>
+                <span class="text-sm text-gray-700">Player News</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer">
+                <u-newsletter-preference-checkbox
+                  internal-name="main"
+                  preference-identifier="club_news"
+                  checked="true"
+                  class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                </u-newsletter-preference-checkbox>
+                <span class="text-sm text-gray-700">Club News</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer">
+                <u-newsletter-preference-checkbox
+                  internal-name="main"
+                  preference-identifier="random_news"
+                  class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                </u-newsletter-preference-checkbox>
+                <span class="text-sm text-gray-700">Random News</span>
+              </label>
+            </div>
+            <u-error-message for="main" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <div class="flex flex-col gap-1 border border-gray-200 rounded-lg p-3">
+            <label class="flex items-center justify-between cursor-pointer p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition">
+              <span>Test Newsletter</span>
+              <u-newsletter-checkbox
+                internal-name="test"
+                checked="false"
+                class-name="appearance-none relative w-11 h-6 bg-gray-300 rounded-full cursor-pointer transition-colors checked:bg-indigo-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow after:transition-transform checked:after:translate-x-5">
+              </u-newsletter-checkbox>
+            </label>
+            <div class="flex flex-col gap-2 mt-2 ml-2">
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <u-newsletter-preference-checkbox
+                  internal-name="test"
+                  preference-identifier="captain1"
+                  class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                </u-newsletter-preference-checkbox>
+                <span class="text-sm text-gray-700">Captain News</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <u-newsletter-preference-checkbox
+                  internal-name="test"
+                  preference-identifier="choco2"
+                  class-name="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                </u-newsletter-preference-checkbox>
+                <span class="text-sm text-gray-700">Chocolate News</span>
+              </label>
+            </div>
+            <u-error-message for="test" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <u-newsletter-consent-checkbox
+                class-name="w-4 h-4 mt-0.5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+              </u-newsletter-consent-checkbox>
+              <div class="text-sm text-gray-700">
+                I want to receive the newsletter of the brand with information about their entertainment offers and specials via email. My data will not be passed along to third-persons. My consent can at any time be revoked via Email to info@unidy.io.
+                <div class="text-sm text-gray-700 mt-1">I accept the <a href="https://demo.unidy.de/data_protection" class="text-indigo-600 hover:underline">data protection terms</a> and <a href="https://demo.unidy.de/terms_of_use" class="text-indigo-600 hover:underline">terms of use</a>.</div>
+              </div>
+            </label>
+            <u-error-message for="consent" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <u-submit-button
+            class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow transition border border-indigo-600 mt-4">
+            Subscribe
+          </u-submit-button>
+          <u-error-message for="general" class-name="text-red-500 text-sm"></u-error-message>
+        </div>
+      </u-conditional-render>
+
+      <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="20"></u-flash-message>
+    </u-newsletter-root>
+  </div>
+  </main>
+
+  <footer class="text-center py-5 mt-8 bg-gray-800 text-white text-sm">
+    <p>&copy; <span id="year"></span> Unidy. All rights reserved.</p>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </footer>
+
+  <script>
+    window.addEventListener("appload", () => {
+      const spinner = document.getElementById('sdk-initial-spinner');
+      if (spinner) {
+        spinner.remove();
+      }
+    });
+  </script>
 </body>
-
-<script>
-  const newsletterSubmit = document.querySelector("submit-button");
-  const messageContainer = document.getElementById("message-container");
-  newsletterSubmit.addEventListener("success", (e) => {
-    messageContainer.style.color = "green";
-    messageContainer.innerHTML = "Thank you for subscribing! Please check your email for confirmation.";
-
-  });
-
-  newsletterSubmit.addEventListener("error", (e) => {
-    messageContainer.style.color = "red";
-
-    if (e.detail.data?.error_identifier === 'rate_limit_exceeded') {
-      messageContainer.innerHTML = "Rate limit exceeded. Please try again in a few seconds";
-      return;
-    }
-
-    messageContainer.innerHTML = e.detail.data.errors.map((error) => {
-      return `Newsletter ${error.newsletter_internal_name}: ${error.error_identifier}`;
-    }).join("<br>");
-
-  });
-</script>
-
 </html>

@@ -1,4 +1,6 @@
-import { Component, h, Prop, type EventEmitter, Event } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, h, Prop } from "@stencil/core";
+import { t } from "../../../i18n";
+import { hasSlotContent } from "../../../shared/component-utils";
 import { Auth } from "../../auth";
 
 @Component({
@@ -6,11 +8,19 @@ import { Auth } from "../../auth";
   shadow: false,
 })
 export class LogoutButton {
-  @Prop() text = "Logout";
+  @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
   @Event() logout!: EventEmitter<void>;
+
+  private hasSlot = false;
+
+  async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();
@@ -29,7 +39,7 @@ export class LogoutButton {
   render() {
     return (
       <button type="button" class={this.componentClassName} onClick={this.handleLogout} aria-live="polite">
-        {this.text}
+        {this.hasSlot ? <slot /> : t("buttons.logout")}
       </button>
     );
   }

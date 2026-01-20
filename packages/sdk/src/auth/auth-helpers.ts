@@ -1,75 +1,139 @@
-import { authStore, authState } from "../auth/store/auth-store";
-import type { CreateSignInResponse, PasskeyOptionsResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
-import type { ProfileRaw } from "../profile/store/profile-store";
-import { state as profileState } from "../profile/store/profile-store";
 import { jwtDecode } from "jwt-decode";
+import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
+import { authState, authStore } from "../auth/store/auth-store";
+import { t } from "../i18n";
+import { createLogger } from "../logger";
+import type { ProfileRaw } from "../profile";
+import { state as profileState } from "../profile/store/profile-store";
+import { clearUrlParam } from "../shared/component-utils";
+import { Flash } from "../shared/store/flash-store";
 import type { TokenPayload } from "./auth";
+import { authenticateWithPasskey } from "./passkey-auth";
 
 export class AuthHelpers {
   private client: UnidyClient;
+  private logger = createLogger("AuthHelpers");
 
   constructor(client: UnidyClient) {
     this.client = client;
   }
 
-  async createSignIn(email: string) {
+  async createSignIn(email: string, password?: string, sendMagicCode?: boolean) {
     if (!email) {
-      throw new Error("Email is required");
+      throw new Error(t("errors.required_field", { field: "Email" }));
     }
 
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn(email);
+    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode } });
 
     if (error) {
-      authStore.setFieldError("email", error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setStep("verification");
-      authStore.setEmail(email);
-      authStore.setSignInId((response as CreateSignInResponse).sid);
-      authStore.setLoading(false);
+      if (error === "magic_code_recently_created") {
+        authStore.setMagicCodeStep("sent");
+        authStore.setStep("magic-code");
+        authStore.setLoading(false);
+        authStore.setFieldError("magicCode", error);
+        return [error, response] as const;
+      }
+
+      this.handleAuthError(error, response, password ? "password" : "email");
+      return;
     }
+
+    if (password) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setToken((response as TokenResponse).jwt);
+      authStore.setLoading(false);
+      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
+      return;
+    }
+
+    if (sendMagicCode) {
+      authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setLoginOptions((response as CreateSignInResponse).login_options);
+
+      if ((response as CreateSignInResponse).login_options?.magic_link === false) {
+        authStore.setGlobalError("auth", "magic_link_not_enabled");
+        authStore.setLoading(false);
+
+        return ["magic_link_not_enabled", response] as const;
+      }
+
+      authStore.setMagicCodeStep("sent");
+      authStore.setStep("magic-code");
+      authStore.setLoading(false);
+      return [error, response] as const;
+    }
+    const signInResponse = response as CreateSignInResponse;
+    authStore.setStep("verification");
+    authStore.setEmail(email);
+    authStore.setSignInId(signInResponse.sid);
+    authStore.setLoginOptions(signInResponse.login_options);
+    authStore.setLoading(false);
   }
 
   async authenticateWithPassword(password: string) {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     if (!password) {
-      throw new Error("Password is missing");
+      throw new Error(t("errors.required_field", { field: "Password" }));
     }
 
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
+    const [error, response] = await this.client.auth.authenticateWithPassword({
+      signInId: authState.sid,
+      payload: { password },
+    });
 
     if (error) {
-      if (error === "missing_required_fields") {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
-        authStore.setStep("missing-fields");
-        authStore.setLoading(false);
-        return;
-      }
-      if (error === "account_locked") {
-        authStore.setGlobalError("auth", error);
-      } else {
-        authStore.setFieldError("password", error);
-      }
-      authStore.setLoading(false);
+      this.handleAuthError(error, response, "password");
     } else {
-      authStore.setToken((response as TokenResponse).jwt);
       authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
+      this.handleAuthSuccess(response as TokenResponse);
+      return;
     }
   }
 
+  async authenticateWithMagicCode(code: string) {
+    if (!authState.sid) {
+      throw new Error(t("errors.no_sign_in_id"));
+    }
+
+    if (!code) {
+      throw new Error(t("errors.magic_code_is_missing"));
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.authenticateWithMagicCode({
+      signInId: authState.sid,
+      payload: { code },
+    });
+
+    if (error) {
+      this.handleAuthError(error, response, "magicCode");
+      return;
+    }
+
+    this.handleAuthSuccess(response as TokenResponse);
+  }
+
+  authenticateWithPasskey() {
+    return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
+  }
+
   async logout() {
-    const [error, _] = await this.client.auth.signOut(authState.sid as string);
+    const [error, _] = await this.client.auth.signOut({
+      signInId: authState.sid as string,
+      globalLogout: authState.backendSignedIn,
+    });
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -82,272 +146,282 @@ export class AuthHelpers {
     if (authState.step === "missing-fields") {
       return;
     }
-    this.extractSignInIdFromQuery();
+
+    const sid = clearUrlParam("sid");
+    if (sid) {
+      authStore.setSignInId(sid);
+    }
 
     if (!authState.sid) {
-      // call logger when we add one
+      this.logger.warn("No sign-in ID in the session");
       return;
     }
 
-    const [error, response] = await this.client.auth.refreshToken(authState.sid);
+    const [error, response] = await this.client.auth.refreshToken({ signInId: authState.sid });
 
     if (error) {
+      authStore.reset();
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
     }
   }
 
-  handleSocialAuthRedirect(): void {
-    // missing required fields flow
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
-    const error = params.get("error");
+  async checkSignedIn() {
+    if (authState.authenticated) return;
 
-    if (error !== "missing_required_fields") {
+    const [error, response] = await this.client.auth.signedIn();
+
+    if (error) {
+      // Silent fail
       return;
     }
 
-    const fieldsFromUrl = params.get("fields");
-    if (!fieldsFromUrl) {
-      return;
+    // we only assume that "sso" was used when there isn't an existing sid in the session as setting the sid is the
+    // first step in any login flow, and we should not log out users unintentionally
+    if (!authState.sid) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setBackendSignedIn(true);
     }
-
-    const signInId = params.get("sid");
-    if (signInId) {
-      authStore.setSignInId(signInId);
-    } else {
-      return;
-    }
-
-    try {
-      const fields = JSON.parse(fieldsFromUrl);
-
-      authStore.setMissingFields(fields);
-      profileState.data = fields as ProfileRaw;
-      authStore.setStep("missing-fields");
-
-      params.delete("error");
-      params.delete("fields");
-      const cleanUrl = `${url.origin}${url.pathname}${url.hash}`;
-      window.history.replaceState(null, "", cleanUrl);
-    } catch (e) {
-      console.error("Failed to parse missing fields payload:", e);
-      authStore.setGlobalError("auth", "invalid_required_fields_payload");
-    }
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendMagicCode() {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
+    if (!authState.sid && authState.step !== "single-login") {
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setMagicCodeStep("requested");
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
-
-    authStore.setLoading(false);
-
-    if (error) {
-      authStore.setFieldError("magicCode", error);
-      authStore.setStep("magic-code");
-      if (error === "magic_code_recently_created") {
-        authStore.setMagicCodeStep("sent");
-      }
+    if (authState.step === "single-login") {
+      const [error, response] = await this.createSignIn(authState.email, undefined, true);
+      authStore.setLoading(false);
       return [error, response] as const;
     }
 
-    authStore.setMagicCodeStep("sent");
+    const [error, response] = await this.client.auth.sendMagicCode({ signInId: authState.sid });
+
+    authStore.setLoading(false);
+
     authStore.setStep("magic-code");
-    return [null, response] as const;
-  }
 
-  async authenticateWithMagicCode(code: string) {
-    if (!authState.sid) {
-      throw new Error("No sign in ID available");
+    if (!error) {
+      authStore.setMagicCodeStep("sent");
+
+      return [null, response] as const;
     }
 
-    if (!code) {
-      throw new Error("Magic code is missing");
+    authStore.setFieldError("magicCode", error);
+
+    if (error === "magic_code_recently_created") {
+      authStore.setMagicCodeStep("sent");
     }
 
-    authStore.setLoading(true);
-    authStore.clearErrors();
-
-    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
-
-    if (error) {
-      if (error === "missing_required_fields") {
-        authStore.setMissingFields((response as RequiredFieldsResponse).fields);
-        profileState.data = (response as RequiredFieldsResponse).fields as ProfileRaw;
-        authStore.setStep("missing-fields");
-        return;
-      }
-      authStore.setFieldError("magicCode", error);
-      authStore.setLoading(false);
-    } else {
-      authStore.setToken((response as TokenResponse).jwt);
-      authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
-    }
+    return [error, response] as const;
   }
 
   async sendResetPasswordEmail() {
     if (!authState.sid) {
-      throw new Error("No sign in ID available");
+      throw new Error(t("errors.no_sign_in_id"));
     }
 
     authStore.setLoading(true);
     authStore.setResetPasswordStep("requested");
 
-    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid);
+    const [error, _] = await this.client.auth.sendResetPasswordEmail({
+      signInId: authState.sid,
+      payload: { returnTo: window.location.href },
+    });
 
     if (error) {
-      authStore.setFieldError("password", error);
-      authStore.setLoading(false);
+      authStore.setFieldError("resetPassword", error);
     } else {
       authStore.setResetPasswordStep("sent");
-      authStore.setLoading(false);
       authStore.clearErrors();
     }
+
+    authStore.setLoading(false);
   }
 
-  async authenticateWithPasskey() {
+  async resetPassword() {
+    if (!authState.resetPassword.token) {
+      throw new Error("No reset token available");
+    }
+
+    if (!authState.resetPassword.newPassword) {
+      authStore.setFieldError("resetPassword", "password_required");
+      return;
+    }
+
+    if (
+      authState.resetPassword.passwordConfirmation &&
+      authState.resetPassword.newPassword !== authState.resetPassword.passwordConfirmation
+    ) {
+      authStore.setFieldError("resetPassword", "passwords_do_not_match");
+      return;
+    }
+
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    // Check if WebAuthn is available
-    if (!window.PublicKeyCredential) {
-      authStore.setGlobalError("auth", "passkey_not_supported");
-      authStore.setLoading(false);
+    const [error, response] = await this.client.auth.resetPassword({
+      signInId: authState.sid as string,
+      token: authState.resetPassword.token,
+      payload: {
+        password: authState.resetPassword.newPassword,
+        passwordConfirmation: authState.resetPassword.passwordConfirmation,
+      },
+    });
+
+    if (error) {
+      authStore.setFieldError("resetPassword", error);
+
+      // TODO: add proper password requirements handling --> for now this is fine
+      if (error === "invalid_password") {
+        authStore.setFieldError("password", response.error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
+      }
+    } else {
+      authStore.setStep("email");
+      authStore.updateResetPassword({
+        step: "completed",
+        token: null,
+        newPassword: "",
+        passwordConfirmation: "",
+      });
+
+      clearUrlParam("reset_password_token");
+      Flash.success.addMessage("Password reset successfully");
+    }
+
+    authStore.setLoading(false);
+  }
+
+  async handleResetPasswordRedirect() {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const resetToken = params.get("reset_password_token");
+
+    if (!resetToken) {
+      return;
+    }
+
+    if (authState.sid) {
+      authStore.setLoading(true);
+
+      const [error] = await this.client.auth.validateResetPasswordToken({
+        signInId: authState.sid,
+        token: resetToken,
+      });
+
+      if (error) {
+        authStore.setFieldError("resetPassword", error);
+        authStore.setStep("reset-password");
+        authStore.setLoading(false);
+        return;
+      }
+    }
+
+    authStore.setResetToken(resetToken);
+    authStore.setStep("reset-password");
+    authStore.setLoading(false);
+  }
+
+  handleSocialAuthRedirect(): void {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const error = params.get("error");
+
+    // Not a social auth redirect (normal page load)
+    if (!error && !params.has("sid")) {
+      return;
+    }
+
+    // Handle successful social auth redirect
+    if (!error && params.has("sid") && params.has("id_token")) {
+      authStore.setSignInId(clearUrlParam("sid"));
+
+      const idToken = clearUrlParam("id_token");
+
+      if (idToken) {
+        authStore.setToken(idToken);
+        this.handleAuthSuccess({ jwt: idToken } as TokenResponse);
+      } else {
+        this.logger.error("No ID token found in the URL on social auth redirect");
+      }
+
+      return;
+    }
+
+    // Handle missing required fields
+    if (error !== "missing_required_fields") {
+      this.logger.error("Social auth redirect error:", error);
+      return;
+    }
+
+    const fieldsFromUrl = clearUrlParam("fields");
+    const sid = clearUrlParam("sid");
+    clearUrlParam("error");
+
+    if (!fieldsFromUrl || !sid) {
       return;
     }
 
     try {
-      // Step 1: Get passkey options from server (pass sid if available from previous step)
-      const [optionsError, options] = await this.client.auth.getPasskeyOptions(authState.sid || undefined);
+      const fields = JSON.parse(fieldsFromUrl);
+      authStore.setSignInId(sid);
 
-      if (optionsError || !options) {
-        authStore.setGlobalError("auth", optionsError || "bad_request");
-        authStore.setLoading(false);
-        return;
-      }
-
-      // Step 2: Convert options for navigator.credentials.get()
-      // Helper to decode base64url (WebAuthn uses base64url encoding)
-      const decodeBase64Url = (base64url: string): Uint8Array => {
-        // Convert base64url to regular base64 for atob
-        const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-        // Add padding if needed
-        const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
-        return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
-      };
-
-      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
-        challenge: Uint8Array.from(atob((options as PasskeyOptionsResponse).challenge), (c) => c.charCodeAt(0)),
-        timeout: (options as PasskeyOptionsResponse).timeout || 60000,
-        rpId: (options as PasskeyOptionsResponse).rpId,
-        userVerification: ((options as PasskeyOptionsResponse).userVerification as UserVerificationRequirement) || "required",
-        allowCredentials: (options as PasskeyOptionsResponse).allowCredentials?.map((cred) => ({
-          ...cred,
-          id: decodeBase64Url(cred.id),
-        })),
-      };
-
-      // Step 3: Get credential from browser
-      const credential = (await navigator.credentials.get({
-        publicKey: publicKeyCredentialRequestOptions,
-      })) as PublicKeyCredential | null;
-
-      if (!credential) {
-        authStore.setGlobalError("auth", "passkey_cancelled");
-        authStore.setLoading(false);
-        return;
-      }
-
-      // Step 4: Format credential for server
-      const response = credential.response as AuthenticatorAssertionResponse;
-      const formattedCredential = {
-        id: credential.id,
-        rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
-        response: {
-          authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
-          clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
-          signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
-        },
-        type: credential.type,
-      };
-
-      // Step 5: Verify credential with server
-      const [verifyError, tkResponse] = await this.client.auth.authenticateWithPasskey(formattedCredential);
-
-      const tokenResponse = tkResponse as TokenResponse;
-      if (verifyError || !tokenResponse) {
-        authStore.setGlobalError("auth", verifyError || "authentication_failed");
-        authStore.setLoading(false);
-        return;
-      }
-
-      // Success: Set token and notify
-      authStore.setToken(tokenResponse.jwt);
-
-      // Extract sid from response or JWT token and update store
-      // @ts-ignore
-      if (tokenResponse.sid) {
-        // @ts-ignore
-        authStore.setSignInId(tokenResponse.sid);
-      } else {
-        // Fallback: extract sid from JWT token payload
-        try {
-          const decoded = jwtDecode<TokenPayload>(tokenResponse.jwt);
-          if (decoded.sid) {
-            authStore.setSignInId(decoded.sid);
-          }
-        } catch (error) {
-          // Failed to decode JWT token to extract sid, continue without it
-        }
-      }
-
-      authStore.setLoading(false);
-      authStore.getRootComponentRef()?.onAuth(tokenResponse);
-    } catch (error) {
-      console.log(error);
-
-      // Handle WebAuthn API errors
-      let errorMessage = "passkey_error";
-      if (error instanceof DOMException) {
-        switch (error.name) {
-          case "NotSupportedError":
-            errorMessage = "passkey_not_supported";
-            break;
-          case "NotAllowedError":
-            errorMessage = "passkey_cancelled";
-            break;
-          case "SecurityError":
-            errorMessage = "passkey_security_error";
-            break;
-          case "InvalidStateError":
-            errorMessage = "passkey_invalid_state";
-            break;
-          default:
-            errorMessage = "passkey_error";
-        }
-      }
-      authStore.setGlobalError("auth", errorMessage);
-      authStore.setLoading(false);
+      this.handleMissingFields(fields);
+    } catch (e) {
+      this.logger.error("Failed to parse missing fields payload:", e);
+      authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
   }
 
-  private extractSignInIdFromQuery() {
-    const url = new URL(window.location.href);
-    const sid = url.searchParams.get("sid") || null;
+  private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
+    switch (error) {
+      case "account_not_found":
+        authStore.setFieldError("email", error);
+        break;
 
-    if (sid) {
-      authStore.setSignInId(sid);
-      url.searchParams.delete("sid");
-      window.history.replaceState(null, "", url.toString());
+      case "missing_required_fields": {
+        const { fields, sid } = response as RequiredFieldsResponse;
+        this.handleMissingFields(fields);
+        if (sid) {
+          authStore.setSignInId(sid);
+        }
+        break;
+      }
+
+      default:
+        if (fallbackField === "password") {
+          authStore.setFieldError("password", error);
+        } else if (fallbackField === "magicCode") {
+          authStore.setFieldError("magicCode", error);
+        } else if (fallbackField === "email") {
+          authStore.setFieldError("email", error);
+        } else {
+          // e.g. "account_locked", "internal_server_error"
+          authStore.setGlobalError("auth", error);
+        }
+        break;
     }
+
+    authStore.setLoading(false);
+  }
+
+  private handleMissingFields(fields: RequiredFieldsResponse["fields"]) {
+    authStore.setMissingFields(fields);
+    profileState.data = fields as ProfileRaw;
+    authStore.setStep("missing-fields");
+    authStore.setLoading(false);
+  }
+
+  private handleAuthSuccess(response: TokenResponse) {
+    authStore.setToken(response.jwt);
+    authStore.setLoading(false);
+    authStore.getRootComponentRef()?.onAuth(response);
   }
 }

@@ -1,17 +1,55 @@
-import { Component, h, State, Element, Host, Prop, Watch } from "@stencil/core";
-import { ApiClient } from "../../../api";
+import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import { de } from "date-fns/locale/de";
-
-import { type Ticket, TicketsService } from "../../api/tickets";
-import { type Subscription, SubscriptionsService } from "../../api/subscriptions";
-import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
-import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import type { PaginationMeta } from "../../../api";
+import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
+import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
+import type { Subscription } from "../../api/subscriptions";
+import type { Ticket } from "../../api/tickets";
+import type { PaginationStore } from "../../store/pagination-store";
+import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 
 const LOCALES: Record<string, Locale> = {};
+
+/**
+ * Extracts a nested value from an object using a path string.
+ * Supports dot notation for object properties and bracket notation for arrays.
+ * Paths must use dot notation throughout, e.g., "metadata.foo.bar.[1]"
+ * Examples:
+ *   - "metadata.foo.bar" -> item.metadata.foo.bar
+ *   - "metadata.foo.bar.[1]" -> item.metadata.foo.bar[1]
+ *   - "wallet_export.[0].address" -> item.wallet_export[0].address
+ */
+function getNestedValue(obj: any, path: string): any {
+  if (!path || !obj) return undefined;
+
+  // Split by dots and process each part
+  const parts = path.split(".").filter(Boolean);
+  let result = obj;
+
+  for (const part of parts) {
+    if (result == null) return undefined;
+
+    // Check if this part is an array index like "[1]"
+    if (part.startsWith("[") && part.endsWith("]")) {
+      const indexStr = part.slice(1, -1);
+      const index = /^\d+$/.test(indexStr) ? Number.parseInt(indexStr, 10) : indexStr;
+      result = result[index];
+    } else {
+      result = result[part];
+    }
+  }
+
+  if (typeof result === "object" && result != null) {
+    return JSON.stringify(result);
+  }
+
+  return result;
+}
 
 async function loadLocales() {
   // TODO: This should be pulled into a shared component
@@ -40,14 +78,14 @@ async function loadLocales() {
 }
 
 @Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList {
+export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
-  @Prop() store: PaginationStore = createPaginationStore();
+  @Prop() paginationMeta: PaginationMeta | null = null;
 
   @Prop() target?: string;
   @Prop() containerClass?: string;
@@ -70,6 +108,19 @@ export class TicketableList {
     await this.loadData();
   }
 
+  @Prop() store: PaginationStore | null = null;
+
+  @Event() uTicketableListSuccess!: EventEmitter<{
+    ticketableType: "ticket" | "subscription";
+    items: Subscription[] | Ticket[];
+    paginationMeta: PaginationMeta | null;
+  }>;
+
+  @Event() uTicketableListError!: EventEmitter<{
+    ticketableType?: "ticket" | "subscription";
+    error: string;
+  }>;
+
   async componentWillLoad() {
     await waitForConfig();
     loadLocales().catch((err) => {
@@ -77,29 +128,35 @@ export class TicketableList {
     });
   }
 
-  // TODO[LOGGING]: Log this to console (use shared logger)
   async componentDidLoad() {
-    await this.loadData();
+    this.logger.trace("start componentDidLoad");
+    await waitForConfig();
+    this.logger.trace("UnidyConfig loaded, start to load data");
+
+    const authInstance = await Auth.getInstance();
+
+    if (await authInstance.isAuthenticated()) {
+      await this.loadData();
+      this.logger.debug(`data loaded, items: ${this.items}, paginationMeta: ${this.paginationMeta}`);
+    } else {
+      this.logger.debug("user is not authenticated, skipping data load");
+    }
   }
 
   private async loadData() {
     this.loading = true;
 
-    if (!unidyState.baseUrl || !unidyState.apiKey) {
-      this.error = "[u-ticketable-list] baseUrl and apiKey are required in the unidy-store";
-      this.loading = false;
-      return;
-    }
-
     if (!this.ticketableType) {
       this.error = "[u-ticketable-list] ticketable-type attribute is required";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
       this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
@@ -121,36 +178,75 @@ export class TicketableList {
     }
 
     try {
-      const apiClient = new ApiClient(unidyState.baseUrl, unidyState.apiKey);
-      const service =
-        this.ticketableType === "ticket" ? new TicketsService(apiClient, idToken) : new SubscriptionsService(apiClient, idToken);
+      const unidyClient = await getUnidyClient();
 
-      const response = await service.list(
-        {},
-        {
-          page: this.page,
-          limit: this.limit,
-          ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
-        },
-      );
+      // Parse filter string into typed args using URLSearchParams (treats ; as separator)
+      const filterArgs: Record<string, string> = Object.fromEntries(new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries());
 
-      if (!response.success || !response.data) {
-        this.error =
-          response.error instanceof Error
-            ? response.error.message
-            : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
+      // Common args for both services
+      const commonArgs = {
+        page: this.page,
+        perPage: this.limit,
+        state: filterArgs.state,
+        paymentState: filterArgs.payment_state,
+        orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
+        orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
+        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
+      };
+
+      // Call the appropriate service with type-safe args
+      const [error, data] =
+        this.ticketableType === "ticket"
+          ? await unidyClient.tickets.list({
+              ...commonArgs,
+              ticketCategoryId: filterArgs.ticket_category_id,
+            })
+          : await unidyClient.subscriptions.list({
+              ...commonArgs,
+              subscriptionCategoryId: filterArgs.subscription_category_id,
+            });
+
+      if (error !== null || !data || !("results" in data)) {
+        this.error = this.getTranslatedError(error);
         this.loading = false;
+        this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
-      this.items = response.data.results;
-      this.store.state.paginationMeta = response.data.meta;
+      this.items = data.results;
+      this.paginationMeta = data.meta;
+
+      // Update the store with pagination data
+      if (this.store) {
+        this.store.state.paginationMeta = data.meta;
+      }
 
       this.loading = false;
+
+      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
       this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
     }
+  }
+
+  private getTranslatedError(error: string | null): string {
+    if (!error) {
+      return t("ticketable.errors.fetch_failed", { defaultValue: "Failed to load data" });
+    }
+
+    const errorMessages: Record<string, string> = {
+      connection_failed: t("errors.connection_failed", { defaultValue: "Connection failed. Please check your internet connection." }),
+      schema_validation_error: t("errors.schema_validation", { defaultValue: "Invalid data received from server." }),
+      internal_error: t("errors.internal", { defaultValue: "An internal error occurred." }),
+      missing_id_token: t("errors.unauthorized", { defaultValue: "You must be logged in to view this content." }),
+      unauthorized: t("errors.unauthorized", { defaultValue: "You are not authorized to view this content." }),
+      server_error: t("errors.server", { defaultValue: "A server error occurred. Please try again later." }),
+      invalid_response: t("errors.invalid_response", { defaultValue: "Invalid response from server." }),
+    };
+
+    return errorMessages[error] || t("errors.unknown", { defaultValue: "An unknown error occurred." });
   }
 
   private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {
@@ -166,9 +262,21 @@ export class TicketableList {
           }
 
           let value = attr.value;
-          for (const [key, val] of Object.entries(item)) {
-            value = value.replaceAll(`{{${key}}}`, val as string);
-          }
+          // Find all template strings like {{path}} and replace them with nested values
+          const templateRegex = /\{\{([^}]+)\}\}/g;
+          value = value.replace(templateRegex, (match, path) => {
+            if (path === "wallet_export.pkpass") {
+              // return `${unidyState.baseUrl}/api/sdk/v1/${this.ticketableType}s/${item.id}/exports/pkpass`;
+              return `${unidyState.baseUrl}/${this.ticketableType}s/${item.id}/exports/pkpass`;
+            }
+            if (path === "wallet_export.pdf") {
+              // return `${unidyState.baseUrl}/api/sdk/v1/${this.ticketableType}s/${item.id}/exports/pdf`;
+              return `${unidyState.baseUrl}/${this.ticketableType}s/${item.id}/exports/pdf`;
+            }
+
+            const nestedValue = getNestedValue(item, path.trim());
+            return nestedValue != null ? String(nestedValue) : match;
+          });
 
           return [attr, value] as const;
         })) {
@@ -187,7 +295,7 @@ export class TicketableList {
       } else {
         const key = valueEl.getAttribute("name");
         if (!key) continue;
-        const value = item[key];
+        const value = getNestedValue(item, key);
         const formatAttr = valueEl.getAttribute("format");
         const dateFormatAttr = valueEl.getAttribute("date-format");
 
@@ -198,7 +306,11 @@ export class TicketableList {
         } else if (typeof value === "number" && key === "price") {
           finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
-          finalValue = value.toFixed(2);
+          if (Number.isInteger(value)) {
+            finalValue = value.toString();
+          } else {
+            finalValue = value.toFixed(2);
+          }
         } else if (value != null) {
           finalValue = String(value);
         } else {
@@ -210,6 +322,44 @@ export class TicketableList {
         }
 
         valueEl.textContent = finalValue;
+      }
+    }
+
+    // Process ticketable-conditional elements
+    // Convert to array to avoid issues when modifying the DOM
+    const conditionalElements = Array.from(fragment.querySelectorAll("ticketable-conditional"));
+    for (const conditionalEl of conditionalElements) {
+      const whenAttr = conditionalEl.getAttribute("when");
+      if (!whenAttr) {
+        // If no 'when' attribute, remove the element
+        conditionalEl.remove();
+        continue;
+      }
+
+      if (isSkeleton) {
+        // For skeleton state, remove conditionals
+        conditionalEl.remove();
+        continue;
+      }
+
+      // Check if the item property is truthy
+      const value = getNestedValue(item, whenAttr);
+      const isTruthy = Boolean(value);
+
+      if (isTruthy) {
+        // Replace the conditional element with its children
+        const parent = conditionalEl.parentNode;
+        if (parent) {
+          // Move all children before the conditional element
+          while (conditionalEl.firstChild) {
+            parent.insertBefore(conditionalEl.firstChild, conditionalEl);
+          }
+          // Remove the conditional element
+          parent.removeChild(conditionalEl);
+        }
+      } else {
+        // Remove the conditional element and its children
+        conditionalEl.remove();
       }
     }
 
@@ -234,7 +384,7 @@ export class TicketableList {
 
     const targetElement = document.querySelector(this.target);
     if (!targetElement) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.warn("targetElement not found");
       return;
     }
 
@@ -255,20 +405,24 @@ export class TicketableList {
         target.appendChild(this.renderFragment(template, item));
       }
     } else {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      target.innerHTML = "<h1>Error: {this.error}</h1>";
+      this.logger.error(`failed to load content: ${this.error}`);
+      target.innerHTML = `<h1>${t("errors.prefix")} ${this.error}</h1>`;
     }
   }
 
   render() {
     if (this.error) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
-      return <h1>Error: {this.error}</h1>;
+      this.logger.error(`can't render content: ${this.error}`);
+      return (
+        <h1>
+          {t("errors.prefix")} {this.error}
+        </h1>
+      );
     }
 
     const template = this.element.querySelector("template");
     if (!template) {
-      // TODO[LOGGING]: Log this to console (use shared logger)
+      this.logger.error("template not found");
       return <h1>No template found - fix config</h1>;
     }
 

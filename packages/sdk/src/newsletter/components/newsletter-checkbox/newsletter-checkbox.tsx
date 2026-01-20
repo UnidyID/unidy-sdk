@@ -1,41 +1,81 @@
-import { Component, h, Prop } from "@stencil/core";
-import { newsletterStore } from "../../store/store";
+import { Component, h, Method, Prop } from "@stencil/core";
+import * as NewsletterHelpers from "../../newsletter-helpers";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
-  tag: "newsletter-checkbox",
+  tag: "u-newsletter-checkbox",
   shadow: false,
 })
 export class NewsletterCheckbox {
-  @Prop() label: string;
-  @Prop() internalName: string;
-  @Prop() checked: boolean;
+  @Prop() internalName!: string;
+  @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   componentWillLoad() {
-    if (this.checked) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
+    if (this.checked && !this.isSubscribed) {
+      const checkedNewsletters = newsletterStore.state.checkedNewsletters;
+      if (!(this.internalName in checkedNewsletters)) {
+        newsletterStore.set("checkedNewsletters", {
+          ...checkedNewsletters,
+          [this.internalName]: [],
+        });
+      }
     }
   }
 
-  private handleChange = (e: Event) => {
-    const isChecked = (e.target as HTMLInputElement).checked;
+  private get isSubscribed(): boolean {
+    return NewsletterHelpers.isSubscribed(this.internalName);
+  }
 
-    if (isChecked) {
-      newsletterStore.set("checkedNewsletters", [...newsletterStore.get("checkedNewsletters"), this.internalName]);
+  private get isChecked(): boolean {
+    return this.isSubscribed || this.internalName in newsletterStore.state.checkedNewsletters;
+  }
+
+  private syncToStore(checked: boolean) {
+    if (checked) {
+      const prefs = newsletterStore.state.defaultPreferences[this.internalName];
+      const defaultPrefs: string[] = prefs ? Array.from(prefs) : [];
+
+      newsletterStore.set("checkedNewsletters", {
+        ...newsletterStore.state.checkedNewsletters,
+        [this.internalName]: defaultPrefs,
+      });
     } else {
-      newsletterStore.set(
-        "checkedNewsletters",
-        newsletterStore.get("checkedNewsletters").filter((name) => name !== this.internalName),
-      );
+      const { [this.internalName]: _, ...rest } = newsletterStore.state.checkedNewsletters;
+      newsletterStore.set("checkedNewsletters", rest);
     }
+  }
+
+  private handleChange = () => {
+    if (this.isSubscribed) return;
+    this.syncToStore(!this.isChecked);
   };
+
+  /** Public method to toggle the checkbox programmatically */
+  @Method()
+  async toggle() {
+    this.handleChange();
+  }
+
+  /** Public method to set the checkbox state programmatically */
+  @Method()
+  async setChecked(checked: boolean) {
+    if (this.isSubscribed) return;
+    if (checked !== this.isChecked) {
+      this.syncToStore(checked);
+    }
+  }
 
   render() {
     return (
-      <label htmlFor={this.internalName} part="label" class={this.componentClassName}>
-        <input id={this.internalName} type="checkbox" checked={this.checked} onChange={this.handleChange} part="input" />
-        {this.label}
-      </label>
+      <input
+        type="checkbox"
+        checked={this.isChecked}
+        disabled={this.isSubscribed}
+        onChange={this.handleChange}
+        class={this.componentClassName}
+        aria-checked={this.isChecked}
+      />
     );
   }
 }
