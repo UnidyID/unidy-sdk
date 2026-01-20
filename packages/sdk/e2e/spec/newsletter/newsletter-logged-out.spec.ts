@@ -44,6 +44,7 @@ test.describe("Newsletter (logged out)", () => {
     const nl_sub = await ModelCountAssert.init("NewsletterSubscription", { scope: { email } });
 
     await page.getByRole("textbox", { name: "Email" }).fill(email);
+    await page.getByTestId("nl.consent.checkbox").check();
     await page.getByRole("button", { name: "Subscribe", exact: true }).click();
 
     await expect(page.getByText("You have successfully subscribed")).toBeVisible();
@@ -55,7 +56,40 @@ test.describe("Newsletter (logged out)", () => {
     await nl_sub.toHaveChangedBy(1);
   });
 
-  test("already subscribed flow: shows error, sends email with manage link, navigates to manage subscription page", async ({ page }) => {
+  test("already subscribed flow: shows error", async ({ page }) => {
+    const email = randomEmail();
+
+    const newsletters = new Database("Newsletter");
+    const main = await newsletters.getBy({ internal_name: "main" });
+    if (!main) throw new Error("Newsletter 'main' not found");
+
+    const preferences = new Database("NewsletterPreference");
+    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" } as any);
+    if (!prefClubNews) throw new Error("Preference 'club_news' not found");
+
+    const subscription = await newsletterSubscriptions.create({
+      email: email,
+      newsletter_id: main.id,
+    });
+    if (!subscription) throw new Error("Failed to create newsletter subscription");
+
+    const preferenceSubscriptions = new Database("NewsletterPreferenceSubscription");
+    await preferenceSubscriptions.create({
+      newsletter_subscription_id: subscription.id,
+      newsletter_preference_id: prefClubNews.id,
+    });
+
+    const emailInput = page.getByRole("textbox", { name: "Email" });
+    const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
+
+    await emailInput.fill(email);
+    await page.getByTestId("nl.consent.checkbox").check();
+    await subscribeButton.click();
+
+    await expect(page.getByTestId("nl.group.main").locator("u-error-message")).toBeVisible();
+  });
+
+  test("sends email with manage link, navigates to manage subscription page", async ({ page }) => {
     const email = randomEmail();
 
     const newsletters = new Database("Newsletter");
@@ -79,13 +113,12 @@ test.describe("Newsletter (logged out)", () => {
     });
 
     const userEmails = await EmailAssert.init({ to: email });
+
     const emailInput = page.getByRole("textbox", { name: "Email" });
-    const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
 
     await emailInput.fill(email);
-    await subscribeButton.click();
+    await page.getByRole("button", { name: "Already subscribed? Click" }).click();
 
-    await expect(page.getByTestId("nl.group.main").locator("u-error-message")).toBeVisible();
     await expect(page.getByText("We sent a link to manage your")).toBeVisible();
 
     await userEmails.toHaveReceived(1);
@@ -97,5 +130,19 @@ test.describe("Newsletter (logged out)", () => {
     await page.goto(manageSubscriptionLink);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { name: "Your subscriptions", exact: true })).toBeVisible();
+  });
+
+  test("requires consent to be accepted before subscribing", async ({ page }) => {
+    const email = randomEmail();
+    const emailInput = page.getByRole("textbox", { name: "Email" });
+    const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
+
+    const subscriptions = await ModelCountAssert.init("NewsletterSubscription", { scope: { email } });
+
+    await emailInput.fill(email);
+
+    await subscribeButton.click();
+    await expect(page.locator("u-error-message").filter({ hasText: "Please accept the terms and" })).toBeVisible();
+    await subscriptions.toHaveChangedBy(0);
   });
 });

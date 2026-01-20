@@ -13,7 +13,7 @@ test.describe("Profile - authenticated user", () => {
     await password.fill(userLogin.password);
     await password.press("Enter");
 
-    await expect(page.getByText(/already signed in/i)).toBeVisible();
+    await expect(page.getByTestId("signed.in.view")).toBeVisible();
     await page.goto(routes.profile);
   });
 

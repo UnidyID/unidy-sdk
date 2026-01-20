@@ -37,12 +37,10 @@ test.describe("Manage Subscriptions (logged out)", () => {
 
     const userEmails = await EmailAssert.init({ to: email });
     const emailInput = page.getByRole("textbox", { name: "Email" });
-    const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
 
     await emailInput.fill(email);
-    await subscribeButton.click();
+    await page.getByRole("button", { name: "Already subscribed? Click" }).click();
 
-    await expect(page.getByTestId("nl.group.main").locator("u-error-message")).toBeVisible();
     await expect(page.getByText("We sent a link to manage your")).toBeVisible();
 
     await userEmails.toHaveReceived(1);
