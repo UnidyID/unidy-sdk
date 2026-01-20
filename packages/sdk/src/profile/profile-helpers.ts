@@ -1,5 +1,5 @@
-import { type ProfileRaw, state as profileState } from "./store/profile-store";
 import { t } from "../i18n";
+import { type ProfileRaw, state as profileState } from "./store/profile-store";
 
 export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
   for (const key of Object.keys(sWC)) {

@@ -59,7 +59,7 @@ export class NewsletterRoot extends UnidyComponent {
 
   @Method()
   async submit(forType?: NewsletterButtonFor) {
-    const { email, checkedNewsletters } = newsletterStore.state;
+    const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
 
     if (forType === "login") {
       if (!email) {
@@ -80,6 +80,15 @@ export class NewsletterRoot extends UnidyComponent {
     if (!email) {
       logger.error("Email is required");
       this.uNewsletterError.emit({ email: "", error: "email_required" });
+      return;
+    }
+
+    if (consentRequired && !consentGiven) {
+      newsletterStore.state.errors = {
+        ...newsletterStore.state.errors,
+        consent: "consent_required",
+      };
+
       return;
     }
 

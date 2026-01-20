@@ -61,6 +61,7 @@
     "internal_server_error": "Interne serverfout",
     "magic_code_is_missing": "Magische code ontbreekt",
     "magic_code_recently_created": "Magische code recent aangemaakt",
+    "magic_link_not_enabled": "Aanmelden via magische link is niet ingeschakeld voor dit account",
     "missing_id_token": "Ontbrekende ID-token",
     "missing_refresh_token": "Geen vernieuwingstoken aanwezig",
     "missing_required_fields": "Ontbrekende verplichte velden",
@@ -106,6 +107,7 @@
     },
     "errors": {
       "already_subscribed": "Al geabonneerd",
+      "consent_required": "Accepteer de algemene voorwaarden om u te abonneren",
       "email_required": "Voer uw e-mailadres in",
       "invalid_email": "Ongeldig e-mailadres",
       "login_email_not_found": "Abonnement met dit e-mailadres bestaat niet",

@@ -1,9 +1,9 @@
-import { Component, h, Prop, Element, Host } from "@stencil/core";
-import { newsletterLogout } from "../../newsletter-helpers";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { Flash } from "../../../shared/store/flash-store";
-import { newsletterStore } from "../../store/newsletter-store";
 import { hasSlotContent } from "../../../shared/component-utils";
+import { Flash } from "../../../shared/store/flash-store";
+import { newsletterLogout } from "../../newsletter-helpers";
+import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-logout-button",
@@ -13,6 +13,14 @@ export class LogoutButton {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  private hasSlot = false;
+
+  async componentWillLoad() {
+    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
+    // components and always return true on re-render
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   private handleLogout = () => {
     newsletterLogout();
@@ -24,8 +32,6 @@ export class LogoutButton {
       return <Host style={{ display: "none" }} />;
     }
 
-    const hasContent = hasSlotContent(this.el);
-
     return (
       <Host>
         <button
@@ -36,7 +42,7 @@ export class LogoutButton {
           aria-label="Logout"
           aria-live="polite"
         >
-          {hasContent ? <slot /> : t("newsletter.buttons.logout")}
+          {this.hasSlot ? <slot /> : t("newsletter.buttons.logout")}
         </button>
       </Host>
     );

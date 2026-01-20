@@ -1,6 +1,6 @@
 import { Component, h, Method, Prop, State } from "@stencil/core";
 import * as NewsletterHelpers from "../../newsletter-helpers";
-import { type ExistingSubscription, newsletterStore } from "../../store/newsletter-store";
+import { type ExistingSubscription, newsletterStore, storeDefaultPreference } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-preference-checkbox",

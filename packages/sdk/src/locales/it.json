@@ -61,6 +61,7 @@
     "internal_server_error": "Errore interno del server",
     "magic_code_is_missing": "Codice magico mancante",
     "magic_code_recently_created": "Codice magico creato di recente",
+    "magic_link_not_enabled": "L'accesso tramite link magico non è abilitato per questo account",
     "missing_id_token": "Token ID mancante",
     "missing_refresh_token": "Nessun token di aggiornamento presente",
     "missing_required_fields": "Campi obbligatori mancanti",
@@ -106,6 +107,7 @@
     },
     "errors": {
       "already_subscribed": "Già iscritto",
+      "consent_required": "Accetta i termini e le condizioni per iscriverti",
       "email_required": "Inserisci il tuo indirizzo email",
       "invalid_email": "Indirizzo email non valido",
       "login_email_not_found": "L'abbonamento con questa email non esiste",

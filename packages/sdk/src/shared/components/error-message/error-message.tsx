@@ -10,6 +10,7 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
 @Component({
   tag: "u-error-message",
   shadow: true,
+  styleUrl: "error-message.css",
 })
 export class ErrorMessage {
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -17,7 +18,6 @@ export class ErrorMessage {
 
   @Prop() errorMessages?: Record<string, string>;
   @Element() el!: HTMLElement;
-
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 

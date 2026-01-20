@@ -1,5 +1,6 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { hasSlotContent } from "../../../shared/component-utils";
 import { Flash } from "../../../shared/store/flash-store";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -9,7 +10,14 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class ResetPasswordButton {
+  @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  private hasSlot = false;
+
+  async componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();
@@ -34,11 +42,7 @@ export class ResetPasswordButton {
   }
 
   private getButtonText() {
-    if (
-      ["verification", "single-login"].includes(authState.step) &&
-      authState.availableLoginOptions &&
-      !authState.availableLoginOptions.password
-    ) {
+    if (authState.step === "verification" && authState.availableLoginOptions && !authState.availableLoginOptions.password) {
       return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
     }
 
@@ -55,7 +59,7 @@ export class ResetPasswordButton {
 
     return (
       <button type="button" onClick={this.handleClick} class={this.componentClassName}>
-        {this.getButtonText()}
+        {this.hasSlot ? <slot /> : this.getButtonText()}
       </button>
     );
   }

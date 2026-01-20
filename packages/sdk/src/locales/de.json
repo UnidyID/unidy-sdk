@@ -61,6 +61,7 @@
     "internal_server_error": "Interner Serverfehler",
     "magic_code_is_missing": "Magischer Code fehlt",
     "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
+    "magic_link_not_enabled": "Die Anmeldung über magischen Link ist für dieses Konto nicht aktiviert",
     "missing_id_token": "Fehlender ID-Token",
     "missing_refresh_token": "Kein refresh token gefunden",
     "missing_required_fields": "Fehlende Pflichtfelder",
@@ -106,6 +107,7 @@
     },
     "errors": {
       "already_subscribed": "Bereits abonniert",
+      "consent_required": "Bitte akzeptieren Sie die Nutzungsbedingungen, um sich anzumelden",
       "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein",
       "invalid_email": "Ungültige E-Mail-Adresse",
       "login_email_not_found": "Abonnement mit dieser E-Mail-Adresse existiert nicht",

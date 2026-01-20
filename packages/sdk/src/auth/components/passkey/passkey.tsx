@@ -1,7 +1,7 @@
-import { Component, h, Prop, State, Host } from "@stencil/core";
+import { Component, Host, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { authState } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-passkey",
