@@ -1,81 +1,66 @@
-import * as z from "zod";
-import { type ApiClient, type ApiResponse, PaginationMetaSchema } from "../../api";
-import { getWithSchema } from "./get-with-schema";
-import { type ExportFormat, type ExportLinkResponse, ExportLinkResponseSchema, TicketableListParamsBaseSchema } from "./schemas";
+import type { ApiClientInterface, CommonErrors, ServiceDependencies } from "../../api/base-service";
+import {
+  type ExportFormat,
+  type ExportLinkResponse,
+  ExportLinkResponseSchema,
+  SubscriptionSchema,
+  SubscriptionsListResponseSchema,
+  type Subscription,
+  type SubscriptionsListResponse,
+} from "./schemas";
+import { TicketableService, type TicketableListArgs, type TicketableListResult, type TicketableGetResult } from "./ticketable-service";
 
-// Date transformer for ISO8601 strings
-const dateTransformer = z.coerce.date();
-const nullableDateTransformer = z.coerce.date().nullable();
+// Re-export types for external use
+export type { Subscription, SubscriptionsListResponse } from "./schemas";
 
-// Subscription types based on SubscriptionSerializer
-const SubscriptionSchema = z.object({
-  id: z.uuid(), // unidy_id
-  title: z.string(),
-  text: z.string(),
-  payment_frequency: z.string().nullable(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
-  wallet_export: z.record(z.string(), z.unknown()).nullable(),
-  exportable_to_wallet: z.boolean(),
-  state: z.string(),
-  reference: z.string(),
-  payment_state: z.string().nullable(),
-  currency: z.string().nullable(),
-  button_cta_url: z.string().nullable(),
-  created_at: dateTransformer, // ISO8601(3) -> Date
-  updated_at: dateTransformer, // ISO8601(3) -> Date
-  starts_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  next_payment_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  price: z.number(), // decimal(8, 2) -> float
-  user_id: z.uuid(),
-  subscription_category_id: z.uuid(),
-});
+// Argument types extending base ticketable args
+export interface SubscriptionsListArgs extends TicketableListArgs {
+  subscriptionCategoryId?: string;
+}
+export type SubscriptionsGetArgs = { id: string };
 
-export type Subscription = z.infer<typeof SubscriptionSchema>;
+// Result types
+export type SubscriptionsListResult = TicketableListResult<SubscriptionsListResponse>;
+export type SubscriptionsGetResult = TicketableGetResult<Subscription>;
+export type SubscriptionExportLinkResult = CommonErrors | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
 
-// List response
-const SubscriptionsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(SubscriptionSchema),
-});
+export class SubscriptionsService extends TicketableService {
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "SubscriptionsService", deps);
+  }
 
-export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
+  async list(args: SubscriptionsListArgs = {}): Promise<SubscriptionsListResult> {
+    const params = this.buildListParams(args, "subscription_category_id", args.subscriptionCategoryId);
+    const queryString = this.toQueryString(params);
+    return this.handleList("/api/sdk/v1/subscriptions", queryString, SubscriptionsListResponseSchema, "subscriptions", args);
+  }
 
-// Query params schema with validations
-const SubscriptionsListParamsSchema = TicketableListParamsBaseSchema.extend({ subscription_category_id: z.string().uuid() }).partial();
+  async get(args: SubscriptionsGetArgs): Promise<SubscriptionsGetResult> {
+    return this.handleGet(`/api/sdk/v1/subscriptions/${args.id}`, SubscriptionSchema, "subscription");
+  }
 
-export type SubscriptionsListParams = z.input<typeof SubscriptionsListParamsSchema>;
-
-export class SubscriptionsService {
-  list: (args: object, params?: SubscriptionsListParams) => Promise<ApiResponse<SubscriptionsListResponse>>;
-  get: (args: { id: string }) => Promise<ApiResponse<Subscription>>;
-
-  constructor(private client: ApiClient) {
-    this.list = getWithSchema(
-      this.client,
-      SubscriptionsListResponseSchema,
-      (_args: unknown) => "/api/sdk/v1/subscriptions",
-      SubscriptionsListParamsSchema,
+  async getExportLink(args: { id: string; format: ExportFormat }, idToken: string): Promise<SubscriptionExportLinkResult> {
+    const response = await this.client.post<unknown>(
+      `/api/sdk/v1/subscriptions/${args.id}/export_link`,
+      { format: args.format },
+      { "X-ID-Token": idToken },
     );
 
-    this.get = getWithSchema(this.client, SubscriptionSchema, (args: { id: string }) => `/api/sdk/v1/subscriptions/${args.id}`);
-  }
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        if (response.status === 401 || response.status === 403) {
+          return ["unauthorized", null];
+        }
+        return ["server_error", null];
+      }
 
-  async getExportLink(args: { id: string; format: ExportFormat }, idToken: string): Promise<ApiResponse<ExportLinkResponse>> {
-    const response = await this.client.post<unknown>(`/api/sdk/v1/subscriptions/${args.id}/export_link`, { format: args.format }, { "X-ID-Token": idToken });
+      const parsed = ExportLinkResponseSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid export link response", parsed.error);
+        return ["invalid_response", null];
+      }
 
-    return this.handleResponse(response, () => ExportLinkResponseSchema.parse(response.data));
-  }
-
-  private handleResponse<T>(response: ApiResponse<unknown>, parser: () => T): ApiResponse<T> {
-    if (!response.success || !response.data) {
-      return response as ApiResponse<T>;
-    }
-
-    try {
-      return { ...response, data: parser() };
-    } catch {
-      return { ...response, success: false, error: "Invalid response format", data: undefined };
-    }
+      return [null, parsed.data];
+    });
   }
 }

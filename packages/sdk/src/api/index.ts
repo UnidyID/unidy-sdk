@@ -1,16 +1,39 @@
+import * as Sentry from "@sentry/browser";
+import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
-import { ApiClient, ApiResponse } from "./client";
+import { createLogger } from "../logger";
+import type { ServiceDependencies } from "./base-service";
+import { Auth } from "../auth/auth";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
+export * from "./shared";
+export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
-export * from "./shared";
+export { StandaloneApiClient, StandaloneUnidyClient, createStandaloneClient } from "./standalone";
+export type { StandaloneUnidyClientConfig } from "./standalone";
+
+/** Default browser dependencies using Sentry and the SDK logger */
+function createBrowserDeps(serviceName: string): ServiceDependencies {
+  return {
+    logger: createLogger(serviceName),
+    errorReporter: {
+      captureException: (error, context) => Sentry.captureException(error, { extra: context }),
+    },
+    getIdToken: async () => {
+      const auth = await Auth.getInstance();
+      const token = await auth.getToken();
+      return typeof token === "string" ? token : null;
+    },
+    getLocale: () => unidyState.locale,
+  };
+}
 
 export class UnidyClient {
   private apiClient: ApiClient;
@@ -22,15 +45,14 @@ export class UnidyClient {
   subscriptions: SubscriptionsService;
 
   constructor(baseUrl: string, apiKey: string) {
-    this.apiClient = new ApiClient(baseUrl, apiKey, (isConnected) => {
-      unidyState.backendConnected = isConnected;
-    });
+    this.apiClient = new ApiClient(baseUrl, apiKey);
 
-    this.newsletters = new NewsletterService(this.apiClient);
-    this.profile = new ProfileService(this.apiClient);
-    this.auth = new AuthService(this.apiClient);
-    this.tickets = new TicketsService(this.apiClient);
-    this.subscriptions = new SubscriptionsService(this.apiClient);
+    // Initialize services with browser-specific dependencies
+    this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));
+    this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
+    this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
+    this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
+    this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
   }
 }
 

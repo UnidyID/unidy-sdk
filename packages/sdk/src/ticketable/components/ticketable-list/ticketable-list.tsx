@@ -107,33 +107,46 @@ export class TicketableList extends UnidyComponent {
 
     try {
       const unidyClient = await getUnidyClient();
-      const service = this.ticketableType === "ticket" ? unidyClient.tickets : unidyClient.subscriptions;
 
-      const response = await service.list(
-        {},
-        {
-          page: this.page,
-          limit: this.limit,
-          ...Object.fromEntries((this.filter || "").split(";").map((pair) => pair.split("="))),
-        },
-      );
+      // Parse filter string into typed args using URLSearchParams (treats ; as separator)
+      const filterArgs: Record<string, string> = Object.fromEntries(new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries());
 
-      if (!response.success || !response.data) {
-        this.error =
-          response.error instanceof Error
-            ? response.error.message
-            : response.error || `[u-ticketable-list] Failed to fetch ${this.ticketableType}s`;
+      // Common args for both services
+      const commonArgs = {
+        page: this.page,
+        perPage: this.limit,
+        state: filterArgs.state,
+        paymentState: filterArgs.payment_state,
+        orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
+        orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
+        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
+      };
+
+      // Call the appropriate service with type-safe args
+      const [error, data] =
+        this.ticketableType === "ticket"
+          ? await unidyClient.tickets.list({
+              ...commonArgs,
+              ticketCategoryId: filterArgs.ticket_category_id,
+            })
+          : await unidyClient.subscriptions.list({
+              ...commonArgs,
+              subscriptionCategoryId: filterArgs.subscription_category_id,
+            });
+
+      if (error !== null || !data || !("results" in data)) {
+        this.error = this.getTranslatedError(error);
         this.loading = false;
         this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
-      this.items = response.data.results;
-      this.paginationMeta = response.data.meta;
+      this.items = data.results;
+      this.paginationMeta = data.meta;
 
       // Update the store with pagination data
       if (this.store) {
-        this.store.state.paginationMeta = response.data.meta;
+        this.store.state.paginationMeta = data.meta;
       }
 
       this.loading = false;
@@ -144,6 +157,24 @@ export class TicketableList extends UnidyComponent {
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
     }
+  }
+
+  private getTranslatedError(error: string | null): string {
+    if (!error) {
+      return t("ticketable.errors.fetch_failed", { defaultValue: "Failed to load data" });
+    }
+
+    const errorMessages: Record<string, string> = {
+      connection_failed: t("errors.connection_failed", { defaultValue: "Connection failed. Please check your internet connection." }),
+      schema_validation_error: t("errors.schema_validation", { defaultValue: "Invalid data received from server." }),
+      internal_error: t("errors.internal", { defaultValue: "An internal error occurred." }),
+      missing_id_token: t("errors.unauthorized", { defaultValue: "You must be logged in to view this content." }),
+      unauthorized: t("errors.unauthorized", { defaultValue: "You are not authorized to view this content." }),
+      server_error: t("errors.server", { defaultValue: "A server error occurred. Please try again later." }),
+      invalid_response: t("errors.invalid_response", { defaultValue: "Invalid response from server." }),
+    };
+
+    return errorMessages[error] || t("errors.unknown", { defaultValue: "An unknown error occurred." });
   }
 
   private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {
@@ -269,7 +300,7 @@ export class TicketableList extends UnidyComponent {
       this.logger.error(`can't render content: ${this.error}`);
       return (
         <h1>
-          `${t("errors.prefix")} ${this.error}`
+          {t("errors.prefix")} {this.error}
         </h1>
       );
     }

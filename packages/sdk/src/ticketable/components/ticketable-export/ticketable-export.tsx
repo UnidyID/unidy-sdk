@@ -52,17 +52,23 @@ export class TicketableExport extends UnidyComponent {
 
       const client = await getUnidyClient();
       const service = info.type === "ticket" ? client.tickets : client.subscriptions;
-      const response = await service.getExportLink({ id: info.id, format: this.format }, token);
+      const result = await service.getExportLink({ id: info.id, format: this.format }, token);
+      const [error, data] = result;
 
-      if (!response.success || !response.data) {
-        const errorMessage = typeof response.error === "string" ? response.error : "Failed to get export link";
-        this.uTicketableExportError.emit({ error: errorMessage });
+      if (error !== null) {
+        this.uTicketableExportError.emit({ error });
         this.loading = false;
         return;
       }
 
-      window.open(response.data.url, "_blank");
-      this.uTicketableExportSuccess.emit({ url: response.data.url, format: this.format });
+      if (!data || !("url" in data)) {
+        this.uTicketableExportError.emit({ error: "Failed to get export link" });
+        this.loading = false;
+        return;
+      }
+
+      window.open(data.url, "_blank");
+      this.uTicketableExportSuccess.emit({ url: data.url, format: this.format });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       this.uTicketableExportError.emit({ error: errorMessage });

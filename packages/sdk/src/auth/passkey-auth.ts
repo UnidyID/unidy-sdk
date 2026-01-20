@@ -86,7 +86,7 @@ export async function authenticateWithPasskey(client: UnidyClient, onSuccess: (r
   }
 
   try {
-    const [optionsError, options] = await client.auth.getPasskeyOptions(authState.sid || undefined);
+    const [optionsError, options] = await client.auth.getPasskeyOptions(authState.sid ? { signInId: authState.sid } : undefined);
 
     if (optionsError || !options) {
       authStore.setFieldError("passkey", optionsError || "bad_request");
@@ -108,7 +108,9 @@ export async function authenticateWithPasskey(client: UnidyClient, onSuccess: (r
 
     const formattedCredential = formatCredentialForServer(credential);
 
-    const [verifyError, tkResponse] = await client.auth.authenticateWithPasskey(formattedCredential);
+    const [verifyError, tkResponse] = await client.auth.authenticateWithPasskey({
+      payload: { credential: formattedCredential },
+    });
 
     const tokenResponse = tkResponse as TokenResponse;
     if (verifyError || !tokenResponse) {
