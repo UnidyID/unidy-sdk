@@ -25,6 +25,12 @@ export class JumpToUnidy {
   @Prop() newtab = false;
 
   /**
+   * If true, skips authentication and redirects directly to the Unidy path.
+   * Useful for public pages like terms of service.
+   */
+  @Prop({ attribute: "no-auth" }) noAuth = false;
+
+  /**
    * Custom CSS class name(s) to apply to the button element.
    */
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -64,6 +70,17 @@ export class JumpToUnidy {
 
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path: "${this.path}". Path must be provided and start with "/".`);
+      return;
+    }
+
+    // If no-auth mode, redirect directly to the path without authentication
+    if (this.noAuth) {
+      const finalUrl = new URL(this.path, unidyState.baseUrl).toString();
+      if (this.newtab) {
+        window.open(finalUrl, "_blank");
+      } else {
+        window.location.href = finalUrl;
+      }
       return;
     }
 
@@ -116,6 +133,9 @@ export class JumpToUnidy {
   };
 
   private isDisabled(): boolean {
+    if (this.noAuth) {
+      return this.loading || !this.isValidPath();
+    }
     return !authState.authenticated || this.loading || !this.isValidPath();
   }
 

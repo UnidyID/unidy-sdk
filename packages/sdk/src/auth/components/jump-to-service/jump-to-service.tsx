@@ -46,6 +46,12 @@ export class JumpToService {
    */
   @Prop({ attribute: "skip-oauth-authorization" }) skipOauthAuthorization = false;
 
+  /**
+   * If true, skips authentication and redirects directly to the redirect-uri.
+   * Requires redirect-uri to be set.
+   */
+  @Prop({ attribute: "no-auth" }) noAuth = false;
+
   @State() loading = false;
 
   // TODO: Figure out a way to share this across components
@@ -68,6 +74,20 @@ export class JumpToService {
 
     if (!this.serviceId) {
       console.error("[u-jump-to-service] service-id is required");
+      return;
+    }
+
+    // If no-auth mode, redirect directly to the redirect-uri
+    if (this.noAuth) {
+      if (!this.redirectUri) {
+        console.error("[u-jump-to-service] redirect-uri is required when using no-auth mode");
+        return;
+      }
+      if (this.newtab) {
+        window.open(this.redirectUri, "_blank");
+      } else {
+        window.location.href = this.redirectUri;
+      }
       return;
     }
 
@@ -128,6 +148,9 @@ export class JumpToService {
   };
 
   private isDisabled(): boolean {
+    if (this.noAuth) {
+      return this.loading || !this.serviceId || !this.redirectUri;
+    }
     return !authState.authenticated || this.loading || !this.serviceId;
   }
 
