@@ -18,6 +18,7 @@
       "!**/tsconfig.json",
       "!examples",
       "!development-target.tsx",
+      "!packages/sdk/src/demo-build.css",
       "!packages/sdk-react/lib/components/stencil-generated/components.ts",
       "!packages/sdk-react/lib/components/stencil-generated/components.server.ts"
     ]

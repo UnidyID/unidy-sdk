@@ -8,6 +8,7 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
+export * from "./api/schemas";
 export * from "./api/subscriptions";
 export * from "./api/tickets";
 export * from "./store/pagination-store";

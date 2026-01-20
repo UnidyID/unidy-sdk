@@ -265,15 +265,6 @@ export class TicketableList extends UnidyComponent {
           // Find all template strings like {{path}} and replace them with nested values
           const templateRegex = /\{\{([^}]+)\}\}/g;
           value = value.replace(templateRegex, (match, path) => {
-            if (path === "wallet_export.pkpass") {
-              // return `${unidyState.baseUrl}/api/sdk/v1/${this.ticketableType}s/${item.id}/exports/pkpass`;
-              return `${unidyState.baseUrl}/${this.ticketableType}s/${item.id}/exports/pkpass`;
-            }
-            if (path === "wallet_export.pdf") {
-              // return `${unidyState.baseUrl}/api/sdk/v1/${this.ticketableType}s/${item.id}/exports/pdf`;
-              return `${unidyState.baseUrl}/${this.ticketableType}s/${item.id}/exports/pdf`;
-            }
-
             const nestedValue = getNestedValue(item, path.trim());
             return nestedValue != null ? String(nestedValue) : match;
           });
@@ -360,6 +351,17 @@ export class TicketableList extends UnidyComponent {
       } else {
         // Remove the conditional element and its children
         conditionalEl.remove();
+      }
+    }
+
+    // Set ticketable context on export buttons
+    for (const exportEl of fragment.querySelectorAll("u-ticketable-export")) {
+      if (item) {
+        exportEl.setAttribute("data-ticketable-id", item.id);
+        exportEl.setAttribute("data-ticketable-type", this.ticketableType);
+        exportEl.setAttribute("exportable", item.exportable_to_wallet ? "true" : "false");
+      } else {
+        exportEl.setAttribute("exportable", "false");
       }
     }
 
