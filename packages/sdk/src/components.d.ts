@@ -146,30 +146,51 @@ export namespace Components {
     }
     interface UJumpToService {
         /**
+          * Custom CSS class name(s) to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, opens the URL in a new tab. Defaults to false.
           * @default false
          */
         "newtab": boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
         "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
         "serviceId": string;
         /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
           * @default false
          */
         "skipOauthAuthorization": boolean;
     }
     interface UJumpToUnidy {
         /**
+          * Custom CSS class name(s) to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, opens the URL in a new tab. Defaults to false.
           * @default false
          */
         "newtab": boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
         "path": string;
     }
     interface ULogoutButton {
@@ -932,30 +953,51 @@ declare namespace LocalJSX {
     }
     interface UJumpToService {
         /**
+          * Custom CSS class name(s) to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, opens the URL in a new tab. Defaults to false.
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.
+          * @example "openid,profile"
+         */
         "scopes"?: string;
+        /**
+          * The OAuth Application ID (service ID) to jump to.
+          * @example "2"
+         */
         "serviceId": string;
         /**
+          * If true, skips the OAuth authorization step (if already authorized once). Defaults to false.
           * @default false
          */
         "skipOauthAuthorization"?: boolean;
     }
     interface UJumpToUnidy {
         /**
+          * Custom CSS class name(s) to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, opens the URL in a new tab. Defaults to false.
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * The Unidy path to redirect to. Must start with "/".
+          * @example "/subscriptions"
+          * @example "/tickets"
+         */
         "path": string;
     }
     interface ULogoutButton {
