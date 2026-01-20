@@ -53,10 +53,7 @@ export interface ApiClientInterface {
   delete<T>(endpoint: string, headers?: HeadersInit): Promise<ApiResponse<T>>;
 }
 
-export type CommonErrors =
-  | ["connection_failed", null]
-  | ["schema_validation_error", SchemaValidationError]
-  | ["internal_error", null];
+export type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] | ["internal_error", null];
 
 export type ServiceResult<TSuccess, TError extends string = never> =
   | CommonErrors

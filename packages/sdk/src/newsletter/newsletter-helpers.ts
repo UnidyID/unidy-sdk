@@ -43,9 +43,7 @@ export async function resendDoi(internalName: string): Promise<boolean> {
   return false;
 }
 
-export type LoginEmailResult =
-  | { success: true }
-  | { success: false; error: "rate_limit_exceeded" | "not_found" | "unknown" };
+export type LoginEmailResult = { success: true } | { success: false; error: "rate_limit_exceeded" | "not_found" | "unknown" };
 
 export async function sendLoginEmail(email: string): Promise<LoginEmailResult> {
   const [error] = await getUnidyClient().newsletters.sendLoginEmail({

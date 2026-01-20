@@ -1,8 +1,4 @@
-import type {
-  StandaloneApiClient,
-  StandaloneUnidyClient,
-  StandaloneUnidyClientConfig,
-} from "./dist/types/api/standalone";
+import type { StandaloneApiClient, StandaloneUnidyClient, StandaloneUnidyClientConfig } from "./dist/types/api/standalone";
 
 async function run() {
   const mod = await import("./dist/collection/api/standalone.js");

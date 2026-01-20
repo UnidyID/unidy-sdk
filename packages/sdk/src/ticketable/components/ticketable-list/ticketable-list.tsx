@@ -109,9 +109,7 @@ export class TicketableList extends UnidyComponent {
       const unidyClient = await getUnidyClient();
 
       // Parse filter string into typed args using URLSearchParams (treats ; as separator)
-      const filterArgs: Record<string, string> = Object.fromEntries(
-        new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries(),
-      );
+      const filterArgs: Record<string, string> = Object.fromEntries(new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries());
 
       // Common args for both services
       const commonArgs = {
