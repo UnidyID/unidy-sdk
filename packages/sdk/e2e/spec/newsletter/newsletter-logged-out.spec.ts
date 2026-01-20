@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { routes, userLogin } from "../../config";
+import { routes } from "../../config";
 import { ModelCountAssert } from "../../lib/assert/count";
 import { EmailAssert } from "../../lib/assert/emails";
 import { Database } from "../../lib/database";
+import { extractManageSubscriptionLink } from "../../lib/helpers/newsletter";
 import { randomEmail } from "../../lib/helpers/random";
 
 test.describe("Newsletter (logged out)", () => {
@@ -91,13 +92,9 @@ test.describe("Newsletter (logged out)", () => {
 
     const lastEmail = await userEmails.ensureLast();
 
-    console.log("Last email content:", lastEmail.body);
+    const manageSubscriptionLink = extractManageSubscriptionLink(lastEmail.body);
 
-    const manageSubscriptionLinkMatch = lastEmail.body.match(/href="(http[^"]*\/newsletter[^"]*)"/);
-    const manageSubscriptionLink = manageSubscriptionLinkMatch?.[1]?.replace(/&amp;/g, "&");
-
-    expect(manageSubscriptionLink).toBeDefined();
-    await page.goto(manageSubscriptionLink!);
+    await page.goto(manageSubscriptionLink);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { name: "Your subscriptions", exact: true })).toBeVisible();
   });
