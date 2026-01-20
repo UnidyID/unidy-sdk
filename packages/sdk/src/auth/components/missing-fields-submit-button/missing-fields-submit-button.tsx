@@ -27,7 +27,10 @@ export class MissingFieldsSubmitButton {
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
     const sid = authState.sid as string;
 
-    const [error, response] = await getUnidyClient().auth.updateMissingFields(sid, updatedProfileData);
+    const [error, response] = await getUnidyClient().auth.updateMissingFields({
+      signInId: sid,
+      payload: { user: updatedProfileData },
+    });
 
     if (error) {
       profileState.loading = false;

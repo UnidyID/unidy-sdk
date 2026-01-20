@@ -1,282 +1,393 @@
-import * as Sentry from "@sentry/browser";
-import EventEmitter from "eventemitter3";
-import * as z from "zod/mini";
-import type { ApiClient, ApiResponse } from "../../api";
-import { createLogger } from "../../logger";
+import * as z from "zod";
+import {
+  type ApiClientInterface,
+  BaseService,
+  type CommonErrors,
+  type Options,
+  type Payload,
+  type ServiceDependencies,
+} from "../../api/base-service";
+import {
+  type CreateSubscriptionsPayload,
+  CreateSubscriptionsPayloadSchema,
+  type CreateSubscriptionsResponse,
+  CreateSubscriptionsResponseSchema,
+  DeleteSubscriptionResponseSchema,
+  type LoginEmailPayload,
+  LoginEmailPayloadSchema,
+  type Newsletter,
+  type NewsletterErrorResponse,
+  NewsletterErrorResponseSchema,
+  NewsletterSchema,
+  type NewsletterSubscription,
+  NewsletterSubscriptionSchema,
+  type NewslettersResponse,
+  NewslettersResponseSchema,
+  type ResendDoiPayload,
+  ResendDoiPayloadSchema,
+  type UpdateSubscriptionPayload,
+  UpdateSubscriptionPayloadSchema,
+} from "./schemas";
 
-const NewsletterSubscriptionSchema = z.object({
-  id: z.number(),
-  email: z.string(),
-  newsletter_internal_name: z.string(),
-  preference_identifiers: z.array(z.string()),
-  preference_token: z.string(),
-  confirmed_at: z.union([z.string(), z.null()]),
-});
+// Re-export types for external use
+export type {
+  AdditionalFields,
+  CreateSubscriptionsPayload,
+  CreateSubscriptionsResponse,
+  LoginEmailPayload,
+  Newsletter,
+  NewsletterErrorResponse,
+  NewsletterSubscription,
+  NewsletterSubscriptionError,
+  NewslettersResponse,
+  Preference,
+  PreferenceGroup,
+  ResendDoiPayload,
+  UpdateSubscriptionPayload,
+} from "./schemas";
 
-const NewsletterSubscriptionErrorSchema = z.object({
-  error_identifier: z.string(),
-  error_details: z.optional(z.record(z.string(), z.array(z.string()))),
-  meta: z.object({
-    newsletter_internal_name: z.string(),
-  }),
-});
+// Options type for newsletter methods (only preferenceToken can be passed per-call)
+export type NewsletterOptions = { preferenceToken: string };
 
-const CreateSubscriptionsResponseSchema = z.object({
-  results: z.array(NewsletterSubscriptionSchema),
-  errors: z.array(NewsletterSubscriptionErrorSchema),
-});
+// Argument types for unified interface
+export type NewsletterCreateArgs = Payload<CreateSubscriptionsPayload> & Options<NewsletterOptions>;
+export type NewsletterListArgs = Options<NewsletterOptions>;
+export type NewsletterGetArgs = { internalName: string } & Options<NewsletterOptions>;
+export type NewsletterUpdateArgs = { internalName: string } & Payload<UpdateSubscriptionPayload> & Options<NewsletterOptions>;
+export type NewsletterDeleteArgs = { internalName: string } & Options<NewsletterOptions>;
+export type NewsletterResendDoiArgs = { internalName: string } & Payload<ResendDoiPayload> & Options<NewsletterOptions>;
+export type NewsletterSendLoginEmailArgs = Payload<LoginEmailPayload>;
+export type NewsletterGetByNameArgs = { internalName: string };
 
-const AdditionalFieldsSchema = z.object({
-  first_name: z.optional(z.union([z.string(), z.null()])),
-  last_name: z.optional(z.union([z.string(), z.null()])),
-  salutation: z.optional(z.union([z.literal("mr"), z.literal("mrs"), z.literal("mx"), z.null()])),
-  phone_number: z.optional(z.union([z.string(), z.null()])),
-  date_of_birth: z.optional(z.union([z.string(), z.null()])),
-  company_name: z.optional(z.union([z.string(), z.null()])),
-  address_line_1: z.optional(z.union([z.string(), z.null()])),
-  address_line_2: z.optional(z.union([z.string(), z.null()])),
-  city: z.optional(z.union([z.string(), z.null()])),
-  postal_code: z.optional(z.union([z.string(), z.null()])),
-  country_code: z.optional(z.union([z.string(), z.null()])),
-  preferred_language: z.optional(z.union([z.string(), z.null()])),
-  custom_attributes: z.optional(z.union([z.record(z.string(), z.unknown()), z.null()])),
-});
+// Result types using tuples
+export type NewsletterCreateResult =
+  | CommonErrors
+  | ["rate_limit_exceeded", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | ["newsletter_error", CreateSubscriptionsResponse]
+  | [null, CreateSubscriptionsResponse];
 
-const CreateSubscriptionsPayloadSchema = z.object({
-  email: z.string(),
-  additional_fields: z.optional(AdditionalFieldsSchema),
-  newsletter_subscriptions: z.array(
-    z.object({
-      newsletter_internal_name: z.string(),
-      preference_identifiers: z.optional(z.array(z.string())),
-    }),
-  ),
-  redirect_to_after_confirmation: z.optional(z.string()),
-});
+export type NewsletterListResult =
+  | CommonErrors
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, NewsletterSubscription[]];
 
-const UpdateSubscriptionPayloadSchema = z.object({
-  preference_identifiers: z.array(z.string()),
-});
+export type NewsletterGetResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, NewsletterSubscription];
 
-const LoginEmailPayloadSchema = z.object({
-  email: z.string(),
-  redirect_uri: z.string(),
-});
+export type NewsletterUpdateResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, NewsletterSubscription];
 
-const ResendDoiPayloadSchema = z.object({
-  redirect_to_after_confirmation: z.optional(z.string()),
-});
+export type NewsletterDeleteResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["unprocessable_entity", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, { new_preference_token: string } | null];
 
-const PreferenceSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.union([z.string(), z.null()]),
-  plugin_identifier: z.union([z.string(), z.null()]),
-  position: z.number(),
-  default: z.boolean(),
-  hidden: z.boolean(),
-});
+export type NewsletterResendDoiResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["unauthorized", NewsletterErrorResponse]
+  | ["already_confirmed", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, null];
 
-const PreferenceGroupSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  position: z.number(),
-  flat: z.boolean(),
-  preferences: z.array(PreferenceSchema),
-});
+export type NewsletterSendLoginEmailResult =
+  | CommonErrors
+  | ["rate_limit_exceeded", NewsletterErrorResponse]
+  | ["not_found", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, null];
 
-const NewsletterSchema = z.object({
-  id: z.number(),
-  internal_name: z.string(),
-  default: z.boolean(),
-  position: z.number(),
-  opt_in_type: z.string(),
-  title: z.string(),
-  description: z.union([z.string(), z.null()]),
-  created_at: z.string(),
-  updated_at: z.string(),
-  preference_groups: z.array(PreferenceGroupSchema),
-});
+export type NewsletterListAllResult = CommonErrors | ["server_error", null] | [null, NewslettersResponse];
 
-const NewslettersResponseSchema = z.object({
-  newsletters: z.array(NewsletterSchema),
-});
+export type NewsletterGetByNameResult =
+  | CommonErrors
+  | ["not_found", NewsletterErrorResponse]
+  | ["server_error", NewsletterErrorResponse]
+  | [null, Newsletter];
 
-export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
-export type NewsletterSubscriptionError = z.infer<typeof NewsletterSubscriptionErrorSchema>;
-export type CreateSubscriptionsResponse = z.infer<typeof CreateSubscriptionsResponseSchema>;
-export type CreateSubscriptionsPayload = z.infer<typeof CreateSubscriptionsPayloadSchema>;
-export type AdditionalFields = z.infer<typeof AdditionalFieldsSchema>;
-export type UpdateSubscriptionPayload = z.infer<typeof UpdateSubscriptionPayloadSchema>;
-export type LoginEmailPayload = z.infer<typeof LoginEmailPayloadSchema>;
-export type ResendDoiPayload = z.infer<typeof ResendDoiPayloadSchema>;
-export type Newsletter = z.infer<typeof NewsletterSchema>;
-export type NewslettersResponse = z.infer<typeof NewslettersResponseSchema>;
-export type Preference = z.infer<typeof PreferenceSchema>;
-export type PreferenceGroup = z.infer<typeof PreferenceGroupSchema>;
-
-export type SubscriptionAuthOptions = {
-  idToken?: string;
-  preferenceToken?: string;
-};
-
-export type CreateSubscriptionsResult =
-  | ["schema_validation_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["rate_limit_exceeded", ApiResponse<CreateSubscriptionsResponse>]
-  | ["unauthorized", ApiResponse<CreateSubscriptionsResponse>]
-  | ["newsletter_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["network_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["server_error", ApiResponse<CreateSubscriptionsResponse>]
-  | ["error", ApiResponse<CreateSubscriptionsResponse>]
-  | [null, ApiResponse<CreateSubscriptionsResponse>];
-
-export class NewsletterService extends EventEmitter {
-  private client: ApiClient;
-  private logger = createLogger("NewsletterService");
-
-  constructor(client: ApiClient) {
-    super();
-    this.client = client;
+export class NewsletterService extends BaseService {
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "NewsletterService", deps);
   }
 
-  private buildAuthHeaders(auth?: SubscriptionAuthOptions): HeadersInit | undefined {
-    if (!auth) return undefined;
-
-    const headers: Record<string, string> = {};
-    if (auth.idToken) {
-      headers["X-ID-Token"] = auth.idToken;
-    }
-    if (auth.preferenceToken) {
-      headers["X-Preference-Token"] = auth.preferenceToken;
-    }
-    return Object.keys(headers).length > 0 ? headers : undefined;
-  }
-
-  async createSubscriptions(payload: CreateSubscriptionsPayload, auth?: SubscriptionAuthOptions): Promise<CreateSubscriptionsResult> {
-    CreateSubscriptionsPayloadSchema.parse(payload);
-
-    const response = await this.client.post<CreateSubscriptionsResponse>(
-      "/api/sdk/v1/newsletters/newsletter_subscription",
-      payload,
-      this.buildAuthHeaders(auth),
-    );
-
-    switch (response.status) {
-      case 401:
-        this.emit("unauthorized", response);
-        return ["unauthorized", response];
-      case 429:
-        this.logger.warn("Rate limit exceeded");
-        this.emit("rate_limit_exceeded", response);
-        return ["rate_limit_exceeded", response];
-      case 500:
-        Sentry.captureException(response);
-        return ["server_error", response];
-      case 0:
-        return ["network_error", response];
-      default:
-        if (response.data) {
-          try {
-            const validatedData = CreateSubscriptionsResponseSchema.parse(response.data);
-
-            if (validatedData.errors.length > 0) {
-              this.emit("newsletter_error", response);
-              return ["newsletter_error", response];
-            }
-
-            return [null, response];
-          } catch (_validationError) {
-            return ["schema_validation_error", response];
-          }
-        }
-
-        return ["error", response];
-    }
-  }
-
-  async listSubscriptions(auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription[]>> {
-    return this.client.get<NewsletterSubscription[]>("/api/sdk/v1/newsletters/newsletter_subscription", this.buildAuthHeaders(auth));
-  }
-
-  async getSubscription(internalName: string, auth: SubscriptionAuthOptions): Promise<ApiResponse<NewsletterSubscription>> {
-    return this.client.get<NewsletterSubscription>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildAuthHeaders(auth),
-    );
-  }
-
-  async updateSubscription(
-    internalName: string,
-    payload: UpdateSubscriptionPayload,
-    auth: SubscriptionAuthOptions,
-  ): Promise<ApiResponse<NewsletterSubscription>> {
-    UpdateSubscriptionPayloadSchema.parse(payload);
-
-    return this.client.patch<NewsletterSubscription>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      payload,
-      this.buildAuthHeaders(auth),
-    );
-  }
-
-  async deleteSubscription(
-    internalName: string,
-    auth: SubscriptionAuthOptions,
-  ): Promise<ApiResponse<{ new_preference_token: string } | null>> {
-    return this.client.delete<{ new_preference_token: string } | null>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`,
-      this.buildAuthHeaders(auth),
-    );
-  }
-
-  async resendDoi(internalName: string, payload: ResendDoiPayload, auth: SubscriptionAuthOptions): Promise<ApiResponse<null>> {
-    ResendDoiPayloadSchema.parse(payload);
-
-    return this.client.post<null>(
-      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
-      payload,
-      this.buildAuthHeaders(auth),
-    );
-  }
-
-  async sendLoginEmail(payload: LoginEmailPayload): Promise<ApiResponse<null>> {
-    LoginEmailPayloadSchema.parse(payload);
-
-    return this.client.post<null>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
-  }
-
-  async listNewsletters(): Promise<ApiResponse<NewslettersResponse>> {
-    return this.client.get<NewslettersResponse>("/api/sdk/v1/newsletters");
-  }
-
-  async getNewsletter(internalName: string): Promise<ApiResponse<Newsletter>> {
-    return this.client.get<Newsletter>(`/api/sdk/v1/newsletters/${internalName}`);
-  }
-
-  onError(
-    callback: (errors: z.infer<typeof NewsletterSubscriptionErrorSchema>[]) => void,
-    errorIdentifier?: "unconfirmed" | "already_subscribed" | "invalid_email",
-  ): void {
-    this.on("newsletter_error", (response: ApiResponse<CreateSubscriptionsResponse>) => {
-      if (!response.data?.errors) {
-        return;
-      }
-
-      const errors = errorIdentifier
-        ? response.data.errors.filter((error: { error_identifier: string }) => error.error_identifier === errorIdentifier)
-        : response.data.errors;
-
-      if (errors.length > 0) {
-        callback(errors);
-      }
+  private async buildNewsletterAuthHeaders(options?: Partial<NewsletterOptions>): Promise<HeadersInit | undefined> {
+    const idToken = await this.getIdToken();
+    return this.buildAuthHeaders({
+      "X-ID-Token": idToken ?? undefined,
+      "X-Preference-Token": options?.preferenceToken,
     });
   }
 
-  onRateLimitError(callback: () => void): void {
-    this.on("rate_limit_exceeded", (response: ApiResponse<CreateSubscriptionsResponse>) => {
-      if (response.status === 429) {
-        callback();
+  /**
+   * Create newsletter subscriptions for a user
+   */
+  async create(args: NewsletterCreateArgs): Promise<NewsletterCreateResult> {
+    const { payload, options } = args;
+    const validatedPayload = CreateSubscriptionsPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for create", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
+
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", payload, headers);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        switch (response.status) {
+          case 401:
+            return ["unauthorized", error];
+          case 429:
+            this.logger.warn("Rate limit exceeded");
+            return ["rate_limit_exceeded", error];
+          case 500:
+            this.errorReporter.captureException(response);
+            return ["server_error", error];
+          default:
+            return ["server_error", error];
+        }
       }
+
+      const data = CreateSubscriptionsResponseSchema.parse(response.data);
+      if (data.errors.length > 0) {
+        return ["newsletter_error", data];
+      }
+      return [null, data];
+    });
+  }
+
+  /**
+   * List all subscriptions for the authenticated user
+   */
+  async list(args?: NewsletterListArgs): Promise<NewsletterListResult> {
+    const headers = await this.buildNewsletterAuthHeaders(args?.options);
+    const response = await this.client.get<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", headers);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        return ["server_error", error];
+      }
+
+      const data = z.array(NewsletterSubscriptionSchema).parse(response.data);
+      return [null, data];
+    });
+  }
+
+  /**
+   * Get a specific subscription by newsletter internal name
+   */
+  async get(args: NewsletterGetArgs): Promise<NewsletterGetResult> {
+    const { internalName, options } = args;
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, headers);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        return ["server_error", error];
+      }
+
+      const data = NewsletterSubscriptionSchema.parse(response.data);
+      return [null, data];
+    });
+  }
+
+  /**
+   * Update a subscription's preferences
+   */
+  async update(args: NewsletterUpdateArgs): Promise<NewsletterUpdateResult> {
+    const { internalName, payload, options } = args;
+    const validatedPayload = UpdateSubscriptionPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for update", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
+
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.patch<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, payload, headers);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        return ["server_error", error];
+      }
+
+      const data = NewsletterSubscriptionSchema.parse(response.data);
+      return [null, data];
+    });
+  }
+
+  /**
+   * Delete a subscription
+   */
+  async delete(args: NewsletterDeleteArgs): Promise<NewsletterDeleteResult> {
+    const { internalName, options } = args;
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.delete<unknown>(`/api/sdk/v1/newsletters/${internalName}/newsletter_subscription`, headers);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        if (response.status === 422) {
+          return ["unprocessable_entity", error];
+        }
+        return ["server_error", error];
+      }
+
+      if (response.status === 204) {
+        return [null, null];
+      }
+
+      const data = DeleteSubscriptionResponseSchema.parse(response.data);
+      return [null, data];
+    });
+  }
+
+  /**
+   * Resend double opt-in confirmation email
+   */
+  async resendDoi(args: NewsletterResendDoiArgs): Promise<NewsletterResendDoiResult> {
+    const { internalName, payload, options } = args;
+    const validatedPayload = ResendDoiPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for resendDoi", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
+
+    const headers = await this.buildNewsletterAuthHeaders(options);
+    const response = await this.client.post<unknown>(
+      `/api/sdk/v1/newsletters/${internalName}/newsletter_subscription/resend_doi`,
+      payload,
+      headers,
+    );
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 401) {
+          return ["unauthorized", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        if (error.error_identifier === "already_confirmed") {
+          return ["already_confirmed", error];
+        }
+        return ["server_error", error];
+      }
+
+      return [null, null];
+    });
+  }
+
+  /**
+   * Send a login email for newsletter management
+   */
+  async sendLoginEmail(args: NewsletterSendLoginEmailArgs): Promise<NewsletterSendLoginEmailResult> {
+    const { payload } = args;
+    const validatedPayload = LoginEmailPayloadSchema.safeParse(payload);
+    if (!validatedPayload.success) {
+      this.logger.error("Invalid payload for sendLoginEmail", validatedPayload.error);
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [String(validatedPayload.error)] }];
+    }
+
+    const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription/login_email", payload);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 429) {
+          return ["rate_limit_exceeded", error];
+        }
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        return ["server_error", error];
+      }
+
+      return [null, null];
+    });
+  }
+
+  /**
+   * List all available newsletters
+   */
+  async listAll(): Promise<NewsletterListAllResult> {
+    const response = await this.client.get<unknown>("/api/sdk/v1/newsletters");
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        return ["server_error", null];
+      }
+
+      const data = NewslettersResponseSchema.parse(response.data);
+      return [null, data];
+    });
+  }
+
+  /**
+   * Get a newsletter by its internal name
+   */
+  async getByName(args: NewsletterGetByNameArgs): Promise<NewsletterGetByNameResult> {
+    const { internalName } = args;
+    const response = await this.client.get<unknown>(`/api/sdk/v1/newsletters/${internalName}`);
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+        if (response.status === 404) {
+          return ["not_found", error];
+        }
+        return ["server_error", error];
+      }
+
+      const data = NewsletterSchema.parse(response.data);
+      return [null, data];
     });
   }
 }
