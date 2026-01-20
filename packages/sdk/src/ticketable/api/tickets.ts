@@ -22,7 +22,7 @@ export type TicketsGetArgs = { id: string };
 // Result types
 export type TicketsListResult = TicketableListResult<TicketsListResponse>;
 export type TicketsGetResult = TicketableGetResult<Ticket>;
-export type TicketExportLinkResult = CommonErrors | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
+export type TicketExportLinkResult = CommonErrors | ["missing_id_token", null] | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
 
 export class TicketsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -39,11 +39,16 @@ export class TicketsService extends TicketableService {
     return this.handleGet(`/api/sdk/v1/tickets/${args.id}`, TicketSchema, "ticket");
   }
 
-  async getExportLink(args: { id: string; format: ExportFormat }, idToken: string): Promise<TicketExportLinkResult> {
+  async getExportLink(args: { id: string; format: ExportFormat }): Promise<TicketExportLinkResult> {
+    const idToken = await this.getIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
     const response = await this.client.post<unknown>(
       `/api/sdk/v1/tickets/${args.id}/export_link`,
       { format: args.format },
-      { "X-ID-Token": idToken },
+      this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
 
     return this.handleResponse(response, () => {

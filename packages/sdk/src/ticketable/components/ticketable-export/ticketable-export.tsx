@@ -1,6 +1,5 @@
 import { Component, Element, Event, type EventEmitter, Host, Prop, State, h } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
-import { Auth } from "../../../auth";
 import { UnidyComponent } from "../../../logger";
 import type { ExportFormat } from "../../api/schemas";
 
@@ -34,26 +33,16 @@ export class TicketableExport extends UnidyComponent {
 
     const info = this.getTicketableInfo();
     if (!info) {
-      this.uTicketableExportError.emit({ error: "Missing ticketable context" });
+      this.uTicketableExportError.emit({ error: "missing_context" });
       return;
     }
 
     this.loading = true;
 
     try {
-      const auth = await Auth.getInstance();
-      const token = await auth.getToken();
-
-      if (typeof token !== "string") {
-        this.uTicketableExportError.emit({ error: "Not authenticated" });
-        this.loading = false;
-        return;
-      }
-
       const client = await getUnidyClient();
       const service = info.type === "ticket" ? client.tickets : client.subscriptions;
-      const result = await service.getExportLink({ id: info.id, format: this.format }, token);
-      const [error, data] = result;
+      const [error, data] = await service.getExportLink({ id: info.id, format: this.format });
 
       if (error !== null) {
         this.uTicketableExportError.emit({ error });
@@ -62,7 +51,7 @@ export class TicketableExport extends UnidyComponent {
       }
 
       if (!data || !("url" in data)) {
-        this.uTicketableExportError.emit({ error: "Failed to get export link" });
+        this.uTicketableExportError.emit({ error: "invalid_response" });
         this.loading = false;
         return;
       }
@@ -70,8 +59,8 @@ export class TicketableExport extends UnidyComponent {
       window.open(data.url, "_blank");
       this.uTicketableExportSuccess.emit({ url: data.url, format: this.format });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred";
-      this.uTicketableExportError.emit({ error: errorMessage });
+      this.logger.error("Export link error", err);
+      this.uTicketableExportError.emit({ error: "internal_error" });
     } finally {
       this.loading = false;
     }
