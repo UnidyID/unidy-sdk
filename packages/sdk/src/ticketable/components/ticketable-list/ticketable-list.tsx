@@ -237,6 +237,17 @@ export class TicketableList extends UnidyComponent {
       }
     }
 
+    // Set ticketable context on export buttons
+    for (const exportEl of fragment.querySelectorAll("u-ticketable-export")) {
+      if (item) {
+        exportEl.setAttribute("data-ticketable-id", item.id);
+        exportEl.setAttribute("data-ticketable-type", this.ticketableType);
+        exportEl.setAttribute("exportable", item.exportable_to_wallet ? "true" : "false");
+      } else {
+        exportEl.setAttribute("exportable", "false");
+      }
+    }
+
     return fragment;
   }
 

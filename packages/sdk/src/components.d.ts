@@ -15,6 +15,7 @@ import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
+import { ExportFormat } from "./ticketable/api/schemas";
 import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 import { Subscription } from "./ticketable/api/subscriptions";
@@ -29,6 +30,7 @@ export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
 export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
+export { ExportFormat } from "./ticketable/api/schemas";
 export { PaginationMeta } from "./api";
 export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
@@ -463,6 +465,14 @@ export namespace Components {
         "for"?: AuthButtonFor | NewsletterButtonFor;
         "text"?: string;
     }
+    interface UTicketableExport {
+        "customClass"?: string;
+        /**
+          * @default true
+         */
+        "exportable": boolean;
+        "format": ExportFormat;
+    }
     interface UTicketableList {
         "containerClass"?: string;
         /**
@@ -513,6 +523,10 @@ export interface UProfileCustomEvent<T> extends CustomEvent<T> {
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
+}
+export interface UTicketableExportCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTicketableExportElement;
 }
 export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -795,6 +809,24 @@ declare global {
         prototype: HTMLUSubmitButtonElement;
         new (): HTMLUSubmitButtonElement;
     };
+    interface HTMLUTicketableExportElementEventMap {
+        "uTicketableExportSuccess": { url: string; format: ExportFormat };
+        "uTicketableExportError": { error: string };
+    }
+    interface HTMLUTicketableExportElement extends Components.UTicketableExport, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTicketableExportElementEventMap>(type: K, listener: (this: HTMLUTicketableExportElement, ev: UTicketableExportCustomEvent<HTMLUTicketableExportElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTicketableExportElementEventMap>(type: K, listener: (this: HTMLUTicketableExportElement, ev: UTicketableExportCustomEvent<HTMLUTicketableExportElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTicketableExportElement: {
+        prototype: HTMLUTicketableExportElement;
+        new (): HTMLUTicketableExportElement;
+    };
     interface HTMLUTicketableListElementEventMap {
         "uTicketableListSuccess": {
     ticketableType: "ticket" | "subscription";
@@ -856,6 +888,7 @@ declare global {
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
         "u-submit-button": HTMLUSubmitButtonElement;
+        "u-ticketable-export": HTMLUTicketableExportElement;
         "u-ticketable-list": HTMLUTicketableListElement;
     }
 }
@@ -1283,6 +1316,16 @@ declare namespace LocalJSX {
         "for"?: AuthButtonFor | NewsletterButtonFor;
         "text"?: string;
     }
+    interface UTicketableExport {
+        "customClass"?: string;
+        /**
+          * @default true
+         */
+        "exportable"?: boolean;
+        "format": ExportFormat;
+        "onUTicketableExportError"?: (event: UTicketableExportCustomEvent<{ error: string }>) => void;
+        "onUTicketableExportSuccess"?: (event: UTicketableExportCustomEvent<{ url: string; format: ExportFormat }>) => void;
+    }
     interface UTicketableList {
         "containerClass"?: string;
         /**
@@ -1358,6 +1401,7 @@ declare namespace LocalJSX {
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
         "u-submit-button": USubmitButton;
+        "u-ticketable-export": UTicketableExport;
         "u-ticketable-list": UTicketableList;
     }
 }
@@ -1400,6 +1444,7 @@ declare module "@stencil/core" {
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
+            "u-ticketable-export": LocalJSX.UTicketableExport & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
         }
     }
