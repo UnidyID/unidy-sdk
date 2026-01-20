@@ -187,6 +187,11 @@ export namespace Components {
          */
         "newtab": boolean;
         /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth": boolean;
+        /**
           * The Unidy path to redirect to. Must start with "/".
           * @example "/subscriptions"
           * @example "/tickets"
@@ -993,6 +998,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * If true, skips authentication and redirects directly to the Unidy path. Useful for public pages like terms of service.
+          * @default false
+         */
+        "noAuth"?: boolean;
         /**
           * The Unidy path to redirect to. Must start with "/".
           * @example "/subscriptions"
