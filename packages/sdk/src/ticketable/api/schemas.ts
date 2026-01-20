@@ -1,6 +1,16 @@
 import * as z from "zod";
 import { PaginationMetaSchema } from "../../api/shared";
 
+// Export format and link response schemas
+export const ExportFormat = z.enum(["pdf", "pkpass"]);
+export type ExportFormat = z.infer<typeof ExportFormat>;
+
+export const ExportLinkResponseSchema = z.object({
+  url: z.string().url(),
+  expires_in: z.number(),
+});
+export type ExportLinkResponse = z.infer<typeof ExportLinkResponseSchema>;
+
 // Input validation schemas for ticketable list parameters
 export const TicketableListParamsSchema = z.object({
   page: z.number().int().positive().optional(),
@@ -24,6 +34,7 @@ export const TicketSchema = z.object({
   reference: z.string(),
   metadata: z.record(z.string(), z.unknown()).nullable(),
   wallet_export: z.record(z.string(), z.unknown()).nullable(),
+  exportable_to_wallet: z.boolean(),
   state: z.string(),
   payment_state: z.string().nullable(),
   button_cta_url: z.string().nullable(),
@@ -54,6 +65,7 @@ export const SubscriptionSchema = z.object({
   payment_frequency: z.string().nullable(),
   metadata: z.record(z.string(), z.unknown()).nullable(),
   wallet_export: z.record(z.string(), z.unknown()).nullable(),
+  exportable_to_wallet: z.boolean(),
   state: z.string(),
   reference: z.string(),
   payment_state: z.string().nullable(),
