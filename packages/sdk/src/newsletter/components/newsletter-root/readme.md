@@ -12,6 +12,14 @@
 | `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
+## Events
+
+| Event                | Description | Type                                                     |
+| -------------------- | ----------- | -------------------------------------------------------- |
+| `uNewsletterError`   |             | `CustomEvent<{ email: string; error: string; }>`         |
+| `uNewsletterSuccess` |             | `CustomEvent<{ email: string; newsletters: string[]; }>` |
+
+
 ## Methods
 
 ### `submit(forType?: NewsletterButtonFor) => Promise<void>`
