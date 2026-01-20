@@ -1,5 +1,5 @@
+import { type MixedInCtor, Mixin } from "@stencil/core";
 import type { LoggerModule } from "i18next";
-import { Mixin, type MixedInCtor } from "@stencil/core";
 
 declare global {
   interface Window {

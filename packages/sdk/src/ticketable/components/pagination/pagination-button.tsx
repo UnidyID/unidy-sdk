@@ -1,7 +1,7 @@
-import { Component, h, Prop, Element, Host, State } from "@stencil/core";
+import { Component, Element, Host, h, Prop, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
-import type { PaginationStore } from "../../store/pagination-store";
 import { UnidyComponent } from "../../../logger";
+import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })
 export class PaginationButton extends UnidyComponent {

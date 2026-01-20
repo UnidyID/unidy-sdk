@@ -26,9 +26,17 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn(email, password, sendMagicCode);
+    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode } });
 
     if (error) {
+      if (error === "magic_code_recently_created") {
+        authStore.setMagicCodeStep("sent");
+        authStore.setStep("magic-code");
+        authStore.setLoading(false);
+        authStore.setFieldError("magicCode", error);
+        return [error, response] as const;
+      }
+
       this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
@@ -44,6 +52,15 @@ export class AuthHelpers {
 
     if (sendMagicCode) {
       authStore.setSignInId((response as CreateSignInResponse).sid);
+      authStore.setLoginOptions((response as CreateSignInResponse).login_options);
+
+      if ((response as CreateSignInResponse).login_options?.magic_link === false) {
+        authStore.setGlobalError("auth", "magic_link_not_enabled");
+        authStore.setLoading(false);
+
+        return ["magic_link_not_enabled", response] as const;
+      }
+
       authStore.setMagicCodeStep("sent");
       authStore.setStep("magic-code");
       authStore.setLoading(false);
@@ -69,7 +86,10 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.authenticateWithPassword(authState.sid, password);
+    const [error, response] = await this.client.auth.authenticateWithPassword({
+      signInId: authState.sid,
+      payload: { password },
+    });
 
     if (error) {
       this.handleAuthError(error, response, "password");
@@ -92,7 +112,10 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.authenticateWithMagicCode(authState.sid, code);
+    const [error, response] = await this.client.auth.authenticateWithMagicCode({
+      signInId: authState.sid,
+      payload: { code },
+    });
 
     if (error) {
       this.handleAuthError(error, response, "magicCode");
@@ -107,7 +130,10 @@ export class AuthHelpers {
   }
 
   async logout() {
-    const [error, _] = await this.client.auth.signOut(authState.sid as string);
+    const [error, _] = await this.client.auth.signOut({
+      signInId: authState.sid as string,
+      globalLogout: authState.backendSignedIn,
+    });
 
     if (error) {
       authStore.setGlobalError("auth", error);
@@ -131,7 +157,7 @@ export class AuthHelpers {
       return;
     }
 
-    const [error, response] = await this.client.auth.refreshToken(authState.sid);
+    const [error, response] = await this.client.auth.refreshToken({ signInId: authState.sid });
 
     if (error) {
       authStore.reset();
@@ -139,6 +165,26 @@ export class AuthHelpers {
     } else {
       authStore.setToken((response as TokenResponse).jwt);
     }
+  }
+
+  async checkSignedIn() {
+    if (authState.authenticated) return;
+
+    const [error, response] = await this.client.auth.signedIn();
+
+    if (error) {
+      // Silent fail
+      return;
+    }
+
+    // we only assume that "sso" was used when there isn't an existing sid in the session as setting the sid is the
+    // first step in any login flow, and we should not log out users unintentionally
+    if (!authState.sid) {
+      const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
+      authStore.setSignInId(token.sid);
+      authStore.setBackendSignedIn(true);
+    }
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   async sendMagicCode() {
@@ -156,7 +202,7 @@ export class AuthHelpers {
       return [error, response] as const;
     }
 
-    const [error, response] = await this.client.auth.sendMagicCode(authState.sid);
+    const [error, response] = await this.client.auth.sendMagicCode({ signInId: authState.sid });
 
     authStore.setLoading(false);
 
@@ -185,7 +231,10 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.setResetPasswordStep("requested");
 
-    const [error, _] = await this.client.auth.sendResetPasswordEmail(authState.sid, window.location.href);
+    const [error, _] = await this.client.auth.sendResetPasswordEmail({
+      signInId: authState.sid,
+      payload: { returnTo: window.location.href },
+    });
 
     if (error) {
       authStore.setFieldError("resetPassword", error);
@@ -218,12 +267,14 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.resetPassword(
-      authState.sid as string,
-      authState.resetPassword.token,
-      authState.resetPassword.newPassword,
-      authState.resetPassword.passwordConfirmation,
-    );
+    const [error, response] = await this.client.auth.resetPassword({
+      signInId: authState.sid as string,
+      token: authState.resetPassword.token,
+      payload: {
+        password: authState.resetPassword.newPassword,
+        passwordConfirmation: authState.resetPassword.passwordConfirmation,
+      },
+    });
 
     if (error) {
       authStore.setFieldError("resetPassword", error);
@@ -260,7 +311,10 @@ export class AuthHelpers {
     if (authState.sid) {
       authStore.setLoading(true);
 
-      const [error] = await this.client.auth.validateResetPasswordToken(authState.sid, resetToken);
+      const [error] = await this.client.auth.validateResetPasswordToken({
+        signInId: authState.sid,
+        token: resetToken,
+      });
 
       if (error) {
         authStore.setFieldError("resetPassword", error);

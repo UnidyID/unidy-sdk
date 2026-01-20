@@ -1,7 +1,7 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { authState, authStore } from "../../store/auth-store";
 import { Auth } from "../../auth";
+import { authState, authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-send-magic-code-button",
@@ -19,10 +19,15 @@ export class SendMagicCodeButton {
 
     const authInstance = await Auth.getInstance();
 
-    const [_error, response] = await authInstance.helpers.sendMagicCode();
+    const [error, response] = await authInstance.helpers.sendMagicCode();
 
     if (response && "enable_resend_after" in response) {
       this.startCountdown(response.enable_resend_after);
+    }
+
+    if (error === "magic_code_recently_created") {
+      authStore.setStep("magic-code");
+      authStore.setMagicCodeStep("sent");
     }
   };
 
@@ -50,12 +55,20 @@ export class SendMagicCodeButton {
     this.clearCountdown();
   }
 
-  render() {
-    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
-      return null;
+  private shouldRender(): boolean {
+    if (!["magic-code", "verification", "single-login"].includes(authState.step)) {
+      return false;
     }
 
-    if (authState.step !== "magic-code" && authState.step !== "verification" && authState.step !== "single-login") {
+    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
+      return false;
+    }
+
+    return true;
+  }
+
+  render() {
+    if (!this.shouldRender()) {
       return null;
     }
 

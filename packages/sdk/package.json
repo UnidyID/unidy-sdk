@@ -1,8 +1,17 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.1.7",
+  "version": "1.2.0-alpha7",
+  "publishConfig": {
+    "tag": "alpha",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
+  },
   "description": "Unidy SDK: API Client, Stencil Components, and React Wrappers",
   "homepage": "https://sdk-demo.unidy.io",
+  "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -14,59 +23,57 @@
   ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build": "bun run clean && touch src/demo-build.css && stencil build",
+    "build": "bun run clean && touch src/demo-build.css && stencil build && bun run build:standalone",
+    "build:standalone": "bun build ./src/api/standalone.ts --outdir ./dist/collection/api --format esm && bun run build:standalone:types",
+    "build:standalone:types": "tsc -p tsconfig.standalone.json",
     "dev:stencil": "stencil build --dev --watch --serve",
     "dev:css": "tailwindcss -i ./src/demo.css -o ./src/demo-build.css --content './src/**/*.{html}' --watch",
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",
     "test": "stencil test --spec --e2e && jest",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "type": "tsc --noEmit"
+    "type": "tsc --noEmit",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed"
   },
   "dependencies": {
-    "@sentry/browser": "^10.26.0",
-    "@stencil/store": "^2.2.1",
+    "@sentry/browser": "^10.33.0",
+    "@stencil/store": "^2.2.2",
     "date-fns": "^4.1.0",
-    "i18next": "^23.11.5",
+    "i18next": "^25.7.4",
     "jwt-decode": "^4.0.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "rollup-plugin-visualizer": "^6.0.5",
-    "zod": "^4.1.12"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
-    "@rollup/plugin-alias": "^5.1.1",
-    "@stencil/core": "^4.38.3",
-    "@stencil/react-output-target": "^1.2.0",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@playwright/test": "^1.57.0",
+    "@rollup/plugin-alias": "^6.0.0",
+    "@stencil/core": "4.38.3",
+    "@stencil/react-output-target": "^1.2.1",
+    "@tailwindcss/cli": "^4.1.18",
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/bun": "latest",
     "@types/eventemitter3": "^2.0.4",
     "@types/events": "^3.0.3",
     "@types/jest": "^29.5.14",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.6",
+    "@types/node": "^24.10.8",
+    "@types/react": "^19.2.8",
     "concurrently": "^9.2.1",
     "eventemitter3": "^5.0.1",
     "jest": "^29.7.0",
     "jest-cli": "^29.7.0",
-    "puppeteer": "^24.31.0",
+    "puppeteer": "^24.35.0",
     "stencil-tailwind-plugin": "^2.0.5",
-    "@tailwindcss/cli": "^4.1.18",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "publishConfig": {
-    "tag": "latest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/UnidyID/unidy-sdk/tree/master/packages/sdk"
-  },
-  "license": "MIT",
   "keywords": [
     "web-components",
     "unidy",
@@ -114,6 +121,10 @@
     "./ticketable": {
       "import": "./dist/ticketable/sdk.esm.js",
       "require": "./dist/ticketable/sdk.cjs.js"
+    },
+    "./standalone": {
+      "import": "./dist/collection/api/standalone.js",
+      "types": "./dist/types/api/standalone.d.ts"
     }
   }
 }

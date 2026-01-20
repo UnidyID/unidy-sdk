@@ -1,4 +1,4 @@
-import { Component, h, Element } from "@stencil/core";
+import { Component, Element, h } from "@stencil/core";
 import { authState, missingFieldNames } from "../../store/auth-store";
 
 @Component({

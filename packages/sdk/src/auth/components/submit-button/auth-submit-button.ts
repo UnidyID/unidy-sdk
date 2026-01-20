@@ -3,7 +3,7 @@ import type { SubmitButtonContext } from "../../../shared/components/submit-butt
 import { authState } from "../../store/auth-store";
 import { getParentSigninStep } from "../helpers";
 
-export type AuthButtonFor = "email" | "password" | "resetPassword";
+export type AuthButtonFor = "email" | "password" | "resetPassword" | "single-login";
 
 export const authContext: SubmitButtonContext<AuthButtonFor> = {
   handleClick: async (event: MouseEvent, el: HTMLElement, _forProp?: AuthButtonFor) => {
@@ -16,6 +16,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
 
     if (authState.step === "email" && forProp === "email") {
       return authState.email === "";
+    }
+
+    if (authState.step === "single-login" && forProp === "single-login") {
+      return authState.email === "" || authState.password === "";
     }
 
     if (authState.step === "verification" && forProp === "password") {
@@ -46,7 +50,12 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
         return t("buttons.submit");
       case "reset-password":
         if (forProp === "resetPassword") {
-          return t("auth.resetPassword.button_text_set", { defaultValue: "Set Password" });
+          return t("auth.resetPassword.save_new_password", { defaultValue: "Set Password" });
+        }
+        return t("buttons.submit");
+      case "single-login":
+        if (forProp === "single-login") {
+          return t("auth.single-login.button_text", { defaultValue: "Sign In" });
         }
         return t("buttons.submit");
       default:
@@ -61,6 +70,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
 
     if (authState.step === "email") {
       return forProp === "email";
+    }
+
+    if (authState.step === "single-login") {
+      return forProp === "single-login";
     }
 
     if (authState.step === "verification") {

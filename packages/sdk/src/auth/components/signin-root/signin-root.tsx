@@ -16,6 +16,7 @@ export class SigninRoot {
 
   componentDidLoad() {
     authStore.setRootComponentRef(this);
+
     const signInSteps = this.el.querySelectorAll("u-signin-step").values();
     if ([...signInSteps].some((step: HTMLUSigninStepElement) => step.name === "single-login")) {
       authStore.setInitialStep("single-login");

@@ -4,7 +4,8 @@ import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { onChange as unidyOnChange, unidyState } from "../../../shared/store/unidy-store";
+import { Flash } from "../../../shared/store/flash-store";
+import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
@@ -22,7 +23,6 @@ export class Profile {
     error: string;
     details: {
       fieldErrors?: Record<string, string>;
-      flashErrors?: Record<string, string>;
       httpStatus?: number;
       responseData?: unknown;
     };
@@ -39,52 +39,49 @@ export class Profile {
   async componentWillLoad() {
     if (this.initialData !== "") {
       profileState.data = typeof this.initialData === "string" ? JSON.parse(this.initialData) : this.initialData;
-    } else if (authStore.state.authenticated) {
-      await this.getTokenAndFetchProfile();
+    } else {
+      // Ensure auth is initialized before checking authenticated state
+      await Auth.getInstance();
+
+      if (authStore.state.authenticated) {
+        await this.getTokenAndFetchProfile();
+      }
     }
 
     profileState.loading = false;
   }
 
   async getTokenAndFetchProfile() {
-    const authInstance = await Auth.getInstance();
-
-    const idToken = await authInstance.getToken();
-
-    if (idToken && typeof idToken === "string") {
-      await this.fetchProfileData(idToken as string);
-    }
+    await this.fetchProfileData();
   }
 
-  async fetchProfileData(idToken: string) {
+  async fetchProfileData() {
     // avoid multiple requests
     if (this.fetchingProfileData) return;
 
     this.fetchingProfileData = true;
     try {
-      const resp = await getUnidyClient().profile.fetchProfile({ idToken, lang: unidyState.locale });
+      const [error, data] = await getUnidyClient().profile.get();
 
-      if (resp.success) {
-        profileState.configuration = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
+      if (error) {
+        Flash.error.addMessage(String(error));
+      } else {
+        Flash.clear("error");
+        profileState.configuration = JSON.parse(JSON.stringify(data)) as ProfileRaw;
         profileState.configUpdateSource = "fetch";
         profileState.errors = {};
-        profileState.flashErrors = {};
-
-        profileState.data = JSON.parse(JSON.stringify(resp.data)) as ProfileRaw;
-      } else {
-        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        profileState.data = JSON.parse(JSON.stringify(data)) as ProfileRaw;
       }
     } catch (error) {
       Sentry.captureException("Failed to fetch profile data:", error);
-      profileState.flashErrors = { error: t("errors.failed_to_load_profile") };
+      Flash.error.addMessage(t("errors.failed_to_load_profile"));
+    } finally {
+      this.fetchingProfileData = false;
     }
-    this.fetchingProfileData = false;
   }
 
   @Method()
   async submitProfile() {
-    const authInstance = await Auth.getInstance();
-
     profileState.loading = true;
 
     const { configuration, ...stateWithoutConfig } = profileState;
@@ -95,34 +92,38 @@ export class Profile {
     }
 
     const updatedProfileData = buildPayload(stateWithoutConfig.data);
+    const [error, data, responseInfo] = await getUnidyClient().profile.update({ payload: updatedProfileData });
 
-    const resp = await getUnidyClient().profile.updateProfile({
-      idToken: (await authInstance.getToken()) as string,
-      data: updatedProfileData,
-      lang: unidyState.locale,
-    });
-
-    if (resp?.success) {
-      profileState.loading = false;
-      profileState.configuration = JSON.parse(JSON.stringify(resp.data));
-      profileState.configUpdateSource = "submit";
-      profileState.errors = {};
-      this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: resp.data as ProfileRaw });
-    } else {
-      if (resp?.data && "flatErrors" in resp.data) {
-        profileState.errors = resp.data.flatErrors as Record<string, string>;
+    if (error) {
+      if (data && "flatErrors" in data) {
+        profileState.errors = data.flatErrors as Record<string, string>;
         this.uProfileError.emit({
           error: "profile_update_field_errors",
-          details: { fieldErrors: profileState.errors, httpStatus: resp?.status, responseData: resp?.data },
+          details: {
+            fieldErrors: profileState.errors,
+            httpStatus: responseInfo?.httpStatus,
+            responseData: responseInfo?.responseData,
+          },
         });
       } else {
-        profileState.flashErrors = { [String(resp?.status)]: String(resp?.error) };
+        Flash.error.addMessage(String(error));
         this.uProfileError.emit({
           error: "profile_update_failed",
-          details: { flashErrors: profileState.flashErrors, httpStatus: resp?.status, responseData: resp?.data },
+          details: {
+            httpStatus: responseInfo?.httpStatus,
+            responseData: responseInfo?.responseData,
+          },
         });
       }
       profileState.loading = false;
+    } else {
+      profileState.loading = false;
+      profileState.configuration = JSON.parse(JSON.stringify(data));
+      profileState.configUpdateSource = "submit";
+      profileState.errors = {};
+      Flash.clear("error");
+      Flash.success.addMessage(t("profile.updated"));
+      this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: data as ProfileRaw });
     }
   }
 
@@ -135,24 +136,18 @@ export class Profile {
       const token = newToken ?? "";
 
       if (token) {
-        this.fetchProfileData(token);
+        this.fetchProfileData();
       }
     });
   }
 
   render() {
-    const hasFieldErrors = Object.values(profileState.errors).some(Boolean);
-    const errorMsg = Object.values(profileState.flashErrors).filter(Boolean).join(", ");
-    const wasSubmit = profileState.configUpdateSource === "submit";
-
     if (authStore.state.authenticated) {
       return this.fetchingProfileData ? (
         <div>{t("loading")}</div>
       ) : (
         <Host>
           <slot />
-          {!hasFieldErrors && errorMsg && <flash-message variant="error" message={errorMsg} />}
-          {wasSubmit && !errorMsg && !hasFieldErrors && <flash-message variant="success" message={t("profile.updated")} />}
         </Host>
       );
     }
