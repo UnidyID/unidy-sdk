@@ -3,7 +3,7 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
 import type { TokenResponse } from "../../api/auth";
 import { authState, authStore } from "../../store/auth-store";
 
@@ -57,7 +57,7 @@ export class MissingFieldsSubmitButton {
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
           aria-live="polite"
         >
-          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : t("buttons.submit")}
+          {renderButtonContent(hasSlotContent(this.el), profileState.loading, t("buttons.submit"))}
         </button>
       </div>
     );

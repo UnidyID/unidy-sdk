@@ -1,6 +1,7 @@
 import { Component, Element, forceUpdate, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
+import { renderButtonContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { Auth } from "../../auth";
 import { authState, onChange } from "../../store/auth-store";
@@ -143,18 +144,7 @@ export class JumpToUnidy {
     const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {hasSlot ? (
-          [
-            this.loading && <u-spinner key="spinner" />,
-            <span key="slot" style={{ display: this.loading ? "none" : "contents" }}>
-              <slot />
-            </span>,
-          ]
-        ) : this.loading ? (
-          <u-spinner />
-        ) : (
-          t("buttons.jump_to_unidy")
-        )}
+        {renderButtonContent(hasSlot, this.loading, t("buttons.jump_to_unidy"))}
       </button>
     );
   }

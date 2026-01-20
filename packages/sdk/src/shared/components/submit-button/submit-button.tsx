@@ -3,7 +3,7 @@ import { type AuthButtonFor, authContext } from "../../../auth/components/submit
 import { t } from "../../../i18n";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { hasSlotContent } from "../../component-utils";
+import { hasSlotContent, renderButtonContent } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -79,25 +79,6 @@ export class SubmitButton {
     return t("buttons.submit");
   }
 
-  private getButtonContent() {
-    const loading = this.isLoading();
-
-    if (this.hasSlot) {
-      return [
-        loading && <u-spinner key="spinner" />,
-        <span key="slot" style={{ display: loading ? "none" : "contents" }}>
-          <slot />
-        </span>,
-      ];
-    }
-
-    if (loading) {
-      return <u-spinner />;
-    }
-
-    return this.getButtonText();
-  }
-
   render() {
     if (this.contextModule.shouldRender && !this.contextModule.shouldRender(this.for)) {
       return null;
@@ -117,6 +98,6 @@ export class SubmitButton {
       "aria-live": "polite",
     };
 
-    return <button {...buttonProps}>{this.getButtonContent()}</button>;
+    return <button {...buttonProps}>{renderButtonContent(this.hasSlot, this.isLoading(), this.getButtonText())}</button>;
   }
 }
