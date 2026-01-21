@@ -8,7 +8,6 @@ import { extractManageSubscriptionLink } from "./helpers";
 
 test.describe("Manage Subscriptions (logged out)", () => {
   const newsletterSubscriptions = new Database("NewsletterSubscription");
-  let manageSubscriptionLink: string;
   let email: string;
 
   test.beforeEach(async ({ page }) => {
@@ -47,7 +46,7 @@ test.describe("Manage Subscriptions (logged out)", () => {
 
     const lastEmail = await userEmails.ensureLast();
 
-    manageSubscriptionLink = extractManageSubscriptionLink(lastEmail.body);
+    const manageSubscriptionLink = extractManageSubscriptionLink(lastEmail.body);
 
     await page.goto(manageSubscriptionLink);
     await page.waitForLoadState("networkidle");
