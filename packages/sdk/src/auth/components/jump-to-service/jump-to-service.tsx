@@ -1,9 +1,10 @@
-import { Component, h, Prop, State, forceUpdate, Element } from "@stencil/core";
+import { Component, Element, forceUpdate, h, Prop, State } from "@stencil/core";
+import { getUnidyClient } from "../../../api";
+import { t } from "../../../i18n";
+import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { unidyState } from "../../../shared/store/unidy-store";
 import { Auth } from "../../auth";
 import { authState, onChange } from "../../store/auth-store";
-import { getUnidyClient } from "../../../api";
-import { unidyState } from "../../../shared/store/unidy-store";
-import { t } from "../../../i18n";
 
 @Component({
   tag: "u-jump-to-service",
@@ -50,6 +51,11 @@ export class JumpToService {
 
   // TODO: Figure out a way to share this across components
   private unsubscribe?: () => void;
+  private hasSlot = false;
+
+  componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   connectedCallback() {
     this.unsubscribe = onChange("authenticated", () => {
@@ -132,10 +138,9 @@ export class JumpToService {
   }
 
   render() {
-    const hasSlot = this.el.childNodes.length > 0;
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {this.loading ? <u-spinner /> : hasSlot ? <slot /> : t("buttons.jump_to_service")}
+        {renderButtonContent(this.hasSlot, this.loading, t("buttons.jump_to_service"))}
       </button>
     );
   }

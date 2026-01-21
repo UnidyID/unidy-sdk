@@ -14,12 +14,11 @@
   <style>
     u-profile {
       display: block;
-      margin-bottom: 36px;
     }
 
     u-field {
       display: block;
-      margin: 18px 0;
+      margin: 8px 0;
     }
 
     u-field::part(field_label) {
@@ -148,15 +147,15 @@
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 16px 0;
+      padding: 8px 0;
       font-size: 1.0rem;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 2px 12px rgba(49, 130, 206, 0.10);
-      margin-top: 24px;
+      margin-top: 12px;
       margin-bottom: 12px;
       width: 100%;
-      min-width: 180px;
+      min-width: 120px;
       letter-spacing: 0.5px;
     }
 
@@ -275,38 +274,46 @@
         </div>
         <u-full-profile fields="first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
           country-code-display-option="icon"></u-full-profile>
+      </div>
 
-        <div class="mt-8">
-          <h3 class="text-xl font-semibold text-gray-800 mb-4">Jump to Service / Unidy</h3>
-          <div class="flex flex-col gap-3">
-            <div class="flex gap-3">
-              <u-jump-to-service service-id="2"
-                class-name="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                Jump to Service
-              </u-jump-to-service>
-              <u-jump-to-service service-id="2" newtab
-                class-name="flex-1 px-4 py-2 border border-blue-500 text-blue-500 hover:bg-blue-50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                Open in New Tab
-              </u-jump-to-service>
-            </div>
-            <div class="flex gap-3">
-              <u-jump-to-unidy path="/tickets"
-                class-name="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                Jump to Tickets
-              </u-jump-to-unidy>
-              <u-jump-to-unidy path="/subscriptions" newtab
-                class-name="flex-1 px-4 py-2 border border-gray-700 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                Subscriptions (New Tab)
-              </u-jump-to-unidy>
-            </div>
-            <div class="flex gap-3">
-              <u-jump-to-unidy path="/terms" no-auth
-                class-name="flex-1 px-4 py-2 text-gray-500 hover:text-gray-700 text-sm font-medium underline transition-colors">
-                Terms of Service (no auth)
-              </u-jump-to-unidy>
-            </div>
+      <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold text-gray-800">Jump to components</h3>
+          <p class="text-gray-600 text-sm">Navigate to external services or Unidy pages.</p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h4 class="text-lg font-semibold text-gray-800">Services</h4>
+          <div class="flex gap-3">
+            <u-jump-to-service service-id="2"
+              class-name="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Jump to Service
+            </u-jump-to-service>
+            <u-jump-to-service service-id="2" newtab
+              class-name="flex-1 px-4 py-2 border border-blue-500 text-blue-500 hover:bg-blue-50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Jump to Service (New Tab)
+            </u-jump-to-service>
+          </div>
+          <h4 class="text-lg font-semibold text-gray-800">Unidy</h4>
+          <div class="flex gap-3">
+            <u-jump-to-unidy path="/tickets"
+              class-name="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Jump to Tickets
+            </u-jump-to-unidy>
+            <u-jump-to-unidy path="/subscriptions" newtab
+              class-name="flex-1 px-4 py-2 border border-gray-700 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Subscriptions (New Tab)
+            </u-jump-to-unidy>
+          </div>
+          <div class="flex gap-3">
+            <u-jump-to-unidy path="/terms_of_use" no-auth
+              class-name="flex-1  py-2 text-gray-500 hover:text-gray-700 text-sm font-medium underline transition-colors">
+              Terms of Service (no auth)
+            </u-jump-to-unidy>
           </div>
         </div>
+      </div>
+
+      <div class="hidden">
 
         <!-- For testing -->
         <!-- <u-full-profile
