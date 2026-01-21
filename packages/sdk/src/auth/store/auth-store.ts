@@ -91,7 +91,7 @@ const initialState: AuthState = {
     social_logins: [],
     passkey: true,
   },
-  token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  token: localStorage.getItem(SESSION_KEYS.TOKEN),
   backendSignedIn: false,
 };
 
@@ -197,7 +197,7 @@ class AuthStore {
 
   setToken(token: string) {
     state.token = token;
-    saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, token);
+    saveToStorage(localStorage, SESSION_KEYS.TOKEN, token);
     this.setAuthenticated(!!token);
   }
 
@@ -238,7 +238,7 @@ class AuthStore {
     reset();
     saveToStorage(localStorage, SESSION_KEYS.SID, null);
     saveToStorage(localStorage, SESSION_KEYS.EMAIL, null);
-    saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
+    saveToStorage(localStorage, SESSION_KEYS.TOKEN, null);
   }
 }
 
