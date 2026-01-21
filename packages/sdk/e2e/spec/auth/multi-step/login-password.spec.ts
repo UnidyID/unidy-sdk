@@ -22,8 +22,6 @@ test.describe("Auth - Password step", () => {
 
     await expect(page.getByTestId("signed.in.view")).toBeVisible();
     await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
-
-    await page.context().storageState({ path: "playwright/.auth/user.json" });
   });
 
   test("wrong password shows error", async ({ page }) => {

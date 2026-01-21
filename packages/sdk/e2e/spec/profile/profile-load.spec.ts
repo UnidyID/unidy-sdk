@@ -37,7 +37,6 @@ test.describe("Profile - authenticated user", () => {
     const submitButton = page.getByRole("button", { name: "Submit" });
     await submitButton.click();
 
-    await page.waitForTimeout(2000);
     await page.reload();
     await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
