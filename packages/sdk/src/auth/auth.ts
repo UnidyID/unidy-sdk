@@ -81,6 +81,7 @@ export class Auth {
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
     } else if (authState.token) {
+      authStore.setAuthenticated(true);
       await Auth.instance.helpers.refreshToken();
     }
 
