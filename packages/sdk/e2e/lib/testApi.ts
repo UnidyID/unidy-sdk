@@ -1,3 +1,4 @@
+// copied from UnidyCode
 export class TestApi {
   async fetch<T = object>(url: string, options: Omit<RequestInit, "body"> & { body?: any } = {}, throwOnError = true) {
     const res = await fetch(`http://127.0.0.1:3000/test/${url.startsWith("/") ? url.slice(1) : url}`, {

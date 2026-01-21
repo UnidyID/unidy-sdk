@@ -1,10 +1,8 @@
 import type { Brand, UserBrand } from "./brand";
-import type { CustomStyle } from "./customStyle";
 import type { MagicLink } from "./magicLink";
 import type { Newsletter } from "./newsletter";
 import type { NewsletterSubscription } from "./newsletterSubscription";
 import type { OauthApplication } from "./oauthApplication";
-import type { Plugin } from "./plugin";
 import type { TestEmail } from "./testEmail";
 import type { User } from "./user";
 
@@ -29,9 +27,7 @@ export type ModelMap = {
   NewsletterPreference: Newsletter;
   Brand: Brand;
   UserBrand: UserBrand;
-  CustomStyle: CustomStyle;
   "Oauth::Application": OauthApplication;
-  Plugin: Plugin;
 
   [key: string]: BaseModel<any, any>;
 };

@@ -1,8 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { routes, userLogin } from "../../config";
+import { Database } from "../../lib/database";
 
 test.describe("Profile - authenticated user", () => {
   test.beforeEach(async ({ page }) => {
+    const users = new Database("User");
+    const user = await users.ensureGetBy({ email: userLogin.email });
+    await users.update(user.id, { first_name: "Peter", date_of_birth: null });
+
     await page.goto(routes.auth);
 
     const email = page.getByRole("textbox", { name: "Email" });
@@ -26,40 +31,27 @@ test.describe("Profile - authenticated user", () => {
 
   test("profile updated successfully", async ({ page }) => {
     const firstNameField = page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox");
-    const originalFirstName = await firstNameField.inputValue();
 
-    try {
-      await firstNameField.fill("UpdatedFirstName");
+    await firstNameField.fill("UpdatedFirstName");
 
-      const submitButton = page.getByRole("button", { name: "Submit" });
-      await submitButton.click();
+    const submitButton = page.getByRole("button", { name: "Submit" });
+    await submitButton.click();
 
-      await page.waitForTimeout(2000);
-      await page.reload();
-      await expect(firstNameField).toHaveValue("UpdatedFirstName");
-    } finally {
-      await firstNameField.fill(originalFirstName);
-      await page.getByRole("button", { name: "Submit" }).click();
-      await page.waitForTimeout(2000);
-    }
+    await page.waitForTimeout(2000);
+    await page.reload();
+    await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
 
   test("shows date_of_birth error after submit (future date)", async ({ page }) => {
-    const invalidDOB = new Date(Date.now() + 86400000).toLocaleDateString("sv-SE");
+    const invalidDOB = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     const dob = page.locator("input[type='date']");
-    const originalDOB = await dob.inputValue();
 
-    try {
-      await dob.fill(invalidDOB);
-      await dob.blur();
+    await dob.fill(invalidDOB);
+    await dob.blur();
 
-      await page.getByRole("button", { name: "Submit" }).click();
+    await page.getByRole("button", { name: "Submit" }).click();
 
-      await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
-    } finally {
-      await dob.fill(originalDOB);
-      await page.getByRole("button", { name: "Submit" }).click();
-    }
+    await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
   });
 
   test("logout works correctly", async ({ page }) => {

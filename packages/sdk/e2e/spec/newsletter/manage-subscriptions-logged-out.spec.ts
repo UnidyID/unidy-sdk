@@ -3,8 +3,8 @@ import { routes } from "../../config";
 import { ModelCountAssert } from "../../lib/assert/count";
 import { EmailAssert } from "../../lib/assert/emails";
 import { Database } from "../../lib/database";
-import { extractManageSubscriptionLink } from "../../lib/helpers/newsletter";
 import { randomEmail } from "../../lib/helpers/random";
+import { extractManageSubscriptionLink } from "./helpers";
 
 test.describe("Manage Subscriptions (logged out)", () => {
   const newsletterSubscriptions = new Database("NewsletterSubscription");
