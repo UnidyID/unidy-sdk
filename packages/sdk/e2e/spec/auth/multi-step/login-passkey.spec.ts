@@ -9,5 +9,6 @@ test.describe("Auth - Passkey", () => {
   test("should show passkey button", async ({ page }) => {
     const passkeyButton = page.getByRole("button", { name: "Sign in with Passkey" });
     await expect(passkeyButton).toBeVisible();
+    // TODO: Add more tests
   });
 });
