@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
+import { AdditionalFieldName } from "./newsletter/store/newsletter-store";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
@@ -22,6 +23,7 @@ import { Subscription } from "./ticketable/api/subscriptions";
 import { Ticket } from "./ticketable/api/tickets";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
+export { AdditionalFieldName } from "./newsletter/store/newsletter-store";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
@@ -240,6 +242,43 @@ export namespace Components {
         "componentClassName"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
+    }
+    /**
+     * A field component for capturing additional subscriber information in newsletter forms.
+     * Supports all additional fields defined in the API schema (first_name, last_name, phone_number, etc.)
+     * @example ```html
+     * <u-newsletter-field field="first_name" placeholder="Enter your first name"></u-newsletter-field>
+     * <u-newsletter-field field="phone_number" placeholder="Enter your phone number"></u-newsletter-field>
+     * ```
+     */
+    interface UNewsletterField {
+        /**
+          * Aria label for accessibility
+         */
+        "ariaLabel"?: string;
+        /**
+          * Custom CSS class name to apply to the input element
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Whether the field is disabled
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * The field name to capture (e.g., first_name, last_name, phone_number, etc.)
+         */
+        "field": AdditionalFieldName;
+        /**
+          * Placeholder text for the input
+         */
+        "placeholder"?: string;
+        /**
+          * Whether the field is required
+          * @default false
+         */
+        "required": boolean;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -646,6 +685,20 @@ declare global {
         prototype: HTMLUNewsletterConsentCheckboxElement;
         new (): HTMLUNewsletterConsentCheckboxElement;
     };
+    /**
+     * A field component for capturing additional subscriber information in newsletter forms.
+     * Supports all additional fields defined in the API schema (first_name, last_name, phone_number, etc.)
+     * @example ```html
+     * <u-newsletter-field field="first_name" placeholder="Enter your first name"></u-newsletter-field>
+     * <u-newsletter-field field="phone_number" placeholder="Enter your phone number"></u-newsletter-field>
+     * ```
+     */
+    interface HTMLUNewsletterFieldElement extends Components.UNewsletterField, HTMLStencilElement {
+    }
+    var HTMLUNewsletterFieldElement: {
+        prototype: HTMLUNewsletterFieldElement;
+        new (): HTMLUNewsletterFieldElement;
+    };
     interface HTMLUNewsletterLogoutButtonElement extends Components.UNewsletterLogoutButton, HTMLStencilElement {
     }
     var HTMLUNewsletterLogoutButtonElement: {
@@ -868,6 +921,7 @@ declare global {
         "u-missing-fields-submit-button": HTMLUMissingFieldsSubmitButtonElement;
         "u-newsletter-checkbox": HTMLUNewsletterCheckboxElement;
         "u-newsletter-consent-checkbox": HTMLUNewsletterConsentCheckboxElement;
+        "u-newsletter-field": HTMLUNewsletterFieldElement;
         "u-newsletter-logout-button": HTMLUNewsletterLogoutButtonElement;
         "u-newsletter-preference-checkbox": HTMLUNewsletterPreferenceCheckboxElement;
         "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
@@ -1090,6 +1144,43 @@ declare namespace LocalJSX {
     }
     interface UNewsletterConsentCheckbox {
         "componentClassName"?: string;
+    }
+    /**
+     * A field component for capturing additional subscriber information in newsletter forms.
+     * Supports all additional fields defined in the API schema (first_name, last_name, phone_number, etc.)
+     * @example ```html
+     * <u-newsletter-field field="first_name" placeholder="Enter your first name"></u-newsletter-field>
+     * <u-newsletter-field field="phone_number" placeholder="Enter your phone number"></u-newsletter-field>
+     * ```
+     */
+    interface UNewsletterField {
+        /**
+          * Aria label for accessibility
+         */
+        "ariaLabel"?: string;
+        /**
+          * Custom CSS class name to apply to the input element
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Whether the field is disabled
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The field name to capture (e.g., first_name, last_name, phone_number, etc.)
+         */
+        "field": AdditionalFieldName;
+        /**
+          * Placeholder text for the input
+         */
+        "placeholder"?: string;
+        /**
+          * Whether the field is required
+          * @default false
+         */
+        "required"?: boolean;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -1381,6 +1472,7 @@ declare namespace LocalJSX {
         "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
         "u-newsletter-checkbox": UNewsletterCheckbox;
         "u-newsletter-consent-checkbox": UNewsletterConsentCheckbox;
+        "u-newsletter-field": UNewsletterField;
         "u-newsletter-logout-button": UNewsletterLogoutButton;
         "u-newsletter-preference-checkbox": UNewsletterPreferenceCheckbox;
         "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
@@ -1424,6 +1516,15 @@ declare module "@stencil/core" {
             "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
             "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
             "u-newsletter-consent-checkbox": LocalJSX.UNewsletterConsentCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterConsentCheckboxElement>;
+            /**
+             * A field component for capturing additional subscriber information in newsletter forms.
+             * Supports all additional fields defined in the API schema (first_name, last_name, phone_number, etc.)
+             * @example ```html
+             * <u-newsletter-field field="first_name" placeholder="Enter your first name"></u-newsletter-field>
+             * <u-newsletter-field field="phone_number" placeholder="Enter your phone number"></u-newsletter-field>
+             * ```
+             */
+            "u-newsletter-field": LocalJSX.UNewsletterField & JSXBase.HTMLAttributes<HTMLUNewsletterFieldElement>;
             "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
             "u-newsletter-preference-checkbox": LocalJSX.UNewsletterPreferenceCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterPreferenceCheckboxElement>;
             "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;

@@ -133,7 +133,12 @@ async function handleAlreadySubscribedError(
 }
 
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
-  const { checkedNewsletters } = newsletterStore.state;
+  const { checkedNewsletters, additionalFields } = newsletterStore.state;
+
+  // Filter out empty/null additional fields
+  const filteredAdditionalFields = Object.fromEntries(
+    Object.entries(additionalFields).filter(([_, value]) => value !== null && value !== undefined && value !== ""),
+  );
 
   const [error, response] = await getUnidyClient().newsletters.create({
     payload: {
@@ -143,6 +148,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
         preference_identifiers: checkedNewsletters[newsletter] || [],
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
+      ...(Object.keys(filteredAdditionalFields).length > 0 && { additional_fields: filteredAdditionalFields }),
     },
   });
 
