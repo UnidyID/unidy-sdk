@@ -4,16 +4,6 @@ import type { AdditionalFieldName } from "../../store/newsletter-store";
 import { newsletterStore } from "../../store/newsletter-store";
 import { getParentNewsletterRoot } from "../helpers";
 
-/**
- * A field component for capturing additional subscriber information in newsletter forms.
- * Supports all additional fields defined in the API schema (first_name, last_name, phone_number, etc.)
- *
- * @example
- * ```html
- * <u-newsletter-field field="first_name" placeholder="Enter your first name"></u-newsletter-field>
- * <u-newsletter-field field="phone_number" placeholder="Enter your phone number"></u-newsletter-field>
- * ```
- */
 @Component({
   tag: "u-newsletter-field",
   shadow: false,
@@ -21,22 +11,11 @@ import { getParentNewsletterRoot } from "../helpers";
 export class NewsletterField {
   @Element() el!: HTMLElement;
 
-  /** The field name to capture (e.g., first_name, last_name, phone_number, etc.) */
   @Prop() field!: AdditionalFieldName;
-
-  /** Custom CSS class name to apply to the input element */
   @Prop({ attribute: "class-name" }) componentClassName = "";
-
-  /** Whether the field is required */
   @Prop() required = false;
-
-  /** Placeholder text for the input */
   @Prop() placeholder?: string;
-
-  /** Aria label for accessibility */
   @Prop() ariaLabel?: string;
-
-  /** Whether the field is disabled */
   @Prop() disabled = false;
 
   private get inputType(): string {
@@ -80,11 +59,9 @@ export class NewsletterField {
   private get placeholderText(): string {
     if (this.placeholder) return this.placeholder;
 
-    // Try to get a translated placeholder
     const translationKey = `newsletter.fields.${this.field}.placeholder`;
     const translated = t(translationKey);
 
-    // If no translation found, generate a default placeholder from field name
     if (translated === translationKey) {
       return this.field.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     }
@@ -106,7 +83,6 @@ export class NewsletterField {
       [this.field]: value,
     };
 
-    // Clear any error for this field
     if (newsletterStore.state.errors[this.field]) {
       const { [this.field]: _, ...restErrors } = newsletterStore.state.errors;
       newsletterStore.state.errors = restErrors;
@@ -120,7 +96,8 @@ export class NewsletterField {
 
   private isDisabled(): boolean {
     if (this.disabled) return true;
-    // Disable fields when user is already logged in (has preference token and email)
+
+    // disable when logged in
     return !!newsletterStore.state.preferenceToken && !!newsletterStore.state.email;
   }
 
