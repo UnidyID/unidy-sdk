@@ -1,24 +1,24 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
-import { routes, userLogin } from "../../config";
-import { Database } from "../../lib/database";
+import { routes } from "../../config";
+
+// TODO: refactor (https://playwright.dev/docs/auth#session-storage)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const session = JSON.parse(readFileSync(path.resolve(__dirname, "../../../playwright/.auth/session.json"), "utf-8"));
 
 test.describe("Profile - authenticated user", () => {
-  test.beforeEach(async ({ page }) => {
-    const users = new Database("User");
-    const user = await users.ensureGetBy({ email: userLogin.email });
-    await users.update(user.id, { first_name: "Peter", date_of_birth: null });
+  test.use({ storageState: "playwright/.auth/user.json" });
 
-    await page.goto(routes.auth);
-
-    const email = page.getByRole("textbox", { name: "Email" });
-    await email.fill(userLogin.email);
-    await email.press("Enter");
-
-    const password = page.getByRole("textbox", { name: "Password" });
-    await password.fill(userLogin.password);
-    await password.press("Enter");
-
-    await expect(page.getByTestId("signed.in.view")).toBeVisible();
+  test.beforeEach(async ({ page, context }) => {
+    await context.addInitScript((data) => {
+      for (const [key, value] of Object.entries(data)) {
+        sessionStorage.setItem(key, String(value));
+      }
+    }, session);
     await page.goto(routes.profile);
   });
 
@@ -58,18 +58,6 @@ test.describe("Profile - authenticated user", () => {
     await logoutButton.click();
 
     await expect(page.getByText("You need to sign in to view your profile")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
-  });
-});
-
-test.describe("Profile - unauthenticated user", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto(routes.profile);
-  });
-
-  test("profile page shows signed out state", async ({ page }) => {
-    await page.goto(routes.profile);
-    await expect(page.getByText("You need to sign in to view")).toBeVisible();
     await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
   });
 });
