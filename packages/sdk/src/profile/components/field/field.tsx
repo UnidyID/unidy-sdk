@@ -41,6 +41,16 @@ export class Field {
 
   @State() selected?: string | string[];
 
+  componentWillLoad() {
+    // Register this field for partial validation tracking
+    profileState.renderedFields.add(this.field);
+  }
+
+  disconnectedCallback() {
+    // Unregister this field when component is removed
+    profileState.renderedFields.delete(this.field);
+  }
+
   private getFieldData() {
     return this.field.startsWith("custom_attributes.")
       ? profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]

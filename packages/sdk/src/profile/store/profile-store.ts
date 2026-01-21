@@ -27,6 +27,7 @@ export interface ProfileState {
   errors: Record<string, string | null>;
   configUpdateSource?: "fetch" | "submit";
   phoneValid: boolean;
+  renderedFields: Set<string>;
 }
 
 const initialState: ProfileState = {
@@ -35,6 +36,7 @@ const initialState: ProfileState = {
   configuration: {},
   errors: {},
   phoneValid: true,
+  renderedFields: new Set<string>(),
 };
 
 const profileStore = createStore<ProfileState>(initialState);

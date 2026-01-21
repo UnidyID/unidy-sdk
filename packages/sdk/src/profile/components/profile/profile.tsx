@@ -6,7 +6,7 @@ import { onChange as authOnChange, authStore } from "../../../auth/store/auth-st
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
-import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
+import { buildPayload, buildPartialPayload, validateRequiredFieldsPartial, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 
@@ -17,6 +17,15 @@ import { onChange as profileOnChange, state as profileState } from "../../store/
 export class Profile {
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
+  /**
+   * When true, only validates and submits fields rendered as u-field components.
+   * Use when your form shows a subset of profile fields.
+   */
+  @Prop() partialValidation = false;
+  /**
+   * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
+   */
+  @Prop() validateFields?: string;
 
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
   @Event() uProfileError!: EventEmitter<{
@@ -86,12 +95,33 @@ export class Profile {
 
     const { configuration, ...stateWithoutConfig } = profileState;
 
-    if (!validateRequiredFieldsUnchanged(stateWithoutConfig.data)) {
+    let fieldsToValidate: Set<string>;
+    if (this.partialValidation) {
+      if (this.validateFields) {
+        fieldsToValidate = new Set(this.validateFields.split(",").map((f) => f.trim()));
+      } else {
+        fieldsToValidate = profileState.renderedFields;
+      }
+    }
+
+    const isValid = this.partialValidation
+      ? validateRequiredFieldsPartial(stateWithoutConfig.data, fieldsToValidate!)
+      : validateRequiredFieldsUnchanged(stateWithoutConfig.data);
+
+    if (!isValid) {
       profileState.loading = false;
       return;
     }
 
-    const updatedProfileData = buildPayload(stateWithoutConfig.data);
+    let updatedProfileData = this.partialValidation
+      ? buildPartialPayload(stateWithoutConfig.data, fieldsToValidate!)
+      : buildPayload(stateWithoutConfig.data);
+
+    // Add flag for backend partial validation
+    if (this.partialValidation) {
+      updatedProfileData = { ...updatedProfileData, _validate_only_sent_fields: true };
+    }
+
     const [error, data, responseInfo] = await getUnidyClient().profile.update({ payload: updatedProfileData });
 
     if (error) {

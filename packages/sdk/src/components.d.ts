@@ -341,8 +341,17 @@ export namespace Components {
           * @default ""
          */
         "initialData": string | Record<string, string>;
+        /**
+          * When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields.
+          * @default false
+         */
+        "partialValidation": boolean;
         "profileId"?: string;
         "submitProfile": () => Promise<void>;
+        /**
+          * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
+         */
+        "validateFields"?: string;
     }
     interface URawField {
         /**
@@ -1198,7 +1207,16 @@ declare namespace LocalJSX {
     };
   }>) => void;
         "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
+        /**
+          * When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields.
+          * @default false
+         */
+        "partialValidation"?: boolean;
         "profileId"?: string;
+        /**
+          * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
+         */
+        "validateFields"?: string;
     }
     interface URawField {
         /**
