@@ -5,7 +5,7 @@ import { getParentSigninStep } from "../helpers";
 
 export type AuthButtonFor = "email" | "password" | "resetPassword" | "single-login";
 
-function getEmailInput(el: HTMLElement): HTMLInputElement | null {
+function getEmailInput(el: HTMLElement) {
   const signinRoot = el.closest("u-signin-root") || el.closest("u-signin-step");
   const emailField = signinRoot?.querySelector("u-email-field");
   return emailField?.querySelector('input[type="email"]') as HTMLInputElement | null;
