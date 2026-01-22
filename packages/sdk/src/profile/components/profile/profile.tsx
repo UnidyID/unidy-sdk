@@ -201,6 +201,16 @@ export class Profile {
       return new Set(this.validateFields.split(",").map((f) => f.trim()));
     }
 
+    // If no fields are registered, fall back to full validation
+    // This prevents empty payloads when partialValidation is enabled but no u-field components are rendered
+    if (this.renderedFields.size === 0) {
+      console.warn(
+        "[u-profile] partialValidation is enabled but no u-field components are rendered. Falling back to full validation. " +
+          "Use the validateFields prop to explicitly specify fields if you are using custom form elements.",
+      );
+      return undefined;
+    }
+
     return this.renderedFields;
   }
 
