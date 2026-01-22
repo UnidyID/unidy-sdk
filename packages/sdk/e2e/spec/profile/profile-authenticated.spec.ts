@@ -1,13 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { routes } from "../../config";
-import { applySessionStorage, getSessionStoragePath, readSessionStorageFromFile } from "../../lib/helpers/session-storage";
+import { loadAuthenticatedContext } from "../../lib/helpers/session-storage";
 
 test.describe("Profile - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
   test.beforeEach(async ({ page, context }) => {
-    const session = readSessionStorageFromFile();
-    await applySessionStorage(context, session);
+    await loadAuthenticatedContext(context);
 
     await page.goto(routes.profile);
   });

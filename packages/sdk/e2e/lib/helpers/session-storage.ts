@@ -19,3 +19,8 @@ export async function applySessionStorage(context: BrowserContext, session: Sess
     }
   }, session);
 }
+
+export async function loadAuthenticatedContext(context: BrowserContext, sessionPath = getSessionStoragePath()) {
+  const session = readSessionStorageFromFile(sessionPath);
+  await applySessionStorage(context, session);
+}
