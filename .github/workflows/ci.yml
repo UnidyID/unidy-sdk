@@ -28,9 +28,65 @@ jobs:
   e2e:
     name: Playwright Tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:alpine
+        env:
+          POSTGRES_DB: unidy_playwright
+          POSTGRES_PASSWORD: unidy_playwright
+        ports:
+          - 127.0.0.1:5432:5432
+      redis:
+        image: redis
+        ports:
+          - 127.0.0.1:6379:6379
     steps:
-      - name: Checkout code
+      - name: Checkout SDK
         uses: actions/checkout@v4
+
+      - name: Checkout Backend
+        uses: actions/checkout@v4
+        with:
+          repository: UnidyID/unidy
+          path: backend
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Build backend image
+        run: docker build -t unidy-backend:e2e ./backend
+
+      - name: Start backend container
+        run: |
+          docker run -d --name unidy-backend \
+            --network host \
+            -e PORT=3000 \
+            -e DATABASE_URL="postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright" \
+            -e REDIS_URL="redis://127.0.0.1:6379/0" \
+            -e UNIDY_TENANT=unidy \
+            -e UNIDY_ENVIRONMENT=development \
+            -e RAILS_HOST=127.0.0.1 \
+            -e RAILS_ENV=development \
+            -e SHARED_MASTER_KEY="${{ secrets.SHARED_MASTER_KEY }}" \
+            -e RAILS_MASTER_KEY="${{ secrets.RAILS_MASTER_KEY }}" \
+            unidy-backend:e2e
+
+      - name: Backend DB setup and assets
+        run: |
+          echo "::group::Migrate Database"
+          docker exec unidy-backend bundle exec rake db:setup
+          echo "::endgroup::"
+          echo "::group::Prepare assets"
+          docker exec unidy-backend bundle exec rails assets:precompile
+          echo "::endgroup::"
+
+      - name: Wait for backend
+        run: |
+          for i in {1..60}; do
+            curl -fsS http://127.0.0.1:3000/health && exit 0
+            sleep 2
+          done
+          echo "Backend not ready"
+          docker logs unidy-backend
+          exit 1
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -63,3 +119,9 @@ jobs:
           name: playwright-traces
           path: packages/sdk/test-results/
           retention-days: 30
+
+      - name: Cleanup backend container
+        if: always()
+        run: |
+          docker logs unidy-backend || true
+          docker rm -f unidy-backend || true
