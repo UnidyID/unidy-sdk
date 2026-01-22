@@ -39,6 +39,19 @@ Type: `Promise<void>`
 
 
 
+## Dependencies
+
+### Depends on
+
+- [u-spinner](../../../shared/components/spinner)
+
+### Graph
+```mermaid
+graph TD;
+  u-newsletter-root --> u-spinner
+  style u-newsletter-root fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
