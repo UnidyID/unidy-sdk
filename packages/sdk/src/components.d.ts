@@ -347,7 +347,15 @@ export namespace Components {
          */
         "partialValidation": boolean;
         "profileId"?: string;
+        /**
+          * Register a field for partial validation tracking. Called by child u-field components when they mount.
+         */
+        "registerField": (fieldName: string) => Promise<void>;
         "submitProfile": () => Promise<void>;
+        /**
+          * Unregister a field from partial validation tracking. Called by child u-field components when they unmount.
+         */
+        "unregisterField": (fieldName: string) => Promise<void>;
         /**
           * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
          */

@@ -1,9 +1,10 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
-import { getParentSigninStep } from "../../../auth/components/helpers";
 import { authState, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { detectContext, findParentNewsletterRoot, findParentSigninStep } from "../../context-utils";
+
+type EmailFieldContext = "auth" | "newsletter";
 
 @Component({
   tag: "u-email-field",
@@ -19,10 +20,13 @@ export class EmailField {
 
   @State() emailValue = "";
 
-  private get context(): "auth" | "newsletter" | null {
-    if (this.el.closest("u-signin-root")) return "auth";
+  private get context(): EmailFieldContext | null {
+    const detectedContext = detectContext(this.el);
 
-    if (this.el.closest("u-newsletter-root")) return "newsletter";
+    // Email field only supports auth and newsletter contexts
+    if (detectedContext === "auth" || detectedContext === "newsletter") {
+      return detectedContext;
+    }
 
     return null;
   }
@@ -57,9 +61,9 @@ export class EmailField {
 
     if (this.store.state.email === "") return;
 
-    if (this.context === "auth") return await getParentSigninStep(this.el)?.submit();
+    if (this.context === "auth") return await findParentSigninStep(this.el)?.submit();
 
-    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
+    if (this.context === "newsletter") return await findParentNewsletterRoot(this.el)?.submit();
   };
 
   private isDisabled(): boolean {

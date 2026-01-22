@@ -1,5 +1,6 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
+import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -41,14 +42,18 @@ export class Field {
 
   @State() selected?: string | string[];
 
+  /** Reference to parent u-profile element for field registration */
+  private parentProfile: HTMLUProfileElement | null = null;
+
   componentWillLoad() {
-    // Register this field for partial validation tracking
-    profileState.renderedFields.add(this.field);
+    // Find parent u-profile and register this field for partial validation tracking
+    this.parentProfile = findParentProfile(this.el);
+    this.parentProfile?.registerField(this.field);
   }
 
   disconnectedCallback() {
     // Unregister this field when component is removed
-    profileState.renderedFields.delete(this.field);
+    this.parentProfile?.unregisterField(this.field);
   }
 
   private getFieldData() {

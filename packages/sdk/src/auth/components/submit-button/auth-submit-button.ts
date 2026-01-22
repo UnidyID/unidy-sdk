@@ -1,12 +1,12 @@
 import { t } from "../../../i18n";
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
+import { findParentSigninRoot, findParentSigninStep } from "../../../shared/context-utils";
 import { authState } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 
 export type AuthButtonFor = "email" | "password" | "resetPassword" | "single-login";
 
 function getEmailInput(el: HTMLElement) {
-  const signinRoot = el.closest("u-signin-root") || el.closest("u-signin-step");
+  const signinRoot = findParentSigninRoot(el) || findParentSigninStep(el);
   const emailField = signinRoot?.querySelector("u-email-field");
   return emailField?.querySelector('input[type="email"]') as HTMLInputElement | null;
 }
@@ -21,7 +21,7 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
       return;
     }
 
-    await getParentSigninStep(el)?.submit();
+    await findParentSigninStep(el)?.submit();
   },
 
   isDisabled(forProp?: AuthButtonFor, disabled?: boolean): boolean {

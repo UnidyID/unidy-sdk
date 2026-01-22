@@ -1,12 +1,12 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
-import { buildPayload, buildPartialPayload, validateRequiredFieldsPartial, validateRequiredFieldsUnchanged } from "../../profile-helpers";
+import { buildPartialPayload, buildPayload, validateRequiredFieldsPartial, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 
@@ -15,6 +15,8 @@ import { onChange as profileOnChange, state as profileState } from "../../store/
   shadow: false,
 })
 export class Profile {
+  @Element() el!: HTMLElement;
+
   @Prop() profileId?: string;
   @Prop() initialData: string | Record<string, string> = "";
   /**
@@ -38,6 +40,27 @@ export class Profile {
   }>;
 
   @State() fetchingProfileData = false;
+
+  /** Fields registered by child u-field components for partial validation */
+  private renderedFields = new Set<string>();
+
+  /**
+   * Register a field for partial validation tracking.
+   * Called by child u-field components when they mount.
+   */
+  @Method()
+  async registerField(fieldName: string): Promise<void> {
+    this.renderedFields.add(fieldName);
+  }
+
+  /**
+   * Unregister a field from partial validation tracking.
+   * Called by child u-field components when they unmount.
+   */
+  @Method()
+  async unregisterField(fieldName: string): Promise<void> {
+    this.renderedFields.delete(fieldName);
+  }
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
@@ -95,17 +118,11 @@ export class Profile {
 
     const { configuration, ...stateWithoutConfig } = profileState;
 
-    let fieldsToValidate: Set<string>;
-    if (this.partialValidation) {
-      if (this.validateFields) {
-        fieldsToValidate = new Set(this.validateFields.split(",").map((f) => f.trim()));
-      } else {
-        fieldsToValidate = profileState.renderedFields;
-      }
-    }
+    // Determine which fields to validate based on partialValidation mode
+    const fieldsToValidate = this.getFieldsToValidate();
 
-    const isValid = this.partialValidation
-      ? validateRequiredFieldsPartial(stateWithoutConfig.data, fieldsToValidate!)
+    const isValid = fieldsToValidate
+      ? validateRequiredFieldsPartial(stateWithoutConfig.data, fieldsToValidate)
       : validateRequiredFieldsUnchanged(stateWithoutConfig.data);
 
     if (!isValid) {
@@ -113,12 +130,12 @@ export class Profile {
       return;
     }
 
-    let updatedProfileData = this.partialValidation
-      ? buildPartialPayload(stateWithoutConfig.data, fieldsToValidate!)
+    let updatedProfileData = fieldsToValidate
+      ? buildPartialPayload(stateWithoutConfig.data, fieldsToValidate)
       : buildPayload(stateWithoutConfig.data);
 
     // Add flag for backend partial validation
-    if (this.partialValidation) {
+    if (fieldsToValidate) {
       updatedProfileData = { ...updatedProfileData, _validate_only_sent_fields: true };
     }
 
@@ -169,6 +186,22 @@ export class Profile {
         this.fetchProfileData();
       }
     });
+  }
+
+  /**
+   * Returns the set of fields to validate when in partial validation mode,
+   * or undefined when full validation should be used.
+   */
+  private getFieldsToValidate(): Set<string> | undefined {
+    if (!this.partialValidation) {
+      return undefined;
+    }
+
+    if (this.validateFields) {
+      return new Set(this.validateFields.split(",").map((f) => f.trim()));
+    }
+
+    return this.renderedFields;
   }
 
   render() {
