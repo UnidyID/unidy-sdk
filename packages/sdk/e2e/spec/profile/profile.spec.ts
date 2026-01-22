@@ -1,24 +1,19 @@
-import { expect, test } from "@playwright/test";
 import { routes } from "../../config";
-import { loadAuthenticatedContext } from "../../lib/helpers/session-storage";
+import { expect, test } from "../../fixtures";
 
 test.describe("Profile - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
-  test.beforeEach(async ({ page, context }) => {
-    await loadAuthenticatedContext(context);
-
+  test("profile page loads successfully", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profile);
-  });
-
-  test("profile page loads successfully", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
     await expect(page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox")).toBeVisible();
     await expect(page.getByRole("button", { name: "Submit" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
   });
 
-  test("profile updated successfully", async ({ page }) => {
+  test("profile updated successfully", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const firstNameField = page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox");
 
     await firstNameField.fill("UpdatedFirstName");
@@ -30,7 +25,8 @@ test.describe("Profile - authenticated user", () => {
     await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
 
-  test("shows date_of_birth error after submit (future date)", async ({ page }) => {
+  test("shows date_of_birth error after submit (future date)", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const invalidDOB = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     const dob = page.locator("input[type='date']");
 
@@ -42,7 +38,8 @@ test.describe("Profile - authenticated user", () => {
     await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
   });
 
-  test("logout works correctly", async ({ page }) => {
+  test("logout works correctly", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const logoutButton = page.getByRole("button", { name: "Logout" });
     await logoutButton.click();
 
