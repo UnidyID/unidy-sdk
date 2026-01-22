@@ -1,24 +1,14 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
 import { routes } from "../../config";
-
-// TODO: refactor (https://playwright.dev/docs/auth#session-storage)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const session = JSON.parse(readFileSync(path.resolve(__dirname, "../../../playwright/.auth/session.json"), "utf-8"));
+import { applySessionStorage, getSessionStoragePath, readSessionStorageFromFile } from "../../lib/helpers/session-storage";
 
 test.describe("Profile - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
   test.beforeEach(async ({ page, context }) => {
-    await context.addInitScript((data) => {
-      for (const [key, value] of Object.entries(data)) {
-        sessionStorage.setItem(key, String(value));
-      }
-    }, session);
+    const session = readSessionStorageFromFile();
+    await applySessionStorage(context, session);
+
     await page.goto(routes.profile);
   });
 
