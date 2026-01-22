@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { routes, userLogin } from "./config";
 import { Database } from "./lib/database";
@@ -18,8 +18,6 @@ test("create auth state", async ({ page }) => {
   await expect(page.getByTestId("signed.in.view")).toBeVisible();
 
   const session = await page.evaluate(() => JSON.stringify(sessionStorage));
-
-  await mkdir("playwright/.auth", { recursive: true });
 
   await writeFile("playwright/.auth/session.json", session, "utf-8");
 
