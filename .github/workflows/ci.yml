@@ -79,23 +79,21 @@ jobs:
       - name: Backend DB setup and assets
         working-directory: unidy
         env:
+          PORT: 3000
           DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
           REDIS_URL: redis://127.0.0.1:6379/0
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
           RAILS_HOST: 127.0.0.1
-          RAILS_ENV: test
+          RAILS_ENV: development
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
-          echo "::group::Remove dev-only rake tasks"
-          rm -f lib/tasks/annotate_rb.rake
-          echo "::endgroup::"
           echo "::group::Migrate Database"
-          bundle exec rake db:create db:migrate db:seed
+          bundle exec rake db:setup
           echo "::endgroup::"
           echo "::group::Prepare assets"
-          bundle exec rake assets:precompile
+          bundle exec rails assets:precompile
           echo "::endgroup::"
 
       - name: Start backend server
@@ -107,7 +105,7 @@ jobs:
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
           RAILS_HOST: 127.0.0.1
-          RAILS_ENV: test
+          RAILS_ENV: development
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
@@ -118,7 +116,7 @@ jobs:
         run: |
           for i in {1..60}; do
             # Just check if server is responding (any HTTP response is fine)
-            if curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -qE "^[2-5]"; then
+            if curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -qE "^[23]"; then
               echo "Backend is ready"
               exit 0
             fi
