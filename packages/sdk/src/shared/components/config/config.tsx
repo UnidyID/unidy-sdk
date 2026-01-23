@@ -6,6 +6,8 @@ import i18n from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { unidyState } from "../../store/unidy-store";
 
+let configInstance: UnidyConfig | null = null;
+
 export interface Config {
   apiKey: string;
   baseUrl: string;
@@ -40,6 +42,12 @@ export class UnidyConfig extends UnidyComponent {
   @Event() configChange!: EventEmitter<ConfigChange>;
 
   async componentWillLoad() {
+    if (configInstance !== null) {
+      this.logger.error("Only one <u-config> element is allowed per page.");
+      return;
+    }
+    configInstance = this;
+
     if (!this.baseUrl || !this.apiKey) {
       this.logger.error("baseUrl and apiKey are required");
       return;
@@ -66,6 +74,14 @@ export class UnidyConfig extends UnidyComponent {
 
     if (this.checkSignedIn) {
       auth.helpers.checkSignedIn();
+    }
+
+    this.logger.debug("Unidy SDK initialized successfully");
+  }
+
+  disconnectedCallback() {
+    if (configInstance === this) {
+      configInstance = null;
     }
   }
 
