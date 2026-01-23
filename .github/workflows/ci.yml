@@ -56,33 +56,63 @@ jobs:
           ssh-key: ${{ secrets.UNIDY_SSH_KEY }}
           path: unidy
 
-      - name: Build backend image
-        run: docker build -t unidy:e2e ./unidy
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: unidy
+          bundler-cache: true
 
-      - name: Start backend container
-        run: |
-          docker run -d --name unidy \
-            --network host \
-            -e PORT=3000 \
-            -e DATABASE_URL="postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright" \
-            -e REDIS_URL="redis://127.0.0.1:6379/0" \
-            -e UNIDY_TENANT=unidy \
-            -e UNIDY_ENVIRONMENT=development \
-            -e RAILS_HOST=127.0.0.1 \
-            -e RAILS_ENV=test \
-            -e SHARED_MASTER_KEY="${{ secrets.SHARED_MASTER_KEY }}" \
-            -e RAILS_MASTER_KEY="${{ secrets.RAILS_MASTER_KEY }}" \
-            unidy:e2e
+      - name: Install libvips
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libvips libvips-dev
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.0
+
+      - name: Install backend JS dependencies
+        run: bun install
+        working-directory: unidy
 
       - name: Backend DB setup and assets
+        working-directory: unidy
+        env:
+          DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
+          REDIS_URL: redis://127.0.0.1:6379/0
+          UNIDY_TENANT: unidy
+          UNIDY_ENVIRONMENT: development
+          RAILS_HOST: 127.0.0.1
+          RAILS_ENV: test
+          SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
+          echo "::group::Remove dev-only rake tasks"
+          rm -f lib/tasks/annotate_rb.rake
+          echo "::endgroup::"
           echo "::group::Migrate Database"
-          docker exec unidy rm -f lib/tasks/annotate_rb.rake
-          docker exec unidy bundle exec rake db:setup
+          bundle exec rake db:create db:migrate
           echo "::endgroup::"
           echo "::group::Prepare assets"
-          docker exec unidy bundle exec rails assets:precompile
+          bundle exec rake assets:precompile
           echo "::endgroup::"
+
+      - name: Start backend server
+        working-directory: unidy
+        env:
+          PORT: 3000
+          DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
+          REDIS_URL: redis://127.0.0.1:6379/0
+          UNIDY_TENANT: unidy
+          UNIDY_ENVIRONMENT: development
+          RAILS_HOST: 127.0.0.1
+          RAILS_ENV: test
+          SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+        run: |
+          bundle exec rails server -b 127.0.0.1 -p 3000 &
+          echo $! > /tmp/rails.pid
 
       - name: Wait for backend
         run: |
@@ -91,15 +121,9 @@ jobs:
             sleep 2
           done
           echo "Backend not ready"
-          docker logs unidy
           exit 1
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
+      - name: Install SDK dependencies
         run: bun install
 
       - name: Install Playwright browsers
@@ -126,8 +150,9 @@ jobs:
           path: packages/sdk/test-results/
           retention-days: 30
 
-      - name: Cleanup backend container
+      - name: Cleanup
         if: always()
         run: |
-          docker logs unidy || true
-          docker rm -f unidy || true
+          if [ -f /tmp/rails.pid ]; then
+            kill $(cat /tmp/rails.pid) || true
+          fi
