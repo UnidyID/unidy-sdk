@@ -4,7 +4,7 @@ import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-step",
-  shadow: true,
+  shadow: false,
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
@@ -32,30 +32,31 @@ export class SigninStep {
   }
 
   render() {
-    let shouldRender = false;
+    let shouldShow = false;
 
     if (this.name === "email") {
-      shouldRender = authState.step === "email";
+      shouldShow = authState.step === "email";
     } else if (this.name === "verification") {
-      shouldRender = authState.step === "verification";
+      shouldShow = authState.step === "verification";
     } else if (this.name === "magic-code") {
-      shouldRender = authState.step === "magic-code";
+      shouldShow = authState.step === "magic-code";
     } else if (this.name === "reset-password") {
-      shouldRender = authState.step === "reset-password";
+      shouldShow = authState.step === "reset-password";
     } else if (this.name === "registration") {
-      shouldRender = authState.step === "registration" && authState.errors.email === "account_not_found";
+      shouldShow = authState.step === "registration" && authState.errors.email === "account_not_found";
     } else if (this.name === "single-login") {
-      shouldRender = authState.step === "single-login";
+      shouldShow = authState.step === "single-login";
     } else if (this.name === "missing-fields") {
-      shouldRender = authState.step === "missing-fields";
-    }
-
-    if (!shouldRender) {
-      return null;
+      shouldShow = authState.step === "missing-fields";
     }
 
     return (
-      <Host>
+      <Host
+        hidden={!shouldShow}
+        style={{ display: shouldShow ? undefined : "none" }}
+        aria-hidden={!shouldShow ? "true" : null}
+        aria-live="polite"
+      >
         <slot />
       </Host>
     );
