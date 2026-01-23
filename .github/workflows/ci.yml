@@ -92,7 +92,7 @@ jobs:
           rm -f lib/tasks/annotate_rb.rake
           echo "::endgroup::"
           echo "::group::Migrate Database"
-          bundle exec rake db:create db:migrate
+          bundle exec rake db:create db:migrate db:seed
           echo "::endgroup::"
           echo "::group::Prepare assets"
           bundle exec rake assets:precompile
