@@ -143,15 +143,6 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
-    if (authState.step === "missing-fields") {
-      return;
-    }
-
-    const sid = clearUrlParam("sid");
-    if (sid) {
-      authStore.setSignInId(sid);
-    }
-
     if (!authState.sid) {
       this.logger.warn("No sign-in ID in the session");
       return;
@@ -164,6 +155,13 @@ export class AuthHelpers {
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
+    }
+  }
+
+  extractSidFromUrl() {
+    const sid = clearUrlParam("sid");
+    if (sid) {
+      authStore.setSignInId(sid);
     }
   }
 
