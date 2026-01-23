@@ -44,6 +44,11 @@ jobs:
         image: redis
         ports:
           - 127.0.0.1:6379:6379
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 127.0.0.1:1025:1025
+          - 127.0.0.1:8025:8025
     steps:
       - name: Checkout SDK
         uses: actions/checkout@v4
@@ -133,7 +138,7 @@ jobs:
         working-directory: packages/sdk
 
       - name: Run Playwright tests
-        run: bun run e2e
+        run: bunx playwright test --project=setup --project=chromium
         working-directory: packages/sdk
 
       - name: Upload Playwright report
