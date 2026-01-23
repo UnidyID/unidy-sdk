@@ -81,11 +81,11 @@ jobs:
         env:
           PORT: 3000
           DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
-          REDIS_URL: redis://127.0.0.1:6379/0
+          REDIS_URL: redis://localhost/0
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
-          RAILS_HOST: 127.0.0.1
-          RAILS_ENV: development
+          RAILS_HOST: localhost
+          RAILS_ENV: test
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
@@ -101,11 +101,11 @@ jobs:
         env:
           PORT: 3000
           DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
-          REDIS_URL: redis://127.0.0.1:6379/0
+          REDIS_URL: redis://localhost/0
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
-          RAILS_HOST: 127.0.0.1
-          RAILS_ENV: development
+          RAILS_HOST: localhost
+          RAILS_ENV: test
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
@@ -116,7 +116,7 @@ jobs:
         run: |
           for i in {1..60}; do
             # Just check if server is responding (any HTTP response is fine)
-            if curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ | grep -qE "^[23]"; then
+            if curl -sS -o /dev/null -w "%{http_code}" http://localhost:3000/ | grep -qE "^[23]"; then
               echo "Backend is ready"
               exit 0
             fi
