@@ -77,6 +77,7 @@ jobs:
       - name: Backend DB setup and assets
         run: |
           echo "::group::Migrate Database"
+          docker exec unidy rm -f lib/tasks/annotate_rb.rake
           docker exec unidy bundle exec rake db:setup
           echo "::endgroup::"
           echo "::group::Prepare assets"
