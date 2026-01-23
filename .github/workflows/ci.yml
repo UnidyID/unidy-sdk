@@ -69,7 +69,7 @@ jobs:
             -e UNIDY_TENANT=unidy \
             -e UNIDY_ENVIRONMENT=development \
             -e RAILS_HOST=127.0.0.1 \
-            -e RAILS_ENV=development \
+            -e RAILS_ENV=test \
             -e SHARED_MASTER_KEY="${{ secrets.SHARED_MASTER_KEY }}" \
             -e RAILS_MASTER_KEY="${{ secrets.RAILS_MASTER_KEY }}" \
             unidy:e2e
