@@ -44,6 +44,10 @@ jobs:
         image: redis
         ports:
           - 127.0.0.1:6379:6379
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 127.0.0.1:1025:1025
     steps:
       - name: Checkout SDK
         uses: actions/checkout@v4
@@ -85,7 +89,7 @@ jobs:
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
           RAILS_HOST: localhost
-          RAILS_ENV: test
+          RAILS_ENV: development
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
@@ -105,7 +109,7 @@ jobs:
           UNIDY_TENANT: unidy
           UNIDY_ENVIRONMENT: development
           RAILS_HOST: localhost
-          RAILS_ENV: test
+          RAILS_ENV: development
           SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
