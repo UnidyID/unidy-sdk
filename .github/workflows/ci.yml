@@ -53,6 +53,8 @@ jobs:
         with:
           repository: UnidyID/unidy
           ref: master
+          ssh-key: ${{ secrets.UNIDY_SSH_KEY }}
+          path: unidy
 
       - name: Build backend image
         run: docker build -t unidy:e2e ./unidy
