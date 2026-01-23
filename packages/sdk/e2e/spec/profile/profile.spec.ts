@@ -1,35 +1,19 @@
-import { expect, test } from "@playwright/test";
-import { routes, userLogin } from "../../config";
-import { Database } from "../../lib/database";
+import { routes } from "../../config";
+import { expect, test } from "../../fixtures";
 
 test.describe("Profile - authenticated user", () => {
-  test.beforeEach(async ({ page }) => {
-    const users = new Database("User");
-    const user = await users.ensureGetBy({ email: userLogin.email });
-    await users.update(user.id, { first_name: "Peter", date_of_birth: null });
+  test.use({ storageState: "playwright/.auth/user.json" });
 
-    await page.goto(routes.auth);
-
-    const email = page.getByRole("textbox", { name: "Email" });
-    await email.fill(userLogin.email);
-    await email.press("Enter");
-
-    const password = page.getByRole("textbox", { name: "Password" });
-    await password.fill(userLogin.password);
-    await password.press("Enter");
-
-    await expect(page.getByTestId("signed.in.view")).toBeVisible();
+  test("profile page loads successfully", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profile);
-  });
-
-  test("profile page loads successfully", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "Profile", exact: true })).toBeVisible();
     await expect(page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox")).toBeVisible();
     await expect(page.getByRole("button", { name: "Submit" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
   });
 
-  test("profile updated successfully", async ({ page }) => {
+  test("profile updated successfully", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const firstNameField = page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox");
 
     await firstNameField.fill("UpdatedFirstName");
@@ -41,7 +25,8 @@ test.describe("Profile - authenticated user", () => {
     await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
 
-  test("shows date_of_birth error after submit (future date)", async ({ page }) => {
+  test("shows date_of_birth error after submit (future date)", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const invalidDOB = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     const dob = page.locator("input[type='date']");
 
@@ -53,7 +38,8 @@ test.describe("Profile - authenticated user", () => {
     await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
   });
 
-  test("logout works correctly", async ({ page }) => {
+  test("logout works correctly", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profile);
     const logoutButton = page.getByRole("button", { name: "Logout" });
     await logoutButton.click();
 
