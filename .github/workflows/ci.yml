@@ -44,11 +44,6 @@ jobs:
         image: redis
         ports:
           - 127.0.0.1:6379:6379
-      mailpit:
-        image: axllent/mailpit
-        ports:
-          - 127.0.0.1:1025:1025
-          - 127.0.0.1:8025:8025
     steps:
       - name: Checkout SDK
         uses: actions/checkout@v4
