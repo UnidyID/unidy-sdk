@@ -82,6 +82,7 @@ export class UnidyConfig extends UnidyComponent {
   disconnectedCallback() {
     if (configInstance === this) {
       configInstance = null;
+      unidyState.isConfigured = false;
     }
   }
 
