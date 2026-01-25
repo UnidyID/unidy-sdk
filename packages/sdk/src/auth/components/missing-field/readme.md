@@ -5,6 +5,13 @@
 <!-- Auto Generated Below -->
 
 
+## Properties
+
+| Property             | Attribute    | Description | Type     | Default     |
+| -------------------- | ------------ | ----------- | -------- | ----------- |
+| `componentClassName` | `class-name` |             | `string` | `undefined` |
+
+
 ## Dependencies
 
 ### Depends on

@@ -1,4 +1,4 @@
-import { Component, Element, h } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
@@ -9,10 +9,19 @@ import { authState, authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-missing-fields-submit-button",
-  shadow: true,
+  shadow: false,
 })
 export class MissingFieldsSubmitButton {
   @Element() el!: HTMLElement;
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  // Must be evaluated on load, not render, because shadow: false components
+  // will have their DOM modified after first render, causing hasSlotContent to return incorrect results
+  private hasSlot = false;
+
+  componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
 
   private async onSubmit() {
     profileState.loading = true;
@@ -54,10 +63,11 @@ export class MissingFieldsSubmitButton {
           type="button"
           onClick={() => this.onSubmit()}
           part="button"
+          class={this.componentClassName}
           disabled={(profileState.errors && Object.keys(profileState.errors).length > 0) || profileState.phoneValid === false}
           aria-live="polite"
         >
-          {profileState.loading ? <u-spinner /> : hasSlotContent(this.el) ? <slot /> : t("buttons.submit")}
+          {profileState.loading ? <u-spinner /> : this.hasSlot ? <slot /> : t("buttons.submit")}
         </button>
       </div>
     );
