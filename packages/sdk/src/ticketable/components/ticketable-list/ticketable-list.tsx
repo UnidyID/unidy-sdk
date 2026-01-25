@@ -1,7 +1,6 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
-import { de } from "date-fns/locale/de";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
@@ -75,6 +74,10 @@ async function loadLocales() {
       import("date-fns/locale/ro").then((module) => {
         LOCALES.ro = module.ro;
       }),
+    !LOCALES.sv &&
+      import("date-fns/locale/sv").then((module) => {
+        LOCALES.sv = module.sv;
+      }),
   ]);
 }
 
@@ -125,7 +128,7 @@ export class TicketableList extends UnidyComponent {
   async componentWillLoad() {
     await waitForConfig();
     loadLocales().catch((err) => {
-      console.error("[u-ticketable-list] Failed to load locales, falling back to 'de'", err);
+      console.error("[u-ticketable-list] Failed to load locales, falling back to 'en'", err);
     });
   }
 
@@ -294,7 +297,7 @@ export class TicketableList extends UnidyComponent {
         let finalValue: string;
 
         if (typeof value === "object" && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || de });
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || LOCALES.en });
         } else if (typeof value === "number" && key === "price") {
           finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
@@ -318,6 +321,12 @@ export class TicketableList extends UnidyComponent {
     }
 
     // Process ticketable-conditional elements
+    // Shows/hides content based on item property values.
+    // Example:
+    //   <ticketable-conditional when="metadata.vip">
+    //     <span class="vip-badge">VIP</span>
+    //   </ticketable-conditional>
+    // The children are rendered only if the "when" property is truthy.
     // Convert to array to avoid issues when modifying the DOM
     const conditionalElements = Array.from(fragment.querySelectorAll("ticketable-conditional"));
     for (const conditionalEl of conditionalElements) {
