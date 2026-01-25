@@ -22,7 +22,7 @@ export const BaseFieldDataSchema = z
     label: z.string(),
     attr_name: z.string(),
     locked: z.boolean().optional(),
-    locked_text: z.string().optional(),
+    locked_text: z.string().nullish(),
   })
   .strict();
 

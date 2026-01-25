@@ -147,28 +147,29 @@ export class NewsletterService extends BaseService {
     const response = await this.client.post<unknown>("/api/sdk/v1/newsletters/newsletter_subscription", payload, headers);
 
     return this.handleResponse(response, () => {
-      if (!response.success) {
-        const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
-        const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
-        switch (response.status) {
-          case 401:
-            return ["unauthorized", error];
-          case 429:
-            this.logger.warn("Rate limit exceeded");
-            return ["rate_limit_exceeded", error];
-          case 500:
-            this.errorReporter.captureException(response);
-            return ["server_error", error];
-          default:
-            return ["server_error", error];
+      // Both success and 422 return CreateSubscriptionsResponse
+      if (response.success || response.status === 422) {
+        const data = CreateSubscriptionsResponseSchema.parse(response.data);
+        if (data.errors.length > 0) {
+          return ["newsletter_error", data];
         }
+        return [null, data];
       }
 
-      const data = CreateSubscriptionsResponseSchema.parse(response.data);
-      if (data.errors.length > 0) {
-        return ["newsletter_error", data];
+      const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
+      const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+      switch (response.status) {
+        case 401:
+          return ["unauthorized", error];
+        case 429:
+          this.logger.warn("Rate limit exceeded");
+          return ["rate_limit_exceeded", error];
+        case 500:
+          this.errorReporter.captureException(response);
+          return ["server_error", error];
+        default:
+          return ["server_error", error];
       }
-      return [null, data];
     });
   }
 

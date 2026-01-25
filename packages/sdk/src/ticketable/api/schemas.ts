@@ -15,8 +15,8 @@ export type ExportLinkResponse = z.infer<typeof ExportLinkResponseSchema>;
 export const TicketableListParamsSchema = z.object({
   page: z.number().int().positive().optional(),
   perPage: z.number().int().positive().max(250).optional(),
-  state: z.string().optional(),
-  paymentState: z.string().optional(),
+  state: z.string().nullish(),
+  paymentState: z.string().nullish(),
   orderBy: z.enum(["starts_at", "ends_at", "reference", "created_at"]).optional(),
   orderDirection: z.enum(["asc", "desc"]).optional(),
   serviceId: z.number().int().positive().optional(),

@@ -9,7 +9,7 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
 
 @Component({
   tag: "u-error-message",
-  shadow: true,
+  shadow: false,
   styleUrl: "error-message.css",
 })
 export class ErrorMessage {
@@ -18,6 +18,15 @@ export class ErrorMessage {
 
   @Prop() errorMessages?: Record<string, string>;
   @Element() el!: HTMLElement;
+
+  // Must be evaluated on load, not render, because shadow: false components
+  // will have their DOM modified after first render, causing hasSlotContent to return incorrect results
+  private hasSlot = false;
+
+  componentWillLoad() {
+    this.hasSlot = hasSlotContent(this.el);
+  }
+
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
 
@@ -83,18 +92,29 @@ export class ErrorMessage {
   render() {
     const errorCode = this.context === "newsletter" ? this.getNewsletterErrorCode() : this.getAuthErrorCode();
 
-    if (!errorCode) {
-      return null;
-    }
+    // Check if we should show the error
+    let shouldShow = !!errorCode;
 
     // Only render connection_failed for "general" and "connection" types
     if (errorCode === "connection_failed" && this.for !== "general" && this.for !== "connection") {
-      return null;
+      shouldShow = false;
     }
 
-    const errorMessage = this.getErrorMessage(errorCode);
+    const errorMessage = shouldShow ? this.getErrorMessage(errorCode!) : null;
     const formattedMessage = errorMessage?.includes("\n") ? <div style={{ whiteSpace: "pre-line" }}>{errorMessage}</div> : errorMessage;
 
-    return <Host class={this.componentClassName}>{hasSlotContent(this.el) ? <slot /> : formattedMessage}</Host>;
+    // For shadow: false components with slots, we must always render Host but use hidden/display
+    // to control visibility, otherwise slotted content remains visible in the light DOM
+    return (
+      <Host
+        class={`u:block ${this.componentClassName}`}
+        hidden={!shouldShow}
+        style={{ display: shouldShow ? undefined : "none" }}
+        aria-hidden={!shouldShow ? "true" : null}
+        aria-live="polite"
+      >
+        {this.hasSlot ? <slot /> : formattedMessage}
+      </Host>
+    );
   }
 }
