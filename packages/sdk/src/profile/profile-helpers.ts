@@ -35,3 +35,9 @@ export function buildPayload(stateData: ProfileRaw) {
     ),
   };
 }
+
+export function hasProfileChanged(): boolean {
+  const currentData = buildPayload(profileState.data);
+  const savedData = buildPayload(profileState.configuration);
+  return JSON.stringify(currentData) !== JSON.stringify(savedData);
+}
