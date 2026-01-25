@@ -29,7 +29,7 @@ export const config: Config = {
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
         { src: "auth/single-step.html", dest: "auth/single-step.html" },
-        { src: "auth/profile.html", dest: "auth/profile.html" },
+        { src: "profile/index.html", dest: "profile/index.html" },
       ],
     },
   ],
