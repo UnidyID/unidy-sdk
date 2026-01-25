@@ -159,6 +159,9 @@ export class Profile {
       }
     });
 
+    // Set flag before listener to avoid race condition if store emits synchronously
+    this.initialLoadComplete = true;
+
     // Set up data change listener - always emit event, optionally autosave
     this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
       if (this.initialLoadComplete) {
@@ -171,8 +174,6 @@ export class Profile {
         }
       }
     });
-
-    this.initialLoadComplete = true;
   }
 
   disconnectedCallback() {
