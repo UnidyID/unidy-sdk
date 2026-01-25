@@ -4,6 +4,8 @@ import { state as profileState } from "../../store/profile-store";
 
 export class ProfileAutosave {
   private timeoutId: ReturnType<typeof setTimeout> | null = null;
+  private savedTimeoutIds: Map<string, ReturnType<typeof setTimeout>> = new Map();
+  private isSubmitting = false;
   private delay: number;
   private onSubmit: () => Promise<void>;
 
@@ -25,6 +27,17 @@ export class ProfileAutosave {
     }, this.delay);
   };
 
+  clearFieldSavedState(field: string) {
+    const existingTimeout = this.savedTimeoutIds.get(field);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+      this.savedTimeoutIds.delete(field);
+    }
+    if (profileState.fieldSaveStates[field] === "saved") {
+      this.setFieldSaveState(field, "idle");
+    }
+  }
+
   private setFieldSaveState(field: string, state: FieldSaveState) {
     profileState.fieldSaveStates = {
       ...profileState.fieldSaveStates,
@@ -33,6 +46,11 @@ export class ProfileAutosave {
   }
 
   async submitField(field: string): Promise<void> {
+    // Don't submit if already submitting (lock)
+    if (this.isSubmitting) {
+      return;
+    }
+
     // Don't submit if there are validation errors for this field
     if (profileState.errors[field]) {
       return;
@@ -43,21 +61,36 @@ export class ProfileAutosave {
       return;
     }
 
+    // Clear any existing saved timeout for this field
+    this.clearFieldSavedState(field);
+
     // Set field to saving state
     this.setFieldSaveState(field, "saving");
+    this.isSubmitting = true;
 
-    // Submit the profile
-    await this.onSubmit();
+    try {
+      // Submit the profile
+      await this.onSubmit();
 
-    // If no errors, set to saved state
-    if (!profileState.errors[field]) {
-      this.setFieldSaveState(field, "saved");
+      // If no errors, set to saved state
+      if (!profileState.errors[field]) {
+        this.setFieldSaveState(field, "saved");
 
-      // Clear saved state after 2 seconds
-      setTimeout(() => this.setFieldSaveState(field, "idle"), 2000);
-    } else {
-      // If there was an error, reset to idle
+        // Clear saved state after 2 seconds
+        const timeoutId = setTimeout(() => {
+          this.setFieldSaveState(field, "idle");
+          this.savedTimeoutIds.delete(field);
+        }, 2000);
+        this.savedTimeoutIds.set(field, timeoutId);
+      } else {
+        // If there was an error, reset to idle
+        this.setFieldSaveState(field, "idle");
+      }
+    } catch {
+      // On network or other error, reset to idle
       this.setFieldSaveState(field, "idle");
+    } finally {
+      this.isSubmitting = false;
     }
   }
 
@@ -66,5 +99,10 @@ export class ProfileAutosave {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
+    // Clear all saved state timeouts
+    for (const timeoutId of this.savedTimeoutIds.values()) {
+      clearTimeout(timeoutId);
+    }
+    this.savedTimeoutIds.clear();
   }
 }

@@ -202,6 +202,14 @@ export class RawField extends UnidyComponent {
   private onInputField = (newValue: string) => {
     this.selected = newValue;
 
+    // Clear saved state if user starts editing again
+    if (profileState.fieldSaveStates[this.field] === "saved") {
+      profileState.fieldSaveStates = {
+        ...profileState.fieldSaveStates,
+        [this.field]: "idle",
+      };
+    }
+
     const result = this.validateValue(newValue);
     const newErrors = { ...profileState.errors };
 
@@ -217,6 +225,14 @@ export class RawField extends UnidyComponent {
 
   private onChangeSelect = (newValue: string) => {
     this.selected = newValue;
+
+    // Clear saved state if user changes selection again
+    if (profileState.fieldSaveStates[this.field] === "saved") {
+      profileState.fieldSaveStates = {
+        ...profileState.fieldSaveStates,
+        [this.field]: "idle",
+      };
+    }
 
     const result = this.validateValue(newValue);
     const newErrors = { ...profileState.errors };

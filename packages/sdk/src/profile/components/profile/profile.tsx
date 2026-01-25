@@ -178,6 +178,7 @@ export class Profile {
   disconnectedCallback() {
     this.autosaveManager?.destroy();
     this.dataChangeUnsubscribe?.();
+    profileState.activeField = null;
   }
 
   render() {

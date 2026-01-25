@@ -151,7 +151,7 @@ export class Field {
               radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
               multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
               required={fieldData.required || this.required}
-              disabled={isLocked || (profileState.loading && profileState.activeField !== this.field) || this.field === "email"}
+              disabled={isLocked || (profileState.loading && profileState.activeField !== this.field)}
               tooltip={isLocked ? lockedText : undefined}
               placeholder={placeholder}
               componentClassName={this.componentClassName}
