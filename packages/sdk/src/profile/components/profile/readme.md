@@ -7,16 +7,19 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type                                 | Default     |
-| ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
-| `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
-| `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
+| Property        | Attribute        | Description | Type                                 | Default      |
+| --------------- | ---------------- | ----------- | ------------------------------------ | ------------ |
+| `autosave`      | `autosave`       |             | `"disabled" \| "enabled"`            | `"disabled"` |
+| `autosaveDelay` | `autosave-delay` |             | `number`                             | `5000`       |
+| `initialData`   | `initial-data`   |             | `string \| { [x: string]: string; }` | `""`         |
+| `profileId`     | `profile-id`     |             | `string`                             | `undefined`  |
 
 
 ## Events
 
 | Event             | Description | Type                                                                                                                               |
 | ----------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `uProfileChange`  |             | `CustomEvent<{ data: ProfileRaw; field?: string; }>`                                                                               |
 | `uProfileError`   |             | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
 | `uProfileSuccess` |             | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                           |
 

@@ -28,6 +28,10 @@
 | Part                                | Description                                                                                                                                                                                                               |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `"field-error-message"`             |                                                                                                                                                                                                                           |
+| `"field-input-wrapper"`             |                                                                                                                                                                                                                           |
+| `"field-save-indicator"`            |                                                                                                                                                                                                                           |
+| `"field-save-indicator--saved"`     |                                                                                                                                                                                                                           |
+| `"field-save-indicator--saving"`    |                                                                                                                                                                                                                           |
 | `"input_field"`                     |                                                                                                                                                                                                                           |
 | `"multi-select-group_field"`        |                                                                                                                                                                                                                           |
 | `"multi-select-item_checkbox"`      |                                                                                                                                                                                                                           |
@@ -55,11 +59,13 @@
 ### Depends on
 
 - [u-raw-field](../raw-field)
+- [u-spinner](../../../shared/components/spinner)
 
 ### Graph
 ```mermaid
 graph TD;
   u-field --> u-raw-field
+  u-field --> u-spinner
   u-full-profile --> u-field
   u-missing-field --> u-field
   style u-field fill:#f9f,stroke:#333,stroke-width:4px

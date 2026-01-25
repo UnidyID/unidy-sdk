@@ -97,6 +97,7 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 ### Used by
 
  - [u-error-message](../error-message)
+ - [u-field](../../../profile/components/field)
  - [u-jump-to-service](../../../auth/components/jump-to-service)
  - [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
  - [u-logout-button](../../../auth/components/logout-button)
@@ -115,6 +116,7 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 ```mermaid
 graph TD;
   u-error-message --> u-spinner
+  u-field --> u-spinner
   u-jump-to-service --> u-spinner
   u-jump-to-unidy --> u-spinner
   u-logout-button --> u-spinner

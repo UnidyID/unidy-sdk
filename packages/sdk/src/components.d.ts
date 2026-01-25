@@ -10,9 +10,9 @@ import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
-import { Option } from "./profile/components/raw-input-fields/Select";
-import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+import { Option } from "./profile/components/raw-field/components/Select";
+import { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
+import { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
@@ -25,9 +25,9 @@ export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
-export { Option } from "./profile/components/raw-input-fields/Select";
-export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+export { Option } from "./profile/components/raw-field/components/Select";
+export { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
+export { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
@@ -141,10 +141,19 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
+          * @default "disabled"
+         */
+        "autosave"?: "enabled" | "disabled";
+        /**
+          * @default 1000
+         */
+        "autosaveDelay"?: number;
+        /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         "fields"?: string;
+        "submitProfile": () => Promise<void>;
     }
     interface UJumpToService {
         /**
@@ -338,6 +347,14 @@ export namespace Components {
     }
     interface UProfile {
         /**
+          * @default "disabled"
+         */
+        "autosave": "enabled" | "disabled";
+        /**
+          * @default 5000
+         */
+        "autosaveDelay": number;
+        /**
           * @default ""
          */
         "initialData": string | Record<string, string>;
@@ -524,6 +541,10 @@ export interface UNewsletterRootCustomEvent<T> extends CustomEvent<T> {
 export interface UProfileCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUProfileElement;
+}
+export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURawFieldElement;
 }
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -718,6 +739,7 @@ declare global {
         new (): HTMLUPasswordFieldElement;
     };
     interface HTMLUProfileElementEventMap {
+        "uProfileChange": { data: ProfileRaw; field?: string };
         "uProfileSuccess": { message: string; payload: ProfileRaw };
         "uProfileError": {
     error: string;
@@ -742,7 +764,18 @@ declare global {
         prototype: HTMLUProfileElement;
         new (): HTMLUProfileElement;
     };
+    interface HTMLURawFieldElementEventMap {
+        "uFieldSubmit": { field: string };
+    }
     interface HTMLURawFieldElement extends Components.URawField, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLURawFieldElement: {
         prototype: HTMLURawFieldElement;
@@ -1005,6 +1038,14 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
+          * @default "disabled"
+         */
+        "autosave"?: "enabled" | "disabled";
+        /**
+          * @default 1000
+         */
+        "autosaveDelay"?: number;
+        /**
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
@@ -1186,9 +1227,18 @@ declare namespace LocalJSX {
     }
     interface UProfile {
         /**
+          * @default "disabled"
+         */
+        "autosave"?: "enabled" | "disabled";
+        /**
+          * @default 5000
+         */
+        "autosaveDelay"?: number;
+        /**
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        "onUProfileChange"?: (event: UProfileCustomEvent<{ data: ProfileRaw; field?: string }>) => void;
         "onUProfileError"?: (event: UProfileCustomEvent<{
     error: string;
     details: {
@@ -1223,6 +1273,7 @@ declare namespace LocalJSX {
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
+        "onUFieldSubmit"?: (event: URawFieldCustomEvent<{ field: string }>) => void;
         "options"?: string | Option[];
         "pattern"?: string;
         "patternErrorMessage"?: string;

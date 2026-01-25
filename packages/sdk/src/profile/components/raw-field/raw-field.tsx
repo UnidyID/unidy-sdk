@@ -1,11 +1,11 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { UnidyComponent } from "../../../logger";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
-import { Input } from "../raw-input-fields/Input";
-import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
-import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
-import { type Option, Select } from "../raw-input-fields/Select";
-import { Textarea } from "../raw-input-fields/Textarea";
+import { Input } from "./components/Input";
+import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
+import { RadioGroup, type RadioOption } from "./components/RadioGroup";
+import { type Option, Select } from "./components/Select";
+import { Textarea } from "./components/Textarea";
 
 @Component({
   tag: "u-raw-field",
@@ -37,6 +37,8 @@ export class RawField extends UnidyComponent {
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   @Element() el!: HTMLElement;
+
+  @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
   @State() selected?: string | string[];
 
@@ -171,7 +173,13 @@ export class RawField extends UnidyComponent {
     this.writeStore(this.field, updatedValues);
   };
 
-  private onBlurFieldValidation = (e: Event) => {
+  private onFocusField = () => {
+    profileState.activeField = this.field;
+  };
+
+  private onBlurField = (e: Event) => {
+    profileState.activeField = null;
+
     const input = e.target as HTMLInputElement | HTMLTextAreaElement;
     const val = input.value;
 
@@ -187,7 +195,11 @@ export class RawField extends UnidyComponent {
     profileState.errors = newErrors;
   };
 
-  private onChangeFieldValidation = (newValue: string) => {
+  private onBlurSelect = () => {
+    profileState.activeField = null;
+  };
+
+  private onInputField = (newValue: string) => {
     this.selected = newValue;
 
     const result = this.validateValue(newValue);
@@ -201,6 +213,29 @@ export class RawField extends UnidyComponent {
     }
 
     profileState.errors = newErrors;
+  };
+
+  private onChangeSelect = (newValue: string) => {
+    this.selected = newValue;
+
+    const result = this.validateValue(newValue);
+    const newErrors = { ...profileState.errors };
+
+    if (result.valid) {
+      delete newErrors[this.field];
+      this.writeStore(this.field, newValue);
+    } else {
+      newErrors[this.field] = result.message;
+    }
+
+    profileState.errors = newErrors;
+  };
+
+  private onEnterSubmit = () => {
+    // Only emit if there are no validation errors for this field
+    if (!profileState.errors[this.field]) {
+      this.uFieldSubmit.emit({ field: this.field });
+    }
   };
 
   componentWillLoad() {
@@ -250,7 +285,7 @@ export class RawField extends UnidyComponent {
             disabled={this.disabled}
             title={this.tooltip}
             type="radio"
-            onChange={this.onChangeFieldValidation}
+            onChange={this.onChangeSelect}
             options={checkedOptions}
             specificPartKey={this.specificPartKey}
             aria-describedby={this.ariaDescribedBy}
@@ -272,7 +307,7 @@ export class RawField extends UnidyComponent {
             componentClassName={this.componentClassName}
             type="radio"
             specificPartKey={this.specificPartKey}
-            onChange={this.onChangeFieldValidation}
+            onChange={this.onChangeSelect}
             aria-describedby={this.ariaDescribedBy}
             required={this.required}
           />
@@ -333,7 +368,10 @@ export class RawField extends UnidyComponent {
           disabled={this.disabled}
           title={this.tooltip}
           emptyOption={this.emptyOption}
-          onChange={this.onChangeFieldValidation}
+          onChange={this.onChangeSelect}
+          onFocus={this.onFocusField}
+          onBlur={this.onBlurSelect}
+          onEnterSubmit={this.onEnterSubmit}
           componentClassName={this.componentClassName}
           countryCodeDisplayOption={this.countryCodeDisplayOption}
           countryIcon={this.countryIcon}
@@ -355,8 +393,10 @@ export class RawField extends UnidyComponent {
           title={this.tooltip}
           componentClassName={this.componentClassName}
           specificPartKey={this.specificPartKey}
-          onChange={this.onChangeFieldValidation}
-          onBlur={this.onBlurFieldValidation}
+          onInput={this.onInputField}
+          onFocus={this.onFocusField}
+          onBlur={this.onBlurField}
+          onEnterSubmit={this.onEnterSubmit}
           aria-describedby={this.ariaDescribedBy}
         />
       );
@@ -374,8 +414,10 @@ export class RawField extends UnidyComponent {
         componentClassName={this.componentClassName}
         placeholder={this.placeholder}
         specificPartKey={this.specificPartKey}
-        onChange={this.onChangeFieldValidation}
-        onBlur={this.onBlurFieldValidation}
+        onInput={this.onInputField}
+        onFocus={this.onFocusField}
+        onBlur={this.onBlurField}
+        onEnterSubmit={this.onEnterSubmit}
         aria-describedby={this.ariaDescribedBy}
       />
     );

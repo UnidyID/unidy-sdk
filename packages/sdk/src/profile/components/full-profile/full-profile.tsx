@@ -1,4 +1,4 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Method, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
@@ -12,6 +12,16 @@ const EXCLUDED_FIELDS = ["custom_attributes", "email", "preferred_language"];
 export class FullProfile {
   @Prop() fields?: string;
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
+
+  @Prop() autosave?: "enabled" | "disabled" = "disabled";
+  @Prop() autosaveDelay?: number = 1000;
+
+  private profileRef?: HTMLUProfileElement;
+
+  @Method()
+  async submitProfile() {
+    await this.profileRef?.submitProfile();
+  }
 
   private list() {
     if (this.fields) {
@@ -29,7 +39,13 @@ export class FullProfile {
 
   render() {
     return (
-      <u-profile>
+      <u-profile
+        ref={(el) => {
+          this.profileRef = el;
+        }}
+        autosave={this.autosave}
+        autosaveDelay={this.autosaveDelay}
+      >
         {this.list().map((field) => (
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
