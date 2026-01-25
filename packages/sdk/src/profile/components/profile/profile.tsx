@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
@@ -9,16 +9,25 @@ import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
+import { ProfileAutosave } from "./autosave";
 
-@Component({
-  tag: "u-profile",
-  shadow: false,
-})
+@Component({ tag: "u-profile", shadow: false })
 export class Profile {
+  /** Optional profile ID for multi-profile scenarios. */
   @Prop() profileId?: string;
+
+  /** Initial profile data as JSON string or object. If provided, skips fetching from API. */
   @Prop() initialData: string | Record<string, string> = "";
 
+  @State() fetchingProfileData = false;
+
+  /** Emitted whenever profile data changes. Useful for external state synchronization. */
+  @Event() uProfileChange!: EventEmitter<{ data: ProfileRaw; field?: string }>;
+
+  /** Emitted when profile is successfully saved. */
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
+
+  /** Emitted when profile save fails, with error details including field-level errors. */
   @Event() uProfileError!: EventEmitter<{
     error: string;
     details: {
@@ -28,7 +37,21 @@ export class Profile {
     };
   }>;
 
-  @State() fetchingProfileData = false;
+  @Listen("uFieldSubmit")
+  handleFieldSubmit(event: CustomEvent<{ field: string }>) {
+    event.stopPropagation();
+    this.getAutosaveManager().submitField(event.detail.field);
+  }
+
+  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
+  @Prop() autosave: "enabled" | "disabled" = "disabled";
+
+  /** Delay in milliseconds before autosave triggers after the last change. */
+  @Prop() autosaveDelay = 5000;
+
+  private autosaveManager: ProfileAutosave | null = null;
+  private dataChangeUnsubscribe: (() => void) | null = null;
+  private initialLoadComplete = false;
 
   constructor() {
     unidyOnChange("locale", async (_locale) => {
@@ -78,6 +101,13 @@ export class Profile {
     } finally {
       this.fetchingProfileData = false;
     }
+  }
+
+  private getAutosaveManager(): ProfileAutosave {
+    if (!this.autosaveManager) {
+      this.autosaveManager = new ProfileAutosave(this.autosaveDelay, () => this.submitProfile());
+    }
+    return this.autosaveManager;
   }
 
   @Method()
@@ -139,6 +169,28 @@ export class Profile {
         this.fetchProfileData();
       }
     });
+
+    // Set flag before listener to avoid race condition if store emits synchronously
+    this.initialLoadComplete = true;
+
+    // Set up data change listener - always emit event, optionally autosave
+    this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
+      if (this.initialLoadComplete) {
+        // Always emit change event so external consumers can listen
+        this.uProfileChange.emit({ data: data as ProfileRaw });
+
+        // Only autosave if enabled
+        if (this.autosave === "enabled") {
+          this.getAutosaveManager().debouncedSave();
+        }
+      }
+    });
+  }
+
+  disconnectedCallback() {
+    this.autosaveManager?.destroy();
+    this.dataChangeUnsubscribe?.();
+    profileState.activeField = null;
   }
 
   render() {

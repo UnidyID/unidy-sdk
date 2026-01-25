@@ -57,6 +57,14 @@
       outline: none;
     }
 
+    u-field::part(input_field):disabled,
+    u-field::part(textarea_field):disabled,
+    u-field::part(select_field):disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: #e5e7eb;
+    }
+
     u-field::part(radio-group_field) {
       display: inline-flex;
       border: 1px solid #5a6677;
@@ -162,10 +170,12 @@
       background: #0055fe;
     }
 
-    button[part="profile-submit-button"] {
-      --spinner-font-size: 30px;
+    button[part="profile-submit-button"],
+    u-missing-fields-submit-button {
+      --spinner-font-size: 16px;
       --spinner-color-primary: #fff;
       --spinner-color-secondary: rgba(255, 255, 255, 0.4);
+      min-height: 42px;
     }
 
     u-field::part(field-container--first_name) {
@@ -192,7 +202,7 @@
         class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
       <a href="/auth"
         class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
-      <a href="/auth/profile.html"
+      <a href="/profile"
         class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Profile</a>
       <a href="/newsletter"
         class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
@@ -255,7 +265,7 @@
     </div>
   </u-error-message>
 
-  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="20"></u-flash-message>
+  <u-flash-message class-name="fixed bottom-5 right-5 flex-col-reverse" remove-after-seconds="20"></u-flash-message>
 
   <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Profile Components Demo</h1>
@@ -266,11 +276,17 @@
 
     <u-signed-in>
       <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl">
-        <div class="mb-6">
-          <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
-          <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+        <div class="mb-6 flex justify-between items-start">
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
+            <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
+          </div>
+          <label class="flex items-center gap-2 cursor-pointer mt-4">
+            <span class="text-sm text-gray-600">Autosave</span>
+            <input type="checkbox" id="autosave-toggle" checked class="w-4 h-4 accent-blue-500" onchange="toggleAutosave(this.checked)">
+          </label>
         </div>
-        <u-full-profile fields="first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+        <u-full-profile id="profile" autosave="enabled" fields="email,first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
           country-code-display-option="icon"></u-full-profile>
       </div>
 
@@ -532,11 +548,25 @@
       if (spinner) {
         spinner.remove();
       }
+
+      // Restore autosave state from localStorage
+      const savedAutosave = localStorage.getItem('demo-autosave');
+      if (savedAutosave !== null) {
+        const enabled = savedAutosave === 'true';
+        document.getElementById('autosave-toggle').checked = enabled;
+        document.getElementById('profile').setAttribute('autosave', enabled ? 'enabled' : 'disabled');
+      }
     });
 
     function changeLocale(locale) {
       const config = document.querySelector('u-config');
       config.setAttribute('locale', locale);
+    }
+
+    window.toggleAutosave = function(enabled) {
+      const profile = document.getElementById('profile');
+      profile.setAttribute('autosave', enabled ? 'enabled' : 'disabled');
+      localStorage.setItem('demo-autosave', enabled);
     }
   </script>
   </main>

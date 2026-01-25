@@ -1,4 +1,4 @@
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Method, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 
@@ -10,8 +10,24 @@ const EXCLUDED_FIELDS = ["custom_attributes", "email", "preferred_language"];
   shadow: false,
 })
 export class FullProfile {
+  /** Comma-separated list of field names to display. If not provided, all fields are shown. */
   @Prop() fields?: string;
+
+  /** How to display country codes in select fields: "icon" for flag emoji, "label" for text. */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
+
+  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
+  @Prop() autosave?: "enabled" | "disabled" = "disabled";
+
+  /** Delay in milliseconds before autosave triggers after the last change. */
+  @Prop() autosaveDelay?: number = 5000;
+
+  private profileRef?: HTMLUProfileElement;
+
+  @Method()
+  async submitProfile() {
+    await this.profileRef?.submitProfile();
+  }
 
   private list() {
     if (this.fields) {
@@ -29,7 +45,13 @@ export class FullProfile {
 
   render() {
     return (
-      <u-profile>
+      <u-profile
+        ref={(el) => {
+          this.profileRef = el;
+        }}
+        autosave={this.autosave}
+        autosaveDelay={this.autosaveDelay}
+      >
         {this.list().map((field) => (
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}

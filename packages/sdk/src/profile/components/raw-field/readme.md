@@ -33,6 +33,13 @@
 | `value`                    | `value`                       |             | `string \| string[]`                                                   | `undefined`                            |
 
 
+## Events
+
+| Event          | Description | Type                              |
+| -------------- | ----------- | --------------------------------- |
+| `uFieldSubmit` |             | `CustomEvent<{ field: string; }>` |
+
+
 ## Dependencies
 
 ### Used by
