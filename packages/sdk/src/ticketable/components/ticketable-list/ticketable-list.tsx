@@ -30,6 +30,8 @@ const LOCALES: Record<string, Locale> = {
 export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
+  private unsubscribeAuth?: () => void;
+
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
@@ -89,12 +91,16 @@ export class TicketableList extends UnidyComponent {
     }
 
     // Listen for auth changes to refresh data when user logs in
-    authOnChange("token", (newToken: string | null) => {
+    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
       if (newToken) {
         this.logger.debug("auth token changed, refreshing data");
         this.loadData();
       }
     });
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeAuth?.();
   }
 
   private async loadData() {
