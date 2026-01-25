@@ -10,11 +10,17 @@ const EXCLUDED_FIELDS = ["custom_attributes", "email", "preferred_language"];
   shadow: false,
 })
 export class FullProfile {
+  /** Comma-separated list of field names to display. If not provided, all fields are shown. */
   @Prop() fields?: string;
+
+  /** How to display country codes in select fields: "icon" for flag emoji, "label" for text. */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
+  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
   @Prop() autosave?: "enabled" | "disabled" = "disabled";
-  @Prop() autosaveDelay?: number = 1000;
+
+  /** Delay in milliseconds before autosave triggers after the last change. */
+  @Prop() autosaveDelay?: number = 5000;
 
   private profileRef?: HTMLUProfileElement;
 

@@ -11,12 +11,12 @@ Events from the inner `u-profile` component (`uProfileChange`, `uProfileSuccess`
 
 ## Properties
 
-| Property                   | Attribute                     | Description | Type                      | Default      |
-| -------------------------- | ----------------------------- | ----------- | ------------------------- | ------------ |
-| `autosave`                 | `autosave`                    |             | `"disabled" \| "enabled"` | `"disabled"` |
-| `autosaveDelay`            | `autosave-delay`              |             | `number`                  | `1000`       |
-| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"`       | `"label"`    |
-| `fields`                   | `fields`                      |             | `string`                  | `undefined`  |
+| Property                   | Attribute                     | Description                                                                             | Type                      | Default      |
+| -------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- | ------------------------- | ------------ |
+| `autosave`                 | `autosave`                    | Enable or disable autosave. When enabled, profile saves automatically after changes.    | `"disabled" \| "enabled"` | `"disabled"` |
+| `autosaveDelay`            | `autosave-delay`              | Delay in milliseconds before autosave triggers after the last change.                   | `number`                  | `5000`       |
+| `countryCodeDisplayOption` | `country-code-display-option` | How to display country codes in select fields: "icon" for flag emoji, "label" for text. | `"icon" \| "label"`       | `"label"`    |
+| `fields`                   | `fields`                      | Comma-separated list of field names to display. If not provided, all fields are shown.  | `string`                  | `undefined`  |
 
 
 ## Methods

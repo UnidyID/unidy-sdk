@@ -15,6 +15,10 @@ import { state as profileState } from "../../store/profile-store";
  * @part multi-select-item_label
  * @part textarea_field
  * @part input_field
+ * @part field-input-wrapper - Container wrapping the input and save indicator.
+ * @part field-save-indicator - Base styles for save state indicators (spinner/checkmark).
+ * @part field-save-indicator--saving - Shown while the field is being saved (displays spinner).
+ * @part field-save-indicator--saved - Shown after successful save (displays checkmark, disappears after 2s).
  */
 
 @Component({

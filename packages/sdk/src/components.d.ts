@@ -141,17 +141,23 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves automatically after changes.
           * @default "disabled"
          */
         "autosave"?: "enabled" | "disabled";
         /**
-          * @default 1000
+          * Delay in milliseconds before autosave triggers after the last change.
+          * @default 5000
          */
         "autosaveDelay"?: number;
         /**
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
+         */
         "fields"?: string;
         "submitProfile": () => Promise<void>;
     }
@@ -347,17 +353,23 @@ export namespace Components {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves automatically after changes.
           * @default "disabled"
          */
         "autosave": "enabled" | "disabled";
         /**
+          * Delay in milliseconds before autosave triggers after the last change.
           * @default 5000
          */
         "autosaveDelay": number;
         /**
+          * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData": string | Record<string, string>;
+        /**
+          * Optional profile ID for multi-profile scenarios.
+         */
         "profileId"?: string;
         "submitProfile": () => Promise<void>;
     }
@@ -1038,17 +1050,23 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves automatically after changes.
           * @default "disabled"
          */
         "autosave"?: "enabled" | "disabled";
         /**
-          * @default 1000
+          * Delay in milliseconds before autosave triggers after the last change.
+          * @default 5000
          */
         "autosaveDelay"?: number;
         /**
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
+         */
         "fields"?: string;
     }
     interface UJumpToService {
@@ -1227,18 +1245,27 @@ declare namespace LocalJSX {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves automatically after changes.
           * @default "disabled"
          */
         "autosave"?: "enabled" | "disabled";
         /**
+          * Delay in milliseconds before autosave triggers after the last change.
           * @default 5000
          */
         "autosaveDelay"?: number;
         /**
+          * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        /**
+          * Emitted whenever profile data changes. Useful for external state synchronization.
+         */
         "onUProfileChange"?: (event: UProfileCustomEvent<{ data: ProfileRaw; field?: string }>) => void;
+        /**
+          * Emitted when profile save fails, with error details including field-level errors.
+         */
         "onUProfileError"?: (event: UProfileCustomEvent<{
     error: string;
     details: {
@@ -1247,7 +1274,13 @@ declare namespace LocalJSX {
       responseData?: unknown;
     };
   }>) => void;
+        /**
+          * Emitted when profile is successfully saved.
+         */
         "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
+        /**
+          * Optional profile ID for multi-profile scenarios.
+         */
         "profileId"?: string;
     }
     interface URawField {

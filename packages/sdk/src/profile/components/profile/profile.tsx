@@ -13,13 +13,21 @@ import { ProfileAutosave } from "./autosave";
 
 @Component({ tag: "u-profile", shadow: false })
 export class Profile {
+  /** Optional profile ID for multi-profile scenarios. */
   @Prop() profileId?: string;
+
+  /** Initial profile data as JSON string or object. If provided, skips fetching from API. */
   @Prop() initialData: string | Record<string, string> = "";
 
   @State() fetchingProfileData = false;
 
+  /** Emitted whenever profile data changes. Useful for external state synchronization. */
   @Event() uProfileChange!: EventEmitter<{ data: ProfileRaw; field?: string }>;
+
+  /** Emitted when profile is successfully saved. */
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
+
+  /** Emitted when profile save fails, with error details including field-level errors. */
   @Event() uProfileError!: EventEmitter<{
     error: string;
     details: {
@@ -35,7 +43,10 @@ export class Profile {
     this.getAutosaveManager().submitField(event.detail.field);
   }
 
+  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
   @Prop() autosave: "enabled" | "disabled" = "disabled";
+
+  /** Delay in milliseconds before autosave triggers after the last change. */
   @Prop() autosaveDelay = 5000;
 
   private autosaveManager: ProfileAutosave | null = null;
