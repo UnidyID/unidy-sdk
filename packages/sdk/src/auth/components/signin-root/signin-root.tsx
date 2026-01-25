@@ -4,7 +4,7 @@ import { authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-root",
-  shadow: true,
+  shadow: false,
 })
 export class SigninRoot {
   @Element() el!: HTMLElement;
@@ -34,12 +34,16 @@ export class SigninRoot {
   }
 
   render() {
-    if (authStore.state.authenticated) {
-      return null;
-    }
+    const shouldShow = !authStore.state.authenticated;
 
     return (
-      <Host class={this.componentClassName}>
+      <Host
+        class={this.componentClassName}
+        hidden={!shouldShow}
+        style={{ display: shouldShow ? undefined : "none" }}
+        aria-hidden={!shouldShow ? "true" : null}
+        aria-live="polite"
+      >
         <slot />
       </Host>
     );

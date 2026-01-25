@@ -217,8 +217,13 @@ export namespace Components {
         "componentClassName": string;
     }
     interface UMissingField {
+        "componentClassName"?: string;
     }
     interface UMissingFieldsSubmitButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
     }
     interface UNewsletterCheckbox {
         /**
@@ -1077,8 +1082,13 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
     }
     interface UMissingField {
+        "componentClassName"?: string;
     }
     interface UMissingFieldsSubmitButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
     }
     interface UNewsletterCheckbox {
         /**
