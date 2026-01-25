@@ -15,6 +15,9 @@ type SelectProps = {
   emptyOption: boolean;
   specificPartKey?: string;
   onChange: (value: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  onEnterSubmit?: () => void;
   countryIcon?: (code: string) => string;
   ariaDescribedBy?: string;
 };
@@ -36,6 +39,15 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}
+      onFocus={() => props.onFocus?.()}
+      onBlur={() => props.onBlur?.()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && props.onEnterSubmit) {
+          e.preventDefault();
+          props.onChange((e.target as HTMLSelectElement).value);
+          props.onEnterSubmit();
+        }
+      }}
       aria-describedby={props.ariaDescribedBy || undefined}
     >
       {props.emptyOption ? <option value="" selected={props.value === null || props.value === ""} /> : null}
