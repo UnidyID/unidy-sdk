@@ -168,11 +168,12 @@ export class Auth {
   async logout(): Promise<boolean | AuthError> {
     const [error, _] = await this.helpers.logout();
 
+    // Always clear local tokens, even if backend logout fails
+    authStore.reset();
+
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
-
-    authStore.reset();
 
     return true;
   }

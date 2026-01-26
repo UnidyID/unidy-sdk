@@ -22,7 +22,13 @@ export type TicketsGetArgs = { id: string };
 // Result types
 export type TicketsListResult = TicketableListResult<TicketsListResponse>;
 export type TicketsGetResult = TicketableGetResult<Ticket>;
-export type TicketExportLinkResult = CommonErrors | ["missing_id_token", null] | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
+export type TicketExportLinkResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["unauthorized", null]
+  | ["server_error", null]
+  | ["invalid_response", null]
+  | [null, ExportLinkResponse];
 
 export class TicketsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {

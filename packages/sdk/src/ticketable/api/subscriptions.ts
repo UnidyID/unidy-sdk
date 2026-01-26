@@ -22,7 +22,13 @@ export type SubscriptionsGetArgs = { id: string };
 // Result types
 export type SubscriptionsListResult = TicketableListResult<SubscriptionsListResponse>;
 export type SubscriptionsGetResult = TicketableGetResult<Subscription>;
-export type SubscriptionExportLinkResult = CommonErrors | ["missing_id_token", null] | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
+export type SubscriptionExportLinkResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["unauthorized", null]
+  | ["server_error", null]
+  | ["invalid_response", null]
+  | [null, ExportLinkResponse];
 
 export class SubscriptionsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {

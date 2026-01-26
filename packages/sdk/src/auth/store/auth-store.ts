@@ -28,6 +28,7 @@ export interface AuthState {
 
   authenticated: boolean;
   token: string | null;
+  refreshToken: string | null;
   backendSignedIn: boolean;
 }
 
@@ -51,6 +52,7 @@ export const missingFieldNames = () => {
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
+  REFRESH_TOKEN: "unidy_refresh_token",
   EMAIL: "unidy_email",
 } as const;
 
@@ -92,6 +94,7 @@ const initialState: AuthState = {
     passkey: true,
   },
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
+  refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
   backendSignedIn: false,
 };
 
@@ -201,6 +204,11 @@ class AuthStore {
     this.setAuthenticated(!!token);
   }
 
+  setRefreshToken(refreshToken: string | null) {
+    state.refreshToken = refreshToken;
+    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+  }
+
   setMagicCodeStep(step: null | "requested" | "sent") {
     state.magicCodeStep = step;
   }
@@ -230,6 +238,7 @@ class AuthStore {
 
     if (!authenticated) {
       state.token = null;
+      state.refreshToken = null;
       state.sid = null;
     }
   }
@@ -238,6 +247,7 @@ class AuthStore {
     reset();
     saveToStorage(localStorage, SESSION_KEYS.SID, null);
     saveToStorage(localStorage, SESSION_KEYS.EMAIL, null);
+    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
   }
 }
