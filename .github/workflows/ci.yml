@@ -64,6 +64,7 @@ jobs:
         working-directory: packages/sdk
         env:
           E2E_API_URL: ${{ secrets.E2E_API_URL }}
+          E2E_API_TOKEN: ${{ secrets.E2E_API_TOKEN }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
