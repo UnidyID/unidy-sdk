@@ -30,7 +30,7 @@ export interface ProfileState {
 }
 
 const initialState: ProfileState = {
-  loading: true,
+  loading: false,
   data: {},
   configuration: {},
   errors: {},

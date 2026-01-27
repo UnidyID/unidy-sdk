@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, h, Prop } from "@stencil/core";
+import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { unidyState } from "../../../shared/store/unidy-store";
@@ -13,11 +13,11 @@ import { LinkedInLogo } from "./logos/linkedin";
 const SHARED_ICON_CLASSNAME = "u:w-5 u:h-5 u:block";
 
 const ICON_MAP = {
-  google: <GoogleLogo className={SHARED_ICON_CLASSNAME} />,
-  linkedin: <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
-  apple: <AppleLogo className={`${SHARED_ICON_CLASSNAME} u:fill-current`} />,
-  discord: <DiscordLogo className={`${SHARED_ICON_CLASSNAME} u:fill-current`} />,
-  facebook: <FacebookLogo className="u:w-6 u:h-6 u:block" />,
+  google: () => <GoogleLogo className={SHARED_ICON_CLASSNAME} />,
+  linkedin: () => <LinkedInLogo className={SHARED_ICON_CLASSNAME} />,
+  apple: () => <AppleLogo className={`${SHARED_ICON_CLASSNAME} u:fill-current`} />,
+  discord: () => <DiscordLogo className={`${SHARED_ICON_CLASSNAME} u:fill-current`} />,
+  facebook: () => <FacebookLogo className="u:w-6 u:h-6 u:block" />,
 } as const;
 
 type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
@@ -25,7 +25,7 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
 @Component({
   tag: "u-social-login-button",
   styleUrl: "social-login-button.css",
-  shadow: true,
+  shadow: false,
 })
 export class SocialLoginButton extends UnidyComponent {
   @Prop() provider: SocialLoginProvider = "google";
@@ -77,7 +77,7 @@ export class SocialLoginButton extends UnidyComponent {
       return null;
     }
 
-    return ICON_MAP[this.provider];
+    return ICON_MAP[this.provider]();
   }
 
   private getButtonClasses(): string {
@@ -104,22 +104,24 @@ export class SocialLoginButton extends UnidyComponent {
 
     // TODO: allow users to customize already used providers with custom text and icon
     return (
-      <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
-        <div class="u:flex u:items-center u:justify-center" part="social-login-button-content">
-          <slot name="icon">
-            <span aria-hidden="true">{this.renderIcon()}</span>
-          </slot>
+      <Host class="u:block">
+        <button type="button" class={this.getButtonClasses()} onClick={this.onClick} part="social-login-button">
+          <div class="u:flex u:items-center u:justify-center" part="social-login-button-content">
+            <slot name="icon">
+              <span aria-hidden="true">{this.renderIcon()}</span>
+            </slot>
 
-          {this.iconOnly ? (
-            // Render the hidden text for accessibility.
-            <span class="u:sr-only">{text}</span>
-          ) : (
-            <span class={!this.isUnsupportedProvider ? "u:ml-4" : ""} part="social-login-button-text">
-              {text}
-            </span>
-          )}
-        </div>
-      </button>
+            {this.iconOnly ? (
+              // Render the hidden text for accessibility.
+              <span class="u:sr-only">{text}</span>
+            ) : (
+              <span class={!this.isUnsupportedProvider ? "u:ml-4" : ""} part="social-login-button-text">
+                {text}
+              </span>
+            )}
+          </div>
+        </button>
+      </Host>
     );
   }
 }
