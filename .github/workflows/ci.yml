@@ -32,102 +32,14 @@ jobs:
   e2e:
     name: Playwright Tests
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:alpine
-        env:
-          POSTGRES_DB: unidy_playwright
-          POSTGRES_PASSWORD: unidy_playwright
-        ports:
-          - 127.0.0.1:5432:5432
-      redis:
-        image: redis
-        ports:
-          - 127.0.0.1:6379:6379
-      mailpit:
-        image: axllent/mailpit
-        ports:
-          - 127.0.0.1:1025:1025
     steps:
       - name: Checkout SDK
         uses: actions/checkout@v4
-
-      - name: Checkout Backend
-        uses: actions/checkout@v4
-        with:
-          repository: UnidyID/unidy
-          ref: master
-          ssh-key: ${{ secrets.UNIDY_SSH_KEY }}
-          path: unidy
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: unidy
-          bundler-cache: true
-
-      - name: Install libvips
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: libvips libvips-dev
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.0
-
-      - name: Install backend JS dependencies
-        run: bun install
-        working-directory: unidy
-
-      - name: Backend DB setup and assets
-        working-directory: unidy
-        env:
-          PORT: 3000
-          DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
-          REDIS_URL: redis://localhost/0
-          UNIDY_TENANT: unidy
-          UNIDY_ENVIRONMENT: development
-          RAILS_HOST: localhost
-          RAILS_ENV: development
-          SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        run: |
-          echo "::group::Migrate Database"
-          bundle exec rake db:setup
-          echo "::endgroup::"
-          echo "::group::Prepare assets"
-          bundle exec rails assets:precompile
-          echo "::endgroup::"
-
-      - name: Start backend server
-        working-directory: unidy
-        env:
-          PORT: 3000
-          DATABASE_URL: postgresql://postgres:unidy_playwright@127.0.0.1:5432/unidy_playwright
-          REDIS_URL: redis://localhost/0
-          UNIDY_TENANT: unidy
-          UNIDY_ENVIRONMENT: development
-          RAILS_HOST: localhost
-          RAILS_ENV: development
-          SHARED_MASTER_KEY: ${{ secrets.SHARED_MASTER_KEY }}
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        run: |
-          bundle exec rails server -b 127.0.0.1 -p 3000 &
-          echo $! > /tmp/rails.pid
-
-      - name: Wait for backend
-        run: |
-          for i in {1..60}; do
-            # Just check if server is responding (any HTTP response is fine)
-            if curl -sS -o /dev/null -w "%{http_code}" http://localhost:3000/ | grep -qE "^[23]"; then
-              echo "Backend is ready"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Backend not ready"
-          exit 1
 
       - name: Install SDK dependencies
         run: bun install
@@ -136,9 +48,22 @@ jobs:
         run: bunx playwright install --with-deps
         working-directory: packages/sdk
 
+      - name: Build SDK
+        run: bun run build
+        working-directory: packages/sdk
+
+      - name: Configure E2E
+        run: bun run e2e:configure
+        working-directory: packages/sdk
+        env:
+          E2E_SDK_BASE_URL: ${{ secrets.E2E_SDK_BASE_URL }}
+          E2E_SDK_API_KEY: ${{ secrets.E2E_SDK_API_KEY }}
+
       - name: Run Playwright tests
         run: bunx playwright test --project=setup --project=chromium
         working-directory: packages/sdk
+        env:
+          E2E_API_URL: ${{ secrets.E2E_API_URL }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -155,10 +80,3 @@ jobs:
           name: playwright-traces
           path: packages/sdk/test-results/
           retention-days: 30
-
-      - name: Cleanup
-        if: always()
-        run: |
-          if [ -f /tmp/rails.pid ]; then
-            kill $(cat /tmp/rails.pid) || true
-          fi

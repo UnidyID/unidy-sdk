@@ -6,7 +6,7 @@ export class UserLogin {
   ) {}
 }
 
-export const userLogin = new UserLogin("user@example.com", "Ch4ngeme!", "user");
+export const userLogin = new UserLogin("user@example.com", "Ch4angeme!", "user");
 
 export const routes = {
   home: "/",
