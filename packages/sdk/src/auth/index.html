@@ -360,6 +360,13 @@
           Go to Profile
         </a>
       </div>
+      <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+          <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+        </div>
+        <canvas data-testid="profile-qr" id="profile-qr" width="256" height="256"></canvas>
+      </div>
     </u-signed-in>
 
     <div class="flex gap-2 mb-2 fixed bottom-0 right-0 mx-4 items-center">
@@ -369,15 +376,45 @@
   </div>
 
   <script type="module">
-    import { Auth, Flash } from "/build/index.esm.js";
+    import QRCode from "https://esm.sh/qrcode@1.5.4";
+    import { Auth, Flash, getUnidyClient } from "/build/index.esm.js";
 
     window.Flash = Flash;
 
     const signinRoot = document.getElementById("sign-in-root");
     const auth = await Auth.getInstance();
 
+    function generateProfileQR() {
+      const canvas = document.querySelector("#profile-qr");
+      if (canvas) {
+        getUnidyClient().profile.get().then(([error, data]) => {
+          if (!error && data && Object.keys(data).length > 0) {
+            const profileData = {};
+            for (const [key, field] of Object.entries(data)) {
+              if (key === "custom_attributes") {
+                for (const [, customField] of Object.entries(field)) {
+                  if (customField?.label && customField?.value != null) {
+                    profileData[customField.label] = customField.value;
+                  }
+                }
+              } else if (field?.label && field?.value != null) {
+                profileData[field.label] = field.value;
+              }
+            }
+
+            QRCode.toCanvas(canvas, JSON.stringify(profileData), {
+              width: 256,
+              margin: 2,
+              errorCorrectionLevel: "M",
+            }).catch(console.error);
+          }
+        });
+      }
+    }
+
     signinRoot.addEventListener("authEvent", async (event) => {
       console.info("Auth event:", event.detail);
+      generateProfileQR();
     });
 
     signinRoot.addEventListener("errorEvent", (event) => {
@@ -421,6 +458,12 @@
       if (spinner) {
         spinner.remove();
       }
+
+      auth.isAuthenticated().then((isAuthenticated) => {
+        if (isAuthenticated) {
+          generateProfileQR();
+        }
+      });
     });
 
     function changeLocale(locale) {
