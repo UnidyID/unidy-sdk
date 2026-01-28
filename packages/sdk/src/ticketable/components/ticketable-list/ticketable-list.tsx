@@ -4,6 +4,7 @@ import { format } from "date-fns/format";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
+import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
@@ -85,6 +86,8 @@ async function loadLocales() {
 export class TicketableList extends UnidyComponent {
   @Element() element: HTMLElement;
 
+  private unsubscribeAuth?: () => void;
+
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
@@ -145,6 +148,18 @@ export class TicketableList extends UnidyComponent {
     } else {
       this.logger.debug("user is not authenticated, skipping data load");
     }
+
+    // Listen for auth changes to refresh data when user logs in
+    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
+      if (newToken) {
+        this.logger.debug("auth token changed, refreshing data");
+        this.loadData();
+      }
+    });
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeAuth?.();
   }
 
   private async loadData() {
