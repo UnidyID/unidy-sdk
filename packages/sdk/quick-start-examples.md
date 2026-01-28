@@ -557,6 +557,11 @@ This example demonstrates how to generate a QR code containing user profile data
   <!-- Configure the SDK -->
   <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
 
+  <!-- Sign in form -->
+  <u-signin-root id="signin-root" class="max-w-xs mx-auto p-6 bg-white rounded-lg shadow">
+    <!-- See Quick Start: Authentication Flow example above -->
+  </u-signin-root>
+
   <!-- Only show to authenticated users -->
   <u-signed-in>
     <div class="max-w-xs mx-auto p-6 text-center border border-gray-200 rounded-lg bg-white shadow">
