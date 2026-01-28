@@ -75,8 +75,8 @@ export class Auth {
 
     Auth.instance = new Auth(client);
 
-    Auth.instance.helpers.extractSidFromUrl();
     Auth.instance.helpers.handleSocialAuthRedirect();
+    Auth.instance.helpers.extractSidFromUrl();
     await Auth.instance.helpers.handleResetPasswordRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
