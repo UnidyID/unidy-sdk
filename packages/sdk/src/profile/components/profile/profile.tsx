@@ -6,7 +6,7 @@ import { onChange as authOnChange, authStore } from "../../../auth/store/auth-st
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
-import { buildPartialPayload, buildPayload, validateRequiredFieldsPartial, validateRequiredFieldsUnchanged } from "../../profile-helpers";
+import { buildPayload, validateRequiredFields } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 
@@ -121,18 +121,12 @@ export class Profile {
     // Determine which fields to validate based on partialValidation mode
     const fieldsToValidate = this.getFieldsToValidate();
 
-    const isValid = fieldsToValidate
-      ? validateRequiredFieldsPartial(stateWithoutConfig.data, fieldsToValidate)
-      : validateRequiredFieldsUnchanged(stateWithoutConfig.data);
-
-    if (!isValid) {
+    if (!validateRequiredFields(stateWithoutConfig.data, fieldsToValidate)) {
       profileState.loading = false;
       return;
     }
 
-    let updatedProfileData = fieldsToValidate
-      ? buildPartialPayload(stateWithoutConfig.data, fieldsToValidate)
-      : buildPayload(stateWithoutConfig.data);
+    let updatedProfileData = buildPayload(stateWithoutConfig.data, fieldsToValidate);
 
     // Add flag for backend partial validation
     if (fieldsToValidate) {

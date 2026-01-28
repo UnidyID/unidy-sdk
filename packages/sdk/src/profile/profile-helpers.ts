@@ -1,65 +1,43 @@
 import { t } from "../i18n";
 import { type ProfileRaw, state as profileState } from "./store/profile-store";
 
-export function validateRequiredFieldsUnchanged(sWC: ProfileRaw) {
-  for (const key of Object.keys(sWC)) {
-    if (key === "custom_attributes") continue;
-    const field = sWC[key];
-    if (field.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [key]: t("errors.required_field", { field: key }) };
-      return false;
-    }
-  }
+type FieldWrapper = { value?: unknown; required?: boolean };
 
-  for (const key of Object.keys(sWC.custom_attributes ?? {})) {
-    const field = sWC.custom_attributes?.[key];
-    const fieldDisplayName = `custom_attributes.${key}`;
-    if (field?.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [fieldDisplayName]: t("errors.required_field", { field: fieldDisplayName }) };
-      return false;
-    }
-  }
+/** Extracts the value from a field wrapper */
+const extractValue = ([key, field]: [string, unknown]): [string, unknown] => [key, (field as FieldWrapper).value];
 
-  return true;
+/** Checks if a required field is empty */
+function isRequiredFieldEmpty(field: FieldWrapper | undefined): boolean {
+  return field?.required === true && (field.value === "" || field.value === null);
 }
 
-export function buildPayload(stateData: ProfileRaw) {
-  return {
-    ...Object.fromEntries(
-      Object.entries(stateData)
-        .filter(([k]) => k !== "custom_attributes")
-        .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
-    ),
-    custom_attributes: Object.fromEntries(
-      Object.entries(stateData.custom_attributes ?? {}).map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
-    ),
-  };
+/** Sets a validation error for a field and returns false */
+function setFieldError(fieldName: string): false {
+  profileState.errors = { [fieldName]: t("errors.required_field", { field: fieldName }) };
+  return false;
 }
 
 /**
- * Validates only the fields specified in fieldsToValidate.
- * Returns true if all specified required fields have values.
+ * Validates required fields in the profile state.
+ * If fieldsToValidate is provided, only those fields are checked.
+ * Returns true if all (specified) required fields have values.
  */
-export function validateRequiredFieldsPartial(sWC: ProfileRaw, fieldsToValidate: Set<string>) {
-  for (const key of Object.keys(sWC)) {
+export function validateRequiredFields(stateData: ProfileRaw, fieldsToValidate?: Set<string>): boolean {
+  for (const key of Object.keys(stateData)) {
     if (key === "custom_attributes") continue;
-    if (!fieldsToValidate.has(key)) continue;
+    if (fieldsToValidate && !fieldsToValidate.has(key)) continue;
 
-    const field = sWC[key];
-    if (field.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [key]: t("errors.required_field", { field: key }) };
-      return false;
+    if (isRequiredFieldEmpty(stateData[key])) {
+      return setFieldError(key);
     }
   }
 
-  for (const key of Object.keys(sWC.custom_attributes ?? {})) {
-    const fieldDisplayName = `custom_attributes.${key}`;
-    if (!fieldsToValidate.has(fieldDisplayName)) continue;
+  for (const key of Object.keys(stateData.custom_attributes ?? {})) {
+    const fieldName = `custom_attributes.${key}`;
+    if (fieldsToValidate && !fieldsToValidate.has(fieldName)) continue;
 
-    const field = sWC.custom_attributes?.[key];
-    if (field?.required === true && (field.value === "" || field.value === null)) {
-      profileState.errors = { [fieldDisplayName]: t("errors.required_field", { field: fieldDisplayName }) };
-      return false;
+    if (isRequiredFieldEmpty(stateData.custom_attributes?.[key])) {
+      return setFieldError(fieldName);
     }
   }
 
@@ -67,25 +45,24 @@ export function validateRequiredFieldsPartial(sWC: ProfileRaw, fieldsToValidate:
 }
 
 /**
- * Builds a payload containing only the fields specified in fieldsToInclude.
+ * Builds a payload from profile state data.
+ * If fieldsToInclude is provided, only those fields are included.
  */
-export function buildPartialPayload(stateData: ProfileRaw, fieldsToInclude: Set<string>) {
+export function buildPayload(stateData: ProfileRaw, fieldsToInclude?: Set<string>): Record<string, unknown> {
   const regularFields = Object.fromEntries(
     Object.entries(stateData)
-      .filter(([k]) => k !== "custom_attributes" && fieldsToInclude.has(k))
-      .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
+      .filter(([k]) => k !== "custom_attributes" && (!fieldsToInclude || fieldsToInclude.has(k)))
+      .map(extractValue),
   );
 
-  const customAttributeFields = Object.fromEntries(
-    Object.entries(stateData.custom_attributes ?? {})
-      .filter(([k]) => fieldsToInclude.has(`custom_attributes.${k}`))
-      .map(([k, v]: [string, unknown]) => [k, (v as { value: unknown }).value]),
-  );
+  const customAttributes = Object.entries(stateData.custom_attributes ?? {})
+    .filter(([k]) => !fieldsToInclude || fieldsToInclude.has(`custom_attributes.${k}`))
+    .map(extractValue);
 
-  // Only include custom_attributes if there are any to include
-  if (Object.keys(customAttributeFields).length > 0) {
-    return { ...regularFields, custom_attributes: customAttributeFields };
+  if (customAttributes.length > 0) {
+    return { ...regularFields, custom_attributes: Object.fromEntries(customAttributes) };
   }
 
   return regularFields;
 }
+
