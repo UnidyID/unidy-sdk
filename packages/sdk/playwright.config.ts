@@ -2,6 +2,8 @@ import "dotenv/config";
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL || "http://localhost:3333";
+// Use static server when testing against remote backend (E2E_SDK_BASE_URL set) or in CI
+const useStaticServer = !!process.env.E2E_SDK_BASE_URL || !!process.env.CI;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -78,9 +80,9 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "bun run dev",
+    command: useStaticServer ? "bunx serve www -l 3333" : "bun run dev",
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !useStaticServer,
     timeout: 120_000,
   },
 });
