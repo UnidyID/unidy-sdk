@@ -170,9 +170,29 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
     <u-signed-in>
         <u-ticketable-list ticketable-type="ticket" limit="5">
             <template>
-                <div>
-                    <ticketable-value name="title"></ticketable-value>
-                    <ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+                <div class="ticket-card">
+                    <h3><ticketable-value name="title"></ticketable-value></h3>
+                    <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
+                    <p><ticketable-value name="price" format="Price: {{value}}"></ticketable-value></p>
+
+                    <!-- Access nested metadata properties -->
+                    <p><ticketable-value name="metadata.category" default="General"></ticketable-value></p>
+
+                    <!-- Conditional rendering based on metadata -->
+                    <ticketable-conditional when="metadata.vip">
+                        <span class="vip-badge">VIP</span>
+                    </ticketable-conditional>
+
+                    <!-- Export buttons (only show wallet if exportable) -->
+                    <div class="actions">
+                        <u-ticketable-export format="pdf">Download PDF</u-ticketable-export>
+                        <ticketable-conditional when="exportable_to_wallet">
+                            <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+                        </ticketable-conditional>
+                    </div>
+
+                    <!-- Dynamic link using unidy-attr -->
+                    <a unidy-attr unidy-attr-href="{{button_cta_url}}">View Details</a>
                 </div>
             </template>
             <div slot="pagination">
@@ -186,6 +206,13 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 </body>
 </html>
 ```
+
+**Template Features:**
+
+- `<ticketable-value>` - Display values with support for nested paths (`metadata.category`), date formatting, and default values
+- `<ticketable-conditional>` - Conditionally render content based on property truthiness (e.g., show VIP badge only if `metadata.vip` exists)
+- `unidy-attr` - Dynamically set HTML attributes from ticket data (e.g., `unidy-attr-href="{{button_cta_url}}"`)
+- `<u-ticketable-export>` - Export tickets to PDF or Apple Wallet (pkpass)
 
 ### Quick Start: Profile Icon
 

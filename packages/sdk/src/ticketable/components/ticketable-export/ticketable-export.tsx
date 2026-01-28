@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, Host, Prop, State, h } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { UnidyComponent } from "../../../logger";
 import type { ExportFormat } from "../../api/schemas";

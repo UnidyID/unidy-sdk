@@ -1,6 +1,53 @@
 # u-ticketable-list
 
+Fetches and renders a list of tickets or subscriptions. Requires a `<template>` element as a child to define the layout for each item.
 
+## Template Elements
+
+Inside the template, you can use the following special elements:
+
+### `<ticketable-value>`
+
+Displays a value from the ticket or subscription object.
+
+```html
+<ticketable-value name="title"></ticketable-value>
+<ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+<ticketable-value name="price" format="Price: {{value}}"></ticketable-value>
+<ticketable-value name="metadata.category" default="N/A"></ticketable-value>
+```
+
+**Attributes:**
+- `name` - Property path (supports nested: `metadata.foo.bar`, `items.[0].name`)
+- `date-format` - Format string for dates (locales: en, de, fr, nl_be, ro, sv)
+- `format` - Value formatting template (e.g., `Price: {{value}}`)
+- `default` - Fallback if property is missing
+
+### `<ticketable-conditional>`
+
+Conditionally renders children based on a property's truthiness.
+
+```html
+<ticketable-conditional when="metadata.vip">
+  <span class="badge">VIP</span>
+</ticketable-conditional>
+
+<ticketable-conditional when="wallet_export">
+  <u-ticketable-export format="pkpass">Wallet</u-ticketable-export>
+</ticketable-conditional>
+```
+
+**Attributes:**
+- `when` - Property path to check (supports nested paths)
+
+### `unidy-attr`
+
+Dynamically sets HTML attributes from ticket/subscription data.
+
+```html
+<a unidy-attr unidy-attr-href="{{button_cta_url}}">View</a>
+<img unidy-attr unidy-attr-src="{{metadata.image_url}}" />
+```
 
 <!-- Auto Generated Below -->
 

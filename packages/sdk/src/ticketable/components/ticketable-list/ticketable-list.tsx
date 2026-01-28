@@ -1,11 +1,6 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
-import { de } from "date-fns/locale/de";
-import { enUS } from "date-fns/locale/en-US";
-import { fr } from "date-fns/locale/fr";
-import { nlBE } from "date-fns/locale/nl-BE";
-import { ro } from "date-fns/locale/ro";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
@@ -14,16 +9,77 @@ import { UnidyComponent } from "../../../logger";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
-import { createPaginationStore, type PaginationStore } from "../../store/pagination-store";
+import type { PaginationStore } from "../../store/pagination-store";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "./skeleton-helpers";
 
-const LOCALES: Record<string, Locale> = {
-  "en-US": enUS,
-  de: de,
-  fr: fr,
-  "nl-BE": nlBE,
-  ro: ro,
-};
+const LOCALES: Record<string, Locale> = {};
+
+/**
+ * Extracts a nested value from an object using a path string.
+ * Supports dot notation for object properties and bracket notation for arrays.
+ * Paths must use dot notation throughout, e.g., "metadata.foo.bar.[1]"
+ * Examples:
+ *   - "metadata.foo.bar" -> item.metadata.foo.bar
+ *   - "metadata.foo.bar.[1]" -> item.metadata.foo.bar[1]
+ *   - "wallet_export.[0].address" -> item.wallet_export[0].address
+ */
+// biome-ignore lint/suspicious/noExplicitAny: Dynamic nested property access requires any
+function getNestedValue(obj: any, path: string): any {
+  if (!path || !obj) return undefined;
+
+  // Split by dots and process each part
+  const parts = path.split(".").filter(Boolean);
+  let result = obj;
+
+  for (const part of parts) {
+    if (result == null) return undefined;
+
+    // Check if this part is an array index like "[1]"
+    if (part.startsWith("[") && part.endsWith("]")) {
+      const indexStr = part.slice(1, -1);
+      const index = /^\d+$/.test(indexStr) ? Number.parseInt(indexStr, 10) : indexStr;
+      result = result[index];
+    } else {
+      result = result[part];
+    }
+  }
+
+  if (typeof result === "object" && result != null) {
+    return JSON.stringify(result);
+  }
+
+  return result;
+}
+
+async function loadLocales() {
+  // TODO: This should be pulled into a shared component
+  await Promise.all([
+    !LOCALES.en &&
+      import("date-fns/locale/en-GB").then((module) => {
+        LOCALES.en = module.enGB;
+      }),
+    !LOCALES.de &&
+      import("date-fns/locale/de").then((module) => {
+        LOCALES.de = module.de;
+      }),
+    !LOCALES.fr &&
+      import("date-fns/locale/fr").then((module) => {
+        LOCALES.fr = module.fr;
+      }),
+    !LOCALES.nl_be &&
+      import("date-fns/locale/nl-BE").then((module) => {
+        LOCALES.nl_be = module.nlBE;
+      }),
+    !LOCALES.ro &&
+      import("date-fns/locale/ro").then((module) => {
+        LOCALES.ro = module.ro;
+      }),
+    !LOCALES.sv &&
+      import("date-fns/locale/sv").then((module) => {
+        LOCALES.sv = module.sv;
+      }),
+  ]);
+}
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent {
@@ -70,7 +126,10 @@ export class TicketableList extends UnidyComponent {
   }>;
 
   async componentWillLoad() {
-    this.store = createPaginationStore();
+    await waitForConfig();
+    loadLocales().catch((err) => {
+      console.error("[u-ticketable-list] Failed to load locales, falling back to 'en'", err);
+    });
   }
 
   async componentDidLoad() {
@@ -102,6 +161,23 @@ export class TicketableList extends UnidyComponent {
       this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
+      return;
+    }
+
+    // TODO: Add a simple shared way of doing this
+    const auth = await Auth.getInstance();
+    if (!auth) {
+      this.error = "[u-ticketable-list] Auth instance not found";
+      this.loading = false;
+      return;
+    }
+
+    // TODO: Handle auth on change THAT SHOULD EXIST ON THE AUTH INSTANCE
+
+    const idToken = await auth.getToken();
+    if (typeof idToken !== "string") {
+      this.error = "[u-ticketable-list] Failed to get ID token";
+      this.loading = false;
       return;
     }
 
@@ -190,9 +266,12 @@ export class TicketableList extends UnidyComponent {
           }
 
           let value = attr.value;
-          for (const [key, val] of Object.entries(item)) {
-            value = value.replaceAll(`{{${key}}}`, val as string);
-          }
+          // Find all template strings like {{path}} and replace them with nested values
+          const templateRegex = /\{\{([^}]+)\}\}/g;
+          value = value.replace(templateRegex, (match, path) => {
+            const nestedValue = getNestedValue(item, path.trim());
+            return nestedValue != null ? String(nestedValue) : match;
+          });
 
           return [attr, value] as const;
         })) {
@@ -211,18 +290,22 @@ export class TicketableList extends UnidyComponent {
       } else {
         const key = valueEl.getAttribute("name");
         if (!key) continue;
-        const value = item[key];
+        const value = getNestedValue(item, key);
         const formatAttr = valueEl.getAttribute("format");
         const dateFormatAttr = valueEl.getAttribute("date-format");
 
         let finalValue: string;
 
         if (typeof value === "object" && value instanceof Date) {
-          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || de });
+          finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || LOCALES.en });
         } else if (typeof value === "number" && key === "price") {
           finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
-          finalValue = value.toFixed(2);
+          if (Number.isInteger(value)) {
+            finalValue = value.toString();
+          } else {
+            finalValue = value.toFixed(2);
+          }
         } else if (value != null) {
           finalValue = String(value);
         } else {
@@ -234,6 +317,50 @@ export class TicketableList extends UnidyComponent {
         }
 
         valueEl.textContent = finalValue;
+      }
+    }
+
+    // Process ticketable-conditional elements
+    // Shows/hides content based on item property values.
+    // Example:
+    //   <ticketable-conditional when="metadata.vip">
+    //     <span class="vip-badge">VIP</span>
+    //   </ticketable-conditional>
+    // The children are rendered only if the "when" property is truthy.
+    // Convert to array to avoid issues when modifying the DOM
+    const conditionalElements = Array.from(fragment.querySelectorAll("ticketable-conditional"));
+    for (const conditionalEl of conditionalElements) {
+      const whenAttr = conditionalEl.getAttribute("when");
+      if (!whenAttr) {
+        // If no 'when' attribute, remove the element
+        conditionalEl.remove();
+        continue;
+      }
+
+      if (isSkeleton) {
+        // For skeleton state, remove conditionals
+        conditionalEl.remove();
+        continue;
+      }
+
+      // Check if the item property is truthy
+      const value = getNestedValue(item, whenAttr);
+      const isTruthy = Boolean(value);
+
+      if (isTruthy) {
+        // Replace the conditional element with its children
+        const parent = conditionalEl.parentNode;
+        if (parent) {
+          // Move all children before the conditional element
+          while (conditionalEl.firstChild) {
+            parent.insertBefore(conditionalEl.firstChild, conditionalEl);
+          }
+          // Remove the conditional element
+          parent.removeChild(conditionalEl);
+        }
+      } else {
+        // Remove the conditional element and its children
+        conditionalEl.remove();
       }
     }
 

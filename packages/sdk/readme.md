@@ -687,15 +687,27 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 **Inside the template:**
 
 -   `<ticketable-value>`: This component is used inside the template to display a value from the ticket or subscription object.
-    -   `name` (required): The name of the attribute to display (e.g., `title`, `starts_at`).
-    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`).
+    -   `name` (required): The name of the attribute to display. Supports nested paths using dot notation (e.g., `title`, `starts_at`, `metadata.foo.bar`, `metadata.items.[0].name`).
+    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`). Supported locales: `en`, `de`, `fr`, `nl_be`, `ro`, `sv`.
     -   `format`: A string to format the value (e.g., `Price: {{value}}`).
     -   `default`: A default value to display if the attribute is not present.
+
+-   `<ticketable-conditional>`: A conditional element that shows or hides its children based on whether a property is truthy.
+    -   `when` (required): The property path to check. Supports nested paths (e.g., `metadata.vip`, `wallet_export`).
+    -   If the property value is truthy, the children are rendered. If falsy, the entire element is removed.
 
 -   `unidy-attr`: A special attribute that can be applied to any HTML element within the template to dynamically set attributes based on ticket/subscription data.
     -   Add `unidy-attr` to the element
     -   Use `unidy-attr-{attributeName}` to specify which attribute to set (e.g., `unidy-attr-href`, `unidy-attr-src`)
-    -   Use `{{propertyName}}` in the attribute value to reference ticket/subscription properties
+    -   Use `{{propertyPath}}` in the attribute value to reference ticket/subscription properties. Supports nested paths (e.g., `{{metadata.link}}`, `{{wallet_export.[0].url}}`).
+
+**Nested Property Access:**
+
+Both `<ticketable-value>` and `unidy-attr` support accessing nested properties using dot notation:
+-   `metadata.foo` - Access the `foo` property inside `metadata`
+-   `metadata.foo.bar` - Access deeply nested properties
+-   `metadata.items.[0]` - Access array elements by index
+-   `metadata.items.[0].name` - Combine array access with property access
 
 **Example:**
 
@@ -710,7 +722,22 @@ This component fetches and renders a list of tickets or subscriptions. It requir
       <p>
         <ticketable-value name="price" format="Price: {{value}}"></ticketable-value>
       </p>
-      <!-- Dynamic href using unidy-attr -->
+
+      <!-- Nested metadata access -->
+      <p>
+        <ticketable-value name="metadata.category" default="No category"></ticketable-value>
+      </p>
+
+      <!-- Conditional rendering based on metadata -->
+      <ticketable-conditional when="metadata.vip">
+        <span class="vip-badge">VIP</span>
+      </ticketable-conditional>
+
+      <ticketable-conditional when="wallet_export">
+        <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+      </ticketable-conditional>
+
+      <!-- Dynamic href using unidy-attr with nested path -->
       <a unidy-attr unidy-attr-href="{{button_cta_url}}" class="button">
         View Details
       </a>
