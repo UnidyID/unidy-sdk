@@ -1,7 +1,7 @@
 import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { findParentSigninStep } from "../../../shared/context-utils";
 import { authState, authStore } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 
 export type PasswordFieldFor = "login" | "new-password" | "password-confirmation";
 
@@ -84,7 +84,7 @@ export class PasswordField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    (await getParentSigninStep(this.el))?.submit();
+    (await findParentSigninStep(this.el))?.submit();
   };
 
   private shouldRender(): boolean {
