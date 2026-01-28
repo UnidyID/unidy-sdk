@@ -7,13 +7,13 @@
  * - E2E_SDK_API_KEY: The SDK API key (default: public-newsletter-api-key)
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const SDK_BASE_URL = process.env.E2E_SDK_BASE_URL || "http://localhost:3000";
 const SDK_API_KEY = process.env.E2E_SDK_API_KEY || "public-newsletter-api-key";
 
-// @ts-ignore
+// @ts-expect-error
 const WWW_DIR = join(import.meta.dirname, "../../www");
 
 function patchHtmlFiles(dir: string) {
