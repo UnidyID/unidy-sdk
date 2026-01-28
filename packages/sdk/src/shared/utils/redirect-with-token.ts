@@ -34,7 +34,7 @@ export function redirectWithToken({ token, newTab = false, extraParams }: Redire
   const finalUrl = redirectUrl.toString();
 
   if (newTab) {
-    window.open(finalUrl, "_blank");
+    window.open(finalUrl, "_blank", "noreferrer");
   } else {
     window.location.href = finalUrl;
   }
