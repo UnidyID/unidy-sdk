@@ -1,7 +1,7 @@
-import { Component, Element, h, Host, Prop, State } from "@stencil/core";
+import { Component, Element, h, Host, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
-import { oauthState, onChange, setOAuthFieldValue } from "../../store/oauth-store";
+import { oauthState, setOAuthFieldValue } from "../../store/oauth-store";
 
 @Component({
   tag: "u-oauth-missing-fields",
@@ -10,43 +10,16 @@ import { oauthState, onChange, setOAuthFieldValue } from "../../store/oauth-stor
 export class OAuthMissingFields {
   @Element() el!: HTMLElement;
 
-  /**
-   * Custom CSS class name(s) to apply to the container element.
-   */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  @State() private missingFields: string[] = [];
-  @State() private fieldValues: Record<string, unknown> = {};
-
   private provider: OAuthProviderElement | null = null;
-  private unsubscribers: Array<() => void> = [];
 
   componentWillLoad() {
     this.provider = getOAuthProvider(this.el);
 
     if (!this.provider) {
       console.warn("[u-oauth-missing-fields] Must be used inside a u-oauth-provider");
-      return;
     }
-
-    this.missingFields = oauthState.missingFields;
-    this.fieldValues = oauthState.fieldValues;
-
-    this.unsubscribers.push(
-      onChange("missingFields", (fields) => {
-        this.missingFields = fields;
-      })
-    );
-
-    this.unsubscribers.push(
-      onChange("fieldValues", (values) => {
-        this.fieldValues = values;
-      })
-    );
-  }
-
-  disconnectedCallback() {
-    this.unsubscribers.forEach((unsub) => unsub());
   }
 
   private handleFieldChange = (fieldName: string, event: Event) => {
@@ -62,7 +35,6 @@ export class OAuthMissingFields {
   };
 
   private getFieldLabel(fieldName: string): string {
-    // Try to get translation, fall back to humanized field name
     const translationKey = `fields.${fieldName}.label`;
     const translated = t(translationKey);
 
@@ -70,46 +42,43 @@ export class OAuthMissingFields {
       return translated;
     }
 
-    // Humanize the field name
     return fieldName
       .replace("custom_attributes.", "")
       .replace(/_/g, " ")
       .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
-  private renderField(fieldName: string) {
-    const label = this.getFieldLabel(fieldName);
-    const value = (this.fieldValues[fieldName] as string) ?? "";
-    const inputId = `oauth-field-${fieldName.replace(/\./g, "-")}`;
-
-    return (
-      <div class="u-oauth-field" key={fieldName}>
-        <label htmlFor={inputId}>
-          {label} <span class="u-oauth-field-required">*</span>
-        </label>
-        <input
-          type="text"
-          id={inputId}
-          name={fieldName}
-          value={value}
-          required
-          onInput={(e) => this.handleFieldChange(fieldName, e)}
-          onKeyDown={this.handleKeyDown}
-          aria-required="true"
-        />
-      </div>
-    );
-  }
-
   render() {
-    if (this.missingFields.length === 0) {
+    if (oauthState.missingFields.length === 0) {
       return null;
     }
 
     return (
       <Host>
         <div class={this.componentClassName}>
-          {this.missingFields.map((fieldName) => this.renderField(fieldName))}
+          {oauthState.missingFields.map((fieldName) => {
+            const label = this.getFieldLabel(fieldName);
+            const value = (oauthState.fieldValues[fieldName] as string) ?? "";
+            const inputId = `oauth-field-${fieldName.replace(/\./g, "-")}`;
+
+            return (
+              <div class="u-oauth-field" key={fieldName}>
+                <label htmlFor={inputId}>
+                  {label} <span class="u-oauth-field-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id={inputId}
+                  name={fieldName}
+                  value={value}
+                  required
+                  onInput={(e) => this.handleFieldChange(fieldName, e)}
+                  onKeyDown={this.handleKeyDown}
+                  aria-required="true"
+                />
+              </div>
+            );
+          })}
         </div>
       </Host>
     );

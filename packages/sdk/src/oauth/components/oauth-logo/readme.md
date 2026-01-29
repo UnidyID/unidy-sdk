@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property             | Attribute    | Description                                             | Type     | Default |
-| -------------------- | ------------ | ------------------------------------------------------- | -------- | ------- |
-| `componentClassName` | `class-name` | Custom CSS class name(s) to apply to the image element. | `string` | `""`    |
-| `height`             | `height`     | Height of the logo image.                               | `string` | `"64"`  |
-| `width`              | `width`      | Width of the logo image.                                | `string` | `"64"`  |
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
+| `height`             | `height`     |             | `string` | `"64"`  |
+| `width`              | `width`      |             | `string` | `"64"`  |
 
 
 ----------------------------------------------

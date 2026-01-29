@@ -311,6 +311,50 @@
         </div>
       </div>
 
+      <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold text-gray-800">OAuth Consent Flow</h3>
+          <p class="text-gray-600 text-sm">Connect to OAuth applications with in-SDK consent flow.</p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <u-oauth-provider client-id="zjI4ZV0bjXiC6KMeC81ouqliYyOhaRAH7h3H1riJ_i0">
+            <u-oauth-button
+              class-name="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Connect to App
+            </u-oauth-button>
+
+            <u-oauth-modal>
+              <div class="p-6 max-w-md">
+                <div class="flex flex-col items-center gap-4 mb-4">
+                  <u-oauth-logo width="48" height="48" class-name="rounded-lg"></u-oauth-logo>
+                  <div class="text-center">
+                    <h2 class="text-xl font-semibold"><u-oauth-title></u-oauth-title></h2>
+                    <u-oauth-description></u-oauth-description>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <h3 class="text-sm font-medium text-gray-700 mb-2">This app will have access to:</h3>
+                  <u-oauth-scopes class-name="list-disc list-inside text-sm text-gray-600"></u-oauth-scopes>
+                </div>
+
+                <u-oauth-missing-fields class-name="mb-4 space-y-3"></u-oauth-missing-fields>
+
+                <div class="flex gap-3 mt-6">
+                  <u-oauth-button action="cancel"
+                    class-name="flex-1 px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium rounded-lg transition-colors">
+                  </u-oauth-button>
+                  <u-oauth-button action="submit"
+                    class-name="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    Grant Access
+                  </u-oauth-button>
+                </div>
+              </div>
+            </u-oauth-modal>
+          </u-oauth-provider>
+        </div>
+      </div>
+
       <div class="hidden">
 
         <!-- For testing -->

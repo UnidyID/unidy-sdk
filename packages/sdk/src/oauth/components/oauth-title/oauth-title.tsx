@@ -1,7 +1,6 @@
-import { Component, Element, Host, h, State } from "@stencil/core";
-import type { OAuthApplication } from "../../api/oauth";
-import { oauthState, onChange } from "../../store/oauth-store";
+import { Component, Element, h, Host } from "@stencil/core";
 import { getOAuthProvider } from "../context";
+import { oauthState } from "../../store/oauth-store";
 
 @Component({
   tag: "u-oauth-title",
@@ -10,40 +9,21 @@ import { getOAuthProvider } from "../context";
 export class OAuthTitle {
   @Element() el!: HTMLElement;
 
-  @State() private application: OAuthApplication | null = null;
-
-  private unsubscribers: Array<() => void> = [];
-
   componentWillLoad() {
-    const provider = getOAuthProvider(this.el);
-
-    if (!provider) {
+    if (!getOAuthProvider(this.el)) {
       console.warn("[u-oauth-title] Must be used inside a u-oauth-provider");
-      return;
     }
-
-    this.application = oauthState.application;
-
-    this.unsubscribers.push(
-      onChange("application", (app) => {
-        this.application = app;
-      }),
-    );
-  }
-
-  disconnectedCallback() {
-    this.unsubscribers.forEach((unsub) => unsub());
   }
 
   render() {
-    if (!this.application) {
+    if (!oauthState.application) {
       return null;
     }
 
     return (
       <Host id="oauth-modal-title">
         <slot>
-          <span>{this.application.name}</span>
+          <span>{oauthState.application.name}</span>
         </slot>
       </Host>
     );

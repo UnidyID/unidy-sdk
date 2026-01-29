@@ -27,3 +27,8 @@ export { oauthState, onChange as onOAuthChange, resetOAuthState } from "./store/
 
 // Component event types
 export type { OAuthSuccessEvent, OAuthErrorEvent } from "./components/oauth-provider/oauth-provider";
+export type { OAuthButtonAction } from "./components/oauth-button/oauth-button";
+
+// Helper
+export { OAuthHelper } from "./helpers";
+export type { OAuthCallbacks, OAuthConfig } from "./helpers";

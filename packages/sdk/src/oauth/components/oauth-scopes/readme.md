@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property             | Attribute    | Description                                            | Type     | Default |
-| -------------------- | ------------ | ------------------------------------------------------ | -------- | ------- |
-| `componentClassName` | `class-name` | Custom CSS class name(s) to apply to the list element. | `string` | `""`    |
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
 ----------------------------------------------

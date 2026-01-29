@@ -1,7 +1,6 @@
-import { Component, Element, h, Host, State } from "@stencil/core";
+import { Component, Element, h, Host } from "@stencil/core";
 import { getOAuthProvider } from "../context";
-import { oauthState, onChange } from "../../store/oauth-store";
-import type { OAuthApplication } from "../../api/oauth";
+import { oauthState } from "../../store/oauth-store";
 
 @Component({
   tag: "u-oauth-description",
@@ -10,40 +9,21 @@ import type { OAuthApplication } from "../../api/oauth";
 export class OAuthDescription {
   @Element() el!: HTMLElement;
 
-  @State() private application: OAuthApplication | null = null;
-
-  private unsubscribers: Array<() => void> = [];
-
   componentWillLoad() {
-    const provider = getOAuthProvider(this.el);
-
-    if (!provider) {
+    if (!getOAuthProvider(this.el)) {
       console.warn("[u-oauth-description] Must be used inside a u-oauth-provider");
-      return;
     }
-
-    this.application = oauthState.application;
-
-    this.unsubscribers.push(
-      onChange("application", (app) => {
-        this.application = app;
-      })
-    );
-  }
-
-  disconnectedCallback() {
-    this.unsubscribers.forEach((unsub) => unsub());
   }
 
   render() {
-    if (!this.application?.description) {
+    if (!oauthState.application?.description) {
       return null;
     }
 
     return (
       <Host id="oauth-modal-description">
         <slot>
-          <p>{this.application.description}</p>
+          <p>{oauthState.application.description}</p>
         </slot>
       </Host>
     );
