@@ -1,4 +1,4 @@
-/**Add a comment on  lines R1 to R119Add diff commentMarkdown input:  edit mode selected.WritePreviewAdd a suggestionHeadingBoldItalicQuoteCodeLinkUnordered listNumbered listTask listMentionReferenceSaved repliesAdd FilesPaste, drop, or click to add filesCancelCommentStart a reviewReturn to code
+/**
  * Type map for parent component lookups.
  * Maps custom element tag names to their corresponding TypeScript types.
  */
