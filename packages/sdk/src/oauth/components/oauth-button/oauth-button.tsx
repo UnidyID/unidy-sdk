@@ -1,5 +1,6 @@
 import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
 import { authState } from "../../../auth/store/auth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
@@ -11,7 +12,7 @@ export type OAuthButtonAction = "connect" | "submit" | "cancel";
   tag: "u-oauth-button",
   shadow: false,
 })
-export class OAuthButton {
+export class OAuthButton extends UnidyComponent {
   @Element() el!: HTMLElement;
 
   /**
@@ -35,7 +36,7 @@ export class OAuthButton {
     this.provider = getOAuthProvider(this.el);
 
     if (!this.provider) {
-      console.warn("[u-oauth-button] Must be used inside a u-oauth-provider");
+      this.logger.warn("Must be used inside a u-oauth-provider");
     }
   }
 
@@ -43,7 +44,7 @@ export class OAuthButton {
     event.preventDefault();
 
     if (!this.provider) {
-      console.error("[u-oauth-button] No oauth-provider found");
+      this.logger.error("No oauth-provider found");
       return;
     }
 

@@ -1,5 +1,6 @@
 import { Component, Element, h, Host, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState, setOAuthFieldValue } from "../../store/oauth-store";
 
@@ -7,7 +8,7 @@ import { oauthState, setOAuthFieldValue } from "../../store/oauth-store";
   tag: "u-oauth-missing-fields",
   shadow: false,
 })
-export class OAuthMissingFields {
+export class OAuthMissingFields extends UnidyComponent {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -18,7 +19,7 @@ export class OAuthMissingFields {
     this.provider = getOAuthProvider(this.el);
 
     if (!this.provider) {
-      console.warn("[u-oauth-missing-fields] Must be used inside a u-oauth-provider");
+      this.logger.warn("Must be used inside a u-oauth-provider");
     }
   }
 

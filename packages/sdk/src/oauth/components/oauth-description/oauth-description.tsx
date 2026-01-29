@@ -1,4 +1,5 @@
 import { Component, Element, h, Host } from "@stencil/core";
+import { UnidyComponent } from "../../../logger";
 import { getOAuthProvider } from "../context";
 import { oauthState } from "../../store/oauth-store";
 
@@ -6,12 +7,12 @@ import { oauthState } from "../../store/oauth-store";
   tag: "u-oauth-description",
   shadow: false,
 })
-export class OAuthDescription {
+export class OAuthDescription extends UnidyComponent {
   @Element() el!: HTMLElement;
 
   componentWillLoad() {
     if (!getOAuthProvider(this.el)) {
-      console.warn("[u-oauth-description] Must be used inside a u-oauth-provider");
+      this.logger.warn("Must be used inside a u-oauth-provider");
     }
   }
 

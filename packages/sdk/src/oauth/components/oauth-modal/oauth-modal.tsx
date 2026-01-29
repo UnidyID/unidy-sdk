@@ -1,4 +1,5 @@
 import { Component, Element, h, Host } from "@stencil/core";
+import { UnidyComponent } from "../../../logger";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState } from "../../store/oauth-store";
 
@@ -6,7 +7,7 @@ import { oauthState } from "../../store/oauth-store";
   tag: "u-oauth-modal",
   shadow: false,
 })
-export class OAuthModal {
+export class OAuthModal extends UnidyComponent {
   @Element() el!: HTMLElement;
 
   private provider: OAuthProviderElement | null = null;
@@ -16,7 +17,7 @@ export class OAuthModal {
     this.provider = getOAuthProvider(this.el);
 
     if (!this.provider) {
-      console.warn("[u-oauth-modal] Must be used inside a u-oauth-provider");
+      this.logger.warn("Must be used inside a u-oauth-provider");
     }
   }
 

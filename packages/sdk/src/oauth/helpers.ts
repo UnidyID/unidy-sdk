@@ -1,4 +1,5 @@
 import { getUnidyClient } from "../api";
+import { createLogger } from "../logger";
 import { unidyState } from "../shared/store/unidy-store";
 import { Auth } from "../auth/auth";
 import {
@@ -28,6 +29,8 @@ export interface OAuthConfig {
   newtab?: boolean;
   autoRedirect?: boolean;
 }
+
+const logger = createLogger("OAuthHelper");
 
 export class OAuthHelper {
   private callbacks: OAuthCallbacks;
@@ -116,7 +119,7 @@ export class OAuthHelper {
         this.handleError("unknown_error", "An unexpected error occurred");
       }
     } catch (err) {
-      console.error("[OAuthHelper] Error during connect:", err);
+      logger.error("Error during connect:", err);
       this.handleError("unknown_error", "An unexpected error occurred");
     } finally {
       setOAuthLoading(false);
@@ -183,7 +186,7 @@ export class OAuthHelper {
         this.handleError(grantError || "unknown_error", "Failed to grant consent");
       }
     } catch (err) {
-      console.error("[OAuthHelper] Error during submit:", err);
+      logger.error("Error during submit:", err);
       this.handleError("unknown_error", "An unexpected error occurred");
     } finally {
       setOAuthLoading(false);
@@ -229,7 +232,7 @@ export class OAuthHelper {
   }
 
   private handleError(errorIdentifier: string, message: string): void {
-    console.error(`[OAuthHelper] ${errorIdentifier}: ${message}`);
+    logger.error(`${errorIdentifier}: ${message}`);
     setOAuthError(message);
     this.callbacks.onError({ error: message, errorIdentifier });
   }
