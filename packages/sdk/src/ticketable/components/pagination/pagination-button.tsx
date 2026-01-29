@@ -15,7 +15,7 @@ export class PaginationButton extends UnidyComponent {
   private store: PaginationStore | null = null;
   private unsubscribe: (() => void) | null = null;
 
-  componentDidLoad() {
+  componentWillLoad() {
     this.store = this.element.closest("u-ticketable-list")?.store;
     if (!this.store) {
       this.logger.warn("TicketableList component not found");
