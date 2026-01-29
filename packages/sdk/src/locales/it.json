@@ -36,7 +36,10 @@
     }
   },
   "buttons": {
+    "cancel": "Annulla",
     "close": "Chiudi",
+    "confirm": "Conferma",
+    "connect": "Connetti",
     "continue": "Continua",
     "jump_to_service": "Vai al servizio",
     "jump_to_unidy": "Vai a Unidy",
