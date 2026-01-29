@@ -1,5 +1,4 @@
 import { createStore } from "@stencil/store";
-import type { AdditionalFields } from "../api/schemas";
 
 export type NewsletterErrorIdentifier =
   | "unconfirmed"
@@ -24,15 +23,19 @@ export type CheckedNewsletters = Record<NewsletterInternalName, PreferenceIdenti
 
 export type DefaultPreferences = Record<NewsletterInternalName, Set<PreferenceIdentifier>>;
 
-// Supported additional field names matching the API schema (excluding custom_attributes which needs special handling)
-export type AdditionalFieldName = Exclude<keyof AdditionalFields, "custom_attributes">;
+export interface AdditionalFieldNode {
+  value?: string | string[];
+  type?: string;
+}
+export type AdditionalFieldsData = Record<string, AdditionalFieldNode>;
 
 interface NewsletterState {
   email: string;
   preferenceToken: string;
   checkedNewsletters: CheckedNewsletters;
   defaultPreferences: DefaultPreferences;
-  additionalFields: AdditionalFields;
+  additionalFields: AdditionalFieldsData;
+  additionalFieldErrors: Record<string, string>;
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
@@ -60,6 +63,7 @@ const initialState: NewsletterState = {
   checkedNewsletters: {},
   defaultPreferences: {},
   additionalFields: {},
+  additionalFieldErrors: {},
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],

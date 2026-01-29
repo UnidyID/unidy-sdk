@@ -1,46 +1,45 @@
-import { BaseService, type ApiClientInterface, type CommonErrors, type ServiceDependencies, type Payload } from "../../api/base-service";
+import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
 import {
+  type CreateSignInResponse,
   CreateSignInResponseSchema,
+  type ErrorResponse,
   ErrorSchema,
+  type InvalidPasswordResponse,
   InvalidPasswordResponseSchema,
   JumpToServiceErrorSchema,
+  type JumpToServiceRequest,
   JumpToServiceRequestSchema,
   JumpToServiceResponseSchema,
   JumpToUnidyErrorSchema,
+  type JumpToUnidyRequest,
   JumpToUnidyRequestSchema,
   JumpToUnidyResponseSchema,
-  PasskeyOptionsResponseSchema,
-  RequiredFieldsResponseSchema,
-  SendMagicCodeErrorSchema,
-  SendMagicCodeResponseSchema,
-  TokenResponseSchema,
-  type CreateSignInResponse,
-  type ErrorResponse,
-  type InvalidPasswordResponse,
-  type JumpToServiceRequest,
-  type JumpToUnidyRequest,
   type PasskeyCredential,
   type PasskeyOptionsResponse,
+  PasskeyOptionsResponseSchema,
   type RequiredFieldsResponse,
+  RequiredFieldsResponseSchema,
   type SendMagicCodeError,
+  SendMagicCodeErrorSchema,
   type SendMagicCodeResponse,
+  SendMagicCodeResponseSchema,
   type TokenResponse,
+  TokenResponseSchema,
 } from "./schemas";
 
 // Re-export types for external use
 export type {
-  ErrorResponse,
   CreateSignInResponse,
-  TokenResponse,
-  SendMagicCodeResponse,
+  ErrorResponse,
+  InvalidPasswordResponse,
+  LoginOptions,
+  PasskeyCredential,
+  PasskeyOptionsResponse,
   RequiredFieldsResponse,
   SendMagicCodeError,
-  InvalidPasswordResponse,
-  PasskeyOptionsResponse,
-  PasskeyCredential,
+  SendMagicCodeResponse,
+  TokenResponse,
 } from "./schemas";
-
-export type { LoginOptions } from "./schemas";
 
 // Argument types for unified interface
 export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean }>;
@@ -147,11 +146,7 @@ export type JumpToServiceResult =
   | ["invalid_scope", ErrorResponse]
   | [null, string];
 
-export type JumpToUnidyResult =
-  | CommonErrors
-  | ["user_not_found", ErrorResponse]
-  | ["invalid_path", ErrorResponse]
-  | [null, string];
+export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
 
 export class AuthService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {

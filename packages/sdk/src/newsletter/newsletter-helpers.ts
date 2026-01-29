@@ -3,6 +3,7 @@ import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { Flash } from "../shared/store/flash-store";
 import {
+  type AdditionalFieldsData,
   type CheckedNewsletters,
   type ExistingSubscription,
   type NewsletterErrorIdentifier,
@@ -11,6 +12,26 @@ import {
 } from "./store/newsletter-store";
 
 const logger = createLogger("NewsletterHelpers");
+
+function buildAdditionalFieldsPayload(additionalFields: AdditionalFieldsData): Record<string, unknown> {
+  const payload: Record<string, unknown> = {};
+
+  for (const [key, node] of Object.entries(additionalFields)) {
+    if (node.value === undefined || node.value === null || node.value === "") continue;
+
+    if (key.startsWith("custom_attributes.")) {
+      // custom attributes
+      const attrKey = key.replace("custom_attributes.", "");
+      payload.custom_attributes = payload.custom_attributes || {};
+      (payload.custom_attributes as Record<string, unknown>)[attrKey] = node.value;
+    } else {
+      // standard user attributes
+      payload[key] = node.value;
+    }
+  }
+
+  return payload;
+}
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -135,10 +156,7 @@ async function handleAlreadySubscribedError(
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
   const { checkedNewsletters, additionalFields } = newsletterStore.state;
 
-  // Filter out empty/null additional fields
-  const filteredAdditionalFields = Object.fromEntries(
-    Object.entries(additionalFields).filter(([_, value]) => value !== null && value !== undefined && value !== ""),
-  );
+  const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
 
   const [error, response] = await getUnidyClient().newsletters.create({
     payload: {
@@ -148,7 +166,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
         preference_identifiers: checkedNewsletters[newsletter] || [],
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
-      ...(Object.keys(filteredAdditionalFields).length > 0 && { additional_fields: filteredAdditionalFields }),
+      ...(Object.keys(additionalFieldsPayload).length > 0 && { additional_fields: additionalFieldsPayload }),
     },
   });
 
