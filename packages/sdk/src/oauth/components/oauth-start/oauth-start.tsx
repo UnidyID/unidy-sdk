@@ -1,15 +1,15 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
+import { onChange as authOnChange, authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
-import { authState, onChange as authOnChange } from "../../../auth/store/auth-store";
-import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState, onChange } from "../../store/oauth-store";
+import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 @Component({
-  tag: "u-oauth-button",
+  tag: "u-oauth-start",
   shadow: false,
 })
-export class OAuthButton {
+export class OAuthStart {
   @Element() el!: HTMLElement;
 
   /**
@@ -29,7 +29,7 @@ export class OAuthButton {
     this.loading = oauthState.loading;
 
     if (!this.provider) {
-      console.warn("[u-oauth-button] Must be used inside a u-oauth-provider");
+      console.warn("[u-oauth-start] Must be used inside a u-oauth-provider");
       return;
     }
 
@@ -50,7 +50,7 @@ export class OAuthButton {
     event.preventDefault();
 
     if (!this.provider) {
-      console.error("[u-oauth-button] No oauth-provider found");
+      console.error("[u-oauth-start] No oauth-provider found");
       return;
     }
 
