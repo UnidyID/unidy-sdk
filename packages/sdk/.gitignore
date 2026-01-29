@@ -212,3 +212,4 @@ src/demo-build.css
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+!/playwright/.auth/.gitkeep

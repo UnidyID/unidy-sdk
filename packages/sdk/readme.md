@@ -11,6 +11,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 - [Components](#components)
   - [Core Components](#core-components)
   - [Login Flow Components](#login-flow-components)
+  - [Navigation Components](#navigation-components)
   - [Profile Components](#profile-components)
   - [Newsletter Components](#newsletter-components)
   - [Ticket & Subscription Components](#ticket--subscription-components)
@@ -91,11 +92,12 @@ This required component configures the SDK with your Unidy instance details.
 -   `locale`: The language to use for the SDK. Defaults to `en`.
 -   `fallback-locale`: The fallback language to use if a translation is not available in the current locale. Defaults to `en`.
 -   `custom-translations`: A JSON string or object containing custom translations. See the [Internationalization (i18n)](#internationalization-i18n) section for more details.
+-   `check-signed-in`: If set to `true`, automatically checks if the user is signed in on initialization. Defaults to `false`.
 
 **Events:**
 
 -   `unidyInitialized`: Fired when the SDK is successfully initialized. `event.detail` contains the config object with `apiKey`, `baseUrl`, `locale`, and `mode`.
--   `configChange`: Fired when the configuration changes. `event.detail` contains the updated configuration.
+-   `configChange`: Fired when the configuration changes. `event.detail` contains `{ key, value, previousValue }`.
 
 #### `<u-signed-in>`
 
@@ -104,6 +106,7 @@ This component acts as a gatekeeper for authenticated content. It automatically 
 **Attributes:**
 
 - `class-name`: A string of classes to pass to the host element.
+- `not`: If set to `true`, inverts the behavior - shows content only when the user is NOT signed in. Defaults to `false`.
 
 #### `<u-signin-root>`
 
@@ -120,12 +123,19 @@ Renders a complete sign-in and registration flow. This component is automaticall
 
 #### `<u-flash-message>`
 
-Displays a temporary message to the user, such as success, error, or informational messages.
+Displays temporary messages to the user, such as success, error, or informational messages. This component automatically displays messages from the internal flash message store and is typically used to show feedback after form submissions or API operations.
 
 **Attributes:**
 
--   `message` (required): The text content of the message to display.
--   `variant`: The type of message, which affects its styling. Can be `error`, `success`, or `info`. Defaults to `info`.
+-   `class-name`: A string of classes to pass to the host element.
+-   `remove-after-seconds`: Optional number of seconds after which messages are automatically removed. If not set, messages persist until manually dismissed.
+
+**Message Variants:**
+
+Messages displayed by this component can have one of three variants that affect styling:
+-   `error` - Red styling for error messages
+-   `success` - Green styling for success messages
+-   `info` - Blue styling for informational messages
 
 #### `<u-spinner>`
 
@@ -149,17 +159,24 @@ Defines a distinct step in the sign-in process (e.g., entering an email, enterin
 
 **Attributes:**
 
--   `name` (required): The name of the step (e.g., `email`, `verification`, `missing-fields`).
+-   `name` (required): The name of the step (e.g., `email`, `verification`, `magic-code`, `reset-password`, `single-login`, `missing-fields`, `registration`).
 -   `always-render`: If set to `true`, the step will always render its content regardless of the current authentication step.
+
+**Methods:**
+
+-   `isActive()`: Returns `Promise<boolean>` indicating whether this step is currently active.
+-   `submit()`: Programmatically submit the current step. Returns `Promise<void>`.
 
 #### `<u-passkey>`
 
-Renders a button that initiates passkey authentication.
+Renders a button that initiates passkey authentication. This component only renders if passkey authentication is available and the browser supports WebAuthn.
 
 **Attributes:**
 -   `text`: The text to display on the button. Defaults to "Sign in with Passkey".
 -   `loading-text`: The text to display on the button while authenticating. Defaults to "Authenticating..."
 -   `class-name`: A string of classes to pass to the button.
+-   `disabled`: If set to `true`, the button will be disabled. Defaults to `false`.
+-   `aria-described-by`: ID of an element that describes the button for accessibility.
 
 #### `<u-email-field>`
 
@@ -176,8 +193,10 @@ Renders a pre-configured input for the user's password.
 
 **Attributes:**
 
+- `for`: The type of password field. Can be `"login"` (for sign-in), `"new-password"` (for setting a new password), or `"password-confirmation"` (for confirming a new password). Defaults to `"login"`.
 - `placeholder`: The placeholder text for the input field. Defaults to "Enter your password".
 - `class-name`: A string of classes to pass to the input field.
+- `aria-label`: Custom ARIA label for accessibility. Auto-generated based on `for` prop if not provided.
 
 #### `<u-magic-code-field>`
 
@@ -197,7 +216,15 @@ Renders a list of input fields for collecting additional required fields during 
 
 #### `<u-missing-fields-submit-button>`
 
-Renders a button to submit changes made in the `<u-missing-field>` component. It must be placed below a `<u-missing-field>` element.
+Renders a button to submit changes made in the `<u-missing-field>` component. It must be placed inside a `<u-signin-step name="missing-fields">` element below a `<u-missing-field>` element.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button content.
+
+**CSS Shadow Parts:**
+
+-   `button`: The submit button element.
 
 #### `<u-error-message>`
 
@@ -268,16 +295,31 @@ A utility component that renders its children only when a specific condition is 
 **Attributes:**
 
 - `when`: The name of a predefined state to check. Available states:
-  - `passkeyEnabled` - True if passkey login is enabled
-  - `passwordEnabled` - True if password login is enabled
-  - `magicCodeEnabled` - True if magic code login is enabled
-  - `socialLoginsEnabled` - True if any social login providers are enabled
-  - `loading` - True while an auth operation is in progress
-  - `authenticated` - True if the user is authenticated
-  - `magicCodeSent` - True if a magic code has been sent or requested
-  - `magicCodeRequested` - True if a magic code has been requested
-  - `resetPasswordSent` - True if a password reset has been sent or requested
-  - `resetPasswordRequested` - True if a password reset has been requested
+  - **Auth conditions:**
+    - `auth.passkeyEnabled` - True if passkey login is enabled
+    - `auth.passwordEnabled` - True if password login is enabled
+    - `auth.magicCodeEnabled` - True if magic code login is enabled
+    - `auth.socialLoginsEnabled` - True if any social login providers are enabled
+    - `auth.hasSocialLogin(provider)` - True if a specific social provider is enabled
+    - `auth.loading` - True while an auth operation is in progress
+    - `auth.authenticated` - True if the user is authenticated
+    - `auth.magicCodeSent` - True if a magic code has been sent or requested
+    - `auth.magicCodeRequested` - True if a magic code has been requested
+    - `auth.resetPasswordSent` - True if a password reset has been sent or requested
+    - `auth.resetPasswordRequested` - True if a password reset has been requested
+  - **Newsletter conditions:**
+    - `newsletter.hasCheckedNewsletters` - True if any newsletters are checked
+    - `newsletter.hasPreferenceToken` - True if a preference token exists
+    - `newsletter.hasEmail` - True if an email is entered
+    - `newsletter.subscribed(internalName)` - True if subscribed to a specific newsletter
+    - `newsletter.confirmed(internalName)` - True if subscription is confirmed
+    - `newsletter.loggedIn` - True if authenticated or has preference token
+  - **Profile conditions:**
+    - `profile.loading` - True while profile is loading
+    - `profile.hasErrors` - True if profile has validation errors
+    - `profile.hasFlashErrors` - True if there are flash error messages
+    - `profile.phoneValid` - True if phone number is valid
+    - `profile.hasData` - True if profile data is loaded
 - `is`: Optional value the state variable should have for the content to be rendered. Accepts `"true"`, `"enabled"`, `"false"`, `"disabled"`, or an exact value to compare.
 - `not`: If set to `true`, inverts the condition result. Defaults to `false`.
 - `conditionFunction`: A custom function assigned **as a JavaScript property** (not as an HTML attribute) that receives the full `AuthState` and returns a boolean. Use this for custom conditional logic.
@@ -291,15 +333,15 @@ A utility component that renders its children only when a specific condition is 
 **Example: Using predefined states**
 
 ```html
-<u-conditional-render when="authenticated">
+<u-conditional-render when="auth.authenticated">
   <p>Welcome back!</p>
 </u-conditional-render>
 
-<u-conditional-render when="magicCodeSent" is="false">
+<u-conditional-render when="auth.magicCodeSent" is="false">
   <u-send-magic-code-button text="Send Magic Code"></u-send-magic-code-button>
 </u-conditional-render>
 
-<u-conditional-render when="loading" not>
+<u-conditional-render when="auth.loading" not>
   <p>Content shown when not loading</p>
 </u-conditional-render>
 ```
@@ -325,6 +367,62 @@ A utility component that renders its children only when a specific condition is 
 </script>
 ```
 
+### Navigation Components
+
+These components allow authenticated users to navigate to external services or the Unidy platform with single sign-on (SSO).
+
+#### `<u-jump-to-service>`
+
+Renders a button that redirects authenticated users to an external OAuth application (service) with SSO. The user must be authenticated to use this component.
+
+**Attributes:**
+
+-   `service-id` (required): The OAuth Application ID of the service to redirect to.
+-   `redirect-uri`: The OAuth redirect URI. If not provided, the service's default redirect URI is used.
+-   `scopes`: Comma-separated OAuth scopes to request. Defaults to `"openid"`.
+-   `newtab`: If set to `true`, opens the service in a new browser tab. Defaults to `false`.
+-   `skip-oauth-authorization`: If set to `true`, skips the OAuth authorization step if the user has already authorized the application. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button content. If not provided, displays "Jump to Service".
+
+**Example:**
+
+```html
+<u-signed-in>
+  <u-jump-to-service service-id="your-oauth-app-id" newtab="true">
+    Open External App
+  </u-jump-to-service>
+</u-signed-in>
+```
+
+#### `<u-jump-to-unidy>`
+
+Renders a button that redirects authenticated users to a specific path on the Unidy platform with SSO. This allows seamless navigation to Unidy pages without requiring the user to log in again.
+
+**Attributes:**
+
+-   `path` (required): The Unidy path to redirect to. Must start with `/` (e.g., `/profile`, `/settings`).
+-   `newtab`: If set to `true`, opens the Unidy page in a new browser tab. Defaults to `false`.
+-   `no-auth`: If set to `true`, redirects without authentication (for public Unidy pages). Defaults to `false`.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button content. If not provided, displays "Jump to Unidy".
+
+**Example:**
+
+```html
+<u-signed-in>
+  <u-jump-to-unidy path="/profile" newtab="true">
+    Edit Profile on Unidy
+  </u-jump-to-unidy>
+</u-signed-in>
+```
+
 ### Profile Components
 
 #### `<u-full-profile>`
@@ -345,9 +443,15 @@ This component renders a form for users to view and edit their profile data. It 
 
 -   `profileId`: An optional ID for the profile.
 -   `initialData`: Initial profile data, either as a JSON string or a JavaScript object.
--   `apiUrl`: The API URL for profile operations.
--   `apiKey`: The API key for profile operations.
--   `language`: The language to use for profile data.
+
+**Methods:**
+
+-   `submitProfile()`: Programmatically submit the profile form. Returns `Promise<void>`. Validates required fields before submission.
+
+**Events:**
+
+-   `uProfileSuccess`: Fired when profile update is successful. `event.detail` contains `{ message: string, payload: ProfileRaw }`.
+-   `uProfileError`: Fired when profile update fails. `event.detail` contains `{ error: string, details: { fieldErrors?: Record<string, string>, httpStatus?: number, responseData?: unknown } }`.
 
 **Slots:**
 
@@ -434,6 +538,10 @@ The root component for newsletter subscription forms. This component handles ini
 **Methods:**
 -   `submit()`: Programmatically submit the newsletter form. This is called internally by `<u-submit-button>` or `<u-email-field>` when used within the newsletter context.
 
+**Events:**
+-   `uNewsletterSuccess`: Fired when newsletter subscription is successful. `event.detail` contains `{ email: string, newsletters: string[] }`.
+-   `uNewsletterError`: Fired when newsletter subscription fails. `event.detail` contains `{ email: string, error: string }`.
+
 **Slots:**
 -   The default slot allows you to provide the newsletter form content.
 
@@ -456,6 +564,10 @@ Renders a checkbox for subscribing to a specific newsletter. When checked, the n
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
 
+**Methods:**
+-   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
+-   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
+
 #### `<u-newsletter-preference-checkbox>`
 
 Renders a checkbox for managing newsletter preferences. Used within a newsletter to subscribe to specific topics or preferences. If the user is already subscribed and confirmed, changes are persisted immediately.
@@ -465,6 +577,10 @@ Renders a checkbox for managing newsletter preferences. Used within a newsletter
 -   `preference-identifier` (required): The preference identifier for this checkbox.
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
+
+**Methods:**
+-   `toggle()`: Toggles the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
+-   `setChecked(checked: boolean)`: Sets the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
 
 #### `<u-newsletter-toggle-subscription-button>`
 
@@ -493,6 +609,36 @@ Renders a logout button for newsletter preference management sessions. This butt
 
 **Slots:**
 -   The default slot allows you to provide custom button content. If not provided, defaults to "x".
+
+**CSS Shadow Parts:**
+-   `button`: The logout button element.
+
+#### `<u-newsletter-consent-checkbox>`
+
+Renders a checkbox for collecting GDPR consent before newsletter subscription. This checkbox is required when consent collection is enabled for the newsletter form.
+
+**Attributes:**
+-   `class-name`: A string of classes to pass to the checkbox input.
+
+**Methods:**
+-   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`.
+-   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`.
+
+**Example:**
+
+```html
+<u-newsletter-root>
+  <u-email-field placeholder="Enter your email"></u-email-field>
+  <u-newsletter-checkbox internal-name="weekly-digest"></u-newsletter-checkbox>
+
+  <label>
+    <u-newsletter-consent-checkbox class-name="mr-2"></u-newsletter-consent-checkbox>
+    I agree to the terms and conditions
+  </label>
+
+  <u-submit-button>Subscribe</u-submit-button>
+</u-newsletter-root>
+```
 
 #### `<u-submit-button>`
 
@@ -533,18 +679,35 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 -   The default slot should contain a `<template>` element that defines the layout for each item.
 -   `pagination`: A slot for pagination components.
 
+**Events:**
+
+-   `uTicketableListSuccess`: Fired when data is successfully loaded. `event.detail` contains `{ ticketableType: "ticket" | "subscription", items: Ticket[] | Subscription[], paginationMeta: PaginationMeta | null }`.
+-   `uTicketableListError`: Fired when loading fails. `event.detail` contains `{ ticketableType?: "ticket" | "subscription", error: string }`.
+
 **Inside the template:**
 
 -   `<ticketable-value>`: This component is used inside the template to display a value from the ticket or subscription object.
-    -   `name` (required): The name of the attribute to display (e.g., `title`, `starts_at`).
-    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`).
+    -   `name` (required): The name of the attribute to display. Supports nested paths using dot notation (e.g., `title`, `starts_at`, `metadata.foo.bar`, `metadata.items.[0].name`).
+    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`). Supported locales: `en`, `de`, `fr`, `nl_be`, `ro`, `sv`.
     -   `format`: A string to format the value (e.g., `Price: {{value}}`).
     -   `default`: A default value to display if the attribute is not present.
+
+-   `<ticketable-conditional>`: A conditional element that shows or hides its children based on whether a property is truthy.
+    -   `when` (required): The property path to check. Supports nested paths (e.g., `metadata.vip`, `wallet_export`).
+    -   If the property value is truthy, the children are rendered. If falsy, the entire element is removed.
 
 -   `unidy-attr`: A special attribute that can be applied to any HTML element within the template to dynamically set attributes based on ticket/subscription data.
     -   Add `unidy-attr` to the element
     -   Use `unidy-attr-{attributeName}` to specify which attribute to set (e.g., `unidy-attr-href`, `unidy-attr-src`)
-    -   Use `{{propertyName}}` in the attribute value to reference ticket/subscription properties
+    -   Use `{{propertyPath}}` in the attribute value to reference ticket/subscription properties. Supports nested paths (e.g., `{{metadata.link}}`, `{{wallet_export.[0].url}}`).
+
+**Nested Property Access:**
+
+Both `<ticketable-value>` and `unidy-attr` support accessing nested properties using dot notation:
+-   `metadata.foo` - Access the `foo` property inside `metadata`
+-   `metadata.foo.bar` - Access deeply nested properties
+-   `metadata.items.[0]` - Access array elements by index
+-   `metadata.items.[0].name` - Combine array access with property access
 
 **Example:**
 
@@ -559,7 +722,22 @@ This component fetches and renders a list of tickets or subscriptions. It requir
       <p>
         <ticketable-value name="price" format="Price: {{value}}"></ticketable-value>
       </p>
-      <!-- Dynamic href using unidy-attr -->
+
+      <!-- Nested metadata access -->
+      <p>
+        <ticketable-value name="metadata.category" default="No category"></ticketable-value>
+      </p>
+
+      <!-- Conditional rendering based on metadata -->
+      <ticketable-conditional when="metadata.vip">
+        <span class="vip-badge">VIP</span>
+      </ticketable-conditional>
+
+      <ticketable-conditional when="wallet_export">
+        <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+      </ticketable-conditional>
+
+      <!-- Dynamic href using unidy-attr with nested path -->
       <a unidy-attr unidy-attr-href="{{button_cta_url}}" class="button">
         View Details
       </a>
@@ -588,6 +766,47 @@ Renders a button to navigate to the previous or next page.
 **Slots:**
 
 -   `icon`: Allows you to provide a custom icon for the button.
+
+#### `<u-ticketable-export>`
+
+Renders a button to export a ticket or subscription to a file format (e.g., PDF or Apple Wallet pass). This component must be placed inside the `<template>` element within a `<u-ticketable-list>` component.
+
+**Attributes:**
+
+-   `format` (required): The export format. Can be `"pdf"` or `"pkpass"` (Apple Wallet).
+-   `custom-class`: A string of classes to pass to the button element.
+-   `exportable`: Whether the export is available. Defaults to `true`. Set to `false` to disable the export button.
+
+**Events:**
+
+-   `uTicketableExportSuccess`: Fired when the export is successful. `event.detail` contains `{ url: string, format: string }`.
+-   `uTicketableExportError`: Fired when the export fails. `event.detail` contains `{ error: string }`.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button content.
+
+**Example:**
+
+```html
+<u-ticketable-list ticketable-type="ticket">
+  <template>
+    <div class="ticket-card">
+      <h2><ticketable-value name="title"></ticketable-value></h2>
+      <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
+
+      <div class="export-buttons">
+        <u-ticketable-export format="pdf" custom-class="btn btn-primary">
+          Download PDF
+        </u-ticketable-export>
+        <u-ticketable-export format="pkpass" custom-class="btn btn-secondary">
+          Add to Wallet
+        </u-ticketable-export>
+      </div>
+    </div>
+  </template>
+</u-ticketable-list>
+```
 
 ## API Reference
 
@@ -807,6 +1026,8 @@ u-field::part(input_field) {
 |                             | `social-login-button-content`     | The container for the button's content.                                |
 |                             | `social-login-button-text`        | The text within the button.                                            |
 | `<u-spinner>`               | `spinner`                         | The inner rotating `<div>` element of the spinner.                     |
+| `<u-missing-fields-submit-button>` | `button`                   | The submit button element.                                             |
+| `<u-newsletter-logout-button>` | `button`                       | The logout button element.                                             |
 
 ## Internationalization (i18n)
 

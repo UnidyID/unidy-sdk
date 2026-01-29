@@ -39,7 +39,7 @@ function isTruthy(value: unknown): boolean {
 
 @Component({
   tag: "u-conditional-render",
-  shadow: true,
+  shadow: false,
 })
 export class ConditionalRender extends UnidyComponent {
   @Prop() when?: string; // condition to check
@@ -94,13 +94,13 @@ export class ConditionalRender extends UnidyComponent {
   }
 
   render() {
-    const visible = this.shouldRender();
+    const shouldShow = this.shouldRender();
 
     return (
       <Host
-        hidden={!visible}
-        style={{ display: visible ? "contents" : undefined }}
-        aria-hidden={!visible ? "true" : null}
+        hidden={!shouldShow}
+        style={{ display: shouldShow ? "contents" : undefined }}
+        aria-hidden={!shouldShow ? "true" : null}
         aria-live="polite"
       >
         <slot />

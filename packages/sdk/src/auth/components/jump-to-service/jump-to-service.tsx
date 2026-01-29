@@ -1,10 +1,10 @@
-import { Component, Element, forceUpdate, h, Prop, State } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
-import { unidyState } from "../../../shared/store/unidy-store";
+import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
-import { authState, onChange } from "../../store/auth-store";
+import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-jump-to-service",
@@ -49,24 +49,10 @@ export class JumpToService {
 
   @State() loading = false;
 
-  // TODO: Figure out a way to share this across components
-  private unsubscribe?: () => void;
   private hasSlot = false;
 
   componentWillLoad() {
     this.hasSlot = hasSlotContent(this.el);
-  }
-
-  connectedCallback() {
-    this.unsubscribe = onChange("authenticated", () => {
-      forceUpdate(this);
-    });
-  }
-
-  disconnectedCallback() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
   }
 
   private handleClick = async (event: Event) => {
@@ -78,15 +64,13 @@ export class JumpToService {
     }
 
     const auth = await Auth.getInstance();
-    const isAuthenticated = await auth.isAuthenticated();
-
-    if (!isAuthenticated) {
+    if (!(await auth.isAuthenticated())) {
       console.error("[u-jump-to-service] User is not authenticated. Please log in first.");
       return;
     }
 
     const userData = await auth.userData();
-    if (!userData || !userData.email) {
+    if (!userData?.email) {
       console.error("Failed to get user email from authentication token");
       return;
     }
@@ -95,9 +79,7 @@ export class JumpToService {
 
     try {
       const client = getUnidyClient();
-
-      // Parse scopes if provided
-      const scopesArray = this.scopes ? this.scopes.split(",").map((s) => s.trim()) : undefined;
+      const scopesArray = this.scopes?.split(",").map((s) => s.trim());
 
       const [error, token] = await client.auth.jumpToService(this.serviceId, {
         email: userData.email,
@@ -108,24 +90,14 @@ export class JumpToService {
 
       if (error) {
         console.error("Failed to get jump token:", error);
-        this.loading = false;
         return;
       }
 
-      const redirectUrl = new URL("/one_time_login", unidyState.baseUrl);
-      // @ts-expect-error - TOKEN IS A STRING, BUT we need to enable strict for it to work
-      redirectUrl.searchParams.set("token", token);
-      if (this.redirectUri) {
-        redirectUrl.searchParams.set("redirect_uri", this.redirectUri);
-      }
-
-      const finalUrl = redirectUrl.toString();
-
-      if (this.newtab) {
-        window.open(finalUrl, "_blank");
-      } else {
-        window.location.href = finalUrl;
-      }
+      redirectWithToken({
+        token: token as string,
+        newTab: this.newtab,
+        extraParams: this.redirectUri ? { redirect_uri: this.redirectUri } : undefined,
+      });
     } catch (error) {
       console.error("Error jumping to service:", error);
     } finally {

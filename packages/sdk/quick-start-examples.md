@@ -14,6 +14,7 @@ Table of Contents
       - [Simple Profile Icon with Logout:](#simple-profile-icon-with-logout)
       - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
     - [Quick Start: Modal login](#quick-start-modal-login)
+    - [Quick Start: Account Deletion](#quick-start-account-deletion)
 
 
 
@@ -28,7 +29,7 @@ This example demonstrates a complete authentication flow. The SDK automatically 
   <meta charset="UTF-8">
   <title>Unidy Auth Demo</title>
   <!-- Load Components -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
 </head>
 <body>
 
@@ -118,8 +119,8 @@ This example demonstrates how to implement a newsletter subscription form using 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
   <title>Newsletter Signup</title>
 
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.esm.js"></script>
-  <script nomodule src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.1/dist/sdk/sdk.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.js"></script>
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
@@ -169,9 +170,29 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
     <u-signed-in>
         <u-ticketable-list ticketable-type="ticket" limit="5">
             <template>
-                <div>
-                    <ticketable-value name="title"></ticketable-value>
-                    <ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+                <div class="ticket-card">
+                    <h3><ticketable-value name="title"></ticketable-value></h3>
+                    <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
+                    <p><ticketable-value name="price" format="Price: {{value}}"></ticketable-value></p>
+
+                    <!-- Access nested metadata properties -->
+                    <p><ticketable-value name="metadata.category" default="General"></ticketable-value></p>
+
+                    <!-- Conditional rendering based on metadata -->
+                    <ticketable-conditional when="metadata.vip">
+                        <span class="vip-badge">VIP</span>
+                    </ticketable-conditional>
+
+                    <!-- Export buttons (only show wallet if exportable) -->
+                    <div class="actions">
+                        <u-ticketable-export format="pdf">Download PDF</u-ticketable-export>
+                        <ticketable-conditional when="exportable_to_wallet">
+                            <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+                        </ticketable-conditional>
+                    </div>
+
+                    <!-- Dynamic link using unidy-attr -->
+                    <a unidy-attr unidy-attr-href="{{button_cta_url}}">View Details</a>
                 </div>
             </template>
             <div slot="pagination">
@@ -185,6 +206,13 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 </body>
 </html>
 ```
+
+**Template Features:**
+
+- `<ticketable-value>` - Display values with support for nested paths (`metadata.category`), date formatting, and default values
+- `<ticketable-conditional>` - Conditionally render content based on property truthiness (e.g., show VIP badge only if `metadata.vip` exists)
+- `unidy-attr` - Dynamically set HTML attributes from ticket data (e.g., `unidy-attr-href="{{button_cta_url}}"`)
+- `<u-ticketable-export>` - Export tickets to PDF or Apple Wallet (pkpass)
 
 ### Quick Start: Profile Icon
 
@@ -267,7 +295,7 @@ This example demonstrates how to implement a modal login form using the Unidy SD
   <meta charset="UTF-8">
   <title>Unidy Modal login Demo</title>
   <!-- Load Components -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.7/dist/sdk/sdk.esm.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
 
@@ -393,7 +421,7 @@ This example demonstrates how to implement a modal login form using the Unidy SD
     </u-signed-in>
 
   <script type="module">
-    import { Auth } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@1.0.0-alpha.7/dist/sdk/index.esm.js";
+    import { Auth } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
 
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
@@ -456,3 +484,84 @@ This example demonstrates how to implement a modal login form using the Unidy SD
 </body>
 </html>
 ```
+
+### Quick Start: Account Deletion
+
+This example demonstrates how to allow users to delete their own account by redirecting them to the Unidy profile page where the account deletion option is available.
+
+The `u-jump-to-unidy` component handles authentication automatically - when clicked, it generates a one-time login token and redirects the user to the specified Unidy page.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Deletion Demo</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+</head>
+<body>
+
+  <!-- Configure the SDK -->
+  <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+
+  <!-- Only show to authenticated users -->
+  <u-signed-in>
+    <div class="account-settings">
+      <h2>Account Settings</h2>
+      <p>Manage your account or permanently delete it.</p>
+
+      <!-- Button to navigate to Unidy profile page where account deletion is available -->
+      <u-jump-to-unidy
+        path="/profile#logindata"
+        class-name="delete-account-button">
+        Delete My Account
+      </u-jump-to-unidy>
+    </div>
+  </u-signed-in>
+
+  <!-- Show login prompt for unauthenticated users -->
+  <u-signed-in not>
+    <p>Please sign in to manage your account.</p>
+  </u-signed-in>
+
+  <style>
+    .account-settings {
+      max-width: 400px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    .delete-account-button {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .delete-account-button:hover {
+      background-color: #b91c1c;
+    }
+
+    .delete-account-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+
+</body>
+</html>
+```
+
+**Notes:**
+- The `path="/profile"` directs users to the Unidy profile page where the "Delete Account" option is located
+- The button shows a loading state while generating the authentication token
+- You can also open the page in a new tab by adding the `newtab` attribute: `<u-jump-to-unidy path="/profile" newtab>`
+- For pages that don't require authentication (like terms of service), use the `no-auth` attribute

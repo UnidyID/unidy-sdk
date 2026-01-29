@@ -10,6 +10,78 @@
   <script nomodule src="/build/sdk.js"></script>
   <link rel="stylesheet" href="/sdk.css">
   <link rel="stylesheet" href="/demo.css">
+
+  <style>
+    /* Styling for missing-fields step */
+    u-missing-field u-field {
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    u-missing-field u-field::part(field_label) {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 0.875rem;
+    }
+
+    u-missing-field u-field::part(required-indicator) {
+      color: #ef4444;
+    }
+
+    u-missing-field u-field::part(input_field),
+    u-missing-field u-field::part(textarea_field),
+    u-missing-field u-field::part(select_field) {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    u-missing-field u-field::part(input_field):focus,
+    u-missing-field u-field::part(textarea_field):focus,
+    u-missing-field u-field::part(select_field):focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    u-missing-field u-field::part(field-error-message) {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    u-missing-field u-field::part(radio-group_field) {
+      display: inline-flex;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    u-missing-field u-field::part(radio-group-item_radio) {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    u-missing-field u-field::part(radio-group-item_label) {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      background: #fff;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    u-missing-field u-field::part(radio_checked) {
+      background: #3b82f6;
+      color: #fff;
+    }
+  </style>
 </head>
 
   <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
@@ -254,8 +326,10 @@
       </u-signin-step>
 
       <u-signin-step name="missing-fields">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Complete Your Profile</h2>
+        <p class="text-gray-600 text-sm mb-6 text-center">Please fill in the required information to continue</p>
         <u-missing-field></u-missing-field>
-        <u-missing-fields-submit-button></u-missing-fields-submit-button>
+        <u-missing-fields-submit-button class-name="mt-4 px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg disabled:opacity-50 w-full transition-colors duration-200"></u-missing-fields-submit-button>
       </u-signin-step>
 
       <u-signin-step name="reset-password">
