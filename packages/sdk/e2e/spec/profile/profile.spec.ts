@@ -21,6 +21,8 @@ test.describe("Profile - authenticated user", () => {
     const submitButton = page.getByRole("button", { name: "Submit" });
     await submitButton.click();
 
+    await expect(page.getByText("Profile is updated")).toBeVisible();
+
     await page.reload();
     await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
