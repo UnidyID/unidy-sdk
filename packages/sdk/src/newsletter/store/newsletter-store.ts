@@ -8,6 +8,8 @@ export type NewsletterErrorIdentifier =
   | "newsletter_not_found"
   | "preferences_not_found"
   | "invalid_preference_token"
+  | "internal_server_error"
+  | "user_validation_error"
   | "unknown";
 
 export type NewsletterInternalName = string;

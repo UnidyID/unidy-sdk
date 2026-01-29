@@ -59,7 +59,13 @@ export class ErrorMessage {
   }
 
   private getNewsletterErrorMessage(errorIdentifier: NewsletterErrorIdentifier): string {
-    return t(`newsletter.errors.${errorIdentifier}`) || t("errors.unknown", { defaultValue: "An unknown error occurred" });
+    const translationKey = `newsletter.errors.${errorIdentifier}`;
+    const translated = t(translationKey);
+
+    if (translated !== translationKey) {
+      return translated;
+    }
+    return t("errors.unknown", { defaultValue: "An unknown error occurred" });
   }
 
   private getErrorMessage(errorCode: string): string | null {
@@ -67,6 +73,14 @@ export class ErrorMessage {
       return this.getAuthErrorMessage(errorCode);
     }
 
+    // These are already human-readable messages like "can't be blank"
+    // TODO: we should refactor this to have translations for additional field errors
+    const fieldError = newsletterStore.state.additionalFieldErrors[this.for];
+    if (fieldError) {
+      return fieldError;
+    }
+
+    // Otherwise it's an error identifier that needs translation
     return this.getNewsletterErrorMessage(errorCode as NewsletterErrorIdentifier);
   }
 
@@ -85,8 +99,11 @@ export class ErrorMessage {
   }
 
   private getNewsletterErrorCode(): string | null {
-    const error = newsletterStore.state.errors[this.for];
-    return error ?? null;
+    const newsletterError = newsletterStore.state.errors[this.for];
+    if (newsletterError) return newsletterError;
+
+    const fieldError = newsletterStore.state.additionalFieldErrors[this.for];
+    return fieldError ?? null;
   }
 
   render() {

@@ -197,6 +197,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
   if (error === "newsletter_error" && response) {
     const errors = response.errors || [];
     const errorMap: Record<string, NewsletterErrorIdentifier> = {};
+    const additionalFieldErrors: Record<string, string> = {};
 
     // special error case which is handled differently: if user is not authenticated, we send a login email, otherwise we add the
     // already_subscribed subscriptions to the existing subscriptions
@@ -214,15 +215,27 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       (err) => err.error_identifier === "validation_error" && err.error_details && "email" in err.error_details,
     );
 
+    const userValidationErrors = errors.filter((err) => err.error_identifier === "user_validation_error" && err.error_details);
+    for (const err of userValidationErrors) {
+      for (const [field, messages] of Object.entries(err.error_details || {})) {
+        if (Array.isArray(messages) && messages.length > 0) {
+          additionalFieldErrors[field] = messages[0];
+        }
+      }
+    }
+
     if (hasInvalidEmailError) {
       errorMap.email = "invalid_email";
     } else {
       for (const err of errors) {
+        // Skip user_validation_error - handled via additionalFieldErrors
+        if (err.error_identifier === "user_validation_error") continue;
         errorMap[err.meta.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
       }
     }
 
     newsletterStore.state.errors = errorMap;
+    newsletterStore.state.additionalFieldErrors = additionalFieldErrors;
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }
