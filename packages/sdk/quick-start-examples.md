@@ -569,7 +569,7 @@ The `u-jump-to-unidy` component handles authentication automatically - when clic
 
 ### Quick Start: Profile QR Code
 
-This example demonstrates how to generate a QR code containing user profile data. The QR code encodes profile fields as label:value pairs in JSON format.
+This example demonstrates how to generate a QR code containing user profile data. The QR code encodes a greeting message with the user's name.
 
 ```html
 <!DOCTYPE html>
@@ -579,67 +579,69 @@ This example demonstrates how to generate a QR code containing user profile data
   <title>Profile QR Code Demo</title>
   <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <main class="flex-1 p-8">
 
-  <!-- Configure the SDK -->
-  <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+    <!-- Configure the SDK -->
+    <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key" check-signed-in="true"></u-config>
 
-  <!-- Sign in form -->
-  <u-signin-root id="signin-root" class="max-w-xs mx-auto p-6 bg-white rounded-lg shadow">
-    <!-- See Quick Start: Authentication Flow example above -->
-  </u-signin-root>
+    <div class="max-w-2xl mx-auto">
+      <!-- Show this message when user is NOT signed in -->
+      <u-signed-in not>
+        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <p class="text-gray-700">Please sign in to view your profile QR code.</p>
+        </div>
+      </u-signed-in>
 
-  <!-- Only show to authenticated users -->
-  <u-signed-in>
-    <div class="max-w-xs mx-auto p-6 text-center border border-gray-200 rounded-lg bg-white shadow">
-      <h3 class="mb-2 text-gray-800 font-semibold">Your Profile QR Code</h3>
-      <p class="mb-4 text-gray-500 text-sm">Scan this QR code to view your profile data.</p>
-      <canvas id="profile-qr" class="block mx-auto" width="256" height="256"></canvas>
+      <!-- Show the QR code canvas when user IS signed in -->
+      <u-signed-in>
+        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <!-- Canvas where the QR code will be rendered -->
+          <canvas id="profile-qr" width="256" height="256"></canvas>
+        </div>
+      </u-signed-in>
     </div>
-  </u-signed-in>
+  </main>
 
   <script type="module">
     import QRCode from "https://esm.sh/qrcode@1.5.4";
     import { Auth, getUnidyClient } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
 
-    const signinRoot = document.querySelector("u-signin-root");
     const auth = await Auth.getInstance();
 
-    function generateProfileQR() {
+    async function generateProfileQR() {
       const canvas = document.querySelector("#profile-qr");
-      if (canvas) {
-        getUnidyClient().profile.get().then(([error, data]) => {
-          if (!error && data && Object.keys(data).length > 0) {
-            const profileData = {};
-            for (const [key, field] of Object.entries(data)) {
-              if (key === "custom_attributes") {
-                for (const [, customField] of Object.entries(field)) {
-                  if (customField?.label && customField?.value != null) {
-                    profileData[customField.label] = customField.value;
-                  }
-                }
-              } else if (field?.label && field?.value != null) {
-                profileData[field.label] = field.value;
-              }
-            }
+      if (!canvas) return;
 
-            QRCode.toCanvas(canvas, JSON.stringify(profileData), {
-              width: 256,
-              margin: 2,
-              errorCorrectionLevel: "M",
-            }).catch(console.error);
-          }
+      try {
+        const [error, user] = await getUnidyClient().profile.get();
+        if (error || !user) return;
+
+        const firstName = user.first_name?.value ?? "";
+        const lastName = user.last_name?.value ?? "";
+
+        const text = `hello ${firstName} ${lastName}`;
+
+        await QRCode.toCanvas(canvas, text, {
+          width: 256,
+          margin: 2,
+          errorCorrectionLevel: "M",
         });
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    // Generate QR code after login
-    signinRoot.addEventListener("authEvent", () => {
-      generateProfileQR();
-    });
-
-    // Generate QR code if already authenticated
     window.addEventListener("appload", () => {
+
       auth.isAuthenticated().then((isAuthenticated) => {
         if (isAuthenticated) {
           generateProfileQR();
@@ -647,14 +649,12 @@ This example demonstrates how to generate a QR code containing user profile data
       });
     });
   </script>
-
 </body>
 </html>
 ```
 
 **Notes:**
-- The QR code encodes profile data as JSON with `label: value` pairs
-- Custom attributes are also included in the QR code
+- The QR code encodes a simple greeting with the user's first and last name
 - The `qrcode` library is loaded from esm.sh CDN
-- The QR code is generated both on page load (if authenticated) and after login via the `authEvent`
+- The QR code is generated on `appload` if the user is authenticated
 - You can adjust QR code options like `width`, `margin`, and `errorCorrectionLevel` as needed
