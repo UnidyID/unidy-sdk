@@ -17,7 +17,7 @@ function buildAdditionalFieldsPayload(additionalFields: AdditionalFieldsData): R
   const payload: Record<string, unknown> = {};
 
   for (const [key, node] of Object.entries(additionalFields)) {
-    if (node.value === undefined || node.value === null || node.value === "") continue;
+    if (node.value === undefined || node.value === null || (typeof node.value === "string" && node.value.trim() === "")) continue;
 
     if (key.startsWith("custom_attributes.")) {
       // custom attributes
