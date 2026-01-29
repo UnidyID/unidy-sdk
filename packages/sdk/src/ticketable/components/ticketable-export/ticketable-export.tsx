@@ -5,7 +5,7 @@ import type { ExportFormat } from "../../api/schemas";
 
 @Component({ tag: "u-ticketable-export", shadow: false })
 export class TicketableExport extends UnidyComponent {
-  @Element() element: HTMLElement;
+  @Element() el: HTMLElement;
 
   @Prop() format!: ExportFormat;
   @Prop() customClass?: string;
@@ -17,8 +17,8 @@ export class TicketableExport extends UnidyComponent {
   @Event() uTicketableExportError!: EventEmitter<{ error: string }>;
 
   private getTicketableInfo(): { id: string; type: "ticket" | "subscription" } | null {
-    const id = this.element.getAttribute("data-ticketable-id");
-    const type = this.element.getAttribute("data-ticketable-type") as "ticket" | "subscription" | null;
+    const id = this.el.getAttribute("data-ticketable-id");
+    const type = this.el.getAttribute("data-ticketable-type") as "ticket" | "subscription" | null;
 
     if (!id || !type) {
       this.logger.warn("Missing ticketable-id or ticketable-type attributes");

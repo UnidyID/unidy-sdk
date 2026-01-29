@@ -5,7 +5,7 @@ import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })
 export class PaginationButton extends UnidyComponent {
-  @Element() element: HTMLElement;
+  @Element() el: HTMLElement;
 
   @Prop() direction: "prev" | "next" = "next";
   @Prop() customClass?: string;
@@ -16,7 +16,7 @@ export class PaginationButton extends UnidyComponent {
   private unsubscribe: (() => void) | null = null;
 
   componentWillLoad() {
-    this.store = this.element.closest("u-ticketable-list")?.store;
+    this.store = this.el.closest("u-ticketable-list")?.store;
     if (!this.store) {
       this.logger.warn("TicketableList component not found");
       return;
@@ -36,7 +36,7 @@ export class PaginationButton extends UnidyComponent {
   }
 
   private handleClick = () => {
-    const parent = this.element.closest("u-ticketable-list");
+    const parent = this.el.closest("u-ticketable-list");
     if (!parent || !this.paginationMeta) {
       return;
     }

@@ -88,8 +88,8 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
         return this.__logger;
       }
 
-      // biome-ignore lint/suspicious/noExplicitAny: Stencil's @Element() decorator adds `el` or `element` at runtime
-      const el = ((this as any).el || (this as any).element) as HTMLElement | undefined;
+      // biome-ignore lint/suspicious/noExplicitAny: Stencil's @Element() decorator adds `el` at runtime
+      const el = (this as any).el as HTMLElement | undefined;
       const tagName = el?.tagName?.toLowerCase();
 
       if (tagName) {

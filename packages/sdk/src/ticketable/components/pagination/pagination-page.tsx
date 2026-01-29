@@ -5,7 +5,7 @@ import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-page", shadow: false })
 export class PaginationPage extends UnidyComponent {
-  @Element() element: HTMLElement;
+  @Element() el: HTMLElement;
 
   @Prop() customClass?: string;
 
@@ -15,7 +15,7 @@ export class PaginationPage extends UnidyComponent {
   private unsubscribe: (() => void) | null = null;
 
   componentWillLoad() {
-    this.store = this.element.closest("u-ticketable-list")?.store;
+    this.store = this.el.closest("u-ticketable-list")?.store;
     if (!this.store) {
       this.logger.warn("TicketableList component not found");
       return;

@@ -84,7 +84,7 @@ async function loadLocales() {
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent {
-  @Element() element: HTMLElement;
+  @Element() el: HTMLElement;
 
   private unsubscribeAuth?: () => void;
 
@@ -406,7 +406,7 @@ export class TicketableList extends UnidyComponent {
   }
 
   private renderToTarget() {
-    const template = this.element.querySelector("template");
+    const template = this.el.querySelector("template");
     if (!template) return;
 
     const targetElement = document.querySelector(this.target);
@@ -447,7 +447,7 @@ export class TicketableList extends UnidyComponent {
       );
     }
 
-    const template = this.element.querySelector("template");
+    const template = this.el.querySelector("template");
     if (!template) {
       this.logger.error("template not found");
       return <h1>No template found - fix config</h1>;
