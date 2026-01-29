@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Event, type EventEmitter, h, Prop, Watch } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, h, Prop, Watch } from "@stencil/core";
 import { getUnidyClient } from "../../../api/";
 import { Auth } from "../../../auth";
 import i18n from "../../../i18n";
@@ -30,6 +30,8 @@ type TranslationTree = {
   shadow: false,
 })
 export class UnidyConfig extends UnidyComponent {
+  @Element() el!: HTMLElement;
+
   @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";

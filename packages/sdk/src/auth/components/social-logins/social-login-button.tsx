@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Host, h, Prop } from "@stencil/core";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { unidyState } from "../../../shared/store/unidy-store";
@@ -28,6 +28,8 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: false,
 })
 export class SocialLoginButton extends UnidyComponent {
+  @Element() el!: HTMLElement;
+
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
   @Prop() iconOnly = false;

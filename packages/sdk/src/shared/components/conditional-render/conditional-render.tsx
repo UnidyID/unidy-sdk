@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop } from "@stencil/core";
+import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { type AuthState, authState } from "../../../auth/store/auth-store";
 import { UnidyComponent } from "../../../logger";
 import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
@@ -42,6 +42,8 @@ function isTruthy(value: unknown): boolean {
   shadow: false,
 })
 export class ConditionalRender extends UnidyComponent {
+  @Element() el!: HTMLElement;
+
   @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;

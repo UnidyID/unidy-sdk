@@ -83,10 +83,23 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
     __logger: Logger | null = null;
 
     get logger(): Logger {
-      if (!this.__logger) {
-        this.__logger = createLogger(this.constructor.name);
+      // Return cached logger if available
+      if (this.__logger) {
+        return this.__logger;
       }
-      return this.__logger;
+
+      // biome-ignore lint/suspicious/noExplicitAny: Stencil's @Element() decorator adds `el` or `element` at runtime
+      const el = ((this as any).el || (this as any).element) as HTMLElement | undefined;
+      const tagName = el?.tagName?.toLowerCase();
+
+      if (tagName) {
+        // Cache only when we have the tag name (minification-safe)
+        this.__logger = createLogger(tagName);
+        return this.__logger;
+      }
+
+      // This indicates logger was accessed too early (before Stencil assigned el)
+      return createLogger("component:early-access");
     }
   }
   return LoggerMixin;
