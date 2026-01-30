@@ -73,15 +73,28 @@ export class ErrorMessage {
       return this.getAuthErrorMessage(errorCode);
     }
 
-    // These are already human-readable messages like "can't be blank"
-    // TODO: we should refactor this to have translations for additional field errors
     const fieldError = newsletterStore.state.additionalFieldErrors[this.for];
     if (fieldError) {
-      return fieldError;
+      return this.translateValidationError(fieldError);
     }
 
-    // Otherwise it's an error identifier that needs translation
     return this.getNewsletterErrorMessage(errorCode as NewsletterErrorIdentifier);
+  }
+
+  private translateValidationError(errorIdentifier: string): string {
+    const fieldSpecificKey = `errors.${this.for}.${errorIdentifier}`;
+    const fieldSpecific = t(fieldSpecificKey);
+    if (fieldSpecific !== fieldSpecificKey) {
+      return fieldSpecific;
+    }
+
+    const genericKey = `errors.validation.${errorIdentifier}`;
+    const generic = t(genericKey);
+    if (generic !== genericKey) {
+      return generic;
+    }
+
+    return t("errors.unknown", { defaultValue: "An unknown error occurred" });
   }
 
   private getAuthErrorCode(): string | null {
