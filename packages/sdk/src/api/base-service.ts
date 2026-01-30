@@ -1,6 +1,6 @@
 import * as z from "zod";
 import type { ApiResponse, QueryParams } from "./base-client";
-import { SchemaValidationErrorSchema, type SchemaValidationError } from "./shared";
+import { type SchemaValidationError, SchemaValidationErrorSchema } from "./shared";
 
 /**
  * Minimal logger interface that services depend on

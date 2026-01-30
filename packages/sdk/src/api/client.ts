@@ -3,7 +3,7 @@ import { unidyState } from "../shared/store/unidy-store";
 import { BaseApiClient } from "./base-client";
 
 // Re-export types from base-client for backwards compatibility
-export type { ApiResponse, ApiClientConfig, QueryParams } from "./base-client";
+export type { ApiClientConfig, ApiResponse, QueryParams } from "./base-client";
 
 /**
  * Browser-specific API client with CORS mode and Sentry error reporting.

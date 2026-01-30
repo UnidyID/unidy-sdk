@@ -57,7 +57,7 @@ test.describe("Profile - unauthenticated user", () => {
 
   test("profile page shows signed out state", async ({ page }) => {
     await page.goto(routes.profile);
-    await expect(page.getByText("You need to sign in to view")).toBeVisible();
+    await expect(page.getByText("You need to sign in to view your profile")).toBeVisible();
     await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
   });
 });

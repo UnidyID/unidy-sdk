@@ -1,23 +1,23 @@
 import * as Sentry from "@sentry/browser";
-import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
+import { Auth } from "../auth/auth";
+import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
-import { createLogger } from "../logger";
 import type { ServiceDependencies } from "./base-service";
-import { Auth } from "../auth/auth";
+import { ApiClient, ApiResponse } from "./client";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
-export * from "./shared";
-export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
-export { StandaloneApiClient, StandaloneUnidyClient, createStandaloneClient } from "./standalone";
+export * from "./base-service";
+export * from "./shared";
 export type { StandaloneUnidyClientConfig } from "./standalone";
+export { createStandaloneClient, StandaloneApiClient, StandaloneUnidyClient } from "./standalone";
 
 /** Default browser dependencies using Sentry and the SDK logger */
 function createBrowserDeps(serviceName: string): ServiceDependencies {
