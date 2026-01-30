@@ -4,7 +4,7 @@ import { UnidyComponent } from "../../../logger";
 import type { ExportFormat } from "../../api/schemas";
 
 @Component({ tag: "u-ticketable-export", shadow: false })
-export class TicketableExport extends UnidyComponent {
+export class TicketableExport extends UnidyComponent() {
   @Element() element: HTMLElement;
 
   @Prop() format!: ExportFormat;

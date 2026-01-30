@@ -92,8 +92,19 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
   return LoggerMixin;
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: Mixin factory types require any
+type MixinFactory = <B extends MixedInCtor>(Base?: B) => any;
+
 /**
- * Base class for Unidy Stencil components that provides logging functionality.
+ * Interface for the logger functionality provided by UnidyComponent mixin.
+ */
+export interface WithLogger {
+  logger: Logger;
+}
+
+/**
+ * Base class factory for Unidy Stencil components that provides logging functionality
+ * and allows composing additional mixins.
  * Components extending this class get a `this.logger` property that automatically
  * prefixes log messages with the component's class name.
  *
@@ -101,15 +112,24 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
  * ```tsx
  * import { UnidyComponent } from '../logger';
  *
+ * // Basic usage (logger only)
  * @Component({ tag: 'my-component' })
- * export class MyComponent extends UnidyComponent {
+ * export class MyComponent extends UnidyComponent() {
  *   componentDidLoad() {
  *     this.logger.debug('Component loaded');
  *   }
  * }
+ *
+ * // With additional mixins
+ * @Component({ tag: 'my-component' })
+ * export class MyComponent extends UnidyComponent(hasSlotFactory, otherMixin) {
+ *   // Has both logger and hasSlot functionality
+ * }
  * ```
  */
-export const UnidyComponent = Mixin(loggerFactory);
+export const UnidyComponent = <T extends MixinFactory[]>(...mixins: T): MixedInCtor<WithLogger> => {
+  return Mixin(loggerFactory, ...mixins) as unknown as MixedInCtor<WithLogger>;
+};
 
 // Global logger for non-class contexts (backwards compatibility)
 export const logger = createLogger("");
