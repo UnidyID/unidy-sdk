@@ -1,4 +1,4 @@
-import { type MixedInCtor, Mixin } from "@stencil/core";
+import { getElement, type MixedInCtor, Mixin } from "@stencil/core";
 import type { LoggerModule } from "i18next";
 
 declare global {
@@ -84,7 +84,7 @@ export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) =>
 
     get logger(): Logger {
       if (!this.__logger) {
-        this.__logger = createLogger(this.constructor.name);
+        this.__logger = createLogger(getElement(this).localName);
       }
       return this.__logger;
     }
