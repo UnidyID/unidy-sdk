@@ -1,7 +1,8 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { t } from "../../../i18n";
-import { logger, UnidyComponent } from "../../../logger";
+import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { clearUrlParam } from "../../../shared/component-utils";
 import { Flash } from "../../../shared/store/flash-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";

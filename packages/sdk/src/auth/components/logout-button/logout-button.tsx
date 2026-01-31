@@ -1,7 +1,7 @@
 import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
-import { HasSlotFactory } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotFactory } from "../../../shared/base/has-slot-content";
 import { Auth } from "../../auth";
 
 @Component({

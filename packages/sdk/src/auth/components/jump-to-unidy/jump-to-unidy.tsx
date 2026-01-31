@@ -1,8 +1,9 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
-import { HasSlotFactory, renderButtonContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { renderButtonContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";

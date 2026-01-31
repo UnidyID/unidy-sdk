@@ -1,7 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
-import { HasSlotFactory } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotFactory } from "../../../shared/base/has-slot-content";
 import { Flash } from "../../../shared/store/flash-store";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";

@@ -1,10 +1,10 @@
 import { Component, h, Prop } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
-import { HasSlotFactory } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotFactory } from "../../../shared/base/has-slot-content";
 import type { TokenResponse } from "../../api/auth";
 import { authState, authStore } from "../../store/auth-store";
 
@@ -43,7 +43,7 @@ export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotFactory) {
     authStore.setToken(jwt);
 
     // Emit authEvent to allow modal-based logins to close after successful submission
-    this.el.dispatchEvent(new CustomEvent("authEvent", { detail: { jwt }, bubbles: true, composed: true }));
+    this.element.dispatchEvent(new CustomEvent("authEvent", { detail: { jwt }, bubbles: true, composed: true }));
   }
 
   render() {

@@ -1,6 +1,6 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
-import { UnidyComponent } from "../../../logger";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { UnidyComponent } from "../../../shared/base/component";
 import { type ComponentContext, detectContext } from "../../../shared/context-utils";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
 import { Input } from "../raw-input-fields/Input";

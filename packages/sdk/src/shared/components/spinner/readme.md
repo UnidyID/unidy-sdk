@@ -96,13 +96,11 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
 ### Used by
 
- - [u-error-message](../error-message)
  - [u-jump-to-service](../../../auth/components/jump-to-service)
  - [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
  - [u-logout-button](../../../auth/components/logout-button)
  - [u-magic-code-field](../../../auth/components/magic-code-field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
- - [u-newsletter-logout-button](../../../newsletter/components/logout-button)
  - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
  - [u-newsletter-root](../../../newsletter/components/newsletter-root)
  - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
@@ -114,13 +112,11 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 ### Graph
 ```mermaid
 graph TD;
-  u-error-message --> u-spinner
   u-jump-to-service --> u-spinner
   u-jump-to-unidy --> u-spinner
   u-logout-button --> u-spinner
   u-magic-code-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
-  u-newsletter-logout-button --> u-spinner
   u-newsletter-resend-doi-button --> u-spinner
   u-newsletter-root --> u-spinner
   u-newsletter-toggle-subscription-button --> u-spinner

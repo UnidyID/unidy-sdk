@@ -1,10 +1,11 @@
 import { Component, h, Prop } from "@stencil/core";
 import { type AuthButtonFor, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { HasSlotFactory, renderButtonContent } from "../../component-utils";
+import { UnidyComponent } from "../../base/component";
+import { HasSlotFactory } from "../../base/has-slot-content";
+import { renderButtonContent } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -40,11 +41,11 @@ export class SubmitButton extends UnidyComponent(HasSlotFactory) {
   }
 
   private detectContext(): "auth" | "profile" | "newsletter" {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
+    if (this.element.closest("u-signin-root") || this.element.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile")) return "profile";
+    if (this.element.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root")) return "newsletter";
+    if (this.element.closest("u-newsletter-root")) return "newsletter";
 
     throw new Error(
       "No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
@@ -52,7 +53,7 @@ export class SubmitButton extends UnidyComponent(HasSlotFactory) {
   }
 
   private handleClick = async (event: MouseEvent) => {
-    await this.contextModule.handleClick(event, this.el, this.for);
+    await this.contextModule.handleClick(event, this.element, this.for);
   };
 
   private isDisabled(): boolean {
