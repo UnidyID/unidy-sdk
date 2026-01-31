@@ -8,6 +8,8 @@ export type NewsletterErrorIdentifier =
   | "newsletter_not_found"
   | "preferences_not_found"
   | "invalid_preference_token"
+  | "internal_server_error"
+  | "user_validation_error"
   | "unknown";
 
 export type NewsletterInternalName = string;
@@ -23,11 +25,19 @@ export type CheckedNewsletters = Record<NewsletterInternalName, PreferenceIdenti
 
 export type DefaultPreferences = Record<NewsletterInternalName, Set<PreferenceIdentifier>>;
 
+export interface AdditionalFieldNode {
+  value?: string | string[];
+  type?: string;
+}
+export type AdditionalFieldsData = Record<string, AdditionalFieldNode>;
+
 interface NewsletterState {
   email: string;
   preferenceToken: string;
   checkedNewsletters: CheckedNewsletters;
   defaultPreferences: DefaultPreferences;
+  additionalFields: AdditionalFieldsData;
+  additionalFieldErrors: Record<string, string>;
 
   fetchingSubscriptions: boolean;
   existingSubscriptions: ExistingSubscription[];
@@ -54,6 +64,8 @@ const initialState: NewsletterState = {
   preferenceToken: getPersistedValue("preferenceToken") ?? "",
   checkedNewsletters: {},
   defaultPreferences: {},
+  additionalFields: {},
+  additionalFieldErrors: {},
 
   fetchingSubscriptions: false,
   existingSubscriptions: [],

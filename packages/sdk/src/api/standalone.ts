@@ -1,8 +1,8 @@
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter/api/newsletters";
 import { ProfileService } from "../profile/api/profile";
-import { TicketsService } from "../ticketable/api/tickets";
 import { SubscriptionsService } from "../ticketable/api/subscriptions";
+import { TicketsService } from "../ticketable/api/tickets";
 import { BaseApiClient } from "./base-client";
 import type { ServiceDependencies } from "./base-service";
 
@@ -35,29 +35,28 @@ import type { ServiceDependencies } from "./base-service";
  * ```
  */
 
-// Re-export service classes
-export { AuthService } from "../auth/api/auth";
-export { NewsletterService } from "../newsletter/api/newsletters";
-export { ProfileService } from "../profile/api/profile";
-export { TicketsService } from "../ticketable/api/tickets";
-export { SubscriptionsService } from "../ticketable/api/subscriptions";
-
 // Re-export types
 export type * from "../auth/api/auth";
+// Re-export service classes
+export { AuthService } from "../auth/api/auth";
 export type * from "../newsletter/api/newsletters";
+export { NewsletterService } from "../newsletter/api/newsletters";
 export type * from "../profile/api/profile";
-export type * from "../ticketable/api/tickets";
+export { ProfileService } from "../profile/api/profile";
 export type * from "../ticketable/api/subscriptions";
-export type { SchemaValidationError, PaginationMeta, PaginationParams } from "./shared";
+export { SubscriptionsService } from "../ticketable/api/subscriptions";
+export type * from "../ticketable/api/tickets";
+export { TicketsService } from "../ticketable/api/tickets";
+export type { ApiClientConfig, ApiResponse, QueryParams } from "./base-client";
 export type {
-  CommonErrors,
-  ServiceResult,
-  Logger,
-  ErrorReporter,
-  ServiceDependencies,
   ApiClientInterface,
+  CommonErrors,
+  ErrorReporter,
+  Logger,
+  ServiceDependencies,
+  ServiceResult,
 } from "./base-service";
-export type { ApiResponse, ApiClientConfig, QueryParams } from "./base-client";
+export type { PaginationMeta, PaginationParams, SchemaValidationError } from "./shared";
 
 /**
  * Standalone API client without browser-specific dependencies.

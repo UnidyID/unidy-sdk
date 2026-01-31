@@ -1,18 +1,18 @@
 import type { ApiResponse } from "../../api/base-client";
-import { BaseService, type ApiClientInterface, type CommonErrors, type ServiceDependencies, type Payload } from "../../api/base-service";
+import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
 import {
+  type ProfileErrorResponse,
   ProfileErrorResponseSchema,
+  type UserProfileData,
+  type UserProfileFormError,
   UserProfileFormErrorSchema,
   UserProfileRailsFormErrorSchema,
   UserProfileSchema,
-  type ProfileErrorResponse,
-  type UserProfileData,
-  type UserProfileFormError,
 } from "./schemas";
 
+export type { ProfileErrorResponse, UserProfileData, UserProfileFormError } from "./schemas";
 // Re-export types and schemas for external use
 export { UserProfileSchema } from "./schemas";
-export type { UserProfileData, ProfileErrorResponse, UserProfileFormError } from "./schemas";
 
 // Payload type for update (flexible object)
 export type UpdateProfilePayload = Record<string, unknown>;

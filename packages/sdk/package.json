@@ -33,7 +33,9 @@
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
     "type": "tsc --noEmit",
+    "e2e:configure": "bun run e2e/scripts/configure-e2e.ts",
     "e2e": "playwright test",
+    "e2e:ci": "bun run e2e:configure && playwright test --ui",
     "e2e:ui": "playwright test --ui",
     "e2e:headed": "playwright test --headed"
   },

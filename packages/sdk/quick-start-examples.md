@@ -15,6 +15,7 @@ Table of Contents
       - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
     - [Quick Start: Modal login](#quick-start-modal-login)
     - [Quick Start: Account Deletion](#quick-start-account-deletion)
+    - [Quick Start: Profile QR Code](#quick-start-profile-qr-code)
 
 
 
@@ -170,9 +171,29 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
     <u-signed-in>
         <u-ticketable-list ticketable-type="ticket" limit="5">
             <template>
-                <div>
-                    <ticketable-value name="title"></ticketable-value>
-                    <ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+                <div class="ticket-card">
+                    <h3><ticketable-value name="title"></ticketable-value></h3>
+                    <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
+                    <p><ticketable-value name="price" format="Price: {{value}}"></ticketable-value></p>
+
+                    <!-- Access nested metadata properties -->
+                    <p><ticketable-value name="metadata.category" default="General"></ticketable-value></p>
+
+                    <!-- Conditional rendering based on metadata -->
+                    <ticketable-conditional when="metadata.vip">
+                        <span class="vip-badge">VIP</span>
+                    </ticketable-conditional>
+
+                    <!-- Export buttons (only show wallet if exportable) -->
+                    <div class="actions">
+                        <u-ticketable-export format="pdf">Download PDF</u-ticketable-export>
+                        <ticketable-conditional when="exportable_to_wallet">
+                            <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+                        </ticketable-conditional>
+                    </div>
+
+                    <!-- Dynamic link using unidy-attr -->
+                    <a unidy-attr unidy-attr-href="{{button_cta_url}}">View Details</a>
                 </div>
             </template>
             <div slot="pagination">
@@ -186,6 +207,13 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 </body>
 </html>
 ```
+
+**Template Features:**
+
+- `<ticketable-value>` - Display values with support for nested paths (`metadata.category`), date formatting, and default values
+- `<ticketable-conditional>` - Conditionally render content based on property truthiness (e.g., show VIP badge only if `metadata.vip` exists)
+- `unidy-attr` - Dynamically set HTML attributes from ticket data (e.g., `unidy-attr-href="{{button_cta_url}}"`)
+- `<u-ticketable-export>` - Export tickets to PDF or Apple Wallet (pkpass)
 
 ### Quick Start: Profile Icon
 
@@ -538,3 +566,95 @@ The `u-jump-to-unidy` component handles authentication automatically - when clic
 - The button shows a loading state while generating the authentication token
 - You can also open the page in a new tab by adding the `newtab` attribute: `<u-jump-to-unidy path="/profile" newtab>`
 - For pages that don't require authentication (like terms of service), use the `no-auth` attribute
+
+### Quick Start: Profile QR Code
+
+This example demonstrates how to generate a QR code containing user profile data. The QR code encodes a greeting message with the user's name.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile QR Code Demo</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <main class="flex-1 p-8">
+
+    <!-- Configure the SDK -->
+    <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key" check-signed-in="true"></u-config>
+
+    <div class="max-w-2xl mx-auto">
+      <!-- Show this message when user is NOT signed in -->
+      <u-signed-in not>
+        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <p class="text-gray-700">Please sign in to view your profile QR code.</p>
+        </div>
+      </u-signed-in>
+
+      <!-- Show the QR code canvas when user IS signed in -->
+      <u-signed-in>
+        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <!-- Canvas where the QR code will be rendered -->
+          <canvas id="profile-qr" width="256" height="256"></canvas>
+        </div>
+      </u-signed-in>
+    </div>
+  </main>
+
+  <script type="module">
+    import QRCode from "https://esm.sh/qrcode@1.5.4";
+    import { Auth, getUnidyClient } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
+
+    const auth = await Auth.getInstance();
+
+    async function generateProfileQR() {
+      const canvas = document.querySelector("#profile-qr");
+      if (!canvas) return;
+
+      try {
+        const [error, user] = await getUnidyClient().profile.get();
+        if (error || !user) return;
+
+        const firstName = user.first_name?.value ?? "";
+        const lastName = user.last_name?.value ?? "";
+
+        const text = `hello ${firstName} ${lastName}`;
+
+        await QRCode.toCanvas(canvas, text, {
+          width: 256,
+          margin: 2,
+          errorCorrectionLevel: "M",
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    window.addEventListener("appload", () => {
+
+      auth.isAuthenticated().then((isAuthenticated) => {
+        if (isAuthenticated) {
+          generateProfileQR();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+**Notes:**
+- The QR code encodes a simple greeting with the user's first and last name
+- The `qrcode` library is loaded from esm.sh CDN
+- The QR code is generated on `appload` if the user is authenticated
+- You can adjust QR code options like `width`, `margin`, and `errorCorrectionLevel` as needed

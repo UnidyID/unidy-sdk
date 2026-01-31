@@ -3,6 +3,7 @@ import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { Flash } from "../shared/store/flash-store";
 import {
+  type AdditionalFieldsData,
   type CheckedNewsletters,
   type ExistingSubscription,
   type NewsletterErrorIdentifier,
@@ -11,6 +12,26 @@ import {
 } from "./store/newsletter-store";
 
 const logger = createLogger("NewsletterHelpers");
+
+function buildAdditionalFieldsPayload(additionalFields: AdditionalFieldsData): Record<string, unknown> {
+  const payload: Record<string, unknown> = {};
+
+  for (const [key, node] of Object.entries(additionalFields)) {
+    if (node.value === undefined || node.value === null || (typeof node.value === "string" && node.value.trim() === "")) continue;
+
+    if (key.startsWith("custom_attributes.")) {
+      // custom attributes
+      const attrKey = key.replace("custom_attributes.", "");
+      payload.custom_attributes = payload.custom_attributes || {};
+      (payload.custom_attributes as Record<string, unknown>)[attrKey] = node.value;
+    } else {
+      // standard user attributes
+      payload[key] = node.value;
+    }
+  }
+
+  return payload;
+}
 
 const PERSIST_KEY_PREFIX = "unidy_newsletter_";
 
@@ -133,7 +154,9 @@ async function handleAlreadySubscribedError(
 }
 
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
-  const { checkedNewsletters } = newsletterStore.state;
+  const { checkedNewsletters, additionalFields } = newsletterStore.state;
+
+  const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
 
   const [error, response] = await getUnidyClient().newsletters.create({
     payload: {
@@ -143,6 +166,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
         preference_identifiers: checkedNewsletters[newsletter] || [],
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
+      ...(Object.keys(additionalFieldsPayload).length > 0 && { additional_fields: additionalFieldsPayload }),
     },
   });
 
@@ -173,6 +197,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
   if (error === "newsletter_error" && response) {
     const errors = response.errors || [];
     const errorMap: Record<string, NewsletterErrorIdentifier> = {};
+    const additionalFieldErrors: Record<string, string> = {};
 
     // special error case which is handled differently: if user is not authenticated, we send a login email, otherwise we add the
     // already_subscribed subscriptions to the existing subscriptions
@@ -190,15 +215,27 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       (err) => err.error_identifier === "validation_error" && err.error_details && "email" in err.error_details,
     );
 
+    const userValidationErrors = errors.filter((err) => err.error_identifier === "user_validation_error" && err.error_details);
+    for (const err of userValidationErrors) {
+      for (const [field, messages] of Object.entries(err.error_details || {})) {
+        if (Array.isArray(messages) && messages.length > 0) {
+          additionalFieldErrors[field] = messages[0];
+        }
+      }
+    }
+
     if (hasInvalidEmailError) {
       errorMap.email = "invalid_email";
     } else {
       for (const err of errors) {
+        // Skip user_validation_error - handled via additionalFieldErrors
+        if (err.error_identifier === "user_validation_error") continue;
         errorMap[err.meta.newsletter_internal_name] = err.error_identifier as NewsletterErrorIdentifier;
       }
     }
 
     newsletterStore.state.errors = errorMap;
+    newsletterStore.state.additionalFieldErrors = additionalFieldErrors;
   } else {
     Flash.error.addMessage(t("errors.unknown", { defaultValue: "An unknown error occurred" }));
   }

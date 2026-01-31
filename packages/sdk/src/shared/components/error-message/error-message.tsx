@@ -59,7 +59,13 @@ export class ErrorMessage {
   }
 
   private getNewsletterErrorMessage(errorIdentifier: NewsletterErrorIdentifier): string {
-    return t(`newsletter.errors.${errorIdentifier}`) || t("errors.unknown", { defaultValue: "An unknown error occurred" });
+    const translationKey = `newsletter.errors.${errorIdentifier}`;
+    const translated = t(translationKey);
+
+    if (translated !== translationKey) {
+      return translated;
+    }
+    return t("errors.unknown", { defaultValue: "An unknown error occurred" });
   }
 
   private getErrorMessage(errorCode: string): string | null {
@@ -67,7 +73,28 @@ export class ErrorMessage {
       return this.getAuthErrorMessage(errorCode);
     }
 
+    const fieldError = newsletterStore.state.additionalFieldErrors[this.for];
+    if (fieldError) {
+      return this.translateValidationError(fieldError);
+    }
+
     return this.getNewsletterErrorMessage(errorCode as NewsletterErrorIdentifier);
+  }
+
+  private translateValidationError(errorIdentifier: string): string {
+    const fieldSpecificKey = `errors.${this.for}.${errorIdentifier}`;
+    const fieldSpecific = t(fieldSpecificKey);
+    if (fieldSpecific !== fieldSpecificKey) {
+      return fieldSpecific;
+    }
+
+    const genericKey = `errors.validation.${errorIdentifier}`;
+    const generic = t(genericKey);
+    if (generic !== genericKey) {
+      return generic;
+    }
+
+    return t("errors.unknown", { defaultValue: "An unknown error occurred" });
   }
 
   private getAuthErrorCode(): string | null {
@@ -85,8 +112,11 @@ export class ErrorMessage {
   }
 
   private getNewsletterErrorCode(): string | null {
-    const error = newsletterStore.state.errors[this.for];
-    return error ?? null;
+    const newsletterError = newsletterStore.state.errors[this.for];
+    if (newsletterError) return newsletterError;
+
+    const fieldError = newsletterStore.state.additionalFieldErrors[this.for];
+    return fieldError ?? null;
   }
 
   render() {
@@ -100,7 +130,7 @@ export class ErrorMessage {
       shouldShow = false;
     }
 
-    const errorMessage = shouldShow ? this.getErrorMessage(errorCode!) : null;
+    const errorMessage = shouldShow ? this.getErrorMessage(errorCode) : null;
     const formattedMessage = errorMessage?.includes("\n") ? <div style={{ whiteSpace: "pre-line" }}>{errorMessage}</div> : errorMessage;
 
     // For shadow: false components with slots, we must always render Host but use hidden/display

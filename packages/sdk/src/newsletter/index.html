@@ -196,8 +196,10 @@
       </u-conditional-render>
 
       <u-conditional-render when="newsletter.loggedIn" not>
-        <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></u-email-field>
-        <u-error-message for="email" class-name="text-red-500 text-sm"></u-error-message>
+        <div class="flex flex-col gap-3">
+          <u-email-field class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></u-email-field>
+          <u-error-message for="email" class-name="text-red-500 text-sm"></u-error-message>
+        </div>
 
         <u-conditional-render when="newsletter.hasEmail">
           <div class="flex items-center gap-3 mt-2">
@@ -284,7 +286,38 @@
             <u-error-message for="test" class-name="text-red-500 text-sm"></u-error-message>
           </div>
 
-          <div class="flex flex-col gap-2 mt-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
+          <div class="flex flex-col gap-3">
+            <p class="text-gray-600 text-sm font-medium">Additional fields</p>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex flex-col gap-1">
+                <u-raw-field
+                  field="first_name"
+                  type="text"
+                  placeholder="First name"
+                  class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </u-raw-field>
+                <u-error-message for="first_name" class-name="text-red-500 text-sm"></u-error-message>
+              </div>
+              <div class="flex flex-col gap-1">
+                <u-raw-field
+                  field="last_name"
+                  type="text"
+                  placeholder="Last name"
+                  class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </u-raw-field>
+                <u-error-message for="last_name" class-name="text-red-500 text-sm"></u-error-message>
+              </div>
+            </div>
+            <u-raw-field
+              field="phone_number"
+              type="tel"
+              placeholder="Phone number (optional)"
+              class-name="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </u-raw-field>
+            <u-error-message for="phone_number" class-name="text-red-500 text-sm"></u-error-message>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
             <label class="flex items-start gap-3 cursor-pointer">
               <u-newsletter-consent-checkbox data-testid="nl.consent.checkbox"
                 class-name="w-4 h-4 mt-0.5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">

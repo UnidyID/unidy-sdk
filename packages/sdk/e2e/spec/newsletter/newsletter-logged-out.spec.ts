@@ -64,7 +64,7 @@ test.describe("Newsletter (logged out)", () => {
     if (!main) throw new Error("Newsletter 'main' not found");
 
     const preferences = new Database("NewsletterPreference");
-    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" } as any);
+    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" });
     if (!prefClubNews) throw new Error("Preference 'club_news' not found");
 
     const subscription = await newsletterSubscriptions.create({
@@ -97,7 +97,7 @@ test.describe("Newsletter (logged out)", () => {
     if (!main) throw new Error("Newsletter 'main' not found");
 
     const preferences = new Database("NewsletterPreference");
-    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" } as any);
+    const prefClubNews = await preferences.getBy({ plugin_identifier: "club_news" });
     if (!prefClubNews) throw new Error("Preference 'club_news' not found");
 
     const subscription = await newsletterSubscriptions.create({

@@ -41,7 +41,7 @@ function isTruthy(value: unknown): boolean {
   tag: "u-conditional-render",
   shadow: false,
 })
-export class ConditionalRender extends UnidyComponent {
+export class ConditionalRender extends UnidyComponent() {
   @Prop() when?: string; // condition to check
   @Prop() is?: string; // optional value to compare against
   @Prop() not = false;
