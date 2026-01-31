@@ -1,20 +1,24 @@
-import { h } from "@stencil/core";
+import { type MixedInCtor, h } from "@stencil/core";
+
+/**
+ * Interface for the hasSlot functionality provided by the HasSlotFactory mixin.
+ */
+export interface WithHasSlot {
+  hasSlot: boolean;
+  checkSlotContent(element: HTMLElement): void;
+}
 
 /**
  * Checks if a Stencil component's slot has content.
- * Use this in components to render fallback content when a slot is empty.
  *
  * IMPORTANT: (for shadow: false components)
- * You MUST call this in `componentWillLoad()` and cache the result in an instance property.
+ * This must be called in `componentWillLoad()` and cached.
  * After the first render, `element.childNodes` will contain both user-provided slot content
  * AND the component's rendered internal elements (like <button>), causing false positives.
  *
- * Take a look at the https://stenciljs.com/docs/templating-jsx#slots-outside-shadow-dom
- *
- * @param element - The host element of the component (accessed via @Element())
- * @returns true if the slot has content, false otherwise
+ * @see https://stenciljs.com/docs/templating-jsx#slots-outside-shadow-dom
  */
-export function hasSlotContent(element: HTMLElement): boolean {
+function hasSlotContent(element: HTMLElement): boolean {
   if (!element.hasChildNodes()) return false;
 
   for (const child of Array.from(element.childNodes)) {
@@ -24,6 +28,31 @@ export function hasSlotContent(element: HTMLElement): boolean {
 
   return false;
 }
+
+/**
+ * Stencil mixin factory that adds slot content detection to a component.
+ * Components using this mixin get a `hasSlot` property and a `checkSlotContent` method.
+ *
+ * IMPORTANT: You must call `this.checkSlotContent(this.el)` in `componentWillLoad()`.
+ * The component must have `@Element() el!: HTMLElement;` defined.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: Mixin factory requires any for Base parameter
+export const HasSlotFactory = <B extends MixedInCtor>(Base: B = Object as any) => {
+  class HasSlotMixin extends Base {
+    hasSlot = false;
+
+    /**
+     * Checks if the component's slot has content and stores the result.
+     * Must be called in componentWillLoad() before the first render.
+     *
+     * @param element - The host element of the component (from @Element() decorator)
+     */
+    checkSlotContent(element: HTMLElement): void {
+      this.hasSlot = hasSlotContent(element);
+    }
+  }
+  return HasSlotMixin;
+};
 
 /**
  * Removes a query parameter from the current URL and updates the browser history.
