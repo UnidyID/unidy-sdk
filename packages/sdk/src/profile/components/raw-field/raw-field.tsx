@@ -13,7 +13,7 @@ import { Textarea } from "../raw-input-fields/Textarea";
   tag: "u-raw-field",
   shadow: false,
 })
-export class RawField extends UnidyComponent {
+export class RawField extends UnidyComponent() {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";

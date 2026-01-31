@@ -29,7 +29,7 @@ type TranslationTree = {
   tag: "u-config",
   shadow: false,
 })
-export class UnidyConfig extends UnidyComponent {
+export class UnidyConfig extends UnidyComponent() {
   @Prop() mode: "production" | "development" = "production";
   @Prop() baseUrl = "";
   @Prop() apiKey = "";

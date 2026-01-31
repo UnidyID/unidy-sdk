@@ -13,7 +13,7 @@ import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-but
   tag: "u-newsletter-root",
   shadow: false,
 })
-export class NewsletterRoot extends UnidyComponent {
+export class NewsletterRoot extends UnidyComponent() {
   @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 

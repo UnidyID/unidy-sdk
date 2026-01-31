@@ -4,7 +4,7 @@ import { UnidyComponent } from "../../../logger";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-page", shadow: false })
-export class PaginationPage extends UnidyComponent {
+export class PaginationPage extends UnidyComponent() {
   @Element() element: HTMLElement;
 
   @Prop() customClass?: string;

@@ -27,7 +27,7 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   styleUrl: "social-login-button.css",
   shadow: false,
 })
-export class SocialLoginButton extends UnidyComponent {
+export class SocialLoginButton extends UnidyComponent() {
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
   @Prop() iconOnly = false;

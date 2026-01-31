@@ -83,7 +83,7 @@ async function loadLocales() {
 }
 
 @Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList extends UnidyComponent {
+export class TicketableList extends UnidyComponent() {
   @Element() element: HTMLElement;
 
   private unsubscribeAuth?: () => void;

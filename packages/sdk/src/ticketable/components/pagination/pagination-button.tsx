@@ -4,7 +4,7 @@ import { UnidyComponent } from "../../../logger";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })
-export class PaginationButton extends UnidyComponent {
+export class PaginationButton extends UnidyComponent() {
   @Element() element: HTMLElement;
 
   @Prop() direction: "prev" | "next" = "next";
