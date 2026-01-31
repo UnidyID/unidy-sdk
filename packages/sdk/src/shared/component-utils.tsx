@@ -1,11 +1,11 @@
-import { type MixedInCtor, h } from "@stencil/core";
+import { Element, h, type MixedInCtor } from "@stencil/core";
 
 /**
  * Interface for the hasSlot functionality provided by the HasSlotFactory mixin.
  */
 export interface WithHasSlot {
+  el: HTMLElement;
   hasSlot: boolean;
-  checkSlotContent(element: HTMLElement): void;
 }
 
 /**
@@ -31,24 +31,17 @@ function hasSlotContent(element: HTMLElement): boolean {
 
 /**
  * Stencil mixin factory that adds slot content detection to a component.
- * Components using this mixin get a `hasSlot` property and a `checkSlotContent` method.
- *
- * IMPORTANT: You must call `this.checkSlotContent(this.el)` in `componentWillLoad()`.
- * The component must have `@Element() el!: HTMLElement;` defined.
+ * Components using this mixin get `el` (host element) and `hasSlot` properties.
+ * The slot content check is performed automatically in `componentWillLoad`.
  */
 // biome-ignore lint/suspicious/noExplicitAny: Mixin factory requires any for Base parameter
 export const HasSlotFactory = <B extends MixedInCtor>(Base: B = Object as any) => {
   class HasSlotMixin extends Base {
+    @Element() el!: HTMLElement;
     hasSlot = false;
 
-    /**
-     * Checks if the component's slot has content and stores the result.
-     * Must be called in componentWillLoad() before the first render.
-     *
-     * @param element - The host element of the component (from @Element() decorator)
-     */
-    checkSlotContent(element: HTMLElement): void {
-      this.hasSlot = hasSlotContent(element);
+    componentWillLoad() {
+      this.hasSlot = hasSlotContent(this.el);
     }
   }
   return HasSlotMixin;

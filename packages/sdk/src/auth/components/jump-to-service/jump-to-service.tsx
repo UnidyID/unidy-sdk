@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
@@ -12,8 +12,6 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class JumpToService extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
-
   /**
    * The OAuth Application ID (service ID) to jump to.
    * @example "2"
@@ -49,10 +47,6 @@ export class JumpToService extends UnidyComponent(HasSlotFactory) {
   @Prop({ attribute: "skip-oauth-authorization" }) skipOauthAuthorization = false;
 
   @State() loading = false;
-
-  componentWillLoad() {
-    this.checkSlotContent(this.el);
-  }
 
   private handleClick = async (event: Event) => {
     event.preventDefault();

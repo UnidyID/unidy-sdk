@@ -1,4 +1,4 @@
-import { Component, Element, Host, h, Prop } from "@stencil/core";
+import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { HasSlotFactory } from "../../../shared/component-utils";
@@ -11,13 +11,7 @@ import { newsletterStore } from "../../store/newsletter-store";
   shadow: false,
 })
 export class NewsletterLogoutButton extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
-
   @Prop({ attribute: "class-name" }) componentClassName = "";
-
-  async componentWillLoad() {
-    this.checkSlotContent(this.el);
-  }
 
   private handleLogout = () => {
     newsletterLogout();

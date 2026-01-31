@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
@@ -13,12 +13,7 @@ import { authState, authStore } from "../../store/auth-store";
   shadow: false,
 })
 export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-
-  componentWillLoad() {
-    this.checkSlotContent(this.el);
-  }
 
   private async onSubmit() {
     profileState.loading = true;

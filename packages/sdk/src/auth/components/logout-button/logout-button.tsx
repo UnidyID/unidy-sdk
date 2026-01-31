@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, h, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { HasSlotFactory } from "../../../shared/component-utils";
@@ -9,15 +9,10 @@ import { Auth } from "../../auth";
   shadow: false,
 })
 export class LogoutButton extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
   @Event() logout!: EventEmitter<void>;
-
-  async componentWillLoad() {
-    this.checkSlotContent(this.el);
-  }
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();

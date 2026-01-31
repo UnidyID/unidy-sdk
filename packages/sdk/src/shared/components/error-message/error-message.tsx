@@ -1,4 +1,4 @@
-import { Component, Element, Host, h, Prop } from "@stencil/core";
+import { Component, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
@@ -18,11 +18,6 @@ export class ErrorMessage extends UnidyComponent(HasSlotFactory) {
   @Prop() for!: string;
 
   @Prop() errorMessages?: Record<string, string>;
-  @Element() el!: HTMLElement;
-
-  componentWillLoad() {
-    this.checkSlotContent(this.el);
-  }
 
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
     if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";

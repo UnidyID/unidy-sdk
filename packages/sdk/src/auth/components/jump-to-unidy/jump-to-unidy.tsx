@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
@@ -13,8 +13,6 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class JumpToUnidy extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
-
   /**
    * The Unidy path to redirect to. Must start with "/".
    * @example "/subscriptions"
@@ -45,8 +43,6 @@ export class JumpToUnidy extends UnidyComponent(HasSlotFactory) {
   }
 
   componentWillLoad() {
-    this.checkSlotContent(this.el);
-
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);
     }

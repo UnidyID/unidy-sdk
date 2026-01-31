@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { type AuthButtonFor, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
@@ -13,7 +13,6 @@ import { defaultContext, type SubmitButtonContext } from "./context";
   shadow: false,
 })
 export class SubmitButton extends UnidyComponent(HasSlotFactory) {
-  @Element() el!: HTMLElement;
   @Prop() for?: AuthButtonFor | NewsletterButtonFor;
   @Prop() text?: string;
   @Prop() disabled = false;
@@ -23,8 +22,6 @@ export class SubmitButton extends UnidyComponent(HasSlotFactory) {
   private contextModule: SubmitButtonContext = defaultContext;
 
   async componentWillLoad() {
-    this.checkSlotContent(this.el);
-
     this.context = this.detectContext();
 
     switch (this.context) {

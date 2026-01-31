@@ -11,5 +11,4 @@ export class MyComponent extends UnidyComponent(HasSlotFactory) { ... }
 ```
 
 ### HasSlotFactory
-Mixin for slot content detection. Provides `this.hasSlot` and `this.checkSlotContent(el)`.
-Call `this.checkSlotContent(this.el)` in `componentWillLoad()`.
+Mixin for slot content detection. Provides `this.el` and `this.hasSlot` (auto-detected in componentWillLoad).
