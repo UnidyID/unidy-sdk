@@ -1,13 +1,7 @@
-/**
- * Stencil mixin factory that adds slot content detection to a component.
- * Components using this mixin get `element` (host element) and `hasSlot` properties.
- * The slot content check is performed automatically in `connectedCallback`.
- */
-
-import type { MixedInCtor } from "@stencil/core";
+import type { BaseComponentType } from "./component";
 
 // biome-ignore lint/suspicious/noExplicitAny: Mixin factory requires any for Base parameter
-export const HasSlotFactory = <B extends MixedInCtor>(Base: B = Object as any) => {
+export const HasSlotContent = <B extends BaseComponentType>(Base: B = Object as any) => {
   function hasSlotContent(element: HTMLElement) {
     if (!element.hasChildNodes()) return false;
 
@@ -20,8 +14,7 @@ export const HasSlotFactory = <B extends MixedInCtor>(Base: B = Object as any) =
   }
 
   class HasSlotMixin extends Base {
-    // Provided by loggerFactory when used with UnidyComponent(HasSlotFactory)
-    declare element: HTMLElement;
+    // Provided by loggerFactory when used with UnidyComponent(HasSlotContent)
     hasSlot = false;
 
     /*

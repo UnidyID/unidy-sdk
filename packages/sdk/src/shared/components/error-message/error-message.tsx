@@ -3,7 +3,7 @@ import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { UnidyComponent } from "../../base/component";
-import { HasSlotFactory } from "../../base/has-slot-content";
+import { HasSlotContent } from "../../base/has-slot-content";
 import { unidyState } from "../../store/unidy-store";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
@@ -13,7 +13,7 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
   shadow: false,
   styleUrl: "error-message.css",
 })
-export class ErrorMessage extends UnidyComponent(HasSlotFactory) {
+export class ErrorMessage extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() for!: string;
 

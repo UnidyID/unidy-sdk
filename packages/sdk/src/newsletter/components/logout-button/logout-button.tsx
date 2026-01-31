@@ -1,7 +1,7 @@
 import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { Flash } from "../../../shared/store/flash-store";
 import { newsletterLogout } from "../../newsletter-helpers";
 import { newsletterStore } from "../../store/newsletter-store";
@@ -10,7 +10,7 @@ import { newsletterStore } from "../../store/newsletter-store";
   tag: "u-newsletter-logout-button",
   shadow: false,
 })
-export class NewsletterLogoutButton extends UnidyComponent(HasSlotFactory) {
+export class NewsletterLogoutButton extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private handleLogout = () => {

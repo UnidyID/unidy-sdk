@@ -4,7 +4,7 @@ import { t } from "../../../i18n";
 import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
 import { UnidyComponent } from "../../../shared/base/component";
-import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import type { TokenResponse } from "../../api/auth";
 import { authState, authStore } from "../../store/auth-store";
 
@@ -12,7 +12,7 @@ import { authState, authStore } from "../../store/auth-store";
   tag: "u-missing-fields-submit-button",
   shadow: false,
 })
-export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotFactory) {
+export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private async onSubmit() {

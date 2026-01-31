@@ -7,8 +7,8 @@
 Base mixin for all components. Accepts additional mixin factories and provides `this.logger` and `this.element`
 ```tsx
 export class MyComponent extends UnidyComponent() { ... }
-export class MyComponent extends UnidyComponent(HasSlotFactory) { ... }
+export class MyComponent extends UnidyComponent(HasSlotContent) { ... }
 ```
 
-### HasSlotFactory
+### HasSlotContent
 Mixin for slot content detection. Provides `this.hasSlot` (auto-detected in connectedCallback).

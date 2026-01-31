@@ -4,7 +4,7 @@ import { t } from "../../../i18n";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
 import { UnidyComponent } from "../../base/component";
-import { HasSlotFactory } from "../../base/has-slot-content";
+import { HasSlotContent } from "../../base/has-slot-content";
 import { renderButtonContent } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
@@ -13,7 +13,7 @@ import { defaultContext, type SubmitButtonContext } from "./context";
   styleUrl: "submit-button.css",
   shadow: false,
 })
-export class SubmitButton extends UnidyComponent(HasSlotFactory) {
+export class SubmitButton extends UnidyComponent(HasSlotContent) {
   @Prop() for?: AuthButtonFor | NewsletterButtonFor;
   @Prop() text?: string;
   @Prop() disabled = false;

@@ -2,7 +2,7 @@ import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { renderButtonContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
@@ -13,7 +13,7 @@ import { authState } from "../../store/auth-store";
   tag: "u-jump-to-unidy",
   shadow: false,
 })
-export class JumpToUnidy extends UnidyComponent(HasSlotFactory) {
+export class JumpToUnidy extends UnidyComponent(HasSlotContent) {
   /**
    * The Unidy path to redirect to. Must start with "/".
    * @example "/subscriptions"

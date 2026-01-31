@@ -2,7 +2,7 @@ import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { renderButtonContent } from "../../../shared/component-utils";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
@@ -12,7 +12,7 @@ import { authState } from "../../store/auth-store";
   tag: "u-jump-to-service",
   shadow: false,
 })
-export class JumpToService extends UnidyComponent(HasSlotFactory) {
+export class JumpToService extends UnidyComponent(HasSlotContent) {
   /**
    * The OAuth Application ID (service ID) to jump to.
    * @example "2"

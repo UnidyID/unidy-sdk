@@ -1,14 +1,14 @@
 import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { HasSlotFactory } from "../../../shared/base/has-slot-content";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { Auth } from "../../auth";
 
 @Component({
   tag: "u-logout-button",
   shadow: false,
 })
-export class LogoutButton extends UnidyComponent(HasSlotFactory) {
+export class LogoutButton extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() reloadOnSuccess = true;
 
