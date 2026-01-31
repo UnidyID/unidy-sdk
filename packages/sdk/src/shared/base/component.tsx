@@ -46,7 +46,7 @@ export type BaseComponentType = ReturnType<typeof loggerFactory>;
  *
  * // With additional mixins
  * @Component({ tag: 'my-component' })
- * export class MyComponent extends UnidyComponent(HasSlotFactory) {
+ * export class MyComponent extends UnidyComponent(HasSlotFactory, ...) {
  *   // Has both logger and hasSlot functionality
  * }
  * ```
