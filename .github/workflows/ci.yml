@@ -23,7 +23,7 @@ jobs:
         run: bun install
 
       - name: Lint code
-        run: bun lint
+        run: bun lint --error-on-warnings
 
   e2e:
     name: Playwright Tests
