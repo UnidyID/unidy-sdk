@@ -2,7 +2,7 @@
   display: block;
 }
 .field-error:focus {
-  border-color: red !important;
+  border-color: red;
   outline-color: red;
 }
 
@@ -17,4 +17,3 @@
 [part="select"]:disabled {
   cursor: not-allowed;
 }
-

@@ -1,6 +1,7 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { authState, authStore } from "../../store/auth-store";
+import { t } from "../../../i18n";
 import { Auth } from "../../auth";
+import { authState, authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-send-magic-code-button",
@@ -9,8 +10,6 @@ import { Auth } from "../../auth";
 export class SendMagicCodeButton {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
-  @Prop() text = "Send Magic Code";
-  @Prop() alreadySentText = "Magic code already sent to your email";
 
   @State() countdown = 0;
   private countdownInterval: number | null = null;
@@ -20,10 +19,15 @@ export class SendMagicCodeButton {
 
     const authInstance = await Auth.getInstance();
 
-    const [_error, response] = await authInstance.helpers.sendMagicCode();
+    const [error, response] = await authInstance.helpers.sendMagicCode();
 
     if (response && "enable_resend_after" in response) {
       this.startCountdown(response.enable_resend_after);
+    }
+
+    if (error === "magic_code_recently_created") {
+      authStore.setStep("magic-code");
+      authStore.setMagicCodeStep("sent");
     }
   };
 
@@ -51,20 +55,32 @@ export class SendMagicCodeButton {
     this.clearCountdown();
   }
 
+  private shouldRender(): boolean {
+    if (!["magic-code", "verification", "single-login"].includes(authState.step)) {
+      return false;
+    }
+
+    if (!authState.availableLoginOptions?.magic_link && authState.step !== "single-login") {
+      return false;
+    }
+
+    return true;
+  }
+
   render() {
-    if (authState.step !== "magic-code" && authState.step !== "verification") {
+    if (!this.shouldRender()) {
       return null;
     }
 
-    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0;
+    const isDisabled = this.disabled || authState.magicCodeStep === "requested" || this.countdown > 0 || authState.email === "";
+    const buttonTextKey = authState.step !== "magic-code" ? "auth.magicCode.button_text" : "auth.magicCode.resend.button_text";
+    const text = t(buttonTextKey, { defaultValue: "Send Magic Code" });
+    const alreadySentText = t("auth.magicCode.already_sent_text", { defaultValue: "Magic code already sent to your email" });
+    const sendingText = t("auth.magicCode.sending_text", { defaultValue: "Sending..." });
 
     return (
       <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
-        {this.countdown > 0
-          ? this.alreadySentText
-          : authState.loading && authState.magicCodeStep === "requested"
-            ? "Sending..."
-            : this.text}
+        {this.countdown > 0 ? alreadySentText : authState.loading && authState.magicCodeStep === "requested" ? sendingText : text}
       </button>
     );
   }

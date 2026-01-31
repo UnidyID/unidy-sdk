@@ -1,4 +1,4 @@
-# send-magic-code-button
+# u-send-magic-code-button
 
 
 
@@ -7,13 +7,24 @@
 
 ## Properties
 
-| Property             | Attribute           | Description | Type      | Default                                   |
-| -------------------- | ------------------- | ----------- | --------- | ----------------------------------------- |
-| `alreadySentText`    | `already-sent-text` |             | `string`  | `"Magic code already sent to your email"` |
-| `componentClassName` | `class-name`        |             | `string`  | `""`                                      |
-| `disabled`           | `disabled`          |             | `boolean` | `false`                                   |
-| `text`               | `text`              |             | `string`  | `"Send Magic Code"`                       |
+| Property             | Attribute    | Description | Type      | Default |
+| -------------------- | ------------ | ----------- | --------- | ------- |
+| `componentClassName` | `class-name` |             | `string`  | `""`    |
+| `disabled`           | `disabled`   |             | `boolean` | `false` |
 
+
+## Dependencies
+
+### Depends on
+
+- [u-spinner](../../../shared/components/spinner)
+
+### Graph
+```mermaid
+graph TD;
+  u-send-magic-code-button --> u-spinner
+  style u-send-magic-code-button fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

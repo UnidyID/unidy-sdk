@@ -10,7 +10,8 @@
 
 export * from "./api";
 export * from "./auth";
+export type * from "./components.d";
 export * from "./newsletter";
 export * from "./profile";
+export { Flash } from "./shared/store/flash-store";
 export * from "./ticketable";
-export type * from "./components.d";

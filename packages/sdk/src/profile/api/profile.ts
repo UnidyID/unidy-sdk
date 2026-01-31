@@ -1,205 +1,160 @@
-import * as Sentry from "@sentry/browser";
-import type { ApiClient, ApiResponse } from "../../api";
-import * as z from "zod";
+import type { ApiResponse } from "../../api/base-client";
+import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
+import {
+  type ProfileErrorResponse,
+  ProfileErrorResponseSchema,
+  type UserProfileData,
+  type UserProfileFormError,
+  UserProfileFormErrorSchema,
+  UserProfileRailsFormErrorSchema,
+  UserProfileSchema,
+} from "./schemas";
 
-const FieldType = z.enum(["text", "textarea", "number", "boolean", "select", "radio", "date", "datetime-local", "checkbox", "tel"]);
+export type { ProfileErrorResponse, UserProfileData, UserProfileFormError } from "./schemas";
+// Re-export types and schemas for external use
+export { UserProfileSchema } from "./schemas";
 
-const BaseFieldDataSchema = z
-  .object({
-    required: z.boolean(),
-    label: z.string(),
-    attr_name: z.string(),
-    locked: z.boolean().optional(),
-    locked_text: z.string().optional(),
-  })
-  .strict();
+// Payload type for update (flexible object)
+export type UpdateProfilePayload = Record<string, unknown>;
 
-const SelectOptionSchema = z
-  .object({
-    value: z.string(),
-    label: z.string(),
-  })
-  .strict();
+// Argument types for unified interface
+export type ProfileUpdateArgs = Payload<UpdateProfilePayload>;
 
-const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
+// Response info type for error diagnostics
+export type ResponseInfo = {
+  httpStatus?: number;
+  responseData?: unknown;
+};
 
-const RadioOptionSchema = z
-  .object({
-    value: RadioValue,
-    label: z.string(),
-    checked: z.boolean(),
-  })
-  .strict();
+// Result types using tuples - 3rd element is optional response info for error diagnostics
+export type ProfileGetResult =
+  | [...CommonErrors, ResponseInfo?]
+  | ["missing_id_token", null, ResponseInfo?]
+  | ["unauthorized", ProfileErrorResponse, ResponseInfo?]
+  | ["invalid_profile_data", null, ResponseInfo?]
+  | ["server_error", ProfileErrorResponse | null, ResponseInfo?]
+  | [null, UserProfileData, ResponseInfo?];
 
-const TextFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null()]),
-  type: z.enum(["text", "textarea"]),
-}).strict();
+export type ProfileUpdateResult =
+  | [...CommonErrors, ResponseInfo?]
+  | ["missing_id_token", null, ResponseInfo?]
+  | ["unauthorized", ProfileErrorResponse, ResponseInfo?]
+  | ["invalid_profile_data", null, ResponseInfo?]
+  | ["validation_error", UserProfileFormError, ResponseInfo?]
+  | ["server_error", ProfileErrorResponse | null, ResponseInfo?]
+  | [null, UserProfileData, ResponseInfo?];
 
-const PhoneFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string().nullable()]),
-  type: z.enum(["tel"]),
-}).strict();
+export class ProfileService extends BaseService {
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "ProfileService", deps);
+  }
 
-const RadioFieldSchema = BaseFieldDataSchema.extend({
-  value: RadioValue,
-  type: z.enum(["radio"]),
-  radio_options: z.array(RadioOptionSchema),
-}).strict();
+  /** Build response info for error diagnostics */
+  private buildResponseInfo(response: ApiResponse<unknown>): ResponseInfo {
+    return {
+      httpStatus: response.status,
+      responseData: response.data,
+    };
+  }
 
-const SelectFieldSchema = BaseFieldDataSchema.extend({
-  value: z.string().nullable(),
-  type: z.enum(["select"]),
-  options: z.array(SelectOptionSchema),
-}).strict();
+  async get(): Promise<ProfileGetResult> {
+    const idToken = await this.getIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
 
-const DateFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null()]),
-  type: z.enum(["date", "datetime-local"]),
-}).strict();
-
-const CustomFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.null(), z.boolean(), z.number(), z.array(z.string())]),
-  type: FieldType,
-  readonly: z.boolean(),
-  radio_options: z.array(RadioOptionSchema).optional(),
-  options: z.array(SelectOptionSchema).optional(),
-}).strict();
-
-export const UserProfileSchema = z.object({
-  salutation: RadioFieldSchema,
-  first_name: TextFieldSchema,
-  last_name: TextFieldSchema,
-  email: TextFieldSchema,
-  phone_number: PhoneFieldSchema,
-  company_name: TextFieldSchema,
-  address_line_1: TextFieldSchema,
-  address_line_2: TextFieldSchema,
-  city: TextFieldSchema,
-  postal_code: TextFieldSchema,
-  country_code: SelectFieldSchema,
-  date_of_birth: DateFieldSchema,
-  preferred_language: TextFieldSchema.optional(),
-  custom_attributes: z.record(z.string(), CustomFieldSchema),
-});
-
-const UserProfileErrorSchema = z
-  .object({
-    error_identifier: z.string(),
-  })
-  .strict();
-
-const FormErrorsValue = z.union([z.array(z.string()), z.array(z.tuple([z.number(), z.array(z.string())]))]);
-
-const FormErrorsRawSchema = z.record(z.string(), FormErrorsValue);
-
-const UserProfileFormErrorSchema = z
-  .object({
-    errors: FormErrorsRawSchema,
-  })
-  .strict()
-  .transform(({ errors }) => {
-    const flatErrors = Object.fromEntries(
-      Object.entries(errors).map(([field, value]) => {
-        const errorMessages =
-          Array.isArray(value) && value.length > 0 && typeof value[0] === "string"
-            ? (value as string[])
-            : (value as Array<[number, string[]]>).flatMap(([, arr]) => arr);
-        return [field, errorMessages.join(" | ")];
-      }),
+    const lang = this.getLocale();
+    const response = await this.client.get<unknown>(
+      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+      this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );
-    return { errors, flatErrors };
-  });
 
-export type UserProfileData = z.infer<typeof UserProfileSchema>;
-export type UserProfileError = z.infer<typeof UserProfileErrorSchema>;
-export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
+    const responseInfo = this.buildResponseInfo(response);
 
-const ProfileResultSchema = z.union([UserProfileSchema, UserProfileErrorSchema, UserProfileFormErrorSchema]);
+    const result = this.handleResponse(response, (): ProfileGetResult => {
+      if (!response.success) {
+        const error = ProfileErrorResponseSchema.safeParse(response.data);
+        if (error.success) {
+          if (response.status === 401) {
+            return ["unauthorized", error.data, responseInfo];
+          }
+          return ["server_error", error.data, responseInfo];
+        }
+        return ["server_error", null, responseInfo];
+      }
 
-export type ProfileResult = UserProfileData | UserProfileError | UserProfileFormError | Record<string, string>;
-
-declare global {
-  interface Window {
-    UNIDY?: { auth?: { id_token?: string } };
-  }
-}
-
-type FetchProfileArgs = { idToken: string; lang?: string };
-type UpdateProfileArgs = { idToken: string; data: unknown; lang?: string };
-
-export class ProfileService {
-  constructor(private client: ApiClient) {}
-
-  async fetchProfile({ idToken, lang }: FetchProfileArgs): Promise<ApiResponse<ProfileResult>> {
-    if (!idToken) {
-      return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
-    }
-
-    try {
-      const resp = await this.client.get<unknown>(`/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`, { "X-ID-Token": idToken });
-
-      const parsed = ProfileResultSchema.safeParse(resp.data);
+      const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
-        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
+        this.logger.error("Invalid profile data", parsed.error);
+        return ["invalid_profile_data", null, responseInfo];
       }
 
-      const data = parsed.data;
+      return [null, parsed.data, responseInfo];
+    });
 
-      if ("error_identifier" in data) {
-        return { ...resp, data, error: data.error_identifier };
-      }
-
-      return { ...resp, data };
-    } catch (error) {
-      Sentry.captureException(error);
-      return {
-        status: error instanceof TypeError ? 0 : 500,
-        success: false,
-        headers: new Headers(),
-        error: error instanceof Error ? error.message : String(error),
-      };
+    // If handleResponse returned a common error (connection_failed, etc), add response info
+    if (Array.isArray(result) && result.length === 2) {
+      return [...result, responseInfo] as ProfileGetResult;
     }
+    return result;
   }
 
-  async updateProfile({ idToken, data, lang }: UpdateProfileArgs): Promise<ApiResponse<ProfileResult>> {
+  async update(args: ProfileUpdateArgs): Promise<ProfileUpdateResult> {
+    const idToken = await this.getIdToken();
     if (!idToken) {
-      return { status: 401, success: false, headers: new Headers(), error: "missing id_token" };
+      return ["missing_id_token", null];
     }
 
-    const payload = data as object;
+    const { payload } = args;
+    const lang = this.getLocale();
 
-    try {
-      const resp = await this.client.patch<unknown>(
-        `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
-        { ...payload },
-        { "X-ID-Token": idToken },
-      );
+    const response = await this.client.patch<unknown>(
+      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+      { ...payload },
+      this.buildAuthHeaders({ "X-ID-Token": idToken }),
+    );
 
-      const parsed = ProfileResultSchema.safeParse(resp.data);
+    const responseInfo = this.buildResponseInfo(response);
+
+    const result = this.handleResponse(response, (): ProfileUpdateResult => {
+      if (!response.success) {
+        // Check for form validation errors first (standard format: { errors: {...} })
+        const formErrors = UserProfileFormErrorSchema.safeParse(response.data);
+        if (formErrors.success) {
+          return ["validation_error", formErrors.data, responseInfo];
+        }
+
+        // Check for Rails-style form errors (format: { error_details: {...} })
+        const railsFormErrors = UserProfileRailsFormErrorSchema.safeParse(response.data);
+        if (railsFormErrors.success) {
+          return ["validation_error", railsFormErrors.data, responseInfo];
+        }
+
+        // Check for API error response
+        const error = ProfileErrorResponseSchema.safeParse(response.data);
+        if (error.success) {
+          if (response.status === 401) {
+            return ["unauthorized", error.data, responseInfo];
+          }
+          return ["server_error", error.data, responseInfo];
+        }
+
+        return ["server_error", null, responseInfo];
+      }
+
+      const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
-        return { status: 400, success: false, headers: new Headers(), error: "invalid profile data" };
+        this.logger.error("Invalid profile data", parsed.error);
+        return ["invalid_profile_data", null, responseInfo];
       }
 
-      const result = parsed.data;
+      return [null, parsed.data, responseInfo];
+    });
 
-      if ("errors" in result) {
-        return { ...resp, data: result };
-      }
-
-      if ("error_identifier" in result) {
-        return { ...resp, data: result, error: result.error_identifier };
-      }
-
-      return { ...resp, data: result };
-    } catch (error) {
-      Sentry.captureException(error);
-      return {
-        status: error instanceof TypeError ? 0 : 500,
-        success: false,
-        headers: new Headers(),
-        error: error instanceof Error ? error.message : String(error),
-      };
+    // If handleResponse returned a common error (connection_failed, etc), add response info
+    if (Array.isArray(result) && result.length === 2) {
+      return [...result, responseInfo] as ProfileUpdateResult;
     }
+    return result;
   }
 }

@@ -1,4 +1,5 @@
 import type { Config } from "@stencil/core";
+import { visualizer } from "rollup-plugin-visualizer";
 import tailwind, { tailwindHMR } from "stencil-tailwind-plugin";
 
 export const config: Config = {
@@ -13,6 +14,7 @@ export const config: Config = {
       esmLoaderPath: "../loader",
       copy: [
         { src: "sdk.css", dest: "sdk.css" },
+        { src: "locales", dest: "locales" },
       ],
     },
     { type: "dist-custom-elements" },
@@ -21,14 +23,22 @@ export const config: Config = {
       type: "www",
       serviceWorker: null,
       copy: [
-        { src: "sdk.css", dest: "css/sdk.css" },
+        { src: "sdk.css", dest: "sdk.css" },
+        { src: "demo-build.css", dest: "demo.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
+        { src: "auth/single-step.html", dest: "auth/single-step.html" },
+        { src: "auth/profile.html", dest: "auth/profile.html" },
       ],
     },
   ],
-  plugins: [tailwind(), tailwindHMR()],
+
+  rollupPlugins: {
+    after: [process.env.ANALYZE === "true" ? visualizer() : null],
+  },
+
+  plugins: [tailwind({ injectTailwindConfiguration: (_filename) => '@import "tailwindcss" prefix(u);' }), tailwindHMR()],
   testing: { browserHeadless: "shell" },
   devServer: { reloadStrategy: "pageReload", openBrowser: false },
 };

@@ -1,4 +1,4 @@
-# newsletter-checkbox
+# u-newsletter-checkbox
 
 
 
@@ -7,20 +7,40 @@
 
 ## Properties
 
-| Property             | Attribute       | Description | Type      | Default     |
-| -------------------- | --------------- | ----------- | --------- | ----------- |
-| `checked`            | `checked`       |             | `boolean` | `undefined` |
-| `componentClassName` | `class-name`    |             | `string`  | `undefined` |
-| `internalName`       | `internal-name` |             | `string`  | `undefined` |
-| `label`              | `label`         |             | `string`  | `undefined` |
+| Property                    | Attribute       | Description | Type      | Default     |
+| --------------------------- | --------------- | ----------- | --------- | ----------- |
+| `checked`                   | `checked`       |             | `boolean` | `false`     |
+| `componentClassName`        | `class-name`    |             | `string`  | `undefined` |
+| `internalName` _(required)_ | `internal-name` |             | `string`  | `undefined` |
 
 
-## Shadow Parts
+## Methods
 
-| Part      | Description |
-| --------- | ----------- |
-| `"input"` |             |
-| `"label"` |             |
+### `setChecked(checked: boolean) => Promise<void>`
+
+Public method to set the checkbox state programmatically
+
+#### Parameters
+
+| Name      | Type      | Description |
+| --------- | --------- | ----------- |
+| `checked` | `boolean` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `toggle() => Promise<void>`
+
+Public method to toggle the checkbox programmatically
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 
 ----------------------------------------------

@@ -1,8 +1,15 @@
-# missing-field
+# u-missing-field
 
 
 
 <!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property             | Attribute    | Description | Type     | Default     |
+| -------------------- | ------------ | ----------- | -------- | ----------- |
+| `componentClassName` | `class-name` |             | `string` | `undefined` |
 
 
 ## Dependencies
@@ -15,7 +22,6 @@
 ```mermaid
 graph TD;
   u-missing-field --> u-field
-  u-field --> u-spinner
   u-field --> u-raw-field
   style u-missing-field fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -23,6 +23,12 @@ bun run build
 
 Make a release commit with the updated `README.md` and `package.json` files and push it to the main branch.
 
+Login (with the unidy-dev account) to npmjs to be able to publish:
+
+```bash
+npm login
+```
+
 Publish the package to npm (if you release a development version add a tag to avoid setting the latest tag to the release `--tag next`):
 
 ```bash

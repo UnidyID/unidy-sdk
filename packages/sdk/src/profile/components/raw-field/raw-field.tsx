@@ -1,16 +1,19 @@
-import { Component, Element, Prop, State, h } from "@stencil/core";
-import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
-import { Textarea } from "../raw-input-fields/Textarea";
-import { Input } from "../raw-input-fields/Input";
+import { Component, Element, h, Prop, State } from "@stencil/core";
+import { UnidyComponent } from "../../../logger";
+import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { type ComponentContext, detectContext } from "../../../shared/context-utils";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
-import { Select, type Option } from "../raw-input-fields/Select";
+import { Input } from "../raw-input-fields/Input";
 import { MultiSelect, type MultiSelectOption } from "../raw-input-fields/MultiSelect";
+import { RadioGroup, type RadioOption } from "../raw-input-fields/RadioGroup";
+import { type Option, Select } from "../raw-input-fields/Select";
+import { Textarea } from "../raw-input-fields/Textarea";
 
 @Component({
   tag: "u-raw-field",
   shadow: false,
 })
-export class RawField {
+export class RawField extends UnidyComponent() {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -39,8 +42,16 @@ export class RawField {
 
   @State() selected?: string | string[];
 
+  private get context(): ComponentContext | null {
+    return detectContext(this.el);
+  }
+
   private readStore(fieldName: string): string | undefined | string[] {
     if (!fieldName) return;
+    return this.context === "newsletter" ? this.readNewsletterStore(fieldName) : this.readProfileStore(fieldName);
+  }
+
+  private readProfileStore(fieldName: string): string | undefined | string[] {
     const data: ProfileRaw = profileState.data;
 
     if (!data) return;
@@ -71,8 +82,17 @@ export class RawField {
     return field.value;
   }
 
+  private readNewsletterStore(fieldName: string): string | undefined | string[] {
+    const field = newsletterStore.state.additionalFields[fieldName];
+    return field?.value;
+  }
+
   private writeStore(fieldName: string, value: string | string[]) {
     if (!fieldName) return;
+    this.context === "newsletter" ? this.writeNewsletterStore(fieldName, value) : this.writeProfileStore(fieldName, value);
+  }
+
+  private writeProfileStore(fieldName: string, value: string | string[]) {
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
@@ -94,12 +114,32 @@ export class RawField {
     }
   }
 
+  private writeNewsletterStore(fieldName: string, value: string | string[]) {
+    const data = newsletterStore.state.additionalFields;
+    newsletterStore.state.additionalFields = {
+      ...data,
+      [fieldName]: { ...data[fieldName], value },
+    };
+  }
+
+  private getErrors(): Record<string, string> {
+    return this.context === "newsletter" ? newsletterStore.state.additionalFieldErrors : profileState.errors;
+  }
+
+  private setErrors(errors: Record<string, string>) {
+    if (this.context === "newsletter") {
+      newsletterStore.state.additionalFieldErrors = errors;
+    } else {
+      profileState.errors = errors;
+    }
+  }
+
   private runExternalValidator(value: string | string[]) {
     if (this.validationFunc) {
       try {
         return this.validationFunc(value);
       } catch (e) {
-        console.error("External validator (validationFunc) threw an error:", e);
+        this.logger.error("External validator (validationFunc) threw an error:", e);
         return null;
       }
     }
@@ -175,7 +215,7 @@ export class RawField {
     const val = input.value;
 
     const result = this.validateValue(val);
-    const newErrors = { ...profileState.errors };
+    const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
@@ -183,14 +223,14 @@ export class RawField {
       newErrors[this.field] = result.message;
     }
 
-    profileState.errors = newErrors;
+    this.setErrors(newErrors);
   };
 
   private onChangeFieldValidation = (newValue: string) => {
     this.selected = newValue;
 
     const result = this.validateValue(newValue);
-    const newErrors = { ...profileState.errors };
+    const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
@@ -199,7 +239,7 @@ export class RawField {
       newErrors[this.field] = result.message;
     }
 
-    profileState.errors = newErrors;
+    this.setErrors(newErrors);
   };
 
   componentWillLoad() {
@@ -230,7 +270,7 @@ export class RawField {
   }
 
   componentDidRender() {
-    const errs = profileState.errors;
+    const errs = this.getErrors();
     if (errs?.[this.field]) {
       this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
     }

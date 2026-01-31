@@ -1,4 +1,4 @@
-import { Component, h, Element } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { authState, missingFieldNames } from "../../store/auth-store";
 
 @Component({
@@ -7,6 +7,7 @@ import { authState, missingFieldNames } from "../../store/auth-store";
 })
 export class MissingField {
   @Element() el!: HTMLElement;
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   render() {
     if (authState.step !== "missing-fields") return null;
@@ -17,7 +18,7 @@ export class MissingField {
       <div class="missing-fields">
         <form>
           {fieldNames.map((fieldName) => (
-            <u-field key={fieldName} field={fieldName} renderDefaultLabel={true} />
+            <u-field key={fieldName} field={fieldName} renderDefaultLabel={true} class-name={this.componentClassName} />
           ))}
         </form>
       </div>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Unidy Auth Demo</title>
+
+  <script type="module" src="/build/sdk.esm.js"></script>
+  <script nomodule src="/build/sdk.js"></script>
+  <link rel="stylesheet" href="/sdk.css">
+  <link rel="stylesheet" href="/demo.css">
+</head>
+
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
+    <div class="logo">
+      <a href="/">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 494" class="w-6 h-10">
+          <path d="M0 0 C24.75 0 49.5 0 75 0 C75.02578125 11.37597656 75.0515625 22.75195312 75.078125 34.47265625 C75.10330268 41.69598057 75.129481 48.91927852 75.16015625 56.14257812 C75.20861937 67.59806106 75.25309317 79.05345628 75.27099609 90.5090332 C75.28405643 98.85391555 75.3111321 107.19861849 75.35461307 115.54339975 C75.37712988 119.95655298 75.3929166 124.36948573 75.39188385 128.78270149 C75.3911314 132.9483894 75.40931347 137.11359175 75.44116783 141.27915382 C75.44958997 142.79669728 75.45146997 144.31429571 75.44580269 145.83185196 C75.38218637 165.50887947 80.8773945 183.49990817 94.78515625 197.859375 C95.51605469 198.56578125 96.24695313 199.2721875 97 200 C97.65871094 200.64453125 98.31742187 201.2890625 98.99609375 201.953125 C114.30183401 216.11940372 133.07744885 219.87928895 153.32763672 219.17041016 C171.34938846 218.02120655 186.88418598 209.00799473 199 196 C212.38082539 180.40035755 216.45609575 163.03116875 216.43237305 142.9284668 C216.441412 141.36005899 216.45174436 139.7916582 216.46325684 138.2232666 C216.49060286 134.00720953 216.50008054 129.7912873 216.50611091 125.57515311 C216.51555351 121.15354912 216.5417612 116.73204356 216.56611633 112.3105011 C216.6096242 103.95632708 216.63826733 95.60217234 216.66143972 87.24791986 C216.69366003 75.94565157 216.74910703 64.64349806 216.80318546 53.34131718 C216.88765413 35.56091246 216.94131831 17.78055185 217 0 C241.75 0 266.5 0 292 0 C292.1209091 41.86589632 292.1209091 41.86589632 292.14648438 59.50195312 C292.16423788 71.6462792 292.18503066 83.79054252 292.22631836 95.93481445 C292.25638258 104.78211557 292.27561308 113.62936543 292.28226548 122.47671622 C292.28614914 127.15381611 292.29516439 131.83076948 292.31719017 136.50782204 C292.3378255 140.92617116 292.34378031 145.34431593 292.33932304 149.76270866 C292.34013634 151.36890912 292.34593872 152.97511772 292.35761642 154.58127594 C292.46074389 169.52110298 290.90803288 184.55375636 286.4375 198.875 C286.0650415 200.08736328 286.0650415 200.08736328 285.68505859 201.32421875 C279.39643042 220.78421611 269.23810681 237.5283989 256 253 C255.31808594 253.80566406 254.63617188 254.61132812 253.93359375 255.44140625 C231.06635061 281.88864832 197.3674151 297.68662511 163 302 C137.1964021 303.4142391 111.8448994 301.81411273 88 291 C87.34773438 290.70754395 86.69546875 290.41508789 86.0234375 290.11376953 C50.43748822 273.89227866 22.43749212 244.67305501 8.39526367 208.08544922 C3.35886984 194.18506187 -0.13108748 179.32767652 -0.12025452 164.50817871 C-0.12110894 163.79897231 -0.12196337 163.0897659 -0.12284368 162.35906839 C-0.12447737 160.00693051 -0.11901205 157.65486558 -0.11352539 155.30273438 C-0.11324304 153.60699465 -0.1134022 151.91125479 -0.1139679 150.21551514 C-0.11425399 145.62934748 -0.10838769 141.04320616 -0.10139394 136.4570446 C-0.09512905 131.6577658 -0.09455412 126.85848636 -0.09336853 122.0592041 C-0.09026445 112.97881071 -0.08206352 103.8984294 -0.07201904 94.81804132 C-0.05873558 82.5422459 -0.05335054 70.26644716 -0.04751682 57.99064636 C-0.038123 38.66042186 -0.01819791 19.33022286 0 0 Z " fill="#0055FF" transform="translate(0,192)"/>
+          <path d="M0 0 C0.73959961 0.19303711 1.47919922 0.38607422 2.24121094 0.58496094 C20.47361558 5.46992989 38.67767024 14.68505189 53 27 C53.82886719 27.70382813 54.65773437 28.40765625 55.51171875 29.1328125 C58.06354503 31.36816425 60.53622647 33.66807979 63 36 C63.94617188 36.87011719 64.89234375 37.74023438 65.8671875 38.63671875 C90.88480136 62.15671294 103.80655244 94.4524195 108 128 C108 133.94 108 139.88 108 146 C83.25 146 58.5 146 33 146 C32.01 140.72 31.02 135.44 30 130 C23.75080328 111.07882105 12.53451825 95.90348033 -5.16796875 86.27734375 C-22.54131093 77.82937449 -42.09232325 75.90659375 -60.671875 81.73828125 C-69.79676301 85.19759912 -77.6720651 89.53809377 -85 96 C-85.75023438 96.65613281 -86.50046875 97.31226562 -87.2734375 97.98828125 C-101.50765484 111.27517013 -106.31186062 127.18302432 -109 146 C-133.75 146 -158.5 146 -184 146 C-184 120.43405512 -184 120.43405512 -181 108 C-180.83371094 107.30986816 -180.66742188 106.61973633 -180.49609375 105.90869141 C-171.37955935 69.46787752 -147.8021217 36.72365174 -115.66015625 17.125 C-81.13116533 -3.2399247 -39.0678293 -10.76513278 0 0 Z " fill="#0055FF" transform="translate(184,4)"/>
+          <path d="M0 0 C6.64873272 6.22025883 8.81256324 12.63711965 9.12863445 21.68044758 C9.13537955 23.07831638 9.1367376 24.47621793 9.13371277 25.87409973 C9.13597833 26.64875114 9.13824388 27.42340254 9.14057809 28.22152823 C9.14688936 30.80761292 9.14609058 33.39364481 9.14526367 35.97973633 C9.14825696 37.83791674 9.15165988 39.69609654 9.15544128 41.55427551 C9.16426833 46.59568937 9.16661886 51.63708625 9.16725707 56.67850709 C9.16796832 59.8301392 9.17010407 62.98176701 9.17275429 66.13339806 C9.1820035 77.13393808 9.18608971 88.13446599 9.18530273 99.13500977 C9.18470209 109.3800974 9.19525238 119.62513235 9.2110464 129.87020665 C9.22413331 138.67379498 9.22948614 147.4773661 9.22884732 156.28096408 C9.22859267 161.5355268 9.23142588 166.7900427 9.24202538 172.04459572 C9.25172566 176.98826549 9.25177228 181.93184385 9.24450874 186.87551689 C9.2434653 188.68586994 9.2458115 190.49622874 9.2518692 192.30657196 C9.32666457 216.21516967 9.32666457 216.21516967 1 225 C-4.73698663 229.73924982 -10.69789078 231.31828484 -18 230.9375 C-25.75188238 229.90312306 -30.78782682 225.72081527 -35.7734375 219.94140625 C-38.97841332 214.86856235 -39.29167257 209.66858515 -39.26742554 203.82218933 C-39.27195665 203.01486951 -39.27648776 202.20754968 -39.28115618 201.37576562 C-39.29378453 198.67908126 -39.29218083 195.98259927 -39.29052734 193.28588867 C-39.29651357 191.34888958 -39.30331934 189.41189287 -39.31088257 187.47489929 C-39.32854022 182.21860681 -39.33323786 176.96237945 -39.33451414 171.70606017 C-39.33593644 168.4204152 -39.34020754 165.13478675 -39.34550858 161.84914589 C-39.36400815 150.3817604 -39.37217928 138.9144214 -39.37060547 127.44702148 C-39.36940412 116.76561885 -39.39050535 106.08441831 -39.4220928 95.40306681 C-39.44826305 86.22580141 -39.45897245 77.04860199 -39.45769465 67.87129956 C-39.45718523 62.39311798 -39.46285726 56.91511601 -39.48405075 51.43697166 C-39.50344562 46.28309993 -39.50354892 41.12957892 -39.48901749 35.97569466 C-39.48692985 34.08793499 -39.49162759 32.2001533 -39.5037384 30.31243134 C-39.62055372 10.8375304 -39.62055372 10.8375304 -33.17578125 2.6953125 C-23.2455442 -5.67356653 -11.11433781 -7.94221994 0 0 Z " fill="#0055FF" transform="translate(161,134)"/>
+        </svg>
+      </a>
+    </div>
+    <nav class="flex gap-2 items-center">
+      <a href="/"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
+      <a href="/auth"
+        class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Auth</a>
+      <a href="/auth/profile.html"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Profile</a>
+      <a href="/newsletter"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
+      <a href="/ticketable"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Tickets</a>
+    </nav>
+
+    <div>
+      <u-signed-in>
+        <u-logout-button
+          class-name="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+        </u-logout-button>
+      </u-signed-in>
+    </div>
+  </header>
+
+  <main class="flex-1 p-8">
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" check-signed-in="true"
+            custom-translations='{
+              "de": {
+                "fields": {
+                  "custom_attributes.favorite_nut": {
+                    "label": "Lieblingsnussi",
+                    "options": {
+                      "peanut": "Erdnussi",
+                      "hazelnut": "Haselnussi",
+                      "walnut": "Walnussi"
+                    }
+                  }
+                }
+              },
+              "en": {
+                "fields": {
+                  "custom_attributes.favorite_nut": {
+                    "label": "Favorite Nut",
+                    "options": {
+                      "peanut": "Peanut",
+                      "hazelnut": "Hazelnut",
+                      "walnut": "Walnut"
+                    }
+                  }
+                }
+              }
+            }'></u-config>
+
+  <u-error-message for="connection"
+    class-name="fixed top-5 left-5 right-5 max-w-2xl mx-auto z-1000 bg-yellow-50 border border-yellow-400 rounded-lg p-4">
+    <div class="flex items-start gap-2">
+      <div>
+        <strong class="block text-yellow-800">Connection Error</strong>
+        <p class="text-yellow-700 text-sm">
+          Unable to connect to the Unidy server
+        </p>
+      </div>
+    </div>
+  </u-error-message>
+
+  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="20"></u-flash-message>
+
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Login Components Demo</h1>
+
+    <u-signed-in not>
+      <div class="flex justify-center mb-8 border-b border-gray-200">
+        <a href="/auth"
+          class="px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 hover:border-gray-300 border-b-2 border-transparent -mb-px transition-all duration-200">Multi-Step</a>
+        <a href="/auth/single-step.html"
+          class="px-6 py-3 text-sm font-semibold text-blue-600 border-b-2 border-blue-600 -mb-px">Single-Step</a>
+      </div>
+    </u-signed-in>
+
+    <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+    </div>
+
+    <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
+      class="flex flex-col gap-2">
+      <u-error-message id="general-error" for="general" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+      <u-signin-step name="single-login">
+        <u-email-field
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"
+          aria-describedby="email-error"></u-email-field>
+        <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-password-field
+          class-name="px-4 py-2 mb-1 border border-gray-300 rounded-lg w-full"
+          aria-describedby="password-error"></u-password-field>
+        <u-error-message id="password-error" for="password"
+          class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-reset-password-button text="Reset Password"
+          class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+        <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+
+        <u-submit-button for="single-login" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
+
+        <div class="flex items-center my-4">
+          <div class="flex-1 border-t border-gray-300"></div>
+          <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+          <div class="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        <u-send-magic-code-button
+          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full hover:cursor-pointer"></u-send-magic-code-button>
+
+          <u-error-message id="magic-code-error" for="magicCode"
+          class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+      </u-signin-step>
+
+      <u-signin-step name="magic-code">
+        <h3 class="text-center text-gray-600 my-4">Enter magic code you received in email</h3>
+
+        <u-magic-code-field class-name="px-4 py-2 mb-2 rounded-lg"
+          aria-describedby="magic-code-error"></u-magic-code-field>
+
+        <u-error-message id="magic-code-error" for="magicCode"
+          class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+
+        <u-send-magic-code-button
+          class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full hover:cursor-pointer"></u-send-magic-code-button>
+      </u-signin-step>
+
+      <u-signin-step name="missing-fields">
+        <u-missing-field></u-missing-field>
+        <u-missing-fields-submit-button></u-missing-fields-submit-button>
+      </u-signin-step>
+
+      <u-signin-step name="reset-password">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2 text-center">Reset Your Password</h2>
+        <p class="text-gray-600 text-sm mb-6 text-center">Enter your new password below</p>
+
+        <u-password-field for="new-password" placeholder="New password"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
+        <u-password-field for="password-confirmation" placeholder="Confirm password"
+          class-name="px-4 py-2 mb-2 border border-gray-300 rounded-lg w-full"></u-password-field>
+        <div class="flex flex-col gap-1 mb-1">
+          <u-error-message for="resetPassword" class-name="mt-1 mb-1 text-sm text-red-500"></u-error-message>
+          <u-error-message for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
+        </div>
+        <u-reset-password-button class-name="mb-4 text-sm text-blue-500"></u-reset-password-button>
+
+        <u-submit-button for="resetPassword"
+          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200"></u-submit-button>
+      </u-signin-step>
+    </u-signin-root>
+
+    <u-signed-in>
+      <div class="bg-white rounded-xl shadow-xl p-8 border border-gray-100 text-center">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">You're signed in!</h3>
+        <p class="text-gray-600 text-sm mb-6">Manage your profile and settings on the profile page.</p>
+        <a href="/auth/profile.html"
+          class="inline-block px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors">
+          Go to Profile
+        </a>
+      </div>
+    </u-signed-in>
+
+    <div class="flex gap-2 mb-2 fixed bottom-0 right-0 mx-4 items-center">
+      <button class="px-3 py-1 bg-gray-300 rounded-md" onclick="changeLocale('en')">🇬🇧</button>
+      <button class="px-3 py-1 bg-gray-300 rounded-md" onclick="changeLocale('de')">🇩🇪</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { Auth, Flash } from "/build/index.esm.js";
+
+    window.Flash = Flash;
+
+    const signinRoot = document.getElementById("sign-in-root");
+    const auth = await Auth.getInstance();
+
+    signinRoot.addEventListener("authEvent", async (event) => {
+      console.info("Auth event:", event.detail);
+    });
+
+    signinRoot.addEventListener("errorEvent", (event) => {
+      console.error("Authentication error:", event.detail.error);
+    });
+
+    // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
+    // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
+    window.addEventListener("appload", () => {
+      const spinner = document.getElementById('sdk-initial-spinner');
+      if (spinner) {
+        spinner.remove();
+      }
+    });
+
+    function changeLocale(locale) {
+      const config = document.querySelector('u-config');
+      config.setAttribute('locale', locale);
+    }
+  </script>
+  </main>
+
+  <footer class="text-center py-5 mt-8 bg-gray-800 text-white text-sm">
+    <p>&copy; <span id="year"></span> Unidy. All rights reserved.</p>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </footer>
+</body>
+
+</html>

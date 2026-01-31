@@ -1,10 +1,13 @@
 import * as Sentry from "@sentry/browser";
-import type { UnidyClient } from "../api";
-import { authStore, authState } from "./store/auth-store";
 import { jwtDecode } from "jwt-decode";
-import { AuthHelpers } from "./auth-helpers";
+import type { UnidyClient } from "../api";
+import { getUnidyClient } from "../api";
+import { t } from "../i18n";
 import { waitForConfig } from "../shared/store/unidy-store";
-import { getUnidyClient } from "./api-client";
+import { AuthHelpers } from "./auth-helpers";
+import { authState, authStore } from "./store/auth-store";
+
+const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
 
 export interface TokenPayload {
   sub: string; // unidy id
@@ -32,7 +35,6 @@ export class Auth {
 
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
-    this.helpers.handleSocialAuthRedirect();
   }
 
   static Errors = {
@@ -66,8 +68,16 @@ export class Auth {
     return Auth.instance;
   }
 
-  static initialize(client: UnidyClient): Auth {
+  static async initialize(client: UnidyClient): Promise<Auth> {
+    if (Auth.instance) {
+      return Auth.instance;
+    }
+
     Auth.instance = new Auth(client);
+
+    Auth.instance.helpers.handleSocialAuthRedirect();
+    Auth.instance.helpers.extractSidFromUrl();
+    await Auth.instance.helpers.handleResetPasswordRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
@@ -80,7 +90,19 @@ export class Auth {
     return !!Auth.instance;
   }
 
-  isTokenValid(token: string | TokenPayload | null): boolean {
+  /**
+   * Checks whether a JWT token is valid and not expired.
+   *
+   * @param token - The JWT token to validate. Can be a raw JWT string, a decoded TokenPayload, or null.
+   * @param expirationBuffer - Number of seconds before actual expiration to consider the token invalid, used to prevent race conditions with preemptive token refresh. Defaults to 10 seconds.
+   * @returns `true` if the token is valid and won't expire within the buffer period, `false` otherwise.
+   * @throws Error if expirationBuffer is not positive number
+   */
+  isTokenValid(token: string | TokenPayload | null, expirationBuffer = DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS): boolean {
+    if (!Number.isFinite(expirationBuffer) || expirationBuffer <= 0) {
+      throw new Error("expirationBuffer must be a positive finite number");
+    }
+
     try {
       let decoded: TokenPayload | null;
 
@@ -92,8 +114,12 @@ export class Auth {
 
       if (!decoded) return false;
 
+      if (typeof decoded.exp !== "number" || !Number.isFinite(decoded.exp)) {
+        return false;
+      }
+
       const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
+      return decoded.exp > currentTime + expirationBuffer;
     } catch (error) {
       Sentry.captureException(error);
       return false;
@@ -115,7 +141,7 @@ export class Auth {
     await this.helpers.refreshToken();
 
     if (authState.globalErrors.auth || !authState.token) {
-      return this.createAuthError("Failed to refresh token. Please sign in again.", "REFRESH_FAILED", true);
+      return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 
     return authState.token as string;
@@ -144,7 +170,7 @@ export class Auth {
     const [error, _] = await this.helpers.logout();
 
     if (error) {
-      return this.createAuthError(`Failed to sign out, reason: ${error}`, "SIGN_OUT_FAILED", false);
+      return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
 
     authStore.reset();

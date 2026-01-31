@@ -1,0 +1,153 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Inserisci la tua email"
+    },
+    "magicCode": {
+      "already_sent_text": "Codice magico già inviato alla tua email",
+      "button_text": "Invia codice magico",
+      "resend": {
+        "button_text": "Invia di nuovo il codice magico"
+      },
+      "sending_text": "Invio in corso..."
+    },
+    "passkey": {
+      "button_text": "Accedi con Passkey",
+      "loading_text": "Autenticazione..."
+    },
+    "password": {
+      "button_text": "Accedi con password",
+      "confirmation": {
+        "placeholder": "Conferma la tua password"
+      },
+      "placeholder": "Inserisci la tua password"
+    },
+    "resetPassword": {
+      "button_text_resend": "Reinvia email di reimpostazione password",
+      "button_text_reset": "Reimposta password",
+      "button_text_set": "Salva password",
+      "success_message": "Email di reimpostazione password inviata. Controlla la tua casella di posta"
+    },
+    "single-login": {
+      "button_text": "Accedi"
+    },
+    "socialLogin": {
+      "button_text": "Continua con {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Chiudi",
+    "continue": "Continua",
+    "jump_to_service": "Vai al servizio",
+    "jump_to_unidy": "Vai a Unidy",
+    "logout": "Esci",
+    "registration": "Registra nuovo account",
+    "sign_in": "Accedi",
+    "submit": "Invia"
+  },
+  "errors": {
+    "account_locked": "Account bloccato",
+    "account_not_found": "Account non trovato",
+    "authentication_failed": "Autenticazione fallita",
+    "bad_request": "Richiesta non valida",
+    "connection_failed": "Impossibile connettersi al server Unidy",
+    "expired": "Scaduto",
+    "failed_to_load_profile": "Impossibile caricare i dati del profilo. Controlla la configurazione",
+    "invalid_id_token": "Token ID non valido",
+    "invalid_passkey": "Passkey non valida",
+    "invalid_password": "Password non valida",
+    "invalid_refresh_token": "Token di aggiornamento non valido",
+    "invalid_required_fields_payload": "Payload dei campi obbligatori non valido",
+    "invalid_reset_token": "Token di reimpostazione non valido. Richiedi una nuova email di reimpostazione password",
+    "invalid_response_format": "Formato di risposta non valido",
+    "internal_server_error": "Errore interno del server",
+    "magic_code_is_missing": "Codice magico mancante",
+    "magic_code_recently_created": "Codice magico creato di recente",
+    "magic_link_not_enabled": "L'accesso tramite link magico non è abilitato per questo account",
+    "missing_id_token": "Token ID mancante",
+    "missing_refresh_token": "Nessun token di aggiornamento presente",
+    "missing_required_fields": "Campi obbligatori mancanti",
+    "no_sign_in_id": "Nessun ID di accesso disponibile",
+    "not_valid": "Non valido",
+    "passkey_cancelled": "Autenticazione passkey annullata",
+    "passkey_error": "Si è verificato un errore sconosciuto della passkey",
+    "passkey_invalid_state": "Stato passkey non valido",
+    "passkey_not_supported": "Passkey non supportata",
+    "passkey_security_error": "Errore di sicurezza passkey",
+    "password_not_set": "Password non impostata",
+    "password_required": "Password richiesta",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "La password è troppo corta (minimo 6 caratteri)",
+      "min_length": "La lunghezza minima è di 6 caratteri",
+      "mixed_case": "Deve contenere lettere maiuscole e minuscole",
+      "number": "Deve contenere un numero",
+      "symbol": "Deve contenere un simbolo"
+    },
+    "passwords_do_not_match": "Le password non corrispondono",
+    "prefix": "ERRORE: ",
+    "refresh_failed": "Impossibile aggiornare il token. Accedi di nuovo",
+    "refresh_token_revoked": "Token di aggiornamento revocato",
+    "required_field": "{{field}} è obbligatorio",
+    "reset_password_already_sent": "Reimpostazione password già inviata",
+    "reset_token_expired": "Il token di reimpostazione è scaduto. Richiedi una nuova email di reimpostazione password",
+    "reset_token_missing": "Token di reimpostazione mancante",
+    "schema_validation_error": "Errore di validazione dello schema",
+    "validation": {
+      "accepted": "deve essere accettato",
+      "blank": "non può essere vuoto",
+      "empty": "non può essere vuoto",
+      "even": "deve essere pari",
+      "exclusion": "è riservato",
+      "in": "non è incluso nella lista",
+      "inclusion": "non è incluso nella lista",
+      "invalid": "non è valido",
+      "not_a_number": "non è un numero",
+      "odd": "deve essere dispari",
+      "present": "deve essere vuoto",
+      "taken": "è già stato preso",
+      "too_long": "è troppo lungo",
+      "too_short": "è troppo corto"
+    },
+    "sign_in_expired": "Accesso scaduto",
+    "sign_in_not_found": "Accesso non trovato",
+    "sign_out_failed": "Uscita fallita, motivo: {{reason}}",
+    "unknown": "Si è verificato un errore sconosciuto",
+    "used": "Usato",
+    "verification_failed": "Verifica fallita"
+  },
+  "loading": "Caricamento...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Reinvia conferma",
+      "subscribe": "Iscriviti",
+      "unsubscribe": "Annulla iscrizione"
+    },
+    "errors": {
+      "already_subscribed": "Già iscritto",
+      "consent_required": "Accetta i termini e le condizioni per iscriverti",
+      "email_required": "Inserisci il tuo indirizzo email",
+      "invalid_email": "Indirizzo email non valido",
+      "login_email_not_found": "L'abbonamento con questa email non esiste",
+      "newsletter_not_found": "Newsletter non trovata",
+      "preferences_not_found": "Preferenza non trovata",
+      "rate_limit_exceeded": "Limite di richieste superato. Riprova più tardi",
+      "unauthorized": "La tua sessione è scaduta. Accedi di nuovo",
+      "unconfirmed": "La tua email non è confermata per questa newsletter",
+      "unsubscribe_failed": "Annullamento iscrizione fallito",
+      "invalid_preference_token": "Token di preferenza non valido. Inserisci il tuo indirizzo email per ricevere un nuovo link."
+    },
+    "success": {
+      "doi_sent": "Email di conferma inviata al tuo indirizzo email",
+      "login_email_sent": "Abbiamo inviato un link per gestire il tuo abbonamento esistente al tuo indirizzo email",
+      "logout": "Sei uscito con successo",
+      "preferences_updated": "Le tue preferenze sono state aggiornate con successo",
+      "subscribe": "Ti sei iscritto con successo",
+      "unsubscribe": "Hai annullato l'iscrizione con successo"
+    }
+  },
+  "profile": {
+    "signInToView": "Accedi per visualizzare il tuo profilo",
+    "updated": "Il profilo è stato aggiornato"
+  }
+}

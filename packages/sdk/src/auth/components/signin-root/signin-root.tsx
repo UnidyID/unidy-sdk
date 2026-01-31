@@ -1,12 +1,14 @@
-import { Component, Host, h, Prop, Event, type EventEmitter } from "@stencil/core";
+import { Component, Element, Event, type EventEmitter, Host, h, Prop } from "@stencil/core";
 import type { TokenResponse } from "../../api/auth";
 import { authStore } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-root",
-  shadow: true,
+  shadow: false,
 })
 export class SigninRoot {
+  @Element() el!: HTMLElement;
+
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @Event() authEvent!: EventEmitter<TokenResponse>;
@@ -14,6 +16,13 @@ export class SigninRoot {
 
   componentDidLoad() {
     authStore.setRootComponentRef(this);
+
+    const signInSteps = this.el.querySelectorAll("u-signin-step").values();
+    if ([...signInSteps].some((step: HTMLUSigninStepElement) => step.name === "single-login")) {
+      authStore.setInitialStep("single-login");
+    } else {
+      authStore.setInitialStep("email");
+    }
   }
 
   onAuth(response: TokenResponse) {
@@ -25,12 +34,16 @@ export class SigninRoot {
   }
 
   render() {
-    if (authStore.state.authenticated) {
-      return null;
-    }
+    const shouldShow = !authStore.state.authenticated;
 
     return (
-      <Host class={this.componentClassName}>
+      <Host
+        class={this.componentClassName}
+        hidden={!shouldShow}
+        style={{ display: shouldShow ? undefined : "none" }}
+        aria-hidden={!shouldShow ? "true" : null}
+        aria-live="polite"
+      >
         <slot />
       </Host>
     );

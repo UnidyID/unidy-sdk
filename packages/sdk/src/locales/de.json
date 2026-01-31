@@ -1,0 +1,153 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Geben Sie Ihre E-Mail-Adresse ein"
+    },
+    "magicCode": {
+      "already_sent_text": "Magischer Code wurde bereits an Ihre E-Mail-Adresse gesendet",
+      "button_text": "Magischen Code senden",
+      "resend": {
+        "button_text": "Magischen Code erneut senden"
+      },
+      "sending_text": "Wird gesendet..."
+    },
+    "passkey": {
+      "button_text": "Mit Passkey anmelden",
+      "loading_text": "Authentifizierung..."
+    },
+    "password": {
+      "button_text": "Mit Password anmelden",
+      "confirmation": {
+        "placeholder": "Bestätigen Sie Ihr Passwort"
+      },
+      "placeholder": "Geben Sie Ihr Passwort ein"
+    },
+    "resetPassword": {
+      "button_text_resend": "Mail zum Zurücksetzen des Passworts erneut senden",
+      "button_text_reset": "Passwort zurücksetzen",
+      "button_text_set": "Passwort speichern",
+      "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang"
+    },
+    "single-login": {
+      "button_text": "Anmelden"
+    },
+    "socialLogin": {
+      "button_text": "Weiter mit {{provider}}"
+    }
+  },
+  "buttons": {
+    "close": "Schließen",
+    "continue": "Weiter",
+    "jump_to_service": "Zum Dienst wechseln",
+    "jump_to_unidy": "Zu Unidy wechseln",
+    "logout": "Abmelden",
+    "registration": "Neues Konto registrieren",
+    "sign_in": "Anmelden",
+    "submit": "Absenden"
+  },
+  "errors": {
+    "account_locked": "Konto gesperrt",
+    "account_not_found": "Konto nicht gefunden",
+    "authentication_failed": "Authentifizierung fehlgeschlagen",
+    "bad_request": "Ungültige Anfrage",
+    "connection_failed": "Verbindung zum Unidy Server nicht möglich",
+    "expired": "Abgelaufen",
+    "failed_to_load_profile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration",
+    "invalid_id_token": "Ungültiger ID-Token",
+    "invalid_passkey": "Ungültiger Passkey",
+    "invalid_password": "Ungültiges Passwort",
+    "invalid_refresh_token": "Ungültiger Aktualisierungs-Token",
+    "invalid_required_fields_payload": "Ungültige Nutzlast für erforderliche Felder",
+    "invalid_reset_token": "Ungültiger Reset-Token. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
+    "invalid_response_format": "Ungültiges Antwortformat",
+    "internal_server_error": "Interner Serverfehler",
+    "magic_code_is_missing": "Magischer Code fehlt",
+    "magic_code_recently_created": "Magischer Code wurde kürzlich erstellt",
+    "magic_link_not_enabled": "Die Anmeldung über magischen Link ist für dieses Konto nicht aktiviert",
+    "missing_id_token": "Fehlender ID-Token",
+    "missing_refresh_token": "Kein refresh token gefunden",
+    "missing_required_fields": "Fehlende Pflichtfelder",
+    "no_sign_in_id": "Keine Anmelde-ID verfügbar",
+    "not_valid": "Nicht gültig",
+    "passkey_cancelled": "Passkey-Authentifizierung abgebrochen",
+    "passkey_error": "Ein unbekannter Passkey-Fehler ist aufgetreten",
+    "passkey_invalid_state": "Ungültiger Passkey-Status",
+    "passkey_not_supported": "Passkey nicht unterstützt",
+    "passkey_security_error": "Passkey-Sicherheitsfehler",
+    "password_not_set": "Passwort nicht festgelegt",
+    "password_required": "Passwort ist erforderlich",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Passwort ist zu kurz (mindestens 6 Zeichen)",
+      "min_length": "Mindestlänge ist 6 Zeichen",
+      "mixed_case": "Muss sowohl Groß- als auch Kleinbuchstaben enthalten",
+      "number": "Muss eine Zahl enthalten",
+      "symbol": "Muss ein Symbol enthalten"
+    },
+    "passwords_do_not_match": "Passwörter stimmen nicht überein",
+    "prefix": "FEHLER: ",
+    "refresh_failed": "Authorisierungstoken konnte nicht aktualisiert werden. Bitte melden Sie sich erneut an",
+    "refresh_token_revoked": "Aktualisierungs-Token widerrufen",
+    "required_field": "{{field}} ist erforderlich",
+    "reset_password_already_sent": "Zurücksetzen des Passworts bereits gesendet",
+    "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
+    "reset_token_missing": "Reset-Token fehlt",
+    "schema_validation_error": "Schemavalidierungsfehler",
+    "validation": {
+      "accepted": "muss akzeptiert werden",
+      "blank": "darf nicht leer sein",
+      "empty": "darf nicht leer sein",
+      "even": "muss gerade sein",
+      "exclusion": "ist reserviert",
+      "in": "ist nicht in der Liste enthalten",
+      "inclusion": "ist nicht in der Liste enthalten",
+      "invalid": "ist ungültig",
+      "not_a_number": "ist keine Zahl",
+      "odd": "muss ungerade sein",
+      "present": "muss leer sein",
+      "taken": "ist bereits vergeben",
+      "too_long": "ist zu lang",
+      "too_short": "ist zu kurz"
+    },
+    "sign_in_expired": "Anmeldung abgelaufen",
+    "sign_in_not_found": "Anmeldung nicht gefunden",
+    "sign_out_failed": "Abmelden fehlgeschlagen, Grund: {{reason}}",
+    "unknown": "Ein unbekannter Fehler ist aufgetreten",
+    "used": "Verwendet",
+    "verification_failed": "Verifizierung fehlgeschlagen"
+  },
+  "loading": "Wird geladen...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Bestätigung erneut senden",
+      "subscribe": "Abonnieren",
+      "unsubscribe": "Abbestellen"
+    },
+    "errors": {
+      "already_subscribed": "Bereits abonniert",
+      "consent_required": "Bitte akzeptieren Sie die Nutzungsbedingungen, um sich anzumelden",
+      "email_required": "Bitte geben Sie Ihre E-Mail-Adresse ein",
+      "invalid_email": "Ungültige E-Mail-Adresse",
+      "login_email_not_found": "Abonnement mit dieser E-Mail-Adresse existiert nicht",
+      "newsletter_not_found": "Newsletter nicht gefunden",
+      "preferences_not_found": "Präferenz nicht gefunden",
+      "rate_limit_exceeded": "Anfragelimit überschritten. Bitte versuchen Sie es später erneut",
+      "unauthorized": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
+      "unconfirmed": "Ihre E-Mail-Adresse ist für diesen Newsletter nicht bestätigt",
+      "unsubscribe_failed": "Abmeldung fehlgeschlagen",
+      "invalid_preference_token": "Ungültiges Präferenz-Token. Geben Sie Ihre E-Mail-Adresse ein, um einen neuen Link zu erhalten."
+    },
+    "success": {
+      "doi_sent": "Bestätigungs-E-Mail wurde an Ihre E-Mail-Adresse gesendet",
+      "login_email_sent": "Wir haben einen Link zur Verwaltung Ihres bestehenden Abonnements an Ihre E-Mail-Adresse gesendet",
+      "logout": "Sie wurden erfolgreich abgemeldet",
+      "preferences_updated": "Ihre Präferenzen wurden erfolgreich aktualisiert",
+      "subscribe": "Sie haben sich erfolgreich abonniert",
+      "unsubscribe": "Sie haben sich erfolgreich abbestellt"
+    }
+  },
+  "profile": {
+    "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
+    "updated": "Profil wurde aktualisiert"
+  }
+}

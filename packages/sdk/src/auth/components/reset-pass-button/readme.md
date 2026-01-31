@@ -1,4 +1,4 @@
-# reset-pass-button
+# u-reset-password-button
 
 
 
@@ -7,12 +7,23 @@
 
 ## Properties
 
-| Property             | Attribute         | Description | Type     | Default                                                 |
-| -------------------- | ----------------- | ----------- | -------- | ------------------------------------------------------- |
-| `componentClassName` | `class-name`      |             | `string` | `""`                                                    |
-| `successMessage`     | `success-message` |             | `string` | `"Password reset email sent. Please check your inbox."` |
-| `text`               | `text`            |             | `string` | `"Reset Password"`                                      |
+| Property             | Attribute    | Description | Type     | Default |
+| -------------------- | ------------ | ----------- | -------- | ------- |
+| `componentClassName` | `class-name` |             | `string` | `""`    |
 
+
+## Dependencies
+
+### Depends on
+
+- [u-spinner](../../../shared/components/spinner)
+
+### Graph
+```mermaid
+graph TD;
+  u-reset-password-button --> u-spinner
+  style u-reset-password-button fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

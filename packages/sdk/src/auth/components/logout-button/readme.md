@@ -1,4 +1,4 @@
-# logout-button
+# u-logout-button
 
 
 
@@ -7,11 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute           | Description | Type      | Default    |
-| -------------------- | ------------------- | ----------- | --------- | ---------- |
-| `componentClassName` | `class-name`        |             | `string`  | `""`       |
-| `reloadOnSuccess`    | `reload-on-success` |             | `boolean` | `true`     |
-| `text`               | `text`              |             | `string`  | `"Logout"` |
+| Property             | Attribute           | Description | Type      | Default |
+| -------------------- | ------------------- | ----------- | --------- | ------- |
+| `componentClassName` | `class-name`        |             | `string`  | `""`    |
+| `reloadOnSuccess`    | `reload-on-success` |             | `boolean` | `true`  |
 
 
 ## Events
@@ -20,6 +19,19 @@
 | -------- | ----------- | ------------------- |
 | `logout` |             | `CustomEvent<void>` |
 
+
+## Dependencies
+
+### Depends on
+
+- [u-spinner](../../../shared/components/spinner)
+
+### Graph
+```mermaid
+graph TD;
+  u-logout-button --> u-spinner
+  style u-logout-button fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

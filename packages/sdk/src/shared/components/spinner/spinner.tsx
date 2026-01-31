@@ -1,4 +1,4 @@
-import {Component, h, Host} from "@stencil/core";
+import { Component, Host, h } from "@stencil/core";
 
 @Component({
   tag: "u-spinner",
@@ -8,8 +8,9 @@ import {Component, h, Host} from "@stencil/core";
 export class Spinner {
   render() {
     return (
-      <Host class="inline-flex items-center justify-center">
-        <div class="spinner-inner w-[1em] h-[1em] rounded-[50%] animate-spin" part="spinner" aria-label="Loading" />
+      <Host class="u:inline-flex u:items-center u:justify-center">
+        {/* biome-ignore lint/a11y/useSemanticElements: spinner is a visual element, output tag not appropriate */}
+        <div class="spinner-inner u:w-[1em] u:h-[1em] u:rounded-[50%] u:animate-spin" part="spinner" role="status" aria-label="Loading" />
       </Host>
     );
   }

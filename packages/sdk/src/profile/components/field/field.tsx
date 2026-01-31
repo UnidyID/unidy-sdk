@@ -1,4 +1,5 @@
-import { Component, Prop, State, h, Element } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
+import { t } from "../../../i18n";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -46,8 +47,6 @@ export class Field {
       : profileState.data[this.field];
   }
 
-  componentWillLoad() {}
-
   componentDidRender() {
     const fieldErrors = profileState.errors;
 
@@ -70,43 +69,68 @@ export class Field {
   // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic fieldData
   private multiSelectLabel = (fieldData: any): string[] => {
     const multiselectMatches: string[] = [];
-    Array.isArray(fieldData.value)
-      ? fieldData.value.map((val: string) => {
-          // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
-          const match = fieldData.options?.find((opt: any) => opt.value === val);
-          multiselectMatches.push(match?.label ?? val);
-        })
-      : [];
+    if (Array.isArray(fieldData.value)) {
+      for (const val of fieldData.value) {
+        // biome-ignore lint/suspicious/noExplicitAny: needed for dynamic option
+        const match = fieldData.options?.find((opt: any) => opt.value === val);
+        const optionTranslationKey = `fields.${this.field}.options.${val}`;
+        const translatedOptionLabel = t(optionTranslationKey);
+        const optionLabel = translatedOptionLabel !== optionTranslationKey ? translatedOptionLabel : match?.label;
+        multiselectMatches.push(optionLabel ?? val);
+      }
+    }
     return multiselectMatches;
   };
 
   render() {
-    if (profileState.loading) {
-      return <u-spinner />;
-    }
-
     const fieldData = this.getFieldData();
     if (!fieldData) {
       return null;
     }
+
+    const labelTranslationKey = `fields.${this.field}.label`;
+    const label = t(labelTranslationKey, { defaultValue: fieldData?.label });
+
+    const placeholderTranslationKey = `fields.${this.field}.placeholder`;
+    const placeholder = t(placeholderTranslationKey, { defaultValue: this.placeholder ? this.placeholder : "" });
+
+    const readonlyPlaceholderTranslationKey = `fields.${this.field}.readonlyPlaceholder`;
+    const readonlyPlaceholder = t(readonlyPlaceholderTranslationKey, {
+      defaultValue: this.readonlyPlaceholder ? this.readonlyPlaceholder : "",
+    });
+
+    const translatedOptions = (fieldData.options || []).map((opt) => {
+      const translationKey = `fields.${this.field}.options.${opt.value}`;
+      const label = t(translationKey, { defaultValue: opt.label });
+      return { ...opt, label };
+    });
+
+    const translatedRadioOptions = (fieldData.radio_options || []).map((opt) => {
+      const translationKey = `fields.${this.field}.options.${opt.value}`;
+      const label = t(translationKey, { defaultValue: opt.label });
+      return { ...opt, label };
+    });
+
+    const errorPrefix = t("errors.prefix", { defaultValue: "ERROR: " });
+
     const isLocked = !!fieldData?.locked;
     const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
     const isReadonly = fieldData?.readonly === true;
     const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
-    // TODO: Add other types
+
     return (
       <div part={`field-container field-container--${this.createSpecificPartKey(this.field)}`}>
         <slot name="label" />
 
         {this.renderDefaultLabel && (
           <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
-            {fieldData?.label}
+            {label}
             {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
           <span id={this.field} part="readonly-indicator">
-            {fieldData?.value || this.readonlyPlaceholder}
+            {fieldData?.value || readonlyPlaceholder}
           </span>
         ) : null}
         {isReadonly && fieldData?.type === "checkbox" && (
@@ -124,13 +148,14 @@ export class Field {
             field={this.field}
             type={fieldData.type as string}
             value={fieldData.value}
-            options={fieldData.type === "select" ? fieldData.options : undefined}
-            radioOptions={fieldData.type === "radio" ? fieldData.radio_options : undefined}
-            multiSelectOptions={fieldData.type === "checkbox" ? fieldData.options : undefined}
+            options={fieldData.type === "select" ? translatedOptions : undefined}
+            radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
+            multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
             required={fieldData.required || this.required}
-            disabled={isLocked}
+            // disable editing of email field
+            disabled={isLocked || profileState.loading || this.field === "email"}
             tooltip={isLocked ? lockedText : undefined}
-            placeholder={this.placeholder}
+            placeholder={placeholder}
             componentClassName={this.componentClassName}
             emptyOption={this.emptyOption}
             countryCodeDisplayOption={this.countryCodeDisplayOption}
@@ -145,7 +170,7 @@ export class Field {
 
         {profileState.errors[this.field] && (
           <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">
-            ERROR: {profileState.errors[this.field]}
+            {errorPrefix} {profileState.errors[this.field]}
           </span>
         )}
       </div>
