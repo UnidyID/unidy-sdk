@@ -11,6 +11,7 @@ const notNull = <T>(value: T): NotNull<T> => {
   return value as NotNull<T>;
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: ID and Create types are generic and extracted via conditional type
 type Create<ModelType extends BaseModel> = CleanModel<ModelType> & (ModelType extends BaseModel<any, infer Create> ? Create : never);
 
 export class Database<
@@ -23,7 +24,9 @@ export class Database<
     private readonly where?: ModelName extends "TestEmail"
       ? string
       : {
+          // biome-ignore lint/suspicious/noExplicitAny: includes is a flexible query parameter
           includes?: any;
+          // biome-ignore lint/suspicious/noExplicitAny: scope allows additional dynamic properties
           scope: Partial<ModelType> & Record<string, any>;
         },
   ) {
@@ -127,7 +130,7 @@ export class Database<
   async fetch<T = object>(
     url: string,
     options: Omit<RequestInit, "body"> & {
-      body?: any;
+      body?: unknown;
     } = {},
     unscoped = false,
     throwOnError = true,

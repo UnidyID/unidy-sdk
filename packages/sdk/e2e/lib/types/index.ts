@@ -1,11 +1,12 @@
 import type { Brand, UserBrand } from "./brand";
 import type { MagicLink } from "./magicLink";
-import type { Newsletter } from "./newsletter";
+import type { Newsletter, NewsletterPreference } from "./newsletter";
 import type { NewsletterSubscription } from "./newsletterSubscription";
 import type { OauthApplication } from "./oauthApplication";
 import type { TestEmail } from "./testEmail";
 import type { User } from "./user";
 
+// biome-ignore lint/suspicious/noExplicitAny: Create type defaults to any for flexibility
 export interface BaseModel<ID = number, Create = any> {
   id: ID;
   created_at: string;
@@ -24,10 +25,11 @@ export type ModelMap = {
   MagicLink: MagicLink;
   Newsletter: Newsletter;
   NewsletterSubscription: NewsletterSubscription;
-  NewsletterPreference: Newsletter;
+  NewsletterPreference: NewsletterPreference;
   Brand: Brand;
   UserBrand: UserBrand;
   "Oauth::Application": OauthApplication;
 
+  // biome-ignore lint/suspicious/noExplicitAny: index signature allows any BaseModel variant
   [key: string]: BaseModel<any, any>;
 };

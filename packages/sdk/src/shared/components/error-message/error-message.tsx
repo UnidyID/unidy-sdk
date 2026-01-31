@@ -130,7 +130,7 @@ export class ErrorMessage {
       shouldShow = false;
     }
 
-    const errorMessage = shouldShow ? this.getErrorMessage(errorCode!) : null;
+    const errorMessage = shouldShow ? this.getErrorMessage(errorCode) : null;
     const formattedMessage = errorMessage?.includes("\n") ? <div style={{ whiteSpace: "pre-line" }}>{errorMessage}</div> : errorMessage;
 
     // For shadow: false components with slots, we must always render Host but use hidden/display

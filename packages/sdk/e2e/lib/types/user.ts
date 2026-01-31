@@ -39,7 +39,7 @@ export interface User extends BaseModel {
   confirmation_token: string | null;
   confirmed_at: string | null;
   accept_invitation_return_url: string | null;
-  custom_attribute_data: Record<string, any> | null;
+  custom_attribute_data: Record<string, unknown> | null;
   has_password: boolean | null;
   manually_confirmed_by_admin_at: string | null;
   preferred_language: string | null;

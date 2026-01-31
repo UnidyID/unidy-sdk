@@ -5,7 +5,7 @@ import { Database } from "../database";
 import type { ModelMap } from "../types";
 
 export class ModelCountAssert<ModelName extends keyof ModelMap> {
-  static async init<ModelName extends keyof ModelMap>(model: ModelName, scope?: any) {
+  static async init<ModelName extends keyof ModelMap>(model: ModelName, scope?: Record<string, unknown>) {
     const expect = new ModelCountAssert({ model, scope });
     expect.initial = await expect.fetchCount();
     return expect;
@@ -20,11 +20,12 @@ export class ModelCountAssert<ModelName extends keyof ModelMap> {
   initial = -1;
   databaseService: Database<ModelName>;
 
-  private constructor(args: { model: ModelName; scope: any } | { database: Database<ModelName> }) {
+  private constructor(args: { model: ModelName; scope: Record<string, unknown> | undefined } | { database: Database<ModelName> }) {
     if ("database" in args) {
       this.databaseService = args.database;
     } else {
-      this.databaseService = new Database(args.model, args.scope);
+      // biome-ignore lint/suspicious/noExplicitAny: complex conditional type in Database makes this necessary
+      this.databaseService = new Database(args.model, args.scope as any);
     }
   }
 
