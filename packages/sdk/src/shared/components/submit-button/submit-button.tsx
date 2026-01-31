@@ -1,9 +1,10 @@
 import { Component, Element, h, Prop } from "@stencil/core";
 import { type AuthButtonFor, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { hasSlotContent, renderButtonContent } from "../../component-utils";
+import { HasSlotFactory, renderButtonContent } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -11,7 +12,7 @@ import { defaultContext, type SubmitButtonContext } from "./context";
   styleUrl: "submit-button.css",
   shadow: false,
 })
-export class SubmitButton {
+export class SubmitButton extends UnidyComponent(HasSlotFactory) {
   @Element() el!: HTMLElement;
   @Prop() for?: AuthButtonFor | NewsletterButtonFor;
   @Prop() text?: string;
@@ -20,12 +21,9 @@ export class SubmitButton {
 
   private context: "auth" | "profile" | "newsletter" = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
-  private hasSlot = false;
 
   async componentWillLoad() {
-    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
-    // components and always return true on re-render
-    this.hasSlot = hasSlotContent(this.el);
+    this.checkSlotContent(this.el);
 
     this.context = this.detectContext();
 

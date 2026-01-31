@@ -1,6 +1,7 @@
 import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../logger";
+import { HasSlotFactory } from "../../../shared/component-utils";
 import { Flash } from "../../../shared/store/flash-store";
 import { newsletterLogout } from "../../newsletter-helpers";
 import { newsletterStore } from "../../store/newsletter-store";
@@ -9,17 +10,13 @@ import { newsletterStore } from "../../store/newsletter-store";
   tag: "u-newsletter-logout-button",
   shadow: false,
 })
-export class LogoutButton {
+export class NewsletterLogoutButton extends UnidyComponent(HasSlotFactory) {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  private hasSlot = false;
-
   async componentWillLoad() {
-    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
-    // components and always return true on re-render
-    this.hasSlot = hasSlotContent(this.el);
+    this.checkSlotContent(this.el);
   }
 
   private handleLogout = () => {

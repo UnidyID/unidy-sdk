@@ -1,8 +1,9 @@
 import { Component, Element, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../logger";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { hasSlotContent } from "../../component-utils";
+import { HasSlotFactory } from "../../component-utils";
 import { unidyState } from "../../store/unidy-store";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
@@ -12,19 +13,15 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
   shadow: false,
   styleUrl: "error-message.css",
 })
-export class ErrorMessage {
+export class ErrorMessage extends UnidyComponent(HasSlotFactory) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() for!: string;
 
   @Prop() errorMessages?: Record<string, string>;
   @Element() el!: HTMLElement;
 
-  // Must be evaluated on load, not render, because shadow: false components
-  // will have their DOM modified after first render, causing hasSlotContent to return incorrect results
-  private hasSlot = false;
-
   componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
+    this.checkSlotContent(this.el);
   }
 
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {

@@ -122,13 +122,14 @@ export interface WithLogger {
  *
  * // With additional mixins
  * @Component({ tag: 'my-component' })
- * export class MyComponent extends UnidyComponent(hasSlotFactory, otherMixin) {
+ * export class MyComponent extends UnidyComponent(HasSlotFactory) {
  *   // Has both logger and hasSlot functionality
  * }
  * ```
  */
-export const UnidyComponent = <T extends MixinFactory[]>(...mixins: T): MixedInCtor<WithLogger> => {
-  return Mixin(loggerFactory, ...mixins) as unknown as MixedInCtor<WithLogger>;
+// biome-ignore lint/suspicious/noExplicitAny: Return type must be any to allow mixin composition with proper type inference
+export const UnidyComponent = <T extends MixinFactory[]>(...mixins: T): any => {
+  return Mixin(loggerFactory, ...mixins);
 };
 
 // Global logger for non-class contexts (backwards compatibility)

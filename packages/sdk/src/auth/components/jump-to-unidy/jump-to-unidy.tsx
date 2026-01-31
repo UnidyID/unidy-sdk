@@ -1,7 +1,8 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../logger";
+import { HasSlotFactory, renderButtonContent } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
@@ -11,7 +12,7 @@ import { authState } from "../../store/auth-store";
   tag: "u-jump-to-unidy",
   shadow: false,
 })
-export class JumpToUnidy {
+export class JumpToUnidy extends UnidyComponent(HasSlotFactory) {
   @Element() el!: HTMLElement;
 
   /**
@@ -39,14 +40,12 @@ export class JumpToUnidy {
 
   @State() loading = false;
 
-  private hasSlot = false;
-
   private isValidPath(): boolean {
     return !!this.path && this.path.startsWith("/");
   }
 
   componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
+    this.checkSlotContent(this.el);
 
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);

@@ -1,7 +1,8 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../logger";
+import { HasSlotFactory, renderButtonContent } from "../../../shared/component-utils";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -10,7 +11,7 @@ import { authState } from "../../store/auth-store";
   tag: "u-jump-to-service",
   shadow: false,
 })
-export class JumpToService {
+export class JumpToService extends UnidyComponent(HasSlotFactory) {
   @Element() el!: HTMLElement;
 
   /**
@@ -49,10 +50,8 @@ export class JumpToService {
 
   @State() loading = false;
 
-  private hasSlot = false;
-
   componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
+    this.checkSlotContent(this.el);
   }
 
   private handleClick = async (event: Event) => {
