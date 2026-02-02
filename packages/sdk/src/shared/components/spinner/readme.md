@@ -98,15 +98,9 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
  - [u-jump-to-service](../../../auth/components/jump-to-service)
  - [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
- - [u-logout-button](../../../auth/components/logout-button)
- - [u-magic-code-field](../../../auth/components/magic-code-field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
  - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
- - [u-newsletter-root](../../../newsletter/components/newsletter-root)
  - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
- - [u-passkey](../../../auth/components/passkey)
- - [u-reset-password-button](../../../auth/components/reset-pass-button)
- - [u-send-magic-code-button](../../../auth/components/send-magic-code-button)
  - [u-submit-button](../submit-button)
 
 ### Graph
@@ -114,15 +108,9 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 graph TD;
   u-jump-to-service --> u-spinner
   u-jump-to-unidy --> u-spinner
-  u-logout-button --> u-spinner
-  u-magic-code-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
   u-newsletter-resend-doi-button --> u-spinner
-  u-newsletter-root --> u-spinner
   u-newsletter-toggle-subscription-button --> u-spinner
-  u-passkey --> u-spinner
-  u-reset-password-button --> u-spinner
-  u-send-magic-code-button --> u-spinner
   u-submit-button --> u-spinner
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```

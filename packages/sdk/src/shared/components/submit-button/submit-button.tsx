@@ -5,7 +5,7 @@ import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
-import { renderButtonContent } from "../../component-utils";
+import { slotFallbackText } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -94,6 +94,6 @@ export class SubmitButton extends UnidyComponent(HasSlotContent) {
       "aria-live": "polite",
     };
 
-    return <button {...buttonProps}>{renderButtonContent(this.hasSlot, this.isLoading(), this.getButtonText())}</button>;
+    return <button {...buttonProps}>{slotFallbackText(this.getButtonText(), { hasSlot: this.hasSlot, loading: this.isLoading() })}</button>;
   }
 }
