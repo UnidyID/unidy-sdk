@@ -493,18 +493,14 @@ export namespace Components {
          */
         "page": number;
         /**
-          * @default null
-         */
-        "paginationMeta": PaginationMeta | null;
-        /**
           * @default false
          */
         "skeletonAllText"?: boolean;
         "skeletonCount"?: number;
         /**
-          * @default null
+          * @default createPaginationStore()
          */
-        "store": PaginationStore | null;
+        "store": PaginationStore;
         "target"?: string;
         "ticketableType": "ticket" | "subscription";
     }
@@ -1360,18 +1356,14 @@ declare namespace LocalJSX {
          */
         "page"?: number;
         /**
-          * @default null
-         */
-        "paginationMeta"?: PaginationMeta | null;
-        /**
           * @default false
          */
         "skeletonAllText"?: boolean;
         "skeletonCount"?: number;
         /**
-          * @default null
+          * @default createPaginationStore()
          */
-        "store"?: PaginationStore | null;
+        "store"?: PaginationStore;
         "target"?: string;
         "ticketableType": "ticket" | "subscription";
     }
