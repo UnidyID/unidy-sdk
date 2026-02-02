@@ -5,8 +5,8 @@ import { t } from "../i18n";
 import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
-import { clearUrlParam } from "../shared/component-utils";
 import { Flash } from "../shared/store/flash-store";
+import { clearUrlParam } from "../shared/utils/url-utils";
 import type { TokenPayload } from "./auth";
 import { authenticateWithPasskey } from "./passkey-auth";
 

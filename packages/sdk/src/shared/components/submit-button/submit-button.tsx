@@ -3,7 +3,7 @@ import { type AuthButtonFor, authContext } from "../../../auth/components/submit
 import { t } from "../../../i18n";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { hasSlotContent, renderButtonContent } from "../../component-utils";
+import { hasSlotContent, slotFallbackText } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -98,6 +98,6 @@ export class SubmitButton {
       "aria-live": "polite",
     };
 
-    return <button {...buttonProps}>{renderButtonContent(this.hasSlot, this.isLoading(), this.getButtonText())}</button>;
+    return <button {...buttonProps}>{slotFallbackText(this.getButtonText(), { hasSlot: this.hasSlot, loading: this.isLoading() })}</button>;
   }
 }
