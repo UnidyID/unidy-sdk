@@ -2,7 +2,7 @@ import { Component, Element, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
-import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { hasSlotContent, slotFallbackText } from "../../../shared/component-utils";
 import { oauthState } from "../../store/oauth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
@@ -115,7 +115,7 @@ export class OAuthButton extends UnidyComponent() {
         onClick={this.handleClick}
         aria-live="polite"
       >
-        {renderButtonContent(this.hasSlot, this.showSpinner(), this.getDefaultLabel())}
+        {slotFallbackText(this.getDefaultLabel(), { hasSlot: this.hasSlot, loading: this.showSpinner() })}
       </button>
     );
   }

@@ -58,19 +58,6 @@ Type: `Promise<void>`
 
 
 
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../../../shared/components/spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-oauth-provider --> u-spinner
-  style u-oauth-provider fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
