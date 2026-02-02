@@ -27,8 +27,11 @@ export class BrandConnectButton {
     } else {
       this.isLoading = true;
       const authInstance = await Auth.getInstance();
-      await authInstance.helpers.connectBrand();
-      this.isLoading = false;
+      try {
+        await authInstance.helpers.connectBrand();
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
