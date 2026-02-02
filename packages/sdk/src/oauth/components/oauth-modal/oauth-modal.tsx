@@ -1,6 +1,6 @@
-import { Component, h } from "@stencil/core";
+import { Component, forceUpdate, h } from "@stencil/core";
 import { UnidyComponent } from "../../../shared/base/component";
-import { oauthState } from "../../store/oauth-store";
+import { onChange, oauthState } from "../../store/oauth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 @Component({
@@ -10,6 +10,7 @@ import { getOAuthProvider, type OAuthProviderElement } from "../context";
 export class OAuthModal extends UnidyComponent() {
   private provider: OAuthProviderElement | null = null;
   private dialogRef?: HTMLDialogElement;
+  private unsubscribe?: () => void;
 
   connectedCallback() {
     this.provider = getOAuthProvider(this.element);
@@ -17,6 +18,15 @@ export class OAuthModal extends UnidyComponent() {
     if (!this.provider) {
       this.logger.warn("Must be used inside a u-oauth-provider");
     }
+
+    // Subscribe to step changes to trigger re-renders
+    this.unsubscribe = onChange("step", () => {
+      forceUpdate(this);
+    });
+  }
+
+  disconnectedCallback() {
+    this.unsubscribe?.();
   }
 
   componentDidRender() {
@@ -47,9 +57,6 @@ export class OAuthModal extends UnidyComponent() {
   };
 
   render() {
-    // Access oauthState.step to subscribe to state changes and trigger re-renders
-    void oauthState.step;
-
     if (!this.provider) {
       return null;
     }
