@@ -21,17 +21,16 @@ export class BrandConnectButton {
   }
 
   private async onClick() {
-    if (this.action === "cancel") {
+    this.isLoading = true;
+    try {
       const authInstance = await Auth.getInstance();
-      await authInstance.helpers.cancelBrandConnect();
-    } else {
-      this.isLoading = true;
-      const authInstance = await Auth.getInstance();
-      try {
+      if (this.action === "cancel") {
+        await authInstance.helpers.cancelBrandConnect();
+      } else {
         await authInstance.helpers.connectBrand();
-      } finally {
-        this.isLoading = false;
       }
+    } finally {
+      this.isLoading = false;
     }
   }
 
