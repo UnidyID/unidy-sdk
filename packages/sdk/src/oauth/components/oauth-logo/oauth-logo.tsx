@@ -43,7 +43,7 @@ export class OAuthLogo extends UnidyComponent {
       <Host>
         <img
           src={logoUrl}
-          alt={`${oauthState.application!.name} logo`}
+          alt={`${oauthState.application?.name ?? "Application"} logo`}
           class={this.componentClassName}
           width={this.width}
           height={this.height}

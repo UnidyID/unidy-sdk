@@ -27,7 +27,7 @@ export class OAuthScopes extends UnidyComponent {
 
     return (
       <Host>
-        <ul class={this.componentClassName} role="list">
+        <ul class={this.componentClassName}>
           {scopes.map((scope) => (
             <li key={scope.scope}>
               <span class="u-oauth-scope-name">{scope.name}</span>

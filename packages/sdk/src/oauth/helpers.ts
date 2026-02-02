@@ -216,11 +216,13 @@ export class OAuthHelper {
 
     const finalUrl = redirectUrl.toString();
 
-    this.callbacks.onSuccess({
-      token,
-      application: oauthState.application!,
-      redirectUrl: finalUrl,
-    });
+    if (oauthState.application) {
+      this.callbacks.onSuccess({
+        token,
+        application: oauthState.application,
+        redirectUrl: finalUrl,
+      });
+    }
 
     if (this.config.autoRedirect !== false) {
       if (oauthState.newtab) {

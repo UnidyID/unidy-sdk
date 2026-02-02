@@ -38,10 +38,14 @@ export class OAuthModal extends UnidyComponent {
     }
   };
 
-  private handleBackdropClick = (event: MouseEvent) => {
+  private handleBackdropClick = (event: MouseEvent | KeyboardEvent) => {
     if (event.target === this.dialogRef) {
       this.provider?.cancel();
     }
+  };
+
+  private setDialogRef = (el: HTMLDialogElement | undefined) => {
+    this.dialogRef = el;
   };
 
   render() {
@@ -51,13 +55,16 @@ export class OAuthModal extends UnidyComponent {
 
     return (
       <Host>
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose */}
         <dialog
-          ref={(el) => (this.dialogRef = el)}
+          ref={this.setDialogRef}
           onClose={this.handleDialogClose}
           onClick={this.handleBackdropClick}
           aria-labelledby="oauth-modal-title"
           aria-describedby="oauth-modal-description"
         >
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: prevents backdrop click propagation */}
+          {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by dialog */}
           <div class="u-oauth-modal-content" onClick={(e) => e.stopPropagation()}>
             <slot />
           </div>
