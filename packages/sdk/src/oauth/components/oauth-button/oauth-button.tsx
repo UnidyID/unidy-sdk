@@ -1,8 +1,9 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
-import { hasSlotContent, slotFallbackText } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
+import { slotFallbackText } from "../../../shared/component-utils";
 import { oauthState } from "../../store/oauth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
@@ -12,9 +13,7 @@ export type OAuthButtonAction = "connect" | "submit" | "cancel";
   tag: "u-oauth-button",
   shadow: false,
 })
-export class OAuthButton extends UnidyComponent() {
-  @Element() el!: HTMLElement;
-
+export class OAuthButton extends UnidyComponent(HasSlotContent) {
   /**
    * The action this button performs.
    * - "connect": Start the OAuth flow (default)
@@ -28,12 +27,11 @@ export class OAuthButton extends UnidyComponent() {
    */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  private hasSlot = false;
   private provider: OAuthProviderElement | null = null;
 
-  componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-    this.provider = getOAuthProvider(this.el);
+  connectedCallback() {
+    super.connectedCallback();
+    this.provider = getOAuthProvider(this.element);
 
     if (!this.provider) {
       this.logger.warn("Must be used inside a u-oauth-provider");

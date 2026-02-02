@@ -1,23 +1,13 @@
-import { Component, Element, h, Prop } from "@stencil/core";
-import { UnidyComponent } from "../../../logger";
+import { Component, h, Prop } from "@stencil/core";
 import { oauthState } from "../../store/oauth-store";
-import { getOAuthProvider } from "../context";
 
 @Component({
   tag: "u-oauth-scopes",
   shadow: false,
 })
-export class OAuthScopes extends UnidyComponent() {
-  @Element() el!: HTMLElement;
-
+export class OAuthScopes {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop({ attribute: "item-class-name" }) itemClassName = "";
-
-  componentWillLoad() {
-    if (!getOAuthProvider(this.el)) {
-      this.logger.warn("Must be used inside a u-oauth-provider");
-    }
-  }
 
   render() {
     const scopes = oauthState.application?.scopes ?? [];

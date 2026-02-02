@@ -1,25 +1,15 @@
-import { Component, Element, h, Prop } from "@stencil/core";
-import { UnidyComponent } from "../../../logger";
+import { Component, h, Prop } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { oauthState } from "../../store/oauth-store";
-import { getOAuthProvider } from "../context";
 
 @Component({
   tag: "u-oauth-logo",
   shadow: false,
 })
-export class OAuthLogo extends UnidyComponent() {
-  @Element() el!: HTMLElement;
-
+export class OAuthLogo {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() width = "64";
   @Prop() height = "64";
-
-  componentWillLoad() {
-    if (!getOAuthProvider(this.el)) {
-      this.logger.warn("Must be used inside a u-oauth-provider");
-    }
-  }
 
   private getLogoUrl(): string | null {
     const logoUrl = oauthState.application?.logo_url;
