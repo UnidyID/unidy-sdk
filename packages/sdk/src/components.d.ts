@@ -36,7 +36,11 @@ export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
 export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
-    interface UCancelBrandConnectButton {
+    interface UBrandConnectButton {
+        /**
+          * @default "connect"
+         */
+        "action": "connect" | "cancel";
         /**
           * @default ""
          */
@@ -80,12 +84,6 @@ export namespace Components {
           * @default "production"
          */
         "mode": "production" | "development";
-    }
-    interface UConnectBrandButton {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
     }
     interface UEmailField {
         /**
@@ -550,11 +548,11 @@ export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUTicketableListElement;
 }
 declare global {
-    interface HTMLUCancelBrandConnectButtonElement extends Components.UCancelBrandConnectButton, HTMLStencilElement {
+    interface HTMLUBrandConnectButtonElement extends Components.UBrandConnectButton, HTMLStencilElement {
     }
-    var HTMLUCancelBrandConnectButtonElement: {
-        prototype: HTMLUCancelBrandConnectButtonElement;
-        new (): HTMLUCancelBrandConnectButtonElement;
+    var HTMLUBrandConnectButtonElement: {
+        prototype: HTMLUBrandConnectButtonElement;
+        new (): HTMLUBrandConnectButtonElement;
     };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
@@ -579,12 +577,6 @@ declare global {
     var HTMLUConfigElement: {
         prototype: HTMLUConfigElement;
         new (): HTMLUConfigElement;
-    };
-    interface HTMLUConnectBrandButtonElement extends Components.UConnectBrandButton, HTMLStencilElement {
-    }
-    var HTMLUConnectBrandButtonElement: {
-        prototype: HTMLUConnectBrandButtonElement;
-        new (): HTMLUConnectBrandButtonElement;
     };
     interface HTMLUEmailFieldElement extends Components.UEmailField, HTMLStencilElement {
     }
@@ -882,10 +874,9 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
-        "u-cancel-brand-connect-button": HTMLUCancelBrandConnectButtonElement;
+        "u-brand-connect-button": HTMLUBrandConnectButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
-        "u-connect-brand-button": HTMLUConnectBrandButtonElement;
         "u-email-field": HTMLUEmailFieldElement;
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
@@ -924,7 +915,11 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface UCancelBrandConnectButton {
+    interface UBrandConnectButton {
+        /**
+          * @default "connect"
+         */
+        "action"?: "connect" | "cancel";
         /**
           * @default ""
          */
@@ -970,12 +965,6 @@ declare namespace LocalJSX {
         "mode"?: "production" | "development";
         "onConfigChange"?: (event: UConfigCustomEvent<ConfigChange>) => void;
         "onUnidyInitialized"?: (event: UConfigCustomEvent<Config>) => void;
-    }
-    interface UConnectBrandButton {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
     }
     interface UEmailField {
         /**
@@ -1414,10 +1403,9 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
-        "u-cancel-brand-connect-button": UCancelBrandConnectButton;
+        "u-brand-connect-button": UBrandConnectButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
-        "u-connect-brand-button": UConnectBrandButton;
         "u-email-field": UEmailField;
         "u-error-message": UErrorMessage;
         "u-field": UField;
@@ -1459,10 +1447,9 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "u-cancel-brand-connect-button": LocalJSX.UCancelBrandConnectButton & JSXBase.HTMLAttributes<HTMLUCancelBrandConnectButtonElement>;
+            "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
-            "u-connect-brand-button": LocalJSX.UConnectBrandButton & JSXBase.HTMLAttributes<HTMLUConnectBrandButtonElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
