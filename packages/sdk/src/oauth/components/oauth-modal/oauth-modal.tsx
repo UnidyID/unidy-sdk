@@ -47,6 +47,9 @@ export class OAuthModal extends UnidyComponent() {
   };
 
   render() {
+    // Access oauthState.step to subscribe to state changes and trigger re-renders
+    void oauthState.step;
+
     if (!this.provider) {
       return null;
     }
