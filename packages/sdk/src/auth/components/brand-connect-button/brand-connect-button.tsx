@@ -1,6 +1,6 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { hasSlotContent, slotFallbackText } from "../../../shared/component-utils";
 import { Auth } from "../..";
 import { authState } from "../../store/auth-store";
 
@@ -43,11 +43,7 @@ export class BrandConnectButton {
         disabled={authState.loading}
         aria-live="polite"
       >
-        {this.isLoading
-            ? <u-spinner />
-            : this.hasSlot
-              ? <slot />
-              : t(`buttons.${this.action}`)}
+        {slotFallbackText(t(`buttons.${this.action}`), { hasSlot: this.hasSlot, loading: this.isLoading })}
       </button>
     );
   }
