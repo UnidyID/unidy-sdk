@@ -1,12 +1,10 @@
-import { Component, Element, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import type { ExportFormat } from "../../api/schemas";
 
 @Component({ tag: "u-ticketable-export", shadow: false })
 export class TicketableExport extends UnidyComponent() {
-  @Element() element: HTMLElement;
-
   @Prop() format!: ExportFormat;
   @Prop() customClass?: string;
   @Prop({ reflect: true }) exportable = true;

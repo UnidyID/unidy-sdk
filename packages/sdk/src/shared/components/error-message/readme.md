@@ -14,19 +14,6 @@
 | `for` _(required)_   | `for`        |             | `string`                   | `undefined` |
 
 
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-error-message --> u-spinner
-  style u-error-message fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

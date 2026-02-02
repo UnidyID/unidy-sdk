@@ -1,12 +1,10 @@
-import { Component, Element, Host, h, Prop, State } from "@stencil/core";
+import { Component, Host, h, Prop, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-page", shadow: false })
 export class PaginationPage extends UnidyComponent() {
-  @Element() element: HTMLElement;
-
   @Prop() customClass?: string;
 
   @State() paginationMeta: PaginationMeta | null = null;

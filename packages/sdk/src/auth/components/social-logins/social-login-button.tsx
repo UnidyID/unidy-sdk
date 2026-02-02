@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { authState } from "../../store/auth-store";
 import { AppleLogo } from "./logos/apple";

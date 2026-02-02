@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import type { PaginationMeta } from "../../../api";
@@ -6,7 +6,7 @@ import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
@@ -84,8 +84,6 @@ async function loadLocales() {
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
-  @Element() element: HTMLElement;
-
   private unsubscribeAuth?: () => void;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)

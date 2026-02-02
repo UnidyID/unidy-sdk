@@ -3,7 +3,7 @@ import { Component, Event, type EventEmitter, h, Prop, Watch } from "@stencil/co
 import { getUnidyClient } from "../../../api/";
 import { Auth } from "../../../auth";
 import i18n from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../base/component";
 import { unidyState } from "../../store/unidy-store";
 
 let configInstance: UnidyConfig | null = null;
