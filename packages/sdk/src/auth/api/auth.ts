@@ -1,4 +1,5 @@
 import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
+import { SDK_VERSION } from "../../version";
 import {
   BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
@@ -44,8 +45,8 @@ export type {
   TokenResponse,
 } from "./schemas";
 
-// SDK version for feature gating
-export const SDK_VERSION = "1.3.0";
+// Re-export SDK version for external use (generated from package.json at build time)
+export { SDK_VERSION } from "../../version";
 
 // Argument types for unified interface
 export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; sdkVersion?: string; originUrl?: string }>;
