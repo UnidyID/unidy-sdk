@@ -1,16 +1,17 @@
-import { Component, Element, h, Host, Prop } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { UnidyComponent } from "../../../logger";
-import { getOAuthProvider } from "../context";
 import { oauthState } from "../../store/oauth-store";
+import { getOAuthProvider } from "../context";
 
 @Component({
   tag: "u-oauth-scopes",
   shadow: false,
 })
-export class OAuthScopes extends UnidyComponent {
+export class OAuthScopes extends UnidyComponent() {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop({ attribute: "item-class-name" }) itemClassName = "";
 
   componentWillLoad() {
     if (!getOAuthProvider(this.el)) {
@@ -26,15 +27,13 @@ export class OAuthScopes extends UnidyComponent {
     }
 
     return (
-      <Host>
-        <ul class={this.componentClassName}>
-          {scopes.map((scope) => (
-            <li key={scope.scope}>
-              <span class="u-oauth-scope-name">{scope.name}</span>
-            </li>
-          ))}
-        </ul>
-      </Host>
+      <ul class={this.componentClassName}>
+        {scopes.map((scope) => (
+          <li key={scope.scope} class={this.itemClassName}>
+            <span class="u-oauth-scope-name">{scope.name}</span>
+          </li>
+        ))}
+      </ul>
     );
   }
 }

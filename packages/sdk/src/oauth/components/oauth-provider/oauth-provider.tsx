@@ -1,6 +1,6 @@
-import { Component, Element, Event, type EventEmitter, h, Host, Method, Prop, Watch } from "@stencil/core";
-import { OAuthHelper } from "../../helpers";
+import { Component, Element, Event, type EventEmitter, h, Method, Prop, Watch } from "@stencil/core";
 import type { OAuthApplication } from "../../api/oauth";
+import { OAuthHelper } from "../../helpers";
 
 export interface OAuthSuccessEvent {
   token: string;
@@ -65,7 +65,7 @@ export class OAuthProvider {
         onSuccess: (data) => this.oauthSuccess.emit(data),
         onError: (data) => this.oauthError.emit(data),
         onCancel: () => this.oauthCancel.emit(),
-      }
+      },
     );
     this.helper.initialize();
   }
@@ -90,10 +90,6 @@ export class OAuthProvider {
   }
 
   render() {
-    return (
-      <Host>
-        <slot />
-      </Host>
-    );
+    return <slot />;
   }
 }

@@ -1,13 +1,13 @@
-import { Component, Element, h, Host } from "@stencil/core";
+import { Component, Element, h } from "@stencil/core";
 import { UnidyComponent } from "../../../logger";
-import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState } from "../../store/oauth-store";
+import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 @Component({
   tag: "u-oauth-modal",
   shadow: false,
 })
-export class OAuthModal extends UnidyComponent {
+export class OAuthModal extends UnidyComponent() {
   @Element() el!: HTMLElement;
 
   private provider: OAuthProviderElement | null = null;
@@ -54,22 +54,20 @@ export class OAuthModal extends UnidyComponent {
     }
 
     return (
-      <Host>
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose */}
-        <dialog
-          ref={this.setDialogRef}
-          onClose={this.handleDialogClose}
-          onClick={this.handleBackdropClick}
-          aria-labelledby="oauth-modal-title"
-          aria-describedby="oauth-modal-description"
-        >
-          {/* biome-ignore lint/a11y/noStaticElementInteractions: prevents backdrop click propagation */}
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by dialog */}
-          <div class="u-oauth-modal-content" onClick={(e) => e.stopPropagation()}>
-            <slot />
-          </div>
-        </dialog>
-      </Host>
+      // biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose
+      <dialog
+        ref={this.setDialogRef}
+        onClose={this.handleDialogClose}
+        onClick={this.handleBackdropClick}
+        aria-labelledby="oauth-modal-title"
+        aria-describedby="oauth-modal-description"
+      >
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: prevents backdrop click propagation */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by dialog */}
+        <div class="u-oauth-modal-content" onClick={(e) => e.stopPropagation()}>
+          <slot />
+        </div>
+      </dialog>
     );
   }
 }

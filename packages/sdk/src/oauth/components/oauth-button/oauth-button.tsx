@@ -1,10 +1,10 @@
 import { Component, Element, h, Prop } from "@stencil/core";
+import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
 import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
-import { authState } from "../../../auth/store/auth-store";
-import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState } from "../../store/oauth-store";
+import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 export type OAuthButtonAction = "connect" | "submit" | "cancel";
 
@@ -12,7 +12,7 @@ export type OAuthButtonAction = "connect" | "submit" | "cancel";
   tag: "u-oauth-button",
   shadow: false,
 })
-export class OAuthButton extends UnidyComponent {
+export class OAuthButton extends UnidyComponent() {
   @Element() el!: HTMLElement;
 
   /**

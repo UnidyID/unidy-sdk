@@ -1,20 +1,20 @@
 import { getUnidyClient } from "../api";
+import { Auth } from "../auth/auth";
 import { createLogger } from "../logger";
 import { unidyState } from "../shared/store/unidy-store";
-import { Auth } from "../auth/auth";
+import type { CheckConsentWithErrorResponse, OAuthApplication } from "./api/oauth";
 import {
+  getOAuthFieldUpdates,
   oauthState,
   resetOAuthState,
   setOAuthClientId,
+  setOAuthConsentData,
+  setOAuthError,
+  setOAuthLoading,
   setOAuthOptions,
   setOAuthStep,
-  setOAuthLoading,
-  setOAuthConsentData,
   setOAuthToken,
-  setOAuthError,
-  getOAuthFieldUpdates,
 } from "./store/oauth-store";
-import type { OAuthApplication, CheckConsentWithErrorResponse } from "./api/oauth";
 
 export interface OAuthCallbacks {
   onSuccess: (data: { token: string; application: OAuthApplication; redirectUrl: string }) => void;

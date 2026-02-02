@@ -10,25 +10,24 @@
 
 // API types
 export type {
-  OAuthScope,
-  OAuthApplication,
   CheckConsentResponse,
+  CheckConsentResult,
+  ConnectRequest,
+  ConnectResult,
+  GrantConsentRequest,
+  GrantConsentResult,
+  OAuthApplication,
+  OAuthScope,
   OAuthTokenResponse,
   UpdateConsentRequest,
-  GrantConsentRequest,
-  ConnectRequest,
+  UpdateConsentResult,
 } from "./api/oauth";
-
-export type { CheckConsentResult, UpdateConsentResult, GrantConsentResult, ConnectResult } from "./api/oauth";
-
+export type { OAuthButtonAction } from "./components/oauth-button/oauth-button";
+// Component event types
+export type { OAuthErrorEvent, OAuthSuccessEvent } from "./components/oauth-provider/oauth-provider";
+export type { OAuthCallbacks, OAuthConfig } from "./helpers";
+// Helper
+export { OAuthHelper } from "./helpers";
 // Store types and exports
 export type { OAuthState, OAuthStep } from "./store/oauth-store";
 export { oauthState, onChange as onOAuthChange, resetOAuthState } from "./store/oauth-store";
-
-// Component event types
-export type { OAuthSuccessEvent, OAuthErrorEvent } from "./components/oauth-provider/oauth-provider";
-export type { OAuthButtonAction } from "./components/oauth-button/oauth-button";
-
-// Helper
-export { OAuthHelper } from "./helpers";
-export type { OAuthCallbacks, OAuthConfig } from "./helpers";

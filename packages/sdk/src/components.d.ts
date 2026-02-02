@@ -10,6 +10,7 @@ import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 import { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
 import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
+import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./profile/components/raw-input-fields/Select";
@@ -27,6 +28,7 @@ export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
 export { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
 export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
+export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./profile/components/raw-input-fields/Select";
@@ -314,8 +316,6 @@ export namespace Components {
          */
         "componentClassName": string;
     }
-    interface UOauthDescription {
-    }
     interface UOauthLogo {
         /**
           * @default ""
@@ -359,8 +359,16 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default ""
+         */
+        "itemClassName": string;
     }
-    interface UOauthTitle {
+    interface UOauthText {
+        /**
+          * @default "title"
+         */
+        "type": OAuthTextType;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -767,12 +775,6 @@ declare global {
         prototype: HTMLUOauthButtonElement;
         new (): HTMLUOauthButtonElement;
     };
-    interface HTMLUOauthDescriptionElement extends Components.UOauthDescription, HTMLStencilElement {
-    }
-    var HTMLUOauthDescriptionElement: {
-        prototype: HTMLUOauthDescriptionElement;
-        new (): HTMLUOauthDescriptionElement;
-    };
     interface HTMLUOauthLogoElement extends Components.UOauthLogo, HTMLStencilElement {
     }
     var HTMLUOauthLogoElement: {
@@ -816,11 +818,11 @@ declare global {
         prototype: HTMLUOauthScopesElement;
         new (): HTMLUOauthScopesElement;
     };
-    interface HTMLUOauthTitleElement extends Components.UOauthTitle, HTMLStencilElement {
+    interface HTMLUOauthTextElement extends Components.UOauthText, HTMLStencilElement {
     }
-    var HTMLUOauthTitleElement: {
-        prototype: HTMLUOauthTitleElement;
-        new (): HTMLUOauthTitleElement;
+    var HTMLUOauthTextElement: {
+        prototype: HTMLUOauthTextElement;
+        new (): HTMLUOauthTextElement;
     };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
@@ -1008,13 +1010,12 @@ declare global {
         "u-newsletter-root": HTMLUNewsletterRootElement;
         "u-newsletter-toggle-subscription-button": HTMLUNewsletterToggleSubscriptionButtonElement;
         "u-oauth-button": HTMLUOauthButtonElement;
-        "u-oauth-description": HTMLUOauthDescriptionElement;
         "u-oauth-logo": HTMLUOauthLogoElement;
         "u-oauth-missing-fields": HTMLUOauthMissingFieldsElement;
         "u-oauth-modal": HTMLUOauthModalElement;
         "u-oauth-provider": HTMLUOauthProviderElement;
         "u-oauth-scopes": HTMLUOauthScopesElement;
-        "u-oauth-title": HTMLUOauthTitleElement;
+        "u-oauth-text": HTMLUOauthTextElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
@@ -1295,8 +1296,6 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
     }
-    interface UOauthDescription {
-    }
     interface UOauthLogo {
         /**
           * @default ""
@@ -1340,8 +1339,16 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default ""
+         */
+        "itemClassName"?: string;
     }
-    interface UOauthTitle {
+    interface UOauthText {
+        /**
+          * @default "title"
+         */
+        "type"?: OAuthTextType;
     }
     interface UPaginationButton {
         "customClass"?: string;
@@ -1594,13 +1601,12 @@ declare namespace LocalJSX {
         "u-newsletter-root": UNewsletterRoot;
         "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
         "u-oauth-button": UOauthButton;
-        "u-oauth-description": UOauthDescription;
         "u-oauth-logo": UOauthLogo;
         "u-oauth-missing-fields": UOauthMissingFields;
         "u-oauth-modal": UOauthModal;
         "u-oauth-provider": UOauthProvider;
         "u-oauth-scopes": UOauthScopes;
-        "u-oauth-title": UOauthTitle;
+        "u-oauth-text": UOauthText;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
@@ -1645,13 +1651,12 @@ declare module "@stencil/core" {
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
             "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
             "u-oauth-button": LocalJSX.UOauthButton & JSXBase.HTMLAttributes<HTMLUOauthButtonElement>;
-            "u-oauth-description": LocalJSX.UOauthDescription & JSXBase.HTMLAttributes<HTMLUOauthDescriptionElement>;
             "u-oauth-logo": LocalJSX.UOauthLogo & JSXBase.HTMLAttributes<HTMLUOauthLogoElement>;
             "u-oauth-missing-fields": LocalJSX.UOauthMissingFields & JSXBase.HTMLAttributes<HTMLUOauthMissingFieldsElement>;
             "u-oauth-modal": LocalJSX.UOauthModal & JSXBase.HTMLAttributes<HTMLUOauthModalElement>;
             "u-oauth-provider": LocalJSX.UOauthProvider & JSXBase.HTMLAttributes<HTMLUOauthProviderElement>;
             "u-oauth-scopes": LocalJSX.UOauthScopes & JSXBase.HTMLAttributes<HTMLUOauthScopesElement>;
-            "u-oauth-title": LocalJSX.UOauthTitle & JSXBase.HTMLAttributes<HTMLUOauthTitleElement>;
+            "u-oauth-text": LocalJSX.UOauthText & JSXBase.HTMLAttributes<HTMLUOauthTextElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;

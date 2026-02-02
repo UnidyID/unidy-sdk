@@ -1,27 +1,27 @@
-import { BaseService, type ApiClientInterface, type CommonErrors, type ServiceDependencies } from "../../api/base-service";
+import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api/base-service";
 import {
-  CheckConsentResponseSchema,
-  CheckConsentWithErrorResponseSchema,
-  OAuthTokenResponseSchema,
-  OAuthErrorSchema,
   type CheckConsentResponse,
+  CheckConsentResponseSchema,
   type CheckConsentWithErrorResponse,
-  type OAuthTokenResponse,
-  type UpdateConsentRequest,
-  type GrantConsentRequest,
+  CheckConsentWithErrorResponseSchema,
   type ConnectRequest,
+  type GrantConsentRequest,
+  OAuthErrorSchema,
+  type OAuthTokenResponse,
+  OAuthTokenResponseSchema,
+  type UpdateConsentRequest,
 } from "./schemas";
 
 // Re-export types
 export type {
-  OAuthScope,
-  OAuthApplication,
   CheckConsentResponse,
   CheckConsentWithErrorResponse,
+  ConnectRequest,
+  GrantConsentRequest,
+  OAuthApplication,
+  OAuthScope,
   OAuthTokenResponse,
   UpdateConsentRequest,
-  GrantConsentRequest,
-  ConnectRequest,
 } from "./schemas";
 
 // Result types

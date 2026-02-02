@@ -1,14 +1,14 @@
-import { Component, Element, h, Host, Prop } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../logger";
-import { getOAuthProvider, type OAuthProviderElement } from "../context";
 import { oauthState, setOAuthFieldValue } from "../../store/oauth-store";
+import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 @Component({
   tag: "u-oauth-missing-fields",
   shadow: false,
 })
-export class OAuthMissingFields extends UnidyComponent {
+export class OAuthMissingFields extends UnidyComponent() {
   @Element() el!: HTMLElement;
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -55,33 +55,31 @@ export class OAuthMissingFields extends UnidyComponent {
     }
 
     return (
-      <Host>
-        <div class={this.componentClassName}>
-          {oauthState.missingFields.map((fieldName) => {
-            const label = this.getFieldLabel(fieldName);
-            const value = (oauthState.fieldValues[fieldName] as string) ?? "";
-            const inputId = `oauth-field-${fieldName.replace(/\./g, "-")}`;
+      <div class={this.componentClassName}>
+        {oauthState.missingFields.map((fieldName) => {
+          const label = this.getFieldLabel(fieldName);
+          const value = (oauthState.fieldValues[fieldName] as string) ?? "";
+          const inputId = `oauth-field-${fieldName.replace(/\./g, "-")}`;
 
-            return (
-              <div class="u-oauth-field" key={fieldName}>
-                <label htmlFor={inputId}>
-                  {label} <span class="u-oauth-field-required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id={inputId}
-                  name={fieldName}
-                  value={value}
-                  required
-                  onInput={(e) => this.handleFieldChange(fieldName, e)}
-                  onKeyDown={this.handleKeyDown}
-                  aria-required="true"
-                />
-              </div>
-            );
-          })}
-        </div>
-      </Host>
+          return (
+            <div class="u-oauth-field" key={fieldName}>
+              <label htmlFor={inputId}>
+                {label} <span class="u-oauth-field-required">*</span>
+              </label>
+              <input
+                type="text"
+                id={inputId}
+                name={fieldName}
+                value={value}
+                required
+                onInput={(e) => this.handleFieldChange(fieldName, e)}
+                onKeyDown={this.handleKeyDown}
+                aria-required="true"
+              />
+            </div>
+          );
+        })}
+      </div>
     );
   }
 }
