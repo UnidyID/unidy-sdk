@@ -1,7 +1,7 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { hasSlotContent, slotFallbackText } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
@@ -120,7 +120,7 @@ export class JumpToUnidy {
   render() {
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {renderButtonContent(this.hasSlot, this.loading, t("buttons.jump_to_unidy"))}
+        {slotFallbackText(t("buttons.jump_to_unidy"), { hasSlot: this.hasSlot, loading: this.loading })}
       </button>
     );
   }
