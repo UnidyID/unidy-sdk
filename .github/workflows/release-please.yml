@@ -1,9 +1,21 @@
-name: Release Please
+name: Release
 
 on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'stable'
+        type: choice
+        options:
+          - stable
+          - alpha
+          - beta
+          - next
 
 permissions:
   contents: write
@@ -11,7 +23,11 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name == 'push' || github.event.inputs.release_type == 'stable'
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -19,26 +35,72 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
-      # The logic below handles the NPM publication
+  prerelease:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
       - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
-        if: ${{ steps.release.outputs.release_created }}
 
       - name: Install dependencies
         run: bun install
-        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Determine version
+        id: version
+        run: |
+          CURRENT_VERSION=$(jq -r '.version' packages/sdk/package.json)
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-.*$//')
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          PRERELEASE_TYPE="${{ github.event.inputs.release_type }}"
+          NEW_VERSION="${BASE_VERSION}-${PRERELEASE_TYPE}.${TIMESTAMP}"
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "New version: ${NEW_VERSION}"
+
+      - name: Update package.json version
+        run: |
+          cd packages/sdk
+          jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
 
       - name: Build SDK
         run: bun run build
-        if: ${{ steps.release.outputs.release_created }}
 
       - name: Publish to NPM
-        if: ${{ steps.release.outputs.release_created }}
         run: |
           cd packages/sdk
-          bun publish
+          bun publish --tag ${{ github.event.inputs.release_type }}
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+  publish-stable:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build SDK
+        run: bun run build
+
+      - name: Publish to NPM
+        run: |
+          cd packages/sdk
+          bun publish --tag latest
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
