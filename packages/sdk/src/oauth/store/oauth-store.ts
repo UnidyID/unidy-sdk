@@ -1,4 +1,5 @@
 import { createStore } from "@stencil/store";
+import { state as profileState } from "../../profile/store/profile-store";
 import type { OAuthApplication } from "../api/oauth";
 
 export type OAuthStep = "idle" | "loading" | "consent" | "submitting" | "redirecting" | "error";
@@ -104,18 +105,24 @@ export function clearOAuthError() {
 }
 
 export function getOAuthFieldUpdates(): { user_updates: Record<string, unknown> } | null {
-  const values = oauthState.fieldValues;
-  if (Object.keys(values).length === 0) return null;
+  const missingFields = oauthState.missingFields;
+  if (missingFields.length === 0) return null;
 
   const userUpdates: Record<string, unknown> = {};
   const customAttributes: Record<string, unknown> = {};
 
-  for (const [key, value] of Object.entries(values)) {
-    if (key.startsWith("custom_attributes.")) {
-      const attrName = key.replace("custom_attributes.", "");
-      customAttributes[attrName] = value;
+  for (const fieldName of missingFields) {
+    if (fieldName.startsWith("custom_attributes.")) {
+      const attrName = fieldName.replace("custom_attributes.", "");
+      const fieldData = profileState.data.custom_attributes?.[attrName];
+      if (fieldData?.value !== undefined) {
+        customAttributes[attrName] = fieldData.value;
+      }
     } else {
-      userUpdates[key] = value;
+      const fieldData = profileState.data[fieldName];
+      if (fieldData?.value !== undefined) {
+        userUpdates[fieldName] = fieldData.value;
+      }
     }
   }
 
@@ -123,5 +130,5 @@ export function getOAuthFieldUpdates(): { user_updates: Record<string, unknown> 
     userUpdates.custom_attributes = customAttributes;
   }
 
-  return { user_updates: userUpdates };
+  return Object.keys(userUpdates).length > 0 ? { user_updates: userUpdates } : null;
 }

@@ -1,8 +1,8 @@
-import { Component, h, Prop } from "@stencil/core";
-import { t } from "../../../i18n";
+import { Component, forceUpdate, h, Prop, State } from "@stencil/core";
+import { getUnidyClient } from "../../../api";
 import { UnidyComponent } from "../../../shared/base/component";
-import { oauthState, setOAuthFieldValue } from "../../store/oauth-store";
-import { getOAuthProvider, type OAuthProviderElement } from "../context";
+import { state as profileState } from "../../../profile/store/profile-store";
+import { onChange, oauthState } from "../../store/oauth-store";
 
 @Component({
   tag: "u-oauth-missing-fields",
@@ -10,41 +10,45 @@ import { getOAuthProvider, type OAuthProviderElement } from "../context";
 })
 export class OAuthMissingFields extends UnidyComponent() {
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  @Prop({ attribute: "field-class-name" }) fieldClassName = "";
 
-  private provider: OAuthProviderElement | null = null;
+  @State() profileLoaded = false;
+  @State() loading = false;
+
+  private unsubscribe?: () => void;
 
   connectedCallback() {
-    this.provider = getOAuthProvider(this.element);
-
-    if (!this.provider) {
-      this.logger.warn("Must be used inside a u-oauth-provider");
-    }
+    // Subscribe to missingFields changes to trigger re-renders
+    this.unsubscribe = onChange("missingFields", () => {
+      forceUpdate(this);
+      // Fetch profile data when missing fields change
+      if (oauthState.missingFields.length > 0 && !this.profileLoaded) {
+        this.fetchProfileData();
+      }
+    });
   }
 
-  private handleFieldChange = (fieldName: string, event: Event) => {
-    const target = event.target as HTMLInputElement;
-    setOAuthFieldValue(fieldName, target.value);
-  };
+  disconnectedCallback() {
+    this.unsubscribe?.();
+  }
 
-  private handleKeyDown = async (event: KeyboardEvent) => {
-    if (event.key === "Enter" && this.provider) {
-      event.preventDefault();
-      await this.provider.submit();
+  private async fetchProfileData() {
+    if (this.loading || this.profileLoaded) return;
+
+    this.loading = true;
+    try {
+      const [error, data] = await getUnidyClient().profile.get();
+
+      if (!error && data) {
+        profileState.data = JSON.parse(JSON.stringify(data));
+        profileState.configuration = JSON.parse(JSON.stringify(data));
+        this.profileLoaded = true;
+      }
+    } catch (err) {
+      this.logger.error("Failed to fetch profile data:", err);
+    } finally {
+      this.loading = false;
     }
-  };
-
-  private getFieldLabel(fieldName: string): string {
-    const translationKey = `fields.${fieldName}.label`;
-    const translated = t(translationKey);
-
-    if (translated !== translationKey) {
-      return translated;
-    }
-
-    return fieldName
-      .replace("custom_attributes.", "")
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
   render() {
@@ -52,31 +56,21 @@ export class OAuthMissingFields extends UnidyComponent() {
       return null;
     }
 
+    if (this.loading) {
+      return <div class={this.componentClassName}><u-spinner /></div>;
+    }
+
     return (
       <div class={this.componentClassName}>
-        {oauthState.missingFields.map((fieldName) => {
-          const label = this.getFieldLabel(fieldName);
-          const value = (oauthState.fieldValues[fieldName] as string) ?? "";
-          const inputId = `oauth-field-${fieldName.replace(/\./g, "-")}`;
-
-          return (
-            <div class="u-oauth-field" key={fieldName}>
-              <label htmlFor={inputId}>
-                {label} <span class="u-oauth-field-required">*</span>
-              </label>
-              <input
-                type="text"
-                id={inputId}
-                name={fieldName}
-                value={value}
-                required
-                onInput={(e) => this.handleFieldChange(fieldName, e)}
-                onKeyDown={this.handleKeyDown}
-                aria-required="true"
-              />
-            </div>
-          );
-        })}
+        {oauthState.missingFields.map((fieldName) => (
+          <u-field
+            key={fieldName}
+            field={fieldName}
+            renderDefaultLabel={true}
+            required={true}
+            class-name={this.fieldClassName}
+          />
+        ))}
       </div>
     );
   }

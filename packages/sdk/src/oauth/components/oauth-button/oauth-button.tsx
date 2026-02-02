@@ -1,6 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
+import { state as profileState } from "../../../profile/store/profile-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { slotFallbackText } from "../../../shared/component-utils";
@@ -77,8 +78,14 @@ export class OAuthButton extends UnidyComponent(HasSlotContent) {
   private allFieldsFilled(): boolean {
     if (oauthState.missingFields.length === 0) return true;
 
-    return oauthState.missingFields.every((field) => {
-      const value = oauthState.fieldValues[field];
+    return oauthState.missingFields.every((fieldName) => {
+      let value: unknown;
+      if (fieldName.startsWith("custom_attributes.")) {
+        const attrName = fieldName.replace("custom_attributes.", "");
+        value = profileState.data.custom_attributes?.[attrName]?.value;
+      } else {
+        value = profileState.data[fieldName]?.value;
+      }
       return value !== undefined && value !== null && value !== "";
     });
   }
