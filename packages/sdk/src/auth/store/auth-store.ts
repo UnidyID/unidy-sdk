@@ -4,10 +4,11 @@ import { unidyState } from "../../shared/store/unidy-store";
 import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 
-export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration" | "single-login";
+export type AuthStep = "email" | "verification" | "magic-code" | "connect-brand" | "missing-fields" | "reset-password" | "registration" | "single-login";
 
 export interface AuthState {
   step: AuthStep;
+  initialStep: AuthStep;
   sid: string | null;
   email: string;
   password: string;
@@ -64,6 +65,7 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
 
 const initialState: AuthState = {
   step: undefined,
+  initialStep: "email",
   email: localStorage.getItem(SESSION_KEYS.EMAIL) ?? "",
   password: "",
   magicCodeStep: null,
@@ -116,6 +118,7 @@ class AuthStore {
   }
 
   setInitialStep(step: AuthStep) {
+    state.initialStep = step;
     if (state.step === undefined) state.step = step;
   }
 

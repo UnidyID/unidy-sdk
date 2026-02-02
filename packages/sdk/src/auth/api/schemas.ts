@@ -64,6 +64,19 @@ export const RequiredFieldsResponseSchema = z
     sid: meta.sid,
   }));
 
+// Brand connection required response
+export const BrandConnectionRequiredResponseSchema = z
+  .object({
+    error_identifier: z.literal("brand_connection_required"),
+    meta: z.object({
+      sid: z.string().nullish(),
+    }),
+  })
+  .transform(({ error_identifier, meta }) => ({
+    error_identifier,
+    sid: meta.sid,
+  }));
+
 // Invalid password response with field-level errors
 export const InvalidPasswordResponseSchema = z.object({
   error_details: z.object({
@@ -139,3 +152,4 @@ export type JumpToServiceRequest = z.infer<typeof JumpToServiceRequestSchema>;
 export type JumpToServiceResponse = z.infer<typeof JumpToServiceResponseSchema>;
 export type JumpToUnidyRequest = z.infer<typeof JumpToUnidyRequestSchema>;
 export type JumpToUnidyResponse = z.infer<typeof JumpToUnidyResponseSchema>;
+export type BrandConnectionRequiredResponse = z.infer<typeof BrandConnectionRequiredResponseSchema>;

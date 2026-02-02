@@ -353,6 +353,18 @@ export class AuthHelpers {
       return;
     }
 
+    // Handle brand connection required
+    if (error === "brand_connection_required") {
+      const sid = clearUrlParam("sid");
+      clearUrlParam("error");
+
+      if (sid) {
+        authStore.setSignInId(sid);
+        authStore.setStep("connect-brand");
+      }
+      return;
+    }
+
     // Handle missing required fields
     if (error !== "missing_required_fields") {
       this.logger.error("Social auth redirect error:", error);
@@ -378,11 +390,48 @@ export class AuthHelpers {
     }
   }
 
+  async connectBrand() {
+    if (!authState.sid) {
+      throw new Error(t("errors.no_sign_in_id"));
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.connectBrand({ signInId: authState.sid });
+
+    if (error) {
+      this.handleAuthError(error, response);
+      return;
+    }
+
+    this.handleAuthSuccess(response as TokenResponse);
+  }
+
+  async cancelBrandConnect() {
+    // Sign out to clear cookies and session
+    if (authState.sid) {
+      await this.client.auth.signOut({ signInId: authState.sid });
+    }
+
+    // Remember the initial step before resetting
+    const initialStep = authState.initialStep;
+
+    // Reset to initial state
+    authStore.reset();
+    authStore.setStep(initialStep);
+  }
+
   private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);
         break;
+
+      case "brand_connection_required": {
+        authStore.setStep("connect-brand");
+        break;
+      }
 
       case "missing_required_fields": {
         const { fields, sid } = response as RequiredFieldsResponse;

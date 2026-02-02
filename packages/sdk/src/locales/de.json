@@ -36,7 +36,9 @@
     }
   },
   "buttons": {
+    "cancel": "Abbrechen",
     "close": "Schließen",
+    "connect": "Verbinden",
     "continue": "Weiter",
     "jump_to_service": "Zum Dienst wechseln",
     "jump_to_unidy": "Zu Unidy wechseln",

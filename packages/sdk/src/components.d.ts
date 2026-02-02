@@ -36,6 +36,12 @@ export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
 export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
+    interface UCancelBrandConnectButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -74,6 +80,12 @@ export namespace Components {
           * @default "production"
          */
         "mode": "production" | "development";
+    }
+    interface UConnectBrandButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
     }
     interface UEmailField {
         /**
@@ -435,7 +447,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
@@ -538,6 +550,12 @@ export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUTicketableListElement;
 }
 declare global {
+    interface HTMLUCancelBrandConnectButtonElement extends Components.UCancelBrandConnectButton, HTMLStencilElement {
+    }
+    var HTMLUCancelBrandConnectButtonElement: {
+        prototype: HTMLUCancelBrandConnectButtonElement;
+        new (): HTMLUCancelBrandConnectButtonElement;
+    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -561,6 +579,12 @@ declare global {
     var HTMLUConfigElement: {
         prototype: HTMLUConfigElement;
         new (): HTMLUConfigElement;
+    };
+    interface HTMLUConnectBrandButtonElement extends Components.UConnectBrandButton, HTMLStencilElement {
+    }
+    var HTMLUConnectBrandButtonElement: {
+        prototype: HTMLUConnectBrandButtonElement;
+        new (): HTMLUConnectBrandButtonElement;
     };
     interface HTMLUEmailFieldElement extends Components.UEmailField, HTMLStencilElement {
     }
@@ -858,8 +882,10 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
+        "u-cancel-brand-connect-button": HTMLUCancelBrandConnectButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
+        "u-connect-brand-button": HTMLUConnectBrandButtonElement;
         "u-email-field": HTMLUEmailFieldElement;
         "u-error-message": HTMLUErrorMessageElement;
         "u-field": HTMLUFieldElement;
@@ -898,6 +924,12 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface UCancelBrandConnectButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -938,6 +970,12 @@ declare namespace LocalJSX {
         "mode"?: "production" | "development";
         "onConfigChange"?: (event: UConfigCustomEvent<ConfigChange>) => void;
         "onUnidyInitialized"?: (event: UConfigCustomEvent<Config>) => void;
+    }
+    interface UConnectBrandButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
     }
     interface UEmailField {
         /**
@@ -1292,7 +1330,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
     }
     interface USocialLoginButton {
         /**
@@ -1376,8 +1414,10 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
+        "u-cancel-brand-connect-button": UCancelBrandConnectButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
+        "u-connect-brand-button": UConnectBrandButton;
         "u-email-field": UEmailField;
         "u-error-message": UErrorMessage;
         "u-field": UField;
@@ -1419,8 +1459,10 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "u-cancel-brand-connect-button": LocalJSX.UCancelBrandConnectButton & JSXBase.HTMLAttributes<HTMLUCancelBrandConnectButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
+            "u-connect-brand-button": LocalJSX.UConnectBrandButton & JSXBase.HTMLAttributes<HTMLUConnectBrandButtonElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
             "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
             "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;

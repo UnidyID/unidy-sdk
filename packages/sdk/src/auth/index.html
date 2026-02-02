@@ -325,6 +325,16 @@
           class-name="px-4 py-2 border text-blue-500 bg-blue-50 rounded-lg text-center disabled:opacity-50 w-full hover:cursor-pointer"></u-send-magic-code-button>
       </u-signin-step>
 
+      <u-signin-step name="connect-brand">
+        <h2 class="text-xl font-semibold text-gray-800 mb-2 text-center">Connect Your Account</h2>
+        <p class="text-gray-600 text-sm mb-6 text-center">Would you like to connect your Unidy account to this brand?</p>
+
+        <div class="flex gap-4 w-full">
+          <u-cancel-brand-connect-button class="flex-1" class-name="w-full px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors duration-200 cursor-pointer"></u-cancel-brand-connect-button>
+          <u-connect-brand-button class="flex-1" class-name="w-full px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors duration-200 cursor-pointer"></u-connect-brand-button>
+        </div>
+      </u-signin-step>
+
       <u-signin-step name="missing-fields">
         <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">Complete Your Profile</h2>
         <p class="text-gray-600 text-sm mb-6 text-center">Please fill in the required information to continue</p>
