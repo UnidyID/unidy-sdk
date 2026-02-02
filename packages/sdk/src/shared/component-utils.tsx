@@ -1,4 +1,4 @@
-import { h } from "@stencil/core";
+import { Fragment, h } from "@stencil/core";
 
 /**
  * Checks if a Stencil component's slot has content.
@@ -25,46 +25,41 @@ export function hasSlotContent(element: HTMLElement): boolean {
   return false;
 }
 
-export interface ButtonContentOptions {
-  /** Whether the component has slotted content */
-  hasSlot: boolean;
-  /** Whether the component is in a loading state */
-  loading: boolean;
-  /** The default text to display when there's no slot content */
-  defaultText: string;
-}
-
 /**
- * Returns button content with proper slot/loading handling for shadow: false components.
+ * Returns slot fallback content with proper loading handling for shadow: false components.
  * When there's slot content, we must always render the <slot /> element to capture it,
  * otherwise the slotted content will be visible even during loading state.
  *
- * @returns JSX content for the button
+ * @param fallbackText - The default text to display when there's no slot content
+ * @param options - Options object containing hasSlot and loading state
+ * @returns JSX content for the slot fallback
  *
  * @example
  * ```tsx
  * render() {
  *   return (
  *     <button>
- *       {buttonContent({ hasSlot: this.hasSlot, loading: this.loading, defaultText: t("buttons.submit") })}
+ *       {slotFallbackText(t("buttons.submit"), { hasSlot: this.hasSlot, loading: this.isLoading() })}
  *     </button>
  *   );
  * }
  * ```
  */
-export function buttonContent({ hasSlot, loading, defaultText }: ButtonContentOptions) {
+export function slotFallbackText(fallbackText: string, { hasSlot, loading = false }: { hasSlot: boolean; loading?: boolean }) {
   if (hasSlot) {
-    return [
-      loading && <u-spinner key="spinner" />,
-      <span key="slot" style={{ display: loading ? "none" : "contents" }}>
-        <slot />
-      </span>,
-    ];
+    return (
+      <Fragment>
+        {loading && <u-spinner key="spinner" />}
+        <span key="slot" style={{ display: loading ? "none" : "contents" }}>
+          <slot />
+        </span>
+      </Fragment>
+    );
   }
 
   if (loading) {
     return <u-spinner />;
   }
 
-  return defaultText;
+  return fallbackText;
 }
