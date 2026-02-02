@@ -47,7 +47,7 @@ export class BrandConnect {
     authStore.getRootComponentRef()?.onAuth(response);
   }
 
-  private handleAuthError(error: string, response: unknown) {
+  private handleAuthError(error: string, _response: unknown) {
     switch (error) {
       case "brand_connection_required": {
         authStore.setStep("connect-brand");
