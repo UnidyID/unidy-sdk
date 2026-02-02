@@ -2,7 +2,7 @@
   "name": "@unidy.io/sdk",
   "version": "1.2.0",
   "publishConfig": {
-    "tag": "alpha",
+    "tag": "latest",
     "access": "public"
   },
   "repository": {
