@@ -121,6 +121,19 @@
     "verification_failed": "Verification failed"
   },
   "loading": "Loading...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth application not found",
+      "client_id_required": "client-id is required",
+      "connection_failed": "Network error. Please try again.",
+      "grant_failed": "Failed to grant consent",
+      "invalid_field_values": "Invalid field values provided",
+      "missing_required_fields": "Please fill in all required fields",
+      "not_authenticated": "User is not authenticated. Please log in first.",
+      "unknown": "An unexpected error occurred",
+      "update_failed": "Failed to update user data"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

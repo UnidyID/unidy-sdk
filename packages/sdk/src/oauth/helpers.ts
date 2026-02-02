@@ -1,5 +1,6 @@
 import { getUnidyClient } from "../api";
 import { Auth } from "../auth/auth";
+import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { unidyState } from "../shared/store/unidy-store";
 import type { CheckConsentWithErrorResponse, OAuthApplication } from "./api/oauth";
@@ -71,7 +72,7 @@ export class OAuthHelper {
 
   async connect(): Promise<void> {
     if (!this.config.clientId) {
-      this.handleError("client_id_required", "client-id is required");
+      this.handleError("client_id_required", t("oauth.errors.client_id_required"));
       return;
     }
 
@@ -79,7 +80,7 @@ export class OAuthHelper {
     const isAuthenticated = await auth.isAuthenticated();
 
     if (!isAuthenticated) {
-      this.handleError("not_authenticated", "User is not authenticated. Please log in first.");
+      this.handleError("not_authenticated", t("oauth.errors.not_authenticated"));
       return;
     }
 
@@ -112,15 +113,15 @@ export class OAuthHelper {
         });
         setOAuthStep("consent");
       } else if (error === "application_not_found") {
-        this.handleError("application_not_found", "OAuth application not found");
+        this.handleError("application_not_found", t("oauth.errors.application_not_found"));
       } else if (error === "connection_failed") {
-        this.handleError("connection_failed", "Network error. Please try again.");
+        this.handleError("connection_failed", t("oauth.errors.connection_failed"));
       } else {
-        this.handleError("unknown_error", "An unexpected error occurred");
+        this.handleError("unknown_error", t("oauth.errors.unknown"));
       }
     } catch (err) {
       logger.error("Error during connect:", err);
-      this.handleError("unknown_error", "An unexpected error occurred");
+      this.handleError("unknown_error", t("oauth.errors.unknown"));
     } finally {
       setOAuthLoading(false);
     }
@@ -128,7 +129,7 @@ export class OAuthHelper {
 
   async submit(): Promise<void> {
     if (!oauthState.clientId) {
-      this.handleError("client_id_required", "client-id is required");
+      this.handleError("client_id_required", t("oauth.errors.client_id_required"));
       return;
     }
 
@@ -144,11 +145,11 @@ export class OAuthHelper {
 
         if (updateError) {
           if (updateError === "invalid_user_updates") {
-            setOAuthError("Invalid field values provided");
+            setOAuthError(t("oauth.errors.invalid_field_values"));
             setOAuthStep("consent");
             return;
           }
-          this.handleError(updateError, "Failed to update user data");
+          this.handleError(updateError, t("oauth.errors.update_failed"));
           return;
         }
       }
@@ -180,14 +181,14 @@ export class OAuthHelper {
             missingFields: consentData.missing_fields,
           });
         }
-        setOAuthError("Please fill in all required fields");
+        setOAuthError(t("oauth.errors.missing_required_fields"));
         setOAuthStep("consent");
       } else {
-        this.handleError(grantError || "unknown_error", "Failed to grant consent");
+        this.handleError(grantError || "unknown_error", t("oauth.errors.grant_failed"));
       }
     } catch (err) {
       logger.error("Error during submit:", err);
-      this.handleError("unknown_error", "An unexpected error occurred");
+      this.handleError("unknown_error", t("oauth.errors.unknown"));
     } finally {
       setOAuthLoading(false);
     }
