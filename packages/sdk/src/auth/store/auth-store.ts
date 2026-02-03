@@ -38,23 +38,6 @@ export interface AuthState {
   _initialStep: AuthStep | null;
 }
 
-const missingRequiredUserDefaultFields = () => {
-  const fields = store.state.missingRequiredFields ?? ({} as RequiredFieldsResponse["fields"]);
-  const { custom_attributes, ...missingRequiredUserDefaultFields } = fields;
-  return missingRequiredUserDefaultFields as Record<string, ProfileNode>;
-};
-
-const missingRequiredCustomAttributeFields = () => {
-  const fields = store.state.missingRequiredFields ?? ({} as RequiredFieldsResponse["fields"]);
-  return (fields?.custom_attributes ?? {}) as Record<string, ProfileNode>;
-};
-
-export const missingFieldNames = () => {
-  const userDefaultFields = Object.keys(missingRequiredUserDefaultFields());
-  const ca = Object.keys(missingRequiredCustomAttributeFields()).map((k) => `custom_attributes.${k}`);
-  return [...userDefaultFields, ...ca];
-};
-
 const SESSION_KEYS = {
   SID: "unidy_signin_id",
   TOKEN: "unidy_token",
