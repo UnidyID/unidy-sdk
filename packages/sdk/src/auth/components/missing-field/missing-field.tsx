@@ -14,7 +14,7 @@ const missingRequiredCustomAttributeFields = () => {
   return (fields?.custom_attributes ?? {}) as Record<string, ProfileNode>;
 };
 
-export const missingFieldNames = () => {
+const missingFieldNames = () => {
   const userDefaultFields = Object.keys(missingRequiredUserDefaultFields());
   const ca = Object.keys(missingRequiredCustomAttributeFields()).map((k) => `custom_attributes.${k}`);
   return [...userDefaultFields, ...ca];

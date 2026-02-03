@@ -1,5 +1,4 @@
 import { createStore } from "@stencil/store";
-import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
