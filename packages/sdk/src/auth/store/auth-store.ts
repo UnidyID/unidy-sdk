@@ -375,6 +375,7 @@ class AuthStore {
       return false;
     }
 
+    const currentStep = state.step;
     const previousStep = state._stepHistory[state._stepHistory.length - 1];
     state._stepHistory = state._stepHistory.slice(0, -1);
 
@@ -383,7 +384,8 @@ class AuthStore {
     // clear errors when going back
     this.clearErrors();
 
-    if (previousStep === "email" || previousStep === "single-login") {
+    // Clear magic code state when leaving magic-code step so a fresh request happens on re-entry
+    if (currentStep === "magic-code" || previousStep === "email" || previousStep === "single-login") {
       state.magicCodeStep = null;
       saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
     }
