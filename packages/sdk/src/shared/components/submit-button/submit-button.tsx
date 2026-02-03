@@ -6,7 +6,7 @@ import { profileContext } from "../../../profile/components/submit-button/profil
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
 import { slotFallbackText } from "../../component-utils";
-import { type ComponentContext } from "../../context-utils";
+import type { ComponentContext } from "../../context-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({

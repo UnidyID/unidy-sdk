@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -20,7 +20,8 @@
       "!development-target.tsx",
       "!packages/sdk/src/demo-build.css",
       "!packages/sdk-react/lib/components/stencil-generated/components.ts",
-      "!packages/sdk-react/lib/components/stencil-generated/components.server.ts"
+      "!packages/sdk-react/lib/components/stencil-generated/components.server.ts",
+      "!**/playwright-report/**/*"
     ]
   },
   "formatter": {
