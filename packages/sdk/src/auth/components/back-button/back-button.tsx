@@ -1,9 +1,9 @@
-import { Component, h, Prop, State, Watch } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { Auth } from "../../auth";
-import { authState, onChange } from "../../store/auth-store";
+import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-back-button",
@@ -18,35 +18,12 @@ export class BackButton extends UnidyComponent(HasSlotContent) {
    */
   @Prop() restart = false;
 
-  @State() canGoBack = false;
-
-  private unsubscribe?: () => void;
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.updateCanGoBack();
-
-    this.unsubscribe = onChange("step", () => {
-      this.updateCanGoBack();
-    });
-  }
-
-  disconnectedCallback() {
-    this.unsubscribe?.();
-  }
-
-  @Watch("restart")
-  updateCanGoBack() {
-    try {
-      if (this.restart) {
-        const initialStep = authState._initialStep ?? "email";
-        this.canGoBack = authState.step !== initialStep && authState.step !== undefined;
-      } else {
-        this.canGoBack = (authState._stepHistory?.length ?? 0) > 0;
-      }
-    } catch {
-      this.canGoBack = false;
+  private canGoBack(): boolean {
+    if (this.restart) {
+      const initialStep = authState._initialStep ?? "email";
+      return authState.step !== initialStep && authState.step !== undefined;
     }
+    return (authState._stepHistory?.length ?? 0) > 0;
   }
 
   private handleClick = async () => {
@@ -67,7 +44,8 @@ export class BackButton extends UnidyComponent(HasSlotContent) {
   }
 
   render() {
-    if (!this.canGoBack) {
+    if (!this.canGoBack()) {
+      console.log("canGoBack is false");
       return null;
     }
 
