@@ -30,6 +30,11 @@ export interface AuthState {
   token: string | null;
   refreshToken: string | null;
   backendSignedIn: boolean;
+
+  // recovery and navigation related state
+  _pendingRecoveryStep: AuthStep | null;
+  _stepHistory: AuthStep[];
+  _initialStep: AuthStep | null;
 }
 
 const missingRequiredUserDefaultFields = () => {
@@ -54,6 +59,9 @@ const SESSION_KEYS = {
   TOKEN: "unidy_token",
   REFRESH_TOKEN: "unidy_refresh_token",
   EMAIL: "unidy_email",
+  STEP: "unidy_step",
+  LOGIN_OPTIONS: "unidy_login_options",
+  MAGIC_CODE_STEP: "unidy_magic_code_step",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -64,11 +72,63 @@ const saveToStorage = (storage: Storage, key: string, value: string | null) => {
   }
 };
 
+const loadJsonFromStorage = <T>(storage: Storage, key: string): T | null => {
+  const value = storage.getItem(key);
+  if (!value) return null;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+};
+
+const saveJsonToStorage = <T>(storage: Storage, key: string, value: T | null) => {
+  if (value) {
+    storage.setItem(key, JSON.stringify(value));
+  } else {
+    storage.removeItem(key);
+  }
+};
+
+const RECOVERABLE_STEPS: AuthStep[] = ["verification", "magic-code"];
+
+const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
+  return step !== undefined && RECOVERABLE_STEPS.includes(step);
+};
+
+const getStoredStep = (): AuthStep | null => {
+  try {
+    return localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
+  } catch {
+    return null;
+  }
+};
+
+const getStoredLoginOptions = (): LoginOptions | null => {
+  try {
+    return loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
+  } catch {
+    return null;
+  }
+};
+
+const getStoredMagicCodeStep = (): AuthState["magicCodeStep"] => {
+  try {
+    return localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
+  } catch {
+    return null;
+  }
+};
+
+const storedStep = getStoredStep();
+const storedLoginOptions = getStoredLoginOptions();
+const storedMagicCodeStep = getStoredMagicCodeStep();
+
 const initialState: AuthState = {
   step: undefined,
   email: localStorage.getItem(SESSION_KEYS.EMAIL) ?? "",
   password: "",
-  magicCodeStep: null,
+  magicCodeStep: storedMagicCodeStep,
   resetPassword: {
     step: null,
     token: null,
@@ -87,7 +147,7 @@ const initialState: AuthState = {
   globalErrors: {},
   authenticated: false,
   missingRequiredFields: undefined,
-  availableLoginOptions: {
+  availableLoginOptions: storedLoginOptions ?? {
     magic_link: false,
     password: false,
     social_logins: [],
@@ -96,6 +156,10 @@ const initialState: AuthState = {
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
   backendSignedIn: false,
+
+  _pendingRecoveryStep: isRecoverableStep(storedStep) ? storedStep : null,
+  _stepHistory: [],
+  _initialStep: null,
 };
 
 const store = createStore<AuthState>(initialState);
@@ -119,7 +183,12 @@ class AuthStore {
   }
 
   setInitialStep(step: AuthStep) {
-    if (state.step === undefined) state.step = step;
+    if (state._initialStep === null) {
+      state._initialStep = step;
+    }
+    if (state.step === undefined) {
+      state.step = step;
+    }
   }
 
   setEmail(email: string) {
@@ -139,6 +208,7 @@ class AuthStore {
 
   setLoginOptions(availableLoginOptions: LoginOptions) {
     state.availableLoginOptions = availableLoginOptions;
+    saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, availableLoginOptions);
   }
 
   setLoading(loading: boolean) {
@@ -164,7 +234,7 @@ class AuthStore {
       return false;
     }
 
-    if (error === "sign_in_not_found") {
+    if (error === "sign_in_not_found" || error === "sign_in_already_processed" || error === "sign_in_expired") {
       this.reset();
       return false;
     }
@@ -185,8 +255,17 @@ class AuthStore {
     state.globalErrors = {};
   }
 
-  setStep(step: AuthStep) {
+  setStep(step: AuthStep, addToHistory = true) {
+    if (addToHistory && state.step !== undefined && state.step !== step) {
+      state._stepHistory = [...state._stepHistory, state.step];
+    }
+
     state.step = step;
+    if (isRecoverableStep(step)) {
+      saveToStorage(localStorage, SESSION_KEYS.STEP, step);
+    } else {
+      saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    }
   }
 
   setSignInId(signInId: string) {
@@ -211,6 +290,7 @@ class AuthStore {
 
   setMagicCodeStep(step: null | "requested" | "sent") {
     state.magicCodeStep = step;
+    saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, step);
   }
 
   setResetPasswordStep(step: null | "requested" | "sent" | "completed") {
@@ -249,6 +329,79 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.EMAIL, null);
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
+
+    // recovery-related storage
+    saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
+    saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+  }
+
+  getPendingRecoveryStep(): AuthStep | null {
+    return state._pendingRecoveryStep;
+  }
+
+  applyRecoveryStep(): boolean {
+    const pendingStep = state._pendingRecoveryStep;
+    if (!pendingStep || !state.sid) {
+      this.clearPendingRecovery();
+      return false;
+    }
+
+    state.step = pendingStep;
+    state._pendingRecoveryStep = null;
+    return true;
+  }
+
+  clearPendingRecovery() {
+    state._pendingRecoveryStep = null;
+    saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+  }
+
+  canGoBack(): boolean {
+    return state._stepHistory.length > 0;
+  }
+
+  goBack(): boolean {
+    if (state._stepHistory.length === 0) {
+      return false;
+    }
+
+    const previousStep = state._stepHistory[state._stepHistory.length - 1];
+    state._stepHistory = state._stepHistory.slice(0, -1);
+
+    this.setStep(previousStep, false);
+
+    // clear errors when going back
+    this.clearErrors();
+
+    if (previousStep === "email" || previousStep === "single-login") {
+      state.magicCodeStep = null;
+      saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+    }
+
+    return true;
+  }
+
+  restart() {
+    const initialStep = state._initialStep ?? "email";
+
+    // keep email for convenience
+    const email = state.email;
+    reset();
+
+    state.email = email;
+    state.step = initialStep;
+    state._initialStep = initialStep;
+    state._stepHistory = [];
+    state._pendingRecoveryStep = null;
+
+    saveToStorage(localStorage, SESSION_KEYS.SID, null);
+    saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
+    saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
+    saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
+    saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
   }
 }
 

@@ -175,6 +175,25 @@ export class AuthHelpers {
     }
   }
 
+  // Note: This does not validate the SID with an API call to avoid side effects. We assume here that the SID is valid and that next action wont fail because of it.
+  recoverSignInStep(): boolean {
+    const pendingStep = authStore.getPendingRecoveryStep();
+
+    if (!pendingStep || !authState.sid) {
+      authStore.clearPendingRecovery();
+      return false;
+    }
+
+    this.logger.info("Recovering sign-in step:", pendingStep);
+
+    const recovered = authStore.applyRecoveryStep();
+    if (recovered) {
+      this.logger.info("Sign-in step recovered successfully:", pendingStep);
+    }
+
+    return recovered;
+  }
+
   async checkSignedIn() {
     if (authState.authenticated) return;
 

@@ -83,6 +83,9 @@ export class Auth {
       authStore.setAuthenticated(true);
     }
 
+    // Resume auth flow after page reload or new tab by recovering the sign-in step
+    Auth.instance.helpers.recoverSignInStep();
+
     return Auth.instance;
   }
 
@@ -181,6 +184,22 @@ export class Auth {
 
   getEmail(): string | null {
     return authState.email;
+  }
+
+  canGoBack(): boolean {
+    return authStore.canGoBack();
+  }
+
+  goBack(): boolean {
+    return authStore.goBack();
+  }
+
+  restart(): void {
+    authStore.restart();
+  }
+
+  getCurrentStep(): string | undefined {
+    return authState.step;
   }
 
   private createAuthError(message: string, code: AuthError["code"], requiresReauth = false): AuthError {
