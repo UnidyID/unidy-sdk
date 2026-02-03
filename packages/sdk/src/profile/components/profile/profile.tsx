@@ -41,7 +41,15 @@ export class Profile {
 
   @State() fetchingProfileData = false;
 
-  /** Fields registered by child u-field components for partial validation */
+  /**
+   * Fields registered by child u-field components for partial validation.
+   *
+   * Instance Isolation: This Set is an instance property, meaning each u-profile
+   * component has its own independent Set. When multiple u-profile components exist
+   * on the same page, each maintains its own field registry. Child u-field components
+   * use findParentProfile(this.element) to locate their closest parent u-profile,
+   * ensuring fields register with the correct profile instance.
+   */
   private renderedFields = new Set<string>();
 
   /**

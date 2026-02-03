@@ -30,6 +30,7 @@ export const config: Config = {
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
         { src: "auth/single-step.html", dest: "auth/single-step.html" },
         { src: "auth/profile.html", dest: "auth/profile.html" },
+        { src: "profile/partial.html", dest: "profile/partial.html" },
       ],
     },
   ],
