@@ -4,23 +4,28 @@
 ## Stencil Store Reactivity
 `@stencil/store` handles reactivity automatically. Access store state directly in the render method - re-renders trigger automatically when state changes. See https://stenciljs.com/docs/v2/stencil-store#storestate
 
-Don't manually subscribe to store changes:
-```tsx
-// Unnecessary in most cases
-private unsubscribe?: () => void;
-connectedCallback() {
-  this.unsubscribe = onChange("step", () => this.updateState());
-}
-disconnectedCallback() {
-  this.unsubscribe?.();
-}
-```
-
-**DO** access store state directly in render:
 ```tsx
 // ✅ Stencil handles reactivity
 render() {
   if (authState.step === "email") { ... }
+}
+```
+
+**Exception: Slotted components** - Components rendered inside a `<slot>` may not re-render when store state changes. Use a `@State()` trigger with subscriptions:
+```tsx
+@State() private renderTrigger = 0;
+private unsubscribers: (() => void)[] = [];
+
+connectedCallback() {
+  const triggerRender = () => { this.renderTrigger++; };
+  this.unsubscribers.push(onChange("step", triggerRender));
+}
+disconnectedCallback() {
+  this.unsubscribers.forEach((unsub) => unsub());
+}
+render() {
+  void this.renderTrigger; // Establish dependency
+  // ... use authState directly
 }
 ```
 
