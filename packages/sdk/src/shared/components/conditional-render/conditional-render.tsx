@@ -1,9 +1,9 @@
 import { Component, Host, h, Prop } from "@stencil/core";
 import { type AuthState, authState } from "../../../auth/store/auth-store";
-import { UnidyComponent } from "../../../logger";
 import * as NewsletterHelpers from "../../../newsletter/newsletter-helpers";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { profileStore } from "../../../profile/store/profile-store";
+import { UnidyComponent } from "../../base/component";
 import { flashState } from "../../store/flash-store";
 
 const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {

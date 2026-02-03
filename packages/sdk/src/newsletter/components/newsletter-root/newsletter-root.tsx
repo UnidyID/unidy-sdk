@@ -1,10 +1,11 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { t } from "../../../i18n";
-import { logger, UnidyComponent } from "../../../logger";
-import { clearUrlParam } from "../../../shared/component-utils";
+import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { Flash } from "../../../shared/store/flash-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
+import { clearUrlParam } from "../../../shared/utils/url-utils";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 import { type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
 import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-button";

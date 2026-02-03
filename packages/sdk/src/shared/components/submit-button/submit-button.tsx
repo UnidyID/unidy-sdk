@@ -1,9 +1,11 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { type AuthButtonFor, authContext } from "../../../auth/components/submit-button/auth-submit-button";
 import { t } from "../../../i18n";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
-import { hasSlotContent, renderButtonContent } from "../../component-utils";
+import { UnidyComponent } from "../../base/component";
+import { HasSlotContent } from "../../base/has-slot-content";
+import { slotFallbackText } from "../../component-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -11,8 +13,7 @@ import { defaultContext, type SubmitButtonContext } from "./context";
   styleUrl: "submit-button.css",
   shadow: false,
 })
-export class SubmitButton {
-  @Element() el!: HTMLElement;
+export class SubmitButton extends UnidyComponent(HasSlotContent) {
   @Prop() for?: AuthButtonFor | NewsletterButtonFor;
   @Prop() text?: string;
   @Prop() disabled = false;
@@ -20,13 +21,8 @@ export class SubmitButton {
 
   private context: "auth" | "profile" | "newsletter" = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
-  private hasSlot = false;
 
   async componentWillLoad() {
-    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
-    // components and always return true on re-render
-    this.hasSlot = hasSlotContent(this.el);
-
     this.context = this.detectContext();
 
     switch (this.context) {
@@ -45,11 +41,11 @@ export class SubmitButton {
   }
 
   private detectContext(): "auth" | "profile" | "newsletter" {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
+    if (this.element.closest("u-signin-root") || this.element.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile")) return "profile";
+    if (this.element.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root")) return "newsletter";
+    if (this.element.closest("u-newsletter-root")) return "newsletter";
 
     throw new Error(
       "No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
@@ -57,7 +53,7 @@ export class SubmitButton {
   }
 
   private handleClick = async (event: MouseEvent) => {
-    await this.contextModule.handleClick(event, this.el, this.for);
+    await this.contextModule.handleClick(event, this.element, this.for);
   };
 
   private isDisabled(): boolean {
@@ -98,6 +94,6 @@ export class SubmitButton {
       "aria-live": "polite",
     };
 
-    return <button {...buttonProps}>{renderButtonContent(this.hasSlot, this.isLoading(), this.getButtonText())}</button>;
+    return <button {...buttonProps}>{slotFallbackText(this.getButtonText(), { hasSlot: this.hasSlot, loading: this.isLoading() })}</button>;
   }
 }

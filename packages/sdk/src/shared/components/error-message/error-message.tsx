@@ -1,8 +1,9 @@
-import { Component, Element, Host, h, Prop } from "@stencil/core";
+import { Component, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { hasSlotContent } from "../../component-utils";
+import { UnidyComponent } from "../../base/component";
+import { HasSlotContent } from "../../base/has-slot-content";
 import { unidyState } from "../../store/unidy-store";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
@@ -12,27 +13,18 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
   shadow: false,
   styleUrl: "error-message.css",
 })
-export class ErrorMessage {
+export class ErrorMessage extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() for!: string;
 
   @Prop() errorMessages?: Record<string, string>;
-  @Element() el!: HTMLElement;
-
-  // Must be evaluated on load, not render, because shadow: false components
-  // will have their DOM modified after first render, causing hasSlotContent to return incorrect results
-  private hasSlot = false;
-
-  componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {
-    if (this.el.closest("u-signin-root") || this.el.closest("u-signin-step")) return "auth";
+    if (this.element.closest("u-signin-root") || this.element.closest("u-signin-step")) return "auth";
 
-    if (this.el.closest("u-profile")) return "profile";
+    if (this.element.closest("u-profile")) return "profile";
 
-    if (this.el.closest("u-newsletter-root")) return "newsletter";
+    if (this.element.closest("u-newsletter-root")) return "newsletter";
 
     if (this.for === "general" || this.for === "connection") return "other";
 
