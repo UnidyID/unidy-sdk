@@ -5,9 +5,9 @@ import { newsletterStore } from "../../store/newsletter-store";
 export type NewsletterButtonFor = "login" | "create";
 
 export const newsletterContext: SubmitButtonContext<NewsletterButtonFor> = {
-  handleClick: async (event: MouseEvent, el: HTMLElement, forProp?: NewsletterButtonFor) => {
+  handleClick: async (event: MouseEvent, element: HTMLElement, forProp?: NewsletterButtonFor) => {
     event.preventDefault();
-    return await findParentNewsletterRoot(el)?.submit(forProp);
+    return await findParentNewsletterRoot(element)?.submit(forProp);
   },
 
   isDisabled(forProp, disabled?: boolean): boolean {

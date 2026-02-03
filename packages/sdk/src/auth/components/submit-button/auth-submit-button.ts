@@ -5,23 +5,23 @@ import { authState } from "../../store/auth-store";
 
 export type AuthButtonFor = "email" | "password" | "resetPassword" | "single-login";
 
-function getEmailInput(el: HTMLElement) {
-  const signinRoot = findParentSigninRoot(el) || findParentSigninStep(el);
+function getEmailInput(element: HTMLElement) {
+  const signinRoot = findParentSigninRoot(element) || findParentSigninStep(element);
   const emailField = signinRoot?.querySelector("u-email-field");
   return emailField?.querySelector('input[type="email"]') as HTMLInputElement | null;
 }
 
 export const authContext: SubmitButtonContext<AuthButtonFor> = {
-  handleClick: async (event: MouseEvent, el: HTMLElement, _forProp?: AuthButtonFor) => {
+  handleClick: async (event: MouseEvent, element: HTMLElement, _forProp?: AuthButtonFor) => {
     event.preventDefault();
 
-    const emailInput = getEmailInput(el);
+    const emailInput = getEmailInput(element);
     if (emailInput && !emailInput.checkValidity()) {
       emailInput.reportValidity();
       return;
     }
 
-    await findParentSigninStep(el)?.submit();
+    await findParentSigninStep(element)?.submit();
   },
 
   isDisabled(forProp?: AuthButtonFor, disabled?: boolean): boolean {

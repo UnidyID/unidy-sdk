@@ -1,7 +1,8 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { authState, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { UnidyComponent } from "../../base/component";
 import { detectContext, findParentNewsletterRoot, findParentSigninStep } from "../../context-utils";
 
 type EmailFieldContext = "auth" | "newsletter";
@@ -11,8 +12,7 @@ type EmailFieldContext = "auth" | "newsletter";
   styleUrl: "email-field.css",
   shadow: false,
 })
-export class EmailField {
-  @Element() el!: HTMLElement;
+export class EmailField extends UnidyComponent() {
 
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaLabel = "Email";
@@ -21,7 +21,7 @@ export class EmailField {
   @State() emailValue = "";
 
   private get context(): EmailFieldContext | null {
-    const detectedContext = detectContext(this.el);
+    const detectedContext = detectContext(this.element);
 
     // Email field only supports auth and newsletter contexts
     if (detectedContext === "auth" || detectedContext === "newsletter") {
@@ -61,9 +61,9 @@ export class EmailField {
 
     if (this.store.state.email === "") return;
 
-    if (this.context === "auth") return await findParentSigninStep(this.el)?.submit();
+    if (this.context === "auth") return await findParentSigninStep(this.element)?.submit();
 
-    if (this.context === "newsletter") return await findParentNewsletterRoot(this.el)?.submit();
+    if (this.context === "newsletter") return await findParentNewsletterRoot(this.element)?.submit();
   };
 
   private isDisabled(): boolean {

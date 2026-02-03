@@ -1,5 +1,6 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../shared/base/component";
 import { findParentSigninStep } from "../../../shared/context-utils";
 import { authState, authStore } from "../../store/auth-store";
 
@@ -9,8 +10,7 @@ export type PasswordFieldFor = "login" | "new-password" | "password-confirmation
   tag: "u-password-field",
   shadow: false,
 })
-export class PasswordField {
-  @Element() el!: HTMLElement;
+export class PasswordField extends UnidyComponent() {
 
   @Prop() for: PasswordFieldFor = "login";
   @Prop({ attribute: "class-name" }) componentClassName = "";
@@ -84,7 +84,7 @@ export class PasswordField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    (await findParentSigninStep(this.el))?.submit();
+    (await findParentSigninStep(this.element))?.submit();
   };
 
   private shouldRender(): boolean {

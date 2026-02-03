@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { type ComponentContext, detectContext } from "../../../shared/context-utils";
@@ -38,12 +38,10 @@ export class RawField extends UnidyComponent() {
   @Prop() patternErrorMessage?: string;
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  @Element() el!: HTMLElement;
-
   @State() selected?: string | string[];
 
   private get context(): ComponentContext | null {
-    return detectContext(this.el);
+    return detectContext(this.element);
   }
 
   private readStore(fieldName: string): string | undefined | string[] {
@@ -272,7 +270,7 @@ export class RawField extends UnidyComponent() {
   componentDidRender() {
     const errs = this.getErrors();
     if (errs?.[this.field]) {
-      this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
+      this.element.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
     }
   }
 

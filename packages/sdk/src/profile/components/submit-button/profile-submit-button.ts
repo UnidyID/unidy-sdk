@@ -3,9 +3,9 @@ import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 
 export const profileContext: SubmitButtonContext = {
-  async handleClick(event: MouseEvent, el: HTMLElement, _forProp?: string) {
+  async handleClick(event: MouseEvent, element: HTMLElement, _forProp?: string) {
     event.preventDefault();
-    await findParentProfile(el)?.submitProfile();
+    await findParentProfile(element)?.submitProfile();
   },
 
   isDisabled(_forProp, disabled?: boolean): boolean {
