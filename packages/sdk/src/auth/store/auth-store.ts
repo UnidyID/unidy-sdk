@@ -222,10 +222,11 @@ class AuthStore {
       error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_ALREADY_PROCESSED ||
       error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_EXPIRED
     ) {
-      // Preserve email in this case so user can retry without re-entering
+      // Preserve email so user can retry without re-entering
       const email = state.email;
       this.reset();
       state.email = email;
+      saveToStorage(localStorage, SESSION_KEYS.EMAIL, email);
       return false;
     }
 
@@ -384,8 +385,11 @@ class AuthStore {
     reset();
 
     state.email = email;
+    saveToStorage(localStorage, SESSION_KEYS.EMAIL, email);
+
     state.availableLoginOptions = loginOptions;
     saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, loginOptions);
+
     state.step = initialStep;
     state._initialStep = initialStep;
     state._stepHistory = [];
