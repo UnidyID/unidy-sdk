@@ -48,7 +48,7 @@ export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ pass
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string }>;
 // biome-ignore lint/suspicious/noExplicitAny: user fields are dynamic
 export type UpdateMissingFieldsArgs = { signInId: string } & Payload<{ user: Record<string, any> }>;
-export type RefreshTokenArgs = { signInId: string };
+export type RefreshTokenArgs = { signInId: string; refreshToken: string };
 export type SendResetPasswordEmailArgs = { signInId: string } & Payload<{ returnTo: string }>;
 export type ResetPasswordArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string }>;
 export type ValidateResetPasswordTokenArgs = { signInId: string; token: string };
@@ -285,8 +285,10 @@ export class AuthService extends BaseService {
   }
 
   async refreshToken(args: RefreshTokenArgs): Promise<RefreshTokenResult> {
-    const { signInId } = args;
-    const response = await this.client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {});
+    const { signInId, refreshToken } = args;
+    const response = await this.client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {
+      refresh_token: refreshToken,
+    });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
