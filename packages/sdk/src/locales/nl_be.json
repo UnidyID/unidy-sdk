@@ -33,6 +33,10 @@
     },
     "socialLogin": {
       "button_text": "Doorgaan met {{provider}}"
+    },
+    "navigation": {
+      "back": "Terug",
+      "restart": "Opnieuw beginnen"
     }
   },
   "buttons": {
