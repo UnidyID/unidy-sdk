@@ -54,6 +54,8 @@ export class Auth {
     },
     general: {
       ACCOUNT_LOCKED: "account_locked",
+      SIGN_IN_NOT_FOUND: "sign_in_not_found",
+      SIGN_IN_ALREADY_PROCESSED: "sign_in_already_processed",
       SIGN_IN_EXPIRED: "sign_in_expired",
     },
   } as const;

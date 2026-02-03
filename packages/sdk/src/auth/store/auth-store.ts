@@ -3,6 +3,7 @@ import type { ProfileNode } from "../../profile";
 import { unidyState } from "../../shared/store/unidy-store";
 import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
+import { AUTH_ERROR_CODES } from "../error-definitions";
 
 export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration" | "single-login";
 
@@ -216,17 +217,17 @@ class AuthStore {
   }
 
   setFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey", error: string | null) {
-    if (!this.handleError(error)) return;
+    if (!this.handleGeneralError(error)) return;
 
     state.errors = { ...state.errors, [field]: error };
   }
 
   setGlobalError(key: string, error: string | null) {
-    if (!this.handleError(error)) return;
+    if (!this.handleGeneralError(error)) return;
     state.globalErrors = { ...state.globalErrors, [key]: error };
   }
 
-  private handleError(error: string | null): boolean {
+  private handleGeneralError(error: string | null): boolean {
     if (!error) return true;
 
     if (error === "connection_failed") {
@@ -234,8 +235,15 @@ class AuthStore {
       return false;
     }
 
-    if (error === "sign_in_not_found" || error === "sign_in_already_processed" || error === "sign_in_expired") {
+    if (
+      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_NOT_FOUND ||
+      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_ALREADY_PROCESSED ||
+      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_EXPIRED
+    ) {
+      // Preserve email in this case so user can retry without re-entering
+      const email = state.email;
       this.reset();
+      state.email = email;
       return false;
     }
 
@@ -386,11 +394,13 @@ class AuthStore {
   restart() {
     const initialStep = state._initialStep ?? "email";
 
-    // keep email for convenience
+    // Preserve user context for convenience
     const email = state.email;
+    const loginOptions = state.availableLoginOptions;
     reset();
 
     state.email = email;
+    state.availableLoginOptions = loginOptions;
     state.step = initialStep;
     state._initialStep = initialStep;
     state._stepHistory = [];
@@ -400,7 +410,6 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
     saveToStorage(localStorage, SESSION_KEYS.STEP, null);
-    saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
   }
 }
