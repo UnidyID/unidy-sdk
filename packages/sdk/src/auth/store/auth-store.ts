@@ -385,6 +385,7 @@ class AuthStore {
 
     state.email = email;
     state.availableLoginOptions = loginOptions;
+    saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, loginOptions);
     state.step = initialStep;
     state._initialStep = initialStep;
     state._stepHistory = [];
