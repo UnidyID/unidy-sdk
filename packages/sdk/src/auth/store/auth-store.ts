@@ -73,7 +73,7 @@ const saveJsonToStorage = <T>(storage: Storage, key: string, value: T | null) =>
   }
 };
 
-const RECOVERABLE_STEPS: AuthStep[] = ["verification", "magic-code"];
+const RECOVERABLE_STEPS: AuthStep[] = ["verification", "magic-code", "missing-fields"];
 
 const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
   return step !== undefined && RECOVERABLE_STEPS.includes(step);
@@ -228,6 +228,7 @@ class AuthStore {
     }
 
     state.step = step;
+
     if (isRecoverableStep(step)) {
       saveToStorage(localStorage, SESSION_KEYS.STEP, step);
     } else {
