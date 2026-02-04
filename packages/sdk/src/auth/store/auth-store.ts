@@ -79,33 +79,9 @@ const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
   return step !== undefined && RECOVERABLE_STEPS.includes(step);
 };
 
-const getStoredStep = (): AuthStep | null => {
-  try {
-    return localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
-  } catch {
-    return null;
-  }
-};
-
-const getStoredLoginOptions = (): LoginOptions | null => {
-  try {
-    return loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
-  } catch {
-    return null;
-  }
-};
-
-const getStoredMagicCodeStep = (): AuthState["magicCodeStep"] => {
-  try {
-    return localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
-  } catch {
-    return null;
-  }
-};
-
-const storedStep = getStoredStep();
-const storedLoginOptions = getStoredLoginOptions();
-const storedMagicCodeStep = getStoredMagicCodeStep();
+const storedStep = localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
+const storedLoginOptions = loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
+const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
 
 const initialState: AuthState = {
   step: undefined,
