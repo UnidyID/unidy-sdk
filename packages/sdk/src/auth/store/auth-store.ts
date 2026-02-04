@@ -368,7 +368,7 @@ class AuthStore {
     this.clearErrors();
 
     // Clear magic code state when leaving magic-code step so a fresh request happens on re-entry
-    if (currentStep === "magic-code" || previousStep === "email" || previousStep === "single-login") {
+    if (currentStep === "magic-code") {
       state.magicCodeStep = null;
       saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
     }
