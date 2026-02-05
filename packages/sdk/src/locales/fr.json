@@ -42,6 +42,7 @@
   "buttons": {
     "cancel": "Annuler",
     "close": "Fermer",
+    "confirm": "Confirmer",
     "connect": "Connecter",
     "continue": "Continuer",
     "jump_to_service": "Aller au service",
@@ -122,6 +123,19 @@
     "verification_failed": "Échec de la vérification"
   },
   "loading": "Chargement...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Application OAuth introuvable",
+      "client_id_required": "client-id est requis",
+      "connection_failed": "Erreur réseau. Veuillez réessayer.",
+      "grant_failed": "Échec de l'octroi du consentement",
+      "invalid_field_values": "Valeurs de champ invalides fournies",
+      "missing_required_fields": "Veuillez remplir tous les champs obligatoires",
+      "not_authenticated": "L'utilisateur n'est pas authentifié. Veuillez d'abord vous connecter.",
+      "unknown": "Une erreur inattendue s'est produite",
+      "update_failed": "Échec de la mise à jour des données utilisateur"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

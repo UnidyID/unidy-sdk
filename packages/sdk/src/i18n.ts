@@ -6,6 +6,7 @@ import fr from "./locales/fr.json";
 import it from "./locales/it.json";
 import nl_be from "./locales/nl_be.json";
 import ro from "./locales/ro.json";
+import sv from "./locales/sv.json";
 import { i18nLogger } from "./logger";
 import { onChange as unidyOnChange, unidyState } from "./shared/store/unidy-store";
 
@@ -23,6 +24,7 @@ i18n.use(i18nLogger).init({
     it: { translation: it },
     nl_be: { translation: nl_be },
     ro: { translation: ro },
+    sv: { translation: sv },
   },
 });
 

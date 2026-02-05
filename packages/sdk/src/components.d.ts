@@ -8,6 +8,9 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
+import { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
+import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
+import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./profile/components/raw-input-fields/Select";
@@ -23,6 +26,9 @@ import { Ticket } from "./ticketable/api/tickets";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
+export { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
+export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
+export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./profile/components/raw-input-fields/Select";
@@ -319,6 +325,91 @@ export namespace Components {
          */
         "unsubscribeClassName": string;
     }
+    interface UOauthButton {
+        /**
+          * The action this button performs. - "connect": Start the OAuth flow (default) - "submit": Submit the consent form - "cancel": Cancel the consent flow
+          * @default "connect"
+         */
+        "action": OAuthButtonAction;
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+    }
+    interface UOauthLogo {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default "64"
+         */
+        "height": string;
+        /**
+          * @default "64"
+         */
+        "width": string;
+    }
+    interface UOauthMissingFields {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default ""
+         */
+        "fieldClassName": string;
+    }
+    interface UOauthModal {
+        /**
+          * Custom CSS class name(s) to apply to the dialog backdrop. Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+          * @default ""
+         */
+        "backdropClassName": string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog content wrapper.
+          * @default ""
+         */
+        "contentClassName": string;
+    }
+    interface UOauthProvider {
+        /**
+          * @default true
+         */
+        "autoRedirect": boolean;
+        "cancel": () => Promise<void>;
+        "clientId": string;
+        "connect": () => Promise<void>;
+        /**
+          * @default false
+         */
+        "newtab": boolean;
+        "redirectUri"?: string;
+        "scopes"?: string;
+        "submit": () => Promise<void>;
+    }
+    interface UOauthScopes {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * @default ""
+         */
+        "itemClassName": string;
+    }
+    interface UOauthText {
+        /**
+          * @default "title"
+         */
+        "type": OAuthTextType;
+    }
     interface UPaginationButton {
         "customClass"?: string;
         /**
@@ -542,6 +633,10 @@ export interface UNewsletterRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUNewsletterRootElement;
 }
+export interface UOauthProviderCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUOauthProviderElement;
+}
 export interface UProfileCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUProfileElement;
@@ -725,6 +820,61 @@ declare global {
     var HTMLUNewsletterToggleSubscriptionButtonElement: {
         prototype: HTMLUNewsletterToggleSubscriptionButtonElement;
         new (): HTMLUNewsletterToggleSubscriptionButtonElement;
+    };
+    interface HTMLUOauthButtonElement extends Components.UOauthButton, HTMLStencilElement {
+    }
+    var HTMLUOauthButtonElement: {
+        prototype: HTMLUOauthButtonElement;
+        new (): HTMLUOauthButtonElement;
+    };
+    interface HTMLUOauthLogoElement extends Components.UOauthLogo, HTMLStencilElement {
+    }
+    var HTMLUOauthLogoElement: {
+        prototype: HTMLUOauthLogoElement;
+        new (): HTMLUOauthLogoElement;
+    };
+    interface HTMLUOauthMissingFieldsElement extends Components.UOauthMissingFields, HTMLStencilElement {
+    }
+    var HTMLUOauthMissingFieldsElement: {
+        prototype: HTMLUOauthMissingFieldsElement;
+        new (): HTMLUOauthMissingFieldsElement;
+    };
+    interface HTMLUOauthModalElement extends Components.UOauthModal, HTMLStencilElement {
+    }
+    var HTMLUOauthModalElement: {
+        prototype: HTMLUOauthModalElement;
+        new (): HTMLUOauthModalElement;
+    };
+    interface HTMLUOauthProviderElementEventMap {
+        "oauthSuccess": OAuthSuccessEvent;
+        "oauthError": OAuthErrorEvent;
+        "oauthCancel": void;
+    }
+    interface HTMLUOauthProviderElement extends Components.UOauthProvider, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUOauthProviderElementEventMap>(type: K, listener: (this: HTMLUOauthProviderElement, ev: UOauthProviderCustomEvent<HTMLUOauthProviderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUOauthProviderElementEventMap>(type: K, listener: (this: HTMLUOauthProviderElement, ev: UOauthProviderCustomEvent<HTMLUOauthProviderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUOauthProviderElement: {
+        prototype: HTMLUOauthProviderElement;
+        new (): HTMLUOauthProviderElement;
+    };
+    interface HTMLUOauthScopesElement extends Components.UOauthScopes, HTMLStencilElement {
+    }
+    var HTMLUOauthScopesElement: {
+        prototype: HTMLUOauthScopesElement;
+        new (): HTMLUOauthScopesElement;
+    };
+    interface HTMLUOauthTextElement extends Components.UOauthText, HTMLStencilElement {
+    }
+    var HTMLUOauthTextElement: {
+        prototype: HTMLUOauthTextElement;
+        new (): HTMLUOauthTextElement;
     };
     interface HTMLUPaginationButtonElement extends Components.UPaginationButton, HTMLStencilElement {
     }
@@ -913,6 +1063,13 @@ declare global {
         "u-newsletter-resend-doi-button": HTMLUNewsletterResendDoiButtonElement;
         "u-newsletter-root": HTMLUNewsletterRootElement;
         "u-newsletter-toggle-subscription-button": HTMLUNewsletterToggleSubscriptionButtonElement;
+        "u-oauth-button": HTMLUOauthButtonElement;
+        "u-oauth-logo": HTMLUOauthLogoElement;
+        "u-oauth-missing-fields": HTMLUOauthMissingFieldsElement;
+        "u-oauth-modal": HTMLUOauthModalElement;
+        "u-oauth-provider": HTMLUOauthProviderElement;
+        "u-oauth-scopes": HTMLUOauthScopesElement;
+        "u-oauth-text": HTMLUOauthTextElement;
         "u-pagination-button": HTMLUPaginationButtonElement;
         "u-pagination-page": HTMLUPaginationPageElement;
         "u-passkey": HTMLUPasskeyElement;
@@ -1202,6 +1359,91 @@ declare namespace LocalJSX {
          */
         "unsubscribeClassName"?: string;
     }
+    interface UOauthButton {
+        /**
+          * The action this button performs. - "connect": Start the OAuth flow (default) - "submit": Submit the consent form - "cancel": Cancel the consent flow
+          * @default "connect"
+         */
+        "action"?: OAuthButtonAction;
+        /**
+          * Custom CSS class name(s) to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
+    interface UOauthLogo {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default "64"
+         */
+        "height"?: string;
+        /**
+          * @default "64"
+         */
+        "width"?: string;
+    }
+    interface UOauthMissingFields {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default ""
+         */
+        "fieldClassName"?: string;
+    }
+    interface UOauthModal {
+        /**
+          * Custom CSS class name(s) to apply to the dialog backdrop. Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+          * @default ""
+         */
+        "backdropClassName"?: string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog content wrapper.
+          * @default ""
+         */
+        "contentClassName"?: string;
+    }
+    interface UOauthProvider {
+        /**
+          * @default true
+         */
+        "autoRedirect"?: boolean;
+        "clientId": string;
+        /**
+          * @default false
+         */
+        "newtab"?: boolean;
+        "onOauthCancel"?: (event: UOauthProviderCustomEvent<void>) => void;
+        "onOauthError"?: (event: UOauthProviderCustomEvent<OAuthErrorEvent>) => void;
+        "onOauthSuccess"?: (event: UOauthProviderCustomEvent<OAuthSuccessEvent>) => void;
+        "redirectUri"?: string;
+        "scopes"?: string;
+    }
+    interface UOauthScopes {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * @default ""
+         */
+        "itemClassName"?: string;
+    }
+    interface UOauthText {
+        /**
+          * @default "title"
+         */
+        "type"?: OAuthTextType;
+    }
     interface UPaginationButton {
         "customClass"?: string;
         /**
@@ -1454,6 +1696,13 @@ declare namespace LocalJSX {
         "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
         "u-newsletter-root": UNewsletterRoot;
         "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
+        "u-oauth-button": UOauthButton;
+        "u-oauth-logo": UOauthLogo;
+        "u-oauth-missing-fields": UOauthMissingFields;
+        "u-oauth-modal": UOauthModal;
+        "u-oauth-provider": UOauthProvider;
+        "u-oauth-scopes": UOauthScopes;
+        "u-oauth-text": UOauthText;
         "u-pagination-button": UPaginationButton;
         "u-pagination-page": UPaginationPage;
         "u-passkey": UPasskey;
@@ -1499,6 +1748,13 @@ declare module "@stencil/core" {
             "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
             "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
             "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
+            "u-oauth-button": LocalJSX.UOauthButton & JSXBase.HTMLAttributes<HTMLUOauthButtonElement>;
+            "u-oauth-logo": LocalJSX.UOauthLogo & JSXBase.HTMLAttributes<HTMLUOauthLogoElement>;
+            "u-oauth-missing-fields": LocalJSX.UOauthMissingFields & JSXBase.HTMLAttributes<HTMLUOauthMissingFieldsElement>;
+            "u-oauth-modal": LocalJSX.UOauthModal & JSXBase.HTMLAttributes<HTMLUOauthModalElement>;
+            "u-oauth-provider": LocalJSX.UOauthProvider & JSXBase.HTMLAttributes<HTMLUOauthProviderElement>;
+            "u-oauth-scopes": LocalJSX.UOauthScopes & JSXBase.HTMLAttributes<HTMLUOauthScopesElement>;
+            "u-oauth-text": LocalJSX.UOauthText & JSXBase.HTMLAttributes<HTMLUOauthTextElement>;
             "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
             "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
             "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;

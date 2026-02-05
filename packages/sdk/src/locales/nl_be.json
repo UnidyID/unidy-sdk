@@ -42,6 +42,7 @@
   "buttons": {
     "cancel": "Annuleren",
     "close": "Sluiten",
+    "confirm": "Bevestigen",
     "connect": "Verbinden",
     "continue": "Doorgaan",
     "jump_to_service": "Naar dienst gaan",
