@@ -287,6 +287,33 @@ Renders a button that redirects users to the Unidy registration page. This butto
 
 -   `registration-content`: A slot for displaying content before the registration button (e.g., explanatory text).
 
+#### `<u-back-button>`
+
+Renders a navigation button that allows users to go back to the previous step in the authentication flow, or restart the entire flow.
+
+**Attributes:**
+
+-   `restart`: If `true`, restarts the entire flow instead of going back one step. Use this for "Start over" buttons. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button text. If not provided, displays "Back" (or "Start over" if `restart` is `true`).
+
+**Example:**
+
+```html
+<u-signin-step name="verification">
+  <u-back-button class-name="text-blue-500">← Back</u-back-button>
+  <!-- rest of verification step -->
+</u-signin-step>
+
+<u-signin-step name="reset-password">
+  <u-back-button restart class-name="text-blue-500">← Start over</u-back-button>
+  <!-- rest of reset password step -->
+</u-signin-step>
+```
+
 #### `<u-social-login-button>`
 
 Renders a button for logging in with a social provider.
@@ -874,6 +901,14 @@ Returns the email address that was used during the sign-in flow.
 #### `auth.logout(): Promise<boolean | AuthError>`
 
 Logs the user out by invalidating the session and clearing all stored tokens.
+
+#### `auth.goBack(): boolean`
+
+Navigates to the previous step in the authentication flow. Returns `true` if navigation was successful, `false` if there's no previous step to return to. This is used internally by `<u-back-button>`.
+
+#### `auth.restart(): void`
+
+Restarts the authentication flow from the beginning while preserving the user's email and login options. This is used internally by `<u-back-button restart>`.
 
 ### UnidyClient
 

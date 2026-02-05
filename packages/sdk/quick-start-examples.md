@@ -60,10 +60,30 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     </div>
 
     <u-signin-step name="verification">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
       <u-conditional-render when="auth.passwordEnabled">
         <u-password-field placeholder="Enter your password"></u-password-field>
         <u-submit-button for="password" text="Sign In"></u-submit-button>
       </u-conditional-render>
+      <u-conditional-render when="auth.magicCodeEnabled">
+        <u-send-magic-code-button class-name="mt-2 text-sm text-blue-500">Send Magic Code Instead</u-send-magic-code-button>
+      </u-conditional-render>
+    </u-signin-step>
+
+    <u-signin-step name="magic-code">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
+      <p class="mb-4 text-gray-600">Enter the code sent to your email</p>
+      <u-magic-code-field></u-magic-code-field>
+      <u-error-message for="magicCode" class-name="text-red-500 text-sm mt-2"></u-error-message>
+    </u-signin-step>
+
+    <u-signin-step name="reset-password">
+      <u-back-button restart class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Start over</u-back-button>
+      <p class="mb-4 text-gray-600">Enter your new password</p>
+      <u-password-field for="new-password" placeholder="New password"></u-password-field>
+      <u-password-field for="password-confirmation" placeholder="Confirm password"></u-password-field>
+      <u-error-message for="resetPassword" class-name="text-red-500 text-sm mt-2"></u-error-message>
+      <u-submit-button for="resetPassword" text="Reset Password"></u-submit-button>
     </u-signin-step>
   </u-signin-root>
 

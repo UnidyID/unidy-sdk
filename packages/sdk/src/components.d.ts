@@ -38,6 +38,7 @@ export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
     interface UBackButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
@@ -1048,6 +1049,7 @@ declare global {
 declare namespace LocalJSX {
     interface UBackButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
