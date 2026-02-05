@@ -36,6 +36,17 @@ export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
 export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart": boolean;
+    }
     interface UBrandConnectButton {
         /**
           * @default "connect"
@@ -548,6 +559,12 @@ export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUTicketableListElement;
 }
 declare global {
+    interface HTMLUBackButtonElement extends Components.UBackButton, HTMLStencilElement {
+    }
+    var HTMLUBackButtonElement: {
+        prototype: HTMLUBackButtonElement;
+        new (): HTMLUBackButtonElement;
+    };
     interface HTMLUBrandConnectButtonElement extends Components.UBrandConnectButton, HTMLStencilElement {
     }
     var HTMLUBrandConnectButtonElement: {
@@ -874,6 +891,7 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
+        "u-back-button": HTMLUBackButtonElement;
         "u-brand-connect-button": HTMLUBrandConnectButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
@@ -915,6 +933,17 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart"?: boolean;
+    }
     interface UBrandConnectButton {
         /**
           * @default "connect"
@@ -1403,6 +1432,7 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
+        "u-back-button": UBackButton;
         "u-brand-connect-button": UBrandConnectButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
@@ -1447,6 +1477,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
             "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;

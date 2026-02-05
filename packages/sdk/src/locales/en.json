@@ -34,6 +34,10 @@
     },
     "socialLogin": {
       "button_text": "Continue with {{provider}}"
+    },
+    "navigation": {
+      "back": "Back",
+      "restart": "Start over"
     }
   },
   "buttons": {

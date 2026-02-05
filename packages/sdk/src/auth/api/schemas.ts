@@ -44,6 +44,7 @@ export const SendMagicCodeErrorSchema = BaseErrorSchema.extend({
 // JWT token response
 export const TokenResponseSchema = z.object({
   jwt: z.string(),
+  refresh_token: z.string(),
   sid: z.string().nullish(),
 });
 

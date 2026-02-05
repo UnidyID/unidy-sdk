@@ -45,6 +45,7 @@ export class AuthHelpers {
       const token = jwtDecode<TokenPayload>((response as TokenResponse).jwt);
       authStore.setSignInId(token.sid);
       authStore.setToken((response as TokenResponse).jwt);
+      authStore.setRefreshToken((response as TokenResponse).refresh_token);
       authStore.setLoading(false);
       authStore.getRootComponentRef()?.onAuth(response as TokenResponse);
       return;
@@ -148,13 +149,22 @@ export class AuthHelpers {
       return;
     }
 
-    const [error, response] = await this.client.auth.refreshToken({ signInId: authState.sid });
+    if (!authState.refreshToken) {
+      this.logger.warn("No refresh token in the session");
+      return;
+    }
+
+    const [error, response] = await this.client.auth.refreshToken({
+      signInId: authState.sid,
+      refreshToken: authState.refreshToken,
+    });
 
     if (error) {
       authStore.reset();
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
+      authStore.setRefreshToken((response as TokenResponse).refresh_token);
     }
   }
 
@@ -163,6 +173,25 @@ export class AuthHelpers {
     if (sid) {
       authStore.setSignInId(sid);
     }
+  }
+
+  // Note: This does not validate the SID with an API call to avoid side effects. We assume here that the SID is valid and that next action wont fail because of it.
+  recoverSignInStep(): boolean {
+    const pendingStep = authStore.getPendingRecoveryStep();
+
+    if (!pendingStep || !authState.sid) {
+      authStore.clearPendingRecovery();
+      return false;
+    }
+
+    this.logger.info("Recovering sign-in step:", pendingStep);
+
+    const recovered = authStore.applyRecoveryStep();
+    if (recovered) {
+      this.logger.info("Sign-in step recovered successfully:", pendingStep);
+    }
+
+    return recovered;
   }
 
   async checkSignedIn() {
@@ -337,17 +366,28 @@ export class AuthHelpers {
       return;
     }
 
-    // Handle successful social auth redirect
-    if (!error && params.has("sid") && params.has("id_token")) {
+    // Handle successful social auth redirect with encoded auth_payload
+    if (!error && params.has("sid") && params.has("auth_payload")) {
       authStore.setSignInId(clearUrlParam("sid"));
 
-      const idToken = clearUrlParam("id_token");
+      const authPayload = clearUrlParam("auth_payload");
 
-      if (idToken) {
-        authStore.setToken(idToken);
-        this.handleAuthSuccess({ jwt: idToken } as TokenResponse);
+      if (authPayload) {
+        try {
+          const decoded = JSON.parse(atob(authPayload));
+          const idToken = decoded.id_token;
+          const refreshToken = decoded.refresh_token;
+
+          if (idToken) {
+            this.handleAuthSuccess({ jwt: idToken, refresh_token: refreshToken } as TokenResponse);
+          } else {
+            this.logger.error("No ID token found in auth_payload on social auth redirect");
+          }
+        } catch (e) {
+          this.logger.error("Failed to decode auth_payload on social auth redirect:", e);
+        }
       } else {
-        this.logger.error("No ID token found in the URL on social auth redirect");
+        this.logger.error("No auth_payload found in the URL on social auth redirect");
       }
 
       return;
@@ -468,6 +508,7 @@ export class AuthHelpers {
 
   private handleAuthSuccess(response: TokenResponse) {
     authStore.setToken(response.jwt);
+    authStore.setRefreshToken(response.refresh_token);
     authStore.setLoading(false);
     authStore.getRootComponentRef()?.onAuth(response);
   }

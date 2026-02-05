@@ -1,6 +1,7 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { Flash } from "../../../shared/store/flash-store";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
@@ -9,15 +10,8 @@ import { authState } from "../../store/auth-store";
   tag: "u-reset-password-button",
   shadow: false,
 })
-export class ResetPasswordButton {
-  @Element() el!: HTMLElement;
+export class ResetPasswordButton extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-
-  private hasSlot = false;
-
-  async componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   private handleClick = async () => {
     const authInstance = await Auth.getInstance();

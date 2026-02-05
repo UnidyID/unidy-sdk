@@ -33,6 +33,10 @@
     },
     "socialLogin": {
       "button_text": "Continuă cu {{provider}}"
+    },
+    "navigation": {
+      "back": "Înapoi",
+      "restart": "Reîncepe"
     }
   },
   "buttons": {
