@@ -4,7 +4,15 @@ import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 import { AUTH_ERROR_CODES } from "../error-definitions";
 
-export type AuthStep = "email" | "verification" | "magic-code" | "connect-brand" | "missing-fields" | "reset-password" | "registration" | "single-login";
+export type AuthStep =
+  | "email"
+  | "verification"
+  | "magic-code"
+  | "connect-brand"
+  | "missing-fields"
+  | "reset-password"
+  | "registration"
+  | "single-login";
 
 export interface AuthState {
   step: AuthStep;

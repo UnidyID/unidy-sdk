@@ -8,7 +8,15 @@ import { authState } from "../../store/auth-store";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
+  @Prop() name!:
+    | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration";
   @Prop() alwaysRender = false;
 
   @Method()
