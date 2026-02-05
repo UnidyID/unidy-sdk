@@ -6,7 +6,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Quick Start: Examples](https://github.com/UnidyID/unidy-sdk/blob/master/packages/sdk/quick-start-examples.md)
+- [Quick Start: Examples](./quick-start-examples.md#quick-start-examples)
 - [Swagger API Docs](https://demo.unidy.io/swagger/sdk/html?urls.primaryName=SDK+API+V1)
 - [Components](#components)
   - [Core Components](#core-components)

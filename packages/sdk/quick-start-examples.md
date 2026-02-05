@@ -614,7 +614,7 @@ This example demonstrates how to generate a QR code containing user profile data
     <div class="max-w-2xl mx-auto">
       <!-- Show this message when user is NOT signed in -->
       <u-signed-in not>
-        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
           <div class="mb-6">
             <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
             <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
@@ -625,7 +625,7 @@ This example demonstrates how to generate a QR code containing user profile data
 
       <!-- Show the QR code canvas when user IS signed in -->
       <u-signed-in>
-        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
           <div class="mb-6">
             <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
             <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
