@@ -14,10 +14,10 @@
 
 ## Events
 
-| Event        | Description | Type                                          |
-| ------------ | ----------- | --------------------------------------------- |
-| `authEvent`  |             | `CustomEvent<{ jwt: string; sid?: string; }>` |
-| `errorEvent` |             | `CustomEvent<{ error: string; }>`             |
+| Event        | Description | Type                                                                 |
+| ------------ | ----------- | -------------------------------------------------------------------- |
+| `authEvent`  |             | `CustomEvent<{ jwt: string; refresh_token: string; sid?: string; }>` |
+| `errorEvent` |             | `CustomEvent<{ error: string; }>`                                    |
 
 
 ----------------------------------------------

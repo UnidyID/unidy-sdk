@@ -42,6 +42,27 @@ export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
 export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart": boolean;
+    }
+    interface UBrandConnectButton {
+        /**
+          * @default "connect"
+         */
+        "action": "connect" | "cancel";
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -526,7 +547,7 @@ export namespace Components {
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
@@ -633,6 +654,18 @@ export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUTicketableListElement;
 }
 declare global {
+    interface HTMLUBackButtonElement extends Components.UBackButton, HTMLStencilElement {
+    }
+    var HTMLUBackButtonElement: {
+        prototype: HTMLUBackButtonElement;
+        new (): HTMLUBackButtonElement;
+    };
+    interface HTMLUBrandConnectButtonElement extends Components.UBrandConnectButton, HTMLStencilElement {
+    }
+    var HTMLUBrandConnectButtonElement: {
+        prototype: HTMLUBrandConnectButtonElement;
+        new (): HTMLUBrandConnectButtonElement;
+    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -1008,6 +1041,8 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
+        "u-back-button": HTMLUBackButtonElement;
+        "u-brand-connect-button": HTMLUBrandConnectButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -1055,6 +1090,27 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart"?: boolean;
+    }
+    interface UBrandConnectButton {
+        /**
+          * @default "connect"
+         */
+        "action"?: "connect" | "cancel";
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -1534,7 +1590,7 @@ declare namespace LocalJSX {
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
     }
     interface USocialLoginButton {
         /**
@@ -1618,6 +1674,8 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
+        "u-back-button": UBackButton;
+        "u-brand-connect-button": UBrandConnectButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1668,6 +1726,8 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
+            "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;

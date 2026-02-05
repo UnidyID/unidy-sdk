@@ -54,6 +54,8 @@ export class Auth {
     },
     general: {
       ACCOUNT_LOCKED: "account_locked",
+      SIGN_IN_NOT_FOUND: "sign_in_not_found",
+      SIGN_IN_ALREADY_PROCESSED: "sign_in_already_processed",
       SIGN_IN_EXPIRED: "sign_in_expired",
     },
   } as const;
@@ -82,6 +84,9 @@ export class Auth {
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
     }
+
+    // Resume auth flow after page reload or new tab by recovering the sign-in step
+    Auth.instance.helpers.recoverSignInStep();
 
     return Auth.instance;
   }
@@ -169,17 +174,34 @@ export class Auth {
   async logout(): Promise<boolean | AuthError> {
     const [error, _] = await this.helpers.logout();
 
+    // Always clear local tokens, even if backend logout fails
+    authStore.reset();
+
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
-
-    authStore.reset();
 
     return true;
   }
 
   getEmail(): string | null {
     return authState.email;
+  }
+
+  canGoBack(): boolean {
+    return authStore.canGoBack();
+  }
+
+  goBack(): boolean {
+    return authStore.goBack();
+  }
+
+  restart(): void {
+    authStore.restart();
+  }
+
+  getCurrentStep(): string | undefined {
+    return authState.step;
   }
 
   private createAuthError(message: string, code: AuthError["code"], requiresReauth = false): AuthError {

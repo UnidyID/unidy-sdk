@@ -44,6 +44,7 @@ export const SendMagicCodeErrorSchema = BaseErrorSchema.extend({
 // JWT token response
 export const TokenResponseSchema = z.object({
   jwt: z.string(),
+  refresh_token: z.string(),
   sid: z.string().nullish(),
 });
 
@@ -61,6 +62,19 @@ export const RequiredFieldsResponseSchema = z
   .transform(({ error_identifier, meta }) => ({
     error_identifier,
     fields: meta.fields,
+    sid: meta.sid,
+  }));
+
+// Brand connection required response
+export const BrandConnectionRequiredResponseSchema = z
+  .object({
+    error_identifier: z.literal("brand_connection_required"),
+    meta: z.object({
+      sid: z.string().nullish(),
+    }),
+  })
+  .transform(({ error_identifier, meta }) => ({
+    error_identifier,
     sid: meta.sid,
   }));
 
@@ -139,3 +153,4 @@ export type JumpToServiceRequest = z.infer<typeof JumpToServiceRequestSchema>;
 export type JumpToServiceResponse = z.infer<typeof JumpToServiceResponseSchema>;
 export type JumpToUnidyRequest = z.infer<typeof JumpToUnidyRequestSchema>;
 export type JumpToUnidyResponse = z.infer<typeof JumpToUnidyResponseSchema>;
+export type BrandConnectionRequiredResponse = z.infer<typeof BrandConnectionRequiredResponseSchema>;
