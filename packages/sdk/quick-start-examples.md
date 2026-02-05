@@ -185,6 +185,64 @@ This example demonstrates how to implement a newsletter subscription form using 
 </body>
 </html>
 ```
+
+#### Newsletter with Additional Fields
+
+You can collect additional profile fields during newsletter signup using `u-raw-field`. These fields are submitted along with the email and newsletter selection.
+
+```html
+<u-newsletter-root>
+  <u-email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+
+  <!-- Additional profile fields -->
+  <div class="flex flex-col gap-3">
+    <p class="text-gray-600 text-sm font-medium">Additional fields</p>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="first_name"
+          type="text"
+          placeholder="First name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="first_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="last_name"
+          type="text"
+          placeholder="Last name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="last_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+    </div>
+    <u-raw-field
+      field="phone_number"
+      type="tel"
+      placeholder="Phone number (optional)"
+      class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+    </u-raw-field>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-gray-500 text-sm">Select newsletters</label>
+    <u-newsletter-checkbox internal-name="internal-name-for-newsletter" checked="true"
+      class-name="flex items-center gap-2"></u-newsletter-checkbox>
+    <u-submit-button
+      class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+      Subscribe
+    </u-submit-button>
+  </div>
+</u-newsletter-root>
+```
+
+**Notes:**
+- `u-raw-field` creates a simple input field bound to a profile field name
+- The `field` attribute specifies which profile field to update (e.g., `first_name`, `last_name`, `phone_number`)
+- Use `u-error-message` with the matching `for` attribute to display validation errors
+- All fields are submitted together when the user clicks the submit button
+
 ### Quick Start: Ticket implementation
 
 This example demonstrates how to list tickets and subscriptions using the Unidy SDK.
