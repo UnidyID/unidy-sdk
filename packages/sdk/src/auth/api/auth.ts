@@ -1,5 +1,4 @@
 import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
-import { SDK_VERSION } from "../../version";
 import {
   BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
@@ -49,7 +48,7 @@ export type {
 export { SDK_VERSION } from "../../version";
 
 // Argument types for unified interface
-export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; sdkVersion?: string; originUrl?: string }>;
+export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; originUrl?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string }>;
@@ -180,8 +179,8 @@ export class AuthService extends BaseService {
   }
 
   async createSignIn(args: CreateSignInArgs): Promise<CreateSignInResult> {
-    const { email, password, sendMagicCode, sdkVersion = SDK_VERSION, originUrl = window.location.href } = args.payload;
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode, sdkVersion, originUrl });
+    const { email, password, sendMagicCode, originUrl = window.location.href } = args.payload;
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode, originUrl });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
