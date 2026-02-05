@@ -1,4 +1,4 @@
-import { Component, forceUpdate, h } from "@stencil/core";
+import { Component, forceUpdate, h, Prop } from "@stencil/core";
 import { UnidyComponent } from "../../../shared/base/component";
 import { onChange, oauthState } from "../../store/oauth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
@@ -8,6 +8,22 @@ import { getOAuthProvider, type OAuthProviderElement } from "../context";
   shadow: false,
 })
 export class OAuthModal extends UnidyComponent() {
+  /**
+   * Custom CSS class name(s) to apply to the dialog element.
+   */
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  /**
+   * Custom CSS class name(s) to apply to the dialog content wrapper.
+   */
+  @Prop({ attribute: "content-class-name" }) contentClassName = "";
+
+  /**
+   * Custom CSS class name(s) to apply to the dialog backdrop.
+   * Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+   */
+  @Prop({ attribute: "backdrop-class-name" }) backdropClassName = "";
+
   private provider: OAuthProviderElement | null = null;
   private dialogRef?: HTMLDialogElement;
   private unsubscribe?: () => void;
@@ -67,12 +83,13 @@ export class OAuthModal extends UnidyComponent() {
         ref={this.setDialogRef}
         onClose={this.handleDialogClose}
         onClick={this.handleBackdropClick}
+        class={this.componentClassName}
         aria-labelledby="oauth-modal-title"
         aria-describedby="oauth-modal-description"
       >
         {/* biome-ignore lint/a11y/noStaticElementInteractions: prevents backdrop click propagation */}
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by dialog */}
-        <div class="u-oauth-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div class={this.contentClassName} onClick={(e) => e.stopPropagation()}>
           <slot />
         </div>
       </dialog>

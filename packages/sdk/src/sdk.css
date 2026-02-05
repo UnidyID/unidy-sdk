@@ -39,22 +39,3 @@ u-submit-button,
 u-ticketable-list {
   visibility: hidden;
 }
-
-/* OAuth Modal Dialog Styles */
-u-oauth-modal dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow: auto;
-}
-
-u-oauth-modal dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
-}

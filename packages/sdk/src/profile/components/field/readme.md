@@ -51,6 +51,7 @@
 
  - [u-full-profile](../full-profile)
  - [u-missing-field](../../../auth/components/missing-field)
+ - [u-oauth-missing-fields](../../../oauth/components/oauth-missing-fields)
 
 ### Depends on
 
@@ -62,6 +63,7 @@ graph TD;
   u-field --> u-raw-field
   u-full-profile --> u-field
   u-missing-field --> u-field
+  u-oauth-missing-fields --> u-field
   style u-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

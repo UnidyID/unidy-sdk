@@ -335,8 +335,27 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * @default ""
+         */
+        "fieldClassName": string;
     }
     interface UOauthModal {
+        /**
+          * Custom CSS class name(s) to apply to the dialog backdrop. Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+          * @default ""
+         */
+        "backdropClassName": string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog content wrapper.
+          * @default ""
+         */
+        "contentClassName": string;
     }
     interface UOauthProvider {
         /**
@@ -1315,8 +1334,27 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * @default ""
+         */
+        "fieldClassName"?: string;
     }
     interface UOauthModal {
+        /**
+          * Custom CSS class name(s) to apply to the dialog backdrop. Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+          * @default ""
+         */
+        "backdropClassName"?: string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Custom CSS class name(s) to apply to the dialog content wrapper.
+          * @default ""
+         */
+        "contentClassName"?: string;
     }
     interface UOauthProvider {
         /**
