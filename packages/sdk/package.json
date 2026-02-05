@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publishConfig": {
     "tag": "latest",
     "access": "public"
@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",
-    "build": "bun run clean && touch src/demo-build.css && stencil build && bun run build:standalone",
+    "build": "bun run clean && bun run scripts/generate-version.ts && touch src/demo-build.css && stencil build && bun run build:standalone",
     "build:standalone": "bun build ./src/api/standalone.ts --outdir ./dist/collection/api --format esm && bun run build:standalone:types",
     "build:standalone:types": "tsc -p tsconfig.standalone.json",
     "dev:stencil": "stencil build --dev --watch --serve",

@@ -41,7 +41,9 @@
     }
   },
   "buttons": {
+    "cancel": "Cancel",
     "close": "Close",
+    "connect": "Connect",
     "continue": "Continue",
     "jump_to_service": "Jump to Service",
     "jump_to_unidy": "Jump to Unidy",

@@ -40,7 +40,9 @@
     }
   },
   "buttons": {
+    "cancel": "Anulează",
     "close": "Închide",
+    "connect": "Conectează",
     "continue": "Continuă",
     "jump_to_service": "Mergi la serviciu",
     "jump_to_unidy": "Mergi la Unidy",
