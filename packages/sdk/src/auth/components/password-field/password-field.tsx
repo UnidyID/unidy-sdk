@@ -1,7 +1,7 @@
 import { Component, Element, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { findParentSigninStep } from "../../../shared/context-utils";
 import { authState, authStore } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 
 export type PasswordFieldFor = "login" | "new-password" | "password-confirmation";
 
@@ -12,8 +12,11 @@ export type PasswordFieldFor = "login" | "new-password" | "password-confirmation
 export class PasswordField {
   @Element() el!: HTMLElement;
 
+  /** The purpose of this password field: login, new-password, or password-confirmation. */
   @Prop() for: PasswordFieldFor = "login";
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** ARIA label for accessibility. Defaults based on the 'for' prop if not provided. */
   @Prop() ariaLabel = "";
 
   private getAriaLabel(): string {
@@ -84,7 +87,7 @@ export class PasswordField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    (await getParentSigninStep(this.el))?.submit();
+    (await findParentSigninStep(this.el))?.submit();
   };
 
   private shouldRender(): boolean {

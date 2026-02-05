@@ -28,9 +28,13 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: false,
 })
 export class SocialLoginButton extends UnidyComponent() {
+  /** The OAuth provider (google, linkedin, apple, discord, facebook, or unidy). */
   @Prop() provider: SocialLoginProvider = "google";
+  /** The URL to redirect to after authentication. Defaults to current page. */
   @Prop() redirectUri: string = window.location.href;
+  /** If true, shows only the provider icon without text. */
   @Prop() iconOnly = false;
+  /** Button theme: 'light' (white background) or 'dark' (dark background). */
   @Prop() theme: "light" | "dark" = "light";
 
   componentWillLoad() {

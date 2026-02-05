@@ -14,9 +14,13 @@ import { defaultContext, type SubmitButtonContext } from "./context";
   shadow: false,
 })
 export class SubmitButton extends UnidyComponent(HasSlotContent) {
+  /** The action type for the button. Varies by context (auth: email/password/magic-code/reset-password, newsletter: subscribe/login). */
   @Prop() for?: AuthButtonFor | NewsletterButtonFor;
+  /** Custom button text. If not provided, uses context-specific defaults. */
   @Prop() text?: string;
+  /** If true, the button will be disabled. */
   @Prop() disabled = false;
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private context: "auth" | "profile" | "newsletter" = "auth";

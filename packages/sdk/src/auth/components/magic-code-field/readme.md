@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default |
-| -------------------- | ------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name` |             | `string` | `""`    |
+| Property             | Attribute    | Description                                    | Type     | Default |
+| -------------------- | ------------ | ---------------------------------------------- | -------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the container element. | `string` | `""`    |
 
 
 ## Shadow Parts

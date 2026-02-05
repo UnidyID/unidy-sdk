@@ -7,8 +7,11 @@ import { newsletterStore } from "../../store/newsletter-store";
   shadow: false,
 })
 export class NewsletterCheckbox {
+  /** The internal name of the newsletter (as configured in the backend). */
   @Prop() internalName!: string;
+  /** If true, the checkbox will be checked by default. */
   @Prop() checked = false;
+  /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   componentWillLoad() {

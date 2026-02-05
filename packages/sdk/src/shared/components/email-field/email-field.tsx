@@ -13,8 +13,11 @@ import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 export class EmailField {
   @Element() el!: HTMLElement;
 
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** ARIA label for accessibility. */
   @Prop() ariaLabel = "Email";
+  /** If true, the input will be disabled. */
   @Prop() disabled = false;
 
   @State() emailValue = "";

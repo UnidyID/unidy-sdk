@@ -90,20 +90,29 @@ export class TicketableList extends UnidyComponent() {
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
+  /** Pagination metadata from the API response. */
   @Prop() paginationMeta: PaginationMeta | null = null;
 
+  /** CSS selector for the target element where items will be rendered. */
   @Prop() target?: string;
+  /** CSS classes to apply to the container element. */
   @Prop() containerClass?: string;
 
   // TODO: add a component that can override this
+  /** Filter string for API queries (e.g., 'state=active;payment_state=paid'). */
   @Prop({ mutable: true }) filter = "";
 
   // TODO: Add pagination component to override all of this
+  /** Number of items per page. */
   @Prop({ mutable: true }) limit = 10;
+  /** Current page number. */
   @Prop({ mutable: true }) page = 1;
 
+  /** Number of skeleton items to show while loading. Defaults to limit. */
   @Prop() skeletonCount?: number;
+  /** If true, replaces all text content with skeleton loaders. */
   @Prop() skeletonAllText?: boolean = false;
+  /** The type of ticketable items to list ('ticket' or 'subscription'). */
   @Prop() ticketableType!: "ticket" | "subscription";
 
   @Watch("page")
@@ -113,14 +122,17 @@ export class TicketableList extends UnidyComponent() {
     await this.loadData();
   }
 
+  /** Pagination store instance for external state management. */
   @Prop() store: PaginationStore | null = null;
 
+  /** Fired when items are successfully fetched. Contains items and pagination metadata. */
   @Event() uTicketableListSuccess!: EventEmitter<{
     ticketableType: "ticket" | "subscription";
     items: Subscription[] | Ticket[];
     paginationMeta: PaginationMeta | null;
   }>;
 
+  /** Fired when fetching items fails. Contains the error message. */
   @Event() uTicketableListError!: EventEmitter<{
     ticketableType?: "ticket" | "subscription";
     error: string;

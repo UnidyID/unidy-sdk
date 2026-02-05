@@ -14,9 +14,12 @@ export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword"
   styleUrl: "error-message.css",
 })
 export class ErrorMessage extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** The error type to display (e.g., 'email', 'password', 'general', 'connection'). */
   @Prop() for!: string;
 
+  /** Custom error messages keyed by error code. Overrides default translations. */
   @Prop() errorMessages?: Record<string, string>;
 
   private detectContext(): "auth" | "newsletter" | "profile" | "other" {

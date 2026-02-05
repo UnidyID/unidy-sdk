@@ -9,9 +9,12 @@ import { Auth } from "../../auth";
   shadow: false,
 })
 export class LogoutButton extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** If true, reloads the page after successful logout. */
   @Prop() reloadOnSuccess = true;
 
+  /** Fired after successful logout. */
   @Event() logout!: EventEmitter<void>;
 
   private handleLogout = async () => {
