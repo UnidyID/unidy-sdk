@@ -1,0 +1,171 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Ange din e-postadress"
+    },
+    "magicCode": {
+      "already_sent_text": "Magisk kod har redan skickats till din e-post",
+      "button_text": "Skicka magisk kod",
+      "resend": {
+        "button_text": "Skicka magisk kod igen"
+      },
+      "sending_text": "Skickar..."
+    },
+    "passkey": {
+      "button_text": "Logga in med Passkey",
+      "loading_text": "Autentiserar..."
+    },
+    "password": {
+      "button_text": "Logga in med lösenord",
+      "confirmation": {
+        "placeholder": "Bekräfta ditt lösenord"
+      },
+      "placeholder": "Ange ditt lösenord"
+    },
+    "resetPassword": {
+      "button_text_resend": "Skicka e-post för lösenordsåterställning igen",
+      "button_text_reset": "Återställ lösenord",
+      "button_text_save": "Spara nytt lösenord",
+      "button_text_set": "Ange lösenord",
+      "success_message": "E-post för lösenordsåterställning har skickats. Kontrollera din inkorg"
+    },
+    "single-login": {
+      "button_text": "Logga in"
+    },
+    "socialLogin": {
+      "button_text": "Fortsätt med {{provider}}"
+    }
+  },
+  "buttons": {
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "confirm": "Bekräfta",
+    "connect": "Anslut",
+    "continue": "Fortsätt",
+    "jump_to_service": "Gå till tjänsten",
+    "jump_to_unidy": "Gå till Unidy",
+    "logout": "Logga ut",
+    "registration": "Registrera nytt konto",
+    "sign_in": "Logga in",
+    "submit": "Skicka"
+  },
+  "errors": {
+    "account_locked": "Kontot är låst",
+    "account_not_found": "Kontot hittades inte",
+    "authentication_failed": "Autentisering misslyckades",
+    "bad_request": "Ogiltig begäran",
+    "connection_failed": "Kunde inte ansluta till Unidy-servern",
+    "expired": "Utgången",
+    "failed_to_load_profile": "Kunde inte ladda profildata. Kontrollera konfigurationen",
+    "internal_server_error": "Internt serverfel",
+    "invalid_id_token": "Ogiltig ID-token",
+    "invalid_passkey": "Ogiltig passkey",
+    "invalid_password": "Ogiltigt lösenord",
+    "invalid_refresh_token": "Ogiltig uppdateringstoken",
+    "invalid_required_fields_payload": "Ogiltig data för obligatoriska fält",
+    "invalid_reset_token": "Ogiltig återställningstoken. Begär ett nytt e-postmeddelande för lösenordsåterställning",
+    "invalid_response_format": "Ogiltigt svarsformat",
+    "magic_code_is_missing": "Magisk kod saknas",
+    "magic_code_not_valid": "Magisk kod är ogiltig",
+    "magic_code_recently_created": "Magisk kod har nyligen skapats",
+    "magic_link_not_enabled": "Magisk länk-inloggning är inte aktiverad för detta konto",
+    "missing_id_token": "ID-token saknas",
+    "missing_refresh_token": "Ingen uppdateringstoken finns",
+    "missing_required_fields": "Obligatoriska fält saknas",
+    "no_sign_in_id": "Inget inloggnings-ID tillgängligt",
+    "not_valid": "Ogiltig",
+    "passkey_cancelled": "Passkey-autentisering avbröts",
+    "passkey_error": "Ett okänt passkey-fel uppstod",
+    "passkey_invalid_state": "Ogiltigt passkey-tillstånd",
+    "passkey_not_supported": "Passkey stöds inte",
+    "passkey_security_error": "Passkey-säkerhetsfel",
+    "password_not_set": "Lösenord ej angivet",
+    "password_required": "Lösenord krävs",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Lösenordet är för kort (minst 6 tecken)",
+      "min_length": "Minst 6 tecken",
+      "mixed_case": "Måste innehålla både stora och små bokstäver",
+      "number": "Måste innehålla en siffra",
+      "symbol": "Måste innehålla en symbol"
+    },
+    "passwords_do_not_match": "Lösenorden matchar inte",
+    "prefix": "FEL: ",
+    "refresh_failed": "Kunde inte uppdatera token. Logga in igen",
+    "refresh_token_revoked": "Uppdateringstoken har återkallats",
+    "required_field": "{{field}} är obligatoriskt",
+    "reset_password_already_sent": "E-post för lösenordsåterställning har redan skickats",
+    "reset_token_expired": "Återställningstoken har utgått. Begär ett nytt e-postmeddelande för lösenordsåterställning",
+    "reset_token_missing": "Återställningstoken saknas",
+    "schema_validation_error": "Schemavalideringsfel",
+    "sign_in_expired": "Inloggningen har utgått",
+    "sign_in_not_found": "Inloggning hittades inte",
+    "sign_out_failed": "Utloggning misslyckades, anledning: {{reason}}",
+    "unknown": "Ett okänt fel uppstod",
+    "used": "Använd",
+    "validation": {
+      "accepted": "måste accepteras",
+      "blank": "får inte vara tomt",
+      "empty": "får inte vara tomt",
+      "even": "måste vara jämnt",
+      "exclusion": "är reserverat",
+      "in": "finns inte i listan",
+      "inclusion": "finns inte i listan",
+      "invalid": "är ogiltigt",
+      "not_a_number": "är inte ett nummer",
+      "odd": "måste vara udda",
+      "present": "måste vara tomt",
+      "taken": "är redan taget",
+      "too_long": "är för långt",
+      "too_short": "är för kort"
+    },
+    "verification_failed": "Verifiering misslyckades"
+  },
+  "loading": "Laddar...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Skicka bekräftelse igen",
+      "subscribe": "Prenumerera",
+      "unsubscribe": "Avsluta prenumeration"
+    },
+    "errors": {
+      "already_subscribed": "Redan prenumererad",
+      "consent_required": "Vänligen acceptera villkoren för att prenumerera",
+      "email_required": "Vänligen ange din e-postadress",
+      "invalid_email": "Ogiltig e-postadress",
+      "invalid_preference_token": "Ogiltig inställningstoken. Ange din e-postadress för att få en ny länk.",
+      "login_email_not_found": "Prenumeration med denna e-postadress finns inte",
+      "newsletter_not_found": "Nyhetsbrev hittades inte",
+      "preferences_not_found": "Inställning hittades inte",
+      "rate_limit_exceeded": "Gränsen överskriden. Försök igen senare",
+      "unauthorized": "Din session har utgått. Logga in igen",
+      "unconfirmed": "Din e-post är inte bekräftad för detta nyhetsbrev",
+      "unsubscribe_failed": "Kunde inte avsluta prenumeration"
+    },
+    "success": {
+      "doi_sent": "Bekräftelsemail har skickats till din e-postadress",
+      "login_email_sent": "Vi har skickat en länk för att hantera din befintliga prenumeration till din e-postadress",
+      "logout": "Du har loggats ut",
+      "preferences_updated": "Dina inställningar har uppdaterats",
+      "subscribe": "Du har prenumererat",
+      "unsubscribe": "Du har avslutat prenumerationen"
+    }
+  },
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth-applikation hittades inte",
+      "client_id_required": "client-id krävs",
+      "connection_failed": "Nätverksfel. Försök igen.",
+      "grant_failed": "Kunde inte bevilja samtycke",
+      "invalid_field_values": "Ogiltiga fältvärden angivna",
+      "missing_required_fields": "Vänligen fyll i alla obligatoriska fält",
+      "not_authenticated": "Användaren är inte autentiserad. Logga in först.",
+      "unknown": "Ett oväntat fel uppstod",
+      "update_failed": "Kunde inte uppdatera användardata"
+    }
+  },
+  "profile": {
+    "signInToView": "Logga in för att visa din profil",
+    "updated": "Profilen är uppdaterad"
+  }
+}

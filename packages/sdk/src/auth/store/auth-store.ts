@@ -4,10 +4,11 @@ import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 import { AUTH_ERROR_CODES } from "../error-definitions";
 
-export type AuthStep = "email" | "verification" | "magic-code" | "missing-fields" | "reset-password" | "registration" | "single-login";
+export type AuthStep = "email" | "verification" | "magic-code" | "connect-brand" | "missing-fields" | "reset-password" | "registration" | "single-login";
 
 export interface AuthState {
   step: AuthStep;
+  initialStep: AuthStep;
   sid: string | null;
   email: string;
   password: string;
@@ -85,6 +86,7 @@ const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) a
 
 const initialState: AuthState = {
   step: undefined,
+  initialStep: "email",
   email: localStorage.getItem(SESSION_KEYS.EMAIL) ?? "",
   password: "",
   magicCodeStep: storedMagicCodeStep,
@@ -142,6 +144,7 @@ class AuthStore {
   }
 
   setInitialStep(step: AuthStep) {
+    state.initialStep = step;
     if (state._initialStep === null) {
       state._initialStep = step;
     }

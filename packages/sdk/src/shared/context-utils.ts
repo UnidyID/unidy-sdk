@@ -8,12 +8,13 @@ type ParentComponentMap = {
   "u-signin-step": HTMLUSigninStepElement;
   "u-newsletter-root": HTMLUNewsletterRootElement;
   "u-ticketable-list": HTMLUTicketableListElement;
+  "u-oauth-provider": HTMLUOauthProviderElement;
 };
 
 /**
  * Component context types used throughout the SDK.
  */
-export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable";
+export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth";
 
 // ============================================================================
 // Parent Component Lookup Utilities
@@ -69,6 +70,13 @@ export function findParentTicketableList(element: HTMLElement): HTMLUTicketableL
   return findParent(element, "u-ticketable-list");
 }
 
+/**
+ * Find the parent u-oauth-provider component.
+ */
+export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProviderElement | null {
+  return findParent(element, "u-oauth-provider");
+}
+
 // ============================================================================
 // Context Detection Utilities
 // ============================================================================
@@ -87,6 +95,10 @@ export function findParentTicketableList(element: HTMLElement): HTMLUTicketableL
 export function detectContext(element: HTMLElement): ComponentContext | null {
   if (findParentSigninRoot(element) || findParentSigninStep(element)) {
     return "auth";
+  }
+
+  if (findParentOAuthProvider(element)) {
+    return "oauth";
   }
 
   if (findParentProfile(element)) {
@@ -121,7 +133,7 @@ export function detectContextOrThrow(element: HTMLElement, componentName: string
 
   if (!context) {
     throw new Error(
-      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, or u-ticketable-list.`,
+      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, or u-oauth-provider.`,
     );
   }
 

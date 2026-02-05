@@ -9,7 +9,15 @@ import { authState } from "../../store/auth-store";
 export class SigninStep {
   @Element() el!: HTMLElement;
   /** The name of this step in the sign-in flow. */
-  @Prop() name!: "email" | "verification" | "magic-code" | "reset-password" | "single-login" | "missing-fields" | "registration";
+  @Prop() name!:
+    | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration";
   /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
@@ -42,6 +50,8 @@ export class SigninStep {
       shouldShow = authState.step === "verification";
     } else if (this.name === "magic-code") {
       shouldShow = authState.step === "magic-code";
+    } else if (this.name === "connect-brand") {
+      shouldShow = authState.step === "connect-brand";
     } else if (this.name === "reset-password") {
       shouldShow = authState.step === "reset-password";
     } else if (this.name === "registration") {

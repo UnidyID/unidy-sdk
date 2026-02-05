@@ -1,0 +1,98 @@
+import { Component, forceUpdate, h, Prop } from "@stencil/core";
+import { UnidyComponent } from "../../../shared/base/component";
+import { onChange, oauthState } from "../../store/oauth-store";
+import { getOAuthProvider, type OAuthProviderElement } from "../context";
+
+@Component({
+  tag: "u-oauth-modal",
+  shadow: false,
+})
+export class OAuthModal extends UnidyComponent() {
+  /**
+   * Custom CSS class name(s) to apply to the dialog element.
+   */
+  @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  /**
+   * Custom CSS class name(s) to apply to the dialog content wrapper.
+   */
+  @Prop({ attribute: "content-class-name" }) contentClassName = "";
+
+  /**
+   * Custom CSS class name(s) to apply to the dialog backdrop.
+   * Note: Backdrop styling requires CSS ::backdrop pseudo-element.
+   */
+  @Prop({ attribute: "backdrop-class-name" }) backdropClassName = "";
+
+  private provider: OAuthProviderElement | null = null;
+  private dialogRef?: HTMLDialogElement;
+  private unsubscribe?: () => void;
+
+  connectedCallback() {
+    this.provider = getOAuthProvider(this.element);
+
+    if (!this.provider) {
+      this.logger.warn("Must be used inside a u-oauth-provider");
+    }
+
+    // Subscribe to step changes to trigger re-renders
+    this.unsubscribe = onChange("step", () => {
+      forceUpdate(this);
+    });
+  }
+
+  disconnectedCallback() {
+    this.unsubscribe?.();
+  }
+
+  componentDidRender() {
+    const shouldBeOpen = oauthState.step === "consent" || oauthState.step === "submitting";
+
+    if (shouldBeOpen && this.dialogRef && !this.dialogRef.open) {
+      this.dialogRef.showModal();
+    } else if (!shouldBeOpen && this.dialogRef?.open) {
+      this.dialogRef.close();
+    }
+  }
+
+  private handleDialogClose = () => {
+    const isOpen = oauthState.step === "consent" || oauthState.step === "submitting";
+    if (isOpen) {
+      this.provider?.cancel();
+    }
+  };
+
+  private handleBackdropClick = (event: MouseEvent | KeyboardEvent) => {
+    if (event.target === this.dialogRef) {
+      this.provider?.cancel();
+    }
+  };
+
+  private setDialogRef = (el: HTMLDialogElement | undefined) => {
+    this.dialogRef = el;
+  };
+
+  render() {
+    if (!this.provider) {
+      return null;
+    }
+
+    return (
+      // biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose
+      <dialog
+        ref={this.setDialogRef}
+        onClose={this.handleDialogClose}
+        onClick={this.handleBackdropClick}
+        class={this.componentClassName}
+        aria-labelledby="oauth-modal-title"
+        aria-describedby="oauth-modal-description"
+      >
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: prevents backdrop click propagation */}
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by dialog */}
+        <div class={this.contentClassName} onClick={(e) => e.stopPropagation()}>
+          <slot />
+        </div>
+      </dialog>
+    );
+  }
+}

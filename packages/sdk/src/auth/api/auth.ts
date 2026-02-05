@@ -1,5 +1,6 @@
 import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
 import {
+  BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
   CreateSignInResponseSchema,
   type ErrorResponse,
@@ -25,6 +26,7 @@ import {
   SendMagicCodeResponseSchema,
   type TokenResponse,
   TokenResponseSchema,
+  type BrandConnectionRequiredResponse,
 } from "./schemas";
 
 // Re-export types for external use
@@ -36,13 +38,17 @@ export type {
   PasskeyCredential,
   PasskeyOptionsResponse,
   RequiredFieldsResponse,
+  BrandConnectionRequiredResponse,
   SendMagicCodeError,
   SendMagicCodeResponse,
   TokenResponse,
 } from "./schemas";
 
+// Re-export SDK version for external use (generated from package.json at build time)
+export { SDK_VERSION } from "../../version";
+
 // Argument types for unified interface
-export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean }>;
+export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; originUrl?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string }>;
@@ -55,6 +61,7 @@ export type ValidateResetPasswordTokenArgs = { signInId: string; token: string }
 export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
 export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredential }>;
+export type ConnectBrandArgs = { signInId: string };
 
 // Result types
 export type CreateSignInResult =
@@ -69,6 +76,7 @@ export type AuthenticateResultShared =
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
+  | ["brand_connection_required", BrandConnectionRequiredResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
   | [null, TokenResponse];
 
@@ -146,7 +154,18 @@ export type JumpToServiceResult =
   | ["invalid_scope", ErrorResponse]
   | [null, string];
 
-export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
+export type JumpToUnidyResult =
+  | CommonErrors
+  | ["user_not_found", ErrorResponse]
+  | ["invalid_path", ErrorResponse]
+  | [null, string];
+
+export type ConnectBrandResult =
+  | CommonErrors
+  | ["sign_in_not_found", ErrorResponse]
+  | ["sign_in_not_authenticated", ErrorResponse]
+  | ["missing_required_fields", RequiredFieldsResponse]
+  | [null, TokenResponse];
 
 export class AuthService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -160,8 +179,8 @@ export class AuthService extends BaseService {
   }
 
   async createSignIn(args: CreateSignInArgs): Promise<CreateSignInResult> {
-    const { email, password, sendMagicCode } = args.payload;
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
+    const { email, password, sendMagicCode, originUrl = window.location.href } = args.payload;
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode, originUrl });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -220,11 +239,16 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+        const brand_connection_check = BrandConnectionRequiredResponseSchema.safeParse(response.data);
+        if (brand_connection_check.success) {
+          return ["brand_connection_required", brand_connection_check.data];
+        }
 
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
         if (missing_fields_check.success) {
           return ["missing_required_fields", missing_fields_check.data];
         }
+
         const error_response = this.parseErrorResponse(response.data);
 
         return [
@@ -267,8 +291,12 @@ export class AuthService extends BaseService {
 
     return this.handleResponse(response, () => {
       if (!response.success) {
-        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+        const brand_connection_check = BrandConnectionRequiredResponseSchema.safeParse(response.data);
+        if (brand_connection_check.success) {
+          return ["brand_connection_required", brand_connection_check.data];
+        }
 
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
         if (missing_fields_check.success) {
           return ["missing_required_fields", missing_fields_check.data];
         }
@@ -478,6 +506,25 @@ export class AuthService extends BaseService {
       }
 
       return [null, parsed.data.token];
+    });
+  }
+
+  async connectBrand(args: ConnectBrandArgs): Promise<ConnectBrandResult> {
+    const { signInId } = args;
+    const response = await this.client.post<TokenResponse>(`/api/sdk/v1/sign_ins/${signInId}/brand_connect`, {});
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
+        if (missing_fields_check.success) {
+          return ["missing_required_fields", missing_fields_check.data];
+        }
+
+        const error_response = this.parseErrorResponse(response.data);
+        return [error_response.error_identifier as "sign_in_not_found" | "sign_in_not_authenticated", error_response];
+      }
+
+      return [null, TokenResponseSchema.parse(response.data)];
     });
   }
 }
