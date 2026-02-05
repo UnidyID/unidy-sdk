@@ -33,6 +33,10 @@
     },
     "socialLogin": {
       "button_text": "Weiter mit {{provider}}"
+    },
+    "navigation": {
+      "back": "Zurück",
+      "restart": "Neu starten"
     }
   },
   "buttons": {

@@ -36,6 +36,17 @@ export { PaginationStore } from "./ticketable/store/pagination-store";
 export { Subscription } from "./ticketable/api/subscriptions";
 export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart": boolean;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -538,6 +549,12 @@ export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLUTicketableListElement;
 }
 declare global {
+    interface HTMLUBackButtonElement extends Components.UBackButton, HTMLStencilElement {
+    }
+    var HTMLUBackButtonElement: {
+        prototype: HTMLUBackButtonElement;
+        new (): HTMLUBackButtonElement;
+    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -858,6 +875,7 @@ declare global {
         new (): HTMLUTicketableListElement;
     };
     interface HTMLElementTagNameMap {
+        "u-back-button": HTMLUBackButtonElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -898,6 +916,17 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface UBackButton {
+        /**
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * @default false
+         */
+        "restart"?: boolean;
+    }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
         "is"?: string;
@@ -1376,6 +1405,7 @@ declare namespace LocalJSX {
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
+        "u-back-button": UBackButton;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -1419,6 +1449,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
