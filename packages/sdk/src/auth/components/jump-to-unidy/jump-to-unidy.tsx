@@ -74,7 +74,7 @@ export class JumpToUnidy extends UnidyComponent(HasSlotContent) {
       return;
     }
 
-    const userData = await auth.userData();
+    const userData = await auth.userTokenPayload();
     if (!userData?.email) {
       console.error("Failed to get user email from authentication token");
       return;

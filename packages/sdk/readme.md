@@ -903,7 +903,7 @@ Checks if the user has a valid, non-expired token. If the token is expired, it w
 
 Retrieves the current JWT access token. If the token is expired, it automatically attempts to refresh it. This ensures that any backend request made with this token is always using a valid token if a refresh is possible.
 
-#### `auth.userData(): Promise<TokenPayload | null>`
+#### `auth.userTokenPayload(): Promise<TokenPayload | null>`
 
 Retrieves the decoded user data from the JWT. This method also benefits from the automatic token refresh, ensuring the data is from a valid session.
 
