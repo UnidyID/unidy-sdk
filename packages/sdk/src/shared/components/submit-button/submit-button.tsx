@@ -6,6 +6,7 @@ import { profileContext } from "../../../profile/components/submit-button/profil
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
 import { slotFallbackText } from "../../component-utils";
+import type { ComponentContext } from "../../context-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -19,7 +20,7 @@ export class SubmitButton extends UnidyComponent(HasSlotContent) {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
-  private context: "auth" | "profile" | "newsletter" = "auth";
+  private context: ComponentContext = "auth";
   private contextModule: SubmitButtonContext = defaultContext;
 
   async componentWillLoad() {

@@ -7,10 +7,12 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type                                 | Default     |
-| ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
-| `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
-| `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
+| Property            | Attribute            | Description                                                                                                                       | Type                                 | Default     |
+| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------- |
+| `initialData`       | `initial-data`       |                                                                                                                                   | `string \| { [x: string]: string; }` | `""`        |
+| `partialValidation` | `partial-validation` | When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields. | `boolean`                            | `false`     |
+| `profileId`         | `profile-id`         |                                                                                                                                   | `string`                             | `undefined` |
+| `validateFields`    | `validate-fields`    | Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.                              | `string`                             | `undefined` |
 
 
 ## Events
@@ -23,9 +25,43 @@
 
 ## Methods
 
+### `registerField(fieldName: string) => Promise<void>`
+
+Register a field for partial validation tracking.
+Called by child u-field components when they mount.
+
+#### Parameters
+
+| Name        | Type     | Description |
+| ----------- | -------- | ----------- |
+| `fieldName` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `submitProfile() => Promise<void>`
 
 
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `unregisterField(fieldName: string) => Promise<void>`
+
+Unregister a field from partial validation tracking.
+Called by child u-field components when they unmount.
+
+#### Parameters
+
+| Name        | Type     | Description |
+| ----------- | -------- | ----------- |
+| `fieldName` | `string` |             |
 
 #### Returns
 

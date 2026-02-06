@@ -4,9 +4,12 @@ import { t } from "../../../i18n";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
+import { type ComponentContext, detectContext } from "../../context-utils";
 import { unidyState } from "../../store/unidy-store";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
+
+type ErrorMessageContext = ComponentContext | "other";
 
 @Component({
   tag: "u-error-message",
@@ -19,22 +22,21 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
 
   @Prop() errorMessages?: Record<string, string>;
 
-  private detectContext(): "auth" | "newsletter" | "profile" | "other" {
-    if (this.element.closest("u-signin-root") || this.element.closest("u-signin-step")) return "auth";
+  private get context(): ErrorMessageContext {
+    const detectedContext = detectContext(this.element);
 
-    if (this.element.closest("u-profile")) return "profile";
+    if (detectedContext) {
+      return detectedContext;
+    }
 
-    if (this.element.closest("u-newsletter-root")) return "newsletter";
-
-    if (this.for === "general" || this.for === "connection") return "other";
+    // Allow "general" and "connection" error types outside of standard containers
+    if (this.for === "general" || this.for === "connection") {
+      return "other";
+    }
 
     throw new Error(
       "No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
     );
-  }
-
-  private get context(): "auth" | "newsletter" | "profile" | "other" {
-    return this.detectContext();
   }
 
   private getAuthErrorMessage(errorCode: string): string {

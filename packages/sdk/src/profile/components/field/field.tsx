@@ -1,5 +1,7 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../shared/base/component";
+import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -22,7 +24,7 @@ import { state as profileState } from "../../store/profile-store";
   styleUrl: "field.css",
   shadow: true,
 })
-export class Field {
+export class Field extends UnidyComponent() {
   @Prop() field!: string;
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "No information";
@@ -37,9 +39,21 @@ export class Field {
   @Prop() patternErrorMessage?: string;
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  @Element() el!: HTMLElement;
-
   @State() selected?: string | string[];
+
+  /** Reference to parent u-profile element for field registration */
+  private parentProfile: HTMLUProfileElement | null = null;
+
+  componentWillLoad() {
+    // Find parent u-profile and register this field for partial validation tracking
+    this.parentProfile = findParentProfile(this.element);
+    this.parentProfile?.registerField(this.field);
+  }
+
+  disconnectedCallback() {
+    // Unregister this field when component is removed
+    this.parentProfile?.unregisterField(this.field);
+  }
 
   private getFieldData() {
     return this.field.startsWith("custom_attributes.")
@@ -51,8 +65,8 @@ export class Field {
     const fieldErrors = profileState.errors;
 
     if (Object.keys(fieldErrors)[0] === this.field) {
-      this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
-      this.el.shadowRoot
+      this.element.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      this.element.shadowRoot
         ?.getElementById(this.field)
         ?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, select, textarea")
         ?.focus();

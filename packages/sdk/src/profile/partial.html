@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Unidy Profile Partial Validation Test</title>
+
+  <script type="module" src="/build/sdk.esm.js"></script>
+  <script nomodule src="/build/sdk.js"></script>
+  <link rel="stylesheet" href="/sdk.css">
+  <link rel="stylesheet" href="/demo.css">
+
+  <style>
+    u-profile {
+      display: block;
+      padding: 20px;
+      margin: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+
+    u-field {
+      display: block;
+      margin: 8px 0;
+    }
+
+    u-field::part(field_label) {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    u-field::part(input_field) {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+
+    button[part="profile-submit-button"] {
+      background: #0055fe;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .profile-section {
+      background: #f9fafb;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gray-100 p-8">
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" check-signed-in="true"></u-config>
+
+  <h1 class="text-2xl font-bold mb-4">Partial Profile Validation Test</h1>
+  <p class="mb-4 text-gray-600">This page tests that multiple u-profile components work independently with partial validation.</p>
+
+  <u-signed-in>
+    <!-- Profile 1: Only first_name field with partial validation -->
+    <div id="profile-section-1" class="profile-section">
+      <h2 class="text-lg font-semibold mb-2">Profile 1: First Name Only (partial-validation)</h2>
+      <u-profile partial-validation="true" id="profile-1">
+        <u-field field="first_name" data-testid="profile1-first-name"></u-field>
+        <u-submit-button data-testid="profile1-submit">Save First Name</u-submit-button>
+      </u-profile>
+    </div>
+
+    <!-- Profile 2: Only last_name field with partial validation -->
+    <div id="profile-section-2" class="profile-section">
+      <h2 class="text-lg font-semibold mb-2">Profile 2: Last Name Only (partial-validation)</h2>
+      <u-profile partial-validation="true" id="profile-2">
+        <u-field field="last_name" data-testid="profile2-last-name"></u-field>
+        <u-submit-button data-testid="profile2-submit">Save Last Name</u-submit-button>
+      </u-profile>
+    </div>
+
+    <!-- Profile 3: Multiple fields with explicit validateFields prop -->
+    <div id="profile-section-3" class="profile-section">
+      <h2 class="text-lg font-semibold mb-2">Profile 3: Explicit validateFields prop</h2>
+      <u-profile partial-validation="true" validate-fields="first_name,last_name" id="profile-3">
+        <u-field field="first_name" data-testid="profile3-first-name"></u-field>
+        <u-field field="last_name" data-testid="profile3-last-name"></u-field>
+        <u-field field="date_of_birth" data-testid="profile3-dob"></u-field>
+        <u-submit-button data-testid="profile3-submit">Save Names Only</u-submit-button>
+      </u-profile>
+    </div>
+  </u-signed-in>
+
+  <u-signed-in not>
+    <p class="text-center text-gray-600">You need to sign in to test partial validation</p>
+    <a href="/auth" class="text-blue-500 underline">Login</a>
+  </u-signed-in>
+
+  <u-flash-message class-name="fixed top-5 left-5" remove-after-seconds="10"></u-flash-message>
+</body>
+
+</html>
