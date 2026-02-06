@@ -45,7 +45,7 @@ function getNestedValue(obj: any, path: string): any {
     }
   }
 
-  if (typeof result === "object" && result != null) {
+  if (typeof result === "object" && result != null && !(result instanceof Date)) {
     return JSON.stringify(result);
   }
 
