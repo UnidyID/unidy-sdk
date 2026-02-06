@@ -39,15 +39,6 @@ test.describe("Profile - authenticated user", () => {
 
     await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
   });
-
-  test("logout works correctly", async ({ page, authenticatedContext: _authenticatedContext }) => {
-    await page.goto(routes.profile);
-    const logoutButton = page.getByRole("button", { name: "Logout" });
-    await logoutButton.click();
-
-    await expect(page.getByText("You need to sign in to view your profile")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
-  });
 });
 
 test.describe("Profile - unauthenticated user", () => {

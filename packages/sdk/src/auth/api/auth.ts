@@ -391,7 +391,9 @@ export class AuthService extends BaseService {
 
   async signOut(args: SignOutArgs): Promise<SignOutResult> {
     const { signInId, globalLogout = false } = args;
-    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { globalLogout });
+    const idToken = await this.getIdToken();
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    const response = await this.client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/sign_out`, { globalLogout }, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
