@@ -14,5 +14,6 @@ export const routes = {
   oauth: "/oauth",
   newsletter: "/newsletter",
   profile: "/auth/profile.html",
+  profilePartial: "/profile/partial.html",
   ticketable: "/ticketable",
 } as const;

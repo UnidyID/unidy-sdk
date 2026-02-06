@@ -1,7 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
+import { buildPayload, validateRequiredFields } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { HasSlotContent } from "../../../shared/base/has-slot-content";
@@ -20,7 +20,7 @@ export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotContent) {
 
     const { configuration, ...stateWithoutConfig } = profileState;
 
-    if (!validateRequiredFieldsUnchanged(stateWithoutConfig.data)) {
+    if (!validateRequiredFields(stateWithoutConfig.data)) {
       profileState.loading = false;
       return;
     }

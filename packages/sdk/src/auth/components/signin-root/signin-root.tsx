@@ -1,4 +1,5 @@
-import { Component, Element, Event, type EventEmitter, Host, h, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop } from "@stencil/core";
+import { UnidyComponent } from "../../../shared/base/component";
 import type { TokenResponse } from "../../api/auth";
 import { authStore } from "../../store/auth-store";
 
@@ -6,9 +7,7 @@ import { authStore } from "../../store/auth-store";
   tag: "u-signin-root",
   shadow: false,
 })
-export class SigninRoot {
-  @Element() el!: HTMLElement;
-
+export class SigninRoot extends UnidyComponent() {
   /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -20,7 +19,7 @@ export class SigninRoot {
   componentDidLoad() {
     authStore.setRootComponentRef(this);
 
-    const signInSteps = this.el.querySelectorAll("u-signin-step").values();
+    const signInSteps = this.element.querySelectorAll("u-signin-step").values();
     if ([...signInSteps].some((step: HTMLUSigninStepElement) => step.name === "single-login")) {
       authStore.setInitialStep("single-login");
     } else {

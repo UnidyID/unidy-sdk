@@ -486,6 +486,8 @@ This component renders a form for users to view and edit their profile data. It 
 
 -   `profileId`: An optional ID for the profile.
 -   `initialData`: Initial profile data, either as a JSON string or a JavaScript object.
+-   `partialValidation`: When `true`, only validates and submits fields that are rendered as `<u-field>` components. Use this when your form shows only a subset of profile fields to avoid validation errors for required fields not in your UI. Defaults to `false`.
+-   `validateFields`: A comma-separated list of field names to validate. Overrides auto-detection when `partialValidation` is `true`.
 
 **Methods:**
 
@@ -499,6 +501,17 @@ This component renders a form for users to view and edit their profile data. It 
 **Slots:**
 
 - The default slot allows you to provide the content to be rendered within the profile component.
+
+**Example: Partial validation**
+
+```html
+<!-- Only first_name and email will be validated/submitted -->
+<u-profile partial-validation="true">
+  <u-field field="first_name"></u-field>
+  <u-field field="email"></u-field>
+  <u-submit-button>Save</u-submit-button>
+</u-profile>
+```
 
 #### `<u-field>`
 

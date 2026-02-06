@@ -28,7 +28,7 @@ export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" 
  * @returns The parent component element or null if not found
  *
  * @example
- * const profile = findParent(this.el, "u-profile");
+ * const profile = findParent(this.element, "u-profile");
  * profile?.submitProfile();
  */
 export function findParent<T extends keyof ParentComponentMap>(element: HTMLElement, tagName: T): ParentComponentMap[T] | null {
@@ -89,7 +89,7 @@ export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProvide
  * @returns The detected context or null
  *
  * @example
- * const context = detectContext(this.el);
+ * const context = detectContext(this.element);
  * if (context === "auth") { ... }
  */
 export function detectContext(element: HTMLElement): ComponentContext | null {
@@ -126,7 +126,7 @@ export function detectContext(element: HTMLElement): ComponentContext | null {
  * @throws Error if no context is found
  *
  * @example
- * const context = detectContextOrThrow(this.el, "submit button");
+ * const context = detectContextOrThrow(this.element, "submit button");
  */
 export function detectContextOrThrow(element: HTMLElement, componentName: string): ComponentContext {
   const context = detectContext(element);

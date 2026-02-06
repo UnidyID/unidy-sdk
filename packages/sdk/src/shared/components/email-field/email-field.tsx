@@ -1,18 +1,18 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
-import { getParentSigninStep } from "../../../auth/components/helpers";
+import { Component, h, Prop, State } from "@stencil/core";
 import { authState, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { getParentNewsletterRoot } from "../../../newsletter/components/helpers";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { UnidyComponent } from "../../base/component";
+import { detectContext, findParentNewsletterRoot, findParentSigninStep } from "../../context-utils";
+
+type EmailFieldContext = "auth" | "newsletter";
 
 @Component({
   tag: "u-email-field",
   styleUrl: "email-field.css",
   shadow: false,
 })
-export class EmailField {
-  @Element() el!: HTMLElement;
-
+export class EmailField extends UnidyComponent() {
   /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
   /** ARIA label for accessibility. */
@@ -22,10 +22,13 @@ export class EmailField {
 
   @State() emailValue = "";
 
-  private get context(): "auth" | "newsletter" | null {
-    if (this.el.closest("u-signin-root")) return "auth";
+  private get context(): EmailFieldContext | null {
+    const detectedContext = detectContext(this.element);
 
-    if (this.el.closest("u-newsletter-root")) return "newsletter";
+    // Email field only supports auth and newsletter contexts
+    if (detectedContext === "auth" || detectedContext === "newsletter") {
+      return detectedContext;
+    }
 
     return null;
   }
@@ -60,9 +63,9 @@ export class EmailField {
 
     if (this.store.state.email === "") return;
 
-    if (this.context === "auth") return await getParentSigninStep(this.el)?.submit();
+    if (this.context === "auth") return await findParentSigninStep(this.element)?.submit();
 
-    if (this.context === "newsletter") return await getParentNewsletterRoot(this.el)?.submit();
+    if (this.context === "newsletter") return await findParentNewsletterRoot(this.element)?.submit();
   };
 
   private isDisabled(): boolean {

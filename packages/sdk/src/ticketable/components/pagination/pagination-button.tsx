@@ -1,6 +1,7 @@
 import { Component, Host, h, Prop, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import { UnidyComponent } from "../../../shared/base/component";
+import { findParentTicketableList } from "../../../shared/context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })
@@ -16,7 +17,7 @@ export class PaginationButton extends UnidyComponent() {
   private unsubscribe: (() => void) | null = null;
 
   componentWillLoad() {
-    this.store = this.element.closest("u-ticketable-list")?.store;
+    this.store = findParentTicketableList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("TicketableList component not found");
       return;
@@ -36,7 +37,7 @@ export class PaginationButton extends UnidyComponent() {
   }
 
   private handleClick = () => {
-    const parent = this.element.closest("u-ticketable-list");
+    const parent = findParentTicketableList(this.element);
     if (!parent || !this.paginationMeta) {
       return;
     }
