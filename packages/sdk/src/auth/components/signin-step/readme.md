@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property            | Attribute       | Description | Type                                                                                                                                       | Default     |
-| ------------------- | --------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| `alwaysRender`      | `always-render` |             | `boolean`                                                                                                                                  | `false`     |
-| `name` _(required)_ | `name`          |             | `"connect-brand" \| "email" \| "magic-code" \| "missing-fields" \| "registration" \| "reset-password" \| "single-login" \| "verification"` | `undefined` |
+| Property            | Attribute       | Description                                                                         | Type                                                                                                                                       | Default     |
+| ------------------- | --------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| `alwaysRender`      | `always-render` | If true, the step will always render regardless of the current authentication step. | `boolean`                                                                                                                                  | `false`     |
+| `name` _(required)_ | `name`          | The name of this step in the sign-in flow.                                          | `"connect-brand" \| "email" \| "magic-code" \| "missing-fields" \| "registration" \| "reset-password" \| "single-login" \| "verification"` | `undefined` |
 
 
 ## Methods

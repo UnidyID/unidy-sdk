@@ -8,6 +8,7 @@ import { Auth } from "../../auth";
   shadow: false,
 })
 export class BackButton extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   /**

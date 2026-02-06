@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute          | Description | Type     | Default |
-| -------------------- | ------------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name`       |             | `string` | `""`    |
-| `fieldClassName`     | `field-class-name` |             | `string` | `""`    |
+| Property             | Attribute          | Description                                    | Type     | Default |
+| -------------------- | ------------------ | ---------------------------------------------- | -------- | ------- |
+| `componentClassName` | `class-name`       | CSS classes to apply to the container element. | `string` | `""`    |
+| `fieldClassName`     | `field-class-name` | CSS classes to apply to each field element.    | `string` | `""`    |
 
 
 ## Dependencies

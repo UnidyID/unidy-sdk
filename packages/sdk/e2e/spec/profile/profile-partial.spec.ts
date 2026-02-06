@@ -60,10 +60,7 @@ test.describe("Profile - partial validation", () => {
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
   });
 
-  test("explicit validateFields prop overrides auto-detection", async ({
-    page,
-    authenticatedContext: _authenticatedContext,
-  }) => {
+  test("explicit validateFields prop overrides auto-detection", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profilePartial);
 
     // Wait for profile 3 which has validateFields="first_name,last_name"

@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property                   | Attribute                     | Description | Type                | Default     |
-| -------------------------- | ----------------------------- | ----------- | ------------------- | ----------- |
-| `countryCodeDisplayOption` | `country-code-display-option` |             | `"icon" \| "label"` | `"label"`   |
-| `fields`                   | `fields`                      |             | `string`            | `undefined` |
+| Property                   | Attribute                     | Description                                                                        | Type                | Default     |
+| -------------------------- | ----------------------------- | ---------------------------------------------------------------------------------- | ------------------- | ----------- |
+| `countryCodeDisplayOption` | `country-code-display-option` | For phone fields: how to display country code selector ('icon' or 'label').        | `"icon" \| "label"` | `"label"`   |
+| `fields`                   | `fields`                      | Comma-separated list of field names to display. If not provided, shows all fields. | `string`            | `undefined` |
 
 
 ## Dependencies

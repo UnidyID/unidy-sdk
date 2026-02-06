@@ -17,7 +17,9 @@ import { onChange as profileOnChange, state as profileState } from "../../store/
 export class Profile {
   @Element() el!: HTMLElement;
 
+  /** Optional profile ID (for multi-profile scenarios). */
   @Prop() profileId?: string;
+  /** Initial profile data as JSON string or object. If provided, skips fetching from API. */
   @Prop() initialData: string | Record<string, string> = "";
   /**
    * When true, only validates and submits fields rendered as u-field components.
@@ -29,7 +31,9 @@ export class Profile {
    */
   @Prop() validateFields?: string;
 
+  /** Fired on successful profile update. Contains success message and updated profile data. */
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
+  /** Fired on profile update failure. Contains error code and details including field errors. */
   @Event() uProfileError!: EventEmitter<{
     error: string;
     details: {

@@ -30,15 +30,24 @@ type TranslationTree = {
   shadow: false,
 })
 export class UnidyConfig extends UnidyComponent() {
+  /** SDK mode: 'production' or 'development'. Development mode enables verbose logging. */
   @Prop() mode: "production" | "development" = "production";
+  /** The Unidy API base URL (e.g., 'https://your-tenant.unidy.io'). */
   @Prop() baseUrl = "";
+  /** Your Unidy API key. */
   @Prop() apiKey = "";
+  /** Custom translations as JSON string or object. Keyed by locale code. */
   @Prop() customTranslations: string | Record<string, TranslationTree> = "";
+  /** Fallback locale when translation is missing. */
   @Prop() fallbackLocale = "en";
+  /** Current locale for translations (e.g., 'en', 'de', 'fr'). */
   @Prop() locale = "en";
+  /** If true, checks for existing session on load and restores authentication state. */
   @Prop() checkSignedIn = false;
 
+  /** Fired when SDK initialization is complete. Contains configuration details. */
   @Event() unidyInitialized!: EventEmitter<Config>;
+  /** Fired when a configuration property changes. */
   @Event() configChange!: EventEmitter<ConfigChange>;
 
   async componentWillLoad() {

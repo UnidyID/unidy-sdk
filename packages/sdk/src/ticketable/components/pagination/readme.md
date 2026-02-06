@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type     | Default     |
-| ------------- | -------------- | ----------- | -------- | ----------- |
-| `customClass` | `custom-class` |             | `string` | `undefined` |
+| Property             | Attribute    | Description                               | Type     | Default     |
+| -------------------- | ------------ | ----------------------------------------- | -------- | ----------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the span element. | `string` | `undefined` |
 
 
 ----------------------------------------------

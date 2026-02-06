@@ -23,6 +23,8 @@ Table of Contents
 
 This example demonstrates a complete authentication flow. The SDK automatically shows the correct interface based on the user's authentication status.
 
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling. You can replace these with your own CSS classes or include Tailwind in your project.
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -58,14 +60,42 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     </div>
 
     <u-signin-step name="verification">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
       <u-conditional-render when="auth.passwordEnabled">
         <u-password-field placeholder="Enter your password"></u-password-field>
         <u-submit-button for="password" text="Sign In"></u-submit-button>
       </u-conditional-render>
+      <u-conditional-render when="auth.magicCodeEnabled">
+        <u-send-magic-code-button class-name="mt-2 text-sm text-blue-500">Send Magic Code Instead</u-send-magic-code-button>
+      </u-conditional-render>
+    </u-signin-step>
+
+    <u-signin-step name="magic-code">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
+      <p class="mb-4 text-gray-600">Enter the code sent to your email</p>
+      <u-magic-code-field></u-magic-code-field>
+      <u-error-message for="magicCode" class-name="text-red-500 text-sm mt-2"></u-error-message>
+    </u-signin-step>
+
+    <u-signin-step name="reset-password">
+      <u-back-button restart class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Start over</u-back-button>
+      <p class="mb-4 text-gray-600">Enter your new password</p>
+      <u-password-field for="new-password" placeholder="New password"></u-password-field>
+      <u-password-field for="password-confirmation" placeholder="Confirm password"></u-password-field>
+      <u-error-message for="resetPassword" class-name="text-red-500 text-sm mt-2"></u-error-message>
+      <u-submit-button for="resetPassword" text="Reset Password"></u-submit-button>
     </u-signin-step>
   </u-signin-root>
 
-  <!-- 3. This profile view is automatically shown to logged-in users -->
+  <!--
+    PROFILE VIEW OPTIONS (choose ONE of the following three approaches):
+
+    Option A: Custom profile with u-profile and u-field components
+    Option B: u-full-profile with specific fields
+    Option C: u-full-profile showing all fields
+  -->
+
+  <!-- Option A: Custom profile using u-profile and u-field for full control -->
   <u-signed-in>
     <h2>Welcome!</h2>
     <u-profile>
@@ -76,9 +106,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     <u-logout-button>Sign Out</u-logout-button>
   </u-signed-in>
 
-  <!-- These are alternative implementations of the profile: -->
-
-  <!-- 3.1 Full Profile Component: You can define specific fields. -->
+  <!-- Option B: u-full-profile with specific fields only -->
+  <!--
   <u-signed-in>
     <div class="mb-6">
       <u-logout-button
@@ -90,9 +119,11 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     </div>
     <u-full-profile fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
   </u-signed-in>
+  -->
 
-  <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
-   <u-signed-in>
+  <!-- Option C: u-full-profile showing all available fields -->
+  <!--
+  <u-signed-in>
     <div class="mb-6">
       <u-logout-button
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -102,7 +133,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile country-code-display-option="icon"></u-full-profile>
-   </u-signed-in>
+  </u-signed-in>
+  -->
 
 </body>
 </html>
@@ -110,6 +142,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
 ### Quick Start: Newsletter implementation
 
 This example demonstrates how to implement a newsletter subscription form using the Unidy SDK.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling.
 
 ```html
 <!DOCTYPE html>
@@ -151,6 +185,64 @@ This example demonstrates how to implement a newsletter subscription form using 
 </body>
 </html>
 ```
+
+#### Newsletter with Additional Fields
+
+You can collect additional profile fields during newsletter signup using `u-raw-field`. These fields are submitted along with the email and newsletter selection.
+
+```html
+<u-newsletter-root>
+  <u-email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+
+  <!-- Additional profile fields -->
+  <div class="flex flex-col gap-3">
+    <p class="text-gray-600 text-sm font-medium">Additional fields</p>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="first_name"
+          type="text"
+          placeholder="First name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="first_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="last_name"
+          type="text"
+          placeholder="Last name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="last_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+    </div>
+    <u-raw-field
+      field="phone_number"
+      type="tel"
+      placeholder="Phone number (optional)"
+      class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+    </u-raw-field>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-gray-500 text-sm">Select newsletters</label>
+    <u-newsletter-checkbox internal-name="internal-name-for-newsletter" checked="true"
+      class-name="flex items-center gap-2"></u-newsletter-checkbox>
+    <u-submit-button
+      class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+      Subscribe
+    </u-submit-button>
+  </div>
+</u-newsletter-root>
+```
+
+**Notes:**
+- `u-raw-field` creates a simple input field bound to a profile field name
+- The `field` attribute specifies which profile field to update (e.g., `first_name`, `last_name`, `phone_number`)
+- Use `u-error-message` with the matching `for` attribute to display validation errors
+- All fields are submitted together when the user clicks the submit button
+
 ### Quick Start: Ticket implementation
 
 This example demonstrates how to list tickets and subscriptions using the Unidy SDK.
@@ -217,11 +309,19 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 
 ### Quick Start: Profile Icon
 
-These examples demonstrate a profile icon that displays the user’s avatar and allows the user to navigate to their profile or log out.
+These examples demonstrate a profile icon that displays the user's avatar and allows the user to navigate to their profile or log out.
+
+> **Note:** These examples use [Tailwind CSS](https://tailwindcss.com/) utility classes for styling. The examples assume you have a `<u-signin-root id="sign-in-root">` element elsewhere on the page.
 
 #### Simple Profile Icon with Logout:
 
 ```html
+<!-- Your sign-in root (place elsewhere on the page) -->
+<u-signin-root id="sign-in-root">
+  <!-- ... sign-in steps ... -->
+</u-signin-root>
+
+<!-- Profile icon menu -->
 <u-signed-in>
   <div id="userMenu" class="flex items-center space-x-2" style="display: none;">
     <a href="profile/index.html" class="flex items-center p-2 rounded hover:bg-gray-100 transition-colors duration-200" aria-label="My Profile" title="My Profile">
@@ -288,6 +388,8 @@ These examples demonstrate a profile icon that displays the user’s avatar and 
 ### Quick Start: Modal login
 
 This example demonstrates how to implement a modal login form using the Unidy SDK.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling.
 
 ```html
 <!DOCTYPE html>
@@ -571,6 +673,8 @@ The `u-jump-to-unidy` component handles authentication automatically - when clic
 
 This example demonstrates how to generate a QR code containing user profile data. The QR code encodes a greeting message with the user's name.
 
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling and the [qrcode](https://www.npmjs.com/package/qrcode) library loaded from esm.sh CDN.
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -588,7 +692,7 @@ This example demonstrates how to generate a QR code containing user profile data
     <div class="max-w-2xl mx-auto">
       <!-- Show this message when user is NOT signed in -->
       <u-signed-in not>
-        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
           <div class="mb-6">
             <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
             <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
@@ -599,7 +703,7 @@ This example demonstrates how to generate a QR code containing user profile data
 
       <!-- Show the QR code canvas when user IS signed in -->
       <u-signed-in>
-        <div id="qr-demo" class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
           <div class="mb-6">
             <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
             <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>

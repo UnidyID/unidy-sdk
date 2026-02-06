@@ -6,6 +6,7 @@ import { newsletterStore } from "../../store/newsletter-store";
   shadow: false,
 })
 export class NewsletterConsentCheckbox {
+  /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   componentWillLoad() {

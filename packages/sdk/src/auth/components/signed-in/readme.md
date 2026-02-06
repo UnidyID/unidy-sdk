@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type      | Default |
-| -------------------- | ------------ | ----------- | --------- | ------- |
-| `componentClassName` | `class-name` |             | `string`  | `""`    |
-| `not`                | `not`        |             | `boolean` | `false` |
+| Property             | Attribute    | Description                                                                | Type      | Default |
+| -------------------- | ------------ | -------------------------------------------------------------------------- | --------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the host element.                                  | `string`  | `""`    |
+| `not`                | `not`        | If true, shows content when user is NOT signed in (inverts the condition). | `boolean` | `false` |
 
 
 ----------------------------------------------

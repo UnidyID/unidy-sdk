@@ -25,18 +25,30 @@ import { state as profileState } from "../../store/profile-store";
   shadow: true,
 })
 export class Field extends UnidyComponent() {
+  /** The field name (e.g., 'first_name', 'custom_attributes.favorite_color'). */
   @Prop() field!: string;
+  /** If true, marks the field as required (in addition to backend configuration). */
   @Prop() required = false;
+  /** Placeholder text shown when field is readonly and has no value. */
   @Prop() readonlyPlaceholder = "No information";
+  /** For phone fields: how to display country code selector ('icon' or 'label'). */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
+  /** Error message shown when phone number validation fails. */
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+  /** If true, includes an empty option in select dropdowns. */
   @Prop() emptyOption = true;
+  /** Placeholder text for the input field. */
   @Prop() placeholder?: string;
+  /** If true, renders the default label above the field. */
   @Prop() renderDefaultLabel = true;
 
+  /** Regex pattern for custom validation. */
   @Prop() pattern?: string;
+  /** Error message shown when pattern validation fails. */
   @Prop() patternErrorMessage?: string;
+  /** Custom validation function. Returns { valid: boolean, message?: string }. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   @State() selected?: string | string[];

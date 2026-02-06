@@ -16,9 +16,12 @@ import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-but
 })
 export class NewsletterRoot extends UnidyComponent() {
   @Element() el!: HTMLElement;
+  /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
+  /** Fired on successful newsletter subscription. Contains the email and subscribed newsletters. */
   @Event() uNewsletterSuccess!: EventEmitter<{ email: string; newsletters: string[] }>;
+  /** Fired on newsletter subscription failure. Contains the email and error code. */
   @Event() uNewsletterError!: EventEmitter<{ email: string; error: string }>;
 
   getErrorText(errorIdentifier: NewsletterErrorIdentifier): string {

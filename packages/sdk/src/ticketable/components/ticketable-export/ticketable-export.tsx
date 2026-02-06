@@ -5,8 +5,11 @@ import type { ExportFormat } from "../../api/schemas";
 
 @Component({ tag: "u-ticketable-export", shadow: false })
 export class TicketableExport extends UnidyComponent() {
+  /** The export format (pdf or pkpass). */
   @Prop() format!: ExportFormat;
-  @Prop() customClass?: string;
+  /** CSS classes to apply to the button element. */
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
+  /** Whether the export is available. Set to false to disable the button. */
   @Prop({ reflect: true }) exportable = true;
 
   @State() loading = false;
@@ -69,7 +72,7 @@ export class TicketableExport extends UnidyComponent() {
 
     return (
       <Host>
-        <button type="button" onClick={this.handleClick} disabled={disabled} class={this.customClass}>
+        <button type="button" onClick={this.handleClick} disabled={disabled} class={this.componentClassName}>
           <slot />
         </button>
       </Host>

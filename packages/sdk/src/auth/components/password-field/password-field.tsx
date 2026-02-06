@@ -11,9 +11,11 @@ export type PasswordFieldFor = "login" | "new-password" | "password-confirmation
   shadow: false,
 })
 export class PasswordField extends UnidyComponent() {
-
+  /** The purpose of this password field: login, new-password, or password-confirmation. */
   @Prop() for: PasswordFieldFor = "login";
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** ARIA label for accessibility. Defaults based on the 'for' prop if not provided. */
   @Prop() ariaLabel = "";
 
   private getAriaLabel(): string {

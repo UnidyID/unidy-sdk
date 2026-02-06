@@ -13,9 +13,11 @@ type EmailFieldContext = "auth" | "newsletter";
   shadow: false,
 })
 export class EmailField extends UnidyComponent() {
-
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** ARIA label for accessibility. */
   @Prop() ariaLabel = "Email";
+  /** If true, the input will be disabled. */
   @Prop() disabled = false;
 
   @State() emailValue = "";

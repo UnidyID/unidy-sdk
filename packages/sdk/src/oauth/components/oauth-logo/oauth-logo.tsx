@@ -7,8 +7,11 @@ import { oauthState } from "../../store/oauth-store";
   shadow: false,
 })
 export class OAuthLogo {
+  /** CSS classes to apply to the logo image element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** Width of the logo image in pixels. */
   @Prop() width = "64";
+  /** Height of the logo image in pixels. */
   @Prop() height = "64";
 
   private getLogoUrl(): string | null {

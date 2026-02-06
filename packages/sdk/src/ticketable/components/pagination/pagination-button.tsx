@@ -6,8 +6,10 @@ import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })
 export class PaginationButton extends UnidyComponent() {
+  /** The direction of navigation. */
   @Prop() direction: "prev" | "next" = "next";
-  @Prop() customClass?: string;
+  /** CSS classes to apply to the button element. */
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() paginationMeta: PaginationMeta | null = null;
 
@@ -73,7 +75,7 @@ export class PaginationButton extends UnidyComponent() {
           onClick={this.handleClick}
           disabled={disabled}
           aria-label={isPrev ? "Previous page" : "Next page"}
-          class={this.customClass}
+          class={this.componentClassName}
         >
           <slot name="icon">
             <span aria-hidden="true">{icon}</span>

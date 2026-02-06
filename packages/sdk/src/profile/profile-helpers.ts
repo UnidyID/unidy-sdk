@@ -65,4 +65,3 @@ export function buildPayload(stateData: ProfileRaw, fieldsToInclude?: Set<string
 
   return regularFields;
 }
-

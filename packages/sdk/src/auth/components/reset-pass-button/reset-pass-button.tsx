@@ -11,6 +11,7 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class ResetPasswordButton extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   private handleClick = async () => {

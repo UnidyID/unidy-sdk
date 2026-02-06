@@ -7,9 +7,13 @@ import { type ExistingSubscription, newsletterStore, storeDefaultPreference } fr
   shadow: false,
 })
 export class NewsletterPreferenceCheckbox {
+  /** The internal name of the parent newsletter. */
   @Prop() internalName!: string;
+  /** The preference identifier (e.g., 'daily', 'weekly', 'promotions'). */
   @Prop() preferenceIdentifier!: string;
+  /** If true, the checkbox will be checked by default. */
   @Prop() checked = false;
+  /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() loading = false;

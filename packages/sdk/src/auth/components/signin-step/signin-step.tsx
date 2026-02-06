@@ -8,7 +8,17 @@ import { authState } from "../../store/auth-store";
 })
 export class SigninStep {
   @Element() el!: HTMLElement;
-  @Prop() name!: "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
+  /** The name of this step in the sign-in flow. */
+  @Prop() name!:
+    | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration";
+  /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
   @Method()

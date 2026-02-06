@@ -8,10 +8,12 @@ import { authStore } from "../../store/auth-store";
   shadow: false,
 })
 export class SigninRoot extends UnidyComponent() {
-
+  /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
+  /** Fired on successful authentication. Contains the JWT and refresh token. */
   @Event() authEvent!: EventEmitter<TokenResponse>;
+  /** Fired on authentication failure. Contains the error code. */
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
   componentDidLoad() {

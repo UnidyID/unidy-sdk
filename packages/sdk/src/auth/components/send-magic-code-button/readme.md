@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type      | Default |
-| -------------------- | ------------ | ----------- | --------- | ------- |
-| `componentClassName` | `class-name` |             | `string`  | `""`    |
-| `disabled`           | `disabled`   |             | `boolean` | `false` |
+| Property             | Attribute    | Description                                 | Type      | Default |
+| -------------------- | ------------ | ------------------------------------------- | --------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the button element. | `string`  | `""`    |
+| `disabled`           | `disabled`   | If true, the button will be disabled.       | `boolean` | `false` |
 
 
 ----------------------------------------------

@@ -6,7 +6,8 @@ import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-page", shadow: false })
 export class PaginationPage extends UnidyComponent() {
-  @Prop() customClass?: string;
+  /** CSS classes to apply to the span element. */
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() paginationMeta: PaginationMeta | null = null;
 
@@ -45,7 +46,7 @@ export class PaginationPage extends UnidyComponent() {
 
     return (
       <Host>
-        <span class={this.customClass}>
+        <span class={this.componentClassName}>
           Page {this.paginationMeta.page} of {this.paginationMeta.last}
         </span>
       </Host>

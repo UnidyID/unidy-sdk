@@ -44,6 +44,7 @@ export { Ticket } from "./ticketable/api/tickets";
 export namespace Components {
     interface UBackButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
@@ -55,10 +56,12 @@ export namespace Components {
     }
     interface UBrandConnectButton {
         /**
+          * The action this button performs: "connect" to proceed with brand connection, "cancel" to abort.
           * @default "connect"
          */
         "action": "connect" | "cancel";
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
@@ -74,86 +77,127 @@ export namespace Components {
     }
     interface UConfig {
         /**
+          * Your Unidy API key.
           * @default ""
          */
         "apiKey": string;
         /**
+          * The Unidy API base URL (e.g., 'https://your-tenant.unidy.io').
           * @default ""
          */
         "baseUrl": string;
         /**
+          * If true, checks for existing session on load and restores authentication state.
           * @default false
          */
         "checkSignedIn": boolean;
         /**
+          * Custom translations as JSON string or object. Keyed by locale code.
           * @default ""
          */
         "customTranslations": string | Record<string, TranslationTree>;
         /**
+          * Fallback locale when translation is missing.
           * @default "en"
          */
         "fallbackLocale": string;
         /**
+          * Current locale for translations (e.g., 'en', 'de', 'fr').
           * @default "en"
          */
         "locale": string;
         /**
+          * SDK mode: 'production' or 'development'. Development mode enables verbose logging.
           * @default "production"
          */
         "mode": "production" | "development";
     }
     interface UEmailField {
         /**
+          * ARIA label for accessibility.
           * @default "Email"
          */
         "ariaLabel": string;
         /**
+          * CSS classes to apply to the input element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, the input will be disabled.
           * @default false
          */
         "disabled": boolean;
     }
     interface UErrorMessage {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * Custom error messages keyed by error code. Overrides default translations.
+         */
         "errorMessages"?: Record<string, string>;
+        /**
+          * The error type to display (e.g., 'email', 'password', 'general', 'connection').
+         */
         "for": string;
     }
     interface UField {
+        /**
+          * CSS classes to apply to the input element.
+         */
         "componentClassName"?: string;
         /**
+          * For phone fields: how to display country code selector ('icon' or 'label').
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
+          * If true, includes an empty option in select dropdowns.
           * @default true
          */
         "emptyOption": boolean;
+        /**
+          * The field name (e.g., 'first_name', 'custom_attributes.favorite_color').
+         */
         "field": string;
         /**
+          * Error message shown when phone number validation fails.
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        /**
+          * Regex pattern for custom validation.
+         */
         "pattern"?: string;
+        /**
+          * Error message shown when pattern validation fails.
+         */
         "patternErrorMessage"?: string;
+        /**
+          * Placeholder text for the input field.
+         */
         "placeholder"?: string;
         /**
+          * Placeholder text shown when field is readonly and has no value.
           * @default "No information"
          */
         "readonlyPlaceholder": string;
         /**
+          * If true, renders the default label above the field.
           * @default true
          */
         "renderDefaultLabel": boolean;
         /**
+          * If true, marks the field as required (in addition to backend configuration).
           * @default false
          */
         "required": boolean;
+        /**
+          * Custom validation function. Returns { valid: boolean, message?: string }.
+         */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
     interface UFlashMessage {
@@ -168,9 +212,13 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
+          * For phone fields: how to display country code selector ('icon' or 'label').
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * Comma-separated list of field names to display. If not provided, shows all fields.
+         */
         "fields"?: string;
     }
     interface UJumpToService {
@@ -229,16 +277,19 @@ export namespace Components {
     }
     interface ULogoutButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, reloads the page after successful logout.
           * @default true
          */
         "reloadOnSuccess": boolean;
     }
     interface UMagicCodeField {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName": string;
@@ -254,10 +305,17 @@ export namespace Components {
     }
     interface UNewsletterCheckbox {
         /**
+          * If true, the checkbox will be checked by default.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (as configured in the backend).
+         */
         "internalName": string;
         /**
           * Public method to set the checkbox state programmatically
@@ -269,6 +327,9 @@ export namespace Components {
         "toggle": () => Promise<void>;
     }
     interface UNewsletterConsentCheckbox {
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
@@ -281,11 +342,21 @@ export namespace Components {
     }
     interface UNewsletterPreferenceCheckbox {
         /**
+          * If true, the checkbox will be checked by default.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "internalName": string;
+        /**
+          * The preference identifier (e.g., 'daily', 'weekly', 'promotions').
+         */
         "preferenceIdentifier": string;
         /**
           * Public method to set the checkbox state programmatically
@@ -305,6 +376,7 @@ export namespace Components {
     }
     interface UNewsletterRoot {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName": string;
@@ -339,24 +411,29 @@ export namespace Components {
     }
     interface UOauthLogo {
         /**
+          * CSS classes to apply to the logo image element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * Height of the logo image in pixels.
           * @default "64"
          */
         "height": string;
         /**
+          * Width of the logo image in pixels.
           * @default "64"
          */
         "width": string;
     }
     interface UOauthMissingFields {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * CSS classes to apply to each field element.
           * @default ""
          */
         "fieldClassName": string;
@@ -380,45 +457,75 @@ export namespace Components {
     }
     interface UOauthProvider {
         /**
+          * If true, automatically redirects to the authorization URL after successful consent.
           * @default true
          */
         "autoRedirect": boolean;
+        /**
+          * Cancels the OAuth consent flow and emits the oauthCancel event.
+         */
         "cancel": () => Promise<void>;
+        /**
+          * The OAuth application client ID.
+         */
         "clientId": string;
+        /**
+          * Initiates the OAuth consent flow by fetching application details and displaying the consent UI.
+         */
         "connect": () => Promise<void>;
         /**
+          * If true, opens the OAuth flow in a new tab instead of the current window.
           * @default false
          */
         "newtab": boolean;
+        /**
+          * The URL to redirect to after authorization. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request (e.g., "openid,profile,email").
+         */
         "scopes"?: string;
+        /**
+          * Submits the OAuth consent form, granting authorization to the application.
+         */
         "submit": () => Promise<void>;
     }
     interface UOauthScopes {
         /**
+          * CSS classes to apply to the scopes list container.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * CSS classes to apply to each scope list item.
           * @default ""
          */
         "itemClassName": string;
     }
     interface UOauthText {
         /**
+          * The type of text to display: "title" for application name, "description" for application description.
           * @default "title"
          */
         "type": OAuthTextType;
     }
     interface UPaginationButton {
-        "customClass"?: string;
         /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The direction of navigation.
           * @default "next"
          */
         "direction": "prev" | "next";
     }
     interface UPaginationPage {
-        "customClass"?: string;
+        /**
+          * CSS classes to apply to the span element.
+         */
+        "componentClassName"?: string;
     }
     interface UPasskey {
         /**
@@ -436,20 +543,24 @@ export namespace Components {
     }
     interface UPasswordField {
         /**
+          * ARIA label for accessibility. Defaults based on the 'for' prop if not provided.
           * @default ""
          */
         "ariaLabel": string;
         /**
+          * CSS classes to apply to the input element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * The purpose of this password field: login, new-password, or password-confirmation.
           * @default "login"
          */
         "for": PasswordFieldFor;
     }
     interface UProfile {
         /**
+          * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData": string | Record<string, string>;
@@ -458,6 +569,9 @@ export namespace Components {
           * @default false
          */
         "partialValidation": boolean;
+        /**
+          * Optional profile ID (for multi-profile scenarios).
+         */
         "profileId"?: string;
         /**
           * Register a field for partial validation tracking. Called by child u-field components when they mount.
@@ -528,59 +642,80 @@ export namespace Components {
     }
     interface UResetPasswordButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
     }
     interface USendMagicCodeButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, the button will be disabled.
           * @default false
          */
         "disabled": boolean;
     }
     interface USignedIn {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, shows content when user is NOT signed in (inverts the condition).
           * @default false
          */
         "not": boolean;
     }
     interface USigninRoot {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName": string;
     }
     interface USigninStep {
         /**
+          * If true, the step will always render regardless of the current authentication step.
           * @default false
          */
         "alwaysRender": boolean;
         "isActive": () => Promise<boolean>;
-        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        /**
+          * The name of this step in the sign-in flow.
+         */
+        "name": | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration";
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
         /**
+          * If true, shows only the provider icon without text.
           * @default false
          */
         "iconOnly": boolean;
         /**
+          * The OAuth provider (google, linkedin, apple, discord, facebook, or unidy).
           * @default "google"
          */
         "provider": SocialLoginProvider;
         /**
+          * The URL to redirect to after authentication. Defaults to current page.
           * @default window.location.href
          */
         "redirectUri": string;
         /**
+          * Button theme: 'light' (white background) or 'dark' (dark background).
           * @default "light"
          */
         "theme": "light" | "dark";
@@ -589,52 +724,85 @@ export namespace Components {
     }
     interface USubmitButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * If true, the button will be disabled.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * The action type for the button. Varies by context (auth: email/password/magic-code/reset-password, newsletter: subscribe/login).
+         */
         "for"?: AuthButtonFor | NewsletterButtonFor;
+        /**
+          * Custom button text. If not provided, uses context-specific defaults.
+         */
         "text"?: string;
     }
     interface UTicketableExport {
-        "customClass"?: string;
         /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * Whether the export is available. Set to false to disable the button.
           * @default true
          */
         "exportable": boolean;
+        /**
+          * The export format (pdf or pkpass).
+         */
         "format": ExportFormat;
     }
     interface UTicketableList {
+        /**
+          * CSS classes to apply to the container element.
+         */
         "containerClass"?: string;
         /**
+          * Filter string for API queries (e.g., 'state=active;payment_state=paid').
           * @default ""
          */
         "filter": string;
         /**
+          * Number of items per page.
           * @default 10
          */
         "limit": number;
         /**
+          * Current page number.
           * @default 1
          */
         "page": number;
         /**
+          * Pagination metadata from the API response.
           * @default null
          */
         "paginationMeta": PaginationMeta | null;
         /**
+          * If true, replaces all text content with skeleton loaders.
           * @default false
          */
         "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
         "skeletonCount"?: number;
         /**
+          * Pagination store instance for external state management.
           * @default null
          */
         "store": PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
         "target"?: string;
+        /**
+          * The type of ticketable items to list ('ticket' or 'subscription').
+         */
         "ticketableType": "ticket" | "subscription";
     }
 }
@@ -1109,6 +1277,7 @@ declare global {
 declare namespace LocalJSX {
     interface UBackButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
@@ -1120,10 +1289,12 @@ declare namespace LocalJSX {
     }
     interface UBrandConnectButton {
         /**
+          * The action this button performs: "connect" to proceed with brand connection, "cancel" to abort.
           * @default "connect"
          */
         "action"?: "connect" | "cancel";
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
@@ -1139,88 +1310,135 @@ declare namespace LocalJSX {
     }
     interface UConfig {
         /**
+          * Your Unidy API key.
           * @default ""
          */
         "apiKey"?: string;
         /**
+          * The Unidy API base URL (e.g., 'https://your-tenant.unidy.io').
           * @default ""
          */
         "baseUrl"?: string;
         /**
+          * If true, checks for existing session on load and restores authentication state.
           * @default false
          */
         "checkSignedIn"?: boolean;
         /**
+          * Custom translations as JSON string or object. Keyed by locale code.
           * @default ""
          */
         "customTranslations"?: string | Record<string, TranslationTree>;
         /**
+          * Fallback locale when translation is missing.
           * @default "en"
          */
         "fallbackLocale"?: string;
         /**
+          * Current locale for translations (e.g., 'en', 'de', 'fr').
           * @default "en"
          */
         "locale"?: string;
         /**
+          * SDK mode: 'production' or 'development'. Development mode enables verbose logging.
           * @default "production"
          */
         "mode"?: "production" | "development";
+        /**
+          * Fired when a configuration property changes.
+         */
         "onConfigChange"?: (event: UConfigCustomEvent<ConfigChange>) => void;
+        /**
+          * Fired when SDK initialization is complete. Contains configuration details.
+         */
         "onUnidyInitialized"?: (event: UConfigCustomEvent<Config>) => void;
     }
     interface UEmailField {
         /**
+          * ARIA label for accessibility.
           * @default "Email"
          */
         "ariaLabel"?: string;
         /**
+          * CSS classes to apply to the input element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, the input will be disabled.
           * @default false
          */
         "disabled"?: boolean;
     }
     interface UErrorMessage {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * Custom error messages keyed by error code. Overrides default translations.
+         */
         "errorMessages"?: Record<string, string>;
+        /**
+          * The error type to display (e.g., 'email', 'password', 'general', 'connection').
+         */
         "for": string;
     }
     interface UField {
+        /**
+          * CSS classes to apply to the input element.
+         */
         "componentClassName"?: string;
         /**
+          * For phone fields: how to display country code selector ('icon' or 'label').
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
+          * If true, includes an empty option in select dropdowns.
           * @default true
          */
         "emptyOption"?: boolean;
+        /**
+          * The field name (e.g., 'first_name', 'custom_attributes.favorite_color').
+         */
         "field": string;
         /**
+          * Error message shown when phone number validation fails.
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        /**
+          * Regex pattern for custom validation.
+         */
         "pattern"?: string;
+        /**
+          * Error message shown when pattern validation fails.
+         */
         "patternErrorMessage"?: string;
+        /**
+          * Placeholder text for the input field.
+         */
         "placeholder"?: string;
         /**
+          * Placeholder text shown when field is readonly and has no value.
           * @default "No information"
          */
         "readonlyPlaceholder"?: string;
         /**
+          * If true, renders the default label above the field.
           * @default true
          */
         "renderDefaultLabel"?: boolean;
         /**
+          * If true, marks the field as required (in addition to backend configuration).
           * @default false
          */
         "required"?: boolean;
+        /**
+          * Custom validation function. Returns { valid: boolean, message?: string }.
+         */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
     interface UFlashMessage {
@@ -1235,9 +1453,13 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
+          * For phone fields: how to display country code selector ('icon' or 'label').
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
+        /**
+          * Comma-separated list of field names to display. If not provided, shows all fields.
+         */
         "fields"?: string;
     }
     interface UJumpToService {
@@ -1296,17 +1518,23 @@ declare namespace LocalJSX {
     }
     interface ULogoutButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * Fired after successful logout.
+         */
         "onLogout"?: (event: ULogoutButtonCustomEvent<void>) => void;
         /**
+          * If true, reloads the page after successful logout.
           * @default true
          */
         "reloadOnSuccess"?: boolean;
     }
     interface UMagicCodeField {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName"?: string;
@@ -1322,13 +1550,23 @@ declare namespace LocalJSX {
     }
     interface UNewsletterCheckbox {
         /**
+          * If true, the checkbox will be checked by default.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (as configured in the backend).
+         */
         "internalName": string;
     }
     interface UNewsletterConsentCheckbox {
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
     }
     interface UNewsletterLogoutButton {
@@ -1339,11 +1577,21 @@ declare namespace LocalJSX {
     }
     interface UNewsletterPreferenceCheckbox {
         /**
+          * If true, the checkbox will be checked by default.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "internalName": string;
+        /**
+          * The preference identifier (e.g., 'daily', 'weekly', 'promotions').
+         */
         "preferenceIdentifier": string;
     }
     interface UNewsletterResendDoiButton {
@@ -1355,10 +1603,17 @@ declare namespace LocalJSX {
     }
     interface UNewsletterRoot {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * Fired on newsletter subscription failure. Contains the email and error code.
+         */
         "onUNewsletterError"?: (event: UNewsletterRootCustomEvent<{ email: string; error: string }>) => void;
+        /**
+          * Fired on successful newsletter subscription. Contains the email and subscribed newsletters.
+         */
         "onUNewsletterSuccess"?: (event: UNewsletterRootCustomEvent<{ email: string; newsletters: string[] }>) => void;
     }
     interface UNewsletterToggleSubscriptionButton {
@@ -1390,24 +1645,29 @@ declare namespace LocalJSX {
     }
     interface UOauthLogo {
         /**
+          * CSS classes to apply to the logo image element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * Height of the logo image in pixels.
           * @default "64"
          */
         "height"?: string;
         /**
+          * Width of the logo image in pixels.
           * @default "64"
          */
         "width"?: string;
     }
     interface UOauthMissingFields {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * CSS classes to apply to each field element.
           * @default ""
          */
         "fieldClassName"?: string;
@@ -1431,45 +1691,75 @@ declare namespace LocalJSX {
     }
     interface UOauthProvider {
         /**
+          * If true, automatically redirects to the authorization URL after successful consent.
           * @default true
          */
         "autoRedirect"?: boolean;
+        /**
+          * The OAuth application client ID.
+         */
         "clientId": string;
         /**
+          * If true, opens the OAuth flow in a new tab instead of the current window.
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * Fired when the user cancels the OAuth consent flow.
+         */
         "onOauthCancel"?: (event: UOauthProviderCustomEvent<void>) => void;
+        /**
+          * Fired when an error occurs during the OAuth flow. Contains the error message and optional identifier.
+         */
         "onOauthError"?: (event: UOauthProviderCustomEvent<OAuthErrorEvent>) => void;
+        /**
+          * Fired on successful OAuth authorization. Contains the token, application details, and redirect URL.
+         */
         "onOauthSuccess"?: (event: UOauthProviderCustomEvent<OAuthSuccessEvent>) => void;
+        /**
+          * The URL to redirect to after authorization. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request (e.g., "openid,profile,email").
+         */
         "scopes"?: string;
     }
     interface UOauthScopes {
         /**
+          * CSS classes to apply to the scopes list container.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * CSS classes to apply to each scope list item.
           * @default ""
          */
         "itemClassName"?: string;
     }
     interface UOauthText {
         /**
+          * The type of text to display: "title" for application name, "description" for application description.
           * @default "title"
          */
         "type"?: OAuthTextType;
     }
     interface UPaginationButton {
-        "customClass"?: string;
         /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The direction of navigation.
           * @default "next"
          */
         "direction"?: "prev" | "next";
     }
     interface UPaginationPage {
-        "customClass"?: string;
+        /**
+          * CSS classes to apply to the span element.
+         */
+        "componentClassName"?: string;
     }
     interface UPasskey {
         /**
@@ -1487,23 +1777,30 @@ declare namespace LocalJSX {
     }
     interface UPasswordField {
         /**
+          * ARIA label for accessibility. Defaults based on the 'for' prop if not provided.
           * @default ""
          */
         "ariaLabel"?: string;
         /**
+          * CSS classes to apply to the input element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * The purpose of this password field: login, new-password, or password-confirmation.
           * @default "login"
          */
         "for"?: PasswordFieldFor;
     }
     interface UProfile {
         /**
+          * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
+        /**
+          * Fired on profile update failure. Contains error code and details including field errors.
+         */
         "onUProfileError"?: (event: UProfileCustomEvent<{
     error: string;
     details: {
@@ -1512,12 +1809,18 @@ declare namespace LocalJSX {
       responseData?: unknown;
     };
   }>) => void;
+        /**
+          * Fired on successful profile update. Contains success message and updated profile data.
+         */
         "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
         /**
           * When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields.
           * @default false
          */
         "partialValidation"?: boolean;
+        /**
+          * Optional profile ID (for multi-profile scenarios).
+         */
         "profileId"?: string;
         /**
           * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
@@ -1579,59 +1882,86 @@ declare namespace LocalJSX {
     }
     interface UResetPasswordButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
     }
     interface USendMagicCodeButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, the button will be disabled.
           * @default false
          */
         "disabled"?: boolean;
     }
     interface USignedIn {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, shows content when user is NOT signed in (inverts the condition).
           * @default false
          */
         "not"?: boolean;
     }
     interface USigninRoot {
         /**
+          * CSS classes to apply to the host element.
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * Fired on successful authentication. Contains the JWT and refresh token.
+         */
         "onAuthEvent"?: (event: USigninRootCustomEvent<TokenResponse>) => void;
+        /**
+          * Fired on authentication failure. Contains the error code.
+         */
         "onErrorEvent"?: (event: USigninRootCustomEvent<{ error: string }>) => void;
     }
     interface USigninStep {
         /**
+          * If true, the step will always render regardless of the current authentication step.
           * @default false
          */
         "alwaysRender"?: boolean;
-        "name": "email" | "verification" | "magic-code" | "connect-brand" | "reset-password" | "single-login" | "missing-fields" | "registration";
+        /**
+          * The name of this step in the sign-in flow.
+         */
+        "name": | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration";
     }
     interface USocialLoginButton {
         /**
+          * If true, shows only the provider icon without text.
           * @default false
          */
         "iconOnly"?: boolean;
         /**
+          * The OAuth provider (google, linkedin, apple, discord, facebook, or unidy).
           * @default "google"
          */
         "provider"?: SocialLoginProvider;
         /**
+          * The URL to redirect to after authentication. Defaults to current page.
           * @default window.location.href
          */
         "redirectUri"?: string;
         /**
+          * Button theme: 'light' (white background) or 'dark' (dark background).
           * @default "light"
          */
         "theme"?: "light" | "dark";
@@ -1640,63 +1970,102 @@ declare namespace LocalJSX {
     }
     interface USubmitButton {
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * If true, the button will be disabled.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * The action type for the button. Varies by context (auth: email/password/magic-code/reset-password, newsletter: subscribe/login).
+         */
         "for"?: AuthButtonFor | NewsletterButtonFor;
+        /**
+          * Custom button text. If not provided, uses context-specific defaults.
+         */
         "text"?: string;
     }
     interface UTicketableExport {
-        "customClass"?: string;
         /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * Whether the export is available. Set to false to disable the button.
           * @default true
          */
         "exportable"?: boolean;
+        /**
+          * The export format (pdf or pkpass).
+         */
         "format": ExportFormat;
         "onUTicketableExportError"?: (event: UTicketableExportCustomEvent<{ error: string }>) => void;
         "onUTicketableExportSuccess"?: (event: UTicketableExportCustomEvent<{ url: string; format: ExportFormat }>) => void;
     }
     interface UTicketableList {
+        /**
+          * CSS classes to apply to the container element.
+         */
         "containerClass"?: string;
         /**
+          * Filter string for API queries (e.g., 'state=active;payment_state=paid').
           * @default ""
          */
         "filter"?: string;
         /**
+          * Number of items per page.
           * @default 10
          */
         "limit"?: number;
+        /**
+          * Fired when fetching items fails. Contains the error message.
+         */
         "onUTicketableListError"?: (event: UTicketableListCustomEvent<{
     ticketableType?: "ticket" | "subscription";
     error: string;
   }>) => void;
+        /**
+          * Fired when items are successfully fetched. Contains items and pagination metadata.
+         */
         "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
     ticketableType: "ticket" | "subscription";
     items: Subscription[] | Ticket[];
     paginationMeta: PaginationMeta | null;
   }>) => void;
         /**
+          * Current page number.
           * @default 1
          */
         "page"?: number;
         /**
+          * Pagination metadata from the API response.
           * @default null
          */
         "paginationMeta"?: PaginationMeta | null;
         /**
+          * If true, replaces all text content with skeleton loaders.
           * @default false
          */
         "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
         "skeletonCount"?: number;
         /**
+          * Pagination store instance for external state management.
           * @default null
          */
         "store"?: PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
         "target"?: string;
+        /**
+          * The type of ticketable items to list ('ticket' or 'subscription').
+         */
         "ticketableType": "ticket" | "subscription";
     }
     interface IntrinsicElements {
