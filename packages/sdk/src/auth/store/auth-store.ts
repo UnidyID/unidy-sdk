@@ -52,6 +52,7 @@ const SESSION_KEYS = {
   REFRESH_TOKEN: "unidy_refresh_token",
   EMAIL: "unidy_email",
   STEP: "unidy_step",
+  STEP_HISTORY: "unidy_step_history",
   LOGIN_OPTIONS: "unidy_login_options",
   MAGIC_CODE_STEP: "unidy_magic_code_step",
 } as const;
@@ -89,6 +90,7 @@ const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
 };
 
 const storedStep = localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
+const storedStepHistory = loadJsonFromStorage<AuthStep[]>(localStorage, SESSION_KEYS.STEP_HISTORY);
 const storedLoginOptions = loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
 const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
 
@@ -127,7 +129,7 @@ const initialState: AuthState = {
   backendSignedIn: false,
 
   _pendingRecoveryStep: isRecoverableStep(storedStep) ? storedStep : null,
-  _stepHistory: [],
+  _stepHistory: isRecoverableStep(storedStep) && storedStepHistory ? storedStepHistory : [],
   _initialStep: null,
 };
 
@@ -242,8 +244,10 @@ class AuthStore {
 
     if (isRecoverableStep(step)) {
       saveToStorage(localStorage, SESSION_KEYS.STEP, step);
+      saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, state._stepHistory);
     } else {
       saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+      saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     }
   }
 
@@ -311,6 +315,7 @@ class AuthStore {
 
     // recovery-related storage
     saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
   }
@@ -326,6 +331,7 @@ class AuthStore {
       return false;
     }
 
+    // _stepHistory is already loaded from localStorage in initialState
     state.step = pendingStep;
     state._pendingRecoveryStep = null;
     return true;
@@ -334,6 +340,7 @@ class AuthStore {
   clearPendingRecovery() {
     state._pendingRecoveryStep = null;
     saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
   }
 
@@ -387,6 +394,7 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, null);
     saveToStorage(sessionStorage, SESSION_KEYS.TOKEN, null);
     saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+    saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
   }
 }
