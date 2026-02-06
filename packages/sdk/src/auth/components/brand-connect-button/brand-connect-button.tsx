@@ -11,7 +11,9 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class BrandConnectButton extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** The action this button performs: "connect" to proceed with brand connection, "cancel" to abort. */
   @Prop() action: "connect" | "cancel" = "connect";
   @State() isLoading = false;
 

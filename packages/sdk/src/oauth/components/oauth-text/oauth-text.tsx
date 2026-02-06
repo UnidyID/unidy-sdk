@@ -8,6 +8,7 @@ export type OAuthTextType = "title" | "description";
   shadow: false,
 })
 export class OAuthText {
+  /** The type of text to display: "title" for application name, "description" for application description. */
   @Prop() type: OAuthTextType = "title";
 
   render() {

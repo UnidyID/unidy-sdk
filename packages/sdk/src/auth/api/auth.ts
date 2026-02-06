@@ -1,5 +1,6 @@
 import { type ApiClientInterface, BaseService, type CommonErrors, type Payload, type ServiceDependencies } from "../../api/base-service";
 import {
+  type BrandConnectionRequiredResponse,
   BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
   CreateSignInResponseSchema,
@@ -26,11 +27,13 @@ import {
   SendMagicCodeResponseSchema,
   type TokenResponse,
   TokenResponseSchema,
-  type BrandConnectionRequiredResponse,
 } from "./schemas";
 
+// Re-export SDK version for external use (generated from package.json at build time)
+export { SDK_VERSION } from "../../version";
 // Re-export types for external use
 export type {
+  BrandConnectionRequiredResponse,
   CreateSignInResponse,
   ErrorResponse,
   InvalidPasswordResponse,
@@ -38,14 +41,10 @@ export type {
   PasskeyCredential,
   PasskeyOptionsResponse,
   RequiredFieldsResponse,
-  BrandConnectionRequiredResponse,
   SendMagicCodeError,
   SendMagicCodeResponse,
   TokenResponse,
 } from "./schemas";
-
-// Re-export SDK version for external use (generated from package.json at build time)
-export { SDK_VERSION } from "../../version";
 
 // Argument types for unified interface
 export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; originUrl?: string }>;
@@ -154,11 +153,7 @@ export type JumpToServiceResult =
   | ["invalid_scope", ErrorResponse]
   | [null, string];
 
-export type JumpToUnidyResult =
-  | CommonErrors
-  | ["user_not_found", ErrorResponse]
-  | ["invalid_path", ErrorResponse]
-  | [null, string];
+export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
 
 export type ConnectBrandResult =
   | CommonErrors

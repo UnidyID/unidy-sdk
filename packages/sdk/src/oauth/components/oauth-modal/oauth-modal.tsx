@@ -1,6 +1,6 @@
 import { Component, forceUpdate, h, Prop } from "@stencil/core";
 import { UnidyComponent } from "../../../shared/base/component";
-import { onChange, oauthState } from "../../store/oauth-store";
+import { oauthState, onChange } from "../../store/oauth-store";
 import { getOAuthProvider, type OAuthProviderElement } from "../context";
 
 @Component({

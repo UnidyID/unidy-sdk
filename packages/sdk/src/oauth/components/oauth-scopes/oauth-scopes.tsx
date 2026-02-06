@@ -6,7 +6,9 @@ import { oauthState } from "../../store/oauth-store";
   shadow: false,
 })
 export class OAuthScopes {
+  /** CSS classes to apply to the scopes list container. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** CSS classes to apply to each scope list item. */
   @Prop({ attribute: "item-class-name" }) itemClassName = "";
 
   render() {

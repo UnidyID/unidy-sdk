@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type                    | Default     |
-| -------------------- | ------------ | ----------- | ----------------------- | ----------- |
-| `action`             | `action`     |             | `"cancel" \| "connect"` | `"connect"` |
-| `componentClassName` | `class-name` |             | `string`                | `""`        |
+| Property             | Attribute    | Description                                                                                     | Type                    | Default     |
+| -------------------- | ------------ | ----------------------------------------------------------------------------------------------- | ----------------------- | ----------- |
+| `action`             | `action`     | The action this button performs: "connect" to proceed with brand connection, "cancel" to abort. | `"cancel" \| "connect"` | `"connect"` |
+| `componentClassName` | `class-name` | CSS classes to apply to the button element.                                                     | `string`                | `""`        |
 
 
 ## Dependencies

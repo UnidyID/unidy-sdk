@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                       | Default   |
-| -------- | --------- | ----------- | -------------------------- | --------- |
-| `type`   | `type`    |             | `"description" \| "title"` | `"title"` |
+| Property | Attribute | Description                                                                                           | Type                       | Default   |
+| -------- | --------- | ----------------------------------------------------------------------------------------------------- | -------------------------- | --------- |
+| `type`   | `type`    | The type of text to display: "title" for application name, "description" for application description. | `"description" \| "title"` | `"title"` |
 
 
 ----------------------------------------------

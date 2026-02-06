@@ -56,10 +56,12 @@ export namespace Components {
     }
     interface UBrandConnectButton {
         /**
+          * The action this button performs: "connect" to proceed with brand connection, "cancel" to abort.
           * @default "connect"
          */
         "action": "connect" | "cancel";
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
@@ -409,24 +411,29 @@ export namespace Components {
     }
     interface UOauthLogo {
         /**
+          * CSS classes to apply to the logo image element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * Height of the logo image in pixels.
           * @default "64"
          */
         "height": string;
         /**
+          * Width of the logo image in pixels.
           * @default "64"
          */
         "width": string;
     }
     interface UOauthMissingFields {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * CSS classes to apply to each field element.
           * @default ""
          */
         "fieldClassName": string;
@@ -450,32 +457,55 @@ export namespace Components {
     }
     interface UOauthProvider {
         /**
+          * If true, automatically redirects to the authorization URL after successful consent.
           * @default true
          */
         "autoRedirect": boolean;
+        /**
+          * Cancels the OAuth consent flow and emits the oauthCancel event.
+         */
         "cancel": () => Promise<void>;
+        /**
+          * The OAuth application client ID.
+         */
         "clientId": string;
+        /**
+          * Initiates the OAuth consent flow by fetching application details and displaying the consent UI.
+         */
         "connect": () => Promise<void>;
         /**
+          * If true, opens the OAuth flow in a new tab instead of the current window.
           * @default false
          */
         "newtab": boolean;
+        /**
+          * The URL to redirect to after authorization. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request (e.g., "openid,profile,email").
+         */
         "scopes"?: string;
+        /**
+          * Submits the OAuth consent form, granting authorization to the application.
+         */
         "submit": () => Promise<void>;
     }
     interface UOauthScopes {
         /**
+          * CSS classes to apply to the scopes list container.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * CSS classes to apply to each scope list item.
           * @default ""
          */
         "itemClassName": string;
     }
     interface UOauthText {
         /**
+          * The type of text to display: "title" for application name, "description" for application description.
           * @default "title"
          */
         "type": OAuthTextType;
@@ -1242,10 +1272,12 @@ declare namespace LocalJSX {
     }
     interface UBrandConnectButton {
         /**
+          * The action this button performs: "connect" to proceed with brand connection, "cancel" to abort.
           * @default "connect"
          */
         "action"?: "connect" | "cancel";
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
@@ -1596,24 +1628,29 @@ declare namespace LocalJSX {
     }
     interface UOauthLogo {
         /**
+          * CSS classes to apply to the logo image element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * Height of the logo image in pixels.
           * @default "64"
          */
         "height"?: string;
         /**
+          * Width of the logo image in pixels.
           * @default "64"
          */
         "width"?: string;
     }
     interface UOauthMissingFields {
         /**
+          * CSS classes to apply to the container element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * CSS classes to apply to each field element.
           * @default ""
          */
         "fieldClassName"?: string;
@@ -1637,32 +1674,55 @@ declare namespace LocalJSX {
     }
     interface UOauthProvider {
         /**
+          * If true, automatically redirects to the authorization URL after successful consent.
           * @default true
          */
         "autoRedirect"?: boolean;
+        /**
+          * The OAuth application client ID.
+         */
         "clientId": string;
         /**
+          * If true, opens the OAuth flow in a new tab instead of the current window.
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * Fired when the user cancels the OAuth consent flow.
+         */
         "onOauthCancel"?: (event: UOauthProviderCustomEvent<void>) => void;
+        /**
+          * Fired when an error occurs during the OAuth flow. Contains the error message and optional identifier.
+         */
         "onOauthError"?: (event: UOauthProviderCustomEvent<OAuthErrorEvent>) => void;
+        /**
+          * Fired on successful OAuth authorization. Contains the token, application details, and redirect URL.
+         */
         "onOauthSuccess"?: (event: UOauthProviderCustomEvent<OAuthSuccessEvent>) => void;
+        /**
+          * The URL to redirect to after authorization. Must match one of the application's allowed redirect URIs.
+         */
         "redirectUri"?: string;
+        /**
+          * Comma-separated list of OAuth scopes to request (e.g., "openid,profile,email").
+         */
         "scopes"?: string;
     }
     interface UOauthScopes {
         /**
+          * CSS classes to apply to the scopes list container.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * CSS classes to apply to each scope list item.
           * @default ""
          */
         "itemClassName"?: string;
     }
     interface UOauthText {
         /**
+          * The type of text to display: "title" for application name, "description" for application description.
           * @default "title"
          */
         "type"?: OAuthTextType;
