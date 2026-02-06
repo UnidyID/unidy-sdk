@@ -2,7 +2,7 @@ import { createStore } from "@stencil/store";
 import { unidyState } from "../../shared/store/unidy-store";
 import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
-import { AUTH_ERROR_CODES } from "../error-definitions";
+import { Auth } from "../auth";
 
 export type AuthStep =
   | "email"
@@ -205,9 +205,9 @@ class AuthStore {
     }
 
     if (
-      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_NOT_FOUND ||
-      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_ALREADY_PROCESSED ||
-      error === AUTH_ERROR_CODES.GENERAL.SIGN_IN_EXPIRED
+      error === Auth.Errors.general.SIGN_IN_NOT_FOUND ||
+      error === Auth.Errors.general.SIGN_IN_ALREADY_PROCESSED ||
+      error === Auth.Errors.general.SIGN_IN_EXPIRED
     ) {
       // Preserve email so user can retry without re-entering
       const email = state.email;
