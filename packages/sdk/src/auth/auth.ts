@@ -41,10 +41,16 @@ export class Auth {
     email: {
       NOT_FOUND: "account_not_found",
     },
+    general: {
+      ACCOUNT_LOCKED: "account_locked",
+      SIGN_IN_ALREADY_PROCESSED: "sign_in_already_processed",
+      SIGN_IN_EXPIRED: "sign_in_expired",
+      SIGN_IN_NOT_FOUND: "sign_in_not_found",
+    },
     magicCode: {
-      RECENTLY_CREATED: "magic_code_recently_created",
-      NOT_VALID: "magic_code_not_valid",
       EXPIRED: "magic_code_expired",
+      NOT_VALID: "magic_code_not_valid",
+      RECENTLY_CREATED: "magic_code_recently_created",
       USED: "magic_code_used",
     },
     password: {
@@ -52,11 +58,8 @@ export class Auth {
       NOT_SET: "password_not_set",
       RESET_PASSWORD_ALREADY_SENT: "reset_password_already_sent",
     },
-    general: {
-      ACCOUNT_LOCKED: "account_locked",
-      SIGN_IN_NOT_FOUND: "sign_in_not_found",
-      SIGN_IN_ALREADY_PROCESSED: "sign_in_already_processed",
-      SIGN_IN_EXPIRED: "sign_in_expired",
+    passwordReset: {
+      PASSWORD_TOO_WEAK: "password_too_weak",
     },
   } as const;
 
