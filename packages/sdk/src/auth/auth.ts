@@ -9,34 +9,55 @@ import { authState, authStore } from "./store/auth-store";
 
 const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
 
+/**
+ * Decoded JWT payload for Unidy auth tokens.
+ */
 export interface TokenPayload {
-  sub: string; // unidy id
-  sid: string; // sign-in id
+  /** Unidy user id (subject). */
+  sub: string;
+  /** Sign-in session id. */
+  sid: string;
+  /** Expiration time (Unix seconds). */
   exp: number;
+  /** Issued-at time (Unix seconds). */
   iat: number;
+  /** Issuer. */
   iss: string;
+  /** Audience. */
   aud: string;
+  /** Nonce. */
   nonce: string;
+  /** Time of authentication (Unix seconds). */
   auth_time: number;
+  /** User email. */
   email: string;
+  /** Whether the email has been verified. */
   email_verified: boolean;
   [key: string]: unknown;
 }
 
+/**
+ * Auth-specific error with a machine-readable code and whether re-authentication is required.
+ */
 export type AuthError = Error & {
   code: "TOKEN_EXPIRED" | "REFRESH_FAILED" | "NO_TOKEN" | "INVALID_TOKEN" | "SIGN_IN_NOT_FOUND" | "SIGN_OUT_FAILED";
   requiresReauth: boolean;
 };
 
+/**
+ * Singleton auth service: token validation, refresh, logout, and auth flow state (step, email, navigation).
+ */
 export class Auth {
   private static instance: Auth;
 
+  /** Helper methods for redirects, token refresh, and sign-in step recovery. */
   readonly helpers: AuthHelpers;
 
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
   }
 
+  /** Known error codes for email, magic code, password, and general auth flows. */
   static Errors = {
     email: {
       NOT_FOUND: "account_not_found",
@@ -60,6 +81,9 @@ export class Auth {
     },
   } as const;
 
+  /**
+   * Returns the singleton Auth instance, initializing it (and waiting for config) if needed.
+   */
   static async getInstance(): Promise<Auth> {
     if (!Auth.isInitialized()) {
       await waitForConfig();
@@ -70,6 +94,12 @@ export class Auth {
     return Auth.instance;
   }
 
+  /**
+   * Creates and configures the singleton Auth instance (redirect handling, reset-password, token check, step recovery).
+   * Idempotent: returns existing instance if already initialized.
+   *
+   * @param client - Unidy API client used for auth requests.
+   */
   static async initialize(client: UnidyClient): Promise<Auth> {
     if (Auth.instance) {
       return Auth.instance;
@@ -91,6 +121,7 @@ export class Auth {
     return Auth.instance;
   }
 
+  /** Whether the Auth singleton has been initialized. */
   static isInitialized(): boolean {
     return !!Auth.instance;
   }
@@ -131,11 +162,17 @@ export class Auth {
     }
   }
 
+  /** Returns whether the user has a valid token (after refresh if needed). */
   async isAuthenticated(): Promise<boolean> {
     const token = await this.getToken();
     return typeof token === "string";
   }
 
+  /**
+   * Returns a valid access token, refreshing it if expired. Use this for authenticated API calls.
+   *
+   * @returns The JWT string, or an AuthError if refresh fails or no token is available.
+   */
   async getToken(): Promise<string | AuthError> {
     const currentToken = authState.token;
 
@@ -152,7 +189,10 @@ export class Auth {
     return authState.token as string;
   }
 
-  async userData(): Promise<TokenPayload | null> {
+  /**
+   * Returns the decoded JWT payload for the current user, or null if not authenticated or decode fails.
+   */
+  async userTokenPayload(): Promise<TokenPayload | null> {
     const token = await this.getToken();
 
     if (typeof token !== "string") {
@@ -171,6 +211,11 @@ export class Auth {
     }
   }
 
+  /**
+   * Logs the user out (backend call when possible) and clears local auth state. Local state is always cleared even if backend fails.
+   *
+   * @returns `true` on success, or an AuthError if backend logout failed.
+   */
   async logout(): Promise<boolean | AuthError> {
     const [error, _] = await this.helpers.logout();
 
@@ -184,26 +229,32 @@ export class Auth {
     return true;
   }
 
+  /** Email from the current auth flow or session, if available. */
   getEmail(): string | null {
     return authState.email;
   }
 
+  /** Whether the auth flow can navigate back to the previous step. */
   canGoBack(): boolean {
     return authStore.canGoBack();
   }
 
+  /** Navigates the auth flow back one step. Returns whether the navigation was performed. */
   goBack(): boolean {
     return authStore.goBack();
   }
 
+  /** Resets the auth flow to the initial step. */
   restart(): void {
     authStore.restart();
   }
 
+  /** Current step identifier of the auth flow (e.g. "email", "magic_code"). */
   getCurrentStep(): string | undefined {
     return authState.step;
   }
 
+  /** Builds an AuthError with the given message, code, and requiresReauth flag. */
   private createAuthError(message: string, code: AuthError["code"], requiresReauth = false): AuthError {
     const error = new Error(message) as AuthError;
     error.code = code;

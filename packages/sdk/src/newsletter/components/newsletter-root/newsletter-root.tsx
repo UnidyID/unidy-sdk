@@ -50,7 +50,7 @@ export class NewsletterRoot extends UnidyComponent() {
     newsletterStore.state.isAuthenticated = isAuthenticated;
 
     if (isAuthenticated) {
-      const userData = await authInstance.userData();
+      const userData = await authInstance.userTokenPayload();
 
       if (userData) {
         newsletterStore.state.email = userData.email;
