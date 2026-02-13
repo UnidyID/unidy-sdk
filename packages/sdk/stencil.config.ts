@@ -26,6 +26,7 @@ export const config: Config = {
         { src: "sdk.css", dest: "sdk.css" },
         { src: "demo-build.css", dest: "demo.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
+        { src: "auth/registration.html", dest: "auth/registration.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
         { src: "auth/single-step.html", dest: "auth/single-step.html" },

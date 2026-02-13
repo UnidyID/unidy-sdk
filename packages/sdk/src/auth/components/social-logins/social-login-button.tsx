@@ -60,9 +60,18 @@ export class SocialLoginButton extends UnidyComponent() {
     return authState.availableLoginOptions.social_logins.some((enabled) => enabled.startsWith(this.provider) || enabled === this.provider);
   }
 
+  private isInsideRegistrationRoot(): boolean {
+    return !!this.el.closest("u-registration-root");
+  }
+
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
+
+    // Use registration OAuth endpoint when inside registration root
+    if (this.isInsideRegistrationRoot()) {
+      return `${baseUrl}/api/sdk/v1/registration/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
+    }
 
     return `${baseUrl}/api/sdk/v1/sign_ins/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
   }
