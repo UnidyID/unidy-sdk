@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { AuthService } from "../auth/api/auth";
 import { Auth } from "../auth/auth";
+import { CaptchaService } from "../shared/captcha";
 import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
 import { OAuthService } from "../oauth/api/oauth";
@@ -14,6 +15,7 @@ export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../oauth/api/oauth";
 export * from "../profile/api/profile";
+export * from "../shared/captcha";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
 export * from "./base-service";
@@ -44,6 +46,7 @@ export class UnidyClient {
   profile: ProfileService;
   auth: AuthService;
   oauth: OAuthService;
+  captcha: CaptchaService;
   tickets: TicketsService;
   subscriptions: SubscriptionsService;
 
@@ -55,6 +58,7 @@ export class UnidyClient {
     this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
     this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
     this.oauth = new OAuthService(this.apiClient, createBrowserDeps("OAuthService"));
+    this.captcha = new CaptchaService(this.apiClient, createBrowserDeps("CaptchaService"));
     this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
     this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
   }

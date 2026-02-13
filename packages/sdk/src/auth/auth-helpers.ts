@@ -1,10 +1,12 @@
 import { jwtDecode } from "jwt-decode";
 import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
+import { isCaptchaError } from "../shared/captcha";
 import { authState, authStore } from "../auth/store/auth-store";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
+import { captchaManager } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/utils/url-utils";
 import type { TokenPayload } from "./auth";
@@ -26,7 +28,19 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode } });
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
+    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode, captchaToken } });
 
     if (error) {
       if (error === "magic_code_recently_created") {
@@ -87,9 +101,21 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
     const [error, response] = await this.client.auth.authenticateWithPassword({
       signInId: authState.sid,
-      payload: { password },
+      payload: { password, captchaToken },
     });
 
     if (error) {
@@ -113,9 +139,21 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
     const [error, response] = await this.client.auth.authenticateWithMagicCode({
       signInId: authState.sid,
-      payload: { code },
+      payload: { code, captchaToken },
     });
 
     if (error) {
@@ -463,6 +501,14 @@ export class AuthHelpers {
   }
 
   private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
+    // Handle captcha errors - reset the captcha for retry
+    if (isCaptchaError(error)) {
+      captchaManager.reset();
+      authStore.setGlobalError("captcha", error);
+      authStore.setLoading(false);
+      return;
+    }
+
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);

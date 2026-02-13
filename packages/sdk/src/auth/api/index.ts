@@ -27,6 +27,7 @@ export type {
 
 // Re-export sign-in types
 export type {
+  CaptchaErrors,
   CreateSignInArgs,
   SendMagicCodeArgs,
   AuthenticateWithPasswordArgs,

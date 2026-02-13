@@ -5,6 +5,7 @@ import { Auth } from "../../../auth";
 import i18n from "../../../i18n";
 import { UnidyComponent } from "../../base/component";
 import { unidyState } from "../../store/unidy-store";
+import { captchaManager } from "../../captcha";
 
 let configInstance: UnidyConfig | null = null;
 
@@ -79,13 +80,41 @@ export class UnidyConfig extends UnidyComponent() {
     this.loadCustomTranslations();
     unidyState.locale = this.locale;
 
-    const auth = await Auth.initialize(getUnidyClient());
+    const client = getUnidyClient();
+    const auth = await Auth.initialize(client);
+
+    // Fetch captcha configuration (non-blocking)
+    this.loadCaptchaConfig(client);
 
     if (this.checkSignedIn) {
       auth.helpers.checkSignedIn();
     }
 
     this.logger.debug("Unidy SDK initialized successfully");
+  }
+
+  private async loadCaptchaConfig(client: ReturnType<typeof getUnidyClient>) {
+    try {
+      const [error, data] = await client.captcha.getCaptchaConfig();
+
+      if (error === "not_found") {
+        this.logger.debug("No captcha configuration found for this client");
+        return;
+      }
+
+      if (error !== null || !data || !("provider" in data)) {
+        this.logger.warn("Failed to fetch captcha config:", error);
+        return;
+      }
+
+      unidyState.captchaConfig = data;
+      this.logger.debug("Captcha config loaded:", data.provider);
+
+      // Pre-initialize the captcha provider for faster execution
+      await captchaManager.initialize();
+    } catch (err) {
+      this.logger.warn("Error loading captcha config:", err);
+    }
   }
 
   disconnectedCallback() {
