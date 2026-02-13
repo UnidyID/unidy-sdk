@@ -43,10 +43,10 @@ export type {
 export type { LoginOptions } from "./schemas";
 
 // Argument types for unified interface
-export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean }>;
+export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; captchaToken?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
-export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string }>;
-export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string }>;
+export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
+export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;
 // biome-ignore lint/suspicious/noExplicitAny: user fields are dynamic
 export type UpdateMissingFieldsArgs = { signInId: string } & Payload<{ user: Record<string, any> }>;
 export type RefreshTokenArgs = { signInId: string };
@@ -57,9 +57,16 @@ export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
 export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredential }>;
 
+// Captcha error types
+export type CaptchaErrors =
+  | ["captcha_token_missing", ErrorResponse]
+  | ["captcha_verification_failed", ErrorResponse]
+  | ["captcha_score_too_low", ErrorResponse];
+
 // Result types
 export type CreateSignInResult =
   | CommonErrors
+  | CaptchaErrors
   | ["account_not_found", ErrorResponse]
   | [null, CreateSignInResponse]
   | AuthenticateWithPasswordResult
@@ -67,6 +74,7 @@ export type CreateSignInResult =
 
 export type AuthenticateResultShared =
   | CommonErrors
+  | CaptchaErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
@@ -147,11 +155,7 @@ export type JumpToServiceResult =
   | ["invalid_scope", ErrorResponse]
   | [null, string];
 
-export type JumpToUnidyResult =
-  | CommonErrors
-  | ["user_not_found", ErrorResponse]
-  | ["invalid_path", ErrorResponse]
-  | [null, string];
+export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
 
 export class AuthService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -165,8 +169,13 @@ export class AuthService extends BaseService {
   }
 
   async createSignIn(args: CreateSignInArgs): Promise<CreateSignInResult> {
-    const { email, password, sendMagicCode } = args.payload;
-    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode });
+    const { email, password, sendMagicCode, captchaToken } = args.payload;
+    const response = await this.client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", {
+      email,
+      password,
+      sendMagicCode,
+      captcha_token: captchaToken,
+    });
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -221,6 +230,7 @@ export class AuthService extends BaseService {
     const { signInId, payload } = args;
     const response = await this.client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       password: payload.password,
+      captcha_token: payload.captchaToken,
     });
 
     return this.handleResponse(response, () => {
@@ -268,6 +278,7 @@ export class AuthService extends BaseService {
     const { signInId, payload } = args;
     const response = await this.client.post<{ code: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
       code: payload.code,
+      captcha_token: payload.captchaToken,
     });
 
     return this.handleResponse(response, () => {

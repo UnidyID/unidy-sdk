@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { ApiClient, ApiResponse } from "./client";
 import { AuthService } from "../auth/api/auth";
+import { CaptchaService } from "../shared/captcha";
 import { NewsletterService } from "../newsletter";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
@@ -12,6 +13,7 @@ import { Auth } from "../auth/auth";
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../profile/api/profile";
+export * from "../shared/captcha";
 export * from "./shared";
 export * from "./base-service";
 export * from "../ticketable/api/subscriptions";
@@ -41,6 +43,7 @@ export class UnidyClient {
   newsletters: NewsletterService;
   profile: ProfileService;
   auth: AuthService;
+  captcha: CaptchaService;
   tickets: TicketsService;
   subscriptions: SubscriptionsService;
 
@@ -51,6 +54,7 @@ export class UnidyClient {
     this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));
     this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
     this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
+    this.captcha = new CaptchaService(this.apiClient, createBrowserDeps("CaptchaService"));
     this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
     this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
   }
