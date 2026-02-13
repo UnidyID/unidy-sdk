@@ -20,7 +20,11 @@
   "collection": "dist/collection/collection-manifest.json",
   "files": [
     "dist/",
-    "loader/"
+    "loader/",
+    "readme.md",
+    "quick-start-examples.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "clean": "rm -rf dist www loader .stencil",

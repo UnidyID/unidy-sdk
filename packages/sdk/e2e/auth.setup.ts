@@ -22,4 +22,11 @@ test("create auth state", async ({ page }) => {
   await writeFile("playwright/.auth/session.json", session, "utf-8");
 
   await page.context().storageState({ path: "playwright/.auth/user.json" });
+
+  // Clear session so tests start clean and explicitly opt-in to auth via storageState
+  await page.context().clearCookies();
+  await page.evaluate(() => {
+    sessionStorage.clear();
+    localStorage.clear();
+  });
 });
