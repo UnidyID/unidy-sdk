@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, h, Prop } from "@stencil/core";
+import { Component, h, Prop, Element } from "@stencil/core";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { GoogleLogo } from "./logos/google";
 import { LinkedInLogo } from "./logos/linkedin";
@@ -25,6 +25,8 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: true,
 })
 export class SocialLoginButton {
+  @Element() el!: HTMLElement;
+
   @Prop() text = "Continue with Google";
   @Prop() provider: SocialLoginProvider = "google";
   @Prop() redirectUri: string = window.location.href;
@@ -42,9 +44,18 @@ export class SocialLoginButton {
     return !Object.prototype.hasOwnProperty.call(ICON_MAP, this.provider) && this.provider !== "unidy";
   }
 
+  private isInsideRegistrationRoot(): boolean {
+    return !!this.el.closest("u-registration-root");
+  }
+
   private getAuthUrl(): string {
     const baseUrl = unidyState.baseUrl;
     const redirectUri = this.redirectUri ? encodeURIComponent(this.redirectUri) : baseUrl;
+
+    // Use registration OAuth endpoint when inside registration root
+    if (this.isInsideRegistrationRoot()) {
+      return `${baseUrl}/api/sdk/v1/registration/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
+    }
 
     return `${baseUrl}/api/sdk/v1/sign_ins/auth/omniauth/${this.provider}?sdk_redirect_uri=${redirectUri}`;
   }

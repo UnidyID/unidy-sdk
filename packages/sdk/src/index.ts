@@ -12,5 +12,6 @@ export * from "./api";
 export * from "./auth";
 export * from "./newsletter";
 export * from "./profile";
+export * from "./registration";
 export * from "./ticketable";
 export type * from "./components.d";

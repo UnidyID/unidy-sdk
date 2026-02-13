@@ -23,6 +23,7 @@ export const config: Config = {
       copy: [
         { src: "sdk.css", dest: "css/sdk.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
+        { src: "auth/registration.html", dest: "auth/registration.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
       ],
