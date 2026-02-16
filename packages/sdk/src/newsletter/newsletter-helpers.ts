@@ -1,6 +1,7 @@
 import { getUnidyClient } from "../api";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
+import { captchaManager, isCaptchaError } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import {
   type AdditionalFieldsData,
@@ -158,6 +159,17 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
 
   const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
 
+  // Execute captcha if enabled for newsletter
+  let captchaToken: string | undefined;
+  try {
+    const captchaResult = await captchaManager.execute("newsletter");
+    captchaToken = captchaResult?.token;
+  } catch (captchaError) {
+    logger.error("Captcha execution failed:", captchaError);
+    Flash.error.addMessage(t("captcha_execution_failed"));
+    return false;
+  }
+
   const [error, response] = await getUnidyClient().newsletters.create({
     payload: {
       email,
@@ -167,6 +179,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
       ...(Object.keys(additionalFieldsPayload).length > 0 && { additional_fields: additionalFieldsPayload }),
+      ...(captchaToken && { captcha_token: captchaToken }),
     },
   });
 
@@ -186,6 +199,12 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     }
 
     return true;
+  }
+
+  if (error && isCaptchaError(error)) {
+    captchaManager.reset();
+    Flash.error.addMessage(t(error));
+    return false;
   }
 
   if (error === "unauthorized") {

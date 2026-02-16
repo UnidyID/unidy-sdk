@@ -7,7 +7,7 @@ import { HasSlotContent } from "../../base/has-slot-content";
 import { type ComponentContext, detectContext } from "../../context-utils";
 import { unidyState } from "../../store/unidy-store";
 
-export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey";
+export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey" | "captcha";
 
 type ErrorMessageContext = ComponentContext | "other";
 
@@ -103,6 +103,10 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
 
     if (forValue === "general") {
       return authState.globalErrors.auth;
+    }
+
+    if (forValue === "captcha") {
+      return authState.globalErrors.captcha;
     }
 
     return authState.errors[forValue];

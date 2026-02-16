@@ -1,8 +1,8 @@
-import type { CaptchaConfig, CaptchaFeature, CaptchaProvider } from "./api";
 import { createLogger } from "../../logger";
 import { unidyState } from "../store/unidy-store";
-import type { CaptchaProviderInterface, CaptchaExecuteResult } from "./types";
-import { RecaptchaV3Provider, TurnstileProvider, HCaptchaProvider, FriendlyCaptchaProvider } from "./providers";
+import type { CaptchaConfig, CaptchaFeature, CaptchaProvider } from "./api";
+import { FriendlyCaptchaProvider, HCaptchaProvider, RecaptchaV3Provider, TurnstileProvider } from "./providers";
+import type { CaptchaExecuteResult, CaptchaProviderInterface } from "./types";
 
 const logger = createLogger("CaptchaManager");
 
@@ -31,12 +31,22 @@ function createProvider(providerType: CaptchaProvider): CaptchaProviderInterface
 class CaptchaManager {
   private provider: CaptchaProviderInterface | null = null;
   private initPromise: Promise<void> | null = null;
+  private configLoadingPromise: Promise<void> = Promise.resolve();
 
   /**
    * Get the current captcha configuration from the store
    */
   private get config(): CaptchaConfig | null {
     return unidyState.captchaConfig;
+  }
+
+  /**
+   * Set the promise that resolves when captcha config loading is complete.
+   * Called by the config component to signal that config fetching is in progress.
+   * This ensures execute() waits for config before checking feature flags.
+   */
+  setConfigLoadingPromise(promise: Promise<void>): void {
+    this.configLoadingPromise = promise;
   }
 
   /**
@@ -131,6 +141,9 @@ class CaptchaManager {
    * @param feature The feature being protected (used as action for reCAPTCHA v3)
    */
   async execute(feature: CaptchaFeature): Promise<CaptchaExecuteResult | null> {
+    // Wait for config loading to complete before checking feature flags
+    await this.configLoadingPromise;
+
     if (!this.isEnabledForFeature(feature)) {
       logger.debug(`Captcha not enabled for feature: ${feature}`);
       return null;
@@ -142,8 +155,7 @@ class CaptchaManager {
     }
 
     if (!this.provider) {
-      logger.error("Cannot execute captcha: provider not initialized");
-      return null;
+      throw new Error("Cannot execute captcha: provider not initialized");
     }
 
     try {

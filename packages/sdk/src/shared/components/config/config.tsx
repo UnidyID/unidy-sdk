@@ -4,8 +4,8 @@ import { getUnidyClient } from "../../../api/";
 import { Auth } from "../../../auth";
 import i18n from "../../../i18n";
 import { UnidyComponent } from "../../base/component";
-import { unidyState } from "../../store/unidy-store";
 import { captchaManager } from "../../captcha";
+import { unidyState } from "../../store/unidy-store";
 
 let configInstance: UnidyConfig | null = null;
 
@@ -83,8 +83,10 @@ export class UnidyConfig extends UnidyComponent() {
     const client = getUnidyClient();
     const auth = await Auth.initialize(client);
 
-    // Fetch captcha configuration (non-blocking)
-    this.loadCaptchaConfig(client);
+    // Fetch captcha configuration (non-blocking, but captchaManager.execute() will
+    // await this promise before checking feature flags to avoid race conditions)
+    const captchaConfigPromise = this.loadCaptchaConfig(client);
+    captchaManager.setConfigLoadingPromise(captchaConfigPromise);
 
     if (this.checkSignedIn) {
       auth.helpers.checkSignedIn();

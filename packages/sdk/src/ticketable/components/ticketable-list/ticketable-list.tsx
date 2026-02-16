@@ -86,8 +86,6 @@ async function loadLocales() {
 export class TicketableList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
 
-  private unsubscribeAuth?: () => void;
-
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
