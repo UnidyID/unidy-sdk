@@ -112,7 +112,7 @@ export class CaptchaField {
     }
 
     return (
-      <div class={`u-captcha-field ${this.componentClassName}`} role="group" aria-label={this.ariaLabel}>
+      <fieldset class={`u-captcha-field ${this.componentClassName}`} aria-label={this.ariaLabel}>
         {this.isLoading && (
           <div class="u-captcha-loading" aria-live="polite">
             <span class="u:sr-only">Loading security verification...</span>
@@ -127,7 +127,7 @@ export class CaptchaField {
         )}
 
         <div ref={this.handleContainerRef} class={`u-captcha-container ${this.isLoading ? "u:hidden" : ""}`} aria-hidden={this.isLoading} />
-      </div>
+      </fieldset>
     );
   }
 }

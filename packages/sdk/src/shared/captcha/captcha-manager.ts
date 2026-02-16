@@ -104,11 +104,12 @@ class CaptchaManager {
       return this.initPromise;
     }
 
+    const config = this.config;
     this.initPromise = (async () => {
       try {
-        this.provider = createProvider(this.config!.provider);
-        await this.provider.load(this.config!.site_key);
-        logger.debug(`Captcha provider ${this.config!.provider} loaded successfully`);
+        this.provider = createProvider(config.provider);
+        await this.provider.load(config.site_key);
+        logger.debug(`Captcha provider ${config.provider} loaded successfully`);
       } catch (error) {
         logger.error("Failed to initialize captcha provider:", error);
         this.provider = null;

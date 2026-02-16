@@ -49,9 +49,6 @@ test.describe("Captcha field - configured", () => {
 
     // Inject a mock captcha config into the store (simulating backend response)
     await page.evaluate(() => {
-      // Access the Stencil store via the global state
-      const configEl = document.querySelector("u-config") as HTMLElement & { captchaConfig?: unknown };
-      // Set captcha config directly on the store by dispatching through the store's state
       const event = new CustomEvent("__test_set_captcha_config", {
         detail: {
           id: 1,
