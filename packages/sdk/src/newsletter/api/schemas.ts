@@ -84,8 +84,15 @@ export const PreferenceSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   plugin_identifier: z.string().nullable(),
-  position: z.number(),
-  default: z.boolean(),
+  // Backend may return null for legacy rows; normalize to stable defaults.
+  position: z
+    .number()
+    .nullable()
+    .transform((value) => value ?? 0),
+  default: z
+    .boolean()
+    .nullable()
+    .transform((value) => value ?? false),
   hidden: z.boolean(),
 });
 
@@ -93,7 +100,11 @@ export const PreferenceSchema = z.object({
 export const PreferenceGroupSchema = z.object({
   id: z.number(),
   name: z.string(),
-  position: z.number(),
+  // Backend may return null for legacy rows; normalize to stable defaults.
+  position: z
+    .number()
+    .nullable()
+    .transform((value) => value ?? 0),
   flat: z.boolean(),
   preferences: z.array(PreferenceSchema),
 });

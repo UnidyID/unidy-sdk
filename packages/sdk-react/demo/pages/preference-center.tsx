@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useNewsletterLogin, useNewsletterPreferenceCenter, useNewsletterResendConfirmation } from "@unidy.io/sdk-react";
 import { type FormEvent, useCallback, useState } from "react";
 import { Link } from "react-router";

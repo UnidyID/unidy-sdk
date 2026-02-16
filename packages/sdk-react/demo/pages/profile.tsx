@@ -1,5 +1,6 @@
 import type { UserProfileData } from "@unidy.io/sdk-react";
 import { useAuth, useProfile } from "@unidy.io/sdk-react";
+import type * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -141,9 +142,7 @@ function ProfileForm({
                 <label
                   key={`${field.key}-${opt.value}`}
                   className={`flex flex-1 items-center justify-center gap-2 px-3 py-2 text-sm transition-colors ${
-                    (values[field.key] ?? "") === opt.value
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
+                    (values[field.key] ?? "") === opt.value ? "bg-blue-600 text-white" : "bg-white text-gray-700 hover:bg-gray-50"
                   } ${field.locked ? "opacity-60" : ""}`}
                   style={index < field.radioOptions.length - 1 ? { borderRight: "1px solid #d1d5db" } : undefined}
                 >

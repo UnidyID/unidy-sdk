@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { isSuccess, useUnidyClient } from "@unidy.io/sdk-react";
+import * as React from "react";
 import { Link } from "react-router";
 
 const queryClient = new QueryClient({

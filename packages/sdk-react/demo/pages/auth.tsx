@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useAuth } from "@unidy.io/sdk-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
