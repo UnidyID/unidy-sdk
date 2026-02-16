@@ -44,8 +44,8 @@ test.describe("Captcha field - configured", () => {
   test("captcha field becomes visible when captcha config is set for a widget provider", async ({ page }) => {
     await page.goto(routes.auth);
 
-    // Wait for config to be loaded
-    await page.waitForSelector("u-config");
+    // Wait for config component to be in the DOM (non-visual, so check attached not visible)
+    await page.waitForSelector("u-config", { state: "attached" });
 
     // Inject a mock captcha config into the store (simulating backend response)
     await page.evaluate(() => {
