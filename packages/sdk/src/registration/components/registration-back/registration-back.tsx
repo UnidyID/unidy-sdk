@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { registrationState } from "../../store/registration-store";
 import { getParentRegistrationRoot } from "../helpers";
 
@@ -22,21 +22,12 @@ export class RegistrationBack {
   };
 
   private isDisabled(): boolean {
-    return (
-      registrationState.currentStepIndex === 0 ||
-      registrationState.loading ||
-      registrationState.submitting
-    );
+    return registrationState.currentStepIndex === 0 || registrationState.loading || registrationState.submitting;
   }
 
   render() {
     return (
-      <button
-        type="button"
-        class={this.componentClassName}
-        onClick={this.handleClick}
-        disabled={this.isDisabled()}
-      >
+      <button type="button" class={this.componentClassName} onClick={this.handleClick} disabled={this.isDisabled()}>
         <slot />
       </button>
     );

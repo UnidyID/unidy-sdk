@@ -1,15 +1,14 @@
-import { Component, h, Prop, Method, Element } from "@stencil/core";
-import { registrationState, registrationStore } from "../../store/registration-store";
+import { Component, h, Method, Prop } from "@stencil/core";
+import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
+import { registrationState, registrationStore } from "../../store/registration-store";
 import { getParentRegistrationRoot } from "../helpers";
 
 @Component({
   tag: "u-registration-step",
   shadow: false,
 })
-export class RegistrationStep {
-  @Element() el!: HTMLElement;
-
+export class RegistrationStep extends UnidyComponent() {
   @Prop() name!: string;
   @Prop({ attribute: "always-render" }) alwaysRender = false;
   @Prop({ attribute: "requires-email-verification" }) requiresEmailVerification = false;

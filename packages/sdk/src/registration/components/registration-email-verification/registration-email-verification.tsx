@@ -1,4 +1,4 @@
-import { Component, Prop, State, h } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 

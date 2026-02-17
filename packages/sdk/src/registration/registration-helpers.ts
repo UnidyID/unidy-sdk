@@ -1,11 +1,11 @@
-import { registrationStore, registrationState } from "./store/registration-store";
-import type {
-  RegistrationFlowResponse,
-  CreateRegistrationPayload,
-  UpdateRegistrationPayload,
-  SendVerificationCodeResponse,
-} from "../auth/api/register";
 import type { UnidyClient } from "../api";
+import type {
+  CreateRegistrationPayload,
+  RegistrationFlowResponse,
+  SendVerificationCodeResponse,
+  UpdateRegistrationPayload,
+} from "../auth/api/register";
+import { registrationState, registrationStore } from "./store/registration-store";
 
 export class RegistrationHelpers {
   private client: UnidyClient;

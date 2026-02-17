@@ -11,7 +11,6 @@
 | ------------------------- | ------------ | ----------- | --------- | ----------- |
 | `checked`                 | `checked`    |             | `boolean` | `false`     |
 | `componentClassName`      | `class-name` |             | `string`  | `undefined` |
-| `label` _(required)_      | `label`      |             | `string`  | `undefined` |
 | `name` _(required)_       | `name`       |             | `string`  | `undefined` |
 | `preference` _(required)_ | `preference` |             | `string`  | `undefined` |
 

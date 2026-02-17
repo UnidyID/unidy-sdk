@@ -1,6 +1,6 @@
-import { Component, h, Prop, Event, type EventEmitter } from "@stencil/core";
-import { registrationState } from "../../store/registration-store";
+import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { Registration } from "../../registration";
+import { registrationState } from "../../store/registration-store";
 
 @Component({
   tag: "u-registration-resume",

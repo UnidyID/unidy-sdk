@@ -1,7 +1,7 @@
 import { createStore } from "@stencil/store";
 import type { RegistrationFlowResponse } from "../../auth/api/register";
-import type { RegistrationRoot } from "../components/registration-root/registration-root";
 import { unidyState } from "../../shared/store/unidy-store";
+import type { RegistrationRoot } from "../components/registration-root/registration-root";
 
 export interface RegistrationState {
   // Flow state
@@ -86,10 +86,8 @@ const initialState: RegistrationState = {
 const store = createStore<RegistrationState>(initialState);
 const { state, reset } = store;
 
-const registrationStoreOnChange: <K extends keyof RegistrationState>(
-  prop: K,
-  cb: (value: RegistrationState[K]) => void,
-) => () => void = store.onChange;
+const registrationStoreOnChange: <K extends keyof RegistrationState>(prop: K, cb: (value: RegistrationState[K]) => void) => () => void =
+  store.onChange;
 
 class RegistrationStore {
   private rootComponentRef: RegistrationRoot | null = null;

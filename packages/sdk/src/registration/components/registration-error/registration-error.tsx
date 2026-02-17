@@ -1,6 +1,8 @@
-import { Component, Element, h, Host, Prop } from "@stencil/core";
-import { registrationState } from "../../store/registration-store";
+import { Component, Host, h, Prop } from "@stencil/core";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { registrationState } from "../../store/registration-store";
 import { hasSlotContent } from "../../../shared/component-utils";
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -25,12 +27,10 @@ type ErrorField = "email" | "password" | "verificationCode" | "registration" | "
   styleUrl: "registration-error.css",
   shadow: false,
 })
-export class RegistrationError {
+export class RegistrationError extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() for!: ErrorField;
   @Prop() errorMessages?: Record<string, string>;
-
-  @Element() el!: HTMLElement;
 
   private getErrorMessage(errorCode: string): string {
     if (this.errorMessages?.[errorCode]) {
@@ -63,10 +63,6 @@ export class RegistrationError {
       return null;
     }
 
-    return (
-      <Host class={this.componentClassName}>
-        {hasSlotContent(this.el) ? <slot /> : this.getErrorMessage(errorCode)}
-      </Host>
-    );
+    return <Host class={this.componentClassName}>{this.hasSlot ? <slot /> : this.getErrorMessage(errorCode)}</Host>;
   }
 }

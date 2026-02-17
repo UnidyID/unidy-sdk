@@ -1,6 +1,6 @@
 import { Component, h, Prop, State } from "@stencil/core";
-import { registrationState } from "../../store/registration-store";
 import { Registration } from "../../registration";
+import { registrationState } from "../../store/registration-store";
 
 @Component({
   tag: "u-registration-resend",

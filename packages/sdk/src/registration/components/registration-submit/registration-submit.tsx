@@ -1,4 +1,4 @@
-import { Component, Element, Prop, h } from "@stencil/core";
+import { Component, Element, h, Prop } from "@stencil/core";
 import { registrationState } from "../../store/registration-store";
 import { getParentRegistrationStep } from "../helpers";
 
@@ -23,12 +23,7 @@ export class RegistrationSubmit {
 
   render() {
     return (
-      <button
-        type="submit"
-        class={this.componentClassName}
-        onClick={this.handleClick}
-        disabled={this.isDisabled()}
-      >
+      <button type="submit" class={this.componentClassName} onClick={this.handleClick} disabled={this.isDisabled()}>
         <slot />
       </button>
     );

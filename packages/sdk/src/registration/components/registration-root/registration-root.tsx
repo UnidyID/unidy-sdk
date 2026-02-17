@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, Method, Prop, h } from "@stencil/core";
+import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
