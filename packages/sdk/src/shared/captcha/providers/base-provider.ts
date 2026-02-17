@@ -1,5 +1,5 @@
 import type { CaptchaProvider } from "../api";
-import type { CaptchaProviderInterface, CaptchaExecuteResult } from "../types";
+import type { CaptchaExecuteResult, CaptchaProviderInterface } from "../types";
 
 /**
  * Base class for captcha providers that handles common functionality

@@ -1,7 +1,7 @@
 import { Component, Element, h, Prop, State, Watch } from "@stencil/core";
 import type { CaptchaFeature } from "../../captcha";
 import { captchaManager } from "../../captcha";
-import { unidyState, onChange } from "../../store/unidy-store";
+import { onChange, unidyState } from "../../store/unidy-store";
 
 /**
  * Captcha field component that renders a captcha widget when required

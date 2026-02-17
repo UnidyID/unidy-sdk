@@ -1,12 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 import type { CreateSignInResponse, RequiredFieldsResponse, TokenResponse, UnidyClient } from "../api";
-import { isCaptchaError } from "../shared/captcha";
 import { authState, authStore } from "../auth/store/auth-store";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
-import { captchaManager } from "../shared/captcha";
+import { captchaManager, isCaptchaError } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/utils/url-utils";
 import type { TokenPayload } from "./auth";

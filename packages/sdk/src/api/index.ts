@@ -1,11 +1,11 @@
 import * as Sentry from "@sentry/browser";
 import { AuthService } from "../auth/api/auth";
 import { Auth } from "../auth/auth";
-import { CaptchaService } from "../shared/captcha";
 import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
 import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile";
+import { CaptchaService } from "../shared/captcha";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
 import type { ServiceDependencies } from "./base-service";

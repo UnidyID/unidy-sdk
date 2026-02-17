@@ -27,7 +27,13 @@ import type { CommonErrors, HandleResponseFn } from "./shared";
 // Argument types
 // ============================================
 
-export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; originUrl?: string; captchaToken?: string }>;
+export type CreateSignInArgs = Payload<{
+  email: string;
+  password?: string;
+  sendMagicCode?: boolean;
+  originUrl?: string;
+  captchaToken?: string;
+}>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;

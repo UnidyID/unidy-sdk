@@ -1,4 +1,4 @@
-import type { CaptchaProvider, CaptchaFeature } from "./api";
+import type { CaptchaFeature, CaptchaProvider } from "./api";
 
 /**
  * Result of a captcha execution
