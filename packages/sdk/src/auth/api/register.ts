@@ -38,7 +38,7 @@ const NewsletterPreferencesSchema = z
   .object({
     _clear: z.record(z.string(), z.boolean()).optional(),
   })
-  .catchall(z.array(z.string()));
+  .passthrough();
 
 // Registration flow response schema (from Sdk::RegistrationFlowSerializer)
 const RegistrationFlowResponseSchema = z.object({
