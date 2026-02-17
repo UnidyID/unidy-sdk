@@ -1,82 +1,67 @@
-import * as z from "zod";
+import type { ApiClientInterface } from "../../api/base-service";
+import {
+  type ErrorResponse,
+  JumpToServiceErrorSchema,
+  type JumpToServiceRequest,
+  JumpToServiceRequestSchema,
+  JumpToServiceResponseSchema,
+  JumpToUnidyErrorSchema,
+  type JumpToUnidyRequest,
+  JumpToUnidyRequestSchema,
+  JumpToUnidyResponseSchema,
+} from "./schemas";
+import { type CommonErrors, handleResponse } from "./shared";
 
-import type { ApiClient } from "../../api";
-import { type CommonErrors, ErrorSchema, type ErrorResponse, handleResponse } from "./shared";
-
-// Payload schemas
-const JumpToServicePayloadSchema = z.object({
-  redirect_uri: z.string().optional(),
-  scopes: z.array(z.string()).optional(),
-  skip_oauth_authorization: z.boolean().optional(),
-});
-
-const JumpToUnidyPayloadSchema = z.object({
-  path: z.string(),
-});
-
-// Response schema
-const JumpToResponseSchema = z.object({
-  token: z.string(),
-});
-
-// Error response schema with error_identifier
-const JumpToErrorSchema = z.object({
-  error_identifier: z.string(),
-});
-
-// Exported types
-export type JumpToServicePayload = z.infer<typeof JumpToServicePayloadSchema>;
-export type JumpToUnidyPayload = z.infer<typeof JumpToUnidyPayloadSchema>;
-export type JumpToResponse = z.infer<typeof JumpToResponseSchema>;
-export type JumpToError = z.infer<typeof JumpToErrorSchema>;
-
+// ============================================
 // Result types
+// ============================================
+
 export type JumpToServiceResult =
   | CommonErrors
-  | ["application_not_found", JumpToError]
-  | ["invalid_redirect_uri", JumpToError]
-  | ["invalid_scope", JumpToError]
-  | ["missing_id_token", ErrorResponse]
-  | ["invalid_id_token", ErrorResponse]
-  | [null, JumpToResponse];
+  | ["user_not_found", ErrorResponse]
+  | ["application_not_found", ErrorResponse]
+  | ["invalid_redirect_uri", ErrorResponse]
+  | ["invalid_scope", ErrorResponse]
+  | [null, string];
 
-export type JumpToUnidyResult =
-  | CommonErrors
-  | ["invalid_path", JumpToError]
-  | ["missing_id_token", ErrorResponse]
-  | ["invalid_id_token", ErrorResponse]
-  | [null, JumpToResponse];
+export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
 
+// ============================================
 // Jump-to API functions
+// ============================================
 
 /**
  * Create a one-time login token for jumping to an external OAuth service.
  * Requires user to be authenticated (ID token in cookie or header).
  */
 export async function jumpToService(
-  client: ApiClient,
+  client: ApiClientInterface,
   serviceId: string,
-  payload?: JumpToServicePayload,
+  request: JumpToServiceRequest,
 ): Promise<JumpToServiceResult> {
-  const response = await client.post<JumpToResponse>(`/api/sdk/v1/jump_to/service/${serviceId}`, payload ?? {});
+  const validatedRequest = JumpToServiceRequestSchema.parse(request);
+  const response = await client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      // Try parsing as error_identifier format first
-      const jumpToErrorCheck = JumpToErrorSchema.safeParse(response.data);
-      if (jumpToErrorCheck.success) {
+      const errorParse = JumpToServiceErrorSchema.safeParse(response.data);
+      if (errorParse.success) {
+        const errorIdentifier = errorParse.data.error_identifier;
         return [
-          jumpToErrorCheck.data.error_identifier as "application_not_found" | "invalid_redirect_uri" | "invalid_scope",
-          jumpToErrorCheck.data,
+          errorIdentifier as "user_not_found" | "application_not_found" | "invalid_redirect_uri" | "invalid_scope",
+          { error_identifier: errorIdentifier },
         ];
       }
 
-      // Fall back to standard error format
-      const error_response = ErrorSchema.parse(response.data);
-      return [error_response.error as "missing_id_token" | "invalid_id_token", error_response];
+      return ["user_not_found", { error_identifier: "unknown_error" }];
     }
 
-    return [null, JumpToResponseSchema.parse(response.data)];
+    const parsed = JumpToServiceResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }];
+    }
+
+    return [null, parsed.data.token];
   });
 }
 
@@ -84,22 +69,26 @@ export async function jumpToService(
  * Create a one-time login token for jumping to an internal Unidy path.
  * Requires user to be authenticated (ID token in cookie or header).
  */
-export async function jumpToUnidy(client: ApiClient, payload: JumpToUnidyPayload): Promise<JumpToUnidyResult> {
-  const response = await client.post<JumpToResponse>("/api/sdk/v1/jump_to/unidy", payload);
+export async function jumpToUnidy(client: ApiClientInterface, request: JumpToUnidyRequest): Promise<JumpToUnidyResult> {
+  const validatedRequest = JumpToUnidyRequestSchema.parse(request);
+  const response = await client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      // Try parsing as error_identifier format first
-      const jumpToErrorCheck = JumpToErrorSchema.safeParse(response.data);
-      if (jumpToErrorCheck.success) {
-        return [jumpToErrorCheck.data.error_identifier as "invalid_path", jumpToErrorCheck.data];
+      const errorParse = JumpToUnidyErrorSchema.safeParse(response.data);
+      if (errorParse.success) {
+        const errorIdentifier = errorParse.data.error_identifier;
+        return [errorIdentifier as "user_not_found" | "invalid_path", { error_identifier: errorIdentifier }];
       }
 
-      // Fall back to standard error format
-      const error_response = ErrorSchema.parse(response.data);
-      return [error_response.error as "missing_id_token" | "invalid_id_token", error_response];
+      return ["user_not_found", { error_identifier: "unknown_error" }];
     }
 
-    return [null, JumpToResponseSchema.parse(response.data)];
+    const parsed = JumpToUnidyResponseSchema.safeParse(response.data);
+    if (!parsed.success) {
+      return ["schema_validation_error", { error_identifier: "schema_validation_error", errors: [] }];
+    }
+
+    return [null, parsed.data.token];
   });
 }

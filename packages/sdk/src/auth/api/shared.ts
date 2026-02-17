@@ -1,35 +1,19 @@
-import * as Sentry from "@sentry/browser";
 import * as z from "zod";
 
-import { type ApiResponse, type SchemaValidationError, SchemaValidationErrorSchema } from "../../api";
-import { UserProfileSchema } from "../../profile";
+import type { ApiResponse } from "../../api/base-client";
+import type { CommonErrors } from "../../api/base-service";
+import { SchemaValidationErrorSchema } from "../../api/shared";
 import { unidyState } from "../../shared/store/unidy-store";
 
-// Common schemas
+// Re-export for submodules
+export type { CommonErrors } from "../../api/base-service";
+
+// Error schema for registration endpoints (uses `error` field)
 export const ErrorSchema = z.object({
   error: z.string(),
 });
 
-export const TokenResponseSchema = z.object({
-  jwt: z.string(),
-  sid: z.string().optional(),
-});
-
-export const RequiredFieldsResponseSchema = z.object({
-  error: z.literal("missing_required_fields"),
-  fields: UserProfileSchema.omit({ custom_attributes: true })
-    .partial()
-    .extend({
-      custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
-    }),
-});
-
-// Common types
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
-export type TokenResponse = z.infer<typeof TokenResponseSchema>;
-export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
-
-export type CommonErrors = ["connection_failed", null] | ["schema_validation_error", SchemaValidationError];
 
 /**
  * Central error handling and response parsing for auth API calls.
@@ -38,7 +22,7 @@ export type CommonErrors = ["connection_failed", null] | ["schema_validation_err
 export function handleResponse<T>(
   response: ApiResponse<unknown>,
   handler: () => T,
-): T | ["connection_failed", null] | ["schema_validation_error", SchemaValidationError] {
+): T | CommonErrors {
   if (response.connectionError) {
     unidyState.backendConnected = false;
     return ["connection_failed", null];
@@ -47,8 +31,14 @@ export function handleResponse<T>(
   try {
     return handler();
   } catch (error) {
-    Sentry.captureException(error);
-    return ["schema_validation_error", SchemaValidationErrorSchema.parse(response.data)];
+    if (error instanceof z.ZodError) {
+      const parsed = SchemaValidationErrorSchema.safeParse(response.data);
+      const schemaError = parsed.success
+        ? parsed.data
+        : { error_identifier: "schema_validation_error", errors: [String(error)] };
+      return ["schema_validation_error", schemaError];
+    }
+    return ["internal_error", null];
   }
 }
 

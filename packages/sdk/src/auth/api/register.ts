@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import type { ApiClient } from "../../api";
+import type { ApiClientInterface } from "../../api/base-service";
 import { type CommonErrors, ErrorSchema, type ErrorResponse, handleResponse, withRid } from "./shared";
 
 // Registration profile data schema (matches backend REGISTRATION_PROFILE_DATA)
@@ -177,7 +177,7 @@ export type SendResumeLinkResult =
  * Create a new registration flow.
  */
 export async function createRegistration(
-  client: ApiClient,
+  client: ApiClientInterface,
   payload: CreateRegistrationPayload,
 ): Promise<CreateRegistrationResult> {
   const response = await client.post<RegistrationFlowResponse>("/api/sdk/v1/registration", payload);
@@ -200,7 +200,7 @@ export async function createRegistration(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function getRegistration(
-  client: ApiClient,
+  client: ApiClientInterface,
   options?: RegistrationOptions,
 ): Promise<GetRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration", options?.rid);
@@ -221,7 +221,7 @@ export async function getRegistration(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function updateRegistration(
-  client: ApiClient,
+  client: ApiClientInterface,
   payload: UpdateRegistrationPayload,
   options?: RegistrationOptions,
 ): Promise<UpdateRegistrationResult> {
@@ -246,7 +246,7 @@ export async function updateRegistration(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function cancelRegistration(
-  client: ApiClient,
+  client: ApiClientInterface,
   options?: RegistrationOptions,
 ): Promise<CancelRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration", options?.rid);
@@ -267,7 +267,7 @@ export async function cancelRegistration(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function finalizeRegistration(
-  client: ApiClient,
+  client: ApiClientInterface,
   options?: RegistrationOptions,
 ): Promise<FinalizeRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/finalize", options?.rid);
@@ -297,7 +297,7 @@ export async function finalizeRegistration(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function sendEmailVerificationCode(
-  client: ApiClient,
+  client: ApiClientInterface,
   options?: RegistrationOptions,
 ): Promise<SendVerificationCodeResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/email_verification/send_code", options?.rid);
@@ -321,7 +321,7 @@ export async function sendEmailVerificationCode(
  * Uses rid from cookie by default, or pass rid in options.
  */
 export async function verifyEmail(
-  client: ApiClient,
+  client: ApiClientInterface,
   payload: VerifyEmailPayload,
   options?: RegistrationOptions,
 ): Promise<VerifyEmailResult> {
@@ -345,7 +345,7 @@ export async function verifyEmail(
  * Send a resume link to the user's email to continue registration.
  * Note: This endpoint doesn't require rid since it looks up by email.
  */
-export async function sendResumeLink(client: ApiClient, payload: SendResumeLinkPayload): Promise<SendResumeLinkResult> {
+export async function sendResumeLink(client: ApiClientInterface, payload: SendResumeLinkPayload): Promise<SendResumeLinkResult> {
   const response = await client.post<{ success: boolean }>("/api/sdk/v1/registration/resume", payload);
 
   return handleResponse(response, () => {

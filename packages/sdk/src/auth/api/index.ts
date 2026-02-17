@@ -1,27 +1,62 @@
-import type { ApiClient } from "../../api";
+import { BaseService, type ApiClientInterface, type ServiceDependencies } from "../../api/base-service";
+import type { JumpToServiceRequest, JumpToUnidyRequest } from "./schemas";
 
-// Re-export shared types
-export { type CommonErrors, type ErrorResponse, type TokenResponse, type RequiredFieldsResponse } from "./shared";
+// Import submodules
+import * as signIn from "./sign_in";
+import * as register from "./register";
+import * as jumpTo from "./jump_to";
 
-// Re-export sign-in types and schemas
+// Re-export SDK version for external use (generated from package.json at build time)
+export { SDK_VERSION } from "../../version";
+
+// Re-export schema types for external use
 export type {
-  CreateSignInPayload,
+  BrandConnectionRequiredResponse,
   CreateSignInResponse,
-  SendMagicCodeResponse,
-  SendMagicCodeError,
-  PasskeyOptionsResponse,
+  ErrorResponse,
+  InvalidPasswordResponse,
+  LoginOptions,
   PasskeyCredential,
+  PasskeyOptionsResponse,
+  RequiredFieldsResponse,
+  SendMagicCodeError,
+  SendMagicCodeResponse,
+  TokenResponse,
+} from "./schemas";
+
+// Re-export sign-in types
+export type {
+  CreateSignInArgs,
+  SendMagicCodeArgs,
+  AuthenticateWithPasswordArgs,
+  AuthenticateWithMagicCodeArgs,
+  UpdateMissingFieldsArgs,
+  RefreshTokenArgs,
+  SendResetPasswordEmailArgs,
+  ResetPasswordArgs,
+  ValidateResetPasswordTokenArgs,
+  SignOutArgs,
+  GetPasskeyOptionsArgs,
+  AuthenticateWithPasskeyArgs,
+  ConnectBrandArgs,
   CreateSignInResult,
   AuthenticateResultShared,
   SendMagicCodeResult,
   AuthenticateWithPasswordResult,
   AuthenticateWithMagicCodeResult,
   RefreshTokenResult,
+  SendResetPasswordEmailResult,
   ResetPasswordResult,
+  ValidateResetPasswordTokenResult,
   SignOutResult,
+  SignedInResult,
   GetPasskeyOptionsResult,
   AuthenticateWithPasskeyResult,
+  ConnectBrandResult,
 } from "./sign_in";
+
+// Re-export jump-to types
+export type { JumpToServiceResult, JumpToUnidyResult } from "./jump_to";
 
 // Re-export registration types
 export type {
@@ -45,75 +80,95 @@ export type {
   SendResumeLinkResult,
 } from "./register";
 
-// Re-export jump-to types
-export type {
-  JumpToServicePayload,
-  JumpToUnidyPayload,
-  JumpToResponse,
-  JumpToError,
-  JumpToServiceResult,
-  JumpToUnidyResult,
-} from "./jump_to";
-
-// Import functions from submodules
-import * as signIn from "./sign_in";
-import * as register from "./register";
-import * as jumpTo from "./jump_to";
-
 /**
  * AuthService provides authentication, registration, and jump-to functionality.
  * Methods delegate to specialized submodules for better code organization.
  */
-export class AuthService {
-  private client: ApiClient;
-
-  constructor(client: ApiClient) {
-    this.client = client;
+export class AuthService extends BaseService {
+  constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
+    super(client, "AuthService", deps);
   }
 
   // ============================================
   // Sign-in methods
   // ============================================
 
-  createSignIn(email: string): Promise<signIn.CreateSignInResult> {
-    return signIn.createSignIn(this.client, email);
+  createSignIn(args: signIn.CreateSignInArgs): Promise<signIn.CreateSignInResult> {
+    return signIn.createSignIn(this.client, args);
   }
 
-  sendMagicCode(signInId: string): Promise<signIn.SendMagicCodeResult> {
-    return signIn.sendMagicCode(this.client, signInId);
+  sendMagicCode(args: signIn.SendMagicCodeArgs): Promise<signIn.SendMagicCodeResult> {
+    return signIn.sendMagicCode(this.client, args);
   }
 
-  authenticateWithPassword(signInId: string, password: string): Promise<signIn.AuthenticateWithPasswordResult> {
-    return signIn.authenticateWithPassword(this.client, signInId, password);
+  authenticateWithPassword(args: signIn.AuthenticateWithPasswordArgs): Promise<signIn.AuthenticateWithPasswordResult> {
+    return signIn.authenticateWithPassword(this.client, args);
   }
 
-  authenticateWithMagicCode(signInId: string, code: string): Promise<signIn.AuthenticateWithMagicCodeResult> {
-    return signIn.authenticateWithMagicCode(this.client, signInId, code);
+  authenticateWithMagicCode(args: signIn.AuthenticateWithMagicCodeArgs): Promise<signIn.AuthenticateWithMagicCodeResult> {
+    return signIn.authenticateWithMagicCode(this.client, args);
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic user fields
-  updateMissingFields(signInId: string, user: Record<string, any>): Promise<signIn.AuthenticateResultShared> {
-    return signIn.updateMissingFields(this.client, signInId, user);
+  updateMissingFields(args: signIn.UpdateMissingFieldsArgs): Promise<signIn.AuthenticateResultShared> {
+    return signIn.updateMissingFields(this.client, args);
   }
 
-  refreshToken(signInId: string): Promise<signIn.RefreshTokenResult> {
-    return signIn.refreshToken(this.client, signInId);
+  refreshToken(args: signIn.RefreshTokenArgs): Promise<signIn.RefreshTokenResult> {
+    return signIn.refreshToken(this.client, args);
   }
 
-  sendResetPasswordEmail(signInId: string): Promise<signIn.ResetPasswordResult> {
-    return signIn.sendResetPasswordEmail(this.client, signInId);
+  sendResetPasswordEmail(args: signIn.SendResetPasswordEmailArgs): Promise<signIn.SendResetPasswordEmailResult> {
+    return signIn.sendResetPasswordEmail(this.client, args);
   }
 
-  signOut(signInId: string): Promise<signIn.SignOutResult> {
-    return signIn.signOut(this.client, signInId);
+  resetPassword(args: signIn.ResetPasswordArgs): Promise<signIn.ResetPasswordResult> {
+    return signIn.resetPassword(this.client, args);
   }
 
-  getPasskeyOptions(sid?: string): Promise<signIn.GetPasskeyOptionsResult> {
-    return signIn.getPasskeyOptions(this.client, sid);
+  validateResetPasswordToken(args: signIn.ValidateResetPasswordTokenArgs): Promise<signIn.ValidateResetPasswordTokenResult> {
+    return signIn.validateResetPasswordToken(this.client, args);
   }
 
-  authenticateWithPasskey(credential: signIn.PasskeyCredential): Promise<signIn.AuthenticateWithPasskeyResult> {
-    return signIn.authenticateWithPasskey(this.client, credential);
+  async signOut(args: signIn.SignOutArgs): Promise<signIn.SignOutResult> {
+    const idToken = await this.getIdToken();
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    return signIn.signOut(this.client, args, headers);
+  }
+
+  signedIn(): Promise<signIn.SignedInResult> {
+    return signIn.signedIn(this.client);
+  }
+
+  // ============================================
+  // Passkey methods
+  // ============================================
+
+  getPasskeyOptions(args?: signIn.GetPasskeyOptionsArgs): Promise<signIn.GetPasskeyOptionsResult> {
+    return signIn.getPasskeyOptions(this.client, args);
+  }
+
+  authenticateWithPasskey(args: signIn.AuthenticateWithPasskeyArgs): Promise<signIn.AuthenticateWithPasskeyResult> {
+    return signIn.authenticateWithPasskey(this.client, args);
+  }
+
+  // ============================================
+  // Brand connect methods
+  // ============================================
+
+  connectBrand(args: signIn.ConnectBrandArgs): Promise<signIn.ConnectBrandResult> {
+    return signIn.connectBrand(this.client, args);
+  }
+
+  // ============================================
+  // Jump-to methods
+  // ============================================
+
+  jumpToService(serviceId: string, request: JumpToServiceRequest): Promise<jumpTo.JumpToServiceResult> {
+    return jumpTo.jumpToService(this.client, serviceId, request);
+  }
+
+  jumpToUnidy(request: JumpToUnidyRequest): Promise<jumpTo.JumpToUnidyResult> {
+    return jumpTo.jumpToUnidy(this.client, request);
   }
 
   // ============================================
@@ -156,17 +211,5 @@ export class AuthService {
 
   sendResumeLink(payload: register.SendResumeLinkPayload): Promise<register.SendResumeLinkResult> {
     return register.sendResumeLink(this.client, payload);
-  }
-
-  // ============================================
-  // Jump-to methods
-  // ============================================
-
-  jumpToService(serviceId: string, payload?: jumpTo.JumpToServicePayload): Promise<jumpTo.JumpToServiceResult> {
-    return jumpTo.jumpToService(this.client, serviceId, payload);
-  }
-
-  jumpToUnidy(payload: jumpTo.JumpToUnidyPayload): Promise<jumpTo.JumpToUnidyResult> {
-    return jumpTo.jumpToUnidy(this.client, payload);
   }
 }
