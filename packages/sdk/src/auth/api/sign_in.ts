@@ -20,7 +20,7 @@ import {
   type TokenResponse,
   TokenResponseSchema,
 } from "./schemas";
-import { type CommonErrors, handleResponse } from "./shared";
+import type { CommonErrors, HandleResponseFn } from "./shared";
 
 // ============================================
 // Argument types
@@ -148,7 +148,11 @@ function parseErrorResponse(data: unknown): ErrorResponse {
 // Sign-in API functions
 // ============================================
 
-export async function createSignIn(client: ApiClientInterface, args: CreateSignInArgs): Promise<CreateSignInResult> {
+export async function createSignIn(
+  client: ApiClientInterface,
+  args: CreateSignInArgs,
+  handleResponse: HandleResponseFn,
+): Promise<CreateSignInResult> {
   const { email, password, sendMagicCode, originUrl = window.location.href } = args.payload;
   const response = await client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode, originUrl });
 
@@ -182,7 +186,11 @@ export async function createSignIn(client: ApiClientInterface, args: CreateSignI
   });
 }
 
-export async function sendMagicCode(client: ApiClientInterface, args: SendMagicCodeArgs): Promise<SendMagicCodeResult> {
+export async function sendMagicCode(
+  client: ApiClientInterface,
+  args: SendMagicCodeArgs,
+  handleResponse: HandleResponseFn,
+): Promise<SendMagicCodeResult> {
   const { signInId } = args;
   const response = await client.post<SendMagicCodeResponse>(`/api/sdk/v1/sign_ins/${signInId}/send_magic_code`, {});
 
@@ -203,6 +211,7 @@ export async function sendMagicCode(client: ApiClientInterface, args: SendMagicC
 export async function authenticateWithPassword(
   client: ApiClientInterface,
   args: AuthenticateWithPasswordArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<AuthenticateWithPasswordResult> {
   const { signInId, payload } = args;
   const response = await client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
@@ -235,6 +244,7 @@ export async function authenticateWithPassword(
 export async function authenticateWithMagicCode(
   client: ApiClientInterface,
   args: AuthenticateWithMagicCodeArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<AuthenticateWithMagicCodeResult> {
   const { signInId, payload } = args;
   const response = await client.post<{ code: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
@@ -266,6 +276,7 @@ export async function authenticateWithMagicCode(
 export async function updateMissingFields(
   client: ApiClientInterface,
   args: UpdateMissingFieldsArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<AuthenticateResultShared> {
   const { signInId, payload } = args;
   const response = await client.patch<unknown>(`/api/sdk/v1/sign_ins/${signInId}/update_required_fields`, {
@@ -287,7 +298,11 @@ export async function updateMissingFields(
   });
 }
 
-export async function refreshToken(client: ApiClientInterface, args: RefreshTokenArgs): Promise<RefreshTokenResult> {
+export async function refreshToken(
+  client: ApiClientInterface,
+  args: RefreshTokenArgs,
+  handleResponse: HandleResponseFn,
+): Promise<RefreshTokenResult> {
   const { signInId, refreshToken } = args;
   const response = await client.post<Record<string, never>>(`/api/sdk/v1/sign_ins/${signInId}/refresh_token`, {
     refresh_token: refreshToken,
@@ -306,6 +321,7 @@ export async function refreshToken(client: ApiClientInterface, args: RefreshToke
 export async function sendResetPasswordEmail(
   client: ApiClientInterface,
   args: SendResetPasswordEmailArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<SendResetPasswordEmailResult> {
   const { signInId, payload } = args;
   const response = await client.post<null>(`/api/sdk/v1/sign_ins/${signInId}/password_reset/send`, {
@@ -330,7 +346,11 @@ export async function sendResetPasswordEmail(
   });
 }
 
-export async function resetPassword(client: ApiClientInterface, args: ResetPasswordArgs): Promise<ResetPasswordResult> {
+export async function resetPassword(
+  client: ApiClientInterface,
+  args: ResetPasswordArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ResetPasswordResult> {
   const { signInId, token, payload } = args;
   const response = await client.patch<null>(`/api/sdk/v1/sign_ins/${signInId}/password_reset`, {
     token,
@@ -356,6 +376,7 @@ export async function resetPassword(client: ApiClientInterface, args: ResetPassw
 export async function validateResetPasswordToken(
   client: ApiClientInterface,
   args: ValidateResetPasswordTokenArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<ValidateResetPasswordTokenResult> {
   const { signInId, token } = args;
   const response = await client.get<{ valid: boolean }>(
@@ -375,6 +396,7 @@ export async function validateResetPasswordToken(
 export async function signOut(
   client: ApiClientInterface,
   args: SignOutArgs,
+  handleResponse: HandleResponseFn,
   headers?: HeadersInit,
 ): Promise<SignOutResult> {
   const { signInId, globalLogout = false } = args;
@@ -390,7 +412,7 @@ export async function signOut(
   });
 }
 
-export async function signedIn(client: ApiClientInterface): Promise<SignedInResult> {
+export async function signedIn(client: ApiClientInterface, handleResponse: HandleResponseFn): Promise<SignedInResult> {
   const response = await client.get<TokenResponse>("/api/sdk/v1/sign_ins/signed_in");
 
   return handleResponse(response, () => {
@@ -409,7 +431,8 @@ export async function signedIn(client: ApiClientInterface): Promise<SignedInResu
 
 export async function getPasskeyOptions(
   client: ApiClientInterface,
-  args?: GetPasskeyOptionsArgs,
+  args: GetPasskeyOptionsArgs | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<GetPasskeyOptionsResult> {
   const signInId = args?.signInId;
   const endpoint = signInId ? `/api/sdk/v1/passkeys/new?sid=${encodeURIComponent(signInId)}` : "/api/sdk/v1/passkeys/new";
@@ -428,6 +451,7 @@ export async function getPasskeyOptions(
 export async function authenticateWithPasskey(
   client: ApiClientInterface,
   args: AuthenticateWithPasskeyArgs,
+  handleResponse: HandleResponseFn,
 ): Promise<AuthenticateWithPasskeyResult> {
   const { payload } = args;
   const response = await client.post<{ publicKeyCredential: PasskeyCredential }>("/api/sdk/v1/passkeys", {
@@ -451,7 +475,11 @@ export async function authenticateWithPasskey(
 // Brand connect API functions
 // ============================================
 
-export async function connectBrand(client: ApiClientInterface, args: ConnectBrandArgs): Promise<ConnectBrandResult> {
+export async function connectBrand(
+  client: ApiClientInterface,
+  args: ConnectBrandArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ConnectBrandResult> {
   const { signInId } = args;
   const response = await client.post<TokenResponse>(`/api/sdk/v1/sign_ins/${signInId}/brand_connect`, {});
 

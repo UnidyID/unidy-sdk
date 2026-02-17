@@ -10,7 +10,7 @@ import {
   JumpToUnidyRequestSchema,
   JumpToUnidyResponseSchema,
 } from "./schemas";
-import { type CommonErrors, handleResponse } from "./shared";
+import type { CommonErrors, HandleResponseFn } from "./shared";
 
 // ============================================
 // Result types
@@ -38,6 +38,7 @@ export async function jumpToService(
   client: ApiClientInterface,
   serviceId: string,
   request: JumpToServiceRequest,
+  handleResponse: HandleResponseFn,
 ): Promise<JumpToServiceResult> {
   const validatedRequest = JumpToServiceRequestSchema.parse(request);
   const response = await client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest);
@@ -69,7 +70,11 @@ export async function jumpToService(
  * Create a one-time login token for jumping to an internal Unidy path.
  * Requires user to be authenticated (ID token in cookie or header).
  */
-export async function jumpToUnidy(client: ApiClientInterface, request: JumpToUnidyRequest): Promise<JumpToUnidyResult> {
+export async function jumpToUnidy(
+  client: ApiClientInterface,
+  request: JumpToUnidyRequest,
+  handleResponse: HandleResponseFn,
+): Promise<JumpToUnidyResult> {
   const validatedRequest = JumpToUnidyRequestSchema.parse(request);
   const response = await client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest);
 

@@ -1,7 +1,9 @@
 import * as z from "zod";
 
 import type { ApiClientInterface } from "../../api/base-service";
-import { type CommonErrors, ErrorSchema, type ErrorResponse, handleResponse, withRid } from "./shared";
+import { type ErrorResponse, ErrorSchema } from "./schemas";
+import type { CommonErrors, HandleResponseFn } from "./shared";
+import { withRid } from "./shared";
 
 // Registration profile data schema (matches backend REGISTRATION_PROFILE_DATA)
 const RegistrationProfileDataSchema = z
@@ -110,6 +112,12 @@ export type VerifyEmailPayload = z.infer<typeof VerifyEmailPayloadSchema>;
 export type SendResumeLinkPayload = z.infer<typeof SendResumeLinkPayloadSchema>;
 export type CannotFinalizeError = z.infer<typeof CannotFinalizeErrorSchema>;
 
+/** Safely parse error response, returning a fallback if parsing fails */
+function parseErrorResponse(data: unknown): ErrorResponse {
+  const parsed = ErrorSchema.safeParse(data);
+  return parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+}
+
 // Options type for registration methods (optional rid parameter)
 export type RegistrationOptions = {
   rid?: string;
@@ -179,14 +187,15 @@ export type SendResumeLinkResult =
 export async function createRegistration(
   client: ApiClientInterface,
   payload: CreateRegistrationPayload,
+  handleResponse: HandleResponseFn,
 ): Promise<CreateRegistrationResult> {
   const response = await client.post<RegistrationFlowResponse>("/api/sdk/v1/registration", payload);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
+      const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error as "email_already_registered" | "registration_flow_already_exists" | "invalid_record",
+        error_response.error_identifier as "email_already_registered" | "registration_flow_already_exists" | "invalid_record",
         error_response,
       ];
     }
@@ -201,15 +210,16 @@ export async function createRegistration(
  */
 export async function getRegistration(
   client: ApiClientInterface,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<GetRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration", options?.rid);
   const response = await client.get<RegistrationFlowResponse>(endpoint);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
-      return [error_response.error as "registration_not_found" | "registration_expired", error_response];
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired", error_response];
     }
 
     return [null, RegistrationFlowResponseSchema.parse(response.data)];
@@ -223,16 +233,17 @@ export async function getRegistration(
 export async function updateRegistration(
   client: ApiClientInterface,
   payload: UpdateRegistrationPayload,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<UpdateRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration", options?.rid);
   const response = await client.patch<RegistrationFlowResponse>(endpoint, payload);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
+      const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error as "registration_not_found" | "registration_expired" | "invalid_record",
+        error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record",
         error_response,
       ];
     }
@@ -247,15 +258,16 @@ export async function updateRegistration(
  */
 export async function cancelRegistration(
   client: ApiClientInterface,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<CancelRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration", options?.rid);
   const response = await client.delete<{ success: boolean }>(endpoint);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
-      return [error_response.error as "registration_not_found" | "registration_expired", error_response];
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired", error_response];
     }
 
     return [null, null];
@@ -268,7 +280,8 @@ export async function cancelRegistration(
  */
 export async function finalizeRegistration(
   client: ApiClientInterface,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<FinalizeRegistrationResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/finalize", options?.rid);
   const response = await client.post<RegistrationFlowResponse>(endpoint, {});
@@ -281,9 +294,9 @@ export async function finalizeRegistration(
         return ["cannot_finalize", cannotFinalizeCheck.data];
       }
 
-      const error_response = ErrorSchema.parse(response.data);
+      const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error as "registration_not_found" | "registration_expired" | "email_already_registered",
+        error_response.error_identifier as "registration_not_found" | "registration_expired" | "email_already_registered",
         error_response,
       ];
     }
@@ -298,16 +311,17 @@ export async function finalizeRegistration(
  */
 export async function sendEmailVerificationCode(
   client: ApiClientInterface,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<SendVerificationCodeResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/email_verification/send_code", options?.rid);
   const response = await client.post<SendVerificationCodeResponse>(endpoint, {});
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
+      const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error as "registration_not_found" | "registration_expired" | "verification_code_recently_sent",
+        error_response.error_identifier as "registration_not_found" | "registration_expired" | "verification_code_recently_sent",
         error_response,
       ];
     }
@@ -323,16 +337,17 @@ export async function sendEmailVerificationCode(
 export async function verifyEmail(
   client: ApiClientInterface,
   payload: VerifyEmailPayload,
-  options?: RegistrationOptions,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
 ): Promise<VerifyEmailResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/email_verification/verify", options?.rid);
   const response = await client.post<RegistrationFlowResponse>(endpoint, payload);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
+      const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error as "registration_not_found" | "registration_expired" | "invalid_code" | "code_expired",
+        error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_code" | "code_expired",
         error_response,
       ];
     }
@@ -345,13 +360,17 @@ export async function verifyEmail(
  * Send a resume link to the user's email to continue registration.
  * Note: This endpoint doesn't require rid since it looks up by email.
  */
-export async function sendResumeLink(client: ApiClientInterface, payload: SendResumeLinkPayload): Promise<SendResumeLinkResult> {
+export async function sendResumeLink(
+  client: ApiClientInterface,
+  payload: SendResumeLinkPayload,
+  handleResponse: HandleResponseFn,
+): Promise<SendResumeLinkResult> {
   const response = await client.post<{ success: boolean }>("/api/sdk/v1/registration/resume", payload);
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const error_response = ErrorSchema.parse(response.data);
-      return [error_response.error as "email_required" | "registration_flow_not_found", error_response];
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "email_required" | "registration_flow_not_found", error_response];
     }
 
     return [null, null];
