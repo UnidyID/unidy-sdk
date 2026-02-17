@@ -8,6 +8,7 @@ import { authState } from "../../store/auth-store";
   shadow: false,
 })
 export class MagicCodeField {
+  /** CSS classes to apply to the container element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @State() codeDigits: string[] = ["", "", "", ""];

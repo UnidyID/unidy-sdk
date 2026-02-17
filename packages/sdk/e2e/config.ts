@@ -11,7 +11,10 @@ export const userLogin = new UserLogin("user@example.com", "Ch4ngeme!", "user");
 export const routes = {
   home: "/",
   auth: "/auth",
+  oauth: "/oauth",
   newsletter: "/newsletter",
   profile: "/auth/profile.html",
+  profilePartial: "/profile/partial.html",
+  registration: "/auth/registration.html",
   ticketable: "/ticketable",
 } as const;

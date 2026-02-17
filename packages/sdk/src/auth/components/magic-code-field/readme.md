@@ -7,9 +7,9 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default |
-| -------------------- | ------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name` |             | `string` | `""`    |
+| Property             | Attribute    | Description                                    | Type     | Default |
+| -------------------- | ------------ | ---------------------------------------------- | -------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the container element. | `string` | `""`    |
 
 
 ## Shadow Parts
@@ -18,19 +18,6 @@
 | --------------- | ----------- |
 | `"digit-input"` |             |
 
-
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../../../shared/components/spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-magic-code-field --> u-spinner
-  style u-magic-code-field fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

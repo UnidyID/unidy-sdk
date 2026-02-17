@@ -1,13 +1,13 @@
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
+import { findParentNewsletterRoot } from "../../../shared/context-utils";
 import { newsletterStore } from "../../store/newsletter-store";
-import { getParentNewsletterRoot } from "../helpers";
 
 export type NewsletterButtonFor = "login" | "create";
 
 export const newsletterContext: SubmitButtonContext<NewsletterButtonFor> = {
-  handleClick: async (event: MouseEvent, el: HTMLElement, forProp?: NewsletterButtonFor) => {
+  handleClick: async (event: MouseEvent, element: HTMLElement, forProp?: NewsletterButtonFor) => {
     event.preventDefault();
-    return await getParentNewsletterRoot(el)?.submit(forProp);
+    return await findParentNewsletterRoot(element)?.submit(forProp);
   },
 
   isDisabled(forProp, disabled?: boolean): boolean {

@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
     <title>Unidy Tickets &amp; Subscriptions Demo</title>
-
     <script type="module" src="/build/sdk.esm.js"></script>
     <script nomodule src="/build/sdk.js"></script>
     <link rel="stylesheet" href="/demo.css">
@@ -96,16 +95,44 @@
                       <ticketable-value name="price" format="Price -> {{value}}"></ticketable-value>
                     </span>
                   </div>
+
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Metadata</span>
+                    <span class="text-lg font-semibold text-blue-600">
+                      <ticketable-value name="metadata"></ticketable-value>
+                      <hr />
+                      <ticketable-value name="metadata.foo.bar.[0]"></ticketable-value>
+                      <hr />
+                      <ticketable-value name="metadata.foo.bar"></ticketable-value>
+                      <hr />
+                      <ticketable-value name="metadata.foobar" default="No foobar"></ticketable-value>
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <a
-                unidy-attr
-                unidy-attr-href="{{button_cta_url}}"
-                class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
-              >
-                View Details
-              </a>
+              <div class="flex items-center gap-2">
+                <u-ticketable-export
+                  format="pdf"
+                  custom-class="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50"
+                >
+                  PDF
+                </u-ticketable-export>
+                <u-ticketable-export
+                  format="pkpass"
+                  custom-class="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 whitespace-nowrap disabled:opacity-50"
+                >
+                  Wallet
+                </u-ticketable-export>
+
+                <a
+                  unidy-attr
+                  unidy-attr-href="{{button_cta_url}}"
+                  class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+                >
+                  View Details
+                </a>
+              </div>
             </div>
           </div>
         </template>
@@ -211,17 +238,21 @@
       </u-ticketable-list>
     </u-signed-in>
 
-    <script>
-      document.getElementById('state-filter').addEventListener('change', e => {
-        const list = document.getElementById('tickets-list');
-        const params = new URLSearchParams(list.getAttribute('filter').replace(/;/g, '&'));
+  <script>
+    document
+      .getElementById("state-filter")
+      .addEventListener("change", (e) => {
+        const list = document.getElementById("tickets-list");
+        const params = new URLSearchParams(
+          list.getAttribute("filter").replace(/;/g, "&")
+        );
         if (e.target.value) {
-          params.set('state', e.target.value);
+          params.set("state", e.target.value);
         } else {
-          params.delete('state');
+          params.delete("state");
         }
 
-        list.setAttribute('filter', params.toString().replace(/&/g, ';'));
+        list.setAttribute("filter", params.toString().replace(/&/g, ";"));
       });
 
       window.addEventListener("appload", () => {

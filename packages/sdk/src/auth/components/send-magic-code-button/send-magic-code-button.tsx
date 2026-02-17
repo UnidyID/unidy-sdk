@@ -8,7 +8,9 @@ import { authState, authStore } from "../../store/auth-store";
   shadow: false,
 })
 export class SendMagicCodeButton {
+  /** If true, the button will be disabled. */
   @Prop() disabled = false;
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @State() countdown = 0;

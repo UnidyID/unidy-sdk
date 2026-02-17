@@ -1,4 +1,3 @@
-import { type MixedInCtor, Mixin } from "@stencil/core";
 import type { LoggerModule } from "i18next";
 
 declare global {
@@ -71,45 +70,6 @@ export const createLogger = (prefix: string): Logger => {
     return logger;
   }, {} as Logger);
 };
-
-/**
- * Stencil mixin factory that adds a logger property to the component.
- * The logger automatically uses the component's class name as the prefix.
- */
-// biome-ignore lint/suspicious/noExplicitAny: if we have no Base we have to invent one
-export const loggerFactory = <B extends MixedInCtor>(Base: B = Object as any) => {
-  class LoggerMixin extends Base {
-    /** @internal */
-    __logger: Logger | null = null;
-
-    get logger(): Logger {
-      if (!this.__logger) {
-        this.__logger = createLogger(this.constructor.name);
-      }
-      return this.__logger;
-    }
-  }
-  return LoggerMixin;
-};
-
-/**
- * Base class for Unidy Stencil components that provides logging functionality.
- * Components extending this class get a `this.logger` property that automatically
- * prefixes log messages with the component's class name.
- *
- * @example
- * ```tsx
- * import { UnidyComponent } from '../logger';
- *
- * @Component({ tag: 'my-component' })
- * export class MyComponent extends UnidyComponent {
- *   componentDidLoad() {
- *     this.logger.debug('Component loaded');
- *   }
- * }
- * ```
- */
-export const UnidyComponent = Mixin(loggerFactory);
 
 // Global logger for non-class contexts (backwards compatibility)
 export const logger = createLogger("");

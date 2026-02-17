@@ -34,10 +34,17 @@
     },
     "socialLogin": {
       "button_text": "Continue with {{provider}}"
+    },
+    "navigation": {
+      "back": "Back",
+      "restart": "Start over"
     }
   },
   "buttons": {
+    "cancel": "Cancel",
     "close": "Close",
+    "confirm": "Confirm",
+    "connect": "Connect",
     "continue": "Continue",
     "jump_to_service": "Jump to Service",
     "jump_to_unidy": "Jump to Unidy",
@@ -94,6 +101,22 @@
     "reset_token_expired": "Reset token has expired. Please request a new password reset email",
     "reset_token_missing": "Reset token is missing",
     "schema_validation_error": "Schema validation error",
+    "validation": {
+      "accepted": "must be accepted",
+      "blank": "can't be blank",
+      "empty": "can't be empty",
+      "even": "must be even",
+      "exclusion": "is reserved",
+      "in": "is not included in the list",
+      "inclusion": "is not included in the list",
+      "invalid": "is invalid",
+      "not_a_number": "is not a number",
+      "odd": "must be odd",
+      "present": "must be blank",
+      "taken": "has already been taken",
+      "too_long": "is too long",
+      "too_short": "is too short"
+    },
     "sign_in_expired": "Sign in expired",
     "sign_in_not_found": "Sign in not found",
     "sign_out_failed": "Failed to sign out, reason: {{reason}}",
@@ -102,6 +125,19 @@
     "verification_failed": "Verification failed"
   },
   "loading": "Loading...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth application not found",
+      "client_id_required": "client-id is required",
+      "connection_failed": "Network error. Please try again.",
+      "grant_failed": "Failed to grant consent",
+      "invalid_field_values": "Invalid field values provided",
+      "missing_required_fields": "Please fill in all required fields",
+      "not_authenticated": "User is not authenticated. Please log in first.",
+      "unknown": "An unexpected error occurred",
+      "update_failed": "Failed to update user data"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

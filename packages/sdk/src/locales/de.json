@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Weiter mit {{provider}}"
+    },
+    "navigation": {
+      "back": "Zurück",
+      "restart": "Neu starten"
     }
   },
   "buttons": {
+    "cancel": "Abbrechen",
     "close": "Schließen",
+    "confirm": "Bestätigen",
+    "connect": "Verbinden",
     "continue": "Weiter",
     "jump_to_service": "Zum Dienst wechseln",
     "jump_to_unidy": "Zu Unidy wechseln",
@@ -92,6 +99,22 @@
     "reset_token_expired": "Reset-Token ist abgelaufen. Bitte fordern Sie eine neue E-Mail zum Zurücksetzen des Passworts an",
     "reset_token_missing": "Reset-Token fehlt",
     "schema_validation_error": "Schemavalidierungsfehler",
+    "validation": {
+      "accepted": "muss akzeptiert werden",
+      "blank": "darf nicht leer sein",
+      "empty": "darf nicht leer sein",
+      "even": "muss gerade sein",
+      "exclusion": "ist reserviert",
+      "in": "ist nicht in der Liste enthalten",
+      "inclusion": "ist nicht in der Liste enthalten",
+      "invalid": "ist ungültig",
+      "not_a_number": "ist keine Zahl",
+      "odd": "muss ungerade sein",
+      "present": "muss leer sein",
+      "taken": "ist bereits vergeben",
+      "too_long": "ist zu lang",
+      "too_short": "ist zu kurz"
+    },
     "sign_in_expired": "Anmeldung abgelaufen",
     "sign_in_not_found": "Anmeldung nicht gefunden",
     "sign_out_failed": "Abmelden fehlgeschlagen, Grund: {{reason}}",
@@ -100,6 +123,19 @@
     "verification_failed": "Verifizierung fehlgeschlagen"
   },
   "loading": "Wird geladen...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth-Anwendung nicht gefunden",
+      "client_id_required": "client-id ist erforderlich",
+      "connection_failed": "Netzwerkfehler. Bitte versuchen Sie es erneut.",
+      "grant_failed": "Zustimmung konnte nicht erteilt werden",
+      "invalid_field_values": "Ungültige Feldwerte angegeben",
+      "missing_required_fields": "Bitte füllen Sie alle Pflichtfelder aus",
+      "not_authenticated": "Benutzer ist nicht authentifiziert. Bitte melden Sie sich zuerst an.",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten",
+      "update_failed": "Benutzerdaten konnten nicht aktualisiert werden"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

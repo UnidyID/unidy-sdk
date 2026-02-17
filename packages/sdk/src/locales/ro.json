@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Continuă cu {{provider}}"
+    },
+    "navigation": {
+      "back": "Înapoi",
+      "restart": "Reîncepe"
     }
   },
   "buttons": {
+    "cancel": "Anulare",
     "close": "Închide",
+    "confirm": "Confirmare",
+    "connect": "Conectare",
     "continue": "Continuă",
     "jump_to_service": "Mergi la serviciu",
     "jump_to_unidy": "Mergi la Unidy",
@@ -92,6 +99,22 @@
     "reset_token_expired": "Token-ul de resetare a expirat. Vă rugăm să solicitați un nou e-mail pentru resetarea parolei",
     "reset_token_missing": "Token de resetare lipsă",
     "schema_validation_error": "Eroare de validare a schemei",
+    "validation": {
+      "accepted": "trebuie acceptat",
+      "blank": "nu poate fi gol",
+      "empty": "nu poate fi gol",
+      "even": "trebuie să fie par",
+      "exclusion": "este rezervat",
+      "in": "nu este inclus în listă",
+      "inclusion": "nu este inclus în listă",
+      "invalid": "nu este valid",
+      "not_a_number": "nu este un număr",
+      "odd": "trebuie să fie impar",
+      "present": "trebuie să fie gol",
+      "taken": "este deja luat",
+      "too_long": "este prea lung",
+      "too_short": "este prea scurt"
+    },
     "sign_in_expired": "Conectare expirată",
     "sign_in_not_found": "Conectare negăsită",
     "sign_out_failed": "Deconectare eșuată, motiv: {{reason}}",
@@ -100,6 +123,19 @@
     "verification_failed": "Verificare eșuată"
   },
   "loading": "Se încarcă...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Aplicație OAuth negăsită",
+      "client_id_required": "client-id este obligatoriu",
+      "connection_failed": "Eroare de rețea. Vă rugăm să încercați din nou.",
+      "grant_failed": "Acordarea consimțământului a eșuat",
+      "invalid_field_values": "Valori de câmp invalide furnizate",
+      "missing_required_fields": "Vă rugăm să completați toate câmpurile obligatorii",
+      "not_authenticated": "Utilizatorul nu este autentificat. Vă rugăm să vă conectați mai întâi.",
+      "unknown": "A apărut o eroare neașteptată",
+      "update_failed": "Actualizarea datelor utilizatorului a eșuat"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

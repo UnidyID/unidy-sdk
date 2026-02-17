@@ -1,5 +1,7 @@
 import { Component, Element, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
-import { UnidyComponent } from "../../../logger";
+import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { UnidyComponent } from "../../../shared/base/component";
+import { type ComponentContext, detectContext } from "../../../shared/context-utils";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
 import { Input } from "./components/Input";
 import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
@@ -11,7 +13,7 @@ import { Textarea } from "./components/Textarea";
   tag: "u-raw-field",
   shadow: false,
 })
-export class RawField extends UnidyComponent {
+export class RawField extends UnidyComponent() {
   @Prop() required = false;
   @Prop() readonlyPlaceholder = "";
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
@@ -40,10 +42,19 @@ export class RawField extends UnidyComponent {
 
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
+
   @State() selected?: string | string[];
+
+  private get context(): ComponentContext | null {
+    return detectContext(this.element);
+  }
 
   private readStore(fieldName: string): string | undefined | string[] {
     if (!fieldName) return;
+    return this.context === "newsletter" ? this.readNewsletterStore(fieldName) : this.readProfileStore(fieldName);
+  }
+
+  private readProfileStore(fieldName: string): string | undefined | string[] {
     const data: ProfileRaw = profileState.data;
 
     if (!data) return;
@@ -74,8 +85,17 @@ export class RawField extends UnidyComponent {
     return field.value;
   }
 
+  private readNewsletterStore(fieldName: string): string | undefined | string[] {
+    const field = newsletterStore.state.additionalFields[fieldName];
+    return field?.value;
+  }
+
   private writeStore(fieldName: string, value: string | string[]) {
     if (!fieldName) return;
+    this.context === "newsletter" ? this.writeNewsletterStore(fieldName, value) : this.writeProfileStore(fieldName, value);
+  }
+
+  private writeProfileStore(fieldName: string, value: string | string[]) {
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
@@ -94,6 +114,26 @@ export class RawField extends UnidyComponent {
     } else {
       const field = data[key];
       profileState.data = { ...data, [key]: { ...field, value } };
+    }
+  }
+
+  private writeNewsletterStore(fieldName: string, value: string | string[]) {
+    const data = newsletterStore.state.additionalFields;
+    newsletterStore.state.additionalFields = {
+      ...data,
+      [fieldName]: { ...data[fieldName], value },
+    };
+  }
+
+  private getErrors(): Record<string, string> {
+    return this.context === "newsletter" ? newsletterStore.state.additionalFieldErrors : profileState.errors;
+  }
+
+  private setErrors(errors: Record<string, string>) {
+    if (this.context === "newsletter") {
+      newsletterStore.state.additionalFieldErrors = errors;
+    } else {
+      profileState.errors = errors;
     }
   }
 
@@ -184,7 +224,7 @@ export class RawField extends UnidyComponent {
     const val = input.value;
 
     const result = this.validateValue(val);
-    const newErrors = { ...profileState.errors };
+    const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
@@ -192,7 +232,7 @@ export class RawField extends UnidyComponent {
       newErrors[this.field] = result.message;
     }
 
-    profileState.errors = newErrors;
+    this.setErrors(newErrors);
   };
 
   private onBlurSelect = () => {
@@ -211,7 +251,7 @@ export class RawField extends UnidyComponent {
     }
 
     const result = this.validateValue(newValue);
-    const newErrors = { ...profileState.errors };
+    const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
@@ -220,7 +260,7 @@ export class RawField extends UnidyComponent {
       newErrors[this.field] = result.message;
     }
 
-    profileState.errors = newErrors;
+    this.setErrors(newErrors);
   };
 
   private onChangeSelect = (newValue: string) => {
@@ -282,9 +322,9 @@ export class RawField extends UnidyComponent {
   }
 
   componentDidRender() {
-    const errs = profileState.errors;
+    const errs = this.getErrors();
     if (errs?.[this.field]) {
-      this.el.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
+      this.element.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
     }
   }
 

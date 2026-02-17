@@ -96,39 +96,29 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
 ### Used by
 
- - [u-error-message](../error-message)
+ - [u-brand-connect-button](../../../auth/components/brand-connect-button)
  - [u-field](../../../profile/components/field)
  - [u-jump-to-service](../../../auth/components/jump-to-service)
  - [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
- - [u-logout-button](../../../auth/components/logout-button)
- - [u-magic-code-field](../../../auth/components/magic-code-field)
  - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
- - [u-newsletter-logout-button](../../../newsletter/components/logout-button)
  - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
- - [u-newsletter-root](../../../newsletter/components/newsletter-root)
  - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
- - [u-passkey](../../../auth/components/passkey)
- - [u-reset-password-button](../../../auth/components/reset-pass-button)
- - [u-send-magic-code-button](../../../auth/components/send-magic-code-button)
+ - [u-oauth-button](../../../oauth/components/oauth-button)
+ - [u-oauth-missing-fields](../../../oauth/components/oauth-missing-fields)
  - [u-submit-button](../submit-button)
 
 ### Graph
 ```mermaid
 graph TD;
-  u-error-message --> u-spinner
+  u-brand-connect-button --> u-spinner
   u-field --> u-spinner
   u-jump-to-service --> u-spinner
   u-jump-to-unidy --> u-spinner
-  u-logout-button --> u-spinner
-  u-magic-code-field --> u-spinner
   u-missing-fields-submit-button --> u-spinner
-  u-newsletter-logout-button --> u-spinner
   u-newsletter-resend-doi-button --> u-spinner
-  u-newsletter-root --> u-spinner
   u-newsletter-toggle-subscription-button --> u-spinner
-  u-passkey --> u-spinner
-  u-reset-password-button --> u-spinner
-  u-send-magic-code-button --> u-spinner
+  u-oauth-button --> u-spinner
+  u-oauth-missing-fields --> u-spinner
   u-submit-button --> u-spinner
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```

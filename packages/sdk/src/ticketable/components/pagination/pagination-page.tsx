@@ -1,21 +1,21 @@
-import { Component, Element, Host, h, Prop, State } from "@stencil/core";
+import { Component, Host, h, Prop, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
+import { findParentTicketableList } from "../../../shared/context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-page", shadow: false })
-export class PaginationPage extends UnidyComponent {
-  @Element() element: HTMLElement;
-
-  @Prop() customClass?: string;
+export class PaginationPage extends UnidyComponent() {
+  /** CSS classes to apply to the span element. */
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() paginationMeta: PaginationMeta | null = null;
 
   private store: PaginationStore | null = null;
   private unsubscribe: (() => void) | null = null;
 
-  componentDidLoad() {
-    this.store = this.element.closest("u-ticketable-list")?.store;
+  componentWillLoad() {
+    this.store = findParentTicketableList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("TicketableList component not found");
       return;
@@ -46,7 +46,7 @@ export class PaginationPage extends UnidyComponent {
 
     return (
       <Host>
-        <span class={this.customClass}>
+        <span class={this.componentClassName}>
           Page {this.paginationMeta.page} of {this.paginationMeta.last}
         </span>
       </Host>

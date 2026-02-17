@@ -15,12 +15,15 @@ Table of Contents
       - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
     - [Quick Start: Modal login](#quick-start-modal-login)
     - [Quick Start: Account Deletion](#quick-start-account-deletion)
+    - [Quick Start: Profile QR Code](#quick-start-profile-qr-code)
 
 
 
 ### Quick Start: Authentication Flow
 
 This example demonstrates a complete authentication flow. The SDK automatically shows the correct interface based on the user's authentication status.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling. You can replace these with your own CSS classes or include Tailwind in your project.
 
 ```html
 <!DOCTYPE html>
@@ -57,14 +60,42 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     </div>
 
     <u-signin-step name="verification">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
       <u-conditional-render when="auth.passwordEnabled">
         <u-password-field placeholder="Enter your password"></u-password-field>
         <u-submit-button for="password" text="Sign In"></u-submit-button>
       </u-conditional-render>
+      <u-conditional-render when="auth.magicCodeEnabled">
+        <u-send-magic-code-button class-name="mt-2 text-sm text-blue-500">Send Magic Code Instead</u-send-magic-code-button>
+      </u-conditional-render>
+    </u-signin-step>
+
+    <u-signin-step name="magic-code">
+      <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Back</u-back-button>
+      <p class="mb-4 text-gray-600">Enter the code sent to your email</p>
+      <u-magic-code-field></u-magic-code-field>
+      <u-error-message for="magicCode" class-name="text-red-500 text-sm mt-2"></u-error-message>
+    </u-signin-step>
+
+    <u-signin-step name="reset-password">
+      <u-back-button restart class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">← Start over</u-back-button>
+      <p class="mb-4 text-gray-600">Enter your new password</p>
+      <u-password-field for="new-password" placeholder="New password"></u-password-field>
+      <u-password-field for="password-confirmation" placeholder="Confirm password"></u-password-field>
+      <u-error-message for="resetPassword" class-name="text-red-500 text-sm mt-2"></u-error-message>
+      <u-submit-button for="resetPassword" text="Reset Password"></u-submit-button>
     </u-signin-step>
   </u-signin-root>
 
-  <!-- 3. This profile view is automatically shown to logged-in users -->
+  <!--
+    PROFILE VIEW OPTIONS (choose ONE of the following three approaches):
+
+    Option A: Custom profile with u-profile and u-field components
+    Option B: u-full-profile with specific fields
+    Option C: u-full-profile showing all fields
+  -->
+
+  <!-- Option A: Custom profile using u-profile and u-field for full control -->
   <u-signed-in>
     <h2>Welcome!</h2>
     <u-profile>
@@ -75,9 +106,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     <u-logout-button>Sign Out</u-logout-button>
   </u-signed-in>
 
-  <!-- These are alternative implementations of the profile: -->
-
-  <!-- 3.1 Full Profile Component: You can define specific fields. -->
+  <!-- Option B: u-full-profile with specific fields only -->
+  <!--
   <u-signed-in>
     <div class="mb-6">
       <u-logout-button
@@ -89,9 +119,11 @@ This example demonstrates a complete authentication flow. The SDK automatically 
     </div>
     <u-full-profile fields="first_name,last_name,custom_attributes.your_custom_attribute_name" country-code-display-option="icon"></u-full-profile>
   </u-signed-in>
+  -->
 
-  <!-- 3.2  If no fields are provided, the entire profile will be displayed. -->
-   <u-signed-in>
+  <!-- Option C: u-full-profile showing all available fields -->
+  <!--
+  <u-signed-in>
     <div class="mb-6">
       <u-logout-button
         class-name="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
@@ -101,7 +133,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
       <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
     </div>
     <u-full-profile country-code-display-option="icon"></u-full-profile>
-   </u-signed-in>
+  </u-signed-in>
+  -->
 
 </body>
 </html>
@@ -109,6 +142,8 @@ This example demonstrates a complete authentication flow. The SDK automatically 
 ### Quick Start: Newsletter implementation
 
 This example demonstrates how to implement a newsletter subscription form using the Unidy SDK.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling.
 
 ```html
 <!DOCTYPE html>
@@ -150,6 +185,64 @@ This example demonstrates how to implement a newsletter subscription form using 
 </body>
 </html>
 ```
+
+#### Newsletter with Additional Fields
+
+You can collect additional profile fields during newsletter signup using `u-raw-field`. These fields are submitted along with the email and newsletter selection.
+
+```html
+<u-newsletter-root>
+  <u-email-field placeholder="Enter your email" class-name="px-4 py-2 border border-gray-300 rounded-lg w-full"></u-email-field>
+
+  <!-- Additional profile fields -->
+  <div class="flex flex-col gap-3">
+    <p class="text-gray-600 text-sm font-medium">Additional fields</p>
+    <div class="grid grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="first_name"
+          type="text"
+          placeholder="First name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="first_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+      <div class="flex flex-col gap-1">
+        <u-raw-field
+          field="last_name"
+          type="text"
+          placeholder="Last name"
+          class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+        </u-raw-field>
+        <u-error-message for="last_name" class-name="text-red-500 text-sm"></u-error-message>
+      </div>
+    </div>
+    <u-raw-field
+      field="phone_number"
+      type="tel"
+      placeholder="Phone number (optional)"
+      class-name="px-4 py-2 border border-gray-300 rounded-lg w-full">
+    </u-raw-field>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="text-gray-500 text-sm">Select newsletters</label>
+    <u-newsletter-checkbox internal-name="internal-name-for-newsletter" checked="true"
+      class-name="flex items-center gap-2"></u-newsletter-checkbox>
+    <u-submit-button
+      class-name="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg shadow transition border border-indigo-600 mt-4">
+      Subscribe
+    </u-submit-button>
+  </div>
+</u-newsletter-root>
+```
+
+**Notes:**
+- `u-raw-field` creates a simple input field bound to a profile field name
+- The `field` attribute specifies which profile field to update (e.g., `first_name`, `last_name`, `phone_number`)
+- Use `u-error-message` with the matching `for` attribute to display validation errors
+- All fields are submitted together when the user clicks the submit button
+
 ### Quick Start: Ticket implementation
 
 This example demonstrates how to list tickets and subscriptions using the Unidy SDK.
@@ -170,9 +263,29 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
     <u-signed-in>
         <u-ticketable-list ticketable-type="ticket" limit="5">
             <template>
-                <div>
-                    <ticketable-value name="title"></ticketable-value>
-                    <ticketable-value name="starts_at" date-format="dd.MM.yyyy"></ticketable-value>
+                <div class="ticket-card">
+                    <h3><ticketable-value name="title"></ticketable-value></h3>
+                    <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
+                    <p><ticketable-value name="price" format="Price: {{value}}"></ticketable-value></p>
+
+                    <!-- Access nested metadata properties -->
+                    <p><ticketable-value name="metadata.category" default="General"></ticketable-value></p>
+
+                    <!-- Conditional rendering based on metadata -->
+                    <ticketable-conditional when="metadata.vip">
+                        <span class="vip-badge">VIP</span>
+                    </ticketable-conditional>
+
+                    <!-- Export buttons (only show wallet if exportable) -->
+                    <div class="actions">
+                        <u-ticketable-export format="pdf">Download PDF</u-ticketable-export>
+                        <ticketable-conditional when="exportable_to_wallet">
+                            <u-ticketable-export format="pkpass">Add to Wallet</u-ticketable-export>
+                        </ticketable-conditional>
+                    </div>
+
+                    <!-- Dynamic link using unidy-attr -->
+                    <a unidy-attr unidy-attr-href="{{button_cta_url}}">View Details</a>
                 </div>
             </template>
             <div slot="pagination">
@@ -187,13 +300,28 @@ This example demonstrates how to list tickets and subscriptions using the Unidy 
 </html>
 ```
 
+**Template Features:**
+
+- `<ticketable-value>` - Display values with support for nested paths (`metadata.category`), date formatting, and default values
+- `<ticketable-conditional>` - Conditionally render content based on property truthiness (e.g., show VIP badge only if `metadata.vip` exists)
+- `unidy-attr` - Dynamically set HTML attributes from ticket data (e.g., `unidy-attr-href="{{button_cta_url}}"`)
+- `<u-ticketable-export>` - Export tickets to PDF or Apple Wallet (pkpass)
+
 ### Quick Start: Profile Icon
 
-These examples demonstrate a profile icon that displays the user’s avatar and allows the user to navigate to their profile or log out.
+These examples demonstrate a profile icon that displays the user's avatar and allows the user to navigate to their profile or log out.
+
+> **Note:** These examples use [Tailwind CSS](https://tailwindcss.com/) utility classes for styling. The examples assume you have a `<u-signin-root id="sign-in-root">` element elsewhere on the page.
 
 #### Simple Profile Icon with Logout:
 
 ```html
+<!-- Your sign-in root (place elsewhere on the page) -->
+<u-signin-root id="sign-in-root">
+  <!-- ... sign-in steps ... -->
+</u-signin-root>
+
+<!-- Profile icon menu -->
 <u-signed-in>
   <div id="userMenu" class="flex items-center space-x-2" style="display: none;">
     <a href="profile/index.html" class="flex items-center p-2 rounded hover:bg-gray-100 transition-colors duration-200" aria-label="My Profile" title="My Profile">
@@ -260,6 +388,8 @@ These examples demonstrate a profile icon that displays the user’s avatar and 
 ### Quick Start: Modal login
 
 This example demonstrates how to implement a modal login form using the Unidy SDK.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling.
 
 ```html
 <!DOCTYPE html>
@@ -538,3 +668,97 @@ The `u-jump-to-unidy` component handles authentication automatically - when clic
 - The button shows a loading state while generating the authentication token
 - You can also open the page in a new tab by adding the `newtab` attribute: `<u-jump-to-unidy path="/profile" newtab>`
 - For pages that don't require authentication (like terms of service), use the `no-auth` attribute
+
+### Quick Start: Profile QR Code
+
+This example demonstrates how to generate a QR code containing user profile data. The QR code encodes a greeting message with the user's name.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling and the [qrcode](https://www.npmjs.com/package/qrcode) library loaded from esm.sh CDN.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile QR Code Demo</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <main class="flex-1 p-8">
+
+    <!-- Configure the SDK -->
+    <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key" check-signed-in="true"></u-config>
+
+    <div class="max-w-2xl mx-auto">
+      <!-- Show this message when user is NOT signed in -->
+      <u-signed-in not>
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <p class="text-gray-700">Please sign in to view your profile QR code.</p>
+        </div>
+      </u-signed-in>
+
+      <!-- Show the QR code canvas when user IS signed in -->
+      <u-signed-in>
+        <div class="mx-auto px-6 py-8 bg-white rounded-[18px] shadow-xl mt-6">
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Profile QR</h3>
+            <p class="text-gray-600 text-sm">Demonstrates generating a QR code externally.</p>
+          </div>
+          <!-- Canvas where the QR code will be rendered -->
+          <canvas id="profile-qr" width="256" height="256"></canvas>
+        </div>
+      </u-signed-in>
+    </div>
+  </main>
+
+  <script type="module">
+    import QRCode from "https://esm.sh/qrcode@1.5.4";
+    import { Auth, getUnidyClient } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
+
+    const auth = await Auth.getInstance();
+
+    async function generateProfileQR() {
+      const canvas = document.querySelector("#profile-qr");
+      if (!canvas) return;
+
+      try {
+        const [error, user] = await getUnidyClient().profile.get();
+        if (error || !user) return;
+
+        const firstName = user.first_name?.value ?? "";
+        const lastName = user.last_name?.value ?? "";
+
+        const text = `hello ${firstName} ${lastName}`;
+
+        await QRCode.toCanvas(canvas, text, {
+          width: 256,
+          margin: 2,
+          errorCorrectionLevel: "M",
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    window.addEventListener("appload", () => {
+
+      auth.isAuthenticated().then((isAuthenticated) => {
+        if (isAuthenticated) {
+          generateProfileQR();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+**Notes:**
+- The QR code encodes a simple greeting with the user's first and last name
+- The `qrcode` library is loaded from esm.sh CDN
+- The QR code is generated on `appload` if the user is authenticated
+- You can adjust QR code options like `width`, `margin`, and `errorCorrectionLevel` as needed

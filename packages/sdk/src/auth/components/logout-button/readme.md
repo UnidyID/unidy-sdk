@@ -7,31 +7,18 @@
 
 ## Properties
 
-| Property             | Attribute           | Description | Type      | Default |
-| -------------------- | ------------------- | ----------- | --------- | ------- |
-| `componentClassName` | `class-name`        |             | `string`  | `""`    |
-| `reloadOnSuccess`    | `reload-on-success` |             | `boolean` | `true`  |
+| Property             | Attribute           | Description                                        | Type      | Default |
+| -------------------- | ------------------- | -------------------------------------------------- | --------- | ------- |
+| `componentClassName` | `class-name`        | CSS classes to apply to the button element.        | `string`  | `""`    |
+| `reloadOnSuccess`    | `reload-on-success` | If true, reloads the page after successful logout. | `boolean` | `true`  |
 
 
 ## Events
 
-| Event    | Description | Type                |
-| -------- | ----------- | ------------------- |
-| `logout` |             | `CustomEvent<void>` |
+| Event    | Description                    | Type                |
+| -------- | ------------------------------ | ------------------- |
+| `logout` | Fired after successful logout. | `CustomEvent<void>` |
 
-
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../../../shared/components/spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-logout-button --> u-spinner
-  style u-logout-button fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

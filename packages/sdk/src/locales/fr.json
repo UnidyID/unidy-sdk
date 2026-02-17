@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Continuer avec {{provider}}"
+    },
+    "navigation": {
+      "back": "Retour",
+      "restart": "Recommencer"
     }
   },
   "buttons": {
+    "cancel": "Annuler",
     "close": "Fermer",
+    "confirm": "Confirmer",
+    "connect": "Connecter",
     "continue": "Continuer",
     "jump_to_service": "Aller au service",
     "jump_to_unidy": "Aller à Unidy",
@@ -92,6 +99,22 @@
     "reset_token_expired": "Le jeton de réinitialisation a expiré. Veuillez demander un nouvel e-mail de réinitialisation du mot de passe",
     "reset_token_missing": "Jeton de réinitialisation manquant",
     "schema_validation_error": "Erreur de validation du schéma",
+    "validation": {
+      "accepted": "doit être accepté",
+      "blank": "ne peut pas être vide",
+      "empty": "ne peut pas être vide",
+      "even": "doit être pair",
+      "exclusion": "est réservé",
+      "in": "n'est pas inclus dans la liste",
+      "inclusion": "n'est pas inclus dans la liste",
+      "invalid": "n'est pas valide",
+      "not_a_number": "n'est pas un nombre",
+      "odd": "doit être impair",
+      "present": "doit être vide",
+      "taken": "est déjà pris",
+      "too_long": "est trop long",
+      "too_short": "est trop court"
+    },
     "sign_in_expired": "Connexion expirée",
     "sign_in_not_found": "Connexion introuvable",
     "sign_out_failed": "Échec de la déconnexion, raison : {{reason}}",
@@ -100,6 +123,19 @@
     "verification_failed": "Échec de la vérification"
   },
   "loading": "Chargement...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Application OAuth introuvable",
+      "client_id_required": "client-id est requis",
+      "connection_failed": "Erreur réseau. Veuillez réessayer.",
+      "grant_failed": "Échec de l'octroi du consentement",
+      "invalid_field_values": "Valeurs de champ invalides fournies",
+      "missing_required_fields": "Veuillez remplir tous les champs obligatoires",
+      "not_authenticated": "L'utilisateur n'est pas authentifié. Veuillez d'abord vous connecter.",
+      "unknown": "Une erreur inattendue s'est produite",
+      "update_failed": "Échec de la mise à jour des données utilisateur"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

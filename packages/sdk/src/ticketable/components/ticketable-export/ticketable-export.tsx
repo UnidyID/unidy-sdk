@@ -1,14 +1,15 @@
-import { Component, Element, Event, type EventEmitter, Host, Prop, State, h } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import type { ExportFormat } from "../../api/schemas";
 
 @Component({ tag: "u-ticketable-export", shadow: false })
-export class TicketableExport extends UnidyComponent {
-  @Element() element: HTMLElement;
-
+export class TicketableExport extends UnidyComponent() {
+  /** The export format (pdf or pkpass). */
   @Prop() format!: ExportFormat;
-  @Prop() customClass?: string;
+  /** CSS classes to apply to the button element. */
+  @Prop({ attribute: "class-name" }) componentClassName?: string;
+  /** Whether the export is available. Set to false to disable the button. */
   @Prop({ reflect: true }) exportable = true;
 
   @State() loading = false;
@@ -71,7 +72,7 @@ export class TicketableExport extends UnidyComponent {
 
     return (
       <Host>
-        <button type="button" onClick={this.handleClick} disabled={disabled} class={this.customClass}>
+        <button type="button" onClick={this.handleClick} disabled={disabled} class={this.componentClassName}>
           <slot />
         </button>
       </Host>

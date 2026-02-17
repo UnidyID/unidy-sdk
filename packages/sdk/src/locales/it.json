@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Continua con {{provider}}"
+    },
+    "navigation": {
+      "back": "Indietro",
+      "restart": "Ricomincia"
     }
   },
   "buttons": {
+    "cancel": "Annulla",
     "close": "Chiudi",
+    "confirm": "Conferma",
+    "connect": "Connetti",
     "continue": "Continua",
     "jump_to_service": "Vai al servizio",
     "jump_to_unidy": "Vai a Unidy",
@@ -92,6 +99,22 @@
     "reset_token_expired": "Il token di reimpostazione è scaduto. Richiedi una nuova email di reimpostazione password",
     "reset_token_missing": "Token di reimpostazione mancante",
     "schema_validation_error": "Errore di validazione dello schema",
+    "validation": {
+      "accepted": "deve essere accettato",
+      "blank": "non può essere vuoto",
+      "empty": "non può essere vuoto",
+      "even": "deve essere pari",
+      "exclusion": "è riservato",
+      "in": "non è incluso nella lista",
+      "inclusion": "non è incluso nella lista",
+      "invalid": "non è valido",
+      "not_a_number": "non è un numero",
+      "odd": "deve essere dispari",
+      "present": "deve essere vuoto",
+      "taken": "è già stato preso",
+      "too_long": "è troppo lungo",
+      "too_short": "è troppo corto"
+    },
     "sign_in_expired": "Accesso scaduto",
     "sign_in_not_found": "Accesso non trovato",
     "sign_out_failed": "Uscita fallita, motivo: {{reason}}",
@@ -100,6 +123,19 @@
     "verification_failed": "Verifica fallita"
   },
   "loading": "Caricamento...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Applicazione OAuth non trovata",
+      "client_id_required": "client-id è obbligatorio",
+      "connection_failed": "Errore di rete. Riprova.",
+      "grant_failed": "Impossibile concedere il consenso",
+      "invalid_field_values": "Valori dei campi non validi",
+      "missing_required_fields": "Compila tutti i campi obbligatori",
+      "not_authenticated": "Utente non autenticato. Effettua prima l'accesso.",
+      "unknown": "Si è verificato un errore imprevisto",
+      "update_failed": "Impossibile aggiornare i dati utente"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

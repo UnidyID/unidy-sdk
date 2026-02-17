@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { authState } from "../../store/auth-store";
 import { AppleLogo } from "./logos/apple";
@@ -27,10 +27,14 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   styleUrl: "social-login-button.css",
   shadow: false,
 })
-export class SocialLoginButton extends UnidyComponent {
+export class SocialLoginButton extends UnidyComponent() {
+  /** The OAuth provider (google, linkedin, apple, discord, facebook, or unidy). */
   @Prop() provider: SocialLoginProvider = "google";
+  /** The URL to redirect to after authentication. Defaults to current page. */
   @Prop() redirectUri: string = window.location.href;
+  /** If true, shows only the provider icon without text. */
   @Prop() iconOnly = false;
+  /** Button theme: 'light' (white background) or 'dark' (dark background). */
   @Prop() theme: "light" | "dark" = "light";
 
   componentWillLoad() {

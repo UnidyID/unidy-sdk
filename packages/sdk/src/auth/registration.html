@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unidy Registration Demo</title>
+
+  <script type="module" src="/build/sdk.esm.js"></script>
+  <script nomodule src="/build/sdk.js"></script>
+  <link rel="stylesheet" href="/sdk.css">
+  <link rel="stylesheet" href="/demo.css">
+
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+    .field { margin-bottom: 0.75rem; }
+    .field label { display: block; font-weight: 500; margin-bottom: 0.25rem; font-size: 0.875rem; }
+    .field input { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; box-sizing: border-box; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+    .actions button { padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; color: white; }
+    .btn-primary { background: #3b82f6; }
+    .btn-secondary { background: #6b7280; }
+    .btn-danger { background: #ef4444; }
+    .btn-success { background: #10b981; }
+    #status, #error { padding: 1rem; border-radius: 0.375rem; margin-top: 1rem; font-size: 0.875rem; white-space: pre-wrap; word-break: break-all; }
+    #status { background: #f0fdf4; border: 1px solid #bbf7d0; display: none; }
+    #error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; display: none; }
+  </style>
+</head>
+
+<body>
+  <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key">
+    <h1>Registration</h1>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="user@example.com" />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Password" />
+    </div>
+
+    <div class="field">
+      <label for="first_name">First name</label>
+      <input type="text" id="first_name" name="first_name" placeholder="First name" />
+    </div>
+
+    <div class="field">
+      <label for="last_name">Last name</label>
+      <input type="text" id="last_name" name="last_name" placeholder="Last name" />
+    </div>
+
+    <div class="field">
+      <label for="verification_code">Verification code</label>
+      <input type="text" id="verification_code" name="verification_code" placeholder="123456" />
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="btn-create" type="button">Create</button>
+      <button class="btn-secondary" id="btn-update" type="button">Update</button>
+      <button class="btn-secondary" id="btn-send-code" type="button">Send verification code</button>
+      <button class="btn-secondary" id="btn-verify" type="button">Verify email</button>
+      <button class="btn-success" id="btn-finalize" type="button">Finalize</button>
+      <button class="btn-danger" id="btn-cancel" type="button">Cancel</button>
+    </div>
+
+    <div id="status" role="status"></div>
+    <div id="error" role="alert"></div>
+  </u-config>
+
+  <script type="module">
+    import { getUnidyClient } from "/build/index.esm.js";
+
+    const configEl = document.querySelector("u-config");
+
+    // Wait for u-config to initialize — handles both race conditions:
+    // 1. Event fires after listener is added (normal)
+    // 2. Event already fired before listener (use polling fallback)
+    function waitForInit() {
+      return new Promise((resolve) => {
+        // Check if already configured by trying getUnidyClient
+        try {
+          resolve(getUnidyClient());
+          return;
+        } catch (_) {
+          // Not yet configured
+        }
+        configEl.addEventListener("unidyInitialized", () => {
+          resolve(getUnidyClient());
+        });
+      });
+    }
+
+    const client = await waitForInit();
+
+    const $ = (id) => document.getElementById(id);
+    const statusEl = $("status");
+    const errorEl = $("error");
+
+    // Store rid from create response for subsequent API calls
+    let currentRid = null;
+
+    function clearDisplay() {
+      statusEl.textContent = "";
+      statusEl.style.display = "none";
+      errorEl.textContent = "";
+      errorEl.style.display = "none";
+    }
+
+    function showStatus(data) {
+      statusEl.textContent = JSON.stringify(data, null, 2);
+      statusEl.style.display = "block";
+      errorEl.style.display = "none";
+    }
+
+    function showError(code, data) {
+      errorEl.textContent = `${code}: ${JSON.stringify(data, null, 2)}`;
+      errorEl.style.display = "block";
+      statusEl.style.display = "none";
+    }
+
+    async function handleResult(resultPromise) {
+      clearDisplay();
+      try {
+        const [err, data] = await resultPromise;
+        if (err) {
+          showError(err, data);
+        } else {
+          // Track rid from successful registration responses
+          if (data?.rid) {
+            currentRid = data.rid;
+          }
+          showStatus(data);
+        }
+      } catch (e) {
+        showError("js_error", { message: String(e) });
+      }
+    }
+
+    function ridOptions() {
+      return currentRid ? { rid: currentRid } : undefined;
+    }
+
+    $("btn-create").addEventListener("click", () => {
+      const payload = {
+        registration_url: window.location.href,
+        email: $("email").value || undefined,
+        password: $("password").value || undefined,
+      };
+      const firstName = $("first_name").value;
+      const lastName = $("last_name").value;
+      if (firstName || lastName) {
+        payload.registration_profile_data = {};
+        if (firstName) payload.registration_profile_data.first_name = firstName;
+        if (lastName) payload.registration_profile_data.last_name = lastName;
+      }
+      handleResult(client.auth.createRegistration(payload));
+    });
+
+    $("btn-update").addEventListener("click", () => {
+      const payload = {};
+      const email = $("email").value;
+      const password = $("password").value;
+      if (email) payload.email = email;
+      if (password) payload.password = password;
+      const firstName = $("first_name").value;
+      const lastName = $("last_name").value;
+      if (firstName || lastName) {
+        payload.registration_profile_data = {};
+        if (firstName) payload.registration_profile_data.first_name = firstName;
+        if (lastName) payload.registration_profile_data.last_name = lastName;
+      }
+      handleResult(client.auth.updateRegistration(payload, ridOptions()));
+    });
+
+    $("btn-send-code").addEventListener("click", () => {
+      handleResult(client.auth.sendEmailVerificationCode(ridOptions()));
+    });
+
+    $("btn-verify").addEventListener("click", () => {
+      handleResult(client.auth.verifyEmail({ code: $("verification_code").value }, ridOptions()));
+    });
+
+    $("btn-finalize").addEventListener("click", () => {
+      handleResult(client.auth.finalizeRegistration(ridOptions()));
+    });
+
+    $("btn-cancel").addEventListener("click", () => {
+      handleResult(client.auth.cancelRegistration(ridOptions()));
+    });
+  </script>
+</body>
+
+</html>

@@ -3,12 +3,12 @@ import {
   type ExportFormat,
   type ExportLinkResponse,
   ExportLinkResponseSchema,
-  TicketSchema,
-  TicketsListResponseSchema,
   type Ticket,
+  TicketSchema,
   type TicketsListResponse,
+  TicketsListResponseSchema,
 } from "./schemas";
-import { TicketableService, type TicketableListArgs, type TicketableListResult, type TicketableGetResult } from "./ticketable-service";
+import { type TicketableGetResult, type TicketableListArgs, type TicketableListResult, TicketableService } from "./ticketable-service";
 
 // Re-export types for external use
 export type { Ticket, TicketsListResponse } from "./schemas";
@@ -22,7 +22,13 @@ export type TicketsGetArgs = { id: string };
 // Result types
 export type TicketsListResult = TicketableListResult<TicketsListResponse>;
 export type TicketsGetResult = TicketableGetResult<Ticket>;
-export type TicketExportLinkResult = CommonErrors | ["missing_id_token", null] | ["unauthorized", null] | ["server_error", null] | ["invalid_response", null] | [null, ExportLinkResponse];
+export type TicketExportLinkResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["unauthorized", null]
+  | ["server_error", null]
+  | ["invalid_response", null]
+  | [null, ExportLinkResponse];
 
 export class TicketsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {

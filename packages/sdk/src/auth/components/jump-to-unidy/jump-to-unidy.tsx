@@ -1,18 +1,19 @@
-import { Component, Element, forceUpdate, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { hasSlotContent, renderButtonContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
+import { slotFallbackText } from "../../../shared/component-utils";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { redirectWithToken } from "../../../shared/utils/redirect-with-token";
 import { Auth } from "../../auth";
-import { authState, onChange } from "../../store/auth-store";
+import { authState } from "../../store/auth-store";
 
 @Component({
   tag: "u-jump-to-unidy",
   shadow: false,
 })
-export class JumpToUnidy {
-  @Element() el!: HTMLElement;
-
+export class JumpToUnidy extends UnidyComponent(HasSlotContent) {
   /**
    * The Unidy path to redirect to. Must start with "/".
    * @example "/subscriptions"
@@ -37,35 +38,14 @@ export class JumpToUnidy {
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
   @State() loading = false;
-  private unsubscribe?: () => void;
-  private hasSlot = false;
 
-  /**
-   * Validates that the path prop is valid (not empty and starts with "/").
-   * @returns true if path is valid, false otherwise
-   */
   private isValidPath(): boolean {
     return !!this.path && this.path.startsWith("/");
   }
 
   componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-
     if (!this.isValidPath()) {
       console.error(`[u-jump-to-unidy] Invalid path prop: "${this.path}". Path must be provided and start with "/".`);
-    }
-  }
-
-  // TODO: Figure out a way to share this across components
-  connectedCallback() {
-    this.unsubscribe = onChange("authenticated", () => {
-      forceUpdate(this);
-    });
-  }
-
-  disconnectedCallback() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
     }
   }
 
@@ -89,15 +69,13 @@ export class JumpToUnidy {
     }
 
     const auth = await Auth.getInstance();
-    const isAuthenticated = await auth.isAuthenticated();
-
-    if (!isAuthenticated) {
+    if (!(await auth.isAuthenticated())) {
       console.error("[u-jump-to-unidy] User is not authenticated. Please log in first.");
       return;
     }
 
-    const userData = await auth.userData();
-    if (!userData || !userData.email) {
+    const userData = await auth.userTokenPayload();
+    if (!userData?.email) {
       console.error("Failed to get user email from authentication token");
       return;
     }
@@ -106,7 +84,6 @@ export class JumpToUnidy {
 
     try {
       const client = getUnidyClient();
-
       const [error, token] = await client.auth.jumpToUnidy({
         email: userData.email,
         path: this.path,
@@ -114,21 +91,14 @@ export class JumpToUnidy {
 
       if (error) {
         console.error("Failed to get jump token:", error);
-        this.loading = false;
         return;
       }
 
-      const redirectUrl = new URL("/one_time_login", unidyState.baseUrl);
-      // @ts-expect-error - TOKEN IS A STRING, BUT we need to enable strict for it to work
-      redirectUrl.searchParams.set("token", token);
-
-      const finalUrl = redirectUrl.toString();
-
-      if (this.newtab) {
-        window.open(finalUrl, "_blank");
-      } else {
-        window.location.href = finalUrl;
-      }
+      redirectWithToken({
+        // @ts-expect-error - TOKEN IS A STRING, BUT we need to enable strict for it to work
+        token,
+        newTab: this.newtab,
+      });
     } catch (error) {
       console.error("Error jumping to Unidy:", error);
     } finally {
@@ -146,7 +116,7 @@ export class JumpToUnidy {
   render() {
     return (
       <button type="button" disabled={this.isDisabled()} class={this.componentClassName} onClick={this.handleClick} aria-live="polite">
-        {renderButtonContent(this.hasSlot, this.loading, t("buttons.jump_to_unidy"))}
+        {slotFallbackText(t("buttons.jump_to_unidy"), { hasSlot: this.hasSlot, loading: this.loading })}
       </button>
     );
   }
