@@ -109,7 +109,7 @@ export class RegistrationRoot {
 
   @Method()
   async isComplete(): Promise<boolean> {
-    return registrationState.flowResponse?.status === "completed";
+    return registrationState.flowResponse?.status?.completed === true;
   }
 
   render() {
