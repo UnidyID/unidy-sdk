@@ -1,5 +1,6 @@
 import { Component, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { type ComponentContext, detectContext } from "../../../shared/context-utils";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../store/profile-store";
@@ -49,7 +50,15 @@ export class RawField extends UnidyComponent() {
 
   private readStore(fieldName: string): string | undefined | string[] {
     if (!fieldName) return;
-    return this.context === "newsletter" ? this.readNewsletterStore(fieldName) : this.readProfileStore(fieldName);
+
+    switch (this.context) {
+      case "newsletter":
+        return this.readNewsletterStore(fieldName);
+      case "registration":
+        return this.readRegistrationStore(fieldName);
+      default:
+        return this.readProfileStore(fieldName);
+    }
   }
 
   private readProfileStore(fieldName: string): string | undefined | string[] {
@@ -88,9 +97,39 @@ export class RawField extends UnidyComponent() {
     return field?.value;
   }
 
+  private readRegistrationStore(fieldName: string): string | undefined | string[] {
+    if (fieldName === "email") {
+      return registrationState.email || "";
+    }
+
+    if (fieldName === "password") {
+      return registrationState.password || "";
+    }
+
+    if (fieldName.startsWith("custom_attributes.")) {
+      const key = fieldName.replace("custom_attributes.", "");
+      const value = registrationState.customAttributes[key];
+      return value != null ? String(value) : "";
+    }
+
+    const value = registrationState.profileData[fieldName];
+    return value != null ? String(value) : "";
+  }
+
   private writeStore(fieldName: string, value: string | string[]) {
     if (!fieldName) return;
-    this.context === "newsletter" ? this.writeNewsletterStore(fieldName, value) : this.writeProfileStore(fieldName, value);
+
+    switch (this.context) {
+      case "newsletter":
+        this.writeNewsletterStore(fieldName, value);
+        break;
+      case "registration":
+        this.writeRegistrationStore(fieldName, value);
+        break;
+      default:
+        this.writeProfileStore(fieldName, value);
+        break;
+    }
   }
 
   private writeProfileStore(fieldName: string, value: string | string[]) {
@@ -123,15 +162,57 @@ export class RawField extends UnidyComponent() {
     };
   }
 
+  private writeRegistrationStore(fieldName: string, value: string | string[]) {
+    const stringValue = Array.isArray(value) ? value.join(",") : value;
+
+    if (fieldName === "email") {
+      registrationStore.setEmail(stringValue);
+      return;
+    }
+
+    if (fieldName === "password") {
+      registrationStore.setPassword(stringValue);
+      return;
+    }
+
+    if (fieldName.startsWith("custom_attributes.")) {
+      const key = fieldName.replace("custom_attributes.", "");
+      registrationStore.setCustomAttribute(key, stringValue);
+      return;
+    }
+
+    registrationStore.setProfileField(fieldName, stringValue);
+  }
+
   private getErrors(): Record<string, string> {
-    return this.context === "newsletter" ? newsletterStore.state.additionalFieldErrors : profileState.errors;
+    switch (this.context) {
+      case "newsletter":
+        return newsletterStore.state.additionalFieldErrors;
+      case "registration":
+        return registrationState.errors as Record<string, string>;
+      default:
+        return profileState.errors;
+    }
   }
 
   private setErrors(errors: Record<string, string>) {
-    if (this.context === "newsletter") {
-      newsletterStore.state.additionalFieldErrors = errors;
-    } else {
-      profileState.errors = errors;
+    switch (this.context) {
+      case "newsletter":
+        newsletterStore.state.additionalFieldErrors = errors;
+        break;
+      case "registration":
+        // For registration, we use the store methods for better error handling
+        for (const [field, error] of Object.entries(errors)) {
+          if (error) {
+            registrationStore.setFieldError(field, error);
+          } else {
+            registrationStore.clearFieldError(field);
+          }
+        }
+        break;
+      default:
+        profileState.errors = errors;
+        break;
     }
   }
 

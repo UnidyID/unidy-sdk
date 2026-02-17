@@ -713,27 +713,12 @@ export namespace Components {
         "errorMessages"?: Record<string, string>;
         "for": ErrorField;
     }
-    interface URegistrationField {
-        "ariaDescribedBy"?: string;
-        "componentClassName"?: string;
-        "field": string;
-        "options"?: string | Option[];
-        "pattern"?: string;
-        "patternErrorMessage"?: string;
-        "placeholder"?: string;
-        /**
-          * @default false
-         */
-        "required": boolean;
-        "type"?: string;
-    }
     interface URegistrationNewsletter {
         /**
           * @default false
          */
         "checked": boolean;
         "componentClassName"?: string;
-        "label": string;
         "name": string;
     }
     interface URegistrationNewsletterPreference {
@@ -742,7 +727,6 @@ export namespace Components {
          */
         "checked": boolean;
         "componentClassName"?: string;
-        "label": string;
         "name": string;
         "preference": string;
     }
@@ -1331,12 +1315,6 @@ declare global {
         prototype: HTMLURegistrationErrorElement;
         new (): HTMLURegistrationErrorElement;
     };
-    interface HTMLURegistrationFieldElement extends Components.URegistrationField, HTMLStencilElement {
-    }
-    var HTMLURegistrationFieldElement: {
-        prototype: HTMLURegistrationFieldElement;
-        new (): HTMLURegistrationFieldElement;
-    };
     interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
     }
     var HTMLURegistrationNewsletterElement: {
@@ -1548,7 +1526,6 @@ declare global {
         "u-registration-button": HTMLURegistrationButtonElement;
         "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
         "u-registration-error": HTMLURegistrationErrorElement;
-        "u-registration-field": HTMLURegistrationFieldElement;
         "u-registration-newsletter": HTMLURegistrationNewsletterElement;
         "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
         "u-registration-resend": HTMLURegistrationResendElement;
@@ -2247,27 +2224,12 @@ declare namespace LocalJSX {
         "errorMessages"?: Record<string, string>;
         "for": ErrorField;
     }
-    interface URegistrationField {
-        "ariaDescribedBy"?: string;
-        "componentClassName"?: string;
-        "field": string;
-        "options"?: string | Option[];
-        "pattern"?: string;
-        "patternErrorMessage"?: string;
-        "placeholder"?: string;
-        /**
-          * @default false
-         */
-        "required"?: boolean;
-        "type"?: string;
-    }
     interface URegistrationNewsletter {
         /**
           * @default false
          */
         "checked"?: boolean;
         "componentClassName"?: string;
-        "label": string;
         "name": string;
     }
     interface URegistrationNewsletterPreference {
@@ -2276,7 +2238,6 @@ declare namespace LocalJSX {
          */
         "checked"?: boolean;
         "componentClassName"?: string;
-        "label": string;
         "name": string;
         "preference": string;
     }
@@ -2550,7 +2511,6 @@ declare namespace LocalJSX {
         "u-registration-button": URegistrationButton;
         "u-registration-email-verification": URegistrationEmailVerification;
         "u-registration-error": URegistrationError;
-        "u-registration-field": URegistrationField;
         "u-registration-newsletter": URegistrationNewsletter;
         "u-registration-newsletter-preference": URegistrationNewsletterPreference;
         "u-registration-resend": URegistrationResend;
@@ -2625,7 +2585,6 @@ declare module "@stencil/core" {
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
             "u-registration-error": LocalJSX.URegistrationError & JSXBase.HTMLAttributes<HTMLURegistrationErrorElement>;
-            "u-registration-field": LocalJSX.URegistrationField & JSXBase.HTMLAttributes<HTMLURegistrationFieldElement>;
             "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
             "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
             "u-registration-resend": LocalJSX.URegistrationResend & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
