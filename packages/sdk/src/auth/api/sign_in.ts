@@ -1,3 +1,4 @@
+// TODO: Add e2e test coverage for sign_in API functions (currently only partially covered via auth component tests)
 import type { ApiClientInterface, Payload } from "../../api/base-service";
 import {
   type BrandConnectionRequiredResponse,
