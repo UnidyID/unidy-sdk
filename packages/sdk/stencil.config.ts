@@ -31,6 +31,7 @@ export const config: Config = {
         { src: "oauth/index.html", dest: "oauth/index.html" },
         { src: "auth/single-step.html", dest: "auth/single-step.html" },
         { src: "auth/profile.html", dest: "auth/profile.html" },
+        { src: "auth/registration.html", dest: "auth/registration.html" },
         { src: "profile/partial.html", dest: "profile/partial.html" },
       ],
     },
