@@ -35,9 +35,9 @@
 
 ## Events
 
-| Event          | Description | Type                              |
-| -------------- | ----------- | --------------------------------- |
-| `uFieldSubmit` |             | `CustomEvent<{ field: string; }>` |
+| Event          | Description                                                                                     | Type                              |
+| -------------- | ----------------------------------------------------------------------------------------------- | --------------------------------- |
+| `uFieldSubmit` | Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value. | `CustomEvent<{ field: string; }>` |
 
 
 ## Dependencies

@@ -16,11 +16,11 @@ export class FullProfile {
   /** How to display country codes in select fields: "icon" for flag emoji, "label" for text. */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
-  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
-  @Prop() autosave?: "enabled" | "disabled" = "disabled";
+  /** Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set. */
+  @Prop() enableAutosave = false;
 
-  /** Delay in milliseconds before autosave triggers after the last change. */
-  @Prop() autosaveDelay?: number = 5000;
+  /** Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead. */
+  @Prop() saveDelay?: number;
 
   private profileRef?: HTMLUProfileElement;
 
@@ -49,8 +49,8 @@ export class FullProfile {
         ref={(el) => {
           this.profileRef = el;
         }}
-        autosave={this.autosave}
-        autosaveDelay={this.autosaveDelay}
+        enableAutosave={this.enableAutosave}
+        saveDelay={this.saveDelay}
       >
         {this.list().map((field) => (
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />

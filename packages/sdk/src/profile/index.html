@@ -286,7 +286,7 @@
             <input type="checkbox" id="autosave-toggle" checked class="w-4 h-4 accent-blue-500" onchange="toggleAutosave(this.checked)">
           </label>
         </div>
-        <u-full-profile id="profile" autosave="enabled" fields="email,first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
+        <u-full-profile id="profile" enable-autosave="true" fields="email,first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
           country-code-display-option="icon"></u-full-profile>
       </div>
 
@@ -599,7 +599,7 @@
       if (savedAutosave !== null) {
         const enabled = savedAutosave === 'true';
         document.getElementById('autosave-toggle').checked = enabled;
-        document.getElementById('profile').setAttribute('autosave', enabled ? 'enabled' : 'disabled');
+        document.getElementById('profile').enableAutosave = enabled;
       }
     });
 
@@ -610,7 +610,7 @@
 
     window.toggleAutosave = (enabled) => {
       const profile = document.getElementById('profile');
-      profile.setAttribute('autosave', enabled ? 'enabled' : 'disabled');
+      profile.enableAutosave = enabled;
       localStorage.setItem('demo-autosave', enabled);
     }
   </script>

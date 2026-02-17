@@ -212,24 +212,23 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
-          * Enable or disable autosave. When enabled, profile saves automatically after changes.
-          * @default "disabled"
-         */
-        "autosave"?: "enabled" | "disabled";
-        /**
-          * Delay in milliseconds before autosave triggers after the last change.
-          * @default 5000
-         */
-        "autosaveDelay"?: number;
-        /**
           * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave": boolean;
+        /**
           * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         "submitProfile": () => Promise<void>;
     }
     interface UJumpToService {
@@ -571,15 +570,10 @@ export namespace Components {
     }
     interface UProfile {
         /**
-          * Enable or disable autosave. When enabled, profile saves automatically after changes.
-          * @default "disabled"
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
          */
-        "autosave": "enabled" | "disabled";
-        /**
-          * Delay in milliseconds before autosave triggers after the last change.
-          * @default 5000
-         */
-        "autosaveDelay": number;
+        "enableAutosave": boolean;
         /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
@@ -598,6 +592,10 @@ export namespace Components {
           * Register a field for partial validation tracking. Called by child u-field components when they mount.
          */
         "registerField": (fieldName: string) => Promise<void>;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         "submitProfile": () => Promise<void>;
         /**
           * Unregister a field from partial validation tracking. Called by child u-field components when they unmount.
@@ -1490,24 +1488,23 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
-          * Enable or disable autosave. When enabled, profile saves automatically after changes.
-          * @default "disabled"
-         */
-        "autosave"?: "enabled" | "disabled";
-        /**
-          * Delay in milliseconds before autosave triggers after the last change.
-          * @default 5000
-         */
-        "autosaveDelay"?: number;
-        /**
           * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave"?: boolean;
+        /**
           * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
     }
     interface UJumpToService {
         /**
@@ -1841,15 +1838,10 @@ declare namespace LocalJSX {
     }
     interface UProfile {
         /**
-          * Enable or disable autosave. When enabled, profile saves automatically after changes.
-          * @default "disabled"
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
          */
-        "autosave"?: "enabled" | "disabled";
-        /**
-          * Delay in milliseconds before autosave triggers after the last change.
-          * @default 5000
-         */
-        "autosaveDelay"?: number;
+        "enableAutosave"?: boolean;
         /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
@@ -1884,6 +1876,10 @@ declare namespace LocalJSX {
          */
         "profileId"?: string;
         /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
+        /**
           * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
          */
         "validateFields"?: string;
@@ -1911,6 +1907,9 @@ declare namespace LocalJSX {
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
+        /**
+          * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
+         */
         "onUFieldSubmit"?: (event: URawFieldCustomEvent<{ field: string }>) => void;
         "options"?: string | Option[];
         "pattern"?: string;

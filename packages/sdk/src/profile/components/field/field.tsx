@@ -1,4 +1,4 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { findParentProfile } from "../../../shared/context-utils";
@@ -54,8 +54,6 @@ export class Field extends UnidyComponent() {
   @Prop() patternErrorMessage?: string;
   /** Custom validation function. Returns { valid: boolean, message?: string }. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
-
-  @Element() el!: HTMLElement;
 
   /** Reference to parent u-profile element for field registration */
   private parentProfile: HTMLUProfileElement | null = null;

@@ -7,14 +7,14 @@
 
 ## Properties
 
-| Property            | Attribute            | Description                                                                                                                       | Type                                 | Default      |
-| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------ |
-| `autosave`          | `autosave`           | Enable or disable autosave. When enabled, profile saves automatically after changes.                                              | `"disabled" \| "enabled"`            | `"disabled"` |
-| `autosaveDelay`     | `autosave-delay`     | Delay in milliseconds before autosave triggers after the last change.                                                             | `number`                             | `5000`       |
-| `initialData`       | `initial-data`       | Initial profile data as JSON string or object. If provided, skips fetching from API.                                              | `string \| { [x: string]: string; }` | `""`         |
-| `partialValidation` | `partial-validation` | When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields. | `boolean`                            | `false`      |
-| `profileId`         | `profile-id`         | Optional profile ID for multi-profile scenarios.                                                                                  | `string`                             | `undefined`  |
-| `validateFields`    | `validate-fields`    | Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.                              | `string`                             | `undefined`  |
+| Property            | Attribute            | Description                                                                                                                       | Type                                 | Default     |
+| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------- |
+| `enableAutosave`    | `enable-autosave`    | Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.                 | `boolean`                            | `false`     |
+| `initialData`       | `initial-data`       | Initial profile data as JSON string or object. If provided, skips fetching from API.                                              | `string \| { [x: string]: string; }` | `""`        |
+| `partialValidation` | `partial-validation` | When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields. | `boolean`                            | `false`     |
+| `profileId`         | `profile-id`         | Optional profile ID for multi-profile scenarios.                                                                                  | `string`                             | `undefined` |
+| `saveDelay`         | `save-delay`         | Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.                 | `number`                             | `undefined` |
+| `validateFields`    | `validate-fields`    | Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.                              | `string`                             | `undefined` |
 
 
 ## Events

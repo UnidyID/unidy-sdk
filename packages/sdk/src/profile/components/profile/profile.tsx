@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Element, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
@@ -13,8 +13,6 @@ import { ProfileAutosave } from "./autosave";
 
 @Component({ tag: "u-profile", shadow: false })
 export class Profile {
-  @Element() el!: HTMLElement;
-
   /** Optional profile ID for multi-profile scenarios. */
   @Prop() profileId?: string;
 
@@ -56,15 +54,17 @@ export class Profile {
     this.getAutosaveManager().submitField(event.detail.field);
   }
 
-  /** Enable or disable autosave. When enabled, profile saves automatically after changes. */
-  @Prop() autosave: "enabled" | "disabled" = "disabled";
+  /** Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set. */
+  @Prop() enableAutosave = false;
 
-  /** Delay in milliseconds before autosave triggers after the last change. */
-  @Prop() autosaveDelay = 5000;
+  /** Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead. */
+  @Prop() saveDelay?: number;
 
-  private autosaveManager: ProfileAutosave | null = null;
+  private autoSaveManager: ProfileAutosave | null = null;
   private dataChangeUnsubscribe: (() => void) | null = null;
+  private activeFieldUnsubscribe: (() => void) | null = null;
   private initialLoadComplete = false;
+  private previousActiveField: string | null = null;
 
   /**
    * Fields registered by child u-field components for partial validation.
@@ -146,10 +146,10 @@ export class Profile {
   }
 
   private getAutosaveManager(): ProfileAutosave {
-    if (!this.autosaveManager) {
-      this.autosaveManager = new ProfileAutosave(this.autosaveDelay, () => this.submitProfile());
+    if (!this.autoSaveManager) {
+      this.autoSaveManager = new ProfileAutosave(this.saveDelay ?? 0, () => this.submitProfile());
     }
-    return this.autosaveManager;
+    return this.autoSaveManager;
   }
 
   @Method()
@@ -224,23 +224,33 @@ export class Profile {
     // Set flag before listener to avoid race condition if store emits synchronously
     this.initialLoadComplete = true;
 
-    // Set up data change listener - always emit event, optionally autosave
+    // Set up data change listener - always emit event, optionally debounced autosave
     this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
       if (this.initialLoadComplete) {
-        // Always emit change event so external consumers can listen
         this.uProfileChange.emit({ data: data as ProfileRaw });
 
-        // Only autosave if enabled
-        if (this.autosave === "enabled") {
+        // Only use debounced autosave if delay is explicitly set
+        if (this.enableAutosave && this.saveDelay) {
           this.getAutosaveManager().debouncedSave();
         }
       }
     });
+
+    // Save on blur: when activeField goes from a field to null, trigger save
+    if (this.enableAutosave && !this.saveDelay) {
+      this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {
+        if (this.previousActiveField && field === null) {
+          this.getAutosaveManager().submitField(this.previousActiveField);
+        }
+        this.previousActiveField = field;
+      });
+    }
   }
 
   disconnectedCallback() {
-    this.autosaveManager?.destroy();
+    this.autoSaveManager?.destroy();
     this.dataChangeUnsubscribe?.();
+    this.activeFieldUnsubscribe?.();
     profileState.activeField = null;
   }
 

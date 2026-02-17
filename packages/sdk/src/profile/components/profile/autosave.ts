@@ -19,10 +19,14 @@ export class ProfileAutosave {
       clearTimeout(this.timeoutId);
     }
 
-    this.timeoutId = setTimeout(() => {
+    this.timeoutId = setTimeout(async () => {
       const hasErrors = Object.keys(profileState.errors).length > 0;
-      if (hasProfileChanged() && !profileState.loading && !hasErrors) {
-        this.onSubmit();
+      if (hasProfileChanged() && !profileState.loading && !hasErrors && !this.isSubmitting) {
+        try {
+          await this.onSubmit();
+        } catch {
+          // Error already handled by submitProfile
+        }
       }
     }, this.delay);
   };

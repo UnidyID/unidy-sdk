@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { type ComponentContext, detectContext } from "../../../shared/context-utils";
@@ -38,8 +38,7 @@ export class RawField extends UnidyComponent() {
   @Prop() patternErrorMessage?: string;
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  @Element() el!: HTMLElement;
-
+  /** Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value. */
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
   @State() selected?: string | string[];
@@ -274,7 +273,7 @@ export class RawField extends UnidyComponent() {
     }
 
     const result = this.validateValue(newValue);
-    const newErrors = { ...profileState.errors };
+    const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
@@ -283,7 +282,7 @@ export class RawField extends UnidyComponent() {
       newErrors[this.field] = result.message;
     }
 
-    profileState.errors = newErrors;
+    this.setErrors(newErrors);
   };
 
   private onEnterSubmit = () => {
