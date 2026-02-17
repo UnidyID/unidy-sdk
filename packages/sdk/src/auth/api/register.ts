@@ -242,10 +242,7 @@ export async function updateRegistration(
   return handleResponse(response, () => {
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
-      return [
-        error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record",
-        error_response,
-      ];
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record", error_response];
     }
 
     return [null, RegistrationFlowResponseSchema.parse(response.data)];

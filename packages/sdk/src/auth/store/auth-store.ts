@@ -1,8 +1,8 @@
 import { createStore } from "@stencil/store";
 import { unidyState } from "../../shared/store/unidy-store";
 import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
-import type { SigninRoot } from "../components/signin-root/signin-root";
 import { Auth } from "../auth";
+import type { SigninRoot } from "../components/signin-root/signin-root";
 
 export type AuthStep =
   | "email"
