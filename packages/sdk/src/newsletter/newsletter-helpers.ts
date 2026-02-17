@@ -166,7 +166,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     captchaToken = captchaResult?.token;
   } catch (captchaError) {
     logger.error("Captcha execution failed:", captchaError);
-    Flash.error.addMessage(t("captcha_execution_failed"));
+    Flash.error.addMessage(t("errors.captcha_execution_failed"));
     return false;
   }
 
@@ -203,7 +203,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
 
   if (error && isCaptchaError(error)) {
     captchaManager.reset();
-    Flash.error.addMessage(t(error));
+    Flash.error.addMessage(t(`errors.${error}`));
     return false;
   }
 

@@ -113,6 +113,7 @@ class CaptchaManager {
       } catch (error) {
         logger.error("Failed to initialize captcha provider:", error);
         this.provider = null;
+        this.initPromise = null;
         throw error;
       }
     })();

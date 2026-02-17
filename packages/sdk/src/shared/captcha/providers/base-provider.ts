@@ -60,6 +60,9 @@ export abstract class BaseCaptchaProvider implements CaptchaProviderInterface {
             this.loaded = true;
             resolve();
           });
+        } else {
+          this.loadPromise = null;
+          reject(new Error(`${this.provider} script found in DOM but global not available`));
         }
         return;
       }
