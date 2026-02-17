@@ -8,10 +8,7 @@ export type { CommonErrors } from "../../api/base-service";
  * Type for the handleResponse function from BaseService.
  * Standalone API functions receive this as a dependency from AuthService.
  */
-export type HandleResponseFn = <T>(
-  response: ApiResponse<unknown>,
-  handler: () => T,
-) => T | CommonErrors;
+export type HandleResponseFn = <T>(response: ApiResponse<unknown>, handler: () => T) => T | CommonErrors;
 
 /**
  * Builds an endpoint path with optional rid (registration_id) query parameter.

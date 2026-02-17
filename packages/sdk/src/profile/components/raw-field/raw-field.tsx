@@ -42,7 +42,6 @@ export class RawField extends UnidyComponent() {
 
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
-
   @State() selected?: string | string[];
 
   private get context(): ComponentContext | null {

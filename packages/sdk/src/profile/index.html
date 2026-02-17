@@ -608,7 +608,7 @@
       config.setAttribute('locale', locale);
     }
 
-    window.toggleAutosave = function(enabled) {
+    window.toggleAutosave = (enabled) => {
       const profile = document.getElementById('profile');
       profile.setAttribute('autosave', enabled ? 'enabled' : 'disabled');
       localStorage.setItem('demo-autosave', enabled);

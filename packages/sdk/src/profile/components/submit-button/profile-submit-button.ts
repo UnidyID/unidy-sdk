@@ -1,6 +1,6 @@
 import type { SubmitButtonContext } from "../../../shared/components/submit-button/context";
-import { hasProfileChanged } from "../../profile-helpers";
 import { findParentProfile } from "../../../shared/context-utils";
+import { hasProfileChanged } from "../../profile-helpers";
 import { state as profileState } from "../../store/profile-store";
 
 export const profileContext: SubmitButtonContext = {
