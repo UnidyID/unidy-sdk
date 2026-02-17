@@ -47,7 +47,7 @@ const RegistrationFlowResponseSchema = z.object({
   newsletter_preferences: z.record(z.string(), z.array(z.string())).nullable(),
   registration_profile_data: z.record(z.string(), z.unknown()).nullable(),
   social_provider: z.string().nullable(),
-  status: z.string(),
+  status: z.record(z.string(), z.boolean()),
   created_at: z.string(),
   updated_at: z.string(),
   expires_at: z.string(),
@@ -118,7 +118,7 @@ function parseErrorResponse(data: unknown): ErrorResponse {
   return parsed.success ? parsed.data : { error_identifier: "unknown_error" };
 }
 
-// Options type for registration methods (optional rid parameter)
+// Options type for registration methods (rid = registration_id, parallel to sid = sign_in_id)
 export type RegistrationOptions = {
   rid?: string;
 };

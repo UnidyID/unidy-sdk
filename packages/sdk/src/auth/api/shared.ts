@@ -14,7 +14,8 @@ export type HandleResponseFn = <T>(
 ) => T | CommonErrors;
 
 /**
- * Builds an endpoint path with optional rid query parameter.
+ * Builds an endpoint path with optional rid (registration_id) query parameter.
+ * Parallel to sid (sign_in_id) used in the sign-in flow.
  * Uses URL API to safely handle existing query parameters.
  */
 export function withRid(baseUrl: string, path: string, rid?: string): string {
