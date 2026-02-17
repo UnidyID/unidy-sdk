@@ -25,7 +25,7 @@ export class RegistrationField {
   @Prop({ attribute: "class-name" }) componentClassName?: string;
   @Prop({ attribute: "aria-described-by" }) ariaDescribedBy?: string;
 
-  @State() localValue: string = "";
+  @State() localValue = "";
 
   componentWillLoad() {
     if (!this.field) {

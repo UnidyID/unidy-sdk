@@ -1,7 +1,7 @@
-import { Component, h, Prop, Event, type EventEmitter, Method } from "@stencil/core";
+import { Component, Event, type EventEmitter, Method, Prop, h } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
-import { registrationStore, registrationState } from "../../store/registration-store";
 import { Registration } from "../../registration";
+import { registrationState, registrationStore } from "../../store/registration-store";
 
 @Component({
   tag: "u-registration-root",
@@ -10,7 +10,7 @@ import { Registration } from "../../registration";
 export class RegistrationRoot {
   @Prop({ attribute: "registration-url" }) registrationUrl!: string;
   @Prop({ attribute: "brand-id" }) brandId?: number;
-  @Prop() steps: string = "[]";
+  @Prop() steps = "[]";
   @Prop({ attribute: "auto-resume" }) autoResume = true;
 
   @Event() registrationComplete!: EventEmitter<RegistrationFlowResponse>;
@@ -89,9 +89,7 @@ export class RegistrationRoot {
     let nextIndex = registrationState.currentStepIndex + 1;
 
     while (nextIndex < steps.length) {
-      if (!this.shouldSkipStep(steps[nextIndex])) {
-        break;
-      }
+      // TODO: Add skipping logic
       nextIndex++;
     }
 
@@ -112,10 +110,6 @@ export class RegistrationRoot {
   @Method()
   async isComplete(): Promise<boolean> {
     return registrationState.flowResponse?.status === "completed";
-  }
-
-  private shouldSkipStep(_stepName: string): boolean {
-    return false;
   }
 
   render() {

@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from "@stencil/core";
+import { Component, Prop, State, h } from "@stencil/core";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
 @Component({
@@ -8,7 +8,6 @@ import { registrationState, registrationStore } from "../../store/registration-s
 })
 export class RegistrationNewsletter {
   @Prop() name!: string;
-  @Prop() label!: string;
   @Prop() checked = false;
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
@@ -42,16 +41,6 @@ export class RegistrationNewsletter {
   };
 
   render() {
-    return (
-      <label htmlFor={this.name} class={this.componentClassName}>
-        <input
-          id={this.name}
-          type="checkbox"
-          checked={this.isChecked}
-          onChange={this.handleChange}
-        />
-        {this.label}
-      </label>
-    );
+    return <input class={this.componentClassName} name={this.name} type="checkbox" checked={this.isChecked} onChange={this.handleChange} />;
   }
 }

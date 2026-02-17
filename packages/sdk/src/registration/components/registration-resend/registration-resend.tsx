@@ -10,7 +10,7 @@ import { Registration } from "../../registration";
 export class RegistrationResend {
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() countdown: number = 0;
+  @State() countdown = 0;
 
   private registrationInstance: Registration | null = null;
   private countdownInterval: ReturnType<typeof setInterval> | null = null;

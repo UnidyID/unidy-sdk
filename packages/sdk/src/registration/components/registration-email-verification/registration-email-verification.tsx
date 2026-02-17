@@ -1,6 +1,6 @@
-import { Component, h, State, Prop } from "@stencil/core";
-import { registrationState, registrationStore } from "../../store/registration-store";
+import { Component, Prop, State, h } from "@stencil/core";
 import { Registration } from "../../registration";
+import { registrationState, registrationStore } from "../../store/registration-store";
 
 const CODE_LENGTH = 6;
 
@@ -19,6 +19,7 @@ export class RegistrationEmailVerification {
 
   private registrationInstance: Registration | null = null;
   private inputRefs: HTMLInputElement[] = [];
+  private readonly inputKeys = Array.from({ length: CODE_LENGTH }, (_, index) => `digit-${index}`);
 
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
@@ -107,13 +108,13 @@ export class RegistrationEmailVerification {
 
     return (
       <div class={this.componentClassName}>
-        {this.code.map((digit, index) => (
+        {this.inputKeys.map((key, index) => (
           <input
-            key={index}
+            key={key}
             type="text"
             inputMode="numeric"
             maxLength={1}
-            value={digit}
+            value={this.code[index]}
             disabled={isLoading || this.isVerifying || registrationState.emailVerified}
             class={this.inputClassName}
             onInput={(e) => this.handleInput(index, e)}
