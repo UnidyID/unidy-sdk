@@ -212,11 +212,15 @@ export class RawField extends UnidyComponent() {
   };
 
   private onFocusField = () => {
-    profileState.activeField = this.field;
+    if (this.context !== "newsletter") {
+      profileState.activeField = this.field;
+    }
   };
 
   private onBlurField = (e: Event) => {
-    profileState.activeField = null;
+    if (this.context !== "newsletter") {
+      profileState.activeField = null;
+    }
 
     const input = e.target as HTMLInputElement | HTMLTextAreaElement;
     const val = input.value;
@@ -234,19 +238,23 @@ export class RawField extends UnidyComponent() {
   };
 
   private onBlurSelect = () => {
-    profileState.activeField = null;
+    if (this.context !== "newsletter") {
+      profileState.activeField = null;
+    }
   };
 
-  private onInputField = (newValue: string) => {
-    this.selected = newValue;
-
-    // Clear saved state if user starts editing again
-    if (profileState.fieldSaveStates[this.field] === "saved") {
+  private clearFieldSavedState() {
+    if (this.context !== "newsletter" && profileState.fieldSaveStates[this.field] === "saved") {
       profileState.fieldSaveStates = {
         ...profileState.fieldSaveStates,
         [this.field]: "idle",
       };
     }
+  }
+
+  private onInputField = (newValue: string) => {
+    this.selected = newValue;
+    this.clearFieldSavedState();
 
     const result = this.validateValue(newValue);
     const newErrors = { ...this.getErrors() };
@@ -263,14 +271,7 @@ export class RawField extends UnidyComponent() {
 
   private onChangeSelect = (newValue: string) => {
     this.selected = newValue;
-
-    // Clear saved state if user changes selection again
-    if (profileState.fieldSaveStates[this.field] === "saved") {
-      profileState.fieldSaveStates = {
-        ...profileState.fieldSaveStates,
-        [this.field]: "idle",
-      };
-    }
+    this.clearFieldSavedState();
 
     const result = this.validateValue(newValue);
     const newErrors = { ...this.getErrors() };
@@ -286,8 +287,7 @@ export class RawField extends UnidyComponent() {
   };
 
   private onEnterSubmit = () => {
-    // Only emit if there are no validation errors for this field
-    if (!profileState.errors[this.field]) {
+    if (!this.getErrors()[this.field]) {
       this.uFieldSubmit.emit({ field: this.field });
     }
   };
