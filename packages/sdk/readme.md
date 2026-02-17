@@ -6,7 +6,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Quick Start: Examples](quick-start-examples.md#quick-start-examples)
+- [Quick Start: Examples](./quick-start-examples.md#quick-start-examples)
 - [Swagger API Docs](https://demo.unidy.io/swagger/sdk/html?urls.primaryName=SDK+API+V1)
 - [Components](#components)
   - [Core Components](#core-components)
@@ -17,10 +17,26 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
   - [Ticket & Subscription Components](#ticket--subscription-components)
 - [API Reference](#api-reference)
   - [Auth Class](#auth-class)
+  - [UnidyClient](#unidyclient)
+  - [ProfileService](#profileservice)
+  - [NewsletterService](#newsletterservice)
+  - [Ticketable API](#ticketable-api)
+  - [Flash Messages](#flash-messages)
+  - [State Stores](#state-stores)
+  - [Standalone Client](#standalone-client)
   - [Types](#types)
 - [Styling](#styling)
 - [Internationalization (i18n)](#internationalization-i18n)
 - [Advanced Usage: `<u-raw-field>`](#advanced-usage-u-raw-field)
+- [Troubleshooting & FAQ](#troubleshooting--faq)
+- [Token Management & Session Handling](#token-management--session-handling)
+- [Newsletter Preference Token Flow](#newsletter-preference-token-flow)
+- [Complete State Management Reference](#complete-state-management-reference)
+- [Utility Functions](#utility-functions)
+- [Authentication Step Transitions](#authentication-step-transitions)
+- [Browser Compatibility](#browser-compatibility)
+- [Accessibility (a11y)](#accessibility-a11y)
+- [Security Best Practices](#security-best-practices)
 
 ## Prerequisites
 
@@ -271,6 +287,33 @@ Renders a button that redirects users to the Unidy registration page. This butto
 
 -   `registration-content`: A slot for displaying content before the registration button (e.g., explanatory text).
 
+#### `<u-back-button>`
+
+Renders a navigation button that allows users to go back to the previous step in the authentication flow, or restart the entire flow.
+
+**Attributes:**
+
+-   `restart`: If `true`, restarts the entire flow instead of going back one step. Use this for "Start over" buttons. Defaults to `false`.
+-   `class-name`: A string of classes to pass to the button.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button text. If not provided, displays "Back" (or "Start over" if `restart` is `true`).
+
+**Example:**
+
+```html
+<u-signin-step name="verification">
+  <u-back-button class-name="text-blue-500">← Back</u-back-button>
+  <!-- rest of verification step -->
+</u-signin-step>
+
+<u-signin-step name="reset-password">
+  <u-back-button restart class-name="text-blue-500">← Start over</u-back-button>
+  <!-- rest of reset password step -->
+</u-signin-step>
+```
+
 #### `<u-social-login-button>`
 
 Renders a button for logging in with a social provider.
@@ -443,6 +486,8 @@ This component renders a form for users to view and edit their profile data. It 
 
 -   `profileId`: An optional ID for the profile.
 -   `initialData`: Initial profile data, either as a JSON string or a JavaScript object.
+-   `partialValidation`: When `true`, only validates and submits fields that are rendered as `<u-field>` components. Use this when your form shows only a subset of profile fields to avoid validation errors for required fields not in your UI. Defaults to `false`.
+-   `validateFields`: A comma-separated list of field names to validate. Overrides auto-detection when `partialValidation` is `true`.
 
 **Methods:**
 
@@ -456,6 +501,17 @@ This component renders a form for users to view and edit their profile data. It 
 **Slots:**
 
 - The default slot allows you to provide the content to be rendered within the profile component.
+
+**Example: Partial validation**
+
+```html
+<!-- Only first_name and email will be validated/submitted -->
+<u-profile partial-validation="true">
+  <u-field field="first_name"></u-field>
+  <u-field field="email"></u-field>
+  <u-submit-button>Save</u-submit-button>
+</u-profile>
+```
 
 #### `<u-field>`
 
@@ -752,7 +808,7 @@ Displays the current page and the total number of pages.
 
 **Attributes:**
 
--   `custom-class`: A string of classes to pass to the span element.
+-   `class-name`: A string of classes to pass to the span element.
 
 #### `<u-pagination-button>`
 
@@ -761,7 +817,7 @@ Renders a button to navigate to the previous or next page.
 **Attributes:**
 
 -   `direction` (required): The direction of the button. Can be `prev` or `next`.
--   `custom-class`: A string of classes to pass to the button element.
+-   `class-name`: A string of classes to pass to the button element.
 
 **Slots:**
 
@@ -774,7 +830,7 @@ Renders a button to export a ticket or subscription to a file format (e.g., PDF 
 **Attributes:**
 
 -   `format` (required): The export format. Can be `"pdf"` or `"pkpass"` (Apple Wallet).
--   `custom-class`: A string of classes to pass to the button element.
+-   `class-name`: A string of classes to pass to the button element.
 -   `exportable`: Whether the export is available. Defaults to `true`. Set to `false` to disable the export button.
 
 **Events:**
@@ -796,10 +852,10 @@ Renders a button to export a ticket or subscription to a file format (e.g., PDF 
       <p><ticketable-value name="starts_at" date-format="dd.MM.yyyy HH:mm"></ticketable-value></p>
 
       <div class="export-buttons">
-        <u-ticketable-export format="pdf" custom-class="btn btn-primary">
+        <u-ticketable-export format="pdf" class-name="btn btn-primary">
           Download PDF
         </u-ticketable-export>
-        <u-ticketable-export format="pkpass" custom-class="btn btn-secondary">
+        <u-ticketable-export format="pkpass" class-name="btn btn-secondary">
           Add to Wallet
         </u-ticketable-export>
       </div>
@@ -847,7 +903,7 @@ Checks if the user has a valid, non-expired token. If the token is expired, it w
 
 Retrieves the current JWT access token. If the token is expired, it automatically attempts to refresh it. This ensures that any backend request made with this token is always using a valid token if a refresh is possible.
 
-#### `auth.userData(): Promise<TokenPayload | null>`
+#### `auth.userTokenPayload(): Promise<TokenPayload | null>`
 
 Retrieves the decoded user data from the JWT. This method also benefits from the automatic token refresh, ensuring the data is from a valid session.
 
@@ -859,6 +915,110 @@ Returns the email address that was used during the sign-in flow.
 
 Logs the user out by invalidating the session and clearing all stored tokens.
 
+#### `auth.goBack(): boolean`
+
+Navigates to the previous step in the authentication flow. Returns `true` if navigation was successful, `false` if there's no previous step to return to. This is used internally by `<u-back-button>`.
+
+#### `auth.restart(): void`
+
+Restarts the authentication flow from the beginning while preserving the user's email and login options. This is used internally by `<u-back-button restart>`.
+
+### UnidyClient
+
+The `UnidyClient` class provides access to all SDK services. Use `getUnidyClient()` to get a configured instance.
+
+#### `getUnidyClient(): UnidyClient`
+
+Returns a singleton instance of the `UnidyClient`. This function requires `<u-config>` to be initialized first.
+
+```javascript
+import { getUnidyClient } from '@unidy.io/sdk';
+
+const client = getUnidyClient();
+const [error, profile] = await client.profile.get();
+```
+
+#### `UnidyClient` Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `auth` | `AuthService` | Authentication service for sign-in flows |
+| `profile` | `ProfileService` | User profile management |
+| `newsletters` | `NewsletterService` | Newsletter subscription management |
+| `tickets` | `TicketsService` | Ticket management |
+| `subscriptions` | `SubscriptionsService` | Subscription management |
+
+### ProfileService
+
+The `ProfileService` provides methods for fetching and updating user profiles.
+
+#### `profile.get(): Promise<ProfileGetResult>`
+
+Fetches the current user's profile data. Requires authentication.
+
+```javascript
+const [error, profile] = await getUnidyClient().profile.get();
+if (!error) {
+  console.log(profile.first_name.value);
+}
+```
+
+#### `profile.update(args: { payload: object }): Promise<ProfileUpdateResult>`
+
+Updates the current user's profile. Returns the updated profile data.
+
+```javascript
+const [error, updatedProfile] = await getUnidyClient().profile.update({
+  payload: { first_name: 'John', last_name: 'Doe' }
+});
+```
+
+### NewsletterService
+
+The `NewsletterService` provides methods for managing newsletter subscriptions.
+
+#### `newsletters.create(args): Promise<NewsletterCreateResult>`
+
+Creates newsletter subscriptions for a user.
+
+```javascript
+const [error, result] = await getUnidyClient().newsletters.create({
+  payload: { email: 'user@example.com', newsletters: ['weekly-digest'] }
+});
+```
+
+#### `newsletters.list(args?): Promise<NewsletterListResult>`
+
+Lists all subscriptions for the authenticated user.
+
+#### `newsletters.get(args): Promise<NewsletterGetResult>`
+
+Gets a specific subscription by newsletter internal name.
+
+#### `newsletters.update(args): Promise<NewsletterUpdateResult>`
+
+Updates a subscription's preferences.
+
+#### `newsletters.delete(args): Promise<NewsletterDeleteResult>`
+
+Deletes a subscription.
+
+#### `newsletters.resendDoi(args): Promise<NewsletterResendDoiResult>`
+
+Resends the double opt-in confirmation email.
+
+#### `newsletters.sendLoginEmail(args): Promise<NewsletterSendLoginEmailResult>`
+
+Sends a login email for newsletter preference management.
+
+#### `newsletters.listAll(): Promise<NewsletterListAllResult>`
+
+Lists all available newsletters (public, no auth required).
+
+#### `newsletters.getByName(args): Promise<NewsletterGetByNameResult>`
+
+Gets a newsletter definition by its internal name (public, no auth required).
+
 ### Ticketable API
 
 The SDK provides two service classes for interacting with the `ticketable` API: `TicketsService` and `SubscriptionsService`.
@@ -867,11 +1027,100 @@ The SDK provides two service classes for interacting with the `ticketable` API: 
 
 -   `list(args: object, params?: TicketsListParams): Promise<ApiResponse<TicketsListResponse>>`: Fetches a paginated list of tickets.
 -   `get(args: { id: string }): Promise<ApiResponse<Ticket>>`: Fetches a single ticket by its ID.
+-   `getExportLink(args: { id: string, format: 'pdf' | 'pkpass' }): Promise<ApiResponse<{ url: string }>>`: Gets an export link for the ticket.
 
 #### `SubscriptionsService`
 
 -   `list(args: object, params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>>`: Fetches a paginated list of subscriptions.
 -   `get(args: { id: string }): Promise<ApiResponse<Subscription>>`: Fetches a single subscription by its ID.
+-   `getExportLink(args: { id: string, format: 'pdf' | 'pkpass' }): Promise<ApiResponse<{ url: string }>>`: Gets an export link for the subscription.
+
+### Flash Messages
+
+The `Flash` class provides a simple API for displaying temporary messages to users. Messages are automatically displayed by the `<u-flash-message>` component.
+
+```javascript
+import { Flash } from '@unidy.io/sdk';
+
+// Add messages
+Flash.success.addMessage('Profile saved successfully!');
+Flash.error.addMessage('Something went wrong.');
+Flash.info.addMessage('Please check your email.');
+
+// Remove a specific message by ID
+const id = Flash.success.addMessage('Saved!');
+Flash.remove(id);
+
+// Clear all messages of a specific type
+Flash.clear('error');
+
+// Clear all messages
+Flash.clear();
+```
+
+### State Stores
+
+The SDK exposes reactive state stores for advanced use cases. These allow you to subscribe to state changes or access current state directly.
+
+#### Auth State
+
+```javascript
+import { authState, authStore, onAuthChange } from '@unidy.io/sdk';
+
+// Read current state
+console.log(authState.authenticated);
+console.log(authState.email);
+
+// Subscribe to changes
+const unsubscribe = onAuthChange('authenticated', (isAuthenticated) => {
+  console.log('Auth state changed:', isAuthenticated);
+});
+
+// Available state properties:
+// - authenticated: boolean
+// - email: string
+// - step: 'email' | 'verification' | 'magic-code' | 'reset-password' | ...
+// - loading: boolean
+// - errors: Record<string, string>
+```
+
+#### Profile State
+
+```javascript
+import { profileState, profileStore, onProfileChange } from '@unidy.io/sdk';
+
+// Read current state
+console.log(profileState.data);
+console.log(profileState.loading);
+
+// Subscribe to changes
+const unsubscribe = onProfileChange('data', (profileData) => {
+  console.log('Profile updated:', profileData);
+});
+```
+
+### Standalone Client
+
+For use outside of browser environments (e.g., Node.js, serverless functions), use the standalone client which has no browser-specific dependencies.
+
+```javascript
+import { createStandaloneClient } from '@unidy.io/sdk/standalone';
+
+const client = createStandaloneClient({
+  baseUrl: 'https://your-unidy-instance.com',
+  apiKey: 'your-api-key',
+  // Optional: inject custom dependencies
+  deps: {
+    logger: console,
+    errorReporter: { captureException: (e) => console.error(e) },
+    getIdToken: async () => 'user-jwt-token', // For authenticated requests
+    getLocale: () => 'en',
+  },
+});
+
+// Use the same service APIs
+const [error, newsletters] = await client.newsletters.listAll();
+```
 
 ### Types
 
@@ -1129,4 +1378,807 @@ This component is best used when you need to integrate with a design system or a
     ]'
   ></u-raw-field>
 </div>
+```
+
+## Troubleshooting & FAQ
+
+### Configuration Issues
+
+#### "baseUrl and apiKey are required"
+
+The `<u-config>` component requires both `base-url` and `api-key` attributes. Ensure they are set correctly:
+
+```html
+<u-config
+  base-url="https://your-tenant.unidy.io"
+  api-key="your-api-key-here"
+  locale="en"
+></u-config>
+```
+
+#### "Only one `<u-config>` element is allowed per page"
+
+The SDK only supports a single `<u-config>` element. If you're using a SPA framework, ensure the config component isn't duplicated across route changes. Place it once at the root level of your application.
+
+#### CORS errors when connecting to the Unidy backend
+
+Ensure your domain is whitelisted in your Unidy SDK client configuration. Contact your Unidy administrator to add your domain to the allowed origins list.
+
+---
+
+### Authentication Problems
+
+#### Session not persisting after page reload
+
+Add `check-signed-in="true"` to your `<u-config>` to automatically restore authentication state:
+
+```html
+<u-config
+  base-url="https://your-tenant.unidy.io"
+  api-key="your-api-key"
+  check-signed-in="true"
+></u-config>
+```
+
+#### Social login redirects to wrong page
+
+Specify the `redirect-uri` attribute on your social login button:
+
+```html
+<u-social-login-button
+  provider="google"
+  redirect-uri="https://your-site.com/auth/callback"
+></u-social-login-button>
+```
+
+#### Magic code not arriving
+
+- Check your spam folder
+- The magic code has a cooldown period (typically 60 seconds) between requests
+- Verify the email address is correct in `authState.email`
+
+#### Token refresh failures
+
+Token refresh happens automatically. If you're seeing unauthorized errors:
+- Check that your API key is valid
+- Ensure the user's session hasn't been revoked server-side
+- Use `Auth.getInstance().logout()` and have the user sign in again
+
+---
+
+### Component Visibility Issues
+
+#### Components not rendering
+
+Most SDK components require a parent context. Ensure components are nested correctly:
+
+```html
+<!-- Auth components need u-signin-root -->
+<u-signin-root>
+  <u-signin-step name="email">
+    <u-email-field></u-email-field>
+    <u-submit-button></u-submit-button>
+  </u-signin-step>
+</u-signin-root>
+
+<!-- Profile components need u-profile -->
+<u-profile>
+  <u-field field="first_name"></u-field>
+  <u-submit-button></u-submit-button>
+</u-profile>
+
+<!-- Newsletter components need u-newsletter-root -->
+<u-newsletter-root>
+  <u-email-field></u-email-field>
+  <u-newsletter-checkbox internal-name="weekly-digest"></u-newsletter-checkbox>
+</u-newsletter-root>
+```
+
+#### `<u-signin-step>` not showing the expected step
+
+Steps are shown based on `authState.step`. Check the current step value:
+
+```javascript
+import { authState } from '@unidy.io/sdk';
+console.log('Current step:', authState.step);
+// Possible values: 'email', 'verification', 'magic-code', 'reset-password', 'registration', 'missing-fields', 'single-login'
+```
+
+#### `<u-signed-in>` content not showing/hiding correctly
+
+- Content shows when authenticated: `<u-signed-in>...</u-signed-in>`
+- Content shows when NOT authenticated: `<u-signed-in not>...</u-signed-in>`
+
+```html
+<u-signed-in>
+  <p>Welcome back!</p>
+  <u-logout-button>Sign Out</u-logout-button>
+</u-signed-in>
+
+<u-signed-in not>
+  <p>Please sign in to continue.</p>
+</u-signed-in>
+```
+
+---
+
+### Profile & Form Issues
+
+#### Profile fields not loading
+
+Profile data only loads when the user is authenticated:
+
+```html
+<u-signed-in>
+  <u-profile>
+    <u-field field="first_name"></u-field>
+  </u-profile>
+</u-signed-in>
+```
+
+#### Custom attributes not displaying
+
+Use the `custom_attributes.` prefix for custom fields:
+
+```html
+<u-field field="custom_attributes.favorite_color"></u-field>
+<u-field field="custom_attributes.membership_level"></u-field>
+```
+
+#### Form validation errors not displaying
+
+Add `<u-error-message>` components for each field:
+
+```html
+<u-field field="email"></u-field>
+<u-error-message for="email"></u-error-message>
+
+<u-field field="phone_number"></u-field>
+<u-error-message for="phone_number"></u-error-message>
+```
+
+---
+
+### Newsletter Subscription Issues
+
+#### "consent_required" error
+
+When using `<u-newsletter-consent-checkbox>`, users must check it before subscribing:
+
+```html
+<u-newsletter-root>
+  <u-email-field></u-email-field>
+  <u-newsletter-checkbox internal-name="weekly-digest"></u-newsletter-checkbox>
+
+  <label>
+    <u-newsletter-consent-checkbox></u-newsletter-consent-checkbox>
+    I agree to receive newsletters
+  </label>
+
+  <u-submit-button></u-submit-button>
+</u-newsletter-root>
+```
+
+#### Newsletter checkbox disabled after subscription
+
+This is expected behavior. Once subscribed, the checkbox is disabled to prevent accidental unsubscription. Users can manage preferences through the preference center (accessed via the link in newsletter emails).
+
+#### Preference token handling
+
+When users access the preference center via email link, the SDK automatically extracts `preference_token` and `email` from the URL and populates the newsletter state.
+
+---
+
+### Ticketable (Tickets & Subscriptions) Issues
+
+#### Template not rendering any items
+
+Ensure you have a `<template>` element inside `<u-ticketable-list>`:
+
+```html
+<u-ticketable-list ticketable-type="ticket">
+  <template>
+    <div class="ticket-card">
+      <ticketable-value name="reference"></ticketable-value>
+      <ticketable-value name="state"></ticketable-value>
+    </div>
+  </template>
+</u-ticketable-list>
+```
+
+#### `<ticketable-value>` showing empty or wrong data
+
+Check the path syntax:
+- Simple fields: `name="reference"`, `name="state"`, `name="price"`
+- Nested fields: `name="metadata.custom_field"`
+- Array access: `name="wallet_export.[0].address"`
+
+```html
+<ticketable-value name="starts_at" date-format="dd MMM yyyy"></ticketable-value>
+<ticketable-value name="price"></ticketable-value>
+<ticketable-value name="metadata.seat_number" default="N/A"></ticketable-value>
+```
+
+#### Export button always disabled
+
+The export button is disabled when `exportable_to_wallet` is `false` on the ticket/subscription. This is controlled by your Unidy backend configuration.
+
+---
+
+### Styling Issues
+
+#### Tailwind CSS classes not working
+
+The SDK's utility classes (prefixed with `u:`) require the SDK's CSS file. For custom Tailwind classes, ensure Tailwind is configured in your project:
+
+```html
+<!-- SDK styles (required) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.css">
+
+<!-- Your Tailwind styles (optional, for custom styling) -->
+<link rel="stylesheet" href="/your-tailwind-output.css">
+```
+
+#### Cannot style shadow DOM components
+
+Some components like `<u-field>` use Shadow DOM. Use CSS `::part()` selectors:
+
+```css
+u-field::part(input_field) {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+u-field::part(field_label) {
+  font-weight: bold;
+}
+
+u-field::part(field-error-message) {
+  color: red;
+}
+```
+
+#### `class-name` vs `class` attribute
+
+SDK components use `class-name` (not `class`) to pass CSS classes:
+
+```html
+<!-- Correct -->
+<u-submit-button class-name="bg-blue-500 text-white px-4 py-2">Submit</u-submit-button>
+
+<!-- Won't work as expected -->
+<u-submit-button class="bg-blue-500 text-white px-4 py-2">Submit</u-submit-button>
+```
+
+---
+
+### Common Error Codes
+
+| Error Code | Description | Resolution |
+|------------|-------------|------------|
+| `connection_failed` | Cannot reach the Unidy backend | Check network connection and `base-url` configuration |
+| `unauthorized` | Invalid or expired authentication | User needs to sign in again |
+| `account_not_found` | Email not registered | Direct user to registration flow |
+| `invalid_password` | Wrong password | User should retry or reset password |
+| `password_not_set` | User has no password configured | Use magic code or social login instead |
+| `magic_code_expired` | Magic code timed out | Request a new magic code |
+| `magic_code_not_valid` | Wrong magic code entered | User should check code and retry |
+| `magic_code_used` | Magic code already used | Request a new magic code |
+| `magic_code_recently_created` | Magic code requested too soon | Wait for cooldown period (typically 60 seconds) |
+| `reset_password_already_sent` | Password reset email already sent | Check email or wait before requesting again |
+| `account_locked` | Account has been locked | Contact administrator |
+| `sign_in_expired` | Sign-in session timed out | Start the sign-in flow again |
+| `sign_in_not_found` | Sign-in session not found | Start the sign-in flow again |
+| `consent_required` | Newsletter consent not given | User must check consent checkbox |
+| `email_required` | Email field is empty | User must enter email address |
+| `schema_validation_error` | Invalid data format | Check field values match expected types |
+| `invalid_preference_token` | Newsletter preference token invalid | User should request a new preference link |
+
+## Token Management & Session Handling
+
+The SDK handles authentication tokens automatically, but understanding the underlying mechanism helps with debugging and advanced use cases.
+
+### Token Storage
+
+The SDK uses browser storage to persist authentication state:
+
+| Data | Storage | Reason |
+|------|---------|--------|
+| Access Token (JWT) | `sessionStorage` | Short-lived, cleared when browser tab closes |
+| Refresh Token | `localStorage` | Long-lived, persists across sessions |
+| Sign-in ID (`sid`) | `localStorage` | Identifies the current sign-in session |
+| Email | `localStorage` | Pre-fills email field on return visits |
+
+**Storage Keys:**
+- `unidy_token` - Access token
+- `unidy_refresh_token` - Refresh token
+- `unidy_signin_id` - Sign-in session ID
+- `unidy_email` - Last used email address
+
+### Automatic Token Refresh
+
+The SDK automatically refreshes expired tokens when you call `auth.getToken()` or `auth.isAuthenticated()`:
+
+1. When a token is requested, the SDK checks if it's valid and not expiring within 10 seconds
+2. If the token is expired or about to expire, the SDK uses the refresh token to obtain a new access token
+3. If refresh fails (e.g., refresh token expired), the user must sign in again
+
+```javascript
+import { Auth } from '@unidy.io/sdk';
+
+const auth = await Auth.getInstance();
+
+// This automatically refreshes the token if needed
+const token = await auth.getToken();
+
+if (typeof token === 'string') {
+  // Token is valid, use it for API calls
+  fetch('/api/endpoint', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+} else {
+  // Token refresh failed, user needs to re-authenticate
+  console.error('Auth error:', token.code);
+  if (token.requiresReauth) {
+    // Redirect to login or show sign-in UI
+  }
+}
+```
+
+### Session Recovery with `check-signed-in`
+
+When `check-signed-in="true"` is set on `<u-config>`, the SDK attempts to restore the user's session on page load:
+
+1. The SDK calls the backend to check if the user has an active session (e.g., from SSO)
+2. If a valid session exists, the SDK receives new tokens and sets `authState.authenticated = true`
+3. If no session exists, the SDK silently continues (no error shown)
+
+This is useful for:
+- Single Sign-On (SSO) scenarios where the user logged in on another application
+- Restoring sessions after the access token expired but the backend session is still valid
+
+## Newsletter Preference Token Flow
+
+Newsletter preference management uses a special token-based authentication flow that allows users to manage their subscriptions without signing in.
+
+### How It Works
+
+1. **User subscribes to a newsletter** - After subscribing, the user receives confirmation emails containing a preference management link
+2. **Preference link format** - Links contain `preference_token` and `email` as URL parameters:
+   ```
+   https://your-site.com/preferences?preference_token=abc123&email=user@example.com
+   ```
+3. **SDK auto-detection** - When `<u-newsletter-root>` initializes, it automatically extracts these parameters from the URL and populates the newsletter state
+4. **Authenticated session** - With a valid preference token, users can manage their subscriptions without signing in
+
+### Building a Preference Center
+
+```html
+<u-newsletter-root>
+  <!-- Shows logout button only for preference token users (not authenticated users) -->
+  <u-newsletter-logout-button class-name="float-right">×</u-newsletter-logout-button>
+
+  <h2>Manage Your Subscriptions</h2>
+
+  <!-- Email is pre-filled from the URL parameter -->
+  <u-email-field disabled></u-email-field>
+
+  <!-- Toggle buttons for each newsletter -->
+  <div class="newsletter-option">
+    <span>Weekly Digest</span>
+    <u-newsletter-toggle-subscription-button
+      internal-name="weekly-digest"
+      subscribe-class-name="btn-subscribe"
+      unsubscribe-class-name="btn-unsubscribe">
+    </u-newsletter-toggle-subscription-button>
+  </div>
+
+  <!-- Preference checkboxes for granular control -->
+  <u-conditional-render when="newsletter.subscribed(weekly-digest)">
+    <div class="preferences">
+      <label>
+        <u-newsletter-preference-checkbox
+          internal-name="weekly-digest"
+          preference-identifier="tech-news">
+        </u-newsletter-preference-checkbox>
+        Include tech news
+      </label>
+      <label>
+        <u-newsletter-preference-checkbox
+          internal-name="weekly-digest"
+          preference-identifier="product-updates">
+        </u-newsletter-preference-checkbox>
+        Include product updates
+      </label>
+    </div>
+  </u-conditional-render>
+
+  <!-- Resend confirmation for unconfirmed subscriptions -->
+  <u-conditional-render when="newsletter.subscribed(weekly-digest)" not>
+    <u-newsletter-resend-doi-button internal-name="weekly-digest">
+      Resend confirmation email
+    </u-newsletter-resend-doi-button>
+  </u-conditional-render>
+</u-newsletter-root>
+```
+
+### Double Opt-In (DOI) Flow
+
+When double opt-in is enabled for a newsletter:
+
+1. User subscribes → `confirmed_at` is `null`
+2. User receives confirmation email with a link
+3. User clicks link → `confirmed_at` is set
+4. Only confirmed subscriptions receive newsletter emails
+
+Use `<u-newsletter-resend-doi-button>` to allow users to request a new confirmation email.
+
+## Complete State Management Reference
+
+The SDK provides reactive state stores that you can use to build custom UIs or integrate with your application's state management.
+
+### Auth State (`authState`)
+
+```javascript
+import { authState, authStore, onAuthChange, missingFieldNames } from '@unidy.io/sdk';
+```
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `authenticated` | `boolean` | Whether the user is currently authenticated |
+| `email` | `string` | The email address entered or used for sign-in |
+| `password` | `string` | The password entered (cleared after use) |
+| `step` | `AuthStep` | Current step in the auth flow (see below) |
+| `sid` | `string \| null` | Current sign-in session ID |
+| `loading` | `boolean` | Whether an auth operation is in progress |
+| `errors` | `Record<string, string \| null>` | Field-specific errors (`email`, `password`, `magicCode`, `resetPassword`, `passkey`) |
+| `globalErrors` | `Record<string, string \| null>` | Global errors (e.g., `auth`) |
+| `token` | `string \| null` | Current JWT access token |
+| `refreshToken` | `string \| null` | Current refresh token |
+| `magicCodeStep` | `null \| 'requested' \| 'sent'` | Magic code request state |
+| `resetPassword` | `object` | Reset password flow state |
+| `availableLoginOptions` | `LoginOptions \| null` | Available login methods for the current user |
+| `missingRequiredFields` | `object \| undefined` | Fields required to complete registration |
+| `backendSignedIn` | `boolean` | Whether user was signed in via backend SSO |
+
+**`LoginOptions` Structure:**
+
+```typescript
+interface LoginOptions {
+  magic_link: boolean;    // Magic code login available
+  password: boolean;      // Password login available
+  social_logins: string[]; // Available social providers
+  passkey: boolean;       // Passkey login available
+}
+```
+
+**Helper Functions:**
+
+```javascript
+// Get names of missing required fields (useful for custom missing-fields UI)
+const fields = missingFieldNames();
+// Returns: ['first_name', 'last_name', 'custom_attributes.company']
+```
+
+### Profile State (`profileState`)
+
+```javascript
+import { profileState, profileStore, onProfileChange } from '@unidy.io/sdk';
+```
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `loading` | `boolean` | Whether profile is being fetched/updated |
+| `data` | `ProfileRaw` | Current profile data |
+| `configuration` | `ProfileRaw` | Field configuration (types, options, etc.) |
+| `errors` | `Record<string, string \| null>` | Field validation errors |
+| `phoneValid` | `boolean` | Whether phone number passes validation |
+
+### Newsletter State (`newsletterStore`)
+
+```javascript
+import { newsletterStore } from '@unidy.io/sdk';
+
+// Access state
+const state = newsletterStore.state;
+```
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `email` | `string` | Email address for subscription |
+| `preferenceToken` | `string` | Token for preference management |
+| `checkedNewsletters` | `Record<string, string[]>` | Currently checked newsletters and their preferences |
+| `existingSubscriptions` | `ExistingSubscription[]` | User's current subscriptions |
+| `fetchingSubscriptions` | `boolean` | Whether subscriptions are being loaded |
+| `consentGiven` | `boolean` | Whether GDPR consent checkbox is checked |
+| `consentRequired` | `boolean` | Whether consent is required for this form |
+| `errors` | `Record<string, string>` | Newsletter-specific errors |
+| `isAuthenticated` | `boolean` | Whether user is authenticated or has preference token |
+
+### Subscribing to State Changes
+
+All stores support the `onChange` pattern:
+
+```javascript
+import { onAuthChange, onProfileChange } from '@unidy.io/sdk';
+
+// Subscribe to auth state changes
+const unsubscribeAuth = onAuthChange('authenticated', (isAuthenticated) => {
+  console.log('Auth changed:', isAuthenticated);
+});
+
+// Subscribe to profile data changes
+const unsubscribeProfile = onProfileChange('data', (profileData) => {
+  console.log('Profile updated:', profileData);
+});
+
+// Clean up when done
+unsubscribeAuth();
+unsubscribeProfile();
+```
+
+## Utility Functions
+
+### `waitForConfig()`
+
+Waits for the `<u-config>` component to be initialized. Useful when you need to ensure the SDK is ready before making API calls.
+
+```javascript
+import { waitForConfig, getUnidyClient } from '@unidy.io/sdk';
+
+async function initializeApp() {
+  // Wait for <u-config> to be ready
+  await waitForConfig();
+
+  // Now safe to use the client
+  const client = getUnidyClient();
+  const [error, profile] = await client.profile.get();
+}
+```
+
+### `createPaginationStore()`
+
+Creates an external pagination store for advanced ticketable list scenarios.
+
+```javascript
+import { createPaginationStore } from '@unidy.io/sdk';
+
+const paginationStore = createPaginationStore();
+
+// Use with <u-ticketable-list>
+document.querySelector('u-ticketable-list').paginationStore = paginationStore;
+
+// Programmatically control pagination
+paginationStore.state.page = 2;
+paginationStore.state.limit = 20;
+```
+
+## Authentication Step Transitions
+
+The `authState.step` property indicates the current stage in the authentication flow. Understanding what triggers each step helps with building custom UIs.
+
+### Step Flow Diagram
+
+```
+┌─────────┐
+│  email  │ ← Initial step, user enters email
+└────┬────┘
+     │ Submit email
+     ▼
+┌─────────────┐
+│ verification│ ← User chooses login method (password/magic code)
+└──────┬──────┘
+       │
+       ├──── Password ────► [authenticated]
+       │
+       ├──── Magic Code ──► ┌────────────┐
+       │                    │ magic-code │ ← User enters code
+       │                    └─────┬──────┘
+       │                          │
+       │                          ▼
+       │                    [authenticated]
+       │
+       └──── Reset Password ► ┌────────────────┐
+                              │ reset-password │ ← User sets new password
+                              └───────┬────────┘
+                                      │
+                                      ▼
+                                ┌─────────┐
+                                │  email  │ ← Back to start
+                                └─────────┘
+
+Special Steps:
+┌────────────────┐
+│ missing-fields │ ← Required fields not filled (social login)
+└───────┬────────┘
+        │ Submit fields
+        ▼
+  [authenticated]
+
+┌──────────────┐
+│ single-login │ ← Only one login method available (typically magic code only)
+└──────────────┘
+
+┌──────────────┐
+│ registration │ ← Email not found, user needs to register
+└──────────────┘
+```
+
+### Step Triggers
+
+| Step | Triggered When |
+|------|----------------|
+| `email` | Initial state, or after password reset completion |
+| `verification` | Email submitted and account found |
+| `magic-code` | User requests magic code or `sendMagicCode` enabled |
+| `reset-password` | User clicks reset password, or visits reset link |
+| `missing-fields` | Social login successful but required fields missing |
+| `single-login` | Account has only one login method (auto-detected) |
+| `registration` | Email not found (`account_not_found` error) |
+
+### Programmatic Step Control
+
+```javascript
+import { authStore, authState } from '@unidy.io/sdk';
+
+// Check current step
+console.log('Current step:', authState.step);
+
+// Manually set step (use with caution)
+authStore.setStep('email');
+```
+
+## Browser Compatibility
+
+The SDK is built with modern web standards and supports the following browsers:
+
+| Browser | Minimum Version | Notes |
+|---------|-----------------|-------|
+| Chrome | 80+ | Full support |
+| Firefox | 78+ | Full support |
+| Safari | 14+ | Full support |
+| Edge | 80+ | Full support (Chromium-based) |
+| iOS Safari | 14+ | Full support |
+| Android Chrome | 80+ | Full support |
+
+### Feature Requirements
+
+- **Web Components**: The SDK uses Custom Elements v1, supported in all modern browsers
+- **ES Modules**: Required for JavaScript imports
+- **`localStorage` / `sessionStorage`**: Required for token persistence
+- **Fetch API**: Required for API calls
+
+### Shadow DOM Considerations
+
+Some SDK components use Shadow DOM for style encapsulation:
+- `<u-field>` and related input components
+- `<u-social-login-button>`
+- `<u-spinner>`
+
+To style Shadow DOM components, use CSS `::part()` selectors (see [Styling](#styling)).
+
+### Known Limitations
+
+- **Internet Explorer**: Not supported
+- **Legacy Edge (EdgeHTML)**: Not supported
+- **Private/Incognito Mode**: Some browsers restrict `localStorage` in private mode, which may affect session persistence
+
+## Accessibility (a11y)
+
+The SDK components are built with accessibility in mind, following WAI-ARIA guidelines.
+
+### Built-in Accessibility Features
+
+- **Form Labels**: `<u-field>` automatically generates accessible labels
+- **Error Announcements**: Validation errors are associated with their inputs via `aria-describedby`
+- **Loading States**: Buttons indicate loading state to assistive technologies
+- **Focus Management**: Focus is managed appropriately during step transitions
+
+### Recommended ARIA Attributes
+
+For custom implementations, use these attributes:
+
+```html
+<!-- Password field with description -->
+<u-password-field
+  aria-label="Enter your password"
+  aria-describedby="password-requirements">
+</u-password-field>
+<p id="password-requirements">Password must be at least 8 characters</p>
+
+<!-- Magic code field -->
+<u-magic-code-field
+  aria-label="Enter the 6-digit code sent to your email">
+</u-magic-code-field>
+
+<!-- Submit button with loading state -->
+<u-submit-button aria-busy="true">
+  Signing in...
+</u-submit-button>
+```
+
+### Keyboard Navigation
+
+All interactive components support keyboard navigation:
+- **Tab**: Move between form fields
+- **Enter**: Submit forms, activate buttons
+- **Space**: Toggle checkboxes, activate buttons
+- **Escape**: Close modals (if applicable)
+
+### Screen Reader Tips
+
+- Use `<u-error-message>` components to ensure errors are announced
+- Provide descriptive labels for social login buttons
+- Use `aria-live` regions for dynamic content updates
+
+```html
+<div aria-live="polite" aria-atomic="true">
+  <u-flash-message></u-flash-message>
+</div>
+```
+
+## Security Best Practices
+
+### API Key Usage
+
+The SDK API key is designed to be used in client-side code. It identifies your application but does not grant administrative access.
+
+**What the API key allows:**
+- Creating sign-in sessions
+- Authenticating users
+- Accessing user's own profile and subscriptions
+
+**What the API key does NOT allow:**
+- Accessing other users' data
+- Administrative operations
+- Modifying backend configuration
+
+### Token Security
+
+**Access Tokens:**
+- Stored in `sessionStorage` (cleared when tab closes)
+- Short-lived (typically 15 minutes)
+- Contains user claims (ID, email, custom claims)
+
+**Refresh Tokens:**
+- Stored in `localStorage` (persists across sessions)
+- Long-lived but can be revoked server-side
+- Used only to obtain new access tokens
+
+### Recommendations
+
+1. **Use HTTPS**: Always serve your application over HTTPS to protect tokens in transit
+
+2. **Domain Whitelisting**: Ensure only your domains are whitelisted in the Unidy SDK client configuration
+
+3. **Content Security Policy**: Consider adding CSP headers to prevent XSS attacks:
+   ```
+   Content-Security-Policy: script-src 'self' https://cdn.jsdelivr.net;
+   ```
+
+4. **Avoid Logging Tokens**: Never log access or refresh tokens to the console in production
+
+5. **Handle Token Errors**: Always check for `requiresReauth` on auth errors and redirect users to sign in again
+
+6. **Secure Custom Attributes**: Be mindful of what data you store in custom profile attributes
+
+### CORS Configuration
+
+The SDK makes requests to your Unidy backend. Ensure your domain is configured in the SDK client's allowed origins. Contact your Unidy administrator if you encounter CORS errors.
+
+### Session Invalidation
+
+To fully log out a user (including backend session):
+
+```javascript
+import { Auth } from '@unidy.io/sdk';
+
+const auth = await Auth.getInstance();
+await auth.logout(); // Clears local tokens and invalidates backend session
 ```

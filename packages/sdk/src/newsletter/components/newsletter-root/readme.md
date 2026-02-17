@@ -7,17 +7,17 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default |
-| -------------------- | ------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name` |             | `string` | `""`    |
+| Property             | Attribute    | Description                               | Type     | Default |
+| -------------------- | ------------ | ----------------------------------------- | -------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the host element. | `string` | `""`    |
 
 
 ## Events
 
-| Event                | Description | Type                                                     |
-| -------------------- | ----------- | -------------------------------------------------------- |
-| `uNewsletterError`   |             | `CustomEvent<{ email: string; error: string; }>`         |
-| `uNewsletterSuccess` |             | `CustomEvent<{ email: string; newsletters: string[]; }>` |
+| Event                | Description                                                                                 | Type                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `uNewsletterError`   | Fired on newsletter subscription failure. Contains the email and error code.                | `CustomEvent<{ email: string; error: string; }>`         |
+| `uNewsletterSuccess` | Fired on successful newsletter subscription. Contains the email and subscribed newsletters. | `CustomEvent<{ email: string; newsletters: string[]; }>` |
 
 
 ## Methods
@@ -38,19 +38,6 @@ Type: `Promise<void>`
 
 
 
-
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../../../shared/components/spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-newsletter-root --> u-spinner
-  style u-newsletter-root fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

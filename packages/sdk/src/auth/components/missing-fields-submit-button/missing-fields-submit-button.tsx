@@ -1,9 +1,10 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
-import { buildPayload, validateRequiredFieldsUnchanged } from "../../../profile/profile-helpers";
+import { buildPayload, validateRequiredFields } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import type { TokenResponse } from "../../api/auth";
 import { authState, authStore } from "../../store/auth-store";
 
@@ -11,24 +12,15 @@ import { authState, authStore } from "../../store/auth-store";
   tag: "u-missing-fields-submit-button",
   shadow: false,
 })
-export class MissingFieldsSubmitButton {
-  @Element() el!: HTMLElement;
+export class MissingFieldsSubmitButton extends UnidyComponent(HasSlotContent) {
   @Prop({ attribute: "class-name" }) componentClassName = "";
-
-  // Must be evaluated on load, not render, because shadow: false components
-  // will have their DOM modified after first render, causing hasSlotContent to return incorrect results
-  private hasSlot = false;
-
-  componentWillLoad() {
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   private async onSubmit() {
     profileState.loading = true;
 
     const { configuration, ...stateWithoutConfig } = profileState;
 
-    if (!validateRequiredFieldsUnchanged(stateWithoutConfig.data)) {
+    if (!validateRequiredFields(stateWithoutConfig.data)) {
       profileState.loading = false;
       return;
     }
@@ -51,7 +43,7 @@ export class MissingFieldsSubmitButton {
     authStore.setToken(jwt);
 
     // Emit authEvent to allow modal-based logins to close after successful submission
-    this.el.dispatchEvent(new CustomEvent("authEvent", { detail: { jwt }, bubbles: true, composed: true }));
+    this.element.dispatchEvent(new CustomEvent("authEvent", { detail: { jwt }, bubbles: true, composed: true }));
   }
 
   render() {

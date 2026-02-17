@@ -1,26 +1,21 @@
-import { Component, Element, Event, type EventEmitter, h, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
-import { hasSlotContent } from "../../../shared/component-utils";
+import { UnidyComponent } from "../../../shared/base/component";
+import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { Auth } from "../../auth";
 
 @Component({
   tag: "u-logout-button",
   shadow: false,
 })
-export class LogoutButton {
-  @Element() el!: HTMLElement;
+export class LogoutButton extends UnidyComponent(HasSlotContent) {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** If true, reloads the page after successful logout. */
   @Prop() reloadOnSuccess = true;
 
+  /** Fired after successful logout. */
   @Event() logout!: EventEmitter<void>;
-
-  private hasSlot = false;
-
-  async componentWillLoad() {
-    // this needs to be evaluated on load, bc doing it on render will evaluate the generated dom for "shadow: false"
-    // components and always return true on re-render
-    this.hasSlot = hasSlotContent(this.el);
-  }
 
   private handleLogout = async () => {
     const authInstance = await Auth.getInstance();

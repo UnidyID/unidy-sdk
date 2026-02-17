@@ -1,7 +1,8 @@
-import { Component, Element, h, Prop } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../shared/base/component";
+import { findParentSigninStep } from "../../../shared/context-utils";
 import { authState, authStore } from "../../store/auth-store";
-import { getParentSigninStep } from "../helpers";
 
 export type PasswordFieldFor = "login" | "new-password" | "password-confirmation";
 
@@ -9,11 +10,12 @@ export type PasswordFieldFor = "login" | "new-password" | "password-confirmation
   tag: "u-password-field",
   shadow: false,
 })
-export class PasswordField {
-  @Element() el!: HTMLElement;
-
+export class PasswordField extends UnidyComponent() {
+  /** The purpose of this password field: login, new-password, or password-confirmation. */
   @Prop() for: PasswordFieldFor = "login";
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** ARIA label for accessibility. Defaults based on the 'for' prop if not provided. */
   @Prop() ariaLabel = "";
 
   private getAriaLabel(): string {
@@ -84,7 +86,7 @@ export class PasswordField {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    (await getParentSigninStep(this.el))?.submit();
+    (await findParentSigninStep(this.element))?.submit();
   };
 
   private shouldRender(): boolean {

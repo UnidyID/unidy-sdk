@@ -3,6 +3,7 @@ import { AuthService } from "../auth/api/auth";
 import { Auth } from "../auth/auth";
 import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
+import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService } from "../ticketable";
@@ -11,6 +12,7 @@ import { ApiClient, ApiResponse } from "./client";
 
 export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
+export * from "../oauth/api/oauth";
 export * from "../profile/api/profile";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/tickets";
@@ -41,6 +43,7 @@ export class UnidyClient {
   newsletters: NewsletterService;
   profile: ProfileService;
   auth: AuthService;
+  oauth: OAuthService;
   tickets: TicketsService;
   subscriptions: SubscriptionsService;
 
@@ -51,6 +54,7 @@ export class UnidyClient {
     this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));
     this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
     this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
+    this.oauth = new OAuthService(this.apiClient, createBrowserDeps("OAuthService"));
     this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
     this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
   }

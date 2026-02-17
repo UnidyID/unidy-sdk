@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Continuă cu {{provider}}"
+    },
+    "navigation": {
+      "back": "Înapoi",
+      "restart": "Reîncepe"
     }
   },
   "buttons": {
+    "cancel": "Anulare",
     "close": "Închide",
+    "confirm": "Confirmare",
+    "connect": "Conectare",
     "continue": "Continuă",
     "jump_to_service": "Mergi la serviciu",
     "jump_to_unidy": "Mergi la Unidy",
@@ -116,6 +123,19 @@
     "verification_failed": "Verificare eșuată"
   },
   "loading": "Se încarcă...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Aplicație OAuth negăsită",
+      "client_id_required": "client-id este obligatoriu",
+      "connection_failed": "Eroare de rețea. Vă rugăm să încercați din nou.",
+      "grant_failed": "Acordarea consimțământului a eșuat",
+      "invalid_field_values": "Valori de câmp invalide furnizate",
+      "missing_required_fields": "Vă rugăm să completați toate câmpurile obligatorii",
+      "not_authenticated": "Utilizatorul nu este autentificat. Vă rugăm să vă conectați mai întâi.",
+      "unknown": "A apărut o eroare neașteptată",
+      "update_failed": "Actualizarea datelor utilizatorului a eșuat"
+    }
+  },
   "newsletter": {
     "buttons": {
       "logout": "x",

@@ -10,7 +10,9 @@ const EXCLUDED_FIELDS = ["custom_attributes", "email", "preferred_language"];
   shadow: false,
 })
 export class FullProfile {
+  /** Comma-separated list of field names to display. If not provided, shows all fields. */
   @Prop() fields?: string;
+  /** For phone fields: how to display country code selector ('icon' or 'label'). */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
 
   private list() {

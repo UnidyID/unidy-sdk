@@ -7,25 +7,61 @@
 
 ## Properties
 
-| Property      | Attribute      | Description | Type                                 | Default     |
-| ------------- | -------------- | ----------- | ------------------------------------ | ----------- |
-| `initialData` | `initial-data` |             | `string \| { [x: string]: string; }` | `""`        |
-| `profileId`   | `profile-id`   |             | `string`                             | `undefined` |
+| Property            | Attribute            | Description                                                                                                                       | Type                                 | Default     |
+| ------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------- |
+| `initialData`       | `initial-data`       | Initial profile data as JSON string or object. If provided, skips fetching from API.                                              | `string \| { [x: string]: string; }` | `""`        |
+| `partialValidation` | `partial-validation` | When true, only validates and submits fields rendered as u-field components. Use when your form shows a subset of profile fields. | `boolean`                            | `false`     |
+| `profileId`         | `profile-id`         | Optional profile ID (for multi-profile scenarios).                                                                                | `string`                             | `undefined` |
+| `validateFields`    | `validate-fields`    | Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.                              | `string`                             | `undefined` |
 
 
 ## Events
 
-| Event             | Description | Type                                                                                                                               |
-| ----------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `uProfileError`   |             | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
-| `uProfileSuccess` |             | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                           |
+| Event             | Description                                                                              | Type                                                                                                                               |
+| ----------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `uProfileError`   | Fired on profile update failure. Contains error code and details including field errors. | `CustomEvent<{ error: string; details: { fieldErrors?: Record<string, string>; httpStatus?: number; responseData?: unknown; }; }>` |
+| `uProfileSuccess` | Fired on successful profile update. Contains success message and updated profile data.   | `CustomEvent<{ message: string; payload: ProfileRaw; }>`                                                                           |
 
 
 ## Methods
 
+### `registerField(fieldName: string) => Promise<void>`
+
+Register a field for partial validation tracking.
+Called by child u-field components when they mount.
+
+#### Parameters
+
+| Name        | Type     | Description |
+| ----------- | -------- | ----------- |
+| `fieldName` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `submitProfile() => Promise<void>`
 
 
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `unregisterField(fieldName: string) => Promise<void>`
+
+Unregister a field from partial validation tracking.
+Called by child u-field components when they unmount.
+
+#### Parameters
+
+| Name        | Type     | Description |
+| ----------- | -------- | ----------- |
+| `fieldName` | `string` |             |
 
 #### Returns
 

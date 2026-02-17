@@ -1,10 +1,11 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
 import { t } from "../../../i18n";
-import { logger, UnidyComponent } from "../../../logger";
-import { clearUrlParam } from "../../../shared/component-utils";
+import { logger } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { Flash } from "../../../shared/store/flash-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
+import { clearUrlParam } from "../../../shared/utils/url-utils";
 import * as NewsletterHelpers from "../../newsletter-helpers";
 import { type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
 import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-button";
@@ -15,9 +16,12 @@ import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-but
 })
 export class NewsletterRoot extends UnidyComponent() {
   @Element() el!: HTMLElement;
+  /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
+  /** Fired on successful newsletter subscription. Contains the email and subscribed newsletters. */
   @Event() uNewsletterSuccess!: EventEmitter<{ email: string; newsletters: string[] }>;
+  /** Fired on newsletter subscription failure. Contains the email and error code. */
   @Event() uNewsletterError!: EventEmitter<{ email: string; error: string }>;
 
   getErrorText(errorIdentifier: NewsletterErrorIdentifier): string {
@@ -46,7 +50,7 @@ export class NewsletterRoot extends UnidyComponent() {
     newsletterStore.state.isAuthenticated = isAuthenticated;
 
     if (isAuthenticated) {
-      const userData = await authInstance.userData();
+      const userData = await authInstance.userTokenPayload();
 
       if (userData) {
         newsletterStore.state.email = userData.email;

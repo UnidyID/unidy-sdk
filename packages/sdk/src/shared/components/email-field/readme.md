@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type      | Default   |
-| -------------------- | ------------ | ----------- | --------- | --------- |
-| `ariaLabel`          | `aria-label` |             | `string`  | `"Email"` |
-| `componentClassName` | `class-name` |             | `string`  | `""`      |
-| `disabled`           | `disabled`   |             | `boolean` | `false`   |
+| Property             | Attribute    | Description                                | Type      | Default   |
+| -------------------- | ------------ | ------------------------------------------ | --------- | --------- |
+| `ariaLabel`          | `aria-label` | ARIA label for accessibility.              | `string`  | `"Email"` |
+| `componentClassName` | `class-name` | CSS classes to apply to the input element. | `string`  | `""`      |
+| `disabled`           | `disabled`   | If true, the input will be disabled.       | `boolean` | `false`   |
 
 
 ----------------------------------------------

@@ -8,12 +8,13 @@ type ParentComponentMap = {
   "u-signin-step": HTMLUSigninStepElement;
   "u-newsletter-root": HTMLUNewsletterRootElement;
   "u-ticketable-list": HTMLUTicketableListElement;
+  "u-oauth-provider": HTMLUOauthProviderElement;
 };
 
 /**
  * Component context types used throughout the SDK.
  */
-export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable";
+export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth";
 
 // ============================================================================
 // Parent Component Lookup Utilities
@@ -27,7 +28,7 @@ export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable";
  * @returns The parent component element or null if not found
  *
  * @example
- * const profile = findParent(this.el, "u-profile");
+ * const profile = findParent(this.element, "u-profile");
  * profile?.submitProfile();
  */
 export function findParent<T extends keyof ParentComponentMap>(element: HTMLElement, tagName: T): ParentComponentMap[T] | null {
@@ -69,6 +70,13 @@ export function findParentTicketableList(element: HTMLElement): HTMLUTicketableL
   return findParent(element, "u-ticketable-list");
 }
 
+/**
+ * Find the parent u-oauth-provider component.
+ */
+export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProviderElement | null {
+  return findParent(element, "u-oauth-provider");
+}
+
 // ============================================================================
 // Context Detection Utilities
 // ============================================================================
@@ -81,12 +89,16 @@ export function findParentTicketableList(element: HTMLElement): HTMLUTicketableL
  * @returns The detected context or null
  *
  * @example
- * const context = detectContext(this.el);
+ * const context = detectContext(this.element);
  * if (context === "auth") { ... }
  */
 export function detectContext(element: HTMLElement): ComponentContext | null {
   if (findParentSigninRoot(element) || findParentSigninStep(element)) {
     return "auth";
+  }
+
+  if (findParentOAuthProvider(element)) {
+    return "oauth";
   }
 
   if (findParentProfile(element)) {
@@ -114,14 +126,14 @@ export function detectContext(element: HTMLElement): ComponentContext | null {
  * @throws Error if no context is found
  *
  * @example
- * const context = detectContextOrThrow(this.el, "submit button");
+ * const context = detectContextOrThrow(this.element, "submit button");
  */
 export function detectContextOrThrow(element: HTMLElement, componentName: string): ComponentContext {
   const context = detectContext(element);
 
   if (!context) {
     throw new Error(
-      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, or u-ticketable-list.`,
+      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, or u-oauth-provider.`,
     );
   }
 

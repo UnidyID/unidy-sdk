@@ -1,5 +1,7 @@
-import { Component, Element, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
+import { UnidyComponent } from "../../../shared/base/component";
+import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -22,24 +24,48 @@ import { state as profileState } from "../../store/profile-store";
   styleUrl: "field.css",
   shadow: true,
 })
-export class Field {
+export class Field extends UnidyComponent() {
+  /** The field name (e.g., 'first_name', 'custom_attributes.favorite_color'). */
   @Prop() field!: string;
+  /** If true, marks the field as required (in addition to backend configuration). */
   @Prop() required = false;
+  /** Placeholder text shown when field is readonly and has no value. */
   @Prop() readonlyPlaceholder = "No information";
+  /** For phone fields: how to display country code selector ('icon' or 'label'). */
   @Prop() countryCodeDisplayOption?: "icon" | "label" = "label";
+  /** Error message shown when phone number validation fails. */
   @Prop() invalidPhoneMessage = "Please enter a valid phone number.";
+  /** CSS classes to apply to the input element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+  /** If true, includes an empty option in select dropdowns. */
   @Prop() emptyOption = true;
+  /** Placeholder text for the input field. */
   @Prop() placeholder?: string;
+  /** If true, renders the default label above the field. */
   @Prop() renderDefaultLabel = true;
 
+  /** Regex pattern for custom validation. */
   @Prop() pattern?: string;
+  /** Error message shown when pattern validation fails. */
   @Prop() patternErrorMessage?: string;
+  /** Custom validation function. Returns { valid: boolean, message?: string }. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  @Element() el!: HTMLElement;
-
   @State() selected?: string | string[];
+
+  /** Reference to parent u-profile element for field registration */
+  private parentProfile: HTMLUProfileElement | null = null;
+
+  componentWillLoad() {
+    // Find parent u-profile and register this field for partial validation tracking
+    this.parentProfile = findParentProfile(this.element);
+    this.parentProfile?.registerField(this.field);
+  }
+
+  disconnectedCallback() {
+    // Unregister this field when component is removed
+    this.parentProfile?.unregisterField(this.field);
+  }
 
   private getFieldData() {
     return this.field.startsWith("custom_attributes.")
@@ -51,8 +77,8 @@ export class Field {
     const fieldErrors = profileState.errors;
 
     if (Object.keys(fieldErrors)[0] === this.field) {
-      this.el.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
-      this.el.shadowRoot
+      this.element.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      this.element.shadowRoot
         ?.getElementById(this.field)
         ?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, select, textarea")
         ?.focus();

@@ -1,3 +1,5 @@
+import { SDK_VERSION } from "../version";
+
 /**
  * Base API client with shared functionality for both browser and standalone environments.
  */
@@ -74,6 +76,7 @@ export abstract class BaseApiClient {
     h.set("Content-Type", "application/json");
     h.set("Accept", "application/json");
     h.set("Authorization", `Bearer ${this.api_key}`);
+    h.set("SDK-Version", SDK_VERSION);
     return h;
   }
 

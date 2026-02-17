@@ -33,10 +33,17 @@
     },
     "socialLogin": {
       "button_text": "Doorgaan met {{provider}}"
+    },
+    "navigation": {
+      "back": "Terug",
+      "restart": "Opnieuw beginnen"
     }
   },
   "buttons": {
+    "cancel": "Annuleren",
     "close": "Sluiten",
+    "confirm": "Bevestigen",
+    "connect": "Verbinden",
     "continue": "Doorgaan",
     "jump_to_service": "Naar dienst gaan",
     "jump_to_unidy": "Naar Unidy gaan",

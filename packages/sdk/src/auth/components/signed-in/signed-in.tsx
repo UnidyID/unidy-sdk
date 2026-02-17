@@ -6,7 +6,9 @@ import { authStore } from "../../store/auth-store";
   shadow: false,
 })
 export class SignedIn {
+  /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+  /** If true, shows content when user is NOT signed in (inverts the condition). */
   @Prop() not = false;
 
   render() {

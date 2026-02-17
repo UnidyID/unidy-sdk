@@ -1,4 +1,4 @@
-import { Component, Element, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
 import type { Locale } from "date-fns";
 import { format } from "date-fns/format";
 import type { PaginationMeta } from "../../../api";
@@ -6,7 +6,7 @@ import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
-import { UnidyComponent } from "../../../logger";
+import { UnidyComponent } from "../../../shared/base/component";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
@@ -45,7 +45,7 @@ function getNestedValue(obj: any, path: string): any {
     }
   }
 
-  if (typeof result === "object" && result != null) {
+  if (typeof result === "object" && result != null && !(result instanceof Date)) {
     return JSON.stringify(result);
   }
 
@@ -84,28 +84,35 @@ async function loadLocales() {
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
-  @Element() element: HTMLElement;
-
   private unsubscribeAuth?: () => void;
 
   // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
   @State() items: Subscription[] | Ticket[] = [];
   @State() loading = true;
   @State() error: string | null = null;
+  /** Pagination metadata from the API response. */
   @Prop() paginationMeta: PaginationMeta | null = null;
 
+  /** CSS selector for the target element where items will be rendered. */
   @Prop() target?: string;
+  /** CSS classes to apply to the container element. */
   @Prop() containerClass?: string;
 
   // TODO: add a component that can override this
+  /** Filter string for API queries (e.g., 'state=active;payment_state=paid'). */
   @Prop({ mutable: true }) filter = "";
 
   // TODO: Add pagination component to override all of this
+  /** Number of items per page. */
   @Prop({ mutable: true }) limit = 10;
+  /** Current page number. */
   @Prop({ mutable: true }) page = 1;
 
+  /** Number of skeleton items to show while loading. Defaults to limit. */
   @Prop() skeletonCount?: number;
+  /** If true, replaces all text content with skeleton loaders. */
   @Prop() skeletonAllText?: boolean = false;
+  /** The type of ticketable items to list ('ticket' or 'subscription'). */
   @Prop() ticketableType!: "ticket" | "subscription";
 
   @Watch("page")
@@ -115,14 +122,17 @@ export class TicketableList extends UnidyComponent() {
     await this.loadData();
   }
 
+  /** Pagination store instance for external state management. */
   @Prop() store: PaginationStore | null = null;
 
+  /** Fired when items are successfully fetched. Contains items and pagination metadata. */
   @Event() uTicketableListSuccess!: EventEmitter<{
     ticketableType: "ticket" | "subscription";
     items: Subscription[] | Ticket[];
     paginationMeta: PaginationMeta | null;
   }>;
 
+  /** Fired when fetching items fails. Contains the error message. */
   @Event() uTicketableListError!: EventEmitter<{
     ticketableType?: "ticket" | "subscription";
     error: string;

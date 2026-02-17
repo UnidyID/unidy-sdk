@@ -7,23 +7,10 @@
 
 ## Properties
 
-| Property             | Attribute    | Description | Type     | Default |
-| -------------------- | ------------ | ----------- | -------- | ------- |
-| `componentClassName` | `class-name` |             | `string` | `""`    |
+| Property             | Attribute    | Description                                 | Type     | Default |
+| -------------------- | ------------ | ------------------------------------------- | -------- | ------- |
+| `componentClassName` | `class-name` | CSS classes to apply to the button element. | `string` | `""`    |
 
-
-## Dependencies
-
-### Depends on
-
-- [u-spinner](../../../shared/components/spinner)
-
-### Graph
-```mermaid
-graph TD;
-  u-reset-password-button --> u-spinner
-  style u-reset-password-button fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 
