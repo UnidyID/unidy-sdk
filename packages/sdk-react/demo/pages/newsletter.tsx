@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNewsletterLogin, useNewsletterSubscribe } from "@unidy.io/sdk-react";
+import { useNewsletterLogin, useNewsletterSubscribe, useSession } from "@unidy.io/sdk-react";
 import { type FormEvent, useState } from "react";
 import { Link } from "react-router";
 import { type DemoNewsletter, NEWSLETTERS } from "../newsletter-config";
@@ -19,6 +19,7 @@ function getInitialSelection(): Record<string, Set<string>> {
 }
 
 export function Newsletter() {
+  const { isAuthenticated, email: sessionEmail, logout } = useSession();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -26,6 +27,8 @@ export function Newsletter() {
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState<string | null>(null);
   const [subscribeSuccess, setSubscribeSuccess] = useState(false);
+
+  const effectiveEmail = isAuthenticated ? sessionEmail : email;
 
   // Newsletter selection state: { [internalName]: Set<preferenceIdentifier> }
   const [selectedNewsletters, setSelectedNewsletters] = useState<Record<string, Set<string>>>(getInitialSelection);
@@ -75,16 +78,18 @@ export function Newsletter() {
     if (selected.length === 0) return;
 
     const result = await subscribe({
-      email,
+      email: effectiveEmail,
       newsletters: selected.map(([name, prefs]) => ({
         internalName: name,
         preferenceIdentifiers: [...prefs],
       })),
-      additionalFields: {
-        first_name: firstName || null,
-        last_name: lastName || null,
-        phone_number: phoneNumber || null,
-      },
+      additionalFields: isAuthenticated
+        ? undefined
+        : {
+            first_name: firstName || null,
+            last_name: lastName || null,
+            phone_number: phoneNumber || null,
+          },
     });
 
     if (result.success) {
@@ -93,8 +98,8 @@ export function Newsletter() {
   };
 
   const handleLoginEmail = () => {
-    if (email) {
-      sendLoginEmail(email, `${window.location.origin}/preference-center`);
+    if (effectiveEmail) {
+      sendLoginEmail(effectiveEmail, `${window.location.origin}/preference-center`);
     }
   };
 
@@ -168,11 +173,12 @@ export function Newsletter() {
                 id="subscribe-email"
                 type="email"
                 required
-                value={email}
+                value={effectiveEmail}
                 onChange={(e) => setEmail(e.target.value)}
+                readOnly={isAuthenticated}
                 placeholder="you@example.com"
-                className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                aria-describedby={fieldErrors.email ? "email-error" : undefined}
+                className={`px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${isAuthenticated ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}`}
+                aria-describedby={fieldErrors.email ? "email-error" : isAuthenticated ? "email-auth-info" : undefined}
                 aria-invalid={!!fieldErrors.email}
               />
               {fieldErrors.email && (
@@ -180,32 +186,43 @@ export function Newsletter() {
                   {fieldErrors.email}
                 </p>
               )}
-            </div>
-
-            {/* Already subscribed? Send login email */}
-            <div className="flex flex-col gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-600">Already subscribed?</p>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleLoginEmail}
-                  disabled={sendingLogin || !email}
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors disabled:opacity-50 disabled:no-underline"
-                >
-                  {sendingLogin ? "Sending..." : "Send me a login link to manage my subscriptions"}
-                </button>
-              </div>
-              {loginSent && (
-                <output className="text-green-600 text-sm block">
-                  Login email sent! Check your inbox for a link to the preference center.
-                </output>
-              )}
-              {loginError && (
-                <p className="text-red-500 text-sm" role="alert">
-                  {loginError}
+              {isAuthenticated && (
+                <p id="email-auth-info" className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                  If you want to subscribe with a different email address, please{" "}
+                  <button type="button" onClick={logout} className="font-medium underline hover:text-amber-900">
+                    logout
+                  </button>
+                  !
                 </p>
               )}
             </div>
+
+            {/* Already subscribed? Send login email */}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                <p className="text-sm text-gray-600">Already subscribed?</p>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleLoginEmail}
+                    disabled={sendingLogin || !effectiveEmail}
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors disabled:opacity-50 disabled:no-underline"
+                  >
+                    {sendingLogin ? "Sending..." : "Send me a login link to manage my subscriptions"}
+                  </button>
+                </div>
+                {loginSent && (
+                  <output className="text-green-600 text-sm block">
+                    Login email sent! Check your inbox for a link to the preference center.
+                  </output>
+                )}
+                {loginError && (
+                  <p className="text-red-500 text-sm" role="alert">
+                    {loginError}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Newsletter selection */}
             <div className="flex flex-col gap-3">
@@ -250,55 +267,57 @@ export function Newsletter() {
             </div>
 
             {/* Additional fields */}
-            <div className="flex flex-col gap-3">
-              <p className="text-gray-700 text-sm font-medium">Additional fields</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    required
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="First name"
-                    className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                  {fieldErrors.first_name && (
-                    <p className="text-red-500 text-sm" role="alert">
-                      {fieldErrors.first_name}
-                    </p>
-                  )}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-3">
+                <p className="text-gray-700 text-sm font-medium">Additional fields</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="First name"
+                      className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    {fieldErrors.first_name && (
+                      <p className="text-red-500 text-sm" role="alert">
+                        {fieldErrors.first_name}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last name"
+                      className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    {fieldErrors.last_name && (
+                      <p className="text-red-500 text-sm" role="alert">
+                        {fieldErrors.last_name}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <input
-                    type="text"
-                    required
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Last name"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="Phone number (optional)"
                     className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
-                  {fieldErrors.last_name && (
+                  {fieldErrors.phone_number && (
                     <p className="text-red-500 text-sm" role="alert">
-                      {fieldErrors.last_name}
+                      {fieldErrors.phone_number}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="Phone number (optional)"
-                  className="px-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-                {fieldErrors.phone_number && (
-                  <p className="text-red-500 text-sm" role="alert">
-                    {fieldErrors.phone_number}
-                  </p>
-                )}
-              </div>
-            </div>
+            )}
 
             {/* Consent */}
             <div className="flex flex-col gap-2 p-3 border border-gray-200 rounded-lg bg-gray-50">

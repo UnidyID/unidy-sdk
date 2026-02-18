@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNewsletterLogin, useNewsletterPreferenceCenter, useNewsletterResendConfirmation } from "@unidy.io/sdk-react";
+import { useNewsletterLogin, useNewsletterPreferenceCenter, useNewsletterResendConfirmation, useSession } from "@unidy.io/sdk-react";
 import { type FormEvent, useCallback, useState } from "react";
 import { Link } from "react-router";
 import { NEWSLETTERS } from "../newsletter-config";
@@ -91,6 +91,7 @@ function readAndCleanToken(): string | undefined {
 
 export function PreferenceCenter() {
   const [initialToken] = useState(readAndCleanToken);
+  const { isAuthenticated, email: sessionEmail } = useSession();
 
   const { subscriptions, preferenceToken, isLoading, error, isMutating, mutationError, subscribe, unsubscribe, updatePreferences } =
     useNewsletterPreferenceCenter({ preferenceToken: initialToken });
@@ -107,7 +108,9 @@ export function PreferenceCenter() {
     [updatePreferences],
   );
 
-  if (!initialToken) {
+  const hasAccess = isAuthenticated || !!initialToken;
+
+  if (!hasAccess) {
     return <NoTokenView />;
   }
 
@@ -123,7 +126,7 @@ export function PreferenceCenter() {
     );
   }
 
-  if (!preferenceToken) {
+  if (!preferenceToken && !isAuthenticated) {
     return <NoTokenView />;
   }
 
@@ -138,9 +141,11 @@ export function PreferenceCenter() {
           <h1 className="text-3xl font-bold text-indigo-700">Your Subscriptions</h1>
         </div>
 
-        {/* Token info bar */}
+        {/* Info bar */}
         <div className="flex items-center px-4 py-2 border border-gray-300 rounded-lg bg-gray-50">
-          <span className="text-gray-600 text-sm flex-1">Logged in via preference token</span>
+          <span className="text-gray-600 text-sm flex-1">
+            {isAuthenticated ? `Logged in as ${sessionEmail}` : "Logged in via preference token"}
+          </span>
           <Link to="/newsletter" className="text-indigo-600 hover:underline text-sm font-medium">
             Back to subscribe
           </Link>
