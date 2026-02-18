@@ -58,6 +58,7 @@ export const CreateSubscriptionsPayloadSchema = z.object({
     }),
   ),
   redirect_to_after_confirmation: z.optional(z.string()),
+  captcha_token: z.optional(z.string()),
 });
 
 // Update subscription payload

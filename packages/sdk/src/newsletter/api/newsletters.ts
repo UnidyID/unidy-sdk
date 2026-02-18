@@ -7,6 +7,7 @@ import {
   type Payload,
   type ServiceDependencies,
 } from "../../api/base-service";
+import { isCaptchaError } from "../../shared/captcha";
 import {
   type CreateSubscriptionsPayload,
   CreateSubscriptionsPayloadSchema,
@@ -59,9 +60,16 @@ export type NewsletterResendDoiArgs = { internalName: string } & Payload<ResendD
 export type NewsletterSendLoginEmailArgs = Payload<LoginEmailPayload>;
 export type NewsletterGetByNameArgs = { internalName: string };
 
+// Captcha error types for newsletter
+export type NewsletterCaptchaErrors =
+  | ["captcha_token_missing", NewsletterErrorResponse]
+  | ["captcha_verification_failed", NewsletterErrorResponse]
+  | ["captcha_score_too_low", NewsletterErrorResponse];
+
 // Result types using tuples
 export type NewsletterCreateResult =
   | CommonErrors
+  | NewsletterCaptchaErrors
   | ["rate_limit_exceeded", NewsletterErrorResponse]
   | ["unauthorized", NewsletterErrorResponse]
   | ["server_error", NewsletterErrorResponse]
@@ -158,6 +166,11 @@ export class NewsletterService extends BaseService {
 
       const parsed = NewsletterErrorResponseSchema.safeParse(response.data);
       const error = parsed.success ? parsed.data : { error_identifier: "unknown_error" };
+
+      if (isCaptchaError(error.error_identifier)) {
+        return [error.error_identifier as "captcha_token_missing" | "captcha_verification_failed" | "captcha_score_too_low", error];
+      }
+
       switch (response.status) {
         case 401:
           return ["unauthorized", error];

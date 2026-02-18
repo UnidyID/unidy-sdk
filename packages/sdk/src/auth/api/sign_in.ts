@@ -27,10 +27,16 @@ import type { CommonErrors, HandleResponseFn } from "./shared";
 // Argument types
 // ============================================
 
-export type CreateSignInArgs = Payload<{ email: string; password?: string; sendMagicCode?: boolean; originUrl?: string }>;
+export type CreateSignInArgs = Payload<{
+  email: string;
+  password?: string;
+  sendMagicCode?: boolean;
+  originUrl?: string;
+  captchaToken?: string;
+}>;
 export type SendMagicCodeArgs = { signInId: string };
-export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string }>;
-export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string }>;
+export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
+export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;
 // biome-ignore lint/suspicious/noExplicitAny: user fields are dynamic
 export type UpdateMissingFieldsArgs = { signInId: string } & Payload<{ user: Record<string, any> }>;
 export type RefreshTokenArgs = { signInId: string; refreshToken: string };
@@ -43,11 +49,21 @@ export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredentia
 export type ConnectBrandArgs = { signInId: string };
 
 // ============================================
+// Captcha error types
+// ============================================
+
+export type CaptchaErrors =
+  | ["captcha_token_missing", ErrorResponse]
+  | ["captcha_verification_failed", ErrorResponse]
+  | ["captcha_score_too_low", ErrorResponse];
+
+// ============================================
 // Result types
 // ============================================
 
 export type CreateSignInResult =
   | CommonErrors
+  | CaptchaErrors
   | ["account_not_found", ErrorResponse]
   | [null, CreateSignInResponse]
   | AuthenticateWithPasswordResult
@@ -55,6 +71,7 @@ export type CreateSignInResult =
 
 export type AuthenticateResultShared =
   | CommonErrors
+  | CaptchaErrors
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
@@ -154,8 +171,14 @@ export async function createSignIn(
   args: CreateSignInArgs,
   handleResponse: HandleResponseFn,
 ): Promise<CreateSignInResult> {
-  const { email, password, sendMagicCode, originUrl = window.location.href } = args.payload;
-  const response = await client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", { email, password, sendMagicCode, originUrl });
+  const { email, password, sendMagicCode, originUrl = window.location.href, captchaToken } = args.payload;
+  const response = await client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", {
+    email,
+    password,
+    sendMagicCode,
+    originUrl,
+    captcha_token: captchaToken,
+  });
 
   return handleResponse(response, () => {
     if (!response.success) {
@@ -217,6 +240,7 @@ export async function authenticateWithPassword(
   const { signInId, payload } = args;
   const response = await client.post<{ password: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
     password: payload.password,
+    captcha_token: payload.captchaToken,
   });
 
   return handleResponse(response, () => {
@@ -250,6 +274,7 @@ export async function authenticateWithMagicCode(
   const { signInId, payload } = args;
   const response = await client.post<{ code: string }>(`/api/sdk/v1/sign_ins/${signInId}/authenticate`, {
     code: payload.code,
+    captcha_token: payload.captchaToken,
   });
 
   return handleResponse(response, () => {

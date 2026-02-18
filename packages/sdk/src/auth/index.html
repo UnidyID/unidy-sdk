@@ -186,6 +186,8 @@
           aria-describedby="email-error"></u-email-field>
         <u-conditional-render id="custom-condition-example"> <span class="text-sm text-green-600 mb-2">✓ Valid email entered</span></u-conditional-render>
         <u-error-message id="email-error" for="email" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
+        <u-captcha-field feature="login" class="mb-2"></u-captcha-field>
+        <u-error-message for="captcha" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
 
         <u-submit-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg disabled:opacity-50 w-full"></u-submit-button>
 

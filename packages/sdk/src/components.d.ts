@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { CaptchaFeature } from "./shared/captcha";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
@@ -23,6 +24,7 @@ import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 import { Subscription } from "./ticketable/api/subscriptions";
 import { Ticket } from "./ticketable/api/tickets";
+export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
@@ -65,6 +67,34 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+    }
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface UCaptchaField {
+        /**
+          * Accessible label for the captcha
+          * @default "Security verification"
+         */
+        "ariaLabel": string;
+        /**
+          * Custom CSS class for the container
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * The feature this captcha protects (login, registration, newsletter)
+          * @default "login"
+         */
+        "feature": CaptchaFeature;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -874,6 +904,23 @@ declare global {
         prototype: HTMLUBrandConnectButtonElement;
         new (): HTMLUBrandConnectButtonElement;
     };
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface HTMLUCaptchaFieldElement extends Components.UCaptchaField, HTMLStencilElement {
+    }
+    var HTMLUCaptchaFieldElement: {
+        prototype: HTMLUCaptchaFieldElement;
+        new (): HTMLUCaptchaFieldElement;
+    };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
     var HTMLUConditionalRenderElement: {
@@ -1263,6 +1310,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "u-back-button": HTMLUBackButtonElement;
         "u-brand-connect-button": HTMLUBrandConnectButtonElement;
+        "u-captcha-field": HTMLUCaptchaFieldElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -1333,6 +1381,34 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface UCaptchaField {
+        /**
+          * Accessible label for the captcha
+          * @default "Security verification"
+         */
+        "ariaLabel"?: string;
+        /**
+          * Custom CSS class for the container
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * The feature this captcha protects (login, registration, newsletter)
+          * @default "login"
+         */
+        "feature"?: CaptchaFeature;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -2132,6 +2208,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "u-back-button": UBackButton;
         "u-brand-connect-button": UBrandConnectButton;
+        "u-captcha-field": UCaptchaField;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -2184,6 +2261,18 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
             "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
+            /**
+             * Captcha field component that renders a captcha widget when required
+             * Usage:
+             * ```html
+             * <u-captcha-field feature="login"></u-captcha-field>
+             * ```
+             * The component automatically:
+             * - Hides itself when captcha is not configured or not enabled for the feature
+             * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+             * - Is invisible for reCAPTCHA v3 (score-based)
+             */
+            "u-captcha-field": LocalJSX.UCaptchaField & JSXBase.HTMLAttributes<HTMLUCaptchaFieldElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
