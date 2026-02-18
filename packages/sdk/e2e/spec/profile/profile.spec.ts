@@ -14,6 +14,10 @@ test.describe("Profile - authenticated user", () => {
 
   test("profile updated successfully", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profile);
+
+    // Disable autosave so manual submit works without interference
+    await page.locator("#autosave-toggle").uncheck();
+
     const firstNameField = page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox");
 
     await firstNameField.fill("UpdatedFirstName");
@@ -29,15 +33,19 @@ test.describe("Profile - authenticated user", () => {
 
   test("shows date_of_birth error after submit (future date)", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profile);
+
+    // Disable autosave so manual submit works without interference
+    await page.locator("#autosave-toggle").uncheck();
+
     const invalidDOB = new Date(Date.now() + 86400000).toISOString().split("T")[0];
     const dob = page.locator("input[type='date']");
 
     await dob.fill(invalidDOB);
     await dob.blur();
 
-    await page.getByRole("button", { name: "Submit" }).click();
-
+    // Field-level validation shows the error on blur and disables the submit button
     await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
+    await expect(page.getByRole("button", { name: "Submit" })).toBeDisabled();
   });
 });
 

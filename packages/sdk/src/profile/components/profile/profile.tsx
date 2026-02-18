@@ -237,14 +237,12 @@ export class Profile {
     });
 
     // Save on blur: when activeField goes from a field to null, trigger save
-    if (this.enableAutosave && !this.saveDelay) {
-      this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {
-        if (this.previousActiveField && field === null) {
-          this.getAutosaveManager().submitField(this.previousActiveField);
-        }
-        this.previousActiveField = field;
-      });
-    }
+    this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {
+      if (this.enableAutosave && !this.saveDelay && this.previousActiveField && field === null) {
+        this.getAutosaveManager().submitField(this.previousActiveField);
+      }
+      this.previousActiveField = field;
+    });
   }
 
   disconnectedCallback() {
