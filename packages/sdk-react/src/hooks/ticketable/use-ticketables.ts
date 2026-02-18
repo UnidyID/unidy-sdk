@@ -1,8 +1,8 @@
 import type { PaginationMeta, Subscription, SubscriptionsListResponse, Ticket, TicketsListResponse } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { useUnidyClient } from "../provider";
-import type { HookCallbacks } from "../types";
-import { runMutation } from "../utils";
+import { useUnidyClient } from "../../provider";
+import type { HookCallbacks } from "../../types";
+import { runMutation } from "../../utils";
 import type { UsePaginationReturn } from "./use-pagination";
 
 // These types aren't re-exported from @unidy.io/sdk/standalone by name,

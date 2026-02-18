@@ -1,6 +1,6 @@
-import * as React from "react";
 import type { Subscription, Ticket } from "@unidy.io/sdk/standalone";
-import { type ExportFormat, useAuth, usePagination, useTicketables } from "@unidy.io/sdk-react";
+import { type ExportFormat, usePagination, useSession, useTicketables } from "@unidy.io/sdk-react";
+import * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -153,7 +153,7 @@ function PaginationBar({
 }
 
 export function Ticketables() {
-  const auth = useAuth({ autoRecover: true });
+  const session = useSession({ autoRecover: true });
   const [type, setType] = useState<TicketableType>("ticket");
   const [stateFilter, setStateFilter] = useState<string>("");
 
@@ -163,7 +163,7 @@ export function Ticketables() {
     type,
     pagination,
     filter: stateFilter ? { state: stateFilter } : undefined,
-    fetchOnMount: auth.isAuthenticated,
+    fetchOnMount: session.isAuthenticated,
     callbacks: {
       onSuccess: (msg) => toast.success(msg),
       onError: (err) => toast.error(err),
@@ -196,7 +196,7 @@ export function Ticketables() {
         <h1 className="text-2xl font-bold mt-2">Ticketables Demo</h1>
       </div>
 
-      {!auth.isAuthenticated && (
+      {!session.isAuthenticated && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
           <p className="text-yellow-700">
             You need to{" "}
@@ -208,7 +208,7 @@ export function Ticketables() {
         </div>
       )}
 
-      {auth.isAuthenticated && (
+      {session.isAuthenticated && (
         <>
           <div className="flex flex-wrap gap-4 mb-6">
             <fieldset className="flex gap-2">

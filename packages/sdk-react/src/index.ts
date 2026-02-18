@@ -21,9 +21,18 @@ export type {
 export { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";
 // Auth utilities
 export { authStorage } from "./auth/auth-storage";
-export type { AuthErrors, AuthStep, LoginOptions, UseAuthOptions, UseAuthReturn } from "./auth/types";
-// Auth hook
-export { useAuth } from "./auth/use-auth";
+// Auth hooks
+export { useLogin } from "./auth/hooks/use-login";
+export { useSession } from "./auth/hooks/use-session";
+export type {
+  AuthErrors,
+  AuthStep,
+  LoginOptions,
+  UseLoginOptions,
+  UseLoginReturn,
+  UseSessionOptions,
+  UseSessionReturn,
+} from "./auth/types";
 // Enhanced client (auto-wires getIdToken to auth storage)
 export { createStandaloneClient } from "./client";
 // Newsletter hooks
@@ -39,13 +48,12 @@ export type { UseNewsletterResendConfirmationReturn } from "./hooks/newsletter/u
 export { useNewsletterResendConfirmation } from "./hooks/newsletter/use-newsletter-resend-confirmation";
 export type { SubscribeArgs, UseNewsletterSubscribeReturn } from "./hooks/newsletter/use-newsletter-subscribe";
 export { useNewsletterSubscribe } from "./hooks/newsletter/use-newsletter-subscribe";
-export type { UseProfileOptions, UseProfileReturn } from "./profile/use-profile";
+export type { UseProfileOptions, UseProfileReturn } from "./hooks/profile/use-profile";
 // Profile hook
-export { useProfile } from "./profile/use-profile";
-export { UnidyProvider, useUnidyClient } from "./provider";
-export type { UsePaginationOptions, UsePaginationReturn } from "./ticketable/use-pagination";
+export { useProfile } from "./hooks/profile/use-profile";
+export type { UsePaginationOptions, UsePaginationReturn } from "./hooks/ticketable/use-pagination";
 // Ticketable hooks
-export { usePagination } from "./ticketable/use-pagination";
+export { usePagination } from "./hooks/ticketable/use-pagination";
 export type {
   ExportFormat,
   ExportLinkResponse,
@@ -53,8 +61,9 @@ export type {
   TicketableType,
   UseTicketablesOptions,
   UseTicketablesReturn,
-} from "./ticketable/use-ticketables";
-export { useTicketables } from "./ticketable/use-ticketables";
+} from "./hooks/ticketable/use-ticketables";
+export { useTicketables } from "./hooks/ticketable/use-ticketables";
+export { UnidyProvider, useUnidyClient } from "./provider";
 
 // Types
 export type { HookCallbacks } from "./types";

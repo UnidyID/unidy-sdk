@@ -1,5 +1,5 @@
+import { useLogin, useSession } from "@unidy.io/sdk-react";
 import * as React from "react";
-import { useAuth } from "@unidy.io/sdk-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -314,12 +314,13 @@ function AuthenticatedView({ email, onLogout }: { email: string; onLogout: () =>
 }
 
 export function Auth() {
-  const auth = useAuth({
+  const login = useLogin({
     callbacks: {
       onSuccess: (msg) => toast.success(msg),
       onError: (err) => toast.error(err),
     },
   });
+  const session = useSession();
 
   return (
     <main className="max-w-md mx-auto p-8">
@@ -329,64 +330,64 @@ export function Auth() {
         </Link>
         <h1 className="text-2xl font-bold mt-2">Authentication</h1>
         <p className="text-gray-500 text-sm">
-          Step: <code className="bg-gray-100 px-1 rounded">{auth.step}</code>
+          Step: <code className="bg-gray-100 px-1 rounded">{login.step}</code>
         </p>
       </div>
 
-      {auth.errors.global && (
+      {login.errors.global && (
         <div role="alert" className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-          <p className="text-red-700 text-sm">{auth.errors.global}</p>
+          <p className="text-red-700 text-sm">{login.errors.global}</p>
         </div>
       )}
 
-      {auth.step === "email" && (
-        <EmailStep onSubmit={(email) => auth.submitEmail(email)} error={auth.errors.email} isLoading={auth.isLoading} />
+      {!session.isAuthenticated && login.step === "email" && (
+        <EmailStep onSubmit={(email) => login.submitEmail(email)} error={login.errors.email} isLoading={login.isLoading} />
       )}
 
-      {auth.step === "verification" && (
+      {!session.isAuthenticated && login.step === "verification" && (
         <VerificationStep
-          loginOptions={auth.loginOptions}
-          onPassword={() => auth.goToStep("password")}
-          onMagicCode={() => auth.sendMagicCode()}
+          loginOptions={login.loginOptions}
+          onPassword={() => login.goToStep("password")}
+          onMagicCode={() => login.sendMagicCode()}
           onSocial={(provider) => {
-            window.location.href = auth.getSocialAuthUrl(provider, window.location.href);
+            window.location.href = login.getSocialAuthUrl(provider, window.location.href);
           }}
-          onBack={() => auth.goBack()}
+          onBack={() => login.goBack()}
         />
       )}
 
-      {auth.step === "password" && (
+      {!session.isAuthenticated && login.step === "password" && (
         <PasswordStep
-          onSubmit={(password) => auth.submitPassword(password)}
-          error={auth.errors.password}
-          isLoading={auth.isLoading}
-          onBack={() => auth.goBack()}
-          onForgot={() => auth.goToStep("reset-password")}
+          onSubmit={(password) => login.submitPassword(password)}
+          error={login.errors.password}
+          isLoading={login.isLoading}
+          onBack={() => login.goBack()}
+          onForgot={() => login.goToStep("reset-password")}
         />
       )}
 
-      {auth.step === "magic-code" && (
+      {!session.isAuthenticated && login.step === "magic-code" && (
         <MagicCodeStep
-          onSubmit={(code) => auth.submitMagicCode(code)}
-          onResend={() => auth.sendMagicCode()}
-          error={auth.errors.magicCode}
-          isLoading={auth.isLoading}
-          resendAfter={auth.magicCodeResendAfter}
-          onBack={() => auth.goBack()}
+          onSubmit={(code) => login.submitMagicCode(code)}
+          onResend={() => login.sendMagicCode()}
+          error={login.errors.magicCode}
+          isLoading={login.isLoading}
+          resendAfter={login.magicCodeResendAfter}
+          onBack={() => login.goBack()}
         />
       )}
 
-      {auth.step === "reset-password" && (
+      {!session.isAuthenticated && login.step === "reset-password" && (
         <ResetPasswordStep
-          resetPasswordStep={auth.resetPasswordStep}
-          onSend={() => auth.sendResetPasswordEmail()}
-          onBack={() => auth.goBack()}
-          error={auth.errors.resetPassword}
-          isLoading={auth.isLoading}
+          resetPasswordStep={login.resetPasswordStep}
+          onSend={() => login.sendResetPasswordEmail()}
+          onBack={() => login.goBack()}
+          error={login.errors.resetPassword}
+          isLoading={login.isLoading}
         />
       )}
 
-      {auth.step === "authenticated" && <AuthenticatedView email={auth.email} onLogout={() => auth.logout()} />}
+      {session.isAuthenticated && <AuthenticatedView email={session.email} onLogout={() => session.logout()} />}
     </main>
   );
 }

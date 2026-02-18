@@ -49,7 +49,7 @@ class ReactStandaloneApiClient extends StandaloneApiClient {
 
 /**
  * Extended client that stores the baseUrl for use by hooks (e.g. social auth URL building)
- * and defaults `getIdToken` to read from sessionStorage, bridging auth tokens written by `useAuth`.
+ * and defaults `getIdToken` to read from sessionStorage, bridging auth tokens written by `useLogin`/`useSession`.
  *
  * On authenticated requests, if the token is expired we first try to refresh it using the
  * stored refresh token before returning an ID token to the requesting service.
@@ -134,7 +134,7 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
  * Create a standalone Unidy client enhanced for React.
  *
  * Differences from the base `createStandaloneClient`:
- * - `getIdToken` defaults to reading from sessionStorage (bridging tokens written by `useAuth`)
+ * - `getIdToken` defaults to reading from sessionStorage (bridging tokens written by `useLogin`/`useSession`)
  * - Exposes `baseUrl` for use by social auth URL building
  */
 export function createStandaloneClient(config: StandaloneUnidyClientConfig): ReactUnidyClient {

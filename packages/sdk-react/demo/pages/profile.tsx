@@ -1,5 +1,5 @@
 import type { UserProfileData } from "@unidy.io/sdk-react";
-import { useAuth, useProfile } from "@unidy.io/sdk-react";
+import { useProfile, useSession } from "@unidy.io/sdk-react";
 import type * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -210,9 +210,9 @@ function ProfileForm({
 }
 
 export function Profile() {
-  const auth = useAuth({ autoRecover: true });
+  const session = useSession({ autoRecover: true });
   const profile = useProfile({
-    fetchOnMount: auth.isAuthenticated,
+    fetchOnMount: session.isAuthenticated,
     callbacks: {
       onSuccess: (msg) => toast.success(msg),
       onError: (err) => toast.error(err),
@@ -228,7 +228,7 @@ export function Profile() {
         <h1 className="text-2xl font-bold mt-2">Profile Demo</h1>
       </div>
 
-      {!auth.isAuthenticated && (
+      {!session.isAuthenticated && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
           <p className="text-yellow-700">
             You need to{" "}
@@ -240,9 +240,9 @@ export function Profile() {
         </div>
       )}
 
-      {auth.isAuthenticated && profile.isLoading && <p className="text-gray-500">Loading profile...</p>}
+      {session.isAuthenticated && profile.isLoading && <p className="text-gray-500">Loading profile...</p>}
 
-      {auth.isAuthenticated && profile.error && (
+      {session.isAuthenticated && profile.error && (
         <div role="alert" className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
           <p className="text-red-700 text-sm">{profile.error}</p>
           <button type="button" onClick={() => profile.refetch()} className="text-red-600 text-sm hover:underline mt-1">
@@ -251,7 +251,7 @@ export function Profile() {
         </div>
       )}
 
-      {auth.isAuthenticated && profile.profile && (
+      {session.isAuthenticated && profile.profile && (
         <ProfileForm
           profile={profile.profile}
           fieldErrors={profile.fieldErrors}

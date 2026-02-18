@@ -29,7 +29,7 @@ export function Home() {
             <Link to="/auth" className="text-blue-600 hover:underline text-lg">
               Authentication
             </Link>
-            <p className="text-gray-600 text-sm">useAuth hook demo (email, password, magic code, social login)</p>
+            <p className="text-gray-600 text-sm">useLogin + useSession demo (email, password, magic code, social login)</p>
           </li>
           <li>
             <Link to="/profile" className="text-blue-600 hover:underline text-lg">

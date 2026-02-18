@@ -47,14 +47,14 @@ export type AuthAction =
   | { type: "SET_RESET_PASSWORD_STEP"; step: "idle" | "sent" }
   | { type: "RECOVER_STATE"; state: Partial<AuthState> };
 
-export interface UseAuthOptions {
+export interface UseLoginOptions {
   initialStep?: AuthStep;
   callbacks?: HookCallbacks;
-  /** Auto-recover auth state from storage on mount. Default: true */
+  /** Auto-recover login flow state from storage on mount. Default: true */
   autoRecover?: boolean;
 }
 
-export interface UseAuthReturn {
+export interface UseLoginReturn {
   // State
   step: AuthStep;
   isAuthenticated: boolean;
@@ -88,8 +88,19 @@ export interface UseAuthReturn {
   goBack: () => void;
   goToStep: (step: AuthStep) => void;
   restart: () => void;
+}
 
-  // Session
+export interface UseSessionOptions {
+  callbacks?: HookCallbacks;
+  /** Auto-recover and hydrate authenticated session state from storage on mount. Default: true */
+  autoRecover?: boolean;
+}
+
+export interface UseSessionReturn {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  email: string;
+  signInId: string | null;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
 }

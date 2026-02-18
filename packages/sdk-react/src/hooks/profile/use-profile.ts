@@ -1,8 +1,8 @@
 import type { UserProfileData, UserProfileFormError } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { useUnidyClient } from "../provider";
-import type { HookCallbacks } from "../types";
-import { runMutation } from "../utils";
+import { useUnidyClient } from "../../provider";
+import type { HookCallbacks } from "../../types";
+import { runMutation } from "../../utils";
 
 interface State {
   profile: UserProfileData | null;
