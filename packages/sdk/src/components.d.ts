@@ -259,6 +259,9 @@ export namespace Components {
           * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
          */
         "saveDelay"?: number;
+        /**
+          * Programmatically submit the profile form. Delegates to the inner u-profile component.
+         */
         "submitProfile": () => Promise<void>;
     }
     interface UJumpToService {

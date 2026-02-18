@@ -51,7 +51,9 @@ export class Profile {
   @Listen("uFieldSubmit")
   handleFieldSubmit(event: CustomEvent<{ field: string }>) {
     event.stopPropagation();
-    this.getAutosaveManager().submitField(event.detail.field);
+    if (this.enableAutosave) {
+      this.getAutosaveManager().submitField(event.detail.field);
+    }
   }
 
   /** Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set. */
@@ -221,9 +223,6 @@ export class Profile {
       }
     });
 
-    // Set flag before listener to avoid race condition if store emits synchronously
-    this.initialLoadComplete = true;
-
     // Set up data change listener - always emit event, optionally debounced autosave
     this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
       if (this.initialLoadComplete) {
@@ -235,6 +234,9 @@ export class Profile {
         }
       }
     });
+
+    // Set flag after listener to ensure no data change events are missed
+    this.initialLoadComplete = true;
 
     // Save on blur: when activeField goes from a field to null, trigger save
     this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {

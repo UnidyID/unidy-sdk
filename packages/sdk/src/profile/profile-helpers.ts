@@ -69,5 +69,5 @@ export function buildPayload(stateData: ProfileRaw, fieldsToInclude?: Set<string
 export function hasProfileChanged(): boolean {
   const currentData = buildPayload(profileState.data);
   const savedData = buildPayload(profileState.configuration);
-  return JSON.stringify(currentData) !== JSON.stringify(savedData);
+  return JSON.stringify(currentData, Object.keys(currentData).sort()) !== JSON.stringify(savedData, Object.keys(savedData).sort());
 }

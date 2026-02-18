@@ -23,7 +23,7 @@ Events from the inner `u-profile` component (`uProfileChange`, `uProfileSuccess`
 
 ### `submitProfile() => Promise<void>`
 
-
+Programmatically submit the profile form. Delegates to the inner u-profile component.
 
 #### Returns
 

@@ -24,6 +24,7 @@ export class FullProfile {
 
   private profileRef?: HTMLUProfileElement;
 
+  /** Programmatically submit the profile form. Delegates to the inner u-profile component. */
   @Method()
   async submitProfile() {
     await this.profileRef?.submitProfile();
