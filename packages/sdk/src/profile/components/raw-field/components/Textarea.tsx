@@ -10,8 +10,10 @@ type TextareaProps = {
   componentClassName?: string;
   placeholder?: string;
   specificPartKey?: string;
-  onChange: (value: string) => void;
+  onInput: (value: string) => void;
+  onFocus?: () => void;
   onBlur?: (e: Event) => void;
+  onEnterSubmit?: () => void;
   ariaDescribedBy?: string;
 };
 
@@ -25,8 +27,17 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     part={`textarea_field ${props.specificPartKey ? `textarea_field--${props.specificPartKey}` : ""}`}
     disabled={props.disabled}
     title={props.title}
-    onChange={(e) => props.onChange((e.target as HTMLTextAreaElement).value)}
+    onInput={(e) => props.onInput((e.target as HTMLTextAreaElement).value)}
+    onFocus={() => props.onFocus?.()}
     onBlur={props.onBlur}
+    onKeyDown={(e) => {
+      // Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux) to submit
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && props.onEnterSubmit) {
+        e.preventDefault();
+        props.onInput((e.target as HTMLTextAreaElement).value);
+        props.onEnterSubmit();
+      }
+    }}
     aria-describedby={props.ariaDescribedBy || undefined}
   />
 );

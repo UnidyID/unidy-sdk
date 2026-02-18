@@ -10,8 +10,10 @@ type InputProps = {
   title?: string;
   placeholder?: string;
   specificPartKey?: string;
-  onChange: (value: string) => void;
+  onInput: (value: string) => void;
+  onFocus?: () => void;
   onBlur?: (e: Event) => void;
+  onEnterSubmit?: () => void;
   ariaDescribedBy?: string;
 };
 
@@ -26,8 +28,16 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
     part={`input_field ${props.specificPartKey ? `input_field--${props.specificPartKey}` : ""}`}
     title={props.title}
     placeholder={props.placeholder}
-    onChange={(e) => props.onChange((e.target as HTMLInputElement).value)}
+    onInput={(e) => props.onInput((e.target as HTMLInputElement).value)}
+    onFocus={() => props.onFocus?.()}
     onBlur={(e) => props.onBlur?.(e)}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && props.onEnterSubmit) {
+        e.preventDefault();
+        props.onInput((e.target as HTMLInputElement).value);
+        props.onEnterSubmit();
+      }
+    }}
     aria-describedby={props.ariaDescribedBy || undefined}
   />
 );

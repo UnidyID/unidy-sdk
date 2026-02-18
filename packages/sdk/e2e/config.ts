@@ -13,7 +13,7 @@ export const routes = {
   auth: "/auth",
   oauth: "/oauth",
   newsletter: "/newsletter",
-  profile: "/auth/profile.html",
+  profile: "/profile",
   profilePartial: "/profile/partial.html",
   registration: "/auth/registration.html",
   ticketable: "/ticketable",

@@ -17,3 +17,24 @@
 [part="select"]:disabled {
   cursor: not-allowed;
 }
+
+/* Field input wrapper for positioning indicator */
+.field-input-wrapper {
+  position: relative;
+}
+
+/* Field save indicator styles */
+.field-save-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.field-save-indicator.saving {
+  --spinner-font-size: 16px;
+}
+
+.field-save-indicator.saved {
+  color: #22c55e;
+}

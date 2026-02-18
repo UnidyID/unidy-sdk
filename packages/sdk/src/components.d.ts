@@ -14,9 +14,9 @@ import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
-import { Option } from "./profile/components/raw-input-fields/Select";
-import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+import { Option } from "./profile/components/raw-field/components/Select";
+import { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
+import { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
@@ -33,9 +33,9 @@ export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
-export { Option } from "./profile/components/raw-input-fields/Select";
-export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+export { Option } from "./profile/components/raw-field/components/Select";
+export { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
+export { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
@@ -242,14 +242,27 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
-          * For phone fields: how to display country code selector ('icon' or 'label').
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
-          * Comma-separated list of field names to display. If not provided, shows all fields.
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave": boolean;
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
+        /**
+          * Programmatically submit the profile form. Delegates to the inner u-profile component.
+         */
+        "submitProfile": () => Promise<void>;
     }
     interface UJumpToService {
         /**
@@ -590,6 +603,11 @@ export namespace Components {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave": boolean;
+        /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
@@ -600,13 +618,17 @@ export namespace Components {
          */
         "partialValidation": boolean;
         /**
-          * Optional profile ID (for multi-profile scenarios).
+          * Optional profile ID for multi-profile scenarios.
          */
         "profileId"?: string;
         /**
           * Register a field for partial validation tracking. Called by child u-field components when they mount.
          */
         "registerField": (fieldName: string) => Promise<void>;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         "submitProfile": () => Promise<void>;
         /**
           * Unregister a field from partial validation tracking. Called by child u-field components when they unmount.
@@ -855,6 +877,10 @@ export interface UOauthProviderCustomEvent<T> extends CustomEvent<T> {
 export interface UProfileCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUProfileElement;
+}
+export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURawFieldElement;
 }
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1133,6 +1159,7 @@ declare global {
         new (): HTMLUPasswordFieldElement;
     };
     interface HTMLUProfileElementEventMap {
+        "uProfileChange": { data: ProfileRaw; field?: string };
         "uProfileSuccess": { message: string; payload: ProfileRaw };
         "uProfileError": {
     error: string;
@@ -1157,7 +1184,18 @@ declare global {
         prototype: HTMLUProfileElement;
         new (): HTMLUProfileElement;
     };
+    interface HTMLURawFieldElementEventMap {
+        "uFieldSubmit": { field: string };
+    }
     interface HTMLURawFieldElement extends Components.URawField, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLURawFieldElement: {
         prototype: HTMLURawFieldElement;
@@ -1529,14 +1567,23 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
-          * For phone fields: how to display country code selector ('icon' or 'label').
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
-          * Comma-separated list of field names to display. If not provided, shows all fields.
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave"?: boolean;
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
     }
     interface UJumpToService {
         /**
@@ -1870,12 +1917,21 @@ declare namespace LocalJSX {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave"?: boolean;
+        /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
         /**
-          * Fired on profile update failure. Contains error code and details including field errors.
+          * Emitted whenever profile data changes. Useful for external state synchronization.
+         */
+        "onUProfileChange"?: (event: UProfileCustomEvent<{ data: ProfileRaw; field?: string }>) => void;
+        /**
+          * Emitted when profile save fails, with error details including field-level errors.
          */
         "onUProfileError"?: (event: UProfileCustomEvent<{
     error: string;
@@ -1886,7 +1942,7 @@ declare namespace LocalJSX {
     };
   }>) => void;
         /**
-          * Fired on successful profile update. Contains success message and updated profile data.
+          * Emitted when profile is successfully saved.
          */
         "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
         /**
@@ -1895,9 +1951,13 @@ declare namespace LocalJSX {
          */
         "partialValidation"?: boolean;
         /**
-          * Optional profile ID (for multi-profile scenarios).
+          * Optional profile ID for multi-profile scenarios.
          */
         "profileId"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         /**
           * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
          */
@@ -1926,6 +1986,10 @@ declare namespace LocalJSX {
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
+        /**
+          * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
+         */
+        "onUFieldSubmit"?: (event: URawFieldCustomEvent<{ field: string }>) => void;
         "options"?: string | Option[];
         "pattern"?: string;
         "patternErrorMessage"?: string;

@@ -23,6 +23,7 @@
 graph TD;
   u-missing-field --> u-field
   u-field --> u-raw-field
+  u-field --> u-spinner
   style u-missing-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

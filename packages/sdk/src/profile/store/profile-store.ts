@@ -20,6 +20,8 @@ export type ProfileRaw = {
   custom_attributes?: Record<string, ProfileNode>;
 } & Record<string, ProfileNode>;
 
+export type FieldSaveState = "idle" | "saving" | "saved";
+
 export interface ProfileState {
   loading: boolean;
   data: ProfileRaw;
@@ -27,6 +29,8 @@ export interface ProfileState {
   errors: Record<string, string | null>;
   configUpdateSource?: "fetch" | "submit";
   phoneValid: boolean;
+  fieldSaveStates: Record<string, FieldSaveState>;
+  activeField: string | null;
 }
 
 const initialState: ProfileState = {
@@ -35,6 +39,8 @@ const initialState: ProfileState = {
   configuration: {},
   errors: {},
   phoneValid: true,
+  fieldSaveStates: {},
+  activeField: null,
 };
 
 const profileStore = createStore<ProfileState>(initialState);

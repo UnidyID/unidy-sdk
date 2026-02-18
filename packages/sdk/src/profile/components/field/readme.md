@@ -28,6 +28,10 @@
 | Part                                | Description                                                                                                                                                                                                               |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `"field-error-message"`             |                                                                                                                                                                                                                           |
+| `"field-input-wrapper"`             | Container wrapping the input and save indicator.                                                                                                                                                                          |
+| `"field-save-indicator"`            | Base styles for save state indicators (spinner/checkmark).                                                                                                                                                                |
+| `"field-save-indicator--saved"`     | Shown after successful save (displays checkmark, disappears after 2s).                                                                                                                                                    |
+| `"field-save-indicator--saving"`    | Shown while the field is being saved (displays spinner).                                                                                                                                                                  |
 | `"input_field"`                     |                                                                                                                                                                                                                           |
 | `"multi-select-group_field"`        |                                                                                                                                                                                                                           |
 | `"multi-select-item_checkbox"`      |                                                                                                                                                                                                                           |
@@ -56,11 +60,13 @@
 ### Depends on
 
 - [u-raw-field](../raw-field)
+- [u-spinner](../../../shared/components/spinner)
 
 ### Graph
 ```mermaid
 graph TD;
   u-field --> u-raw-field
+  u-field --> u-spinner
   u-full-profile --> u-field
   u-missing-field --> u-field
   u-oauth-missing-fields --> u-field
