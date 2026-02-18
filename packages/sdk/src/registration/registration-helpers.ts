@@ -1,11 +1,16 @@
 import type { UnidyClient } from "../api";
 import type {
   CreateRegistrationPayload,
+  PasskeyCreationOptions,
   RegistrationFlowResponse,
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "../auth/api/register";
+import { createLogger } from "../logger";
+import { PASSKEY_ERRORS, buildPublicKeyCreationOptions, formatCreationCredentialForServer } from "../shared/passkey-utils";
 import { registrationState, registrationStore } from "./store/registration-store";
+
+const logger = createLogger("RegistrationHelpers");
 
 export class RegistrationHelpers {
   private client: UnidyClient;
@@ -356,6 +361,107 @@ export class RegistrationHelpers {
       // Fetch the registration flow
       this.getRegistration(rid);
     }
+  }
+
+  /**
+   * Register a passkey for the current registration flow.
+   * Gets creation options from server, triggers WebAuthn browser prompt, sends credential back.
+   */
+  async registerPasskey(passkeyName?: string): Promise<boolean> {
+    if (!registrationState.rid) {
+      registrationStore.setGlobalError("registration", "registration_not_found");
+      return false;
+    }
+
+    if (!window.PublicKeyCredential) {
+      registrationStore.setFieldError("passkey", "passkey_not_supported");
+      return false;
+    }
+
+    registrationStore.setLoading(true);
+    registrationStore.clearErrors();
+
+    try {
+      const [optionsError, options] = await this.client.auth.getPasskeyCreationOptions({
+        rid: registrationState.rid,
+      });
+
+      if (optionsError || !options) {
+        registrationStore.setFieldError("passkey", optionsError || "bad_request");
+        registrationStore.setLoading(false);
+        return false;
+      }
+
+      const publicKeyOptions = buildPublicKeyCreationOptions(options as PasskeyCreationOptions);
+
+      const credential = (await navigator.credentials.create({
+        publicKey: publicKeyOptions,
+      })) as PublicKeyCredential | null;
+
+      if (!credential) {
+        registrationStore.setFieldError("passkey", "passkey_cancelled");
+        registrationStore.setLoading(false);
+        return false;
+      }
+
+      const formattedCredential = formatCreationCredentialForServer(credential);
+
+      const [registerError, response] = await this.client.auth.registerPasskey(
+        {
+          publicKeyCredential: formattedCredential,
+          passkey_name: passkeyName,
+        },
+        { rid: registrationState.rid },
+      );
+
+      registrationStore.setLoading(false);
+
+      if (registerError) {
+        registrationStore.setFieldError("passkey", registerError);
+        return false;
+      }
+
+      registrationStore.setFlowResponse(response as RegistrationFlowResponse);
+      return true;
+    } catch (error) {
+      logger.error("Passkey registration error:", error);
+
+      let errorMessage = "passkey_error";
+      if (error instanceof DOMException) {
+        errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
+      }
+
+      registrationStore.setFieldError("passkey", errorMessage);
+      registrationStore.setLoading(false);
+      return false;
+    }
+  }
+
+  /**
+   * Remove the passkey from the current registration flow.
+   */
+  async removePasskey(): Promise<boolean> {
+    if (!registrationState.rid) {
+      registrationStore.setGlobalError("registration", "registration_not_found");
+      return false;
+    }
+
+    registrationStore.setLoading(true);
+    registrationStore.clearErrors();
+
+    const [error, response] = await this.client.auth.removePasskey({
+      rid: registrationState.rid,
+    });
+
+    registrationStore.setLoading(false);
+
+    if (error) {
+      registrationStore.setFieldError("passkey", error);
+      return false;
+    }
+
+    registrationStore.setFlowResponse(response as RegistrationFlowResponse);
+    return true;
   }
 
   /**

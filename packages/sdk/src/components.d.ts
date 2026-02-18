@@ -730,6 +730,22 @@ export namespace Components {
         "name": string;
         "preference": string;
     }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
     interface URegistrationResend {
         "componentClassName"?: string;
     }
@@ -1327,6 +1343,12 @@ declare global {
         prototype: HTMLURegistrationNewsletterPreferenceElement;
         new (): HTMLURegistrationNewsletterPreferenceElement;
     };
+    interface HTMLURegistrationPasskeyElement extends Components.URegistrationPasskey, HTMLStencilElement {
+    }
+    var HTMLURegistrationPasskeyElement: {
+        prototype: HTMLURegistrationPasskeyElement;
+        new (): HTMLURegistrationPasskeyElement;
+    };
     interface HTMLURegistrationResendElement extends Components.URegistrationResend, HTMLStencilElement {
     }
     var HTMLURegistrationResendElement: {
@@ -1528,6 +1550,7 @@ declare global {
         "u-registration-error": HTMLURegistrationErrorElement;
         "u-registration-newsletter": HTMLURegistrationNewsletterElement;
         "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
+        "u-registration-passkey": HTMLURegistrationPasskeyElement;
         "u-registration-resend": HTMLURegistrationResendElement;
         "u-registration-resume": HTMLURegistrationResumeElement;
         "u-registration-root": HTMLURegistrationRootElement;
@@ -2241,6 +2264,22 @@ declare namespace LocalJSX {
         "name": string;
         "preference": string;
     }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
     interface URegistrationResend {
         "componentClassName"?: string;
     }
@@ -2513,6 +2552,7 @@ declare namespace LocalJSX {
         "u-registration-error": URegistrationError;
         "u-registration-newsletter": URegistrationNewsletter;
         "u-registration-newsletter-preference": URegistrationNewsletterPreference;
+        "u-registration-passkey": URegistrationPasskey;
         "u-registration-resend": URegistrationResend;
         "u-registration-resume": URegistrationResume;
         "u-registration-root": URegistrationRoot;
@@ -2587,6 +2627,7 @@ declare module "@stencil/core" {
             "u-registration-error": LocalJSX.URegistrationError & JSXBase.HTMLAttributes<HTMLURegistrationErrorElement>;
             "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
             "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
+            "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
             "u-registration-resend": LocalJSX.URegistrationResend & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
             "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
             "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;

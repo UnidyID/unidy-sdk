@@ -37,6 +37,7 @@ export interface RegistrationState {
   flowResponse: RegistrationFlowResponse | null;
   canFinalize: boolean;
   socialProvider: string | null;
+  hasPasskey: boolean;
   hasPassword: boolean | null;
 }
 
@@ -80,6 +81,7 @@ const initialState: RegistrationState = {
   flowResponse: null,
   canFinalize: false,
   socialProvider: null,
+  hasPasskey: false,
   hasPassword: null,
 };
 
@@ -256,6 +258,7 @@ class RegistrationStore {
       state.canFinalize = response.can_finalize;
       state.emailVerified = response.email_verified;
       state.socialProvider = response.social_provider;
+      state.hasPasskey = response.has_passkey === true;
       state.hasPassword = response.has_password;
 
       if (response.email) {
@@ -284,6 +287,10 @@ class RegistrationStore {
 
   setSocialProvider(provider: string | null) {
     state.socialProvider = provider;
+  }
+
+  setHasPasskey(hasPasskey: boolean) {
+    state.hasPasskey = hasPasskey;
   }
 
   setHasPassword(hasPassword: boolean | null) {

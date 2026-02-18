@@ -51,6 +51,7 @@ const RegistrationFlowResponseSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   expires_at: z.string(),
+  has_passkey: z.boolean().nullable(),
   has_password: z.boolean().nullable(),
   expired: z.boolean(),
   can_finalize: z.boolean(),
@@ -101,6 +102,39 @@ const CannotFinalizeErrorSchema = z.object({
   auth_method_missing: z.boolean().optional(),
 });
 
+// Passkey creation options schema (WebAuthn PublicKeyCredentialCreationOptions from server)
+const PasskeyCreationOptionsSchema = z.object({
+  challenge: z.string(),
+  timeout: z.number(),
+  rp: z.object({ id: z.string(), name: z.string() }),
+  user: z.object({ id: z.string(), name: z.string(), displayName: z.string() }),
+  pubKeyCredParams: z.array(z.object({ type: z.string(), alg: z.number() })),
+  authenticatorSelection: z
+    .object({
+      authenticatorAttachment: z.string().optional(),
+      residentKey: z.string().optional(),
+      requireResidentKey: z.boolean().optional(),
+      userVerification: z.string().optional(),
+    })
+    .optional(),
+  excludeCredentials: z
+    .array(
+      z.object({
+        type: z.string(),
+        id: z.string(),
+        transports: z.array(z.string()).optional(),
+      }),
+    )
+    .optional(),
+  attestation: z.string().optional(),
+});
+
+// Register passkey payload schema
+const RegisterPasskeyPayloadSchema = z.object({
+  publicKeyCredential: z.record(z.string(), z.unknown()),
+  passkey_name: z.string().optional(),
+});
+
 // Exported types
 export type RegistrationProfileData = z.infer<typeof RegistrationProfileDataSchema>;
 export type NewsletterPreferences = z.infer<typeof NewsletterPreferencesSchema>;
@@ -111,6 +145,8 @@ export type SendVerificationCodeResponse = z.infer<typeof SendVerificationCodeRe
 export type VerifyEmailPayload = z.infer<typeof VerifyEmailPayloadSchema>;
 export type SendResumeLinkPayload = z.infer<typeof SendResumeLinkPayloadSchema>;
 export type CannotFinalizeError = z.infer<typeof CannotFinalizeErrorSchema>;
+export type PasskeyCreationOptions = z.infer<typeof PasskeyCreationOptionsSchema>;
+export type RegisterPasskeyPayload = z.infer<typeof RegisterPasskeyPayloadSchema>;
 
 /** Safely parse error response, returning a fallback if parsing fails */
 function parseErrorResponse(data: unknown): ErrorResponse {
@@ -178,6 +214,25 @@ export type SendResumeLinkResult =
   | ["email_required", ErrorResponse]
   | ["registration_flow_not_found", ErrorResponse]
   | [null, null];
+
+export type GetPasskeyCreationOptionsResult =
+  | CommonErrors
+  | ["registration_not_found", ErrorResponse]
+  | ["registration_expired", ErrorResponse]
+  | [null, PasskeyCreationOptions];
+
+export type RegisterPasskeyResult =
+  | CommonErrors
+  | ["registration_not_found", ErrorResponse]
+  | ["registration_expired", ErrorResponse]
+  | ["invalid_record", ErrorResponse]
+  | [null, RegistrationFlowResponse];
+
+export type RemovePasskeyResult =
+  | CommonErrors
+  | ["registration_not_found", ErrorResponse]
+  | ["registration_expired", ErrorResponse]
+  | [null, RegistrationFlowResponse];
 
 // Registration API functions
 
@@ -371,5 +426,72 @@ export async function sendResumeLink(
     }
 
     return [null, null];
+  });
+}
+
+/**
+ * Get passkey creation options (WebAuthn PublicKeyCredentialCreationOptions).
+ * Uses rid from cookie by default, or pass rid in options.
+ */
+export async function getPasskeyCreationOptions(
+  client: ApiClientInterface,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
+): Promise<GetPasskeyCreationOptionsResult> {
+  const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/passkey/new", options?.rid);
+  const response = await client.get<PasskeyCreationOptions>(endpoint);
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired", error_response];
+    }
+
+    return [null, PasskeyCreationOptionsSchema.parse(response.data)];
+  });
+}
+
+/**
+ * Register a passkey for the current registration flow.
+ * Uses rid from cookie by default, or pass rid in options.
+ */
+export async function registerPasskey(
+  client: ApiClientInterface,
+  payload: RegisterPasskeyPayload,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
+): Promise<RegisterPasskeyResult> {
+  const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/passkey", options?.rid);
+  const response = await client.post<RegistrationFlowResponse>(endpoint, payload);
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record", error_response];
+    }
+
+    return [null, RegistrationFlowResponseSchema.parse(response.data)];
+  });
+}
+
+/**
+ * Remove a passkey from the current registration flow.
+ * Uses rid from cookie by default, or pass rid in options.
+ */
+export async function removePasskey(
+  client: ApiClientInterface,
+  options: RegistrationOptions | undefined,
+  handleResponse: HandleResponseFn,
+): Promise<RemovePasskeyResult> {
+  const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/passkey", options?.rid);
+  const response = await client.delete<RegistrationFlowResponse>(endpoint);
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired", error_response];
+    }
+
+    return [null, RegistrationFlowResponseSchema.parse(response.data)];
   });
 }

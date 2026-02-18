@@ -1,7 +1,7 @@
-import { Component, h, Method, Prop } from "@stencil/core";
+import { Component, Host, h, Method, Prop, State } from "@stencil/core";
 import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
-import { registrationState, registrationStore } from "../../store/registration-store";
+import { onChange, registrationState, registrationStore } from "../../store/registration-store";
 import { getParentRegistrationRoot } from "../helpers";
 
 @Component({
@@ -14,10 +14,27 @@ export class RegistrationStep extends UnidyComponent() {
   @Prop({ attribute: "requires-email-verification" }) requiresEmailVerification = false;
   @Prop({ attribute: "requires-password" }) requiresPassword = false;
 
+  @State() private renderTrigger = 0;
+
   private registrationInstance: Registration | null = null;
+  private unsubscribers: (() => void)[] = [];
 
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
+  }
+
+  connectedCallback() {
+    const triggerRender = () => {
+      this.renderTrigger++;
+    };
+    this.unsubscribers.push(onChange("currentStepName", triggerRender));
+  }
+
+  disconnectedCallback() {
+    for (const unsub of this.unsubscribers) {
+      unsub();
+    }
+    this.unsubscribers = [];
   }
 
   @Method()
@@ -121,12 +138,13 @@ export class RegistrationStep extends UnidyComponent() {
   }
 
   render() {
+    void this.renderTrigger;
     const isActive = registrationState.currentStepName === this.name;
 
-    if (!isActive && !this.alwaysRender) {
-      return null;
-    }
-
-    return <slot />;
+    return (
+      <Host hidden={!isActive && !this.alwaysRender}>
+        <slot />
+      </Host>
+    );
   }
 }
