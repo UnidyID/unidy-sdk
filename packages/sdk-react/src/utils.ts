@@ -30,7 +30,8 @@ export async function runMutation<TResult extends [string | null, unknown, ...un
   sdkCall: () => Promise<TResult>,
   handlers: {
     onMutate: () => void;
-    onSuccess: (data: SuccessData<TResult>) => boolean | undefined;
+    // biome-ignore lint/suspicious/noConfusingVoidType: void is correct here — most callers return nothing, only error paths return false
+    onSuccess: (data: SuccessData<TResult>) => boolean | void;
     onError: (error: string, data: ErrorData<TResult>) => void;
   },
 ): Promise<boolean> {
