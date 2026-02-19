@@ -1,5 +1,6 @@
 import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
+import { authState } from "../../../auth/store/auth-store";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
@@ -33,6 +34,11 @@ export class RegistrationRoot {
       console.error("[u-registration-root] Invalid steps prop. Expected JSON array string.", e);
     }
 
+    // Pre-populate email from auth state when embedded in the signin flow
+    if (!registrationState.email && authState.email) {
+      registrationStore.setEmail(authState.email);
+    }
+
     // Auto-resume if enabled and rid is present
     if (this.autoResume) {
       await this.tryAutoResume();
@@ -51,14 +57,55 @@ export class RegistrationRoot {
         url.searchParams.delete("registration_rid");
         const cleanUrl = `${url.origin}${url.pathname}${url.searchParams.toString() ? `?${url.searchParams.toString()}` : ""}${url.hash}`;
         window.history.replaceState(null, "", cleanUrl);
+        this.advancePastCompletedSteps();
       }
       return;
     }
 
     // Try to resume from stored rid
     if (registrationState.rid) {
-      await this.registrationInstance?.helpers.getRegistration();
+      const success = await this.registrationInstance?.helpers.getRegistration();
+      if (success) {
+        this.advancePastCompletedSteps();
+      }
     }
+  }
+
+  private advancePastCompletedSteps() {
+    // The first step (email/flow creation) was already completed — skip past it
+    // and any other steps that should be skipped.
+    // We read HTML attributes directly instead of calling child @Method()s
+    // to avoid a deadlock during componentWillLoad (children aren't initialized yet).
+    const steps = registrationState.steps;
+    let nextIndex = 1;
+
+    while (nextIndex < steps.length) {
+      const stepEl = this.element.querySelector(`u-registration-step[name="${steps[nextIndex]}"]`);
+
+      if (!stepEl || !this.shouldSkipStepByAttributes(stepEl)) {
+        break;
+      }
+
+      nextIndex++;
+    }
+
+    if (nextIndex < steps.length) {
+      registrationStore.setCurrentStepIndex(nextIndex);
+    }
+  }
+
+  private shouldSkipStepByAttributes(stepEl: Element): boolean {
+    if (stepEl.hasAttribute("requires-email-verification") && registrationState.emailVerified) {
+      return true;
+    }
+
+    if (stepEl.hasAttribute("requires-password")) {
+      if (registrationState.passwordlessFlag || registrationState.socialProvider) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   onComplete(response: RegistrationFlowResponse) {

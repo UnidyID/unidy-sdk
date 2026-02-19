@@ -28,6 +28,7 @@ export class RegistrationStep extends UnidyComponent() {
       this.renderTrigger++;
     };
     this.unsubscribers.push(onChange("currentStepName", triggerRender));
+    this.element.addEventListener("keydown", this.handleKeyDown);
   }
 
   disconnectedCallback() {
@@ -35,7 +36,17 @@ export class RegistrationStep extends UnidyComponent() {
       unsub();
     }
     this.unsubscribers = [];
+    this.element.removeEventListener("keydown", this.handleKeyDown);
   }
+
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+      e.preventDefault();
+      // Force the input's change event so the store is updated before submit
+      e.target.dispatchEvent(new Event("change", { bubbles: true }));
+      this.submit();
+    }
+  };
 
   @Method()
   async isActive(): Promise<boolean> {
