@@ -1,3 +1,4 @@
+import * as React from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Toaster } from "sonner";
 import { Auth } from "./pages/auth";
@@ -6,6 +7,8 @@ import { Newsletter } from "./pages/newsletter";
 import { NewsletterReactQuery } from "./pages/newsletter-react-query";
 import { PreferenceCenter } from "./pages/preference-center";
 import { Profile } from "./pages/profile";
+import { SimpleNewsletter } from "./pages/simple/newsletter";
+import { SimplePreferenceCenter } from "./pages/simple/preference-center";
 import { Ticketables } from "./pages/ticketables";
 
 export function App() {
@@ -17,6 +20,8 @@ export function App() {
         <Route path="/newsletter" element={<Newsletter />} />
         <Route path="/preference-center" element={<PreferenceCenter />} />
         <Route path="/newsletter-react-query" element={<NewsletterReactQuery />} />
+        <Route path="/simple/newsletter" element={<SimpleNewsletter />} />
+        <Route path="/simple/preference-center" element={<SimplePreferenceCenter />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/ticketables" element={<Ticketables />} />

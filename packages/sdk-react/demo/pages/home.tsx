@@ -14,6 +14,18 @@ export function Home() {
             <p className="text-gray-600 text-sm">useNewsletterSubscribe hook demo</p>
           </li>
           <li>
+            <Link to="/simple/newsletter" className="text-blue-600 hover:underline text-lg">
+              Simple Newsletter
+            </Link>
+            <p className="text-gray-600 text-sm">Minimal single-newsletter subscribe widget</p>
+          </li>
+          <li>
+            <Link to="/simple/preference-center" className="text-blue-600 hover:underline text-lg">
+              Simple Preference Center
+            </Link>
+            <p className="text-gray-600 text-sm">Minimal preference management for a single newsletter</p>
+          </li>
+          <li>
             <Link to="/preference-center" className="text-blue-600 hover:underline text-lg">
               Preference Center
             </Link>
