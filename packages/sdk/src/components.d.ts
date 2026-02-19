@@ -14,9 +14,9 @@ import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
-import { Option } from "./profile/components/raw-field/components/Select";
-import { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
-import { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
+import { Option } from "./shared/components/raw-field/components/Select";
+import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
 import { RegistrationFlowResponse } from "./auth/api/register";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
@@ -34,9 +34,9 @@ export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
-export { Option } from "./profile/components/raw-field/components/Select";
-export { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
-export { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
+export { Option } from "./shared/components/raw-field/components/Select";
+export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
 export { RegistrationFlowResponse } from "./auth/api/register";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
@@ -53,7 +53,7 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart": boolean;
@@ -683,9 +683,6 @@ export namespace Components {
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
-    interface URegistrationBack {
-        "componentClassName"?: string;
-    }
     interface URegistrationButton {
         /**
           * @default ""
@@ -704,14 +701,6 @@ export namespace Components {
         "autoSend": boolean;
         "componentClassName"?: string;
         "inputClassName"?: string;
-    }
-    interface URegistrationError {
-        /**
-          * @default ""
-         */
-        "componentClassName": string;
-        "errorMessages"?: Record<string, string>;
-        "for": ErrorField;
     }
     interface URegistrationNewsletter {
         /**
@@ -786,9 +775,6 @@ export namespace Components {
         "requiresPassword": boolean;
         "shouldSkip": () => Promise<boolean>;
         "submit": () => Promise<void>;
-    }
-    interface URegistrationSubmit {
-        "componentClassName"?: string;
     }
     interface UResetPasswordButton {
         /**
@@ -1307,12 +1293,6 @@ declare global {
         prototype: HTMLURawFieldElement;
         new (): HTMLURawFieldElement;
     };
-    interface HTMLURegistrationBackElement extends Components.URegistrationBack, HTMLStencilElement {
-    }
-    var HTMLURegistrationBackElement: {
-        prototype: HTMLURegistrationBackElement;
-        new (): HTMLURegistrationBackElement;
-    };
     interface HTMLURegistrationButtonElement extends Components.URegistrationButton, HTMLStencilElement {
     }
     var HTMLURegistrationButtonElement: {
@@ -1324,12 +1304,6 @@ declare global {
     var HTMLURegistrationEmailVerificationElement: {
         prototype: HTMLURegistrationEmailVerificationElement;
         new (): HTMLURegistrationEmailVerificationElement;
-    };
-    interface HTMLURegistrationErrorElement extends Components.URegistrationError, HTMLStencilElement {
-    }
-    var HTMLURegistrationErrorElement: {
-        prototype: HTMLURegistrationErrorElement;
-        new (): HTMLURegistrationErrorElement;
     };
     interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
     }
@@ -1397,12 +1371,6 @@ declare global {
     var HTMLURegistrationStepElement: {
         prototype: HTMLURegistrationStepElement;
         new (): HTMLURegistrationStepElement;
-    };
-    interface HTMLURegistrationSubmitElement extends Components.URegistrationSubmit, HTMLStencilElement {
-    }
-    var HTMLURegistrationSubmitElement: {
-        prototype: HTMLURegistrationSubmitElement;
-        new (): HTMLURegistrationSubmitElement;
     };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
@@ -1544,10 +1512,8 @@ declare global {
         "u-password-field": HTMLUPasswordFieldElement;
         "u-profile": HTMLUProfileElement;
         "u-raw-field": HTMLURawFieldElement;
-        "u-registration-back": HTMLURegistrationBackElement;
         "u-registration-button": HTMLURegistrationButtonElement;
         "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
-        "u-registration-error": HTMLURegistrationErrorElement;
         "u-registration-newsletter": HTMLURegistrationNewsletterElement;
         "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
         "u-registration-passkey": HTMLURegistrationPasskeyElement;
@@ -1555,7 +1521,6 @@ declare global {
         "u-registration-resume": HTMLURegistrationResumeElement;
         "u-registration-root": HTMLURegistrationRootElement;
         "u-registration-step": HTMLURegistrationStepElement;
-        "u-registration-submit": HTMLURegistrationSubmitElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
@@ -1576,7 +1541,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart"?: boolean;
@@ -2217,9 +2182,6 @@ declare namespace LocalJSX {
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
-    interface URegistrationBack {
-        "componentClassName"?: string;
-    }
     interface URegistrationButton {
         /**
           * @default ""
@@ -2238,14 +2200,6 @@ declare namespace LocalJSX {
         "autoSend"?: boolean;
         "componentClassName"?: string;
         "inputClassName"?: string;
-    }
-    interface URegistrationError {
-        /**
-          * @default ""
-         */
-        "componentClassName"?: string;
-        "errorMessages"?: Record<string, string>;
-        "for": ErrorField;
     }
     interface URegistrationNewsletter {
         /**
@@ -2317,9 +2271,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "requiresPassword"?: boolean;
-    }
-    interface URegistrationSubmit {
-        "componentClassName"?: string;
     }
     interface UResetPasswordButton {
         /**
@@ -2546,10 +2497,8 @@ declare namespace LocalJSX {
         "u-password-field": UPasswordField;
         "u-profile": UProfile;
         "u-raw-field": URawField;
-        "u-registration-back": URegistrationBack;
         "u-registration-button": URegistrationButton;
         "u-registration-email-verification": URegistrationEmailVerification;
-        "u-registration-error": URegistrationError;
         "u-registration-newsletter": URegistrationNewsletter;
         "u-registration-newsletter-preference": URegistrationNewsletterPreference;
         "u-registration-passkey": URegistrationPasskey;
@@ -2557,7 +2506,6 @@ declare namespace LocalJSX {
         "u-registration-resume": URegistrationResume;
         "u-registration-root": URegistrationRoot;
         "u-registration-step": URegistrationStep;
-        "u-registration-submit": URegistrationSubmit;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
@@ -2621,10 +2569,8 @@ declare module "@stencil/core" {
             "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
-            "u-registration-back": LocalJSX.URegistrationBack & JSXBase.HTMLAttributes<HTMLURegistrationBackElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
-            "u-registration-error": LocalJSX.URegistrationError & JSXBase.HTMLAttributes<HTMLURegistrationErrorElement>;
             "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
             "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
             "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
@@ -2632,7 +2578,6 @@ declare module "@stencil/core" {
             "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
             "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
             "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
-            "u-registration-submit": LocalJSX.URegistrationSubmit & JSXBase.HTMLAttributes<HTMLURegistrationSubmitElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;

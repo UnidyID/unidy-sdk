@@ -2,7 +2,7 @@ import { Component, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
-const CODE_LENGTH = 6;
+const CODE_LENGTH = 4;
 
 @Component({
   tag: "u-registration-email-verification",
@@ -107,12 +107,14 @@ export class RegistrationEmailVerification {
     const isLoading = registrationState.loading;
 
     return (
-      <div class={this.componentClassName}>
+      <fieldset class={this.componentClassName} aria-label="Verification code" aria-live="polite">
         {this.inputKeys.map((key, index) => (
           <input
             key={key}
             type="text"
             inputMode="numeric"
+            pattern="[0-9]*"
+            autocomplete={index === 0 ? "one-time-code" : "off"}
             maxLength={1}
             value={this.code[index]}
             disabled={isLoading || this.isVerifying || registrationState.emailVerified}
@@ -126,7 +128,7 @@ export class RegistrationEmailVerification {
             aria-label={`Digit ${index + 1} of ${CODE_LENGTH}`}
           />
         ))}
-      </div>
+      </fieldset>
     );
   }
 }

@@ -68,6 +68,8 @@ export class RegistrationResend {
         class={this.componentClassName}
         onClick={this.handleClick}
         disabled={!canResend}
+        aria-live="polite"
+        aria-busy={registrationState.loading ? "true" : "false"}
         data-countdown={this.countdown > 0 ? this.countdown : undefined}
       >
         <slot />

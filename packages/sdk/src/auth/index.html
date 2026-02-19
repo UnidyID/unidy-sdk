@@ -225,7 +225,9 @@
       </u-signin-step>
 
       <u-signin-step name="registration">
-      <u-registration-button for="email">register</u-registration-button>
+        <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700 flex items-center gap-1">&larr; Back</u-back-button>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Create a new account</h2>
+        <p class="text-sm text-gray-600 mb-4">No account was found for this email. Register below to get started.</p>
 
         <u-registration-root
           id="registration"
@@ -244,16 +246,16 @@
                 class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 aria-described-by="reg-email-error">
               </u-raw-field>
-              <u-registration-error id="reg-email-error" for="email" class-name="mt-1 text-sm text-red-500"></u-registration-error>
+              <u-error-message id="reg-email-error" for="email" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>
 
             <u-registration-resume class-name="w-full mb-4 px-4 py-2 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200">
               Send resume link
             </u-registration-resume>
 
-            <u-registration-submit class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            <u-submit-button class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
               Continue
-            </u-registration-submit>
+            </u-submit-button>
 
             <div class="flex items-center my-6">
               <div class="flex-1 border-t border-gray-300"></div>
@@ -303,12 +305,12 @@
             </div>
 
             <div class="flex gap-3 mt-6">
-              <u-registration-back class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
                 Back
-              </u-registration-back>
-              <u-registration-submit class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
                 Continue
-              </u-registration-submit>
+              </u-submit-button>
             </div>
           </u-registration-step>
 
@@ -328,16 +330,16 @@
                 class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 aria-described-by="reg-password-error">
               </u-raw-field>
-              <u-registration-error id="reg-password-error" for="password" class-name="mt-1 text-sm text-red-500"></u-registration-error>
+              <u-error-message id="reg-password-error" for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>
 
             <div class="flex gap-3 mt-6">
-              <u-registration-back class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
                 Back
-              </u-registration-back>
-              <u-registration-submit class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
                 Continue
-              </u-registration-submit>
+              </u-submit-button>
             </div>
           </u-registration-step>
 
@@ -376,12 +378,12 @@
             </div>
 
             <div class="flex gap-3">
-              <u-registration-back class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
                 Back
-              </u-registration-back>
-              <u-registration-submit class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
                 Complete Registration
-              </u-registration-submit>
+              </u-submit-button>
             </div>
           </u-registration-step>
 

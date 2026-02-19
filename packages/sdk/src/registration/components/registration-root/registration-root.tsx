@@ -1,6 +1,6 @@
 import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
-import { authState } from "../../../auth/store/auth-store";
+import { authState, onChange as authOnChange } from "../../../auth/store/auth-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
@@ -20,6 +20,7 @@ export class RegistrationRoot extends UnidyComponent() {
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
   private registrationInstance: Registration | null = null;
+  private unsubscribeAuthEmail?: () => void;
 
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
@@ -40,10 +41,21 @@ export class RegistrationRoot extends UnidyComponent() {
       registrationStore.setEmail(authState.email);
     }
 
+    // Reactively sync email from auth state (e.g. when user enters email in signin, then gets redirected to registration)
+    this.unsubscribeAuthEmail = authOnChange("email", (email) => {
+      if (email && !registrationState.email) {
+        registrationStore.setEmail(email);
+      }
+    });
+
     // Auto-resume if enabled and rid is present
     if (this.autoResume) {
       await this.tryAutoResume();
     }
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeAuthEmail?.();
   }
 
   private async tryAutoResume() {

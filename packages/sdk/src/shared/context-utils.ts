@@ -101,16 +101,18 @@ export function findParentRegistrationRoot(element: HTMLElement): HTMLURegistrat
  * if (context === "auth") { ... }
  */
 export function detectContext(element: HTMLElement): ComponentContext | null {
+  // Registration must be checked before auth because registration components
+  // are nested inside a u-signin-step, and the more specific context wins.
+  if (findParentRegistrationRoot(element)) {
+    return "registration";
+  }
+
   if (findParentSigninRoot(element) || findParentSigninStep(element)) {
     return "auth";
   }
 
   if (findParentOAuthProvider(element)) {
     return "oauth";
-  }
-
-  if (findParentRegistrationRoot(element)) {
-    return "registration";
   }
 
   if (findParentProfile(element)) {

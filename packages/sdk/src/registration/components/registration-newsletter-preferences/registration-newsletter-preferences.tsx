@@ -52,6 +52,15 @@ export class RegistrationNewsletterPreference {
   };
 
   render() {
-    return <input class={this.componentClassName} name={this.name} type="checkbox" checked={this.isChecked} onChange={this.handleChange} />;
+    return (
+      <input
+        class={this.componentClassName}
+        name={this.name}
+        type="checkbox"
+        checked={this.isChecked}
+        onChange={this.handleChange}
+        aria-checked={this.isChecked ? "true" : "false"}
+      />
+    );
   }
 }

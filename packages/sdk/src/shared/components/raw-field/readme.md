@@ -44,7 +44,7 @@
 
 ### Used by
 
- - [u-field](../field)
+ - [u-field](../../../profile/components/field)
 
 ### Graph
 ```mermaid

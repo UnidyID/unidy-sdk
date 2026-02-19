@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, h, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, h, Host, Prop } from "@stencil/core";
 import { Registration } from "../../registration";
 import { registrationState } from "../../store/registration-store";
 
@@ -35,18 +35,22 @@ export class RegistrationResume {
 
   render() {
     if (!registrationState.emailAlreadyInFlow) {
-      return null;
+      return <Host hidden />;
     }
 
     return (
-      <button
-        type="button"
-        class={this.componentClassName}
-        onClick={this.handleClick}
-        disabled={registrationState.loading || registrationState.resumeEmailSent}
-      >
-        <slot />
-      </button>
+      <Host>
+        <button
+          type="button"
+          class={this.componentClassName}
+          onClick={this.handleClick}
+          disabled={registrationState.loading || registrationState.resumeEmailSent}
+          aria-live="polite"
+          aria-busy={registrationState.loading ? "true" : "false"}
+        >
+          <slot />
+        </button>
+      </Host>
     );
   }
 }

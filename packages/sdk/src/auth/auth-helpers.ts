@@ -50,6 +50,10 @@ export class AuthHelpers {
         return [error, response] as const;
       }
 
+      // Preserve email for registration flow when account is not found
+      if (error === "account_not_found") {
+        authStore.setEmail(email);
+      }
       this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
@@ -511,6 +515,7 @@ export class AuthHelpers {
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);
+        authStore.setStep("registration");
         break;
 
       case "brand_connection_required": {
