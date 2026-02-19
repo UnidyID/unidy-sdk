@@ -30,15 +30,15 @@ export async function runMutation<TResult extends [string | null, unknown, ...un
   sdkCall: () => Promise<TResult>,
   handlers: {
     onMutate: () => void;
-    onSuccess: (data: SuccessData<TResult>) => void;
+    onSuccess: (data: SuccessData<TResult>) => boolean | undefined;
     onError: (error: string, data: ErrorData<TResult>) => void;
   },
 ): Promise<boolean> {
   handlers.onMutate();
   const result = await sdkCall();
   if (result[0] === null) {
-    handlers.onSuccess(result[1] as SuccessData<TResult>);
-    return true;
+    const succeeded = handlers.onSuccess(result[1] as SuccessData<TResult>);
+    return succeeded !== false;
   }
   handlers.onError(result[0], result[1] as ErrorData<TResult>);
   return false;

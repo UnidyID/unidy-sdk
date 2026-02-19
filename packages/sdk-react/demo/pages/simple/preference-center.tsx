@@ -1,5 +1,5 @@
-import * as React from "react";
 import { useNewsletterLogin, useNewsletterPreferenceCenter, useSession } from "@unidy.io/sdk-react";
+import type * as React from "react";
 import { type FormEvent, useState } from "react";
 import { Link } from "react-router";
 
@@ -116,9 +116,7 @@ export function SimplePreferenceCenter() {
           </div>
         )}
 
-        {sub && !sub.confirmed && (
-          <p className="text-amber-400 text-sm mt-4">Please check your email to confirm your subscription.</p>
-        )}
+        {sub && !sub.confirmed && <p className="text-amber-400 text-sm mt-4">Please check your email to confirm your subscription.</p>}
       </div>
     </Shell>
   );

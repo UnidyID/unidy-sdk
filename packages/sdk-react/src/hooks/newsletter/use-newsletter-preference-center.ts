@@ -184,7 +184,7 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
               const errorMessage = data.errors.map((e: NewsletterSubscriptionError) => e.error_identifier).join(", ");
               dispatch({ type: "mutate_error", internalName, error: errorMessage });
               callbacksRef.current?.onError?.(errorMessage);
-              return;
+              return false;
             }
             const sub = data.results[0];
             if (sub) {
