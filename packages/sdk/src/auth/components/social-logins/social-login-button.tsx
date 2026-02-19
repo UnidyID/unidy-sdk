@@ -61,7 +61,7 @@ export class SocialLoginButton extends UnidyComponent() {
   }
 
   private isInsideRegistrationRoot(): boolean {
-    return !!this.el.closest("u-registration-root");
+    return !!this.element.closest("u-registration-root");
   }
 
   private getAuthUrl(): string {

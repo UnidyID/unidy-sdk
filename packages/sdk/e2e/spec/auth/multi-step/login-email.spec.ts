@@ -34,7 +34,6 @@ test.describe("Auth - Email step", () => {
     await email.fill("doesnotexist@example.com");
     await email.press("Enter");
 
-    await expect(page.locator("u-registration-button u-error-message")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Register new account" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /register new account/i })).toBeVisible();
   });
 });

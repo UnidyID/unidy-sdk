@@ -1,6 +1,7 @@
 import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
 import { authState } from "../../../auth/store/auth-store";
+import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
@@ -8,7 +9,7 @@ import { registrationState, registrationStore } from "../../store/registration-s
   tag: "u-registration-root",
   shadow: false,
 })
-export class RegistrationRoot {
+export class RegistrationRoot extends UnidyComponent() {
   @Prop({ attribute: "registration-url" }) registrationUrl!: string;
   @Prop({ attribute: "brand-id" }) brandId?: number;
   @Prop() steps = "[]";

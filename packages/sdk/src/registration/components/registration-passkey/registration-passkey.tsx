@@ -1,4 +1,4 @@
-import { Component, Host, Prop, State, h } from "@stencil/core";
+import { Component, Host, h, Prop, State } from "@stencil/core";
 import { isWebAuthnSupported } from "../../../shared/passkey-utils";
 import { Registration } from "../../registration";
 import { onChange, registrationState } from "../../store/registration-store";
@@ -65,16 +65,13 @@ export class RegistrationPasskey {
 
     return (
       <Host>
-        <button
-          type="button"
-          disabled={isDisabled}
-          onClick={this.handleClick}
-          class={this.componentClassName}
-          aria-live="polite"
-        >
+        <button type="button" disabled={isDisabled} onClick={this.handleClick} class={this.componentClassName} aria-live="polite">
           <slot />
           {registrationState.hasPasskey && (
-            <span role="img" aria-label="Passkey registered"> &#x2713;</span>
+            <span role="img" aria-label="Passkey registered">
+              {" "}
+              &#x2713;
+            </span>
           )}
         </button>
       </Host>

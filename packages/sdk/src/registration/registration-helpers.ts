@@ -7,7 +7,7 @@ import type {
   UpdateRegistrationPayload,
 } from "../auth/api/register";
 import { createLogger } from "../logger";
-import { PASSKEY_ERRORS, buildPublicKeyCreationOptions, formatCreationCredentialForServer } from "../shared/passkey-utils";
+import { buildPublicKeyCreationOptions, formatCreationCredentialForServer, PASSKEY_ERRORS } from "../shared/passkey-utils";
 import { registrationState, registrationStore } from "./store/registration-store";
 
 const logger = createLogger("RegistrationHelpers");

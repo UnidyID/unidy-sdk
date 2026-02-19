@@ -3,7 +3,6 @@ import { UnidyComponent } from "../../../shared/base/component";
 import { HasSlotContent } from "../../../shared/base/has-slot-content";
 import { unidyState } from "../../../shared/store/unidy-store";
 import { registrationState } from "../../store/registration-store";
-import { hasSlotContent } from "../../../shared/component-utils";
 
 const ERROR_MESSAGES: Record<string, string> = {
   email_already_registered: "This email is already registered. Please sign in instead.",

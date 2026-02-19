@@ -74,7 +74,7 @@ export class RegistrationStep extends UnidyComponent() {
       return;
     }
 
-    const root = getParentRegistrationRoot(this.el);
+    const root = getParentRegistrationRoot(this.element);
     if (!root) {
       console.error("[u-registration-step] No parent u-registration-root found");
       return;

@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import type { PasskeyOptionsResponse, TokenResponse, UnidyClient } from "../api";
 import { createLogger } from "../logger";
-import { PASSKEY_ERRORS, decodeBase64Url } from "../shared/passkey-utils";
+import { decodeBase64Url, PASSKEY_ERRORS } from "../shared/passkey-utils";
 import type { TokenPayload } from "./auth";
 import { authState, authStore } from "./store/auth-store";
 

@@ -1,8 +1,8 @@
 import type { UnidyClient } from "../api";
-import { registrationStore, registrationState } from "./store/registration-store";
-import { RegistrationHelpers } from "./registration-helpers";
+import { getUnidyClient } from "../api";
 import { waitForConfig } from "../shared/store/unidy-store";
-import { getUnidyClient } from "../auth/api-client";
+import { RegistrationHelpers } from "./registration-helpers";
+import { registrationState, registrationStore } from "./store/registration-store";
 
 export class Registration {
   private static instance: Registration;
