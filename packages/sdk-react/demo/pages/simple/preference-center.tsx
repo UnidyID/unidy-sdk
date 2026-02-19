@@ -6,9 +6,9 @@ import { Link } from "react-router";
 const NEWSLETTER_INTERNAL_NAME = "main";
 
 const PREFERENCES = [
-  { id: "player_news", label: "Player News" },
-  { id: "club_news", label: "Club News" },
-  { id: "random_news", label: "Random News" },
+  { id: "news-updates", label: "News & Updates" },
+  { id: "tips-tricks", label: "Tips & Tricks" },
+  { id: "success-stories", label: "Success Stories" },
 ];
 
 function readAndCleanToken(): string | undefined {
