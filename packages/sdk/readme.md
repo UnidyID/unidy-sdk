@@ -11,6 +11,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 - [Components](#components)
   - [Core Components](#core-components)
   - [Login Flow Components](#login-flow-components)
+  - [Registration Flow Components](#registration-flow-components)
   - [Navigation Components](#navigation-components)
   - [Profile Components](#profile-components)
   - [Newsletter Components](#newsletter-components)
@@ -409,6 +410,120 @@ A utility component that renders its children only when a specific condition is 
   });
 </script>
 ```
+
+### Registration Flow Components
+
+These components build a multi-step registration flow. They are used independently from the login flow components (`<u-signin-root>`) and provide a fully customizable registration experience with steps for email collection, email verification, profile data, password, passkey, and newsletters.
+
+#### `<u-registration-root>`
+
+Container component that manages a multi-step registration flow. Wraps `<u-registration-step>` children and handles flow creation, step navigation, and auto-resume.
+
+When a user receives a resume email and clicks the link, they are redirected to the registration page with a `?registration_rid=<rid>` query parameter. The component detects this, fetches the flow from the server, restores all collected data, and skips past already-completed steps.
+
+**Attributes:**
+
+-   `steps` (required): JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child. Example: `'["email","verification","profile","password","newsletters"]'`
+-   `registration-url`: URL of the registration page, used as the redirect target in resume emails. Defaults to the current page URL.
+-   `brand-id`: Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+-   `auto-resume`: Whether to automatically resume an existing registration flow on load. Defaults to `true`.
+
+**Events:**
+
+-   `registrationComplete`: Fired when the registration flow is finalized and the user account is created. `event.detail` contains the full registration flow response.
+-   `stepChange`: Fired when the active step changes. `event.detail` contains `{ stepName, stepIndex }`.
+-   `errorEvent`: Fired when an error occurs during the registration flow.
+
+**Methods:**
+
+-   `advanceToNextStep()`: Programmatically advance to the next step.
+-   `goToPreviousStep()`: Programmatically go back to the previous step.
+-   `isComplete()`: Returns whether the registration flow has been completed.
+
+#### `<u-registration-step>`
+
+Defines a distinct step in the registration flow. Each step must have a unique `name` that matches one of the entries in the parent `<u-registration-root>`'s `steps` array.
+
+**Attributes:**
+
+-   `name` (required): The step identifier (e.g., `email`, `verification`, `profile`, `password`, `newsletters`).
+-   `requires-email-verification`: If `true`, this step is automatically skipped when the user's email is already verified. Use this for the email verification step.
+-   `requires-password`: If `true`, this step is automatically skipped for social login or passwordless flows.
+-   `always-render`: If `true`, the step's content is always rendered regardless of which step is active.
+
+**Methods:**
+
+-   `isActive()`: Returns whether this step is currently active.
+-   `shouldSkip()`: Returns whether this step should be skipped based on the current flow state.
+-   `submit()`: Programmatically submit the current step.
+
+#### `<u-registration-email-verification>`
+
+Renders a set of digit inputs for entering an email verification code. When all digits are entered, it automatically submits the code and advances to the next step on success.
+
+**Attributes:**
+
+-   `auto-send`: Whether to automatically send the verification code when the step becomes active. Defaults to `true`.
+-   `class-name`: CSS classes to apply to the fieldset container.
+-   `input-class-name`: CSS classes to apply to each individual digit input.
+
+#### `<u-registration-resend>`
+
+Renders a button that resends the email verification code. Includes a cooldown timer controlled by the backend to prevent abuse.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the button element.
+
+#### `<u-registration-passkey>`
+
+Renders a button to register a passkey (WebAuthn credential) during registration. Shows a checkmark when a passkey has been successfully registered. The component renders nothing if the browser does not support WebAuthn.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the button element.
+-   `passkey-name`: Optional name for the passkey. Defaults to "Passkey".
+-   `disabled`: If `true`, the button will be disabled.
+
+#### `<u-registration-resume>`
+
+Displays a button to send a resume link when a registration flow already exists for the entered email. After the link is sent, shows a success message and a resend button with a 60-second cooldown timer. The component is hidden when there is no conflicting registration flow.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the button element.
+
+**Slots:**
+
+-   (default): Content for the initial "send resume link" button.
+-   `success`: Message shown after the resume link has been sent.
+-   `resend`: Content for the resend button, shown alongside the success message.
+
+**Events:**
+
+-   `resumeSent`: Fired when the resume link email has been sent successfully.
+-   `resumeError`: Fired when sending the resume link fails.
+
+#### `<u-registration-newsletter>`
+
+Renders a checkbox for a newsletter subscription during registration. The checkbox state is stored in the registration flow and submitted on finalization.
+
+**Attributes:**
+
+-   `name` (required): The internal name of the newsletter (must match the newsletter configured in Unidy).
+-   `checked`: Whether the checkbox is initially checked. Defaults to `false`.
+-   `class-name`: CSS classes to apply to the checkbox element.
+
+#### `<u-registration-newsletter-preference>`
+
+Renders a checkbox for a newsletter sub-preference (e.g., "Football" under "Sports News"). Used as a child of a newsletter grouping to collect granular preferences.
+
+**Attributes:**
+
+-   `name` (required): The internal name of the parent newsletter.
+-   `preference` (required): The preference key (e.g., `football`, `tennis`).
+-   `checked`: Whether the checkbox is initially checked. Defaults to `false`.
+-   `class-name`: CSS classes to apply to the checkbox element.
 
 ### Navigation Components
 
