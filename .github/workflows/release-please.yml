@@ -104,3 +104,44 @@ jobs:
           bun publish --tag latest
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Fallback: publish if a GitHub release exists but npm publish was missed
+  publish-stable-fallback:
+    needs: release-please
+    if: needs.release-please.outputs.release_created != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if npm publish is needed
+        id: check
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
+          NPM_VERSION=$(npm view @unidy.io/sdk version 2>/dev/null || echo "0.0.0")
+          if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Version $LOCAL_VERSION not on npm (npm has $NPM_VERSION)"
+          else
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "Version $LOCAL_VERSION already published"
+          fi
+
+      - name: Setup Bun
+        if: steps.check.outputs.needs_publish == 'true'
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install dependencies
+        if: steps.check.outputs.needs_publish == 'true'
+        run: bun install
+
+      - name: Build SDK
+        if: steps.check.outputs.needs_publish == 'true'
+        run: bun run build
+
+      - name: Publish to NPM
+        if: steps.check.outputs.needs_publish == 'true'
+        run: |
+          cd packages/sdk
+          bun publish --tag latest
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
