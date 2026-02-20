@@ -9,12 +9,13 @@ type ParentComponentMap = {
   "u-newsletter-root": HTMLUNewsletterRootElement;
   "u-ticketable-list": HTMLUTicketableListElement;
   "u-oauth-provider": HTMLUOauthProviderElement;
+  "u-registration-root": HTMLURegistrationRootElement;
 };
 
 /**
  * Component context types used throughout the SDK.
  */
-export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth";
+export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth" | "registration";
 
 // ============================================================================
 // Parent Component Lookup Utilities
@@ -77,6 +78,13 @@ export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProvide
   return findParent(element, "u-oauth-provider");
 }
 
+/**
+ * Find the parent u-registration-root component.
+ */
+export function findParentRegistrationRoot(element: HTMLElement): HTMLURegistrationRootElement | null {
+  return findParent(element, "u-registration-root");
+}
+
 // ============================================================================
 // Context Detection Utilities
 // ============================================================================
@@ -93,6 +101,12 @@ export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProvide
  * if (context === "auth") { ... }
  */
 export function detectContext(element: HTMLElement): ComponentContext | null {
+  // Registration must be checked before auth because registration components
+  // are nested inside a u-signin-step, and the more specific context wins.
+  if (findParentRegistrationRoot(element)) {
+    return "registration";
+  }
+
   if (findParentSigninRoot(element) || findParentSigninStep(element)) {
     return "auth";
   }
@@ -133,7 +147,7 @@ export function detectContextOrThrow(element: HTMLElement, componentName: string
 
   if (!context) {
     throw new Error(
-      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, or u-oauth-provider.`,
+      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, u-oauth-provider, or u-registration-root.`,
     );
   }
 

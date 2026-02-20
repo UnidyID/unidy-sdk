@@ -28,13 +28,13 @@ test.describe("Auth - Email step", () => {
     await expect(password).toBeVisible();
   });
 
-  test("should offer registration when email is not found", async ({ page }) => {
+  test("should start registration flow when email is not found", async ({ page }) => {
     const email = page.getByRole("textbox", { name: "Email" });
 
     await email.fill("doesnotexist@example.com");
     await email.press("Enter");
 
-    await expect(page.locator("u-registration-button u-error-message")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Register new account" })).toBeVisible();
+    // Registration flow should start automatically
+    await expect(page.getByRole("heading", { name: "Create a new account" })).toBeVisible();
   });
 });

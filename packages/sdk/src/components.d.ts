@@ -14,9 +14,10 @@ import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
-import { Option } from "./profile/components/raw-field/components/Select";
-import { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
-import { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
+import { Option } from "./shared/components/raw-field/components/Select";
+import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+import { RegistrationFlowResponse } from "./auth/api/register";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
@@ -33,9 +34,10 @@ export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
-export { Option } from "./profile/components/raw-field/components/Select";
-export { RadioOption } from "./profile/components/raw-field/components/RadioGroup";
-export { MultiSelectOption } from "./profile/components/raw-field/components/MultiSelect";
+export { Option } from "./shared/components/raw-field/components/Select";
+export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+export { RegistrationFlowResponse } from "./auth/api/register";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
@@ -51,7 +53,7 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart": boolean;
@@ -692,6 +694,114 @@ export namespace Components {
          */
         "redirectUri": string;
     }
+    interface URegistrationEmailVerification {
+        /**
+          * @default true
+         */
+        "autoSend": boolean;
+        "componentClassName"?: string;
+        "inputClassName"?: string;
+    }
+    interface URegistrationNewsletter {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        "componentClassName"?: string;
+        "name": string;
+    }
+    interface URegistrationNewsletterPreference {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        "componentClassName"?: string;
+        "name": string;
+        "preference": string;
+    }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
+    interface URegistrationResend {
+        "componentClassName"?: string;
+    }
+    interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
+    interface URegistrationRoot {
+        /**
+          * Programmatically advance to the next step in the registration flow.
+         */
+        "advanceToNextStep": () => Promise<void>;
+        /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
+          * @default true
+         */
+        "autoResume": boolean;
+        /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Returns the configured brand ID, if any.
+         */
+        "getBrandId": () => Promise<number | undefined>;
+        /**
+          * Returns the registration URL. Falls back to the current page URL if not explicitly set.
+         */
+        "getRegistrationUrl": () => Promise<string>;
+        /**
+          * Programmatically go back to the previous step in the registration flow.
+         */
+        "goToPreviousStep": () => Promise<void>;
+        /**
+          * Returns whether the registration flow has been completed.
+         */
+        "isComplete": () => Promise<boolean>;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
+          * @default "[]"
+         */
+        "steps": string;
+    }
+    interface URegistrationStep {
+        /**
+          * @default false
+         */
+        "alwaysRender": boolean;
+        "isActive": () => Promise<boolean>;
+        "name": string;
+        /**
+          * @default false
+         */
+        "requiresEmailVerification": boolean;
+        /**
+          * @default false
+         */
+        "requiresPassword": boolean;
+        "shouldSkip": () => Promise<boolean>;
+        "submit": () => Promise<void>;
+    }
     interface UResetPasswordButton {
         /**
           * CSS classes to apply to the button element.
@@ -881,6 +991,14 @@ export interface UProfileCustomEvent<T> extends CustomEvent<T> {
 export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLURawFieldElement;
+}
+export interface URegistrationResumeCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationResumeElement;
+}
+export interface URegistrationRootCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationRootElement;
 }
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1207,6 +1325,79 @@ declare global {
         prototype: HTMLURegistrationButtonElement;
         new (): HTMLURegistrationButtonElement;
     };
+    interface HTMLURegistrationEmailVerificationElement extends Components.URegistrationEmailVerification, HTMLStencilElement {
+    }
+    var HTMLURegistrationEmailVerificationElement: {
+        prototype: HTMLURegistrationEmailVerificationElement;
+        new (): HTMLURegistrationEmailVerificationElement;
+    };
+    interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
+    }
+    var HTMLURegistrationNewsletterElement: {
+        prototype: HTMLURegistrationNewsletterElement;
+        new (): HTMLURegistrationNewsletterElement;
+    };
+    interface HTMLURegistrationNewsletterPreferenceElement extends Components.URegistrationNewsletterPreference, HTMLStencilElement {
+    }
+    var HTMLURegistrationNewsletterPreferenceElement: {
+        prototype: HTMLURegistrationNewsletterPreferenceElement;
+        new (): HTMLURegistrationNewsletterPreferenceElement;
+    };
+    interface HTMLURegistrationPasskeyElement extends Components.URegistrationPasskey, HTMLStencilElement {
+    }
+    var HTMLURegistrationPasskeyElement: {
+        prototype: HTMLURegistrationPasskeyElement;
+        new (): HTMLURegistrationPasskeyElement;
+    };
+    interface HTMLURegistrationResendElement extends Components.URegistrationResend, HTMLStencilElement {
+    }
+    var HTMLURegistrationResendElement: {
+        prototype: HTMLURegistrationResendElement;
+        new (): HTMLURegistrationResendElement;
+    };
+    interface HTMLURegistrationResumeElementEventMap {
+        "resumeSent": void;
+        "resumeError": { error: string };
+    }
+    interface HTMLURegistrationResumeElement extends Components.URegistrationResume, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationResumeElementEventMap>(type: K, listener: (this: HTMLURegistrationResumeElement, ev: URegistrationResumeCustomEvent<HTMLURegistrationResumeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationResumeElementEventMap>(type: K, listener: (this: HTMLURegistrationResumeElement, ev: URegistrationResumeCustomEvent<HTMLURegistrationResumeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationResumeElement: {
+        prototype: HTMLURegistrationResumeElement;
+        new (): HTMLURegistrationResumeElement;
+    };
+    interface HTMLURegistrationRootElementEventMap {
+        "registrationComplete": RegistrationFlowResponse;
+        "stepChange": { stepName: string; stepIndex: number };
+        "errorEvent": { error: string };
+    }
+    interface HTMLURegistrationRootElement extends Components.URegistrationRoot, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationRootElementEventMap>(type: K, listener: (this: HTMLURegistrationRootElement, ev: URegistrationRootCustomEvent<HTMLURegistrationRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationRootElementEventMap>(type: K, listener: (this: HTMLURegistrationRootElement, ev: URegistrationRootCustomEvent<HTMLURegistrationRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationRootElement: {
+        prototype: HTMLURegistrationRootElement;
+        new (): HTMLURegistrationRootElement;
+    };
+    interface HTMLURegistrationStepElement extends Components.URegistrationStep, HTMLStencilElement {
+    }
+    var HTMLURegistrationStepElement: {
+        prototype: HTMLURegistrationStepElement;
+        new (): HTMLURegistrationStepElement;
+    };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
     var HTMLUResetPasswordButtonElement: {
@@ -1348,6 +1539,14 @@ declare global {
         "u-profile": HTMLUProfileElement;
         "u-raw-field": HTMLURawFieldElement;
         "u-registration-button": HTMLURegistrationButtonElement;
+        "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
+        "u-registration-newsletter": HTMLURegistrationNewsletterElement;
+        "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
+        "u-registration-passkey": HTMLURegistrationPasskeyElement;
+        "u-registration-resend": HTMLURegistrationResendElement;
+        "u-registration-resume": HTMLURegistrationResumeElement;
+        "u-registration-root": HTMLURegistrationRootElement;
+        "u-registration-step": HTMLURegistrationStepElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
@@ -1368,7 +1567,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart"?: boolean;
@@ -2020,6 +2219,111 @@ declare namespace LocalJSX {
          */
         "redirectUri"?: string;
     }
+    interface URegistrationEmailVerification {
+        /**
+          * @default true
+         */
+        "autoSend"?: boolean;
+        "componentClassName"?: string;
+        "inputClassName"?: string;
+    }
+    interface URegistrationNewsletter {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "name": string;
+    }
+    interface URegistrationNewsletterPreference {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        "componentClassName"?: string;
+        "name": string;
+        "preference": string;
+    }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
+    interface URegistrationResend {
+        "componentClassName"?: string;
+    }
+    interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * Fired when sending the resume link fails. Contains the error identifier.
+         */
+        "onResumeError"?: (event: URegistrationResumeCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the resume link email has been sent successfully.
+         */
+        "onResumeSent"?: (event: URegistrationResumeCustomEvent<void>) => void;
+    }
+    interface URegistrationRoot {
+        /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
+          * @default true
+         */
+        "autoResume"?: boolean;
+        /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Fired when an error occurs during the registration flow.
+         */
+        "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the registration flow is finalized and the user account is created.
+         */
+        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
+        /**
+          * Fired when the active step changes.
+         */
+        "onStepChange"?: (event: URegistrationRootCustomEvent<{ stepName: string; stepIndex: number }>) => void;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
+          * @default "[]"
+         */
+        "steps"?: string;
+    }
+    interface URegistrationStep {
+        /**
+          * @default false
+         */
+        "alwaysRender"?: boolean;
+        "name": string;
+        /**
+          * @default false
+         */
+        "requiresEmailVerification"?: boolean;
+        /**
+          * @default false
+         */
+        "requiresPassword"?: boolean;
+    }
     interface UResetPasswordButton {
         /**
           * CSS classes to apply to the button element.
@@ -2246,6 +2550,14 @@ declare namespace LocalJSX {
         "u-profile": UProfile;
         "u-raw-field": URawField;
         "u-registration-button": URegistrationButton;
+        "u-registration-email-verification": URegistrationEmailVerification;
+        "u-registration-newsletter": URegistrationNewsletter;
+        "u-registration-newsletter-preference": URegistrationNewsletterPreference;
+        "u-registration-passkey": URegistrationPasskey;
+        "u-registration-resend": URegistrationResend;
+        "u-registration-resume": URegistrationResume;
+        "u-registration-root": URegistrationRoot;
+        "u-registration-step": URegistrationStep;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
@@ -2310,6 +2622,14 @@ declare module "@stencil/core" {
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
+            "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
+            "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
+            "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
+            "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
+            "u-registration-resend": LocalJSX.URegistrationResend & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
+            "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
+            "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
+            "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;

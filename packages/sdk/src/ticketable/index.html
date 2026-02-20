@@ -238,22 +238,22 @@
       </u-ticketable-list>
     </u-signed-in>
 
-  <script>
-    document
-      .getElementById("state-filter")
-      .addEventListener("change", (e) => {
-        const list = document.getElementById("tickets-list");
-        const params = new URLSearchParams(
-          list.getAttribute("filter").replace(/;/g, "&")
-        );
-        if (e.target.value) {
-          params.set("state", e.target.value);
-        } else {
-          params.delete("state");
-        }
+    <script>
+      document
+        .getElementById("state-filter")
+        .addEventListener("change", (e) => {
+          const list = document.getElementById("tickets-list");
+          const params = new URLSearchParams(
+            list.getAttribute("filter").replace(/;/g, "&")
+          );
+          if (e.target.value) {
+            params.set("state", e.target.value);
+          } else {
+            params.delete("state");
+          }
 
-        list.setAttribute("filter", params.toString().replace(/&/g, ";"));
-      });
+          list.setAttribute("filter", params.toString().replace(/&/g, ";"));
+        });
 
       window.addEventListener("appload", () => {
         const spinner = document.getElementById('sdk-initial-spinner');

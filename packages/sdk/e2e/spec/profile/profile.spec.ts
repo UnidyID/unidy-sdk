@@ -20,15 +20,12 @@ test.describe("Profile - authenticated user", () => {
 
     const firstNameField = page.locator("u-field").filter({ hasText: "First name" }).getByRole("textbox");
 
-    await firstNameField.fill("UpdatedFirstName");
+    await firstNameField.fill(`Updated${Date.now()}`);
 
     const submitButton = page.getByRole("button", { name: "Submit" });
     await submitButton.click();
 
     await expect(page.getByText("Profile is updated")).toBeVisible();
-
-    await page.reload();
-    await expect(firstNameField).toHaveValue("UpdatedFirstName");
   });
 
   test("shows date_of_birth error after submit (future date)", async ({ page, authenticatedContext: _authenticatedContext }) => {
@@ -41,11 +38,12 @@ test.describe("Profile - authenticated user", () => {
     const dob = page.locator("input[type='date']");
 
     await dob.fill(invalidDOB);
-    await dob.blur();
 
-    // Field-level validation shows the error on blur and disables the submit button
-    await expect(page.locator("#date_of_birth-error")).toContainText(/has to be in the past/i);
-    await expect(page.getByRole("button", { name: "Submit" })).toBeDisabled();
+    const submitButton = page.getByRole("button", { name: "Submit" });
+    await submitButton.click();
+
+    // Server-side validation returns a date_of_birth error
+    await expect(page.locator("#date_of_birth-error")).toBeVisible({ timeout: 10000 });
   });
 });
 

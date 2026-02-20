@@ -2,6 +2,7 @@ import { Component, Host, h, Prop } from "@stencil/core";
 import { authState } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { type NewsletterErrorIdentifier, newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { registrationState } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
 import { type ComponentContext, detectContext } from "../../context-utils";
@@ -38,13 +39,20 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
     }
 
     throw new Error(
-      "No context found for error message. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
+      "No context found for error message. Make sure you are using the component within a u-signin-root, u-registration-root, u-profile, or u-newsletter-root.",
     );
   }
 
   private getAuthErrorMessage(errorCode: string): string {
     if (this.errorMessages?.[errorCode]) {
       return this.errorMessages[errorCode];
+    }
+
+    // Integrator-supplied messages (pattern-error-message, validationFunc, etc.) are
+    // already human-readable and contain spaces. API error identifiers are always
+    // snake_case — only attempt i18n translation for those.
+    if (errorCode.includes(" ")) {
+      return errorCode;
     }
 
     const translatedError = t(`errors.${errorCode}`);
@@ -66,7 +74,7 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
   }
 
   private getErrorMessage(errorCode: string): string | null {
-    if (this.context === "auth") {
+    if (this.context === "auth" || this.context === "registration" || this.context === "other") {
       return this.getAuthErrorMessage(errorCode);
     }
 
@@ -120,8 +128,31 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
     return fieldError ?? null;
   }
 
+  private getRegistrationErrorCode(): string | null {
+    if (this.for === "connection") {
+      return unidyState.backendConnected ? null : "connection_failed";
+    }
+
+    if (this.for === "registration") {
+      return registrationState.globalErrors.registration;
+    }
+
+    return registrationState.errors[this.for];
+  }
+
   render() {
-    const errorCode = this.context === "newsletter" ? this.getNewsletterErrorCode() : this.getAuthErrorCode();
+    let errorCode: string | null = null;
+    switch (this.context) {
+      case "newsletter":
+        errorCode = this.getNewsletterErrorCode();
+        break;
+      case "registration":
+        errorCode = this.getRegistrationErrorCode();
+        break;
+      default:
+        errorCode = this.getAuthErrorCode();
+        break;
+    }
 
     // Check if we should show the error
     let shouldShow = !!errorCode;

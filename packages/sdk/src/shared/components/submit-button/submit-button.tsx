@@ -3,10 +3,11 @@ import { type AuthButtonFor, authContext } from "../../../auth/components/submit
 import { t } from "../../../i18n";
 import { type NewsletterButtonFor, newsletterContext } from "../../../newsletter/components/submit-button/newsletter-submit-button";
 import { profileContext } from "../../../profile/components/submit-button/profile-submit-button";
+import { registrationContext } from "../../../registration/components/submit-button/registration-submit-button";
 import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
 import { slotFallbackText } from "../../component-utils";
-import type { ComponentContext } from "../../context-utils";
+import { type ComponentContext, detectContextOrThrow } from "../../context-utils";
 import { defaultContext, type SubmitButtonContext } from "./context";
 
 @Component({
@@ -40,21 +41,16 @@ export class SubmitButton extends UnidyComponent(HasSlotContent) {
       case "newsletter":
         this.contextModule = newsletterContext;
         break;
+      case "registration":
+        this.contextModule = registrationContext;
+        break;
       default:
         this.contextModule = defaultContext;
     }
   }
 
-  private detectContext(): "auth" | "profile" | "newsletter" {
-    if (this.element.closest("u-signin-root") || this.element.closest("u-signin-step")) return "auth";
-
-    if (this.element.closest("u-profile")) return "profile";
-
-    if (this.element.closest("u-newsletter-root")) return "newsletter";
-
-    throw new Error(
-      "No context found for submit button. Make sure you are using the component within a u-signin-root, u-profile, or u-newsletter-root.",
-    );
+  private detectContext(): ComponentContext {
+    return detectContextOrThrow(this.element, "submit button");
   }
 
   private handleClick = async (event: MouseEvent) => {

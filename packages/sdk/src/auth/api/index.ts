@@ -1,15 +1,40 @@
-import { BaseService, type ApiClientInterface, type ServiceDependencies } from "../../api/base-service";
+import { type ApiClientInterface, BaseService, type ServiceDependencies } from "../../api/base-service";
+import * as jumpTo from "./jump_to";
+import * as register from "./register";
 import type { JumpToServiceRequest, JumpToUnidyRequest } from "./schemas";
 import type { HandleResponseFn } from "./shared";
-
 // Import submodules
 import * as signIn from "./sign_in";
-import * as register from "./register";
-import * as jumpTo from "./jump_to";
 
 // Re-export SDK version for external use (generated from package.json at build time)
 export { SDK_VERSION } from "../../version";
-
+// Re-export jump-to types
+export type { JumpToServiceResult, JumpToUnidyResult } from "./jump_to";
+// Re-export registration types
+export type {
+  CancelRegistrationResult,
+  CannotFinalizeError,
+  CreateRegistrationPayload,
+  CreateRegistrationResult,
+  FinalizeRegistrationResult,
+  GetPasskeyCreationOptionsResult,
+  GetRegistrationResult,
+  NewsletterPreferences,
+  RegisterPasskeyPayload,
+  RegisterPasskeyResult,
+  RegistrationFlowResponse,
+  RegistrationOptions,
+  RegistrationProfileData,
+  RemovePasskeyResult,
+  SendResumeLinkPayload,
+  SendResumeLinkResult,
+  SendVerificationCodeResponse,
+  SendVerificationCodeResult,
+  UpdateRegistrationPayload,
+  UpdateRegistrationResult,
+  VerifyEmailPayload,
+  VerifyEmailResult,
+} from "./register";
 // Re-export schema types for external use
 export type {
   BrandConnectionRequiredResponse,
@@ -24,62 +49,36 @@ export type {
   SendMagicCodeResponse,
   TokenResponse,
 } from "./schemas";
-
 // Re-export sign-in types
 export type {
-  CreateSignInArgs,
-  SendMagicCodeArgs,
-  AuthenticateWithPasswordArgs,
-  AuthenticateWithMagicCodeArgs,
-  UpdateMissingFieldsArgs,
-  RefreshTokenArgs,
-  SendResetPasswordEmailArgs,
-  ResetPasswordArgs,
-  ValidateResetPasswordTokenArgs,
-  SignOutArgs,
-  GetPasskeyOptionsArgs,
-  AuthenticateWithPasskeyArgs,
-  ConnectBrandArgs,
-  CreateSignInResult,
   AuthenticateResultShared,
-  SendMagicCodeResult,
-  AuthenticateWithPasswordResult,
+  AuthenticateWithMagicCodeArgs,
   AuthenticateWithMagicCodeResult,
-  RefreshTokenResult,
-  SendResetPasswordEmailResult,
-  ResetPasswordResult,
-  ValidateResetPasswordTokenResult,
-  SignOutResult,
-  SignedInResult,
-  GetPasskeyOptionsResult,
+  AuthenticateWithPasskeyArgs,
   AuthenticateWithPasskeyResult,
+  AuthenticateWithPasswordArgs,
+  AuthenticateWithPasswordResult,
+  ConnectBrandArgs,
   ConnectBrandResult,
+  CreateSignInArgs,
+  CreateSignInResult,
+  GetPasskeyOptionsArgs,
+  GetPasskeyOptionsResult,
+  RefreshTokenArgs,
+  RefreshTokenResult,
+  ResetPasswordArgs,
+  ResetPasswordResult,
+  SendMagicCodeArgs,
+  SendMagicCodeResult,
+  SendResetPasswordEmailArgs,
+  SendResetPasswordEmailResult,
+  SignedInResult,
+  SignOutArgs,
+  SignOutResult,
+  UpdateMissingFieldsArgs,
+  ValidateResetPasswordTokenArgs,
+  ValidateResetPasswordTokenResult,
 } from "./sign_in";
-
-// Re-export jump-to types
-export type { JumpToServiceResult, JumpToUnidyResult } from "./jump_to";
-
-// Re-export registration types
-export type {
-  RegistrationProfileData,
-  NewsletterPreferences,
-  RegistrationFlowResponse,
-  CreateRegistrationPayload,
-  UpdateRegistrationPayload,
-  SendVerificationCodeResponse,
-  VerifyEmailPayload,
-  SendResumeLinkPayload,
-  CannotFinalizeError,
-  RegistrationOptions,
-  CreateRegistrationResult,
-  GetRegistrationResult,
-  UpdateRegistrationResult,
-  CancelRegistrationResult,
-  FinalizeRegistrationResult,
-  SendVerificationCodeResult,
-  VerifyEmailResult,
-  SendResumeLinkResult,
-} from "./register";
 
 /**
  * AuthService provides authentication, registration, and jump-to functionality.
@@ -206,14 +205,26 @@ export class AuthService extends BaseService {
     return register.sendEmailVerificationCode(this.client, options, this.respond);
   }
 
-  verifyEmail(
-    payload: register.VerifyEmailPayload,
-    options?: register.RegistrationOptions,
-  ): Promise<register.VerifyEmailResult> {
+  verifyEmail(payload: register.VerifyEmailPayload, options?: register.RegistrationOptions): Promise<register.VerifyEmailResult> {
     return register.verifyEmail(this.client, payload, options, this.respond);
   }
 
   sendResumeLink(payload: register.SendResumeLinkPayload): Promise<register.SendResumeLinkResult> {
     return register.sendResumeLink(this.client, payload, this.respond);
+  }
+
+  getPasskeyCreationOptions(options?: register.RegistrationOptions): Promise<register.GetPasskeyCreationOptionsResult> {
+    return register.getPasskeyCreationOptions(this.client, options, this.respond);
+  }
+
+  registerPasskey(
+    payload: register.RegisterPasskeyPayload,
+    options?: register.RegistrationOptions,
+  ): Promise<register.RegisterPasskeyResult> {
+    return register.registerPasskey(this.client, payload, options, this.respond);
+  }
+
+  removePasskey(options?: register.RegistrationOptions): Promise<register.RemovePasskeyResult> {
+    return register.removePasskey(this.client, options, this.respond);
   }
 }

@@ -59,7 +59,7 @@
 
 ### Depends on
 
-- [u-raw-field](../raw-field)
+- [u-raw-field](../../../shared/components/raw-field)
 - [u-spinner](../../../shared/components/spinner)
 
 ### Graph

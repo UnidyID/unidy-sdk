@@ -225,11 +225,215 @@
       </u-signin-step>
 
       <u-signin-step name="registration">
-        <u-registration-button for="email" class-name="px-4 py-2 border text-white bg-blue-500 rounded-lg w-full">
-          <div slot="registration-content">
-            <u-error-message for="email" class-name="mb-4 text-sm text-red-500" />
-          </div>
-        </u-registration-button>
+        <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700 flex items-center gap-1">&larr; Back</u-back-button>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Create a new account</h2>
+        <p class="text-sm text-gray-600 mb-4">No account was found for this email. Register below to get started.</p>
+
+        <u-registration-root
+          id="registration"
+          steps='["email","verification","profile","password","passkey","newsletters"]'>
+
+          <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
+
+          <!-- Step 1: Email -->
+          <u-registration-step name="email">
+            <div class="mb-4">
+              <label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <u-raw-field
+                field="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                aria-described-by="reg-email-error">
+              </u-raw-field>
+              <u-error-message id="reg-email-error" for="email" class-name="mt-1 text-sm text-red-500"></u-error-message>
+            </div>
+
+            <u-registration-resume class-name="w-full mb-4 px-4 py-2 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200">
+              Send resume link
+            </u-registration-resume>
+
+            <u-submit-button class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              Continue
+            </u-submit-button>
+
+            <div class="flex items-center my-6">
+              <div class="flex-1 border-t border-gray-300"></div>
+              <span class="px-3 text-gray-500 text-sm">OR</span>
+              <div class="flex-1 border-t border-gray-300"></div>
+            </div>
+
+            <div class="space-y-3">
+              <u-social-login-button text="Continue with Google" provider="google"></u-social-login-button>
+              <u-social-login-button text="Continue with LinkedIn" provider="linkedin"></u-social-login-button>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 2: Email Verification -->
+          <u-registration-step name="verification" requires-email-verification>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Verify your email</h3>
+            <p class="text-sm text-gray-600 mb-4">Enter the 4-digit code sent to your email address.</p>
+
+            <div class="mb-4 flex justify-center gap-3">
+              <u-registration-email-verification
+                auto-send
+                class-name="flex justify-center gap-3"
+                input-class-name="w-14 h-14 text-center text-2xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </u-registration-email-verification>
+            </div>
+
+            <u-error-message for="verificationCode" class-name="mt-1 text-sm text-red-500 text-center block"></u-error-message>
+
+            <div class="text-center mt-4">
+              <u-registration-resend class-name="text-sm text-blue-500 hover:text-blue-700 disabled:opacity-50">
+                Resend code
+              </u-registration-resend>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 3: Profile -->
+          <u-registration-step name="profile">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Your profile</h3>
+
+            <div class="mb-4">
+              <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <u-raw-field
+                field="first_name"
+                type="text"
+                required
+                placeholder="John"
+                class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </u-raw-field>
+            </div>
+
+            <div class="mb-4">
+              <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <u-raw-field
+                field="last_name"
+                type="text"
+                placeholder="Doe"
+                class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </u-raw-field>
+            </div>
+
+            <div class="mb-4">
+              <label for="custom_attributes.favorite_color" class="block text-sm font-medium text-gray-700 mb-1">Favorite Color</label>
+              <u-raw-field
+                field="custom_attributes.favorite_color"
+                type="select"
+                options='[{"label":"Red","value":"red"},{"label":"Blue","value":"blue"},{"label":"Green","value":"green"}]'
+                class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </u-raw-field>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+                Back
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 4: Password (skipped if social login) -->
+          <u-registration-step name="password" requires-password>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Create a password</h3>
+
+            <div class="mb-4">
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <u-raw-field
+                field="password"
+                type="password"
+                required
+                placeholder="Create a strong password"
+                pattern="^.{8,}$"
+                pattern-error-message="Password must be at least 8 characters"
+                class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                aria-described-by="reg-password-error">
+              </u-raw-field>
+              <u-error-message id="reg-password-error" for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+                Back
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 5: Passkey (optional) -->
+          <u-registration-step name="passkey">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Add a passkey</h3>
+            <p class="text-sm text-gray-600 mb-4">Passkeys let you sign in securely without a password using your fingerprint, face, or device PIN.</p>
+
+            <div class="mb-4 flex justify-center">
+              <u-registration-passkey
+                class-name="px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 disabled:opacity-50"
+                passkey-name="My Passkey">
+                Register Passkey
+              </u-registration-passkey>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+                Back
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 6: Newsletters -->
+          <u-registration-step name="newsletters">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Newsletter preferences</h3>
+
+            <div class="space-y-3 mb-6">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <u-registration-newsletter name="weekly_digest"></u-registration-newsletter>
+                <span class="text-sm text-gray-700">Weekly digest - Get a summary of top stories</span>
+              </label>
+
+              <label class="flex items-center gap-2 cursor-pointer">
+                <u-registration-newsletter name="product_updates" checked></u-registration-newsletter>
+                <span class="text-sm text-gray-700">Product updates - Be the first to know about new features</span>
+              </label>
+
+              <div class="border border-gray-200 rounded-lg p-4">
+                <p class="text-sm font-medium text-gray-700 mb-3">Sports News</p>
+                <div class="space-y-2">
+                  <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                    <u-registration-newsletter-preference name="sports_news" preference="football"></u-registration-newsletter-preference>
+                    Football
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                    <u-registration-newsletter-preference name="sports_news" preference="basketball"></u-registration-newsletter-preference>
+                    Basketball
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                    <u-registration-newsletter-preference name="sports_news" preference="tennis"></u-registration-newsletter-preference>
+                    Tennis
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+                Back
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Complete Registration
+              </u-submit-button>
+            </div>
+          </u-registration-step>
+
+        </u-registration-root>
       </u-signin-step>
 
       <u-signin-step name="verification">
@@ -397,7 +601,7 @@
   </div>
 
   <script type="module">
-    import { Auth, Flash } from "/build/index.esm.js";
+    import { Auth, Flash, onRegistrationChange } from "/build/index.esm.js";
 
     window.Flash = Flash;
 
@@ -434,6 +638,7 @@
 
     // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
     // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
+    // Use { once: true } to prevent HMR from accumulating duplicate listeners.
     window.addEventListener("appload", () => {
       const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
@@ -445,11 +650,32 @@
         customConditionEl.conditionFunction = customConditionFunction;
       }
 
+      const registrationRoot = document.getElementById('registration');
+      if (registrationRoot) {
+        registrationRoot.addEventListener('registrationComplete', (event) => {
+          console.log('Registration complete:', event.detail);
+        });
+
+        registrationRoot.addEventListener('stepChange', (event) => {
+          console.log('Registration step changed:', event.detail);
+        });
+
+        registrationRoot.addEventListener('errorEvent', (event) => {
+          console.error('Registration error:', event.detail.error);
+        });
+      }
+
+      onRegistrationChange('errors', (errors) => {
+        if (errors.email === 'email_already_registered') {
+          console.warn('Email already registered — user should use login flow instead.');
+        }
+      });
+
       const spinner = document.getElementById('sdk-initial-spinner');
       if (spinner) {
         spinner.remove();
       }
-    });
+    }, { once: true });
 
     function changeLocale(locale) {
       const config = document.querySelector('u-config');

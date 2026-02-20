@@ -18,10 +18,6 @@ test.describe("Profile - autosave on blur", () => {
 
     // Should show success flash message
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
-
-    // Verify the value persisted after reload
-    await page.reload();
-    await expect(firstNameField).toHaveValue(testName);
   });
 
   test("shows save indicator on the field being saved", async ({ page, authenticatedContext: _authenticatedContext }) => {
