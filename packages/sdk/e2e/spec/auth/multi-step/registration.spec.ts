@@ -72,8 +72,32 @@ async function navigateToNewslettersStep(page: import("@playwright/test").Page, 
   await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
   await clickContinue(page);
 
+  // Step 5: Passkey — skip it
+  await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
+  await clickContinue(page);
+
   // Should be on newsletters step
   await expect(page.getByRole("heading", { name: "Newsletter preferences" })).toBeVisible();
+}
+
+/** Navigate through email → verification → profile → password to reach the passkey step. */
+async function navigateToPasskeyStep(page: import("@playwright/test").Page, email: string) {
+  await startRegistrationFlow(page, email);
+
+  // Step 1 + 2: Email → Verification
+  await submitEmailAndVerify(page, email);
+
+  // Step 3: Profile — fill required fields and submit
+  await page.getByRole("textbox", { name: "First Name" }).fill("Test");
+  await clickContinue(page);
+
+  // Step 4: Password
+  await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
+  await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+  await clickContinue(page);
+
+  // Should be on passkey step
+  await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
 }
 
 /** Navigate through email → verification → profile to reach the password step. */
@@ -117,7 +141,11 @@ test.describe("Registration - full flow", () => {
     await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
     await clickContinue(page);
 
-    // Step 5: Newsletters
+    // Step 5: Passkey — skip it
+    await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
+    await clickContinue(page);
+
+    // Step 6: Newsletters
     await expect(page.getByRole("heading", { name: "Newsletter preferences" })).toBeVisible();
     await page.getByRole("button", { name: "Complete Registration" }).click();
 
@@ -330,6 +358,39 @@ test.describe("Registration - resume link", () => {
     // Profile step shows with previously entered data preserved.
     await expect(page.getByRole("textbox", { name: "First Name" })).toBeVisible({ timeout: 10000 });
     await expect(page.getByRole("textbox", { name: "First Name" })).toHaveValue("Test");
+  });
+});
+
+test.describe("Registration - passkey", () => {
+  test("should register a passkey and show checkmark", async ({ page }) => {
+    // Set up virtual authenticator via CDP
+    const client = await page.context().newCDPSession(page);
+    await client.send("WebAuthn.enable");
+    await client.send("WebAuthn.addVirtualAuthenticator", {
+      options: {
+        protocol: "ctap2",
+        transport: "internal",
+        hasResidentKey: true,
+        hasUserVerification: true,
+        isUserVerified: true,
+        automaticPresenceSimulation: true,
+      },
+    });
+
+    const email = randomEmail();
+    await navigateToPasskeyStep(page, email);
+
+    // Click the "Register Passkey" button
+    const passkeyButton = page.locator("u-registration-passkey button");
+    await expect(passkeyButton).toBeVisible();
+    await passkeyButton.click();
+
+    // The checkmark should appear after successful registration
+    await expect(passkeyButton.locator("span")).toContainText("✓", { timeout: 10000 });
+
+    // Continue to newsletters and complete registration
+    await clickContinue(page);
+    await expect(page.getByRole("heading", { name: "Newsletter preferences" })).toBeVisible();
   });
 });
 

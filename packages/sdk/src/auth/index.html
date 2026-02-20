@@ -231,7 +231,7 @@
 
         <u-registration-root
           id="registration"
-          steps='["email","verification","profile","password","newsletters"]'>
+          steps='["email","verification","profile","password","passkey","newsletters"]'>
 
           <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
 
@@ -366,7 +366,30 @@
             </div>
           </u-registration-step>
 
-          <!-- Step 5: Newsletters -->
+          <!-- Step 5: Passkey (optional) -->
+          <u-registration-step name="passkey">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Add a passkey</h3>
+            <p class="text-sm text-gray-600 mb-4">Passkeys let you sign in securely without a password using your fingerprint, face, or device PIN.</p>
+
+            <div class="mb-4 flex justify-center">
+              <u-registration-passkey
+                class-name="px-4 py-2 bg-gray-800 text-white font-medium rounded-lg hover:bg-gray-900 disabled:opacity-50"
+                passkey-name="My Passkey">
+                Register Passkey
+              </u-registration-passkey>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+              <u-back-button class-name="px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50">
+                Back
+              </u-back-button>
+              <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 6: Newsletters -->
           <u-registration-step name="newsletters">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Newsletter preferences</h3>
 

@@ -470,7 +470,9 @@ export async function registerPasskey(
   handleResponse: HandleResponseFn,
 ): Promise<RegisterPasskeyResult> {
   const endpoint = withRid(client.baseUrl, "/api/sdk/v1/registration/passkey", options?.rid);
-  const response = await client.post<RegistrationFlowResponse>(endpoint, payload);
+  // Stringify publicKeyCredential so Rails receives it as a plain string for JSON.parse
+  const body = { ...payload, publicKeyCredential: JSON.stringify(payload.publicKeyCredential) };
+  const response = await client.post<RegistrationFlowResponse>(endpoint, body);
 
   return handleResponse(response, () => {
     if (!response.success) {
