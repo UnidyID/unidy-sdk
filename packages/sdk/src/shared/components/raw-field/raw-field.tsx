@@ -200,8 +200,14 @@ export class RawField extends UnidyComponent() {
       case "newsletter":
         newsletterStore.state.additionalFieldErrors = errors;
         break;
-      case "registration":
-        // For registration, we use the store methods for better error handling
+      case "registration": {
+        // Clear fields that were removed from the errors object, then set remaining ones
+        const currentErrors = registrationState.errors as Record<string, string>;
+        for (const field of Object.keys(currentErrors)) {
+          if (!(field in errors)) {
+            registrationStore.clearFieldError(field);
+          }
+        }
         for (const [field, error] of Object.entries(errors)) {
           if (error) {
             registrationStore.setFieldError(field, error);
@@ -210,6 +216,7 @@ export class RawField extends UnidyComponent() {
           }
         }
         break;
+      }
       default:
         profileState.errors = errors;
         break;
@@ -232,27 +239,27 @@ export class RawField extends UnidyComponent() {
     if (this.required) {
       const empty = value === undefined || value === null || value === "";
       if (empty) {
-        return { valid: false, message: "This field is required." };
+        return { valid: false, message: "field_required" };
       }
     }
 
     if (this.pattern && typeof value === "string") {
       const regex = new RegExp(this.pattern);
       if (!regex.test(value)) {
-        return { valid: false, message: this.patternErrorMessage || "Invalid format." };
+        return { valid: false, message: this.patternErrorMessage || "invalid_format" };
       }
     }
 
     const externalResult = this.runExternalValidator(value);
 
     if (externalResult && !externalResult.valid) {
-      return { valid: false, message: externalResult.message || "Invalid input." };
+      return { valid: false, message: externalResult.message || "invalid_input" };
     }
 
     if (this.type === "tel") {
       const phonePattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
       if (typeof value === "string" && value !== "" && !phonePattern.test(value)) {
-        return { valid: false, message: this.invalidPhoneMessage };
+        return { valid: false, message: this.invalidPhoneMessage || "invalid_phone" };
       }
     }
 

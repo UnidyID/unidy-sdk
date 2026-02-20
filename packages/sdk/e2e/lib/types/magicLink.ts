@@ -5,4 +5,6 @@ export interface MagicLink extends BaseModel {
   token: string;
   used_at: string;
   user_id: string;
+  email: string;
+  purpose: string;
 }

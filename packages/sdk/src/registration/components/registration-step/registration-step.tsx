@@ -20,7 +20,11 @@ export class RegistrationStep extends UnidyComponent() {
   private unsubscribers: (() => void)[] = [];
 
   async componentWillLoad() {
-    this.registrationInstance = await Registration.getInstance();
+    try {
+      this.registrationInstance = await Registration.getInstance();
+    } catch {
+      // Config not ready yet — will be retried on submit
+    }
   }
 
   connectedCallback() {
@@ -82,6 +86,12 @@ export class RegistrationStep extends UnidyComponent() {
 
     const registrationUrl = await root.getRegistrationUrl();
     const brandId = await root.getBrandId();
+
+    // Retry initialization if it failed during componentWillLoad (e.g. config timeout on hard reload)
+    if (!this.registrationInstance) {
+      this.registrationInstance = await Registration.getInstance();
+    }
+
     const helpers = this.registrationInstance?.helpers;
 
     if (!helpers) {

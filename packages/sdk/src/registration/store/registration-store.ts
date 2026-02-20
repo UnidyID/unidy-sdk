@@ -214,7 +214,15 @@ class RegistrationStore {
   }
 
   setFieldError(field: string, error: string | null) {
-    if (!this.handleError(error)) return;
+    if (error === "connection_failed") {
+      unidyState.backendConnected = false;
+      return;
+    }
+
+    if (error === "registration_not_found" || error === "registration_expired") {
+      this.reset();
+      return;
+    }
 
     state.errors = { ...state.errors, [field]: error };
   }

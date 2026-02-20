@@ -48,6 +48,13 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
       return this.errorMessages[errorCode];
     }
 
+    // Integrator-supplied messages (pattern-error-message, validationFunc, etc.) are
+    // already human-readable and contain spaces. API error identifiers are always
+    // snake_case — only attempt i18n translation for those.
+    if (errorCode.includes(" ")) {
+      return errorCode;
+    }
+
     const translatedError = t(`errors.${errorCode}`);
     if (translatedError !== `errors.${errorCode}`) {
       return translatedError;

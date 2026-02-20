@@ -188,7 +188,22 @@ class AuthStore {
   }
 
   setFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey", error: string | null) {
-    if (!this.handleGeneralError(error)) return;
+    if (error === "connection_failed") {
+      unidyState.backendConnected = false;
+      return;
+    }
+
+    if (
+      error === Auth.Errors.general.SIGN_IN_NOT_FOUND ||
+      error === Auth.Errors.general.SIGN_IN_ALREADY_PROCESSED ||
+      error === Auth.Errors.general.SIGN_IN_EXPIRED
+    ) {
+      const email = state.email;
+      this.reset();
+      state.email = email;
+      saveToStorage(localStorage, SESSION_KEYS.EMAIL, email);
+      return;
+    }
 
     state.errors = { ...state.errors, [field]: error };
   }

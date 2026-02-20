@@ -739,21 +739,47 @@ export namespace Components {
         "componentClassName"?: string;
     }
     interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
     }
     interface URegistrationRoot {
+        /**
+          * Programmatically advance to the next step in the registration flow.
+         */
         "advanceToNextStep": () => Promise<void>;
         /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
           * @default true
          */
         "autoResume": boolean;
-        "brandId"?: number;
-        "getBrandId": () => Promise<number | undefined>;
-        "getRegistrationUrl": () => Promise<string>;
-        "goToPreviousStep": () => Promise<void>;
-        "isComplete": () => Promise<boolean>;
-        "registrationUrl": string;
         /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Returns the configured brand ID, if any.
+         */
+        "getBrandId": () => Promise<number | undefined>;
+        /**
+          * Returns the registration URL. Falls back to the current page URL if not explicitly set.
+         */
+        "getRegistrationUrl": () => Promise<string>;
+        /**
+          * Programmatically go back to the previous step in the registration flow.
+         */
+        "goToPreviousStep": () => Promise<void>;
+        /**
+          * Returns whether the registration flow has been completed.
+         */
+        "isComplete": () => Promise<boolean>;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
          */
         "steps": string;
@@ -2238,21 +2264,47 @@ declare namespace LocalJSX {
         "componentClassName"?: string;
     }
     interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
+        /**
+          * Fired when sending the resume link fails. Contains the error identifier.
+         */
         "onResumeError"?: (event: URegistrationResumeCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the resume link email has been sent successfully.
+         */
         "onResumeSent"?: (event: URegistrationResumeCustomEvent<void>) => void;
     }
     interface URegistrationRoot {
         /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
           * @default true
          */
         "autoResume"?: boolean;
-        "brandId"?: number;
-        "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
-        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
-        "onStepChange"?: (event: URegistrationRootCustomEvent<{ stepName: string; stepIndex: number }>) => void;
-        "registrationUrl": string;
         /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Fired when an error occurs during the registration flow.
+         */
+        "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the registration flow is finalized and the user account is created.
+         */
+        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
+        /**
+          * Fired when the active step changes.
+         */
+        "onStepChange"?: (event: URegistrationRootCustomEvent<{ stepName: string; stepIndex: number }>) => void;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
          */
         "steps"?: string;

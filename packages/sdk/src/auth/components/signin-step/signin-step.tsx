@@ -55,7 +55,7 @@ export class SigninStep {
     } else if (this.name === "reset-password") {
       shouldShow = authState.step === "reset-password";
     } else if (this.name === "registration") {
-      shouldShow = authState.step === "registration" && authState.errors.email === "account_not_found";
+      shouldShow = authState.step === "registration";
     } else if (this.name === "single-login") {
       shouldShow = authState.step === "single-login";
     } else if (this.name === "missing-fields") {

@@ -231,8 +231,9 @@
 
         <u-registration-root
           id="registration"
-          registration-url="http://localhost:3000/register"
-          steps='["email","profile","password","newsletters"]'>
+          steps='["email","verification","profile","password","newsletters"]'>
+
+          <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
 
           <!-- Step 1: Email -->
           <u-registration-step name="email">
@@ -269,7 +270,29 @@
             </div>
           </u-registration-step>
 
-          <!-- Step 2: Profile -->
+          <!-- Step 2: Email Verification -->
+          <u-registration-step name="verification" requires-email-verification>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Verify your email</h3>
+            <p class="text-sm text-gray-600 mb-4">Enter the 4-digit code sent to your email address.</p>
+
+            <div class="mb-4 flex justify-center gap-3">
+              <u-registration-email-verification
+                auto-send
+                class-name="flex justify-center gap-3"
+                input-class-name="w-14 h-14 text-center text-2xl font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </u-registration-email-verification>
+            </div>
+
+            <u-error-message for="verificationCode" class-name="mt-1 text-sm text-red-500 text-center block"></u-error-message>
+
+            <div class="text-center mt-4">
+              <u-registration-resend class-name="text-sm text-blue-500 hover:text-blue-700 disabled:opacity-50">
+                Resend code
+              </u-registration-resend>
+            </div>
+          </u-registration-step>
+
+          <!-- Step 3: Profile -->
           <u-registration-step name="profile">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Your profile</h3>
 
@@ -314,7 +337,7 @@
             </div>
           </u-registration-step>
 
-          <!-- Step 3: Password (skipped if social login) -->
+          <!-- Step 4: Password (skipped if social login) -->
           <u-registration-step name="password" requires-password>
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Create a password</h3>
 
@@ -343,7 +366,7 @@
             </div>
           </u-registration-step>
 
-          <!-- Step 4: Newsletters -->
+          <!-- Step 5: Newsletters -->
           <u-registration-step name="newsletters">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Newsletter preferences</h3>
 
@@ -592,6 +615,7 @@
 
     // Do not use 'DOMContentLoaded' event here - it is not reliable since it fires when html is parsed, but Stencil componets are
     // probably not yet hydrated so we are using 'appload' event here instead which is fired by Stencil when components are fully hydrated.
+    // Use { once: true } to prevent HMR from accumulating duplicate listeners.
     window.addEventListener("appload", () => {
       const field = document.querySelector('u-field[field="date_of_birth"]');
       if (field) {
@@ -628,7 +652,7 @@
       if (spinner) {
         spinner.remove();
       }
-    });
+    }, { once: true });
 
     function changeLocale(locale) {
       const config = document.querySelector('u-config');

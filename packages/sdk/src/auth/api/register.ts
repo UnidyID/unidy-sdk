@@ -56,6 +56,12 @@ const RegistrationFlowResponseSchema = z.object({
   expired: z.boolean(),
   can_finalize: z.boolean(),
   email_verified: z.boolean(),
+  auth: z
+    .object({
+      id_token: z.string(),
+      refresh_token: z.string(),
+    })
+    .optional(),
 });
 
 // Create registration payload schema
@@ -165,6 +171,7 @@ export type CreateRegistrationResult =
   | ["email_already_registered", ErrorResponse]
   | ["registration_flow_already_exists", ErrorResponse]
   | ["invalid_record", ErrorResponse]
+  | ["password_validation_failed", ErrorResponse]
   | [null, RegistrationFlowResponse];
 
 export type GetRegistrationResult =
@@ -178,6 +185,7 @@ export type UpdateRegistrationResult =
   | ["registration_not_found", ErrorResponse]
   | ["registration_expired", ErrorResponse]
   | ["invalid_record", ErrorResponse]
+  | ["password_validation_failed", ErrorResponse]
   | [null, RegistrationFlowResponse];
 
 export type CancelRegistrationResult =
@@ -250,8 +258,8 @@ export async function createRegistration(
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error_identifier as "email_already_registered" | "registration_flow_already_exists" | "invalid_record",
-        error_response,
+        error_response.error_identifier as "email_already_registered" | "registration_flow_already_exists" | "invalid_record" | "password_validation_failed",
+        response.data as unknown as ErrorResponse,
       ];
     }
 
@@ -297,7 +305,7 @@ export async function updateRegistration(
   return handleResponse(response, () => {
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
-      return [error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record", error_response];
+      return [error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record" | "password_validation_failed", response.data as unknown as ErrorResponse];
     }
 
     return [null, RegistrationFlowResponseSchema.parse(response.data)];

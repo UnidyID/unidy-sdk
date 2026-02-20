@@ -6,6 +6,9 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "../auth/api/register";
+import type { TokenResponse } from "../auth/api/schemas";
+import { authStore } from "../auth/store/auth-store";
+import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { buildPublicKeyCreationOptions, formatCreationCredentialForServer, PASSKEY_ERRORS } from "../shared/passkey-utils";
 import { registrationState, registrationStore } from "./store/registration-store";
@@ -82,6 +85,7 @@ export class RegistrationHelpers {
     if (error) {
       if (error === "registration_flow_already_exists") {
         registrationStore.setEmailAlreadyInFlow(true);
+        registrationStore.setFieldError("email", error);
         return false;
       }
 
@@ -93,6 +97,11 @@ export class RegistrationHelpers {
       if (error === "invalid_record") {
         // Server validation error - parse field errors from response
         this.handleValidationErrors(response);
+        return false;
+      }
+
+      if (error === "password_validation_failed") {
+        this.handlePasswordValidationError(response);
         return false;
       }
 
@@ -132,6 +141,11 @@ export class RegistrationHelpers {
     if (error) {
       if (error === "invalid_record") {
         this.handleValidationErrors(response);
+        return false;
+      }
+
+      if (error === "password_validation_failed") {
+        this.handlePasswordValidationError(response);
         return false;
       }
 
@@ -190,8 +204,17 @@ export class RegistrationHelpers {
       return false;
     }
 
-    registrationStore.setFlowResponse(response as RegistrationFlowResponse);
+    const flowResponse = response as RegistrationFlowResponse;
+    registrationStore.setFlowResponse(flowResponse);
     registrationStore.clearRid();
+
+    // Process auth tokens returned after successful finalization
+    if (flowResponse.auth) {
+      const tokenResponse: TokenResponse = { jwt: flowResponse.auth.id_token, refresh_token: flowResponse.auth.refresh_token };
+      authStore.setToken(tokenResponse.jwt);
+      authStore.setRefreshToken(tokenResponse.refresh_token);
+      authStore.getRootComponentRef()?.onAuth(tokenResponse);
+    }
 
     return true;
   }
@@ -348,18 +371,15 @@ export class RegistrationHelpers {
     const url = new URL(window.location.href);
     const params = url.searchParams;
 
-    // Check for registration_rid parameter (from social OAuth callback)
+    // Check for registration_rid parameter (from social OAuth callback or resume email)
     const rid = params.get("registration_rid");
     if (rid) {
       registrationStore.setRid(rid);
       params.delete("registration_rid");
 
-      // Clean URL
+      // Clean URL — the flow is fetched by RegistrationRoot.tryAutoResume()
       const cleanUrl = `${url.origin}${url.pathname}${params.toString() ? `?${params.toString()}` : ""}${url.hash}`;
       window.history.replaceState(null, "", cleanUrl);
-
-      // Fetch the registration flow
-      this.getRegistration(rid);
     }
   }
 
@@ -462,6 +482,24 @@ export class RegistrationHelpers {
 
     registrationStore.setFlowResponse(response as RegistrationFlowResponse);
     return true;
+  }
+
+  /**
+   * Parse password validation errors from API response and set them as field errors.
+   * Server sends { meta: { password_errors: ["min_length", "number", ...] } }
+   */
+  private handlePasswordValidationError(response: unknown): void {
+    const errorResponse = response as { meta?: { password_errors?: string[] } };
+    const passwordErrors = errorResponse?.meta?.password_errors;
+
+    if (Array.isArray(passwordErrors) && passwordErrors.length > 0) {
+      const messages = passwordErrors
+        .map((key) => t(`errors.password_requirements.${key}`))
+        .filter((msg) => msg);
+      registrationStore.setFieldError("password", messages.join(", "));
+    } else {
+      registrationStore.setFieldError("password", "password_validation_failed");
+    }
   }
 
   /**

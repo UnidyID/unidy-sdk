@@ -1,6 +1,6 @@
 import { Component, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
-import { registrationState, registrationStore } from "../../store/registration-store";
+import { onChange, registrationState, registrationStore } from "../../store/registration-store";
 
 const CODE_LENGTH = 4;
 
@@ -20,6 +20,7 @@ export class RegistrationEmailVerification {
   private registrationInstance: Registration | null = null;
   private inputRefs: HTMLInputElement[] = [];
   private readonly inputKeys = Array.from({ length: CODE_LENGTH }, (_, index) => `digit-${index}`);
+  private unsubscribers: (() => void)[] = [];
 
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
@@ -27,6 +28,27 @@ export class RegistrationEmailVerification {
     if (this.autoSend && !registrationState.verificationCodeSent && registrationState.rid) {
       await this.sendCode();
     }
+
+    // Subscribe to step changes to handle auto-send when this step becomes active
+    // (needed for slotted components where componentWillLoad fires before rid is available)
+    if (this.autoSend) {
+      this.unsubscribers.push(
+        onChange("currentStepName", () => {
+          this.tryAutoSend();
+        }),
+      );
+    }
+  }
+
+  disconnectedCallback() {
+    for (const unsub of this.unsubscribers) {
+      unsub();
+    }
+  }
+
+  private tryAutoSend(): void {
+    if (!this.autoSend || registrationState.verificationCodeSent || !registrationState.rid) return;
+    this.sendCode();
   }
 
   private async sendCode(): Promise<void> {
@@ -94,7 +116,9 @@ export class RegistrationEmailVerification {
     if (helpers) {
       const success = await helpers.verifyEmail(code);
 
-      if (!success) {
+      if (success) {
+        registrationStore.getRootComponentRef()?.advanceToNextStep();
+      } else {
         this.code = Array(CODE_LENGTH).fill("");
         this.inputRefs[0]?.focus();
       }
