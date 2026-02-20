@@ -8,6 +8,7 @@ Table of Contents
 
 - [Quick Start: Examples](#quick-start-examples)
     - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+    - [Quick Start: Registration Flow](#quick-start-registration-flow)
     - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
     - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
     - [Quick Start: Profile Icon](#quick-start-profile-icon)
@@ -139,6 +140,174 @@ This example demonstrates a complete authentication flow. The SDK automatically 
 </body>
 </html>
 ```
+### Quick Start: Registration Flow
+
+This example demonstrates a complete multi-step registration flow with email verification, profile collection, password, passkey, and newsletter preferences.
+
+> **Note:** This example uses [Tailwind CSS](https://tailwindcss.com/) utility classes for styling. You can replace these with your own CSS classes or include Tailwind in your project.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unidy Registration Demo</title>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/sdk.esm.js"></script>
+</head>
+<body>
+
+  <u-config base-url="https://your-unidy-instance.com" api-key="your-api-key"></u-config>
+
+  <u-registration-root
+    id="registration"
+    steps='["email","verification","profile","password","passkey","newsletters"]'>
+
+    <!-- Global error message -->
+    <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
+
+    <!-- Step 1: Email -->
+    <u-registration-step name="email">
+      <h3>Create a new account</h3>
+      <u-raw-field field="email" type="email" required placeholder="you@example.com"
+        class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
+      <u-error-message for="email" class-name="text-sm text-red-500"></u-error-message>
+
+      <!-- Resume button shown when a flow already exists for this email -->
+      <u-registration-resume class-name="mt-2 text-sm text-blue-500">
+        Resume existing registration
+        <p slot="success">Check your email for a link to continue.</p>
+        <span slot="resend">Resend link</span>
+      </u-registration-resume>
+
+      <u-submit-button class-name="w-full px-4 py-2 bg-blue-600 text-white rounded-lg">
+        Continue
+      </u-submit-button>
+    </u-registration-step>
+
+    <!-- Step 2: Email Verification (skipped if already verified) -->
+    <u-registration-step name="verification" requires-email-verification>
+      <h3>Verify your email</h3>
+      <p>Enter the 4-digit code sent to your email address.</p>
+      <u-registration-email-verification
+        auto-send
+        class-name="flex justify-center gap-3"
+        input-class-name="w-14 h-14 text-center text-2xl font-bold border rounded-lg">
+      </u-registration-email-verification>
+      <u-error-message for="verificationCode" class-name="text-sm text-red-500"></u-error-message>
+      <u-registration-resend class-name="text-sm text-blue-500">Resend code</u-registration-resend>
+    </u-registration-step>
+
+    <!-- Step 3: Profile -->
+    <u-registration-step name="profile">
+      <h3>Your profile</h3>
+      <u-raw-field field="first_name" type="text" required placeholder="First Name"
+        class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
+      <u-raw-field field="last_name" type="text" placeholder="Last Name"
+        class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
+
+      <div class="flex gap-3">
+        <u-back-button class-name="px-4 py-2 bg-gray-100 rounded-lg">Back</u-back-button>
+        <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">
+          Continue
+        </u-submit-button>
+      </div>
+    </u-registration-step>
+
+    <!-- Step 4: Password (skipped for social/passwordless login) -->
+    <u-registration-step name="password" requires-password>
+      <h3>Create a password</h3>
+      <u-raw-field field="password" type="password" required placeholder="Create a strong password"
+        pattern="^.{8,}$" pattern-error-message="Password must be at least 8 characters"
+        class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
+      <u-error-message for="password" class-name="text-sm text-red-500"></u-error-message>
+
+      <div class="flex gap-3">
+        <u-back-button class-name="px-4 py-2 bg-gray-100 rounded-lg">Back</u-back-button>
+        <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">
+          Continue
+        </u-submit-button>
+      </div>
+    </u-registration-step>
+
+    <!-- Step 5: Passkey (optional, user can skip) -->
+    <u-registration-step name="passkey">
+      <h3>Add a passkey</h3>
+      <p>Sign in securely without a password using your fingerprint, face, or device PIN.</p>
+      <u-registration-passkey
+        class-name="px-4 py-2 bg-gray-800 text-white rounded-lg"
+        passkey-name="My Passkey">
+        Register Passkey
+      </u-registration-passkey>
+
+      <div class="flex gap-3">
+        <u-back-button class-name="px-4 py-2 bg-gray-100 rounded-lg">Back</u-back-button>
+        <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">
+          Continue
+        </u-submit-button>
+      </div>
+    </u-registration-step>
+
+    <!-- Step 6: Newsletters -->
+    <u-registration-step name="newsletters">
+      <h3>Newsletter preferences</h3>
+
+      <label class="flex items-center gap-2">
+        <u-registration-newsletter name="weekly_digest"></u-registration-newsletter>
+        Weekly digest
+      </label>
+
+      <label class="flex items-center gap-2">
+        <u-registration-newsletter name="product_updates" checked></u-registration-newsletter>
+        Product updates
+      </label>
+
+      <!-- Sub-preferences example -->
+      <p>Sports News</p>
+      <label class="flex items-center gap-2">
+        <u-registration-newsletter-preference name="sports_news" preference="football">
+        </u-registration-newsletter-preference>
+        Football
+      </label>
+      <label class="flex items-center gap-2">
+        <u-registration-newsletter-preference name="sports_news" preference="basketball">
+        </u-registration-newsletter-preference>
+        Basketball
+      </label>
+
+      <div class="flex gap-3">
+        <u-back-button class-name="px-4 py-2 bg-gray-100 rounded-lg">Back</u-back-button>
+        <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">
+          Complete Registration
+        </u-submit-button>
+      </div>
+    </u-registration-step>
+  </u-registration-root>
+
+  <script type="module">
+    const registration = document.getElementById("registration");
+
+    registration.addEventListener("registrationComplete", (event) => {
+      console.log("Registration complete:", event.detail);
+      // Redirect or show success message
+    });
+
+    registration.addEventListener("stepChange", (event) => {
+      console.log("Step changed:", event.detail.stepName);
+    });
+  </script>
+
+</body>
+</html>
+```
+
+**Notes:**
+- Steps with `requires-email-verification` are automatically skipped if the email is already verified (e.g., after resuming a flow)
+- Steps with `requires-password` are automatically skipped for social login or passwordless flows
+- The passkey step is always shown but optional — users can click "Continue" to skip it
+- `<u-registration-resume>` only appears when a registration flow already exists for the entered email
+- `<u-registration-email-verification>` automatically sends the verification code when the step becomes active and auto-submits when all digits are entered
+- `<u-registration-newsletter-preference>` is used for sub-preferences within a newsletter (e.g., sport categories under a "Sports News" newsletter)
+
 ### Quick Start: Newsletter implementation
 
 This example demonstrates how to implement a newsletter subscription form using the Unidy SDK.
