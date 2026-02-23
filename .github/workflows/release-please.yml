@@ -46,6 +46,8 @@ jobs:
 
       - name: Create maintenance branch
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           TAG="${{ needs.release-please.outputs.tag_name }}"
           VERSION="${TAG#v}"
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
