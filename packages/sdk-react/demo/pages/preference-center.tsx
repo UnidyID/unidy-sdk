@@ -1,5 +1,5 @@
-import * as React from "react";
 import { useNewsletterLogin, useNewsletterPreferenceCenter, useNewsletterResendConfirmation, useSession } from "@unidy.io/sdk-react";
+import * as React from "react";
 import { type FormEvent, useCallback, useState } from "react";
 import { Link } from "react-router";
 import { NEWSLETTERS } from "../newsletter-config";

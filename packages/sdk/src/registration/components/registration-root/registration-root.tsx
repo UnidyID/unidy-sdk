@@ -1,6 +1,6 @@
 import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
-import { authState, authStore, onChange as authOnChange } from "../../../auth/store/auth-store";
+import { onChange as authOnChange, authState, authStore } from "../../../auth/store/auth-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
@@ -10,7 +10,6 @@ import { registrationState, registrationStore } from "../../store/registration-s
   shadow: false,
 })
 export class RegistrationRoot extends UnidyComponent() {
-
   /** URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set. */
   @Prop({ attribute: "registration-url" }) registrationUrl?: string;
 
