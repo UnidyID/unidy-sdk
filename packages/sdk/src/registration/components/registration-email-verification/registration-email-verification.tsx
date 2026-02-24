@@ -10,8 +10,13 @@ const CODE_LENGTH = 4;
   shadow: false,
 })
 export class RegistrationEmailVerification {
+  /** Whether to automatically send the verification code when this step becomes active. */
   @Prop({ attribute: "auto-send" }) autoSend = true;
+
+  /** CSS classes to apply to the fieldset container. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+
+  /** CSS classes to apply to each individual digit input. */
   @Prop({ attribute: "input-class-name" }) inputClassName?: string;
 
   @State() code: string[] = Array(CODE_LENGTH).fill("");
