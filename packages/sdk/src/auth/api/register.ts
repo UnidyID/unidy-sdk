@@ -258,7 +258,11 @@ export async function createRegistration(
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error_identifier as "email_already_registered" | "registration_flow_already_exists" | "invalid_record" | "password_validation_failed",
+        error_response.error_identifier as
+          | "email_already_registered"
+          | "registration_flow_already_exists"
+          | "invalid_record"
+          | "password_validation_failed",
         response.data as unknown as ErrorResponse,
       ];
     }
@@ -305,7 +309,14 @@ export async function updateRegistration(
   return handleResponse(response, () => {
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
-      return [error_response.error_identifier as "registration_not_found" | "registration_expired" | "invalid_record" | "password_validation_failed", response.data as unknown as ErrorResponse];
+      return [
+        error_response.error_identifier as
+          | "registration_not_found"
+          | "registration_expired"
+          | "invalid_record"
+          | "password_validation_failed",
+        response.data as unknown as ErrorResponse,
+      ];
     }
 
     return [null, RegistrationFlowResponseSchema.parse(response.data)];

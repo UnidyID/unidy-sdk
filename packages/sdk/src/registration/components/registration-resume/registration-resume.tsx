@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, h, Host, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { registrationState } from "../../store/registration-store";
 

@@ -493,9 +493,7 @@ export class RegistrationHelpers {
     const passwordErrors = errorResponse?.meta?.password_errors;
 
     if (Array.isArray(passwordErrors) && passwordErrors.length > 0) {
-      const messages = passwordErrors
-        .map((key) => t(`errors.password_requirements.${key}`))
-        .filter((msg) => msg);
+      const messages = passwordErrors.map((key) => t(`errors.password_requirements.${key}`)).filter((msg) => msg);
       registrationStore.setFieldError("password", messages.join(", "));
     } else {
       registrationStore.setFieldError("password", "password_validation_failed");

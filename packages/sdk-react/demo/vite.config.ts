@@ -9,10 +9,7 @@ export default defineConfig(({ command }) => ({
     alias: {
       "@unidy.io/sdk-react": path.resolve(__dirname, "../src"),
       ...(command === "serve" && {
-        "@unidy.io/sdk/standalone": path.resolve(
-          __dirname,
-          "../../sdk/src/api/standalone.ts",
-        ),
+        "@unidy.io/sdk/standalone": path.resolve(__dirname, "../../sdk/src/api/standalone.ts"),
       }),
     },
   },
