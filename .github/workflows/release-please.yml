@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - '*-stable'
   workflow_dispatch:
     inputs:
       release_type:
@@ -34,9 +35,34 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          target-branch: ${{ github.ref_name }}
+
+  create-maintenance-branch:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create maintenance branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          VERSION="${TAG#v}"
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          BRANCH="${MAJOR}-${MINOR}-stable"
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "Branch $BRANCH already exists, skipping"
+          else
+            git checkout -b "$BRANCH"
+            git push origin "$BRANCH"
+            echo "Created maintenance branch $BRANCH"
+          fi
 
   prerelease:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable' && github.ref_name == 'master'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -89,6 +115,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
@@ -101,7 +139,7 @@ jobs:
       - name: Publish to NPM
         run: |
           cd packages/sdk
-          bun publish --tag latest
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -112,6 +150,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check if npm publish is needed
         id: check
@@ -142,6 +192,6 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         run: |
           cd packages/sdk
-          bun publish --tag latest
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
