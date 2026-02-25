@@ -1,9 +1,9 @@
 import { Component, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
+import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
 import { registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
 import { type ComponentContext, detectContext } from "../../context-utils";
-import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
 import { Input } from "./components/Input";
 import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
 import { RadioGroup, type RadioOption } from "./components/RadioGroup";
