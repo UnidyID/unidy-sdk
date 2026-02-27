@@ -118,7 +118,9 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          if [[ "${{ github.ref_name }}" == "master" ]]; then
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
             BRANCH="${{ github.ref_name }}"
@@ -154,7 +156,9 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          if [[ "${{ github.ref_name }}" == "master" ]]; then
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
             BRANCH="${{ github.ref_name }}"
