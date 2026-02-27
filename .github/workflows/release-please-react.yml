@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - '*-stable'
   workflow_dispatch:
     inputs:
       release_type:
@@ -34,9 +35,10 @@ jobs:
         with:
           config-file: release-please-config-react.json
           manifest-file: .release-please-manifest-react.json
+          target-branch: ${{ github.ref_name }}
 
   prerelease:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable' && github.ref_name == 'master'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -66,7 +68,7 @@ jobs:
           jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
 
       - name: Build
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         run: |
@@ -89,6 +91,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
 
@@ -96,12 +112,12 @@ jobs:
         run: bun install
 
       - name: Build
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
-          bun publish --tag latest
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -112,6 +128,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check if npm publish is needed
         id: check
@@ -136,12 +166,12 @@ jobs:
 
       - name: Build
         if: steps.check.outputs.needs_publish == 'true'
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'
         run: |
           cd packages/sdk-react
-          bun publish --tag latest
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
