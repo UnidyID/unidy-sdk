@@ -9,7 +9,7 @@
     "format": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
-    "build": "bun run --filter ./packages/* build",
+    "build": "bun run --filter '*' build",
     "prepare": "husky"
   },
   "devDependencies": {
