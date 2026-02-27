@@ -2238,8 +2238,15 @@ Use `requires-password` on the step to automatically skip it for social login or
     pattern="^.{8,}$" pattern-error-message="Password must be at least 8 characters"
     class-name="..."></u-raw-field>
   <u-error-message for="password" class-name="..."></u-error-message>
+
+  <!-- Optional: password confirmation (purely client-side validation) -->
+  <u-raw-field field="password_confirmation" type="password" required
+    placeholder="Confirm your password" class-name="..."></u-raw-field>
+  <u-error-message for="password_confirmation" class-name="..."></u-error-message>
 </u-registration-step>
 ```
+
+The `password_confirmation` field is optional. If included, it validates that both passwords match before allowing the step to advance. The confirmation value is never sent to the server.
 
 ### Resume Flow
 
