@@ -46,7 +46,7 @@ export const TicketSchema = z.object({
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   created_at: dateTransformer, // ISO8601(3) -> Date
   updated_at: dateTransformer, // ISO8601(3) -> Date
-  price: z.number(), // decimal(8, 2) -> float
+  price: z.number().nullable(), // decimal(8, 2) -> float
   user_id: z.uuid(),
   ticket_category_id: z.uuid(),
 });
