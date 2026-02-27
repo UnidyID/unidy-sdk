@@ -37,6 +37,34 @@ jobs:
           manifest-file: .release-please-manifest-react.json
           target-branch: ${{ github.ref_name }}
 
+  create-maintenance-branch:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create maintenance branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          VERSION="${TAG#v}"
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          if [ "$MAJOR" -lt 1 ]; then
+            echo "Skipping maintenance branch for pre-1.0 release ($VERSION)"
+            exit 0
+          fi
+          BRANCH="${MAJOR}-${MINOR}-stable"
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "Branch $BRANCH already exists, skipping"
+          else
+            git checkout -b "$BRANCH"
+            git push origin "$BRANCH"
+            echo "Created maintenance branch $BRANCH"
+          fi
+
   prerelease:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable' && github.ref_name == 'master'
     runs-on: ubuntu-latest
