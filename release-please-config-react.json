@@ -1,0 +1,8 @@
+{
+  "packages": {
+    "packages/sdk-react": {
+      "package-name": "@unidy.io/sdk-react",
+      "release-type": "node"
+    }
+  }
+}
