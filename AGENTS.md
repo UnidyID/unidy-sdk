@@ -7,6 +7,7 @@
 ## Commit Guidelines
 
 - Use conventional commit messages (prefix messages with `fix:`, `feat:`, `refactor:`, `docs:` etc.)
+- PR titles should follow conventional commit format: `prefix: [Linear issue identifier] title` (Omit the Linear issue identifier if not provided)
 - Do not add a "Co-Authored-By: Claude" footer to commits
 - When creating PRs, always assign @me and add reviewers: bvogel,Zeko369,MandyGottschling,Sokre95 excluding the current user from this list
 
