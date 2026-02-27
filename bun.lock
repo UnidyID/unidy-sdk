@@ -57,7 +57,7 @@
     },
     "packages/sdk-react": {
       "name": "@unidy.io/sdk-react",
-      "version": "0.1.0",
+      "version": "0.0.2",
       "dependencies": {
         "jwt-decode": "^4.0.0",
       },
