@@ -7,7 +7,7 @@ This document describes how releases are managed for `@unidy.io/sdk`.
 | Branch | Purpose | npm dist-tag | Example version |
 |--------|---------|-------------|-----------------|
 | `master` | Next minor/major release | `latest` | `1.4.0` |
-| `X-Y-stable` (e.g. `1-3-stable`) | Patch releases for version X.Y | `release-X.Y` (e.g. `release-1.3`) | `1.3.1` |
+| `X-Y-stable` (e.g. `1-3-stable`) | Patch releases for version X.Y | `latest` if >= current latest, otherwise `release-X.Y` | `1.3.1` |
 
 ## How Releases Work
 
@@ -25,7 +25,7 @@ We use [Release Please](https://github.com/googleapis/release-please) to automat
 
 1. Cherry-pick or merge **only `fix:` commits** into the `X-Y-stable` branch
 2. Release Please creates a release PR that bumps the patch version (e.g. `1.3.0` -> `1.3.1`)
-3. When merged, the package is published to npm with the `release-X.Y` tag
+3. When merged, the package is published to npm. If the version is >= the current `latest` on npm, it gets the `latest` tag; otherwise it gets the `release-X.Y` tag
 
 ### Pre-releases (from `master`)
 
@@ -69,10 +69,10 @@ Merging `feat:` or other non-fix conventional commits onto a stable branch will 
 Install specific release channels:
 
 ```bash
-# Latest stable release (from master)
+# Latest stable release (highest published version)
 npm install @unidy.io/sdk@latest
 
-# Specific maintenance release
+# Specific maintenance release (used when a newer version exists on latest)
 npm install @unidy.io/sdk@release-1.3
 
 # Pre-release channels
