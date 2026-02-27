@@ -696,27 +696,51 @@ export namespace Components {
     }
     interface URegistrationEmailVerification {
         /**
+          * Whether to automatically send the verification code when this step becomes active.
           * @default true
          */
         "autoSend": boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
         "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
         "inputClassName"?: string;
     }
     interface URegistrationNewsletter {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
         "name": string;
     }
     interface URegistrationNewsletterPreference {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
         "preference": string;
     }
     interface URegistrationPasskey {
@@ -736,6 +760,9 @@ export namespace Components {
         "passkeyName"?: string;
     }
     interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
     }
     interface URegistrationResume {
@@ -786,20 +813,35 @@ export namespace Components {
     }
     interface URegistrationStep {
         /**
+          * If true, the step's content is always rendered regardless of which step is active.
           * @default false
          */
         "alwaysRender": boolean;
+        /**
+          * Returns whether this step is currently the active step in the registration flow.
+         */
         "isActive": () => Promise<boolean>;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
         "name": string;
         /**
+          * If true, this step is automatically skipped when the user's email is already verified.
           * @default false
          */
         "requiresEmailVerification": boolean;
         /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
           * @default false
          */
         "requiresPassword": boolean;
+        /**
+          * Returns whether this step should be skipped based on the current flow state (e.g. email already verified, passwordless flow).
+         */
         "shouldSkip": () => Promise<boolean>;
+        /**
+          * Submits the current step. Creates or updates the registration flow, then advances to the next step or finalizes registration.
+         */
         "submit": () => Promise<void>;
     }
     interface UResetPasswordButton {
@@ -2221,27 +2263,51 @@ declare namespace LocalJSX {
     }
     interface URegistrationEmailVerification {
         /**
+          * Whether to automatically send the verification code when this step becomes active.
           * @default true
          */
         "autoSend"?: boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
         "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
         "inputClassName"?: string;
     }
     interface URegistrationNewsletter {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
         "name": string;
     }
     interface URegistrationNewsletterPreference {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
         "preference": string;
     }
     interface URegistrationPasskey {
@@ -2261,6 +2327,9 @@ declare namespace LocalJSX {
         "passkeyName"?: string;
     }
     interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
     }
     interface URegistrationResume {
@@ -2311,15 +2380,21 @@ declare namespace LocalJSX {
     }
     interface URegistrationStep {
         /**
+          * If true, the step's content is always rendered regardless of which step is active.
           * @default false
          */
         "alwaysRender"?: boolean;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
         "name": string;
         /**
+          * If true, this step is automatically skipped when the user's email is already verified.
           * @default false
          */
         "requiresEmailVerification"?: boolean;
         /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
           * @default false
          */
         "requiresPassword"?: boolean;

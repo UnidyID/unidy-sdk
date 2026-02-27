@@ -7,8 +7,13 @@ import { registrationState, registrationStore } from "../../store/registration-s
   shadow: false,
 })
 export class RegistrationNewsletter {
+  /** The internal name of the newsletter (must match the newsletter configured in Unidy). */
   @Prop() name!: string;
+
+  /** Whether the checkbox is initially checked. */
   @Prop() checked = false;
+
+  /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() isChecked = false;

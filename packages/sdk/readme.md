@@ -35,6 +35,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 - [Complete State Management Reference](#complete-state-management-reference)
 - [Utility Functions](#utility-functions)
 - [Authentication Step Transitions](#authentication-step-transitions)
+- [Registration Step Transitions](#registration-step-transitions)
 - [Browser Compatibility](#browser-compatibility)
 - [Accessibility (a11y)](#accessibility-a11y)
 - [Security Best Practices](#security-best-practices)
@@ -2148,6 +2149,131 @@ console.log('Current step:', authState.step);
 // Manually set step (use with caution)
 authStore.setStep('email');
 ```
+
+## Registration Step Transitions
+
+The registration flow is managed by `<u-registration-root>`, which orchestrates a sequence of `<u-registration-step>` children. The `steps` attribute defines the order; each step name must match a child step's `name` attribute.
+
+### Step Flow Diagram
+
+```
+┌───────┐
+│ email │ ← User enters email, flow is created on the server
+└───┬───┘
+    │ Submit
+    ▼
+┌──────────────┐
+│ verification │ ← 4-digit code sent to email (skipped if already verified)
+└──────┬───────┘
+       │ Code verified
+       ▼
+┌─────────┐
+│ profile │ ← Collect first name, last name, custom attributes
+└────┬────┘
+     │ Submit
+     ▼
+┌──────────┐
+│ password │ ← Create password (skipped for social/passwordless)
+└────┬─────┘
+     │ Submit
+     ▼
+┌─────────┐
+│ passkey │ ← Optional WebAuthn passkey registration (user can skip)
+└────┬────┘
+     │ Continue / Skip
+     ▼
+┌─────────────┐
+│ newsletters │ ← Newsletter preferences (last step triggers finalization)
+└─────────────┘
+```
+
+### Step Skip Logic
+
+| Step | Automatically Skipped When |
+|------|---------------------------|
+| `verification` | `requires-email-verification` is set and email is already verified (e.g. social login) |
+| `password` | `requires-password` is set and the user registered via social login or passwordless flow |
+
+Steps without skip attributes are never automatically skipped. The passkey step is typically not skipped — the user can choose to continue without registering a passkey.
+
+### Customizing Steps
+
+The step list is fully customizable. You can omit steps, reorder them, or add custom steps:
+
+-   **Minimal flow** (email + password only): `steps='["email","password"]'`
+-   **No passkey**: `steps='["email","verification","profile","password","newsletters"]'`
+-   **Custom step**: Add your own `<u-registration-step name="terms">` with custom content
+
+### Profile & Password Steps with `<u-raw-field>`
+
+The profile and password steps use `<u-raw-field>` to collect data. Within a `<u-registration-root>`, `<u-raw-field>` automatically detects the registration context and reads/writes from the registration store.
+
+**Profile step — collecting user data:**
+
+The `field` attribute maps to the registration profile data field name. Standard fields (`first_name`, `last_name`, etc.) and custom attributes (`custom_attributes.favorite_color`) are both supported:
+
+```html
+<u-registration-step name="profile">
+  <u-raw-field field="first_name" type="text" required placeholder="First Name"
+    class-name="..."></u-raw-field>
+  <u-error-message for="first_name" class-name="..."></u-error-message>
+
+  <u-raw-field field="last_name" type="text" placeholder="Last Name"
+    class-name="..."></u-raw-field>
+
+  <!-- Custom attribute with a select dropdown -->
+  <u-raw-field field="custom_attributes.favorite_color" type="select"
+    options='[{"value":"red","label":"Red"},{"value":"blue","label":"Blue"}]'
+    class-name="..."></u-raw-field>
+</u-registration-step>
+```
+
+**Password step:**
+
+Use `requires-password` on the step to automatically skip it for social login or passwordless flows. The `pattern` attribute provides client-side validation before the server-side password policy check:
+
+```html
+<u-registration-step name="password" requires-password>
+  <u-raw-field field="password" type="password" required
+    pattern="^.{8,}$" pattern-error-message="Password must be at least 8 characters"
+    class-name="..."></u-raw-field>
+  <u-error-message for="password" class-name="..."></u-error-message>
+</u-registration-step>
+```
+
+### Resume Flow
+
+When a user abandons a registration and later returns (or opens a different browser), the flow can be resumed:
+
+1. The user enters the same email → server returns `registration_flow_already_exists`
+2. `<u-registration-resume>` appears, offering to send a resume link via email
+3. The email contains a link with `?registration_rid=<rid>` pointing to the registration page
+4. `<u-registration-root>` detects the parameter, fetches the flow, restores collected data, and skips past completed steps
+
+### Events
+
+| Event | Fired When | `event.detail` |
+|-------|------------|----------------|
+| `registrationComplete` | Flow finalized, user account created | Full `RegistrationFlowResponse` (includes `auth.id_token`) |
+| `stepChange` | Active step changes | `{ stepName, stepIndex }` |
+| `errorEvent` | An error occurs during the flow | Error identifier string |
+
+### Programmatic Control
+
+```javascript
+const root = document.querySelector('u-registration-root');
+
+// Advance to next step (with skip logic)
+await root.advanceToNextStep();
+
+// Go back one step
+await root.goToPreviousStep();
+
+// Check if registration is complete
+const done = await root.isComplete();
+```
+
+For a complete working example, see the [Quick Start: Registration Flow](./quick-start-examples.md#quick-start-registration-flow).
 
 ## Browser Compatibility
 
