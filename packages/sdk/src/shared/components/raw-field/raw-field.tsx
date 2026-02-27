@@ -1,9 +1,9 @@
 import { Component, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { registrationState, registrationStore } from "../../../registration/store/registration-store";
+import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
+import { onChange as onRegistrationChange, registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
 import { type ComponentContext, detectContext } from "../../context-utils";
-import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
 import { Input } from "./components/Input";
 import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
 import { RadioGroup, type RadioOption } from "./components/RadioGroup";
@@ -43,6 +43,28 @@ export class RawField extends UnidyComponent() {
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
   @State() selected?: string | string[];
+
+  private unsubscribers: (() => void)[] = [];
+
+  // Subscribe to password changes so the confirmation field re-validates when the password changes
+  connectedCallback() {
+    if (this.field === "password_confirmation") {
+      this.unsubscribers.push(
+        onRegistrationChange("password", () => {
+          if (this.context === "registration" && registrationState.passwordConfirmation) {
+            this.onInputField(registrationState.passwordConfirmation);
+          }
+        }),
+      );
+    }
+  }
+
+  disconnectedCallback() {
+    for (const unsub of this.unsubscribers) {
+      unsub();
+    }
+    this.unsubscribers = [];
+  }
 
   private get context(): ComponentContext | null {
     return detectContext(this.element);
@@ -104,6 +126,10 @@ export class RawField extends UnidyComponent() {
 
     if (fieldName === "password") {
       return registrationState.password || "";
+    }
+
+    if (fieldName === "password_confirmation") {
+      return registrationState.passwordConfirmation || "";
     }
 
     if (fieldName.startsWith("custom_attributes.")) {
@@ -172,6 +198,11 @@ export class RawField extends UnidyComponent() {
 
     if (fieldName === "password") {
       registrationStore.setPassword(stringValue);
+      return;
+    }
+
+    if (fieldName === "password_confirmation") {
+      registrationStore.setPasswordConfirmation(stringValue);
       return;
     }
 
@@ -260,6 +291,13 @@ export class RawField extends UnidyComponent() {
       const phonePattern = /^\+?\d{4,15}$/;
       if (typeof value === "string" && value !== "" && !phonePattern.test(value)) {
         return { valid: false, message: this.invalidPhoneMessage || "invalid_phone" };
+      }
+    }
+
+    // Password confirmation match validation (registration context only)
+    if (this.context === "registration" && this.field === "password_confirmation" && typeof value === "string" && value !== "") {
+      if (value !== registrationState.password) {
+        return { valid: false, message: "passwords_do_not_match" };
       }
     }
 

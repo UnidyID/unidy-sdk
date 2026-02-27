@@ -88,6 +88,12 @@ export class RegistrationStep extends UnidyComponent() {
       return;
     }
 
+    // Abort if client-side validation errors exist (e.g. password confirmation mismatch, pattern errors)
+    const hasErrors = Object.values(registrationState.errors).some((err) => err != null);
+    if (hasErrors) {
+      return;
+    }
+
     const root = getParentRegistrationRoot(this.element);
     if (!root) {
       console.error("[u-registration-step] No parent u-registration-root found");
