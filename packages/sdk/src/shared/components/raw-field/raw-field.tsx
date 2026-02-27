@@ -257,7 +257,7 @@ export class RawField extends UnidyComponent() {
     }
 
     if (this.type === "tel") {
-      const phonePattern = /^(?=.{4,13}$)(\+\d+|\d+)$/;
+      const phonePattern = /^\+?\d{4,15}$/;
       if (typeof value === "string" && value !== "" && !phonePattern.test(value)) {
         return { valid: false, message: this.invalidPhoneMessage || "invalid_phone" };
       }
@@ -344,12 +344,13 @@ export class RawField extends UnidyComponent() {
     this.selected = newValue;
     this.clearFieldSavedState();
 
-    const result = this.validateValue(newValue);
+    const storeValue = this.type === "tel" ? newValue.replace(/\s/g, "") : newValue;
+    const result = this.validateValue(storeValue);
     const newErrors = { ...this.getErrors() };
 
     if (result.valid) {
       delete newErrors[this.field];
-      this.writeStore(this.field, newValue);
+      this.writeStore(this.field, storeValue);
     } else {
       newErrors[this.field] = result.message;
     }
