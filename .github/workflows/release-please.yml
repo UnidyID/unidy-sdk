@@ -92,7 +92,7 @@ jobs:
           jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
 
       - name: Build SDK
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build
 
       - name: Publish to NPM
         run: |
@@ -136,7 +136,7 @@ jobs:
         run: bun install
 
       - name: Build SDK
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build
 
       - name: Publish to NPM
         run: |
@@ -190,7 +190,7 @@ jobs:
 
       - name: Build SDK
         if: steps.check.outputs.needs_publish == 'true'
-        run: bun run build
+        run: bun run --filter '@unidy.io/sdk' build
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'

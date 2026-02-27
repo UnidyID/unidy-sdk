@@ -7,9 +7,16 @@ import { registrationState, registrationStore } from "../../store/registration-s
   shadow: false,
 })
 export class RegistrationNewsletterPreference {
+  /** The internal name of the parent newsletter. */
   @Prop() name!: string;
+
+  /** The preference key (e.g. "football", "tennis"). */
   @Prop() preference!: string;
+
+  /** Whether the checkbox is initially checked. */
   @Prop() checked = false;
+
+  /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() isChecked = false;
