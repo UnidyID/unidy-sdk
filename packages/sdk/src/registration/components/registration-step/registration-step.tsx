@@ -9,9 +9,16 @@ import { getParentRegistrationRoot } from "../helpers";
   shadow: false,
 })
 export class RegistrationStep extends UnidyComponent() {
+  /** The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array. */
   @Prop() name!: string;
+
+  /** If true, the step's content is always rendered regardless of which step is active. */
   @Prop({ attribute: "always-render" }) alwaysRender = false;
+
+  /** If true, this step is automatically skipped when the user's email is already verified. */
   @Prop({ attribute: "requires-email-verification" }) requiresEmailVerification = false;
+
+  /** If true, this step is automatically skipped for social login or passwordless flows. */
   @Prop({ attribute: "requires-password" }) requiresPassword = false;
 
   @State() private renderTrigger = 0;
@@ -52,11 +59,13 @@ export class RegistrationStep extends UnidyComponent() {
     }
   };
 
+  /** Returns whether this step is currently the active step in the registration flow. */
   @Method()
   async isActive(): Promise<boolean> {
     return registrationState.currentStepName === this.name || this.alwaysRender;
   }
 
+  /** Returns whether this step should be skipped based on the current flow state (e.g. email already verified, passwordless flow). */
   @Method()
   async shouldSkip(): Promise<boolean> {
     if (this.requiresEmailVerification && registrationState.emailVerified) {
@@ -72,6 +81,7 @@ export class RegistrationStep extends UnidyComponent() {
     return false;
   }
 
+  /** Submits the current step. Creates or updates the registration flow, then advances to the next step or finalizes registration. */
   @Method()
   async submit(): Promise<void> {
     if (registrationState.loading || registrationState.submitting) {
