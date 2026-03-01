@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.3.1) (2026-02-27)
+
+
+### Bug Fixes
+
+* add optional password confirmation to registration flow ([#217](https://github.com/UnidyID/unidy-sdk/issues/217)) ([74f7571](https://github.com/UnidyID/unidy-sdk/commit/74f75710c6050755204210e15b3fbce1d2290ade))
+* **ci:** update bun to 1.3.9 and fix workspace filter glob ([#224](https://github.com/UnidyID/unidy-sdk/issues/224)) ([ba97fbb](https://github.com/UnidyID/unidy-sdk/commit/ba97fbbe6766f253f2f4fcd06a0857543c92c9e6))
+* phone validation rejecting valid numbers ([#220](https://github.com/UnidyID/unidy-sdk/issues/220)) ([d7fc3f6](https://github.com/UnidyID/unidy-sdk/commit/d7fc3f6b3ead3a79f60d2a1522c1558963ace7a5))
+* tickets SDK breaking cause of price being NULL ([#219](https://github.com/UnidyID/unidy-sdk/issues/219)) ([62036fd](https://github.com/UnidyID/unidy-sdk/commit/62036fd65d1042e52ed830d69b312d9cdd5240e8))
+
 ## [1.3.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.2.0...@unidy.io/sdk-v1.3.0) (2026-02-20)
 
 
