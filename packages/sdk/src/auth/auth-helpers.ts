@@ -401,7 +401,7 @@ export class AuthHelpers {
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const error = params.get("error");
-    const hasRedirectSid = params.has("unidy_sid") || params.has("sid");
+    const hasRedirectSid = params.has("sdk_login_sid") || params.has("sid");
 
     // Not a social auth redirect (normal page load)
     if (!error && !hasRedirectSid) {
@@ -476,7 +476,7 @@ export class AuthHelpers {
   }
 
   private clearRedirectSignInId(): string | null {
-    return clearUrlParam("unidy_sid") || clearUrlParam("sid");
+    return clearUrlParam("sdk_login_sid") || clearUrlParam("sid");
   }
 
   async connectBrand() {
