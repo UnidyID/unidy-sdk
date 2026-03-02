@@ -401,15 +401,19 @@ export class AuthHelpers {
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const error = params.get("error");
+    const hasRedirectSid = params.has("unidy_sid") || params.has("sid");
 
     // Not a social auth redirect (normal page load)
-    if (!error && !params.has("sid")) {
+    if (!error && !hasRedirectSid) {
       return;
     }
 
     // Handle successful social auth redirect with encoded auth_payload
-    if (!error && params.has("sid") && params.has("auth_payload")) {
-      authStore.setSignInId(clearUrlParam("sid"));
+    if (!error && hasRedirectSid && params.has("auth_payload")) {
+      const signInId = this.clearRedirectSignInId();
+      if (signInId) {
+        authStore.setSignInId(signInId);
+      }
 
       const authPayload = clearUrlParam("auth_payload");
 
@@ -436,7 +440,7 @@ export class AuthHelpers {
 
     // Handle brand connection required
     if (error === "brand_connection_required") {
-      const sid = clearUrlParam("sid");
+      const sid = this.clearRedirectSignInId();
       clearUrlParam("error");
 
       if (sid) {
@@ -453,7 +457,7 @@ export class AuthHelpers {
     }
 
     const fieldsFromUrl = clearUrlParam("fields");
-    const sid = clearUrlParam("sid");
+    const sid = this.clearRedirectSignInId();
     clearUrlParam("error");
 
     if (!fieldsFromUrl || !sid) {
@@ -469,6 +473,10 @@ export class AuthHelpers {
       this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
+  }
+
+  private clearRedirectSignInId(): string | null {
+    return clearUrlParam("unidy_sid") || clearUrlParam("sid");
   }
 
   async connectBrand() {
