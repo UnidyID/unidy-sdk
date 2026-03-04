@@ -8,7 +8,7 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export * from "./registration";
 export type { MatchFoundEventDetail } from "./components/registration-internal-matching/registration-internal-matching";
+export * from "./registration";
 export type { RegistrationState } from "./store/registration-store";
 export { onChange as onRegistrationChange, registrationState, registrationStore } from "./store/registration-store";
