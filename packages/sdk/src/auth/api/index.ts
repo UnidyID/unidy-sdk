@@ -240,9 +240,7 @@ export class AuthService extends BaseService {
   // Internal matching methods
   // ============================================
 
-  getInternalMatchingConfig(
-    options?: register.RegistrationOptions,
-  ): Promise<register.GetInternalMatchingConfigResult> {
+  getInternalMatchingConfig(options?: register.RegistrationOptions): Promise<register.GetInternalMatchingConfigResult> {
     return register.getInternalMatchingConfig(this.client, options, this.respond);
   }
 

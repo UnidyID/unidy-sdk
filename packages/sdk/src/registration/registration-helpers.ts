@@ -1,7 +1,8 @@
 import type { UnidyClient } from "../api";
-import type { InternalMatchingConfig, InternalMatchResult } from "../auth/api/register";
 import type {
   CreateRegistrationPayload,
+  InternalMatchingConfig,
+  InternalMatchResult,
   PasskeyCreationOptions,
   RegistrationFlowResponse,
   SendVerificationCodeResponse,
