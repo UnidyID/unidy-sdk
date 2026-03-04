@@ -2,7 +2,7 @@ import type { UserProfileData, UserProfileFormError } from "@unidy.io/sdk/standa
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
-import { runMutation } from "../../utils";
+import { isRecord, runMutation } from "../../utils";
 
 interface State {
   profile: UserProfileData | null;
@@ -49,7 +49,8 @@ function reducer(state: State, action: Action): State {
 }
 
 function extractFieldErrors(formError: UserProfileFormError): Record<string, string> {
-  return formError.flatErrors ?? {};
+  if (!isRecord(formError)) return {};
+  return "flatErrors" in formError && isRecord(formError.flatErrors) ? (formError.flatErrors as Record<string, string>) : {};
 }
 
 export interface UseProfileOptions {
