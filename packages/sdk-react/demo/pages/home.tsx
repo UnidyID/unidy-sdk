@@ -44,6 +44,12 @@ export function Home() {
             <p className="text-gray-600 text-sm">useLogin + useSession demo (email, password, magic code, social login)</p>
           </li>
           <li>
+            <Link to="/registration" className="text-blue-600 hover:underline text-lg">
+              Registration
+            </Link>
+            <p className="text-gray-600 text-sm">useRegistration hook demo (create, verify, resume, passkey, finalize)</p>
+          </li>
+          <li>
             <Link to="/profile" className="text-blue-600 hover:underline text-lg">
               Profile
             </Link>

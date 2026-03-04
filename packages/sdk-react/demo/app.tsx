@@ -7,6 +7,7 @@ import { Newsletter } from "./pages/newsletter";
 import { NewsletterReactQuery } from "./pages/newsletter-react-query";
 import { PreferenceCenter } from "./pages/preference-center";
 import { Profile } from "./pages/profile";
+import { Registration } from "./pages/registration";
 import { SimpleNewsletter } from "./pages/simple/newsletter";
 import { SimplePreferenceCenter } from "./pages/simple/preference-center";
 import { Ticketables } from "./pages/ticketables";
@@ -23,6 +24,7 @@ export function App() {
         <Route path="/simple/newsletter" element={<SimpleNewsletter />} />
         <Route path="/simple/preference-center" element={<SimplePreferenceCenter />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/registration" element={<Registration />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/ticketables" element={<Ticketables />} />
       </Routes>
