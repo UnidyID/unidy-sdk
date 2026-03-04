@@ -1,6 +1,8 @@
 # u-registration-step
 
+Wraps a single step in a `<u-registration-root>` flow. Steps are shown one at a time and can be conditionally skipped based on the current flow state.
 
+The `requires-email-verification` and `requires-password` props enable automatic skipping — they do not make those fields mandatory. For example, a step with `requires-email-verification` is skipped when the email is already verified (e.g. via social login), but **omitting the step entirely** is also valid: the backend will send a Devise confirmation email after finalization instead. See [`u-registration-root`](../registration-root/readme.md) for the full email verification options.
 
 <!-- Auto Generated Below -->
 

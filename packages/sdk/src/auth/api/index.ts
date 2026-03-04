@@ -14,11 +14,18 @@ export type { JumpToServiceResult, JumpToUnidyResult } from "./jump_to";
 export type {
   CancelRegistrationResult,
   CannotFinalizeError,
+  CheckInternalMatchPayload,
+  CheckInternalMatchResult,
+  ConfirmInternalMatchPayload,
+  ConfirmInternalMatchResult,
   CreateRegistrationPayload,
   CreateRegistrationResult,
   FinalizeRegistrationResult,
+  GetInternalMatchingConfigResult,
   GetPasskeyCreationOptionsResult,
   GetRegistrationResult,
+  InternalMatchingConfig,
+  InternalMatchResult,
   NewsletterPreferences,
   RegisterPasskeyPayload,
   RegisterPasskeyResult,
@@ -30,6 +37,7 @@ export type {
   SendResumeLinkResult,
   SendVerificationCodeResponse,
   SendVerificationCodeResult,
+  SkipInternalMatchResult,
   UpdateRegistrationPayload,
   UpdateRegistrationResult,
   VerifyEmailPayload,
@@ -226,5 +234,33 @@ export class AuthService extends BaseService {
 
   removePasskey(options?: register.RegistrationOptions): Promise<register.RemovePasskeyResult> {
     return register.removePasskey(this.client, options, this.respond);
+  }
+
+  // ============================================
+  // Internal matching methods
+  // ============================================
+
+  getInternalMatchingConfig(
+    options?: register.RegistrationOptions,
+  ): Promise<register.GetInternalMatchingConfigResult> {
+    return register.getInternalMatchingConfig(this.client, options, this.respond);
+  }
+
+  checkInternalMatch(
+    payload: register.CheckInternalMatchPayload,
+    options?: register.RegistrationOptions,
+  ): Promise<register.CheckInternalMatchResult> {
+    return register.checkInternalMatch(this.client, payload, options, this.respond);
+  }
+
+  confirmInternalMatch(
+    payload: register.ConfirmInternalMatchPayload,
+    options?: register.RegistrationOptions,
+  ): Promise<register.ConfirmInternalMatchResult> {
+    return register.confirmInternalMatch(this.client, payload, options, this.respond);
+  }
+
+  skipInternalMatch(options?: register.RegistrationOptions): Promise<register.SkipInternalMatchResult> {
+    return register.skipInternalMatch(this.client, options, this.respond);
   }
 }

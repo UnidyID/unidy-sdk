@@ -190,5 +190,25 @@
   "profile": {
     "signInToView": "Please sign in to view your profile",
     "updated": "Profile is updated"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Find Account",
+      "checking": "Searching...",
+      "confirm_button": "Yes, use this account",
+      "confirming": "Linking...",
+      "default_primary_label": "Customer Number",
+      "error_generic": "An error occurred. Please try again.",
+      "error_no_match": "No matching account found. You can continue without linking.",
+      "match_confirm_question": "Would you like to link this existing account?",
+      "match_found_description": "We found an account linked to your details.",
+      "match_found_title": "Account Found!",
+      "preview_created_at": "Registered:",
+      "preview_email": "Email:",
+      "reject_button": "No, create new account",
+      "rejecting": "Continuing...",
+      "skip_button": "Continue without linking",
+      "skipping": "Continuing..."
+    }
   }
 }
