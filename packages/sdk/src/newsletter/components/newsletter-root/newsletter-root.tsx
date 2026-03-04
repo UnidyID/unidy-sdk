@@ -65,6 +65,8 @@ export class NewsletterRoot extends UnidyComponent() {
   async submit(forType?: NewsletterButtonFor) {
     const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
     const newsletters = Object.keys(checkedNewsletters);
+    const requiredConsentKeys = Object.keys(consentRequired).filter((key) => consentRequired[key]);
+    const hasAllRequiredConsent = requiredConsentKeys.every((key) => consentGiven[key]);
 
     // Check email first for better UX
     if (!email) {
@@ -90,7 +92,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    if (consentRequired && !consentGiven) {
+    if (!hasAllRequiredConsent) {
       newsletterStore.state.errors = {
         ...newsletterStore.state.errors,
         consent: "consent_required",

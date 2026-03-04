@@ -376,6 +376,10 @@ export namespace Components {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
     }
@@ -1932,6 +1936,10 @@ declare namespace LocalJSX {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
     }
     interface UNewsletterLogoutButton {
         /**

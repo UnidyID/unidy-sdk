@@ -6,15 +6,33 @@ import { newsletterStore } from "../../store/newsletter-store";
   shadow: false,
 })
 export class NewsletterConsentCheckbox {
+  private static readonly DEFAULT_CONSENT_KEY = "_consent";
+
   /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
+  /** Unique key used to store this consent state. */
+  @Prop({ attribute: "key" }) consentKey?: string;
+
+  private get resolvedConsentKey() {
+    return this.consentKey || NewsletterConsentCheckbox.DEFAULT_CONSENT_KEY;
+  }
 
   componentWillLoad() {
-    newsletterStore.state.consentRequired = true;
+    newsletterStore.state.consentRequired = {
+      ...newsletterStore.state.consentRequired,
+      [this.resolvedConsentKey]: true,
+    };
+
+    if (!(this.resolvedConsentKey in newsletterStore.state.consentGiven)) {
+      newsletterStore.state.consentGiven = {
+        ...newsletterStore.state.consentGiven,
+        [this.resolvedConsentKey]: false,
+      };
+    }
   }
 
   private get isChecked() {
-    return newsletterStore.state.consentGiven;
+    return newsletterStore.state.consentGiven[this.resolvedConsentKey] ?? false;
   }
 
   private clearConsentError() {
@@ -26,7 +44,10 @@ export class NewsletterConsentCheckbox {
 
   private handleChange = () => {
     const newValue = !this.isChecked;
-    newsletterStore.state.consentGiven = newValue;
+    newsletterStore.state.consentGiven = {
+      ...newsletterStore.state.consentGiven,
+      [this.resolvedConsentKey]: newValue,
+    };
 
     if (newValue) {
       this.clearConsentError();
@@ -41,7 +62,10 @@ export class NewsletterConsentCheckbox {
   @Method()
   async setChecked(checked: boolean) {
     if (checked !== this.isChecked) {
-      newsletterStore.state.consentGiven = checked;
+      newsletterStore.state.consentGiven = {
+        ...newsletterStore.state.consentGiven,
+        [this.resolvedConsentKey]: checked,
+      };
 
       if (checked) {
         this.clearConsentError();

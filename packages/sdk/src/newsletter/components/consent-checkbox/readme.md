@@ -10,6 +10,7 @@
 | Property             | Attribute    | Description                                   | Type     | Default     |
 | -------------------- | ------------ | --------------------------------------------- | -------- | ----------- |
 | `componentClassName` | `class-name` | CSS classes to apply to the checkbox element. | `string` | `undefined` |
+| `consentKey`         | `key`        | Unique key used to store this consent state.  | `string` | `undefined` |
 
 
 ## Methods

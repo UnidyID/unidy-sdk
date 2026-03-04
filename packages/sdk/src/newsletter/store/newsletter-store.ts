@@ -30,6 +30,7 @@ export interface AdditionalFieldNode {
   type?: string;
 }
 export type AdditionalFieldsData = Record<string, AdditionalFieldNode>;
+export type NewsletterConsentMap = Record<string, boolean>;
 
 interface NewsletterState {
   email: string;
@@ -43,8 +44,8 @@ interface NewsletterState {
   existingSubscriptions: ExistingSubscription[];
 
   errors: Record<string, NewsletterErrorIdentifier>;
-  consentGiven: boolean;
-  consentRequired: boolean;
+  consentGiven: NewsletterConsentMap;
+  consentRequired: NewsletterConsentMap;
 
   isAuthenticated: boolean;
 }
@@ -71,8 +72,8 @@ const initialState: NewsletterState = {
   existingSubscriptions: [],
 
   errors: {},
-  consentGiven: false,
-  consentRequired: false,
+  consentGiven: {},
+  consentRequired: {},
 
   isAuthenticated: false,
 };
@@ -92,7 +93,7 @@ export const storeDefaultPreference = (internalName: NewsletterInternalName, pre
 export const reset = () => {
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}preferenceToken`);
   sessionStorage.removeItem(`${PERSIST_KEY_PREFIX}email`);
-  const consentRequired = newsletterStore.state.consentRequired;
+  const consentRequired = { ...newsletterStore.state.consentRequired };
   newsletterStore.state = initialState;
   newsletterStore.state.consentRequired = consentRequired;
 };
