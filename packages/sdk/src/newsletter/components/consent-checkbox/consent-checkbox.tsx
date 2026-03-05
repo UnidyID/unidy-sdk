@@ -1,5 +1,5 @@
 import { Component, Element, h, Method, Prop } from "@stencil/core";
-import { newsletterStore } from "../../store/newsletter-store";
+import { hasAllRequiredConsent, newsletterStore } from "../../store/newsletter-store";
 
 @Component({
   tag: "u-newsletter-consent-checkbox",
@@ -20,8 +20,7 @@ export class NewsletterConsentCheckbox {
   }
 
   private get allRequiredConsentSatisfied() {
-    const requiredConsentKeys = Object.keys(newsletterStore.state.consentRequired).filter((key) => newsletterStore.state.consentRequired[key]);
-    return requiredConsentKeys.every((key) => newsletterStore.state.consentGiven[key]);
+    return hasAllRequiredConsent(newsletterStore.state);
   }
 
   componentWillLoad() {

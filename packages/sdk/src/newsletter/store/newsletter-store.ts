@@ -96,4 +96,10 @@ export const reset = () => {
   const consentRequired = { ...newsletterStore.state.consentRequired };
   newsletterStore.state = initialState;
   newsletterStore.state.consentRequired = consentRequired;
+  newsletterStore.state.consentGiven = Object.fromEntries(Object.keys(consentRequired).map((key) => [key, false]));
+};
+
+export const hasAllRequiredConsent = (state: Pick<NewsletterState, "consentGiven" | "consentRequired">): boolean => {
+  const requiredConsentKeys = Object.keys(state.consentRequired).filter((key) => state.consentRequired[key]);
+  return requiredConsentKeys.every((key) => state.consentGiven[key]);
 };
