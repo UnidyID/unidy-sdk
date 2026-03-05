@@ -86,9 +86,10 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     const parentStep = getParentRegistrationStep(this.element);
     if (!parentStep) return;
     if (registrationState.currentStepName !== parentStep.name) return;
-    // Guard: only init once per step activation
-    if (this.uiState !== "loading") return;
 
+    // Reset to loading each time the step becomes active so back-navigation
+    // re-runs the config fetch and starts from a clean state.
+    this.uiState = "loading";
     await this.initMatchingFlow();
   }
 
@@ -285,7 +286,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     return (
       <Host class={this.componentClassName}>
         <form
-          aria-label={t("registration.internal_matching.default_primary_label")}
+          aria-label={this.primaryLabel || t("registration.internal_matching.default_primary_label")}
           onSubmit={(e) => {
             e.preventDefault();
             void this.handleCheckMatch();
@@ -319,6 +320,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
                 disabled={this.submitting}
                 required
                 aria-required="true"
+                aria-describedby={this.error ? "u-im-error" : undefined}
                 onInput={(e) => {
                   this.additionalValues = {
                     ...this.additionalValues,
