@@ -38,8 +38,8 @@ export class NewsletterConsentCheckbox {
   }
 
   disconnectedCallback() {
-    const { [this.resolvedConsentKey]: _, ...restRequired } = newsletterStore.state.consentRequired;
-    newsletterStore.state.consentRequired = restRequired;
+    delete newsletterStore.state.consentRequired[this.resolvedConsentKey];
+    delete newsletterStore.state.consentGiven[this.resolvedConsentKey];
   }
 
   private get isChecked() {
