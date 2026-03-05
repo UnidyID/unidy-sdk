@@ -1,4 +1,4 @@
-import { Component, h, Method, Prop } from "@stencil/core";
+import { Component, Element, h, Method, Prop } from "@stencil/core";
 import { newsletterStore } from "../../store/newsletter-store";
 
 @Component({
@@ -6,15 +6,22 @@ import { newsletterStore } from "../../store/newsletter-store";
   shadow: false,
 })
 export class NewsletterConsentCheckbox {
+  @Element() element!: HTMLElement;
+
   private static readonly DEFAULT_CONSENT_KEY = "_consent";
 
   /** CSS classes to apply to the checkbox element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
   /** Unique key used to store this consent state. */
-  @Prop({ attribute: "key" }) consentKey?: string;
+  @Prop({ attribute: "consent-key" }) consentKey?: string;
 
   private get resolvedConsentKey() {
-    return this.consentKey || NewsletterConsentCheckbox.DEFAULT_CONSENT_KEY;
+    return this.consentKey || this.element.getAttribute("key") || NewsletterConsentCheckbox.DEFAULT_CONSENT_KEY;
+  }
+
+  private get allRequiredConsentSatisfied() {
+    const requiredConsentKeys = Object.keys(newsletterStore.state.consentRequired).filter((key) => newsletterStore.state.consentRequired[key]);
+    return requiredConsentKeys.every((key) => newsletterStore.state.consentGiven[key]);
   }
 
   componentWillLoad() {
@@ -29,6 +36,11 @@ export class NewsletterConsentCheckbox {
         [this.resolvedConsentKey]: false,
       };
     }
+  }
+
+  disconnectedCallback() {
+    const { [this.resolvedConsentKey]: _, ...restRequired } = newsletterStore.state.consentRequired;
+    newsletterStore.state.consentRequired = restRequired;
   }
 
   private get isChecked() {
@@ -49,7 +61,7 @@ export class NewsletterConsentCheckbox {
       [this.resolvedConsentKey]: newValue,
     };
 
-    if (newValue) {
+    if (newValue && this.allRequiredConsentSatisfied) {
       this.clearConsentError();
     }
   };
@@ -67,7 +79,7 @@ export class NewsletterConsentCheckbox {
         [this.resolvedConsentKey]: checked,
       };
 
-      if (checked) {
+      if (checked && this.allRequiredConsentSatisfied) {
         this.clearConsentError();
       }
     }
