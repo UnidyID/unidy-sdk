@@ -125,7 +125,10 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return;
     }
 
-    const outcome = await helpers.checkInternalMatch(this.matchingValue.trim(), this.additionalValues);
+    const outcome = await helpers.checkInternalMatch(
+      this.matchingValue.trim(),
+      Object.fromEntries(Object.entries(this.additionalValues).map(([k, v]) => [k, v.trim()])),
+    );
 
     this.submitting = false;
 
@@ -253,7 +256,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
             <p>{t("registration.internal_matching.match_confirm_question")}</p>
 
             {this.error && (
-              <div role="alert" aria-live="polite" class={this.errorClassName}>
+              <div role="alert" class={this.errorClassName}>
                 {this.error}
               </div>
             )}
@@ -332,7 +335,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
           ))}
 
           {this.error && (
-            <div id="u-im-error" role="alert" aria-live="polite" class={this.errorClassName}>
+            <div id="u-im-error" role="alert" class={this.errorClassName}>
               {this.error}
             </div>
           )}
