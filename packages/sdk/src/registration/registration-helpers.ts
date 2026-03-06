@@ -539,18 +539,22 @@ export class RegistrationHelpers {
   /**
    * Confirm linking of the current registration with the matched existing user.
    */
-  async confirmInternalMatch(matchingUserId: string | number): Promise<boolean> {
-    if (!registrationState.rid) return false;
+  async confirmInternalMatch(
+    matchingUserId: string | number,
+  ): Promise<{ status: "ok" } | { status: "not_found" } | { status: "mismatch" } | { status: "error" }> {
+    if (!registrationState.rid) return { status: "error" };
 
     const [error, response] = await this.client.auth.confirmInternalMatch(
       { matching_user_id: matchingUserId },
       { rid: registrationState.rid },
     );
 
-    if (error) return false;
+    if (error === "matching_user_not_found") return { status: "not_found" };
+    if (error === "matching_user_mismatch") return { status: "mismatch" };
+    if (error) return { status: "error" };
 
     registrationStore.setFlowResponse(response as RegistrationFlowResponse);
-    return true;
+    return { status: "ok" };
   }
 
   /**

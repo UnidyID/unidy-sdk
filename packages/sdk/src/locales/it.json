@@ -197,6 +197,8 @@
       "confirming": "Collegamento...",
       "default_primary_label": "Numero cliente",
       "error_generic": "Si è verificato un errore. Riprova.",
+      "error_match_mismatch": "Le informazioni inserite non corrispondono ad alcun account. Verifica i tuoi dati e riprova.",
+      "error_match_not_found": "Nessun account trovato per le informazioni fornite. Verifica i tuoi dati e riprova.",
       "error_no_match": "Nessun account corrispondente trovato. Puoi continuare senza collegamento.",
       "match_confirm_question": "Vuoi collegare questo account esistente?",
       "match_found_description": "Abbiamo trovato un account collegato ai tuoi dati.",

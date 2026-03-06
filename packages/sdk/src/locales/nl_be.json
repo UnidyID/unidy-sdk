@@ -184,6 +184,8 @@
       "confirming": "Koppelen...",
       "default_primary_label": "Klantnummer",
       "error_generic": "Er is een fout opgetreden. Probeer het opnieuw.",
+      "error_match_mismatch": "De ingevoerde informatie komt niet overeen met een account. Controleer uw gegevens en probeer het opnieuw.",
+      "error_match_not_found": "Geen account gevonden voor de opgegeven informatie. Controleer uw gegevens en probeer het opnieuw.",
       "error_no_match": "Geen overeenkomend account gevonden. U kunt doorgaan zonder te koppelen.",
       "match_confirm_question": "Wilt u dit bestaande account koppelen?",
       "match_found_description": "We hebben een account gevonden dat aan uw gegevens is gekoppeld.",

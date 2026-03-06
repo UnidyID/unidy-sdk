@@ -197,6 +197,8 @@
       "confirming": "Association en cours...",
       "default_primary_label": "Numéro client",
       "error_generic": "Une erreur s'est produite. Veuillez réessayer.",
+      "error_match_mismatch": "Les informations saisies ne correspondent à aucun compte. Veuillez vérifier vos données et réessayer.",
+      "error_match_not_found": "Aucun compte trouvé pour les informations fournies. Veuillez vérifier vos données et réessayer.",
       "error_no_match": "Aucun compte correspondant trouvé. Vous pouvez continuer sans associer.",
       "match_confirm_question": "Souhaitez-vous associer ce compte existant ?",
       "match_found_description": "Nous avons trouvé un compte lié à vos informations.",

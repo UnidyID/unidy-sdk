@@ -169,11 +169,23 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return;
     }
 
-    const success = await helpers.confirmInternalMatch(this.matchedUserId);
+    const outcome = await helpers.confirmInternalMatch(this.matchedUserId);
 
     this.submitting = false;
 
-    if (!success) {
+    if (outcome.status === "not_found") {
+      this.uiState = "form";
+      this.error = t("registration.internal_matching.error_match_not_found");
+      return;
+    }
+
+    if (outcome.status === "mismatch") {
+      this.uiState = "form";
+      this.error = t("registration.internal_matching.error_match_mismatch");
+      return;
+    }
+
+    if (outcome.status === "error") {
       this.error = t("registration.internal_matching.error_generic");
       return;
     }

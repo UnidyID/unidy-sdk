@@ -191,6 +191,8 @@
       "confirming": "Kopplar...",
       "default_primary_label": "Kundnummer",
       "error_generic": "Ett fel uppstod. Försök igen.",
+      "error_match_mismatch": "Den angivna informationen matchar inget konto. Kontrollera dina uppgifter och försök igen.",
+      "error_match_not_found": "Inget konto hittades för den angivna informationen. Kontrollera dina uppgifter och försök igen.",
       "error_no_match": "Inget matchande konto hittades. Du kan fortsätta utan att koppla.",
       "match_confirm_question": "Vill du koppla det här befintliga kontot?",
       "match_found_description": "Vi hittade ett konto kopplat till dina uppgifter.",

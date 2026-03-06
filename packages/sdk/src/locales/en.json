@@ -199,6 +199,8 @@
       "confirming": "Linking...",
       "default_primary_label": "Customer Number",
       "error_generic": "An error occurred. Please try again.",
+      "error_match_mismatch": "The entered information does not match any account. Please check your details and try again.",
+      "error_match_not_found": "No account found for the provided information. Please check your details and try again.",
       "error_no_match": "No matching account found. You can continue without linking.",
       "match_confirm_question": "Would you like to link this existing account?",
       "match_found_description": "We found an account linked to your details.",

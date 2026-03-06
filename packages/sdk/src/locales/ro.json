@@ -197,6 +197,8 @@
       "confirming": "Se conectează...",
       "default_primary_label": "Număr client",
       "error_generic": "A apărut o eroare. Vă rugăm să încercați din nou.",
+      "error_match_mismatch": "Informațiile introduse nu corespund niciunui cont. Verificați datele și încercați din nou.",
+      "error_match_not_found": "Nu a fost găsit niciun cont pentru informațiile furnizate. Verificați datele și încercați din nou.",
       "error_no_match": "Nu a fost găsit niciun cont corespunzător. Puteți continua fără să asociați.",
       "match_confirm_question": "Doriți să asociați acest cont existent?",
       "match_found_description": "Am găsit un cont asociat cu datele dvs.",
