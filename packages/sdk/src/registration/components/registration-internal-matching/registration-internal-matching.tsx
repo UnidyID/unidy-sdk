@@ -116,6 +116,13 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return;
     }
 
+    for (const field of this.additionalFields) {
+      if (!(this.additionalValues[field.name] ?? "").trim()) {
+        this.error = t("errors.field_required");
+        return;
+      }
+    }
+
     this.submitting = true;
     this.error = "";
 
@@ -234,7 +241,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return (
         <Host class={this.componentClassName}>
           <section aria-label={t("registration.internal_matching.match_found_title")}>
-            <p aria-live="polite">{t("registration.internal_matching.match_found_title")}</p>
+            <p>{t("registration.internal_matching.match_found_title")}</p>
             <p>{t("registration.internal_matching.match_found_description")}</p>
 
             {this.hasSlot ? (
