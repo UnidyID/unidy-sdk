@@ -252,8 +252,8 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     if (this.uiState === "match-found") {
       return (
         <Host class={this.componentClassName}>
-          <section aria-label={t("registration.internal_matching.match_found_title")}>
-            <p>{t("registration.internal_matching.match_found_title")}</p>
+          <section aria-labelledby="u-im-match-found-title">
+            <p id="u-im-match-found-title">{t("registration.internal_matching.match_found_title")}</p>
             <p>{t("registration.internal_matching.match_found_description")}</p>
 
             {this.hasSlot ? (
