@@ -99,7 +99,13 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
 
     const config: InternalMatchingConfig | null = await helpers.getInternalMatchingConfig();
 
-    if (!config?.enabled) {
+    if (config === null) {
+      this.error = t("registration.internal_matching.error_generic");
+      this.uiState = "form";
+      return;
+    }
+
+    if (!config.enabled) {
       await this.triggerStepAdvance();
       return;
     }
@@ -171,25 +177,28 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
 
     const outcome = await helpers.confirmInternalMatch(this.matchedUserId);
 
-    this.submitting = false;
-
     if (outcome.status === "not_found") {
+      this.submitting = false;
       this.uiState = "form";
       this.error = t("registration.internal_matching.error_match_not_found");
       return;
     }
 
     if (outcome.status === "mismatch") {
+      this.submitting = false;
       this.uiState = "form";
       this.error = t("registration.internal_matching.error_match_mismatch");
       return;
     }
 
     if (outcome.status === "error") {
+      this.submitting = false;
       this.error = t("registration.internal_matching.error_generic");
       return;
     }
 
+    // Keep submitting=true through finalization — buttons stay disabled until the
+    // component navigates away, preventing a double-submit.
     await this.triggerStepAdvance();
   }
 
@@ -205,13 +214,14 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
 
     const success = await helpers.skipInternalMatch();
 
-    this.submitting = false;
-
     if (!success) {
+      this.submitting = false;
       this.error = t("registration.internal_matching.error_generic");
       return;
     }
 
+    // Keep submitting=true through finalization — buttons stay disabled until the
+    // component navigates away, preventing a double-submit.
     await this.triggerStepAdvance();
   }
 

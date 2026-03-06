@@ -504,7 +504,7 @@ export class RegistrationHelpers {
 
   /**
    * Fetch the internal matching configuration for the current registration flow.
-   * Returns null if the feature is not configured or an error occurs.
+   * Returns null only on network/API error — a disabled feature returns `{ enabled: false }`.
    */
   async getInternalMatchingConfig(): Promise<InternalMatchingConfig | null> {
     if (!registrationState.rid) return null;

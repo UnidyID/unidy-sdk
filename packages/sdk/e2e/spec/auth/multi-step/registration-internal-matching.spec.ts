@@ -74,21 +74,21 @@ test.describe("Registration — internal matching step", () => {
     const email = randomEmail();
     const userCount = await ModelCountAssert.init("User", { scope: { email } });
 
+    // Mock config as disabled so the component deterministically auto-skips.
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/config/, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ enabled: false }),
+      }),
+    );
+
     const registrationCompletePromise = page.waitForEvent("console", {
       predicate: (msg) => msg.text().includes("Registration complete:"),
       timeout: 30000,
     });
 
     await navigateToInternalMatchingStep(page, email);
-
-    // If internal matching is disabled, the component auto-skips and completes registration.
-    // If enabled, we click the skip button to proceed.
-    const skipButton = page.getByRole("button", { name: /continue without linking/i });
-    const isFormVisible = await skipButton.isVisible({ timeout: 5000 }).catch(() => false);
-
-    if (isFormVisible) {
-      await skipButton.click();
-    }
 
     const completeLog = await registrationCompletePromise;
     expect(completeLog.text()).toContain("Registration complete:");
