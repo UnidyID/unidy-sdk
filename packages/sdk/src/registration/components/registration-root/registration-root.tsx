@@ -57,10 +57,11 @@ export class RegistrationRoot extends UnidyComponent() {
       registrationStore.setEmail(authState.email);
     }
 
-    // Reactively sync email from auth state (e.g. when user enters email in signin, then gets redirected to registration)
-    this.unsubscribeAuthEmail = authOnChange("email", (email) => {
-      if (email && !registrationState.email) {
-        registrationStore.setEmail(email);
+    // Sync email when auth transitions to the registration step (subscribing to "email" would fire on
+    // every keystroke and lock in just the first character typed).
+    this.unsubscribeAuthEmail = authOnChange("step", (step) => {
+      if (step === "registration" && authState.email) {
+        registrationStore.setEmail(authState.email);
       }
     });
 
