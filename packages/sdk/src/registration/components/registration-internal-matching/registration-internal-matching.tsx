@@ -232,6 +232,10 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       const ok = await this.registrationInstance?.helpers.finalizeRegistration();
       if (ok && registrationState.flowResponse) {
         registrationStore.getRootComponentRef()?.onComplete(registrationState.flowResponse);
+      } else if (!ok) {
+        // Finalization failed — re-enable buttons so the user can retry.
+        this.submitting = false;
+        this.error = t("registration.internal_matching.error_generic");
       }
     } else {
       registrationStore.getRootComponentRef()?.advanceToNextStep();
@@ -269,7 +273,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
             {this.hasSlot ? (
               <slot name="match-preview" />
             ) : (
-              <ul aria-label={t("registration.internal_matching.match_found_description")}>
+              <ul>
                 <li>
                   <span>{t("registration.internal_matching.preview_email")}</span> <span>{this.matchedEmailMasked}</span>
                 </li>

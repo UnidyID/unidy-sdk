@@ -33,7 +33,6 @@ async function mockInternalMatchingEnabled(page: Page) {
  */
 async function navigateToInternalMatchingStep(page: import("@playwright/test").Page, email: string) {
   await page.goto(routes.internalMatching);
-  await page.waitForLoadState("networkidle");
 
   // Trigger registration via the sign-in root. Scope the Continue button to the
   // sign-in email step to avoid matching the registration email step's button,
