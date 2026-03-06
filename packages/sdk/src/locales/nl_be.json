@@ -55,6 +55,7 @@
   "errors": {
     "account_locked": "Account vergrendeld",
     "account_not_found": "Account niet gevonden",
+    "account_unconfirmed": "Het e-mailadres van het account is nog niet bevestigd",
     "auth_method_required": "Stel een wachtwoord in of verifieer uw e-mailadres om door te gaan",
     "authentication_failed": "Authenticatie mislukt",
     "bad_request": "Ongeldige aanvraag",

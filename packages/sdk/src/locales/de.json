@@ -55,6 +55,7 @@
   "errors": {
     "account_locked": "Konto gesperrt",
     "account_not_found": "Konto nicht gefunden",
+    "account_unconfirmed": "Die E-Mail-Adresse des Kontos wurde noch nicht bestätigt",
     "auth_method_required": "Bitte legen Sie ein Passwort fest oder bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren",
     "authentication_failed": "Authentifizierung fehlgeschlagen",
     "bad_request": "Ungültige Anfrage",
