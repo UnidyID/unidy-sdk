@@ -55,6 +55,7 @@
   "errors": {
     "account_locked": "Account bloccato",
     "account_not_found": "Account non trovato",
+    "account_unconfirmed": "L'indirizzo email dell'account non è stato confermato",
     "auth_method_required": "Imposta una password o verifica la tua email per continuare",
     "authentication_failed": "Autenticazione fallita",
     "bad_request": "Richiesta non valida",

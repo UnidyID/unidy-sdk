@@ -52,6 +52,7 @@
   "errors": {
     "account_locked": "Kontot är låst",
     "account_not_found": "Kontot hittades inte",
+    "account_unconfirmed": "Kontots e-postadress har inte bekräftats",
     "auth_method_required": "Ange ett lösenord eller verifiera din e-postadress för att fortsätta",
     "authentication_failed": "Autentisering misslyckades",
     "bad_request": "Ogiltig begäran",

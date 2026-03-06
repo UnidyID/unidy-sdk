@@ -55,6 +55,7 @@
   "errors": {
     "account_locked": "Cont blocat",
     "account_not_found": "Cont negăsit",
+    "account_unconfirmed": "Adresa de e-mail a contului nu a fost confirmată",
     "auth_method_required": "Vă rugăm să setați o parolă sau să verificați adresa de e-mail pentru a continua",
     "authentication_failed": "Autentificare eșuată",
     "bad_request": "Cerere invalidă",

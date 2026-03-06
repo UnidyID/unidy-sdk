@@ -56,6 +56,7 @@
   "errors": {
     "account_locked": "Account locked",
     "account_not_found": "Account not found",
+    "account_unconfirmed": "Account email has not been confirmed",
     "auth_method_required": "Please set a password or verify your email to continue",
     "authentication_failed": "Authentication failed",
     "bad_request": "Bad request",

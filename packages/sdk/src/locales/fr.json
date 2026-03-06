@@ -55,6 +55,7 @@
   "errors": {
     "account_locked": "Compte verrouillé",
     "account_not_found": "Compte introuvable",
+    "account_unconfirmed": "L'adresse e-mail du compte n'a pas été confirmée",
     "auth_method_required": "Veuillez définir un mot de passe ou vérifier votre adresse e-mail pour continuer",
     "authentication_failed": "Échec de l'authentification",
     "bad_request": "Mauvaise requête",
