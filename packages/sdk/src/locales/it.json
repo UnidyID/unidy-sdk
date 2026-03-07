@@ -188,5 +188,27 @@
   "profile": {
     "signInToView": "Accedi per visualizzare il tuo profilo",
     "updated": "Il profilo è stato aggiornato"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Cerca account",
+      "checking": "Ricerca...",
+      "confirm_button": "Sì, usa questo account",
+      "confirming": "Collegamento...",
+      "default_primary_label": "Numero cliente",
+      "error_generic": "Si è verificato un errore. Riprova.",
+      "error_match_mismatch": "Le informazioni inserite non corrispondono ad alcun account. Verifica i tuoi dati e riprova.",
+      "error_match_not_found": "Nessun account trovato per le informazioni fornite. Verifica i tuoi dati e riprova.",
+      "error_no_match": "Nessun account corrispondente trovato. Puoi continuare senza collegamento.",
+      "match_confirm_question": "Vuoi collegare questo account esistente?",
+      "match_found_description": "Abbiamo trovato un account collegato ai tuoi dati.",
+      "match_found_title": "Account trovato!",
+      "preview_created_at": "Registrato il:",
+      "preview_email": "E-mail:",
+      "reject_button": "No, crea nuovo account",
+      "rejecting": "Continua...",
+      "skip_button": "Continua senza collegamento",
+      "skipping": "Continua..."
+    }
   }
 }

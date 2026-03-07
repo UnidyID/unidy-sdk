@@ -1,6 +1,8 @@
 import type { UnidyClient } from "../api";
 import type {
   CreateRegistrationPayload,
+  InternalMatchingConfig,
+  InternalMatchResult,
   PasskeyCreationOptions,
   RegistrationFlowResponse,
   SendVerificationCodeResponse,
@@ -498,6 +500,76 @@ export class RegistrationHelpers {
     } else {
       registrationStore.setFieldError("password", "password_validation_failed");
     }
+  }
+
+  /**
+   * Fetch the internal matching configuration for the current registration flow.
+   * Returns null if the registration session (rid) is unavailable or on a network/API
+   * error — a disabled feature returns `{ enabled: false }`.
+   */
+  async getInternalMatchingConfig(): Promise<InternalMatchingConfig | null> {
+    if (!registrationState.rid) return null;
+
+    const [error, config] = await this.client.auth.getInternalMatchingConfig({ rid: registrationState.rid });
+
+    if (error) return null;
+
+    return config as InternalMatchingConfig;
+  }
+
+  /**
+   * Outcome type for the internal match check.
+   */
+  async checkInternalMatch(
+    matchingValue: string,
+    additionalAttributes: Record<string, string> = {},
+  ): Promise<{ status: "found"; data: InternalMatchResult } | { status: "not_found" } | { status: "error" }> {
+    if (!registrationState.rid) return { status: "error" };
+
+    const [error, result] = await this.client.auth.checkInternalMatch(
+      { matching_value: matchingValue, matching_additional_attributes: additionalAttributes },
+      { rid: registrationState.rid },
+    );
+
+    if (error === "internal_matching_match_not_found") return { status: "not_found" };
+    if (error) return { status: "error" };
+
+    return { status: "found", data: result as InternalMatchResult };
+  }
+
+  /**
+   * Confirm linking of the current registration with the matched existing user.
+   */
+  async confirmInternalMatch(
+    matchingUserId: string | number,
+  ): Promise<{ status: "ok" } | { status: "not_found" } | { status: "mismatch" } | { status: "error" }> {
+    if (!registrationState.rid) return { status: "error" };
+
+    const [error, response] = await this.client.auth.confirmInternalMatch(
+      { matching_user_id: matchingUserId },
+      { rid: registrationState.rid },
+    );
+
+    if (error === "matching_user_not_found") return { status: "not_found" };
+    if (error === "matching_user_mismatch") return { status: "mismatch" };
+    if (error) return { status: "error" };
+
+    registrationStore.setFlowResponse(response as RegistrationFlowResponse);
+    return { status: "ok" };
+  }
+
+  /**
+   * Skip internal matching and continue without linking an existing account.
+   */
+  async skipInternalMatch(): Promise<boolean> {
+    if (!registrationState.rid) return false;
+
+    const [error, response] = await this.client.auth.skipInternalMatch({ rid: registrationState.rid });
+
+    if (error) return false;
+
+    registrationStore.setFlowResponse(response as RegistrationFlowResponse);
+    return true;
   }
 
   /**

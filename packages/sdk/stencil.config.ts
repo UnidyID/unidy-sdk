@@ -32,6 +32,7 @@ export const config: Config = {
         { src: "oauth/index.html", dest: "oauth/index.html" },
         { src: "profile/index.html", dest: "profile/index.html" },
         { src: "profile/partial.html", dest: "profile/partial.html" },
+        { src: "registration/internal-matching.html", dest: "registration/internal-matching.html" },
       ],
     },
   ],

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+  <title>Unidy — Internal Matching Demo</title>
+
+  <script type="module" src="/build/sdk.esm.js"></script>
+  <script nomodule src="/build/sdk.js"></script>
+  <link rel="stylesheet" href="/sdk.css">
+  <link rel="stylesheet" href="/demo.css">
+</head>
+
+<body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+  <main class="flex-1 p-8">
+    <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+
+    <div class="max-w-lg mx-auto">
+      <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Internal Matching Demo</h1>
+
+      <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
+        <u-signin-step name="email">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">Sign in</h2>
+          <u-email-field
+            class-name="w-full px-4 py-2 mb-2 border border-gray-300 rounded-lg"
+            placeholder="you@example.com">
+          </u-email-field>
+          <u-error-message for="email" class-name="mb-2 text-sm text-red-500"></u-error-message>
+          <u-submit-button for="email" class-name="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            Continue
+          </u-submit-button>
+        </u-signin-step>
+
+        <u-signin-step name="registration">
+          <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700">&larr; Back</u-back-button>
+          <h2 class="text-xl font-bold text-gray-900 mb-2">Create a new account</h2>
+
+          <u-registration-root
+            id="registration"
+            steps='["email","password","internal-matching"]'>
+
+            <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
+
+            <!-- Step 1: Email -->
+            <u-registration-step name="email">
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <u-raw-field
+                  field="email"
+                  type="email"
+                  required
+                  placeholder="you@example.com"
+                  class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </u-raw-field>
+                <u-error-message for="email" class-name="mt-1 text-sm text-red-500"></u-error-message>
+              </div>
+              <u-submit-button class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </u-registration-step>
+
+            <!-- Step 2: Password -->
+            <u-registration-step name="password" requires-password>
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Create a password</h3>
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <u-raw-field
+                  field="password"
+                  type="password"
+                  required
+                  placeholder="Create a strong password"
+                  pattern="^.{8,}$"
+                  pattern-error-message="Password must be at least 8 characters"
+                  class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </u-raw-field>
+                <u-error-message for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <u-raw-field
+                  field="password_confirmation"
+                  type="password"
+                  required
+                  placeholder="Confirm your password"
+                  class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </u-raw-field>
+                <u-error-message for="password_confirmation" class-name="mt-1 text-sm text-red-500"></u-error-message>
+              </div>
+              <u-submit-button class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                Continue
+              </u-submit-button>
+            </u-registration-step>
+
+            <!-- Step 3: Internal Matching -->
+            <u-registration-step name="internal-matching">
+              <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Link existing account</h3>
+              <u-registration-internal-matching
+                class-name="flex flex-col gap-4"
+                input-class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                primary-button-class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                secondary-button-class-name="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                error-class-name="text-sm text-red-500">
+              </u-registration-internal-matching>
+            </u-registration-step>
+
+          </u-registration-root>
+        </u-signin-step>
+      </u-signin-root>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('registration')?.addEventListener('registrationComplete', (e) => {
+      console.log('Registration complete:', JSON.stringify(e.detail));
+    });
+  </script>
+</body>
+</html>

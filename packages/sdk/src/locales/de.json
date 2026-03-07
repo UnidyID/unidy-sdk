@@ -188,5 +188,27 @@
   "profile": {
     "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
     "updated": "Profil wurde aktualisiert"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Konto suchen",
+      "checking": "Suche...",
+      "confirm_button": "Ja, dieses Konto verknüpfen",
+      "confirming": "Wird verknüpft...",
+      "default_primary_label": "Kundennummer",
+      "error_generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "error_match_mismatch": "Die eingegebenen Informationen stimmen mit keinem Konto überein. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+      "error_match_not_found": "Für die angegebenen Informationen wurde kein Konto gefunden. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+      "error_no_match": "Kein passendes Konto gefunden. Sie können ohne Verknüpfung fortfahren.",
+      "match_confirm_question": "Möchten Sie dieses bestehende Konto verknüpfen?",
+      "match_found_description": "Wir haben ein Konto gefunden, das mit Ihren Daten verknüpft ist.",
+      "match_found_title": "Konto gefunden!",
+      "preview_created_at": "Registriert:",
+      "preview_email": "E-Mail:",
+      "reject_button": "Nein, neues Konto erstellen",
+      "rejecting": "Wird fortgesetzt...",
+      "skip_button": "Ohne Verknüpfung fortfahren",
+      "skipping": "Wird fortgesetzt..."
+    }
   }
 }
