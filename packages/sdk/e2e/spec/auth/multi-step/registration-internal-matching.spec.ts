@@ -217,6 +217,82 @@ test.describe("Registration — internal matching step", () => {
     await expect(page.locator("u-registration-internal-matching").getByRole("alert")).toBeVisible({ timeout: 5000 });
   });
 
+  test("confirm not_found error resets to form with distinct message", async ({ page }) => {
+    const email = randomEmail();
+
+    await mockInternalMatchingEnabled(page);
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/check/, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          matching_status: "found",
+          matching_user_id: 42,
+          matched_user_preview: { email_masked: "j***@example.com", created_at: "2023-06-15T10:00:00.000Z" },
+        }),
+      }),
+    );
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/confirm/, (route) =>
+      route.fulfill({
+        status: 422,
+        contentType: "application/json",
+        body: JSON.stringify({ error_identifier: "matching_user_not_found" }),
+      }),
+    );
+
+    await navigateToInternalMatchingStep(page, email);
+
+    await page.locator("u-registration-internal-matching input#u-im-primary-field").fill("CUST-42");
+    await page.locator("u-registration-internal-matching input#u-im-field-last_name").fill("Smith");
+    await page.locator("u-registration-internal-matching input#u-im-field-date_of_birth").fill("1990-03-15");
+    await page.getByRole("button", { name: /find account/i }).click();
+
+    await expect(page.getByText(/account found/i)).toBeVisible({ timeout: 5000 });
+    await page.getByRole("button", { name: /yes, use this account/i }).click();
+
+    // Should reset to form with the not-found error message
+    await expect(page.locator("u-registration-internal-matching input#u-im-primary-field")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("alert")).toBeVisible();
+  });
+
+  test("confirm mismatch error resets to form with distinct message", async ({ page }) => {
+    const email = randomEmail();
+
+    await mockInternalMatchingEnabled(page);
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/check/, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          matching_status: "found",
+          matching_user_id: 42,
+          matched_user_preview: { email_masked: "j***@example.com", created_at: "2023-06-15T10:00:00.000Z" },
+        }),
+      }),
+    );
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/confirm/, (route) =>
+      route.fulfill({
+        status: 422,
+        contentType: "application/json",
+        body: JSON.stringify({ error_identifier: "matching_user_mismatch" }),
+      }),
+    );
+
+    await navigateToInternalMatchingStep(page, email);
+
+    await page.locator("u-registration-internal-matching input#u-im-primary-field").fill("CUST-42");
+    await page.locator("u-registration-internal-matching input#u-im-field-last_name").fill("Smith");
+    await page.locator("u-registration-internal-matching input#u-im-field-date_of_birth").fill("1990-03-15");
+    await page.getByRole("button", { name: /find account/i }).click();
+
+    await expect(page.getByText(/account found/i)).toBeVisible({ timeout: 5000 });
+    await page.getByRole("button", { name: /yes, use this account/i }).click();
+
+    // Should reset to form with the mismatch error message
+    await expect(page.locator("u-registration-internal-matching input#u-im-primary-field")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole("alert")).toBeVisible();
+  });
+
   test("no-match error is shown when customer number is not found", async ({ page }) => {
     const email = randomEmail();
 

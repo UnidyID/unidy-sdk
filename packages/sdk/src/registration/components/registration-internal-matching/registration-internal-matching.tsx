@@ -274,9 +274,11 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
               <slot name="match-preview" />
             ) : (
               <ul>
-                <li>
-                  <span>{t("registration.internal_matching.preview_email")}</span> <span>{this.matchedEmailMasked}</span>
-                </li>
+                {this.matchedEmailMasked && (
+                  <li>
+                    <span>{t("registration.internal_matching.preview_email")}</span> <span>{this.matchedEmailMasked}</span>
+                  </li>
+                )}
                 {this.matchedCreatedAt && (
                   <li>
                     <span>{t("registration.internal_matching.preview_created_at")}</span>{" "}
