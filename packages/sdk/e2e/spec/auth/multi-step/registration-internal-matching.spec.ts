@@ -205,6 +205,18 @@ test.describe("Registration — internal matching step", () => {
     expect(completeLog.text()).toContain("Registration complete:");
   });
 
+  test("generic error is shown when config fetch fails", async ({ page }) => {
+    const email = randomEmail();
+
+    await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/config/, (route) =>
+      route.fulfill({ status: 500, contentType: "application/json", body: "{}" }),
+    );
+
+    await navigateToInternalMatchingStep(page, email);
+
+    await expect(page.locator("u-registration-internal-matching").getByRole("alert")).toBeVisible({ timeout: 5000 });
+  });
+
   test("no-match error is shown when customer number is not found", async ({ page }) => {
     const email = randomEmail();
 
