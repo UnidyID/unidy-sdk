@@ -1,4 +1,4 @@
-name: Release SDK
+name: Release SDK React
 
 on:
   push:
@@ -27,14 +27,14 @@ jobs:
     if: github.event_name == 'push' || github.event.inputs.release_type == 'stable'
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs['packages/sdk--release_created'] }}
-      tag_name: ${{ steps.release.outputs['packages/sdk--tag_name'] }}
+      release_created: ${{ steps.release.outputs['packages/sdk-react--release_created'] }}
+      tag_name: ${{ steps.release.outputs['packages/sdk-react--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+          config-file: release-please-config-react.json
+          manifest-file: .release-please-manifest-react.json
           target-branch: ${{ github.ref_name }}
 
   create-maintenance-branch:
@@ -52,6 +52,10 @@ jobs:
           VERSION="${TAG#v}"
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
+          if [ "$MAJOR" -lt 1 ]; then
+            echo "Skipping maintenance branch for pre-1.0 release ($VERSION)"
+            exit 0
+          fi
           BRANCH="${MAJOR}-${MINOR}-stable"
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
             echo "Branch $BRANCH already exists, skipping"
@@ -78,7 +82,7 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          CURRENT_VERSION=$(jq -r '.version' packages/sdk/package.json)
+          CURRENT_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
           BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-.*$//')
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           PRERELEASE_TYPE="${{ github.event.inputs.release_type }}"
@@ -88,15 +92,15 @@ jobs:
 
       - name: Update package.json version
         run: |
-          cd packages/sdk
+          cd packages/sdk-react
           jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
 
-      - name: Build SDK
-        run: bun run --filter '@unidy.io/sdk' build
+      - name: Build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         run: |
-          cd packages/sdk
+          cd packages/sdk-react
           bun publish --tag ${{ github.event.inputs.release_type }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -105,8 +109,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
+          git tag "@unidy.io/sdk-react@${{ steps.version.outputs.version }}"
+          git push origin "@unidy.io/sdk-react@${{ steps.version.outputs.version }}"
 
   publish-stable:
     needs: release-please
@@ -118,8 +122,8 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
-          LATEST_VERSION=$(npm view @unidy.io/sdk dist-tags.latest 2>/dev/null || echo "0.0.0")
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
           if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
@@ -135,12 +139,12 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build SDK
-        run: bun run --filter '@unidy.io/sdk' build
+      - name: Build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         run: |
-          cd packages/sdk
+          cd packages/sdk-react
           bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -156,8 +160,8 @@ jobs:
       - name: Determine npm tag
         id: npm-tag
         run: |
-          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
-          LATEST_VERSION=$(npm view @unidy.io/sdk dist-tags.latest 2>/dev/null || echo "0.0.0")
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
           if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
@@ -170,8 +174,8 @@ jobs:
       - name: Check if npm publish is needed
         id: check
         run: |
-          LOCAL_VERSION=$(jq -r '.version' packages/sdk/package.json)
-          NPM_VERSION=$(npm view @unidy.io/sdk version 2>/dev/null || echo "0.0.0")
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          NPM_VERSION=$(npm view @unidy.io/sdk-react version 2>/dev/null || echo "0.0.0")
           if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
             echo "needs_publish=true" >> $GITHUB_OUTPUT
             echo "Version $LOCAL_VERSION not on npm (npm has $NPM_VERSION)"
@@ -188,14 +192,14 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         run: bun install
 
-      - name: Build SDK
+      - name: Build
         if: steps.check.outputs.needs_publish == 'true'
-        run: bun run --filter '@unidy.io/sdk' build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'
         run: |
-          cd packages/sdk
+          cd packages/sdk-react
           bun publish --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
