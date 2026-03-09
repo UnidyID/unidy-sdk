@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.2](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.1...@unidy.io/sdk-v1.3.2) (2026-03-06)
+
+
+### Bug Fixes
+
+* [URGENT] registration email truncated to first character when transitioning from auth flow ([#231](https://github.com/UnidyID/unidy-sdk/issues/231)) ([d847057](https://github.com/UnidyID/unidy-sdk/commit/d8470573f8cdc8024288b5eced29433381302a27))
+* handle account_locked and account_unconfirmed sign-in errors ([#233](https://github.com/UnidyID/unidy-sdk/issues/233)) ([0e5e68d](https://github.com/UnidyID/unidy-sdk/commit/0e5e68dba14be1d3de0783d2a34d5925f8a475e4))
+
 ## [1.3.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.3.1) (2026-02-27)
 
 
