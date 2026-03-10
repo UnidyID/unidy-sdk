@@ -82,6 +82,16 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     this.unsubscribers = [];
   }
 
+  private beginSubmit(): void {
+    this.submitting = true;
+    this.error = "";
+  }
+
+  private setError(message: string): void {
+    this.submitting = false;
+    this.error = message;
+  }
+
   private async maybeInitMatchingFlow(): Promise<void> {
     const parentStep = getParentRegistrationStep(this.element);
     if (!parentStep) return;
@@ -129,8 +139,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       }
     }
 
-    this.submitting = true;
-    this.error = "";
+    this.beginSubmit();
 
     const helpers = this.registrationInstance?.helpers;
     if (!helpers) {
@@ -143,17 +152,17 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       Object.fromEntries(Object.entries(this.additionalValues).map(([k, v]) => [k, v.trim()])),
     );
 
-    this.submitting = false;
-
     if (outcome.status === "error") {
-      this.error = t("registration.internal_matching.error_generic");
+      this.setError(t("registration.internal_matching.error_generic"));
       return;
     }
 
     if (outcome.status === "not_found") {
-      this.error = t("registration.internal_matching.error_no_match");
+      this.setError(t("registration.internal_matching.error_no_match"));
       return;
     }
+
+    this.submitting = false;
 
     const result: InternalMatchResult = outcome.data;
     this.matchedUserId = result.matching_user_id;
@@ -166,8 +175,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
   private async handleConfirmMatch(): Promise<void> {
     if (this.matchedUserId === null) return;
 
-    this.submitting = true;
-    this.error = "";
+    this.beginSubmit();
 
     const helpers = this.registrationInstance?.helpers;
     if (!helpers) {
@@ -178,22 +186,19 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     const outcome = await helpers.confirmInternalMatch(this.matchedUserId);
 
     if (outcome.status === "not_found") {
-      this.submitting = false;
+      this.setError(t("registration.internal_matching.error_match_not_found"));
       this.uiState = "form";
-      this.error = t("registration.internal_matching.error_match_not_found");
       return;
     }
 
     if (outcome.status === "mismatch") {
-      this.submitting = false;
+      this.setError(t("registration.internal_matching.error_match_mismatch"));
       this.uiState = "form";
-      this.error = t("registration.internal_matching.error_match_mismatch");
       return;
     }
 
     if (outcome.status === "error") {
-      this.submitting = false;
-      this.error = t("registration.internal_matching.error_generic");
+      this.setError(t("registration.internal_matching.error_generic"));
       return;
     }
 
@@ -203,8 +208,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
   }
 
   private async handleSkip(): Promise<void> {
-    this.submitting = true;
-    this.error = "";
+    this.beginSubmit();
 
     const helpers = this.registrationInstance?.helpers;
     if (!helpers) {
@@ -215,8 +219,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
     const success = await helpers.skipInternalMatch();
 
     if (!success) {
-      this.submitting = false;
-      this.error = t("registration.internal_matching.error_generic");
+      this.setError(t("registration.internal_matching.error_generic"));
       return;
     }
 
@@ -234,8 +237,7 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
         registrationStore.getRootComponentRef()?.onComplete(registrationState.flowResponse);
       } else if (!ok) {
         // Finalization failed — re-enable buttons so the user can retry.
-        this.submitting = false;
-        this.error = t("registration.internal_matching.error_generic");
+        this.setError(t("registration.internal_matching.error_generic"));
       }
     } else {
       registrationStore.getRootComponentRef()?.advanceToNextStep();
