@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.2...@unidy.io/sdk-v1.3.3) (2026-03-11)
+
+
+### Bug Fixes
+
+* apply nullable price fix to subscriptions ([#234](https://github.com/UnidyID/unidy-sdk/issues/234)) ([8cddd48](https://github.com/UnidyID/unidy-sdk/commit/8cddd4830a1e1c9a3752c27c7279cc03af805daf))
+
 ## [1.3.2](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.1...@unidy.io/sdk-v1.3.2) (2026-03-06)
 
 
