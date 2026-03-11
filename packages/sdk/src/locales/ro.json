@@ -188,5 +188,27 @@
   "profile": {
     "signInToView": "Vă rugăm să vă conectați pentru a vă vedea profilul",
     "updated": "Profilul a fost actualizat"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Caută cont",
+      "checking": "Se caută...",
+      "confirm_button": "Da, folosește acest cont",
+      "confirming": "Se conectează...",
+      "default_primary_label": "Număr client",
+      "error_generic": "A apărut o eroare. Vă rugăm să încercați din nou.",
+      "error_match_mismatch": "Informațiile introduse nu corespund niciunui cont. Verificați datele și încercați din nou.",
+      "error_match_not_found": "Nu a fost găsit niciun cont pentru informațiile furnizate. Verificați datele și încercați din nou.",
+      "error_no_match": "Nu a fost găsit niciun cont corespunzător. Puteți continua fără să asociați.",
+      "match_confirm_question": "Doriți să asociați acest cont existent?",
+      "match_found_description": "Am găsit un cont asociat cu datele dvs.",
+      "match_found_title": "Cont găsit!",
+      "preview_created_at": "Înregistrat:",
+      "preview_email": "E-mail:",
+      "reject_button": "Nu, crează cont nou",
+      "rejecting": "Se continuă...",
+      "skip_button": "Continuați fără asociere",
+      "skipping": "Se continuă..."
+    }
   }
 }

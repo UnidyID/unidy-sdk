@@ -105,6 +105,7 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
  - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
  - [u-oauth-button](../../../oauth/components/oauth-button)
  - [u-oauth-missing-fields](../../../oauth/components/oauth-missing-fields)
+ - [u-registration-internal-matching](../../../registration/components/registration-internal-matching)
  - [u-submit-button](../submit-button)
 
 ### Graph
@@ -119,6 +120,7 @@ graph TD;
   u-newsletter-toggle-subscription-button --> u-spinner
   u-oauth-button --> u-spinner
   u-oauth-missing-fields --> u-spinner
+  u-registration-internal-matching --> u-spinner
   u-submit-button --> u-spinner
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```

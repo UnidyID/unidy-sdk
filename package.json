@@ -1,7 +1,7 @@
 {
   "name": "unidy-sdk",
   "private": true,
-  "packageManager": "bun@1.3.9",
+  "packageManager": "bun@1.3.10",
   "workspaces": [
     "packages/*"
   ],
@@ -13,9 +13,9 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.4",
-    "@commitlint/cli": "^20.4.2",
-    "@commitlint/config-conventional": "^20.4.2",
+    "@biomejs/biome": "^2.4.6",
+    "@commitlint/cli": "^20.4.3",
+    "@commitlint/config-conventional": "^20.4.3",
     "husky": "^9.1.7",
     "release-please": "^17.3.0"
   }

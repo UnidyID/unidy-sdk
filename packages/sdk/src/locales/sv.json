@@ -182,5 +182,27 @@
   "profile": {
     "signInToView": "Logga in för att visa din profil",
     "updated": "Profilen är uppdaterad"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Sök konto",
+      "checking": "Söker...",
+      "confirm_button": "Ja, använd det här kontot",
+      "confirming": "Kopplar...",
+      "default_primary_label": "Kundnummer",
+      "error_generic": "Ett fel uppstod. Försök igen.",
+      "error_match_mismatch": "Den angivna informationen matchar inget konto. Kontrollera dina uppgifter och försök igen.",
+      "error_match_not_found": "Inget konto hittades för den angivna informationen. Kontrollera dina uppgifter och försök igen.",
+      "error_no_match": "Inget matchande konto hittades. Du kan fortsätta utan att koppla.",
+      "match_confirm_question": "Vill du koppla det här befintliga kontot?",
+      "match_found_description": "Vi hittade ett konto kopplat till dina uppgifter.",
+      "match_found_title": "Konto hittades!",
+      "preview_created_at": "Registrerad:",
+      "preview_email": "E-post:",
+      "reject_button": "Nej, skapa nytt konto",
+      "rejecting": "Fortsätter...",
+      "skip_button": "Fortsätt utan att koppla",
+      "skipping": "Fortsätter..."
+    }
   }
 }
