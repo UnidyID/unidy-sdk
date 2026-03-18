@@ -190,6 +190,7 @@
       "confirm_button": "Ja, använd det här kontot",
       "confirming": "Kopplar...",
       "default_primary_label": "Kundnummer",
+      "error_expired": "Din registreringssession har gått ut. Börja om från början.",
       "error_generic": "Ett fel uppstod. Försök igen.",
       "error_match_mismatch": "Den angivna informationen matchar inget konto. Kontrollera dina uppgifter och försök igen.",
       "error_match_not_found": "Inget konto hittades för den angivna informationen. Kontrollera dina uppgifter och försök igen.",

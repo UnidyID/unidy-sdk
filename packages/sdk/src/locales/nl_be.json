@@ -183,6 +183,7 @@
       "confirm_button": "Ja, gebruik dit account",
       "confirming": "Koppelen...",
       "default_primary_label": "Klantnummer",
+      "error_expired": "Uw registratiesessie is verlopen. Begin opnieuw.",
       "error_generic": "Er is een fout opgetreden. Probeer het opnieuw.",
       "error_match_mismatch": "De ingevoerde informatie komt niet overeen met een account. Controleer uw gegevens en probeer het opnieuw.",
       "error_match_not_found": "Geen account gevonden voor de opgegeven informatie. Controleer uw gegevens en probeer het opnieuw.",

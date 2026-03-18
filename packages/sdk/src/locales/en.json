@@ -198,6 +198,7 @@
       "confirm_button": "Yes, use this account",
       "confirming": "Linking...",
       "default_primary_label": "Customer Number",
+      "error_expired": "Your registration session has expired. Please start over.",
       "error_generic": "An error occurred. Please try again.",
       "error_match_mismatch": "The entered information does not match any account. Please check your details and try again.",
       "error_match_not_found": "No account found for the provided information. Please check your details and try again.",

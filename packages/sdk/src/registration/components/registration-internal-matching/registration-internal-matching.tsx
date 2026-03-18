@@ -1,4 +1,5 @@
 import { Component, Event, type EventEmitter, Host, h, Prop, State } from "@stencil/core";
+import { format, isValid, parseISO } from "date-fns";
 import type { InternalMatchingConfig, InternalMatchResult } from "../../../auth/api/register";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
@@ -216,9 +217,14 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return;
     }
 
-    const success = await helpers.skipInternalMatch();
+    const outcome = await helpers.skipInternalMatch();
 
-    if (!success) {
+    if (outcome.status === "expired") {
+      this.setError(t("registration.internal_matching.error_expired"));
+      return;
+    }
+
+    if (outcome.status === "error") {
       this.setError(t("registration.internal_matching.error_generic"));
       return;
     }
@@ -245,15 +251,9 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
   }
 
   private formatDate(dateString: string): string {
-    try {
-      return new Date(dateString).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-    } catch {
-      return dateString;
-    }
+    const d = parseISO(dateString);
+    if (!isValid(d)) return dateString;
+    return format(d, "PP");
   }
 
   render() {

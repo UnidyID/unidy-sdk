@@ -8,8 +8,8 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "../auth/api/register";
-import type { TokenResponse } from "../auth/api/schemas";
-import { authStore } from "../auth/store/auth-store";
+import type { TokenResponse } from "../auth/api";
+import { authStore } from "../auth";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { buildPublicKeyCreationOptions, formatCreationCredentialForServer, PASSKEY_ERRORS } from "../shared/passkey-utils";
@@ -561,15 +561,16 @@ export class RegistrationHelpers {
   /**
    * Skip internal matching and continue without linking an existing account.
    */
-  async skipInternalMatch(): Promise<boolean> {
-    if (!registrationState.rid) return false;
+  async skipInternalMatch(): Promise<{ status: "ok" } | { status: "expired" } | { status: "error" }> {
+    if (!registrationState.rid) return { status: "error" };
 
     const [error, response] = await this.client.auth.skipInternalMatch({ rid: registrationState.rid });
 
-    if (error) return false;
+    if (error === "registration_expired") return { status: "expired" };
+    if (error) return { status: "error" };
 
     registrationStore.setFlowResponse(response as RegistrationFlowResponse);
-    return true;
+    return { status: "ok" };
   }
 
   /**

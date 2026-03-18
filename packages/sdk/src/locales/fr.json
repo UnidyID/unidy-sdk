@@ -196,6 +196,7 @@
       "confirm_button": "Oui, utiliser ce compte",
       "confirming": "Association en cours...",
       "default_primary_label": "Numéro client",
+      "error_expired": "Votre session d'inscription a expiré. Veuillez recommencer.",
       "error_generic": "Une erreur s'est produite. Veuillez réessayer.",
       "error_match_mismatch": "Les informations saisies ne correspondent à aucun compte. Veuillez vérifier vos données et réessayer.",
       "error_match_not_found": "Aucun compte trouvé pour les informations fournies. Veuillez vérifier vos données et réessayer.",
