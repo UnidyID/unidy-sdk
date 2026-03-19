@@ -30,10 +30,12 @@ export function buildPublicKeyRequestOptions(options: PasskeyOptionsResponse): P
     timeout: options.timeout || 60000,
     rpId: options.rpId,
     userVerification: (options.userVerification as UserVerificationRequirement) || "required",
-    allowCredentials: options.allowCredentials?.map((cred) => ({
-      ...cred,
-      id: decodeBase64Url(cred.id),
-    })),
+    allowCredentials: options.allowCredentials?.length
+      ? options.allowCredentials.map((cred) => ({
+          ...cred,
+          id: decodeBase64Url(cred.id),
+        }))
+      : undefined,
   };
 }
 
