@@ -476,7 +476,9 @@ export class AuthHelpers {
   }
 
   private clearRedirectSignInId(): string | null {
-    return clearUrlParam("sdk_login_sid") || clearUrlParam("sid");
+    const sdkLoginSid = clearUrlParam("sdk_login_sid");
+    const sid = clearUrlParam("sid");
+    return sdkLoginSid || sid;
   }
 
   async connectBrand() {
