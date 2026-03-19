@@ -1,8 +1,15 @@
-import type { CreateSignInResponse, InvalidPasswordResponse, SendMagicCodeResponse, TokenResponse } from "@unidy.io/sdk/standalone";
+import type {
+  CreateSignInResponse,
+  InvalidPasswordResponse,
+  PasskeyOptionsResponse,
+  SendMagicCodeResponse,
+  TokenResponse,
+} from "@unidy.io/sdk/standalone";
 import { type Dispatch, type MutableRefObject, useCallback } from "react";
 import type { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { authStorage } from "../auth-storage";
+import { buildPublicKeyRequestOptions, formatAssertionCredentialForServer, isWebAuthnSupported, PASSKEY_ERRORS } from "../passkey-utils";
 import { cleanSocialAuthParams, getSocialAuthUrl, parseSocialAuthCallback } from "../social-auth";
 import type { AuthAction, AuthState, UseLoginReturn } from "../types";
 
@@ -12,6 +19,7 @@ export type LoginActions = Pick<
   | "submitPassword"
   | "sendMagicCode"
   | "submitMagicCode"
+  | "authenticateWithPasskey"
   | "getSocialAuthUrl"
   | "handleSocialAuthCallback"
   | "sendResetPasswordEmail"
@@ -223,6 +231,66 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client, callbacks, dispatch, stateRef],
   );
 
+  const authenticateWithPasskey = useCallback(async () => {
+    if (!isWebAuthnSupported()) {
+      dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_not_supported" });
+      return;
+    }
+
+    dispatch({ type: "SET_LOADING", loading: true });
+    dispatch({ type: "CLEAR_ERRORS" });
+
+    try {
+      const { signInId } = stateRef.current;
+      const [optionsError, options] = await client.auth.getPasskeyOptions(signInId ? { signInId } : undefined);
+
+      if (optionsError || !options) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: optionsError || "bad_request" });
+        callbacks?.onError?.(optionsError || "bad_request");
+        return;
+      }
+
+      const publicKeyOptions = buildPublicKeyRequestOptions(options as PasskeyOptionsResponse);
+      const credential = (await navigator.credentials.get({ publicKey: publicKeyOptions })) as PublicKeyCredential | null;
+
+      if (!credential) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_cancelled" });
+        return;
+      }
+
+      const formattedCredential = formatAssertionCredentialForServer(credential);
+      const [verifyError, tkResponse] = await client.auth.authenticateWithPasskey({
+        payload: { credential: formattedCredential },
+      });
+
+      const tokenResponse = tkResponse as TokenResponse;
+      if (verifyError || !tokenResponse) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: verifyError || "authentication_failed" });
+        callbacks?.onError?.(verifyError || "authentication_failed");
+        return;
+      }
+
+      dispatch({
+        type: "AUTH_SUCCESS",
+        token: tokenResponse.jwt,
+        refreshToken: tokenResponse.refresh_token,
+        signInId: tokenResponse.sid ?? stateRef.current.signInId ?? undefined,
+      });
+      callbacks?.onSuccess?.("Authenticated successfully");
+    } catch (error) {
+      dispatch({ type: "SET_LOADING", loading: false });
+      let errorMessage = "passkey_error";
+      if (error instanceof DOMException) {
+        errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
+      }
+      dispatch({ type: "SET_ERROR", field: "passkey", message: errorMessage });
+      callbacks?.onError?.(errorMessage);
+    }
+  }, [client, callbacks, dispatch, stateRef]);
+
   const buildSocialAuthUrl = useCallback(
     (provider: string, redirectUri: string): string => {
       const baseUrl = "baseUrl" in client ? (client.baseUrl as string) : "";
@@ -336,6 +404,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     submitPassword,
     sendMagicCode,
     submitMagicCode,
+    authenticateWithPasskey,
     getSocialAuthUrl: buildSocialAuthUrl,
     handleSocialAuthCallback,
     sendResetPasswordEmail,

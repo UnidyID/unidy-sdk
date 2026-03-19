@@ -8,6 +8,8 @@ export type {
   Newsletter,
   NewsletterSubscription,
   PaginationMeta,
+  PasskeyCredential,
+  PasskeyOptionsResponse,
   Preference,
   PreferenceGroup,
   StandaloneUnidyClientConfig,
@@ -52,7 +54,12 @@ export type { UseProfileOptions, UseProfileReturn } from "./hooks/profile/use-pr
 // Profile hook
 export { useProfile } from "./hooks/profile/use-profile";
 // Registration hooks
-export type { RegisterPasskeyArgs, UseRegistrationArgs, UseRegistrationReturn } from "./hooks/registration/use-registration";
+export type {
+  CreateAndRegisterPasskeyArgs,
+  RegisterPasskeyArgs,
+  UseRegistrationArgs,
+  UseRegistrationReturn,
+} from "./hooks/registration/use-registration";
 export { useRegistration } from "./hooks/registration/use-registration";
 export type { UsePaginationOptions, UsePaginationReturn } from "./hooks/ticketable/use-pagination";
 // Ticketable hooks

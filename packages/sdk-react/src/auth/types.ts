@@ -13,6 +13,7 @@ export interface AuthErrors {
   email: string | null;
   password: string | null;
   magicCode: string | null;
+  passkey: string | null;
   resetPassword: string | null;
   global: string | null;
 }
@@ -79,6 +80,9 @@ export interface UseLoginReturn {
   // Actions - Social auth
   getSocialAuthUrl: (provider: string, redirectUri: string) => string;
   handleSocialAuthCallback: () => Promise<void>;
+
+  // Actions - Passkey
+  authenticateWithPasskey: () => Promise<void>;
 
   // Actions - Password reset
   sendResetPasswordEmail: (returnTo?: string) => Promise<void>;
