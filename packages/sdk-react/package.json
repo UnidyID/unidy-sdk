@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk-react",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UnidyID/unidy-sdk.git",
