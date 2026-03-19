@@ -26,7 +26,7 @@ function encodeToBase64Url(buffer: ArrayBuffer): string {
 
 export function buildPublicKeyRequestOptions(options: PasskeyOptionsResponse): PublicKeyCredentialRequestOptions {
   return {
-    challenge: decodeBase64Url(options.challenge),
+    challenge: decodeBase64Url(options.challenge) as BufferSource,
     timeout: options.timeout || 60000,
     rpId: options.rpId,
     userVerification: (options.userVerification as UserVerificationRequirement) || "required",
