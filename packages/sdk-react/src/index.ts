@@ -51,6 +51,9 @@ export { useNewsletterSubscribe } from "./hooks/newsletter/use-newsletter-subscr
 export type { UseProfileOptions, UseProfileReturn } from "./hooks/profile/use-profile";
 // Profile hook
 export { useProfile } from "./hooks/profile/use-profile";
+// Registration hooks
+export type { RegisterPasskeyArgs, UseRegistrationArgs, UseRegistrationReturn } from "./hooks/registration/use-registration";
+export { useRegistration } from "./hooks/registration/use-registration";
 export type { UsePaginationOptions, UsePaginationReturn } from "./hooks/ticketable/use-pagination";
 // Ticketable hooks
 export { usePagination } from "./hooks/ticketable/use-pagination";

@@ -17,6 +17,7 @@ import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./shared/components/raw-field/components/Select";
 import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+import { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
 import { RegistrationFlowResponse } from "./auth/api/register";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
@@ -37,6 +38,7 @@ export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./shared/components/raw-field/components/Select";
 export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+export { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
 export { RegistrationFlowResponse } from "./auth/api/register";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
@@ -376,6 +378,10 @@ export namespace Components {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
     }
@@ -696,27 +702,78 @@ export namespace Components {
     }
     interface URegistrationEmailVerification {
         /**
+          * Whether to automatically send the verification code when this step becomes active.
           * @default true
          */
         "autoSend": boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
         "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
         "inputClassName"?: string;
+    }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName": string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName": string;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName": string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName": string;
     }
     interface URegistrationNewsletter {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
         "name": string;
     }
     interface URegistrationNewsletterPreference {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
         "preference": string;
     }
     interface URegistrationPasskey {
@@ -736,6 +793,9 @@ export namespace Components {
         "passkeyName"?: string;
     }
     interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
     }
     interface URegistrationResume {
@@ -786,20 +846,35 @@ export namespace Components {
     }
     interface URegistrationStep {
         /**
+          * If true, the step's content is always rendered regardless of which step is active.
           * @default false
          */
         "alwaysRender": boolean;
+        /**
+          * Returns whether this step is currently the active step in the registration flow.
+         */
         "isActive": () => Promise<boolean>;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
         "name": string;
         /**
+          * If true, this step is automatically skipped when the user's email is already verified.
           * @default false
          */
         "requiresEmailVerification": boolean;
         /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
           * @default false
          */
         "requiresPassword": boolean;
+        /**
+          * Returns whether this step should be skipped based on the current flow state (e.g. email already verified, passwordless flow).
+         */
         "shouldSkip": () => Promise<boolean>;
+        /**
+          * Submits the current step. Creates or updates the registration flow, then advances to the next step or finalizes registration.
+         */
         "submit": () => Promise<void>;
     }
     interface UResetPasswordButton {
@@ -991,6 +1066,10 @@ export interface UProfileCustomEvent<T> extends CustomEvent<T> {
 export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLURawFieldElement;
+}
+export interface URegistrationInternalMatchingCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationInternalMatchingElement;
 }
 export interface URegistrationResumeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1331,6 +1410,23 @@ declare global {
         prototype: HTMLURegistrationEmailVerificationElement;
         new (): HTMLURegistrationEmailVerificationElement;
     };
+    interface HTMLURegistrationInternalMatchingElementEventMap {
+        "matchFound": MatchFoundEventDetail;
+    }
+    interface HTMLURegistrationInternalMatchingElement extends Components.URegistrationInternalMatching, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationInternalMatchingElement: {
+        prototype: HTMLURegistrationInternalMatchingElement;
+        new (): HTMLURegistrationInternalMatchingElement;
+    };
     interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
     }
     var HTMLURegistrationNewsletterElement: {
@@ -1540,6 +1636,7 @@ declare global {
         "u-raw-field": HTMLURawFieldElement;
         "u-registration-button": HTMLURegistrationButtonElement;
         "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
+        "u-registration-internal-matching": HTMLURegistrationInternalMatchingElement;
         "u-registration-newsletter": HTMLURegistrationNewsletterElement;
         "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
         "u-registration-passkey": HTMLURegistrationPasskeyElement;
@@ -1890,6 +1987,10 @@ declare namespace LocalJSX {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -2221,27 +2322,82 @@ declare namespace LocalJSX {
     }
     interface URegistrationEmailVerification {
         /**
+          * Whether to automatically send the verification code when this step becomes active.
           * @default true
          */
         "autoSend"?: boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
         "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
         "inputClassName"?: string;
+    }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName"?: string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName"?: string;
+        /**
+          * Fired when an internal match is found after submitting the form. Use this event to populate a custom `slot="match-preview"` element with the matched account data.
+         */
+        "onMatchFound"?: (event: URegistrationInternalMatchingCustomEvent<MatchFoundEventDetail>) => void;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName"?: string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName"?: string;
     }
     interface URegistrationNewsletter {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
         "name": string;
     }
     interface URegistrationNewsletterPreference {
         /**
+          * Whether the checkbox is initially checked.
           * @default false
          */
         "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
         "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
         "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
         "preference": string;
     }
     interface URegistrationPasskey {
@@ -2261,6 +2417,9 @@ declare namespace LocalJSX {
         "passkeyName"?: string;
     }
     interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
         "componentClassName"?: string;
     }
     interface URegistrationResume {
@@ -2311,15 +2470,21 @@ declare namespace LocalJSX {
     }
     interface URegistrationStep {
         /**
+          * If true, the step's content is always rendered regardless of which step is active.
           * @default false
          */
         "alwaysRender"?: boolean;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
         "name": string;
         /**
+          * If true, this step is automatically skipped when the user's email is already verified.
           * @default false
          */
         "requiresEmailVerification"?: boolean;
         /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
           * @default false
          */
         "requiresPassword"?: boolean;
@@ -2551,6 +2716,7 @@ declare namespace LocalJSX {
         "u-raw-field": URawField;
         "u-registration-button": URegistrationButton;
         "u-registration-email-verification": URegistrationEmailVerification;
+        "u-registration-internal-matching": URegistrationInternalMatching;
         "u-registration-newsletter": URegistrationNewsletter;
         "u-registration-newsletter-preference": URegistrationNewsletterPreference;
         "u-registration-passkey": URegistrationPasskey;
@@ -2623,6 +2789,7 @@ declare module "@stencil/core" {
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
+            "u-registration-internal-matching": LocalJSX.URegistrationInternalMatching & JSXBase.HTMLAttributes<HTMLURegistrationInternalMatchingElement>;
             "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
             "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
             "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;

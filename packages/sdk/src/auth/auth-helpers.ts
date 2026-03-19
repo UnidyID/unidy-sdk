@@ -540,6 +540,11 @@ export class AuthHelpers {
         break;
       }
 
+      case "account_locked":
+      case "account_unconfirmed":
+        authStore.setGlobalError("auth", error);
+        break;
+
       default:
         if (fallbackField === "password") {
           authStore.setFieldError("password", error);
@@ -548,7 +553,6 @@ export class AuthHelpers {
         } else if (fallbackField === "email") {
           authStore.setFieldError("email", error);
         } else {
-          // e.g. "account_locked", "internal_server_error"
           authStore.setGlobalError("auth", error);
         }
         break;

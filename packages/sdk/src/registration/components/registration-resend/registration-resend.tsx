@@ -8,6 +8,7 @@ import { registrationState } from "../../store/registration-store";
   shadow: false,
 })
 export class RegistrationResend {
+  /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
   @State() countdown = 0;

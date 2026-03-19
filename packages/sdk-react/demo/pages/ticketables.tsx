@@ -20,6 +20,7 @@ function formatPrice(price: number, currency: string | null): string {
       // fall through
     }
   }
+
   return price.toFixed(2);
 }
 
@@ -95,7 +96,7 @@ function TicketablesTable({
                 <span className="inline-block px-2 py-0.5 text-xs rounded bg-gray-100">{item.state}</span>
               </td>
               <td className="py-2 pr-4">{formatDate(item.starts_at)}</td>
-              <td className="py-2 pr-4 text-right">{formatPrice(item.price, item.currency)}</td>
+              <td className="py-2 pr-4 text-right">{item.price !== null ?  formatPrice(item.price, item.currency) : null}</td>
               <td className="py-2 space-x-2">
                 <ExportButton id={item.id} format="pdf" label="PDF" onExport={onExport} />
                 {item.exportable_to_wallet && <ExportButton id={item.id} format="pkpass" label="Wallet" onExport={onExport} />}

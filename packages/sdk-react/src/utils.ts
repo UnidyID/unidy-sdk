@@ -1,5 +1,9 @@
 import type { HookCallbacks } from "./types";
 
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 export function isSuccess<T>(result: [string, unknown] | [null, T]): result is [null, T] {
   return result[0] === null;
 }

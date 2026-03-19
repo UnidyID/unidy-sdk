@@ -70,6 +70,7 @@ async function navigateToNewslettersStep(page: import("@playwright/test").Page, 
   // Step 4: Password
   await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
   await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+  await page.locator("u-raw-field[field='password_confirmation'] input").fill("Test1234!");
   await clickContinue(page);
 
   // Step 5: Passkey — skip it
@@ -94,6 +95,7 @@ async function navigateToPasskeyStep(page: import("@playwright/test").Page, emai
   // Step 4: Password
   await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
   await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+  await page.locator("u-raw-field[field='password_confirmation'] input").fill("Test1234!");
   await clickContinue(page);
 
   // Should be on passkey step
@@ -139,6 +141,7 @@ test.describe("Registration - full flow", () => {
     // Step 4: Password
     await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
     await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+    await page.locator("u-raw-field[field='password_confirmation'] input").fill("Test1234!");
     await clickContinue(page);
 
     // Step 5: Passkey — skip it
@@ -185,6 +188,35 @@ test.describe("Registration - full flow", () => {
     // Should show the client-side pattern error and stay on password step
     await expect(page.getByText("Password must be at least 8 characters")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
+  });
+
+  test("should show password confirmation mismatch error", async ({ page }) => {
+    const email = randomEmail();
+
+    await navigateToPasswordStep(page, email);
+
+    // Enter valid password but mismatching confirmation
+    await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+    await page.locator("u-raw-field[field='password_confirmation'] input").fill("DifferentPass1!");
+    await clickContinue(page);
+
+    // Should show mismatch error and stay on password step
+    await expect(page.getByText("Passwords do not match")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
+  });
+
+  test("should advance when password confirmation matches", async ({ page }) => {
+    const email = randomEmail();
+
+    await navigateToPasswordStep(page, email);
+
+    // Enter matching passwords
+    await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+    await page.locator("u-raw-field[field='password_confirmation'] input").fill("Test1234!");
+    await clickContinue(page);
+
+    // Should advance to passkey step
+    await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
   });
 
   test("should navigate back between registration steps", async ({ page }) => {

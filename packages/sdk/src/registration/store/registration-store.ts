@@ -13,6 +13,8 @@ export interface RegistrationState {
   // Field values
   email: string;
   password: string;
+  /** Client-side only confirmation value for password match validation. Never sent to the server. */
+  passwordConfirmation: string;
   passwordlessFlag: boolean;
   profileData: Record<string, unknown>;
   customAttributes: Record<string, unknown>;
@@ -61,6 +63,7 @@ const initialState: RegistrationState = {
 
   email: "",
   password: "",
+  passwordConfirmation: "",
   passwordlessFlag: false,
   profileData: {},
   customAttributes: {},
@@ -149,6 +152,10 @@ class RegistrationStore {
 
   setPassword(password: string) {
     state.password = password;
+  }
+
+  setPasswordConfirmation(password: string) {
+    state.passwordConfirmation = password;
   }
 
   setPasswordlessFlag(flag: boolean) {

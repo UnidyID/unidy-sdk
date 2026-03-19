@@ -35,6 +35,7 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
 - [Complete State Management Reference](#complete-state-management-reference)
 - [Utility Functions](#utility-functions)
 - [Authentication Step Transitions](#authentication-step-transitions)
+- [Registration Step Transitions](#registration-step-transitions)
 - [Browser Compatibility](#browser-compatibility)
 - [Accessibility (a11y)](#accessibility-a11y)
 - [Security Best Practices](#security-best-practices)
@@ -525,6 +526,28 @@ Renders a checkbox for a newsletter sub-preference (e.g., "Football" under "Spor
 -   `checked`: Whether the checkbox is initially checked. Defaults to `false`.
 -   `class-name`: CSS classes to apply to the checkbox element.
 
+#### `<u-registration-internal-matching>`
+
+Optional step component that lets users link a new registration to an existing legacy account by entering a matching attribute (e.g. customer number). Place it inside a `<u-registration-step name="internal-matching">`.
+
+When the step becomes active the component fetches the internal matching configuration from the server. If the feature is disabled, it silently skips the step and advances the flow. If enabled, it renders a form with the configured matching fields.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the wrapper element.
+-   `input-class-name`: CSS classes to apply to text and date input fields.
+-   `primary-button-class-name`: CSS classes to apply to the primary action buttons ("Find Account" and "Yes, use this account").
+-   `secondary-button-class-name`: CSS classes to apply to the secondary action buttons ("Continue without linking" and "No, create new account").
+-   `error-class-name`: CSS classes to apply to error message elements.
+
+**Slots:**
+
+-   `match-preview`: Custom rendering for the matched account preview card. When provided, replaces the default masked-email / registration-date list. Listen to the `matchFound` event to receive the match data and populate this slot.
+
+**Events:**
+
+-   `matchFound`: Fired when a match is found after form submission. Payload: `{ emailMasked: string, createdAt: string }`.
+
 ### Navigation Components
 
 These components allow authenticated users to navigate to external services or the Unidy platform with single sign-on (SSO).
@@ -704,16 +727,20 @@ Newsletter components allow you to create newsletter subscription and preference
 The root component for newsletter subscription forms. This component handles initialization, authentication, and subscription management. It must wrap all other newsletter components.
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the host element.
 
 **Methods:**
+
 -   `submit()`: Programmatically submit the newsletter form. This is called internally by `<u-submit-button>` or `<u-email-field>` when used within the newsletter context.
 
 **Events:**
+
 -   `uNewsletterSuccess`: Fired when newsletter subscription is successful. `event.detail` contains `{ email: string, newsletters: string[] }`.
 -   `uNewsletterError`: Fired when newsletter subscription fails. `event.detail` contains `{ email: string, error: string }`.
 
 **Slots:**
+
 -   The default slot allows you to provide the newsletter form content.
 
 #### `<u-email-field>`
@@ -721,6 +748,7 @@ The root component for newsletter subscription forms. This component handles ini
 Renders a pre-configured input for the user's email address. This component works in both auth and newsletter contexts, automatically detecting its parent container.
 
 **Attributes:**
+
 -   `placeholder`: The placeholder text for the input field. Defaults to `Enter your email`.
 -   `class-name`: A string of classes to pass to the input field.
 -   `disabled`: If set to `true`, the input will be disabled. Defaults to `false`.
@@ -731,11 +759,13 @@ Renders a pre-configured input for the user's email address. This component work
 Renders a checkbox for subscribing to a specific newsletter. When checked, the newsletter is added to the subscription list for submission.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
 
 **Methods:**
+
 -   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
 -   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
 
@@ -744,12 +774,14 @@ Renders a checkbox for subscribing to a specific newsletter. When checked, the n
 Renders a checkbox for managing newsletter preferences. Used within a newsletter to subscribe to specific topics or preferences. If the user is already subscribed and confirmed, changes are persisted immediately.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `preference-identifier` (required): The preference identifier for this checkbox.
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
 
 **Methods:**
+
 -   `toggle()`: Toggles the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
 -   `setChecked(checked: boolean)`: Sets the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
 
@@ -758,6 +790,7 @@ Renders a checkbox for managing newsletter preferences. Used within a newsletter
 Renders a button that toggles subscription status for a specific newsletter. The button text and behavior change based on whether the user is already subscribed.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `class-name`: A string of classes to pass to the button.
 -   `subscribe-class-name`: Additional classes to apply when the user is not subscribed.
@@ -768,6 +801,7 @@ Renders a button that toggles subscription status for a specific newsletter. The
 Renders a button to resend the double opt-in (DOI) confirmation email. This button only appears for subscribed but unconfirmed newsletters.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `class-name`: A string of classes to pass to the button.
 
@@ -776,12 +810,15 @@ Renders a button to resend the double opt-in (DOI) confirmation email. This butt
 Renders a logout button for newsletter preference management sessions. This button is only visible when the user is logged in via preference token (not authenticated users).
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the button.
 
 **Slots:**
+
 -   The default slot allows you to provide custom button content. If not provided, defaults to "x".
 
 **CSS Shadow Parts:**
+
 -   `button`: The logout button element.
 
 #### `<u-newsletter-consent-checkbox>`
@@ -789,9 +826,11 @@ Renders a logout button for newsletter preference management sessions. This butt
 Renders a checkbox for collecting GDPR consent before newsletter subscription. This checkbox is required when consent collection is enabled for the newsletter form.
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the checkbox input.
 
 **Methods:**
+
 -   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`.
 -   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`.
 
@@ -816,12 +855,14 @@ Renders a checkbox for collecting GDPR consent before newsletter subscription. T
 A universal submit button that works across different contexts (auth, newsletter, profile). The button automatically adapts its behavior based on its parent container (`<u-signin-root>`, `<u-newsletter-root>`, or `<u-profile>`).
 
 **Attributes:**
+
 -   `for`: The step or context the button is for (e.g., `email`, `password` for auth context). Optional for newsletter and profile contexts.
 -   `text`: The text to display on the button.
 -   `disabled`: If set to `true`, the button will be disabled. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the button.
 
 **Slots:**
+
 -   The default slot allows you to provide custom button content.
 
 **Note:** In the newsletter context, the button is automatically disabled if no email is entered or no newsletters are selected.
@@ -1805,6 +1846,7 @@ The SDK uses browser storage to persist authentication state:
 | Email | `localStorage` | Pre-fills email field on return visits |
 
 **Storage Keys:**
+
 - `unidy_token` - Access token
 - `unidy_refresh_token` - Refresh token
 - `unidy_signin_id` - Sign-in session ID
@@ -2149,6 +2191,138 @@ console.log('Current step:', authState.step);
 authStore.setStep('email');
 ```
 
+## Registration Step Transitions
+
+The registration flow is managed by `<u-registration-root>`, which orchestrates a sequence of `<u-registration-step>` children. The `steps` attribute defines the order; each step name must match a child step's `name` attribute.
+
+### Step Flow Diagram
+
+```
+┌───────┐
+│ email │ ← User enters email, flow is created on the server
+└───┬───┘
+    │ Submit
+    ▼
+┌──────────────┐
+│ verification │ ← 4-digit code sent to email (skipped if already verified)
+└──────┬───────┘
+       │ Code verified
+       ▼
+┌─────────┐
+│ profile │ ← Collect first name, last name, custom attributes
+└────┬────┘
+     │ Submit
+     ▼
+┌──────────┐
+│ password │ ← Create password (skipped for social/passwordless)
+└────┬─────┘
+     │ Submit
+     ▼
+┌─────────┐
+│ passkey │ ← Optional WebAuthn passkey registration (user can skip)
+└────┬────┘
+     │ Continue / Skip
+     ▼
+┌─────────────┐
+│ newsletters │ ← Newsletter preferences (last step triggers finalization)
+└─────────────┘
+```
+
+### Step Skip Logic
+
+| Step | Automatically Skipped When |
+|------|---------------------------|
+| `verification` | `requires-email-verification` is set and email is already verified (e.g. social login) |
+| `password` | `requires-password` is set and the user registered via social login or passwordless flow |
+
+Steps without skip attributes are never automatically skipped. The passkey step is typically not skipped — the user can choose to continue without registering a passkey.
+
+### Customizing Steps
+
+The step list is fully customizable. You can omit steps, reorder them, or add custom steps:
+
+-   **Minimal flow** (email + password only): `steps='["email","password"]'`
+-   **No passkey**: `steps='["email","verification","profile","password","newsletters"]'`
+-   **Custom step**: Add your own `<u-registration-step name="terms">` with custom content
+
+### Profile & Password Steps with `<u-raw-field>`
+
+The profile and password steps use `<u-raw-field>` to collect data. Within a `<u-registration-root>`, `<u-raw-field>` automatically detects the registration context and reads/writes from the registration store.
+
+**Profile step — collecting user data:**
+
+The `field` attribute maps to the registration profile data field name. Standard fields (`first_name`, `last_name`, etc.) and custom attributes (`custom_attributes.favorite_color`) are both supported:
+
+```html
+<u-registration-step name="profile">
+  <u-raw-field field="first_name" type="text" required placeholder="First Name"
+    class-name="..."></u-raw-field>
+  <u-error-message for="first_name" class-name="..."></u-error-message>
+
+  <u-raw-field field="last_name" type="text" placeholder="Last Name"
+    class-name="..."></u-raw-field>
+
+  <!-- Custom attribute with a select dropdown -->
+  <u-raw-field field="custom_attributes.favorite_color" type="select"
+    options='[{"value":"red","label":"Red"},{"value":"blue","label":"Blue"}]'
+    class-name="..."></u-raw-field>
+</u-registration-step>
+```
+
+**Password step:**
+
+Use `requires-password` on the step to automatically skip it for social login or passwordless flows. The `pattern` attribute provides client-side validation before the server-side password policy check:
+
+```html
+<u-registration-step name="password" requires-password>
+  <u-raw-field field="password" type="password" required
+    pattern="^.{8,}$" pattern-error-message="Password must be at least 8 characters"
+    class-name="..."></u-raw-field>
+  <u-error-message for="password" class-name="..."></u-error-message>
+
+  <!-- Optional: password confirmation (purely client-side validation) -->
+  <u-raw-field field="password_confirmation" type="password" required
+    placeholder="Confirm your password" class-name="..."></u-raw-field>
+  <u-error-message for="password_confirmation" class-name="..."></u-error-message>
+</u-registration-step>
+```
+
+The `password_confirmation` field is optional. If included, it validates that both passwords match before allowing the step to advance. The confirmation value is never sent to the server.
+
+### Resume Flow
+
+When a user abandons a registration and later returns (or opens a different browser), the flow can be resumed:
+
+1. The user enters the same email → server returns `registration_flow_already_exists`
+2. `<u-registration-resume>` appears, offering to send a resume link via email
+3. The email contains a link with `?registration_rid=<rid>` pointing to the registration page
+4. `<u-registration-root>` detects the parameter, fetches the flow, restores collected data, and skips past completed steps
+
+### Events
+
+| Event | Fired When | `event.detail` |
+|-------|------------|----------------|
+| `registrationComplete` | Flow finalized, user account created | Full `RegistrationFlowResponse` (includes `auth.id_token`) |
+| `stepChange` | Active step changes | `{ stepName, stepIndex }` |
+| `errorEvent` | An error occurs during the flow | Error identifier string |
+
+### Programmatic Control
+
+```javascript
+const root = document.querySelector('u-registration-root');
+
+// Advance to next step (with skip logic)
+await root.advanceToNextStep();
+
+// Go back one step
+await root.goToPreviousStep();
+
+// Check if registration is complete
+const done = await root.isComplete();
+```
+
+For a complete working example, see the [Quick Start: Registration Flow](./quick-start-examples.md#quick-start-registration-flow).
+
 ## Browser Compatibility
 
 The SDK is built with modern web standards and supports the following browsers:
@@ -2245,11 +2419,13 @@ All interactive components support keyboard navigation:
 The SDK API key is designed to be used in client-side code. It identifies your application but does not grant administrative access.
 
 **What the API key allows:**
+
 - Creating sign-in sessions
 - Authenticating users
 - Accessing user's own profile and subscriptions
 
 **What the API key does NOT allow:**
+
 - Accessing other users' data
 - Administrative operations
 - Modifying backend configuration
@@ -2257,11 +2433,13 @@ The SDK API key is designed to be used in client-side code. It identifies your a
 ### Token Security
 
 **Access Tokens:**
+
 - Stored in `sessionStorage` (cleared when tab closes)
 - Short-lived (typically 15 minutes)
 - Contains user claims (ID, email, custom claims)
 
 **Refresh Tokens:**
+
 - Stored in `localStorage` (persists across sessions)
 - Long-lived but can be revoked server-side
 - Used only to obtain new access tokens
@@ -2269,18 +2447,13 @@ The SDK API key is designed to be used in client-side code. It identifies your a
 ### Recommendations
 
 1. **Use HTTPS**: Always serve your application over HTTPS to protect tokens in transit
-
 2. **Domain Whitelisting**: Ensure only your domains are whitelisted in the Unidy SDK client configuration
-
 3. **Content Security Policy**: Consider adding CSP headers to prevent XSS attacks:
    ```
    Content-Security-Policy: script-src 'self' https://cdn.jsdelivr.net;
    ```
-
 4. **Avoid Logging Tokens**: Never log access or refresh tokens to the console in production
-
 5. **Handle Token Errors**: Always check for `requiresReauth` on auth errors and redirect users to sign in again
-
 6. **Secure Custom Attributes**: Be mindful of what data you store in custom profile attributes
 
 ### CORS Configuration

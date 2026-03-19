@@ -221,6 +221,12 @@ This example demonstrates a complete multi-step registration flow with email ver
         class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
       <u-error-message for="password" class-name="text-sm text-red-500"></u-error-message>
 
+      <!-- Optional: password confirmation (purely client-side validation) -->
+      <u-raw-field field="password_confirmation" type="password" required
+        placeholder="Confirm your password"
+        class-name="w-full px-4 py-2 border rounded-lg"></u-raw-field>
+      <u-error-message for="password_confirmation" class-name="text-sm text-red-500"></u-error-message>
+
       <div class="flex gap-3">
         <u-back-button class-name="px-4 py-2 bg-gray-100 rounded-lg">Back</u-back-button>
         <u-submit-button class-name="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">

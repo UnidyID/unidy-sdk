@@ -7,7 +7,7 @@ import { Flash } from "../../../shared/store/flash-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { clearUrlParam } from "../../../shared/utils/url-utils";
 import * as NewsletterHelpers from "../../newsletter-helpers";
-import { type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
+import { hasAllRequiredConsent, type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
 import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-button";
 
 @Component({
@@ -65,6 +65,7 @@ export class NewsletterRoot extends UnidyComponent() {
   async submit(forType?: NewsletterButtonFor) {
     const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
     const newsletters = Object.keys(checkedNewsletters);
+    const allRequiredConsentSatisfied = hasAllRequiredConsent({ consentGiven, consentRequired });
 
     // Check email first for better UX
     if (!email) {
@@ -90,7 +91,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    if (consentRequired && !consentGiven) {
+    if (!allRequiredConsentSatisfied) {
       newsletterStore.state.errors = {
         ...newsletterStore.state.errors,
         consent: "consent_required",
