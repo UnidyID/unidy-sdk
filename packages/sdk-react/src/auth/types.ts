@@ -63,7 +63,10 @@ export interface UseLoginReturn {
   email: string;
   loginOptions: LoginOptions | null;
   errors: AuthErrors;
+  /** @deprecated Use `resendAvailableIn` instead. Raw value from the server. */
   magicCodeResendAfter: number | null;
+  /** Seconds remaining before the magic code can be resent. Ticks down automatically. 0 = can resend. */
+  resendAvailableIn: number;
   resetPasswordStep: "idle" | "sent";
   canGoBack: boolean;
 

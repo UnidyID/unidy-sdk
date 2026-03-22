@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useUnidyClient } from "../../provider";
 import { authReducer, createInitialState, isRecoverableStep } from "../auth-reducer";
 import { authStorage } from "../auth-storage";
@@ -78,6 +78,28 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
 
   const loginActions = useLoginActions({ client, stateRef, dispatch, callbacks });
 
+  // Internalized resend countdown timer
+  const [resendAvailableIn, setResendAvailableIn] = useState(0);
+  const initialResendMs = useMemo(() => {
+    if (!state.magicCodeResendAfter) return 0;
+    // Handle both duration-in-ms and absolute-timestamp shapes
+    return state.magicCodeResendAfter > 1_000_000_000_000
+      ? Math.max(0, state.magicCodeResendAfter - Date.now())
+      : Math.max(0, state.magicCodeResendAfter);
+  }, [state.magicCodeResendAfter]);
+
+  useEffect(() => {
+    setResendAvailableIn(Math.ceil(initialResendMs / 1000));
+  }, [initialResendMs]);
+
+  useEffect(() => {
+    if (resendAvailableIn <= 0) return;
+    const timer = setInterval(() => {
+      setResendAvailableIn((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendAvailableIn]);
+
   return {
     step: state.step,
     isAuthenticated: state.isAuthenticated,
@@ -86,6 +108,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
     loginOptions: state.loginOptions,
     errors: state.errors,
     magicCodeResendAfter: state.magicCodeResendAfter,
+    resendAvailableIn,
     resetPasswordStep: state.resetPasswordStep,
     canGoBack: state.stepHistory.length > 0,
     ...loginActions,

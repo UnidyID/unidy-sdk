@@ -174,7 +174,10 @@ export interface UseRegistrationReturn {
   fieldErrors: Record<string, string>;
   missingFields: string[];
   cannotFinalize: CannotFinalizeError | null;
+  /** @deprecated Use `resendAvailableIn` instead. Raw value from the server. */
   enableResendAfter: number | null;
+  /** Seconds remaining before the verification code can be resent. Ticks down automatically. 0 = can resend. */
+  resendAvailableIn: number;
   createRegistration: (payload: CreateRegistrationPayload) => Promise<boolean>;
   getRegistration: (options?: RegistrationOptions) => Promise<boolean>;
   updateRegistration: (payload: UpdateRegistrationPayload, options?: RegistrationOptions) => Promise<boolean>;
@@ -511,6 +514,22 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     dispatch({ type: "reset" });
   }, []);
 
+  // Internalized resend countdown timer
+  const [resendAvailableIn, setResendAvailableIn] = useState(0);
+  useEffect(() => {
+    if (state.enableResendAfter && state.enableResendAfter > 0) {
+      setResendAvailableIn(state.enableResendAfter);
+    }
+  }, [state.enableResendAfter]);
+
+  useEffect(() => {
+    if (resendAvailableIn <= 0) return;
+    const timer = setInterval(() => {
+      setResendAvailableIn((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendAvailableIn]);
+
   return {
     registration: state.registration,
     rid: state.rid,
@@ -521,6 +540,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     missingFields: state.missingFields,
     cannotFinalize: state.cannotFinalize,
     enableResendAfter: state.enableResendAfter,
+    resendAvailableIn,
     createRegistration,
     getRegistration,
     updateRegistration,
