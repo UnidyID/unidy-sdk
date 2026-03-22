@@ -1,6 +1,6 @@
 import type { HookCallbacks } from "../types";
 
-export type AuthStep = "idle" | "email" | "verification" | "password" | "magic-code" | "reset-password" | "authenticated";
+export type AuthStep = "idle" | "email" | "verification" | "password" | "magic-code" | "reset-password" | "connect-brand" | "missing-fields" | "authenticated";
 
 export interface LoginOptions {
   magic_link: boolean;
@@ -15,6 +15,7 @@ export interface AuthErrors {
   magicCode: string | null;
   passkey: string | null;
   resetPassword: string | null;
+  missingFields: string | null;
   global: string | null;
 }
 
@@ -30,6 +31,8 @@ export interface AuthState {
   magicCodeResendAfter: number | null;
   resetPasswordStep: "idle" | "sent";
   stepHistory: AuthStep[];
+  /** Field definitions returned by the server when missing fields are required. Keys are field names, values are field metadata/defaults. */
+  missingFieldDefinitions: Record<string, unknown> | null;
 }
 
 export type AuthAction =
@@ -47,7 +50,8 @@ export type AuthAction =
   | { type: "SET_MAGIC_CODE_RESEND_AFTER"; time: number | null }
   | { type: "SET_RESET_PASSWORD_STEP"; step: "idle" | "sent" }
   | { type: "RECOVER_STATE"; state: Partial<AuthState> }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  | { type: "SET_MISSING_FIELD_DEFINITIONS"; fields: Record<string, unknown> };
 
 export interface UseLoginOptions {
   initialStep?: AuthStep;
@@ -70,6 +74,8 @@ export interface UseLoginReturn {
   resendAvailableIn: number;
   resetPasswordStep: "idle" | "sent";
   canGoBack: boolean;
+  /** Field definitions from the server when the "missing-fields" step is active. */
+  missingFieldDefinitions: Record<string, unknown> | null;
 
   // Actions - Email
   submitEmail: (email: string, options?: { sendMagicCode?: boolean }) => Promise<void>;
@@ -91,6 +97,14 @@ export interface UseLoginReturn {
   // Actions - Password reset
   sendResetPasswordEmail: (returnTo?: string) => Promise<void>;
   resetPassword: (token: string, password: string, confirmation: string) => Promise<void>;
+
+  // Actions - Brand connection
+  /** Accept the brand connection. Transitions to authenticated or missing-fields. */
+  connectBrand: () => Promise<void>;
+  /** Cancel the brand connection and return to the email step. Signs out the current session. */
+  cancelBrandConnect: () => Promise<void>;
+  /** Submit the missing required fields to complete authentication. */
+  submitMissingFields: (fields: Record<string, unknown>) => Promise<void>;
 
   // Actions - Pending registration check
   /**

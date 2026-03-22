@@ -37,6 +37,29 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
         return;
       }
 
+      if (socialCallback.error === "brand_connection_required") {
+        const params = new URLSearchParams(window.location.search);
+        const sid = params.get("sid");
+        if (sid) {
+          dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
+          authStorage.setSignInId(sid);
+        }
+        dispatch({ type: "SET_STEP", step: "connect-brand" });
+        return;
+      }
+
+      if (socialCallback.error === "missing_required_fields" && socialCallback.fields) {
+        const params = new URLSearchParams(window.location.search);
+        const sid = params.get("sid");
+        if (sid) {
+          dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
+          authStorage.setSignInId(sid);
+        }
+        dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: socialCallback.fields });
+        dispatch({ type: "SET_STEP", step: "missing-fields" });
+        return;
+      }
+
       if (socialCallback.error) {
         dispatch({ type: "SET_ERROR", field: "global", message: socialCallback.error });
       }
@@ -111,6 +134,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
     resendAvailableIn,
     resetPasswordStep: state.resetPasswordStep,
     canGoBack: state.stepHistory.length > 0,
+    missingFieldDefinitions: state.missingFieldDefinitions,
     ...loginActions,
   };
 }
