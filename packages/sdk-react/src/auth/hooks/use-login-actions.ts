@@ -234,6 +234,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
   const authenticateWithPasskey = useCallback(async () => {
     if (!isWebAuthnSupported()) {
       dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_not_supported" });
+      callbacks?.onError?.("passkey_not_supported");
       return;
     }
 
@@ -257,6 +258,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       if (!credential) {
         dispatch({ type: "SET_LOADING", loading: false });
         dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_cancelled" });
+        callbacks?.onError?.("passkey_cancelled");
         return;
       }
 

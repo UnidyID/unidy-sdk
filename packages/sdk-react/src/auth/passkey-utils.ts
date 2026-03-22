@@ -48,6 +48,7 @@ export function formatAssertionCredentialForServer(credential: PublicKeyCredenti
       authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
       clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
       signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
+      userHandle: response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(response.userHandle))) : null,
     },
     type: credential.type,
   };
