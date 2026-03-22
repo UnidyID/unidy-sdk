@@ -280,6 +280,9 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
           const [codeError, codeData] = codeResult;
           if (codeError === null) {
             dispatch({ type: "set_resend_after", enableResendAfter: codeData.enable_resend_after });
+          } else {
+            handleError(codeError, codeData);
+            return false;
           }
         }
 
@@ -407,8 +410,6 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
         handleError(verifyError, verifyData);
         return false;
       }
-
-      dispatch({ type: "set_registration", registration: verifyData, rid: verifyData.rid });
 
       const finalizeResult = await client.auth.finalizeRegistration(opts);
       const [finalizeError, finalizeData] = finalizeResult;
@@ -559,8 +560,10 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
 
   const buildSocialAuthUrl = useCallback(
     (provider: string, redirectUri: string): string => {
-      const baseUrl = "baseUrl" in client ? (client.baseUrl as string) : "";
-      return getSocialAuthUrl(baseUrl, provider, redirectUri);
+      if (!("baseUrl" in client) || typeof client.baseUrl !== "string" || !client.baseUrl) {
+        throw new Error("[useRegistration] getSocialAuthUrl: client does not expose a baseUrl");
+      }
+      return getSocialAuthUrl(client.baseUrl, provider, redirectUri);
     },
     [client],
   );

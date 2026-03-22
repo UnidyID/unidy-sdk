@@ -319,8 +319,10 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
 
   const buildSocialAuthUrl = useCallback(
     (provider: string, redirectUri: string): string => {
-      const baseUrl = "baseUrl" in client ? (client.baseUrl as string) : "";
-      return getSocialAuthUrl(baseUrl, provider, redirectUri);
+      if (!("baseUrl" in client) || typeof client.baseUrl !== "string" || !client.baseUrl) {
+        throw new Error("[useLogin] getSocialAuthUrl: client does not expose a baseUrl");
+      }
+      return getSocialAuthUrl(client.baseUrl, provider, redirectUri);
     },
     [client],
   );
