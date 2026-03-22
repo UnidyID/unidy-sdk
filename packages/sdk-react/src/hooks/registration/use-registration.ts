@@ -8,13 +8,16 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "@unidy.io/sdk/standalone";
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { authStorage } from "../../auth/auth-storage";
+import { decodeSid } from "../../auth/helpers/jwt";
 import {
   buildPublicKeyCreationOptions,
   formatCreationCredentialForServer,
   isWebAuthnSupported,
   PASSKEY_ERRORS,
 } from "../../auth/passkey-utils";
+import { getSocialAuthUrl } from "../../auth/social-auth";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { isRecord } from "../../utils";
@@ -99,6 +102,25 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+function hydrateAuthFromRegistration(registration: RegistrationFlowResponse): void {
+  const auth = registration.auth;
+  if (!auth) return;
+
+  authStorage.setToken(auth.id_token);
+  authStorage.setRefreshToken(auth.refresh_token);
+  authStorage.setRecoverableStep(null);
+  authStorage.setMagicCodeStep(null);
+
+  const signInId = decodeSid(auth.id_token);
+  if (signInId) {
+    authStorage.setSignInId(signInId);
+  }
+
+  if (registration.email) {
+    authStorage.setEmail(registration.email);
+  }
+}
+
 function extractFieldErrors(data: unknown): Record<string, string> {
   const errorData = asRegistrationErrorData(data);
   if (!errorData) return {};
@@ -141,6 +163,8 @@ export interface UseRegistrationReturn {
   registration: RegistrationFlowResponse | null;
   rid: string | null;
   isLoading: boolean;
+  /** Whether finalization returned auth tokens and the session was hydrated. */
+  isAuthenticated: boolean;
   error: string | null;
   fieldErrors: Record<string, string>;
   missingFields: string[];
@@ -274,6 +298,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.finalizeRegistration(resolveOptions(options));
       const [errorCode, data] = result;
       if (errorCode === null) {
+        hydrateAuthFromRegistration(data);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration finalized");
         return true;
@@ -458,6 +483,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     registration: state.registration,
     rid: state.rid,
     isLoading: state.isLoading,
+    isAuthenticated: !!state.registration?.auth,
     error: state.error,
     fieldErrors: state.fieldErrors,
     missingFields: state.missingFields,
