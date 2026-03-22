@@ -190,6 +190,8 @@ export interface UseRegistrationReturn {
   registerPasskey: (args: RegisterPasskeyArgs) => Promise<boolean>;
   createAndRegisterPasskey: (args?: CreateAndRegisterPasskeyArgs) => Promise<boolean>;
   removePasskey: (options?: RegistrationOptions) => Promise<boolean>;
+  /** Build the OAuth redirect URL for a social auth provider. */
+  getSocialAuthUrl: (provider: string, redirectUri: string) => string;
   setRid: (rid: string) => void;
   clearErrors: () => void;
   reset: () => void;
@@ -507,6 +509,14 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     [client, handleError, resolveOptions],
   );
 
+  const buildSocialAuthUrl = useCallback(
+    (provider: string, redirectUri: string): string => {
+      const baseUrl = "baseUrl" in client ? (client.baseUrl as string) : "";
+      return getSocialAuthUrl(baseUrl, provider, redirectUri);
+    },
+    [client],
+  );
+
   const setRid = useCallback((rid: string) => dispatch({ type: "set_rid", rid }), []);
   const clearErrors = useCallback(() => dispatch({ type: "clear_errors" }), []);
   const reset = useCallback(() => {
@@ -553,6 +563,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     registerPasskey,
     createAndRegisterPasskey,
     removePasskey,
+    getSocialAuthUrl: buildSocialAuthUrl,
     setRid,
     clearErrors,
     reset,
