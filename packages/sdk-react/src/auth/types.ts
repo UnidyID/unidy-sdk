@@ -91,6 +91,16 @@ export interface UseLoginReturn {
   sendResetPasswordEmail: (returnTo?: string) => Promise<void>;
   resetPassword: (token: string, password: string, confirmation: string) => Promise<void>;
 
+  // Actions - Pending registration check
+  /**
+   * Check if a pending registration exists for the given email and optionally
+   * send a resume link. Useful when `submitEmail` returns `account_not_found`.
+   * Returns `"resume-link-sent"` if a pending registration was found and a
+   * resume link was emailed, `"not-found"` if no registration exists, or
+   * `"error"` on network/server failure.
+   */
+  checkPendingRegistration: (email: string) => Promise<"resume-link-sent" | "not-found" | "error">;
+
   // Navigation
   goBack: () => void;
   goToStep: (step: AuthStep) => void;

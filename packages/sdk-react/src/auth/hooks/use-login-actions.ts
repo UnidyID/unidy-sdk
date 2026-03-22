@@ -24,6 +24,7 @@ export type LoginActions = Pick<
   | "handleSocialAuthCallback"
   | "sendResetPasswordEmail"
   | "resetPassword"
+  | "checkPendingRegistration"
   | "goBack"
   | "goToStep"
   | "restart"
@@ -386,6 +387,23 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client, callbacks, dispatch, stateRef],
   );
 
+  const checkPendingRegistration = useCallback(
+    async (email: string): Promise<"resume-link-sent" | "not-found" | "error"> => {
+      const [errorCode] = await client.auth.sendResumeLink({ email });
+      if (errorCode === null) {
+        return "resume-link-sent";
+      }
+
+      const code = errorCode as string;
+      if (code === "connection_failed" || code === "schema_validation_error" || code === "internal_error") {
+        return "error";
+      }
+
+      return "not-found";
+    },
+    [client],
+  );
+
   const goBack = useCallback(() => {
     dispatch({ type: "GO_BACK" });
   }, [dispatch]);
@@ -411,6 +429,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     handleSocialAuthCallback,
     sendResetPasswordEmail,
     resetPassword,
+    checkPendingRegistration,
     goBack,
     goToStep,
     restart,
