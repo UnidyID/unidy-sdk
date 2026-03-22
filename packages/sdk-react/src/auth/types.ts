@@ -46,7 +46,8 @@ export type AuthAction =
   | { type: "RESTART" }
   | { type: "SET_MAGIC_CODE_RESEND_AFTER"; time: number | null }
   | { type: "SET_RESET_PASSWORD_STEP"; step: "idle" | "sent" }
-  | { type: "RECOVER_STATE"; state: Partial<AuthState> };
+  | { type: "RECOVER_STATE"; state: Partial<AuthState> }
+  | { type: "RESET" };
 
 export interface UseLoginOptions {
   initialStep?: AuthStep;
@@ -104,7 +105,10 @@ export interface UseLoginReturn {
   // Navigation
   goBack: () => void;
   goToStep: (step: AuthStep) => void;
+  /** Go back to email step, preserving email and loginOptions. */
   restart: () => void;
+  /** Fully reset all login state to initial values (step, errors, history, email, etc.). */
+  reset: () => void;
 }
 
 export interface UseSessionOptions {

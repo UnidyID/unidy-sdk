@@ -28,6 +28,7 @@ export type LoginActions = Pick<
   | "goBack"
   | "goToStep"
   | "restart"
+  | "reset"
 >;
 
 interface UseLoginActionsOptions {
@@ -419,6 +420,10 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     dispatch({ type: "RESTART" });
   }, [dispatch]);
 
+  const reset = useCallback(() => {
+    dispatch({ type: "RESET" });
+  }, [dispatch]);
+
   return {
     submitEmail,
     submitPassword,
@@ -433,5 +438,6 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     goBack,
     goToStep,
     restart,
+    reset,
   };
 }

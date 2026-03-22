@@ -144,5 +144,10 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
 
     case "RECOVER_STATE":
       return { ...state, ...action.state };
+
+    case "RESET": {
+      authStorage.clearAll();
+      return createInitialState("email");
+    }
   }
 }

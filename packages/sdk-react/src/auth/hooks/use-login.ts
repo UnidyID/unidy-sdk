@@ -95,7 +95,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
   useEffect(() => {
     if (resendAvailableIn <= 0) return;
     const timer = setInterval(() => {
-      setResendAvailableIn((prev) => Math.max(0, prev - 1));
+      setResendAvailableIn((prev: number) => Math.max(0, prev - 1));
     }, 1000);
     return () => clearInterval(timer);
   }, [resendAvailableIn]);
