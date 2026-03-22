@@ -117,7 +117,7 @@ const [error, data] = await client.newsletters.list({ options: { preferenceToken
 
 #### `useLogin(options?)`
 
-Full multi-step authentication flow state machine. Handles email, password, magic code, social auth, and password reset.
+Full multi-step authentication flow state machine. Handles email, password, magic code, social auth, passkey, password reset, brand connection, and missing fields collection.
 
 ```ts
 const login = useLogin({
@@ -134,31 +134,37 @@ const login = useLogin({
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"authenticated"` |
+| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"connect-brand"` \| `"missing-fields"` \| `"authenticated"` |
 | `isAuthenticated` | `boolean` | Whether the user is authenticated |
 | `isLoading` | `boolean` | Whether an async action is in progress |
 | `email` | `string` | The email being used in the login flow |
 | `loginOptions` | `LoginOptions \| null` | Available login methods after email submission |
-| `errors` | `AuthErrors` | Per-field errors: `email`, `password`, `magicCode`, `resetPassword`, `global` |
-| `magicCodeResendAfter` | `number \| null` | Timestamp after which the magic code can be resent |
+| `errors` | `AuthErrors` | Per-field errors: `email`, `password`, `magicCode`, `resetPassword`, `missingFields`, `global` |
+| `resendAvailableIn` | `number` | Seconds remaining before the magic code can be resent. Ticks down automatically. `0` = can resend. |
 | `resetPasswordStep` | `"idle" \| "sent"` | Reset password email state |
 | `canGoBack` | `boolean` | Whether `goBack()` has a previous step to return to |
+| `missingFieldDefinitions` | `Record<string, unknown> \| null` | Field definitions from the server when the `"missing-fields"` step is active. Keys are field names. |
 
 **Actions:**
 
 | Method | Description |
 |--------|-------------|
 | `submitEmail(email, options?)` | Submit email to start the login flow. Pass `{ sendMagicCode: true }` to skip the verification step. |
-| `submitPassword(password)` | Submit password for authentication |
+| `submitPassword(password)` | Submit password for authentication. May transition to `"connect-brand"` or `"missing-fields"`. |
 | `sendMagicCode()` | Send (or resend) a magic code to the user's email |
-| `submitMagicCode(code)` | Submit the magic code for verification |
+| `submitMagicCode(code)` | Submit the magic code for verification. May transition to `"connect-brand"` or `"missing-fields"`. |
 | `getSocialAuthUrl(provider, redirectUri)` | Get the URL for social auth redirect (e.g. `"google"`, `"apple"`) |
 | `handleSocialAuthCallback()` | Process social auth callback params from URL (called automatically on mount) |
+| `connectBrand()` | Accept the brand connection. May transition to `"missing-fields"` if additional fields are required. |
+| `cancelBrandConnect()` | Cancel the brand connection, sign out, and return to the email step. |
+| `submitMissingFields(fields)` | Submit required fields (as `Record<string, unknown>`) to complete authentication. |
+| `checkPendingRegistration(email)` | Check if a pending registration exists for the email and send a resume link. Returns `"resume-link-sent"`, `"not-found"`, or `"error"`. |
 | `sendResetPasswordEmail(returnTo?)` | Send a password reset email |
 | `resetPassword(token, password, confirmation)` | Reset password using a token from the reset email |
 | `goBack()` | Navigate to the previous step |
 | `goToStep(step)` | Navigate to a specific step |
-| `restart()` | Reset the login flow to the initial state |
+| `restart()` | Go back to email step, preserving email and loginOptions |
+| `reset()` | Fully reset all login state to initial values (step, errors, history, email, etc.) |
 
 **Example — step-based login UI:**
 
@@ -226,6 +232,32 @@ function LoginPage() {
     );
   }
 
+  if (login.step === "connect-brand") {
+    return (
+      <div>
+        <p>An account with this email already exists. Connect it?</p>
+        <button onClick={login.connectBrand} disabled={login.isLoading}>
+          Connect Account
+        </button>
+        <button onClick={login.cancelBrandConnect}>Cancel</button>
+      </div>
+    );
+  }
+
+  if (login.step === "missing-fields") {
+    const fieldNames = Object.keys(login.missingFieldDefinitions ?? {});
+    return (
+      <form onSubmit={(e) => { e.preventDefault(); login.submitMissingFields(values); }}>
+        {fieldNames.map((name) => (
+          <input key={name} placeholder={name} onChange={(e) => setValues(v => ({ ...v, [name]: e.target.value }))} />
+        ))}
+        <button type="submit" disabled={login.isLoading}>Submit</button>
+        {login.errors.missingFields && <p>{login.errors.missingFields}</p>}
+        <button type="button" onClick={login.cancelBrandConnect}>Cancel</button>
+      </form>
+    );
+  }
+
   // ... handle "reset-password" step similarly
 }
 ```
@@ -233,6 +265,8 @@ function LoginPage() {
 #### `useSession(options?)`
 
 Lightweight session hook for pages that only need to check authentication state. Does not drive a login flow.
+
+**SSR-safe:** `isLoading` starts `true` and `isAuthenticated` starts `false` during server rendering and hydration, resolving to the real values after the mount effect runs. This prevents hydration mismatches — you don't need a `mounted` state pattern.
 
 ```ts
 const session = useSession({
@@ -268,6 +302,97 @@ function Header() {
   return isAuthenticated
     ? <div>{email} <button onClick={logout}>Logout</button></div>
     : <a href="/login">Sign in</a>;
+}
+```
+
+#### `useRegistration(args?)`
+
+Multi-step registration flow with email verification, passkey support, and automatic state persistence.
+
+```ts
+const registration = useRegistration({
+  initialRid?: string;              // Optional registration ID to start from
+  autoRecover?: boolean;            // Auto-recover from URL params or storage (default: true)
+  autoSendVerificationCode?: boolean; // Auto-send code after createRegistration (default: false)
+  callbacks?: { onSuccess?, onError? };
+});
+```
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `registration` | `RegistrationFlowResponse \| null` | Current registration flow data |
+| `rid` | `string \| null` | Registration ID |
+| `isLoading` | `boolean` | Whether an async action is in progress |
+| `isAuthenticated` | `boolean` | Whether finalization returned auth tokens |
+| `error` | `string \| null` | General error |
+| `fieldErrors` | `Record<string, string>` | Per-field validation errors |
+| `missingFields` | `string[]` | Fields the server requires before finalization |
+| `cannotFinalize` | `CannotFinalizeError \| null` | Finalization blocker details |
+| `resendAvailableIn` | `number` | Seconds until verification code can be resent. Ticks down automatically. |
+
+**Actions:**
+
+| Method | Description |
+|--------|-------------|
+| `createRegistration(payload)` | Create a new registration flow. Persists `rid` to storage. |
+| `getRegistration(options?)` | Fetch the current registration state |
+| `updateRegistration(payload, options?)` | Update registration fields |
+| `cancelRegistration(options?)` | Cancel the registration |
+| `finalizeRegistration(options?)` | Finalize and create the user. Auto-hydrates `authStorage` with tokens. |
+| `sendEmailVerificationCode(options?)` | Send a verification code |
+| `verifyEmail(code, options?)` | Verify the email with a code |
+| `verifyAndFinalize(code, options?)` | Verify email and finalize in a single atomic call |
+| `sendResumeLink(email)` | Send a resume link for an in-progress registration |
+| `getSocialAuthUrl(provider, redirectUri)` | Get the OAuth redirect URL for social registration |
+| `setRid(rid)` | Manually set the registration ID |
+| `clearErrors()` | Clear all errors |
+| `reset()` | Reset all state and clear persisted registration data |
+
+**Auto-recovery:** On mount, the hook checks for `registration_rid` in URL params and falls back to persisted state in `authStorage`. If a `rid` is found, `getRegistration()` is called automatically to restore the flow.
+
+**Example:**
+
+```tsx
+import { useRegistration } from "@unidy.io/sdk-react";
+
+function RegisterPage() {
+  const reg = useRegistration({ autoSendVerificationCode: true });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+
+  if (reg.isAuthenticated) return <p>Welcome!</p>;
+
+  if (!reg.rid) {
+    return (
+      <form onSubmit={async (e) => {
+        e.preventDefault();
+        await reg.createRegistration({ email, password });
+      }}>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button type="submit" disabled={reg.isLoading}>Register</button>
+        {reg.fieldErrors.email && <p>{reg.fieldErrors.email}</p>}
+      </form>
+    );
+  }
+
+  return (
+    <form onSubmit={async (e) => {
+      e.preventDefault();
+      await reg.verifyAndFinalize(code);
+    }}>
+      <p>Enter the code sent to your email</p>
+      <input value={code} onChange={(e) => setCode(e.target.value)} />
+      <button type="submit" disabled={reg.isLoading}>Verify</button>
+      <button type="button" onClick={() => reg.sendEmailVerificationCode()}
+        disabled={reg.resendAvailableIn > 0}>
+        {reg.resendAvailableIn > 0 ? `Resend in ${reg.resendAvailableIn}s` : "Resend"}
+      </button>
+    </form>
+  );
 }
 ```
 
@@ -374,6 +499,9 @@ const {
 | `subscribe(internalName, preferenceIdentifiers?)` | `Promise<boolean>` | Subscribe to a newsletter |
 | `unsubscribe(internalName)` | `Promise<boolean>` | Unsubscribe from a newsletter |
 | `updatePreferences(internalName, preferenceIdentifiers)` | `Promise<boolean>` | Update preference selections |
+| `getSubscription(internalName)` | `ExistingSubscription \| undefined` | Get the subscription for a newsletter, or `undefined` if not subscribed |
+| `isSubscribed(internalName)` | `boolean` | Check if subscribed to a newsletter |
+| `togglePreference(internalName, preferenceId, allPreferenceIds)` | `Promise<boolean>` | Toggle a preference within a newsletter. Handles subscribe/unsubscribe/update automatically. |
 | `refetch()` | `Promise<void>` | Re-fetch all subscriptions |
 
 **`ExistingSubscription`:**
@@ -591,16 +719,29 @@ if (isSuccess(result)) {
 }
 ```
 
+#### `getSocialAuthUrl(baseUrl, provider, redirectUri)`
+
+Build an OAuth redirect URL for a social auth provider. Also available as a method on `useLogin` and `useRegistration`.
+
+```ts
+import { getSocialAuthUrl } from "@unidy.io/sdk-react";
+
+const url = getSocialAuthUrl("https://your-instance.com", "google", window.location.href);
+window.location.href = url;
+```
+
 #### `authStorage`
 
-Low-level access to the auth token store. Tokens are stored in `sessionStorage` (tab-scoped), while refresh tokens, email, and sign-in IDs are in `localStorage` (cross-tab).
+Low-level access to the auth token store. Tokens are stored in `sessionStorage` (tab-scoped), while refresh tokens, email, and sign-in IDs are in `localStorage` (cross-tab). Registration flow state (`rid`, `email`) is also persisted.
 
 ```ts
 import { authStorage } from "@unidy.io/sdk-react";
 
-authStorage.getToken();    // Current JWT or null
-authStorage.getState();    // { token, refreshToken, signInId, email, ... }
-authStorage.clearAll();    // Clear all auth state (logout)
+authStorage.getToken();         // Current JWT or null
+authStorage.getState();         // { token, refreshToken, signInId, email, registrationRid, ... }
+authStorage.getServerState();   // Stable empty snapshot for SSR/hydration
+authStorage.clearAll();         // Clear all auth state (logout)
+authStorage.clearRegistration(); // Clear persisted registration flow
 ```
 
 ---
