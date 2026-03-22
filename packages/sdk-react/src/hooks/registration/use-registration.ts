@@ -150,6 +150,12 @@ export interface UseRegistrationArgs {
    * called automatically to refresh the flow. Default: true
    */
   autoRecover?: boolean;
+  /**
+   * Automatically send an email verification code after `createRegistration()`
+   * succeeds. Saves consumers from coordinating the create→sendCode sequence
+   * manually. Default: false
+   */
+  autoSendVerificationCode?: boolean;
   callbacks?: HookCallbacks;
 }
 
@@ -185,6 +191,8 @@ export interface UseRegistrationReturn {
   finalizeRegistration: (options?: RegistrationOptions) => Promise<boolean>;
   sendEmailVerificationCode: (options?: RegistrationOptions) => Promise<{ success: boolean; data?: SendVerificationCodeResponse }>;
   verifyEmail: (code: string, options?: RegistrationOptions) => Promise<boolean>;
+  /** Verify the email and automatically finalize the registration in one call. */
+  verifyAndFinalize: (code: string, options?: RegistrationOptions) => Promise<boolean>;
   sendResumeLink: (email: string) => Promise<boolean>;
   getPasskeyCreationOptions: (options?: RegistrationOptions) => Promise<PasskeyCreationOptions | null>;
   registerPasskey: (args: RegisterPasskeyArgs) => Promise<boolean>;
@@ -265,13 +273,23 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
         if (payload.email) authStorage.setRegistrationEmail(payload.email);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration created");
+
+        // Auto-send verification code if configured
+        if (args?.autoSendVerificationCode) {
+          const codeResult = await client.auth.sendEmailVerificationCode({ rid: data.rid });
+          const [codeError, codeData] = codeResult;
+          if (codeError === null) {
+            dispatch({ type: "set_resend_after", enableResendAfter: codeData.enable_resend_after });
+          }
+        }
+
         return true;
       }
 
       handleError(errorCode, data);
       return false;
     },
-    [client, handleError],
+    [client, handleError, args?.autoSendVerificationCode],
   );
 
   const getRegistration = useCallback(
@@ -374,6 +392,36 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
 
       handleError(errorCode, data);
       return false;
+    },
+    [client, handleError, resolveOptions],
+  );
+
+  const verifyAndFinalize = useCallback(
+    async (code: string, options?: RegistrationOptions): Promise<boolean> => {
+      dispatch({ type: "start" });
+      const opts = resolveOptions(options);
+
+      const verifyResult = await client.auth.verifyEmail({ code }, opts);
+      const [verifyError, verifyData] = verifyResult;
+      if (verifyError !== null) {
+        handleError(verifyError, verifyData);
+        return false;
+      }
+
+      dispatch({ type: "set_registration", registration: verifyData, rid: verifyData.rid });
+
+      const finalizeResult = await client.auth.finalizeRegistration(opts);
+      const [finalizeError, finalizeData] = finalizeResult;
+      if (finalizeError !== null) {
+        handleError(finalizeError, finalizeData);
+        return false;
+      }
+
+      authStorage.clearRegistration();
+      hydrateAuthFromRegistration(finalizeData);
+      dispatch({ type: "set_registration", registration: finalizeData, rid: finalizeData.rid });
+      callbacksRef.current?.onSuccess?.("Registration finalized");
+      return true;
     },
     [client, handleError, resolveOptions],
   );
@@ -558,6 +606,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     finalizeRegistration,
     sendEmailVerificationCode,
     verifyEmail,
+    verifyAndFinalize,
     sendResumeLink,
     getPasskeyCreationOptions,
     registerPasskey,
