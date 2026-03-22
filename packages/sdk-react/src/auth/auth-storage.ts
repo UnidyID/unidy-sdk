@@ -59,19 +59,22 @@ function setOrRemove(storage: Storage, key: string, value: string | null): void 
   }
 }
 
+/** Stable empty state returned during SSR and hydration. */
+const SERVER_STATE: AuthStorageState = {
+  token: null,
+  refreshToken: null,
+  signInId: null,
+  email: null,
+  step: null,
+  loginOptions: null,
+  magicCodeStep: null,
+  registrationRid: null,
+  registrationEmail: null,
+};
+
 function ensureState(): AuthStorageState {
   if (typeof window === "undefined") {
-    return {
-      token: null,
-      refreshToken: null,
-      signInId: null,
-      email: null,
-      step: null,
-      loginOptions: null,
-      magicCodeStep: null,
-      registrationRid: null,
-      registrationEmail: null,
-    };
+    return SERVER_STATE;
   }
 
   if (!state) {
@@ -96,6 +99,15 @@ function syncStateFromStorage(): void {
 export const authStorage = {
   getState(): AuthStorageState {
     return ensureState();
+  },
+
+  /**
+   * Returns a stable empty snapshot for use as the server/hydration snapshot
+   * in `useSyncExternalStore`. This ensures the server render and the client
+   * hydration render produce the same output, avoiding hydration mismatches.
+   */
+  getServerState(): AuthStorageState {
+    return SERVER_STATE;
   },
 
   // JWT access token (sessionStorage - more secure, session-only)
