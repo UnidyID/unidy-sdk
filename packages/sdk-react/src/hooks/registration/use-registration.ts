@@ -143,8 +143,13 @@ function extractMissingFields(data: unknown): string[] {
 export interface UseRegistrationArgs {
   /** Optional registration id to start from. */
   initialRid?: string;
-  /** Auto-read `registration_rid` from URL query params on mount. Default: true */
-  autoRecoverRid?: boolean;
+  /**
+   * Auto-recover registration flow state on mount.
+   * Reads `registration_rid` from URL query params and falls back to persisted
+   * state in authStorage. When a rid is recovered, `getRegistration()` is
+   * called automatically to refresh the flow. Default: true
+   */
+  autoRecover?: boolean;
   callbacks?: HookCallbacks;
 }
 
@@ -206,15 +211,35 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     [state.rid],
   );
 
+  const didAutoRecoverRef = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally runs once on mount to recover registration state
   useEffect(() => {
-    if (args?.autoRecoverRid === false) return;
+    if (args?.autoRecover === false) return;
+    if (didAutoRecoverRef.current) return;
     if (state.rid) return;
+    didAutoRecoverRef.current = true;
 
+    // Check URL first, then fall back to persisted storage
     const urlRid = new URLSearchParams(window.location.search).get("registration_rid");
-    if (urlRid) {
-      dispatch({ type: "set_rid", rid: urlRid });
-    }
-  }, [args?.autoRecoverRid, state.rid]);
+    const recoveredRid = urlRid ?? authStorage.getRegistrationRid();
+    if (!recoveredRid) return;
+
+    const recoveredEmail = authStorage.getRegistrationEmail();
+    dispatch({ type: "set_rid", rid: recoveredRid });
+
+    // Auto-fetch the registration to restore full state
+    void (async () => {
+      const result = await client.auth.getRegistration({ rid: recoveredRid });
+      const [errorCode, data] = result;
+      if (errorCode === null) {
+        dispatch({ type: "set_registration", registration: data, rid: data.rid });
+      } else if (recoveredEmail) {
+        // Registration may have expired; clear persisted state
+        authStorage.clearRegistration();
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleError = useCallback((errorCode: string, data: unknown) => {
     const fieldErrors = extractFieldErrors(data);
@@ -231,6 +256,8 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.createRegistration(payload);
       const [errorCode, data] = result;
       if (errorCode === null) {
+        authStorage.setRegistrationRid(data.rid);
+        if (payload.email) authStorage.setRegistrationEmail(payload.email);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration created");
         return true;
@@ -281,6 +308,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.cancelRegistration(resolveOptions(options));
       const [errorCode] = result;
       if (errorCode === null) {
+        authStorage.clearRegistration();
         dispatch({ type: "reset" });
         callbacksRef.current?.onSuccess?.("Registration cancelled");
         return true;
@@ -298,6 +326,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.finalizeRegistration(resolveOptions(options));
       const [errorCode, data] = result;
       if (errorCode === null) {
+        authStorage.clearRegistration();
         hydrateAuthFromRegistration(data);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration finalized");
@@ -477,7 +506,10 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
 
   const setRid = useCallback((rid: string) => dispatch({ type: "set_rid", rid }), []);
   const clearErrors = useCallback(() => dispatch({ type: "clear_errors" }), []);
-  const reset = useCallback(() => dispatch({ type: "reset" }), []);
+  const reset = useCallback(() => {
+    authStorage.clearRegistration();
+    dispatch({ type: "reset" });
+  }, []);
 
   return {
     registration: state.registration,

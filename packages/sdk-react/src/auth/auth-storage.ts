@@ -9,6 +9,8 @@ const KEYS = {
   STEP: "unidy_step",
   LOGIN_OPTIONS: "unidy_login_options",
   MAGIC_CODE_STEP: "unidy_magic_code_step",
+  REGISTRATION_RID: "unidy_registration_rid",
+  REGISTRATION_EMAIL: "unidy_registration_email",
 } as const;
 
 interface AuthStorageState {
@@ -19,6 +21,8 @@ interface AuthStorageState {
   step: AuthStep | null;
   loginOptions: LoginOptions | null;
   magicCodeStep: string | null;
+  registrationRid: string | null;
+  registrationEmail: string | null;
 }
 
 function readStateFromStorage(): AuthStorageState {
@@ -30,6 +34,8 @@ function readStateFromStorage(): AuthStorageState {
     step: localStorage.getItem(KEYS.STEP) as AuthStep | null,
     loginOptions: safeJsonParse<LoginOptions>(localStorage.getItem(KEYS.LOGIN_OPTIONS)),
     magicCodeStep: localStorage.getItem(KEYS.MAGIC_CODE_STEP),
+    registrationRid: localStorage.getItem(KEYS.REGISTRATION_RID),
+    registrationEmail: localStorage.getItem(KEYS.REGISTRATION_EMAIL),
   };
 }
 
@@ -63,6 +69,8 @@ function ensureState(): AuthStorageState {
       step: null,
       loginOptions: null,
       magicCodeStep: null,
+      registrationRid: null,
+      registrationEmail: null,
     };
   }
 
@@ -165,6 +173,30 @@ export const authStorage = {
     emitAuthChange();
   },
 
+  // Registration flow persistence
+  getRegistrationRid(): string | null {
+    return ensureState().registrationRid;
+  },
+  setRegistrationRid(rid: string | null): void {
+    setOrRemove(localStorage, KEYS.REGISTRATION_RID, rid);
+    state = { ...ensureState(), registrationRid: rid };
+    emitAuthChange();
+  },
+  getRegistrationEmail(): string | null {
+    return ensureState().registrationEmail;
+  },
+  setRegistrationEmail(email: string | null): void {
+    setOrRemove(localStorage, KEYS.REGISTRATION_EMAIL, email);
+    state = { ...ensureState(), registrationEmail: email };
+    emitAuthChange();
+  },
+  clearRegistration(): void {
+    localStorage.removeItem(KEYS.REGISTRATION_RID);
+    localStorage.removeItem(KEYS.REGISTRATION_EMAIL);
+    state = { ...ensureState(), registrationRid: null, registrationEmail: null };
+    emitAuthChange();
+  },
+
   /** Clear all auth-related storage keys. Used on logout. */
   clearAll(): void {
     sessionStorage.removeItem(KEYS.TOKEN);
@@ -174,6 +206,8 @@ export const authStorage = {
     localStorage.removeItem(KEYS.STEP);
     localStorage.removeItem(KEYS.LOGIN_OPTIONS);
     localStorage.removeItem(KEYS.MAGIC_CODE_STEP);
+    localStorage.removeItem(KEYS.REGISTRATION_RID);
+    localStorage.removeItem(KEYS.REGISTRATION_EMAIL);
     state = {
       token: null,
       refreshToken: null,
@@ -182,6 +216,8 @@ export const authStorage = {
       step: null,
       loginOptions: null,
       magicCodeStep: null,
+      registrationRid: null,
+      registrationEmail: null,
     };
     emitAuthChange();
   },
