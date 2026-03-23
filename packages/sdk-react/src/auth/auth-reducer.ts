@@ -5,6 +5,7 @@ const INITIAL_ERRORS: AuthErrors = {
   email: null,
   password: null,
   magicCode: null,
+  passkey: null,
   resetPassword: null,
   global: null,
 };

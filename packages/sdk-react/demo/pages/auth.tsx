@@ -50,18 +50,42 @@ function VerificationStep({
   loginOptions,
   onPassword,
   onMagicCode,
+  onPasskey,
   onSocial,
   onBack,
+  passkeyError,
+  isLoading,
 }: {
-  loginOptions: { magic_link: boolean; password: boolean; social_logins: string[] } | null;
+  loginOptions: { magic_link: boolean; password: boolean; social_logins: string[]; passkey: boolean } | null;
   onPassword: () => void;
   onMagicCode: () => void;
+  onPasskey: () => void;
   onSocial: (provider: string) => void;
   onBack: () => void;
+  passkeyError: string | null;
+  isLoading: boolean;
 }) {
   return (
     <div className="space-y-4">
       <p className="text-gray-600 text-sm">Choose how to sign in:</p>
+
+      {loginOptions?.passkey && (
+        <div>
+          <button
+            type="button"
+            onClick={onPasskey}
+            disabled={isLoading}
+            className="w-full border border-gray-300 rounded-md py-2 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {isLoading ? "Authenticating..." : "Sign in with passkey"}
+          </button>
+          {passkeyError && (
+            <p role="alert" className="text-red-600 text-sm mt-1">
+              {passkeyError}
+            </p>
+          )}
+        </div>
+      )}
 
       {loginOptions?.password && (
         <button type="button" onClick={onPassword} className="w-full border border-gray-300 rounded-md py-2 hover:bg-gray-50">
@@ -349,10 +373,13 @@ export function Auth() {
           loginOptions={login.loginOptions}
           onPassword={() => login.goToStep("password")}
           onMagicCode={() => login.sendMagicCode()}
+          onPasskey={() => login.authenticateWithPasskey()}
           onSocial={(provider) => {
             window.location.href = login.getSocialAuthUrl(provider, window.location.href);
           }}
           onBack={() => login.goBack()}
+          passkeyError={login.errors.passkey}
+          isLoading={login.isLoading}
         />
       )}
 

@@ -9,6 +9,12 @@ import type {
   UpdateRegistrationPayload,
 } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
+import {
+  buildPublicKeyCreationOptions,
+  formatCreationCredentialForServer,
+  isWebAuthnSupported,
+  PASSKEY_ERRORS,
+} from "../../auth/passkey-utils";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { isRecord } from "../../utils";
@@ -126,6 +132,11 @@ export interface RegisterPasskeyArgs {
   options?: RegistrationOptions;
 }
 
+export interface CreateAndRegisterPasskeyArgs {
+  passkeyName?: string;
+  options?: RegistrationOptions;
+}
+
 export interface UseRegistrationReturn {
   registration: RegistrationFlowResponse | null;
   rid: string | null;
@@ -145,6 +156,7 @@ export interface UseRegistrationReturn {
   sendResumeLink: (email: string) => Promise<boolean>;
   getPasskeyCreationOptions: (options?: RegistrationOptions) => Promise<PasskeyCreationOptions | null>;
   registerPasskey: (args: RegisterPasskeyArgs) => Promise<boolean>;
+  createAndRegisterPasskey: (args?: CreateAndRegisterPasskeyArgs) => Promise<boolean>;
   removePasskey: (options?: RegistrationOptions) => Promise<boolean>;
   setRid: (rid: string) => void;
   clearErrors: () => void;
@@ -363,6 +375,64 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     [client, handleError, resolveOptions],
   );
 
+  const createAndRegisterPasskey = useCallback(
+    async (args?: CreateAndRegisterPasskeyArgs): Promise<boolean> => {
+      if (!isWebAuthnSupported()) {
+        dispatch({ type: "error", error: "passkey_not_supported" });
+        callbacksRef.current?.onError?.("passkey_not_supported");
+        return false;
+      }
+
+      dispatch({ type: "start" });
+
+      try {
+        const optionsResult = await client.auth.getPasskeyCreationOptions(resolveOptions(args?.options));
+        const [optionsError, creationOptions] = optionsResult;
+        if (optionsError || !creationOptions) {
+          dispatch({ type: "error", error: optionsError || "bad_request" });
+          callbacksRef.current?.onError?.(optionsError || "bad_request");
+          return false;
+        }
+
+        const publicKeyOptions = buildPublicKeyCreationOptions(creationOptions);
+        const credential = (await navigator.credentials.create({ publicKey: publicKeyOptions })) as PublicKeyCredential | null;
+
+        if (!credential) {
+          dispatch({ type: "error", error: "passkey_cancelled" });
+          callbacksRef.current?.onError?.("passkey_cancelled");
+          return false;
+        }
+
+        const formattedCredential = formatCreationCredentialForServer(credential);
+        const result = await client.auth.registerPasskey(
+          {
+            publicKeyCredential: formattedCredential,
+            passkey_name: args?.passkeyName,
+          },
+          resolveOptions(args?.options),
+        );
+        const [errorCode, data] = result;
+        if (errorCode === null) {
+          dispatch({ type: "set_registration", registration: data, rid: data.rid });
+          callbacksRef.current?.onSuccess?.("Passkey registered");
+          return true;
+        }
+
+        handleError(errorCode, data);
+        return false;
+      } catch (error) {
+        let errorMessage = "passkey_error";
+        if (error instanceof DOMException) {
+          errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
+        }
+        dispatch({ type: "error", error: errorMessage });
+        callbacksRef.current?.onError?.(errorMessage);
+        return false;
+      }
+    },
+    [client, handleError, resolveOptions],
+  );
+
   const removePasskey = useCallback(
     async (options?: RegistrationOptions): Promise<boolean> => {
       dispatch({ type: "start" });
@@ -403,6 +473,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     sendResumeLink,
     getPasskeyCreationOptions,
     registerPasskey,
+    createAndRegisterPasskey,
     removePasskey,
     setRid,
     clearErrors,
