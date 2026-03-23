@@ -1,3 +1,6 @@
+# Read the .bun-version file
+idiomatic_version_file_enable_tools = ["bun"]
+
 [tasks.setup]
 run = [
   "mise install",
