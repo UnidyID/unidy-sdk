@@ -275,6 +275,10 @@ export class RawField extends UnidyComponent() {
     }
 
     if (this.pattern && typeof value === "string") {
+      // NOTE: This component receives `pattern` as an HTML attribute string (e.g. pattern="^(?=.*[0-9]).{8,}$").
+      // When callers set this attribute in Astro JSX string literals, escape sequences like \d and \w are silently
+      // dropped by the JavaScript compiler (string literals treat \d as 'd', \w as 'w', etc.).
+      // Always use character classes in pattern strings: [0-9] instead of \d, [a-z] instead of \w, etc.
       const regex = new RegExp(this.pattern);
       if (!regex.test(value)) {
         return { valid: false, message: this.patternErrorMessage || "invalid_format" };
