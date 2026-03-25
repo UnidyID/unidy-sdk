@@ -67,11 +67,11 @@ export async function resendDoi(internalName: string): Promise<boolean> {
 
 export type LoginEmailResult = { success: true } | { success: false; error: "rate_limit_exceeded" | "not_found" | "unknown" };
 
-export async function sendLoginEmail(email: string): Promise<LoginEmailResult> {
+export async function sendLoginEmail(email: string, redirectUri?: string): Promise<LoginEmailResult> {
   const [error] = await getUnidyClient().newsletters.sendLoginEmail({
     payload: {
       email,
-      redirect_uri: redirectToAfterConfirmationUrl(),
+      redirect_uri: redirectUri ?? redirectToAfterConfirmationUrl(),
     },
   });
 
