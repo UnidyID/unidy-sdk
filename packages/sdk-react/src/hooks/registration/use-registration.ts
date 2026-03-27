@@ -8,13 +8,16 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "@unidy.io/sdk/standalone";
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { authStorage } from "../../auth/auth-storage";
+import { decodeSid } from "../../auth/helpers/jwt";
 import {
   buildPublicKeyCreationOptions,
   formatCreationCredentialForServer,
   isWebAuthnSupported,
   PASSKEY_ERRORS,
 } from "../../auth/passkey-utils";
+import { getSocialAuthUrl } from "../../auth/social-auth";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { isRecord } from "../../utils";
@@ -99,6 +102,25 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+function hydrateAuthFromRegistration(registration: RegistrationFlowResponse): void {
+  const auth = registration.auth;
+  if (!auth) return;
+
+  authStorage.setToken(auth.id_token);
+  authStorage.setRefreshToken(auth.refresh_token);
+  authStorage.setRecoverableStep(null);
+  authStorage.setMagicCodeStep(null);
+
+  const signInId = decodeSid(auth.id_token);
+  if (signInId) {
+    authStorage.setSignInId(signInId);
+  }
+
+  if (registration.email) {
+    authStorage.setEmail(registration.email);
+  }
+}
+
 function extractFieldErrors(data: unknown): Record<string, string> {
   const errorData = asRegistrationErrorData(data);
   if (!errorData) return {};
@@ -121,8 +143,19 @@ function extractMissingFields(data: unknown): string[] {
 export interface UseRegistrationArgs {
   /** Optional registration id to start from. */
   initialRid?: string;
-  /** Auto-read `registration_rid` from URL query params on mount. Default: true */
-  autoRecoverRid?: boolean;
+  /**
+   * Auto-recover registration flow state on mount.
+   * Reads `registration_rid` from URL query params and falls back to persisted
+   * state in authStorage. When a rid is recovered, `getRegistration()` is
+   * called automatically to refresh the flow. Default: true
+   */
+  autoRecover?: boolean;
+  /**
+   * Automatically send an email verification code after `createRegistration()`
+   * succeeds. Saves consumers from coordinating the create→sendCode sequence
+   * manually. Default: false
+   */
+  autoSendVerificationCode?: boolean;
   callbacks?: HookCallbacks;
 }
 
@@ -141,11 +174,16 @@ export interface UseRegistrationReturn {
   registration: RegistrationFlowResponse | null;
   rid: string | null;
   isLoading: boolean;
+  /** Whether finalization returned auth tokens and the session was hydrated. */
+  isAuthenticated: boolean;
   error: string | null;
   fieldErrors: Record<string, string>;
   missingFields: string[];
   cannotFinalize: CannotFinalizeError | null;
+  /** @deprecated Use `resendAvailableIn` instead. Raw value from the server. */
   enableResendAfter: number | null;
+  /** Seconds remaining before the verification code can be resent. Ticks down automatically. 0 = can resend. */
+  resendAvailableIn: number;
   createRegistration: (payload: CreateRegistrationPayload) => Promise<boolean>;
   getRegistration: (options?: RegistrationOptions) => Promise<boolean>;
   updateRegistration: (payload: UpdateRegistrationPayload, options?: RegistrationOptions) => Promise<boolean>;
@@ -153,11 +191,15 @@ export interface UseRegistrationReturn {
   finalizeRegistration: (options?: RegistrationOptions) => Promise<boolean>;
   sendEmailVerificationCode: (options?: RegistrationOptions) => Promise<{ success: boolean; data?: SendVerificationCodeResponse }>;
   verifyEmail: (code: string, options?: RegistrationOptions) => Promise<boolean>;
+  /** Verify the email and automatically finalize the registration in one call. */
+  verifyAndFinalize: (code: string, options?: RegistrationOptions) => Promise<boolean>;
   sendResumeLink: (email: string) => Promise<boolean>;
   getPasskeyCreationOptions: (options?: RegistrationOptions) => Promise<PasskeyCreationOptions | null>;
   registerPasskey: (args: RegisterPasskeyArgs) => Promise<boolean>;
   createAndRegisterPasskey: (args?: CreateAndRegisterPasskeyArgs) => Promise<boolean>;
   removePasskey: (options?: RegistrationOptions) => Promise<boolean>;
+  /** Build the OAuth redirect URL for a social auth provider. */
+  getSocialAuthUrl: (provider: string, redirectUri: string) => string;
   setRid: (rid: string) => void;
   clearErrors: () => void;
   reset: () => void;
@@ -182,15 +224,35 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     [state.rid],
   );
 
+  const didAutoRecoverRef = useRef(false);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally runs once on mount to recover registration state
   useEffect(() => {
-    if (args?.autoRecoverRid === false) return;
+    if (args?.autoRecover === false) return;
+    if (didAutoRecoverRef.current) return;
     if (state.rid) return;
+    didAutoRecoverRef.current = true;
 
+    // Check URL first, then fall back to persisted storage
     const urlRid = new URLSearchParams(window.location.search).get("registration_rid");
-    if (urlRid) {
-      dispatch({ type: "set_rid", rid: urlRid });
-    }
-  }, [args?.autoRecoverRid, state.rid]);
+    const recoveredRid = urlRid ?? authStorage.getRegistrationRid();
+    if (!recoveredRid) return;
+
+    const recoveredEmail = authStorage.getRegistrationEmail();
+    dispatch({ type: "set_rid", rid: recoveredRid });
+
+    // Auto-fetch the registration to restore full state
+    void (async () => {
+      const result = await client.auth.getRegistration({ rid: recoveredRid });
+      const [errorCode, data] = result;
+      if (errorCode === null) {
+        dispatch({ type: "set_registration", registration: data, rid: data.rid });
+      } else if (recoveredEmail) {
+        // Registration may have expired; clear persisted state
+        authStorage.clearRegistration();
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleError = useCallback((errorCode: string, data: unknown) => {
     const fieldErrors = extractFieldErrors(data);
@@ -207,15 +269,30 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.createRegistration(payload);
       const [errorCode, data] = result;
       if (errorCode === null) {
+        authStorage.setRegistrationRid(data.rid);
+        if (payload.email) authStorage.setRegistrationEmail(payload.email);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration created");
+
+        // Auto-send verification code if configured
+        if (args?.autoSendVerificationCode) {
+          const codeResult = await client.auth.sendEmailVerificationCode({ rid: data.rid });
+          const [codeError, codeData] = codeResult;
+          if (codeError === null) {
+            dispatch({ type: "set_resend_after", enableResendAfter: codeData.enable_resend_after });
+          } else {
+            handleError(codeError, codeData);
+            return false;
+          }
+        }
+
         return true;
       }
 
       handleError(errorCode, data);
       return false;
     },
-    [client, handleError],
+    [client, handleError, args?.autoSendVerificationCode],
   );
 
   const getRegistration = useCallback(
@@ -257,6 +334,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.cancelRegistration(resolveOptions(options));
       const [errorCode] = result;
       if (errorCode === null) {
+        authStorage.clearRegistration();
         dispatch({ type: "reset" });
         callbacksRef.current?.onSuccess?.("Registration cancelled");
         return true;
@@ -274,6 +352,8 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       const result = await client.auth.finalizeRegistration(resolveOptions(options));
       const [errorCode, data] = result;
       if (errorCode === null) {
+        authStorage.clearRegistration();
+        hydrateAuthFromRegistration(data);
         dispatch({ type: "set_registration", registration: data, rid: data.rid });
         callbacksRef.current?.onSuccess?.("Registration finalized");
         return true;
@@ -315,6 +395,34 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
 
       handleError(errorCode, data);
       return false;
+    },
+    [client, handleError, resolveOptions],
+  );
+
+  const verifyAndFinalize = useCallback(
+    async (code: string, options?: RegistrationOptions): Promise<boolean> => {
+      dispatch({ type: "start" });
+      const opts = resolveOptions(options);
+
+      const verifyResult = await client.auth.verifyEmail({ code }, opts);
+      const [verifyError, verifyData] = verifyResult;
+      if (verifyError !== null) {
+        handleError(verifyError, verifyData);
+        return false;
+      }
+
+      const finalizeResult = await client.auth.finalizeRegistration(opts);
+      const [finalizeError, finalizeData] = finalizeResult;
+      if (finalizeError !== null) {
+        handleError(finalizeError, finalizeData);
+        return false;
+      }
+
+      authStorage.clearRegistration();
+      hydrateAuthFromRegistration(finalizeData);
+      dispatch({ type: "set_registration", registration: finalizeData, rid: finalizeData.rid });
+      callbacksRef.current?.onSuccess?.("Registration finalized");
+      return true;
     },
     [client, handleError, resolveOptions],
   );
@@ -450,19 +558,50 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     [client, handleError, resolveOptions],
   );
 
+  const buildSocialAuthUrl = useCallback(
+    (provider: string, redirectUri: string): string => {
+      if (!("baseUrl" in client) || typeof client.baseUrl !== "string" || !client.baseUrl) {
+        throw new Error("[useRegistration] getSocialAuthUrl: client does not expose a baseUrl");
+      }
+      return getSocialAuthUrl(client.baseUrl, provider, redirectUri);
+    },
+    [client],
+  );
+
   const setRid = useCallback((rid: string) => dispatch({ type: "set_rid", rid }), []);
   const clearErrors = useCallback(() => dispatch({ type: "clear_errors" }), []);
-  const reset = useCallback(() => dispatch({ type: "reset" }), []);
+  const reset = useCallback(() => {
+    authStorage.clearRegistration();
+    dispatch({ type: "reset" });
+  }, []);
+
+  // Internalized resend countdown timer
+  const [resendAvailableIn, setResendAvailableIn] = useState(0);
+  useEffect(() => {
+    if (state.enableResendAfter && state.enableResendAfter > 0) {
+      setResendAvailableIn(state.enableResendAfter);
+    }
+  }, [state.enableResendAfter]);
+
+  useEffect(() => {
+    if (resendAvailableIn <= 0) return;
+    const timer = setInterval(() => {
+      setResendAvailableIn((prev: number) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendAvailableIn]);
 
   return {
     registration: state.registration,
     rid: state.rid,
     isLoading: state.isLoading,
+    isAuthenticated: !!state.registration?.auth,
     error: state.error,
     fieldErrors: state.fieldErrors,
     missingFields: state.missingFields,
     cannotFinalize: state.cannotFinalize,
     enableResendAfter: state.enableResendAfter,
+    resendAvailableIn,
     createRegistration,
     getRegistration,
     updateRegistration,
@@ -470,11 +609,13 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
     finalizeRegistration,
     sendEmailVerificationCode,
     verifyEmail,
+    verifyAndFinalize,
     sendResumeLink,
     getPasskeyCreationOptions,
     registerPasskey,
     createAndRegisterPasskey,
     removePasskey,
+    getSocialAuthUrl: buildSocialAuthUrl,
     setRid,
     clearErrors,
     reset,

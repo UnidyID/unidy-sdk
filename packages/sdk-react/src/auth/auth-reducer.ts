@@ -7,6 +7,7 @@ const INITIAL_ERRORS: AuthErrors = {
   magicCode: null,
   passkey: null,
   resetPassword: null,
+  missingFields: null,
   global: null,
 };
 
@@ -23,6 +24,7 @@ export function createInitialState(initialStep: AuthState["step"] = "email"): Au
     magicCodeResendAfter: null,
     resetPasswordStep: "idle",
     stepHistory: [],
+    missingFieldDefinitions: null,
   };
 }
 
@@ -144,5 +146,13 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
 
     case "RECOVER_STATE":
       return { ...state, ...action.state };
+
+    case "RESET": {
+      authStorage.clearAll();
+      return createInitialState("email");
+    }
+
+    case "SET_MISSING_FIELD_DEFINITIONS":
+      return { ...state, missingFieldDefinitions: action.fields };
   }
 }
