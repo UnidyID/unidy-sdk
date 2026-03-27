@@ -10,7 +10,7 @@ on:
 jobs:
   lint:
     name: Linter
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, hetzner]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -28,7 +28,7 @@ jobs:
 
   e2e:
     name: Playwright Tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, hetzner]
     steps:
       - name: Checkout SDK
         uses: actions/checkout@v6
@@ -42,8 +42,10 @@ jobs:
         run: bun install
 
       - name: Install Playwright browsers
-        run: bunx playwright install --with-deps
+        run: bunx playwright install chromium
         working-directory: packages/sdk
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /opt/ms-playwright
 
       - name: Build SDK
         run: bun run build
@@ -62,6 +64,7 @@ jobs:
         env:
           E2E_API_URL: ${{ secrets.E2E_API_URL }}
           E2E_API_TOKEN: ${{ secrets.E2E_API_TOKEN }}
+          PLAYWRIGHT_BROWSERS_PATH: /opt/ms-playwright
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v7
