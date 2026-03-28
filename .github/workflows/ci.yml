@@ -22,6 +22,8 @@ jobs:
 
       - name: Install dependencies (if needed)
         run: bun install
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
 
       - name: Lint code
         run: bun lint --error-on-warnings
@@ -40,6 +42,8 @@ jobs:
 
       - name: Install SDK dependencies
         run: bun install
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
 
       - name: Install Playwright browsers
         run: bunx playwright install chromium
