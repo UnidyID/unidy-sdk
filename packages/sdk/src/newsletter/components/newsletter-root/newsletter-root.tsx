@@ -115,7 +115,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    const success = await NewsletterHelpers.createSubscriptions({ email });
+    const success = await NewsletterHelpers.createSubscriptions({ email, redirectUri: this.redirectUri });
 
     if (success) {
       this.uNewsletterSuccess.emit({ email, newsletters });

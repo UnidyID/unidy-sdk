@@ -71,7 +71,7 @@ export async function sendLoginEmail(email: string, redirectUri?: string): Promi
   const [error] = await getUnidyClient().newsletters.sendLoginEmail({
     payload: {
       email,
-      redirect_uri: redirectUri ?? redirectToAfterConfirmationUrl(),
+      redirect_uri: redirectUri || redirectToAfterConfirmationUrl(),
     },
   });
 
@@ -134,6 +134,7 @@ export async function fetchSubscriptions(): Promise<void> {
 async function handleAlreadySubscribedError(
   email: string,
   errors: Array<{ error_identifier: string; meta: { newsletter_internal_name: string } }>,
+  redirectUri?: string,
 ): Promise<void> {
   if (newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken) {
     const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
@@ -150,11 +151,16 @@ async function handleAlreadySubscribedError(
       newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
     }
   } else {
-    await sendLoginEmail(email);
+    await sendLoginEmail(email, redirectUri);
   }
 }
 
-async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
+async function handleCreateSubscriptionRequest(
+  email: string,
+  internalNames: string[],
+  showSuccessMessage = true,
+  redirectUri?: string,
+): Promise<boolean> {
   const { checkedNewsletters, additionalFields } = newsletterStore.state;
 
   const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
@@ -222,7 +228,7 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
     // already_subscribed subscriptions to the existing subscriptions
     const hasAlreadySubscribedError = errors.some((err) => err.error_identifier === "already_subscribed");
     if (hasAlreadySubscribedError) {
-      await handleAlreadySubscribedError(email, errors);
+      await handleAlreadySubscribedError(email, errors, redirectUri);
     }
 
     const newsletterNotFoundError = errors.some((err) => err.error_identifier === "newsletter_not_found");
@@ -262,13 +268,13 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
   return false;
 }
 
-export async function subscribeToNewsletter(internalName: string, email: string): Promise<boolean> {
-  return handleCreateSubscriptionRequest(email, [internalName], false);
+export async function subscribeToNewsletter(internalName: string, email: string, redirectUri?: string): Promise<boolean> {
+  return handleCreateSubscriptionRequest(email, [internalName], false, redirectUri);
 }
 
-export async function createSubscriptions({ email }: { email: string }): Promise<boolean> {
+export async function createSubscriptions({ email, redirectUri }: { email: string; redirectUri?: string }): Promise<boolean> {
   const internalNames = Object.keys(newsletterStore.state.checkedNewsletters);
-  return handleCreateSubscriptionRequest(email, internalNames, true);
+  return handleCreateSubscriptionRequest(email, internalNames, true, redirectUri);
 }
 
 export async function deleteSubscription(internalName: string): Promise<boolean> {
