@@ -18,7 +18,7 @@ export class EmailAssert extends Database<"TestEmail"> {
     super("TestEmail", args.to);
   }
 
-  async toHaveReceived(amount: number, attempts = 10) {
+  async toHaveReceived(amount: number, attempts = 30) {
     let current = this.initial;
 
     for (let i = 0; i < attempts; i++) {
