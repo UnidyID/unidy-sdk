@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from "@stencil/core";
+import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { findParentProfile } from "../../../shared/context-utils";
@@ -17,6 +17,10 @@ import { state as profileState } from "../../store/profile-store";
  * @part multi-select-item_label
  * @part textarea_field
  * @part input_field
+ * @part field-input-wrapper - Container wrapping the input and save indicator.
+ * @part field-save-indicator - Base styles for save state indicators (spinner/checkmark).
+ * @part field-save-indicator--saving - Shown while the field is being saved (displays spinner).
+ * @part field-save-indicator--saved - Shown after successful save (displays checkmark, disappears after 2s).
  */
 
 @Component({
@@ -50,8 +54,6 @@ export class Field extends UnidyComponent() {
   @Prop() patternErrorMessage?: string;
   /** Custom validation function. Returns { valid: boolean, message?: string }. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
-
-  @State() selected?: string | string[];
 
   /** Reference to parent u-profile element for field registration */
   private parentProfile: HTMLUProfileElement | null = null;
@@ -169,29 +171,42 @@ export class Field extends UnidyComponent() {
           </ul>
         )}
         {!isReadonly && (
-          <u-raw-field
-            id={this.field}
-            field={this.field}
-            type={fieldData.type as string}
-            value={fieldData.value}
-            options={fieldData.type === "select" ? translatedOptions : undefined}
-            radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
-            multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
-            required={fieldData.required || this.required}
-            // disable editing of email field
-            disabled={isLocked || profileState.loading || this.field === "email"}
-            tooltip={isLocked ? lockedText : undefined}
-            placeholder={placeholder}
-            componentClassName={this.componentClassName}
-            emptyOption={this.emptyOption}
-            countryCodeDisplayOption={this.countryCodeDisplayOption}
-            attrName={fieldData.attr_name}
-            specificPartKey={this.createSpecificPartKey(this.field)}
-            ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
-            pattern={this.pattern}
-            patternErrorMessage={this.patternErrorMessage}
-            validationFunc={this.validationFunc}
-          />
+          <div class="field-input-wrapper" part="field-input-wrapper">
+            <u-raw-field
+              id={this.field}
+              field={this.field}
+              type={fieldData.type as string}
+              value={fieldData.value}
+              options={fieldData.type === "select" ? translatedOptions : undefined}
+              radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
+              multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
+              required={fieldData.required || this.required}
+              disabled={isLocked || (profileState.loading && profileState.activeField !== this.field) || this.field === "email"}
+              tooltip={isLocked ? lockedText : undefined}
+              placeholder={placeholder}
+              componentClassName={this.componentClassName}
+              emptyOption={this.emptyOption}
+              countryCodeDisplayOption={this.countryCodeDisplayOption}
+              attrName={fieldData.attr_name}
+              specificPartKey={this.createSpecificPartKey(this.field)}
+              ariaDescribedBy={profileState.errors[this.field] ? `${this.field}-error` : undefined}
+              pattern={this.pattern}
+              patternErrorMessage={this.patternErrorMessage}
+              validationFunc={this.validationFunc}
+            />
+            {profileState.fieldSaveStates[this.field] === "saving" && (
+              <span part="field-save-indicator field-save-indicator--saving" class="field-save-indicator saving">
+                <u-spinner />
+              </span>
+            )}
+            {profileState.fieldSaveStates[this.field] === "saved" && (
+              <span part="field-save-indicator field-save-indicator--saved" class="field-save-indicator saved">
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-label="Saved" role="img">
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </span>
+            )}
+          </div>
         )}
 
         {profileState.errors[this.field] && (

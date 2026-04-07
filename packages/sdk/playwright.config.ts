@@ -10,14 +10,14 @@ const useStaticServer = !!process.env.E2E_SDK_BASE_URL || !!process.env.CI;
  */
 export default defineConfig({
   testDir: "./e2e",
-  /* Run tests in files in parallel */
+  /* Parallelize across files but run tests within each file sequentially */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: 1,
+  /* Run test files in parallel across workers */
+  workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

@@ -5,6 +5,7 @@ import { t } from "../i18n";
 import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
 import { state as profileState } from "../profile/store/profile-store";
+import { captchaManager, isCaptchaError } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/utils/url-utils";
 import type { TokenPayload } from "./auth";
@@ -26,7 +27,19 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
-    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode } });
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
+    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode, captchaToken } });
 
     if (error) {
       if (error === "magic_code_recently_created") {
@@ -37,6 +50,10 @@ export class AuthHelpers {
         return [error, response] as const;
       }
 
+      // Preserve email for registration flow when account is not found
+      if (error === "account_not_found") {
+        authStore.setEmail(email);
+      }
       this.handleAuthError(error, response, password ? "password" : "email");
       return;
     }
@@ -87,9 +104,21 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
     const [error, response] = await this.client.auth.authenticateWithPassword({
       signInId: authState.sid,
-      payload: { password },
+      payload: { password, captchaToken },
     });
 
     if (error) {
@@ -113,9 +142,21 @@ export class AuthHelpers {
     authStore.setLoading(true);
     authStore.clearErrors();
 
+    // Execute captcha if enabled for login
+    let captchaToken: string | undefined;
+    try {
+      const captchaResult = await captchaManager.execute("login");
+      captchaToken = captchaResult?.token;
+    } catch (captchaError) {
+      this.logger.error("Captcha execution failed:", captchaError);
+      authStore.setGlobalError("captcha", "captcha_execution_failed");
+      authStore.setLoading(false);
+      return;
+    }
+
     const [error, response] = await this.client.auth.authenticateWithMagicCode({
       signInId: authState.sid,
-      payload: { code },
+      payload: { code, captchaToken },
     });
 
     if (error) {
@@ -360,15 +401,19 @@ export class AuthHelpers {
     const url = new URL(window.location.href);
     const params = url.searchParams;
     const error = params.get("error");
+    const hasRedirectSid = params.has("sdk_login_sid") || params.has("sid");
 
     // Not a social auth redirect (normal page load)
-    if (!error && !params.has("sid")) {
+    if (!error && !hasRedirectSid) {
       return;
     }
 
     // Handle successful social auth redirect with encoded auth_payload
-    if (!error && params.has("sid") && params.has("auth_payload")) {
-      authStore.setSignInId(clearUrlParam("sid"));
+    if (!error && hasRedirectSid && params.has("auth_payload")) {
+      const signInId = this.clearRedirectSignInId();
+      if (signInId) {
+        authStore.setSignInId(signInId);
+      }
 
       const authPayload = clearUrlParam("auth_payload");
 
@@ -395,7 +440,7 @@ export class AuthHelpers {
 
     // Handle brand connection required
     if (error === "brand_connection_required") {
-      const sid = clearUrlParam("sid");
+      const sid = this.clearRedirectSignInId();
       clearUrlParam("error");
 
       if (sid) {
@@ -412,7 +457,7 @@ export class AuthHelpers {
     }
 
     const fieldsFromUrl = clearUrlParam("fields");
-    const sid = clearUrlParam("sid");
+    const sid = this.clearRedirectSignInId();
     clearUrlParam("error");
 
     if (!fieldsFromUrl || !sid) {
@@ -428,6 +473,12 @@ export class AuthHelpers {
       this.logger.error("Failed to parse missing fields payload:", e);
       authStore.setGlobalError("auth", "invalid_required_fields_payload");
     }
+  }
+
+  private clearRedirectSignInId(): string | null {
+    const sdkLoginSid = clearUrlParam("sdk_login_sid");
+    const sid = clearUrlParam("sid");
+    return sdkLoginSid || sid;
   }
 
   async connectBrand() {
@@ -463,9 +514,18 @@ export class AuthHelpers {
   }
 
   private handleAuthError(error: string, response: unknown, fallbackField?: "email" | "password" | "magicCode") {
+    // Handle captcha errors - reset the captcha for retry
+    if (isCaptchaError(error)) {
+      captchaManager.reset();
+      authStore.setGlobalError("captcha", error);
+      authStore.setLoading(false);
+      return;
+    }
+
     switch (error) {
       case "account_not_found":
         authStore.setFieldError("email", error);
+        authStore.setStep("registration");
         break;
 
       case "brand_connection_required": {
@@ -482,6 +542,11 @@ export class AuthHelpers {
         break;
       }
 
+      case "account_locked":
+      case "account_unconfirmed":
+        authStore.setGlobalError("auth", error);
+        break;
+
       default:
         if (fallbackField === "password") {
           authStore.setFieldError("password", error);
@@ -490,7 +555,6 @@ export class AuthHelpers {
         } else if (fallbackField === "email") {
           authStore.setFieldError("email", error);
         } else {
-          // e.g. "account_locked", "internal_server_error"
           authStore.setGlobalError("auth", error);
         }
         break;

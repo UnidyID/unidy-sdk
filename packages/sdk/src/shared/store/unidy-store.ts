@@ -1,4 +1,5 @@
 import { createStore } from "@stencil/store";
+import type { CaptchaConfig } from "../captcha";
 
 export interface UnidyState {
   mode: "production" | "development";
@@ -8,6 +9,9 @@ export interface UnidyState {
 
   isConfigured: boolean;
   backendConnected: boolean;
+
+  /** Captcha configuration fetched from backend, null if not configured */
+  captchaConfig: CaptchaConfig | null;
 }
 
 const initialState: UnidyState = {
@@ -18,6 +22,7 @@ const initialState: UnidyState = {
 
   isConfigured: false,
   backendConnected: true,
+  captchaConfig: null,
 };
 
 const store = createStore<UnidyState>(initialState);

@@ -26,6 +26,7 @@ graph TD;
   u-oauth-missing-fields --> u-spinner
   u-oauth-missing-fields --> u-field
   u-field --> u-raw-field
+  u-field --> u-spinner
   style u-oauth-missing-fields fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

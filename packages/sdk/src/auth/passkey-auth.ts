@@ -1,23 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 import type { PasskeyOptionsResponse, TokenResponse, UnidyClient } from "../api";
 import { createLogger } from "../logger";
+import { decodeBase64Url, PASSKEY_ERRORS } from "../shared/passkey-utils";
 import type { TokenPayload } from "./auth";
 import { authState, authStore } from "./store/auth-store";
 
 const logger = createLogger("PasskeyAuth");
-
-const PASSKEY_ERRORS: Record<string, string> = {
-  NotSupportedError: "passkey_not_supported",
-  NotAllowedError: "passkey_cancelled",
-  SecurityError: "passkey_security_error",
-  InvalidStateError: "passkey_invalid_state",
-};
-
-function decodeBase64Url(base64url: string): Uint8Array {
-  const base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
-  return Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
-}
 
 function buildPublicKeyOptions(options: PasskeyOptionsResponse): PublicKeyCredentialRequestOptions {
   return {

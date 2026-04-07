@@ -7,6 +7,7 @@
 ## Commit Guidelines
 
 - Use conventional commit messages (prefix messages with `fix:`, `feat:`, `refactor:`, `docs:` etc.)
+- PR titles should follow conventional commit format: `prefix: [Linear issue identifier] title` (Omit the Linear issue identifier if not provided), don't put this in commit messages
 - Do not add a "Co-Authored-By: Claude" footer to commits
 - When creating PRs, always assign @me and add reviewers: bvogel,Zeko369,MandyGottschling,Sokre95 excluding the current user from this list
 
@@ -15,6 +16,21 @@
 - Stop making more suggestions after your suggestions have been rejected or rolled back twice, rather ask for user guidance
 - When touching front end code that is user facing test it for accessibility and adjust it to be WCAG 2.1 AA compliant
 - If keys are added to locale files always respect alphabetical order
+
+## Styling
+
+- **Always use Tailwind CSS** for all styling in this project
+- Never add custom CSS or inline styles to components
+- Components should be minimally styled and expose `class-name` props to allow customers to style them with their own Tailwind classes
+
+## Tailwind Integration
+
+The Tailwind integration works by injecting styles into components that have a CSS file. For components that accept Tailwind classes via props (like `class-name`), you must:
+
+1. Create an empty CSS file next to the component (e.g., `my-component.css`)
+2. Add `styleUrl: "my-component.css"` to the `@Component` decorator
+
+This is only needed for components that render elements accepting Tailwind classes. Wrapper components that just render `<slot />` don't need CSS files.
 
 ## Documentation & Test Coverage Standards
 

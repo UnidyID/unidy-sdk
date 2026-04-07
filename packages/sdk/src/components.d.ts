@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { CaptchaFeature } from "./shared/captcha";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
 import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
@@ -13,9 +14,11 @@ import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
-import { Option } from "./profile/components/raw-input-fields/Select";
-import { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-import { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+import { Option } from "./shared/components/raw-field/components/Select";
+import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+import { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
+import { RegistrationFlowResponse } from "./auth/api/register";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
@@ -23,6 +26,7 @@ import { PaginationMeta } from "./api";
 import { PaginationStore } from "./ticketable/store/pagination-store";
 import { Subscription } from "./ticketable/api/subscriptions";
 import { Ticket } from "./ticketable/api/tickets";
+export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
 export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsletter-submit-button";
@@ -31,9 +35,11 @@ export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
-export { Option } from "./profile/components/raw-input-fields/Select";
-export { RadioOption } from "./profile/components/raw-input-fields/RadioGroup";
-export { MultiSelectOption } from "./profile/components/raw-input-fields/MultiSelect";
+export { Option } from "./shared/components/raw-field/components/Select";
+export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
+export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
+export { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
+export { RegistrationFlowResponse } from "./auth/api/register";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
@@ -49,7 +55,7 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart": boolean;
@@ -65,6 +71,34 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+    }
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface UCaptchaField {
+        /**
+          * Accessible label for the captcha
+          * @default "Security verification"
+         */
+        "ariaLabel": string;
+        /**
+          * Custom CSS class for the container
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * The feature this captcha protects (login, registration, newsletter)
+          * @default "login"
+         */
+        "feature": CaptchaFeature;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -212,14 +246,27 @@ export namespace Components {
     }
     interface UFullProfile {
         /**
-          * For phone fields: how to display country code selector ('icon' or 'label').
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
-          * Comma-separated list of field names to display. If not provided, shows all fields.
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave": boolean;
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
+        /**
+          * Programmatically submit the profile form. Delegates to the inner u-profile component.
+         */
+        "submitProfile": () => Promise<void>;
     }
     interface UJumpToService {
         /**
@@ -331,6 +378,10 @@ export namespace Components {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
     }
@@ -560,6 +611,11 @@ export namespace Components {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave": boolean;
+        /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
@@ -570,13 +626,17 @@ export namespace Components {
          */
         "partialValidation": boolean;
         /**
-          * Optional profile ID (for multi-profile scenarios).
+          * Optional profile ID for multi-profile scenarios.
          */
         "profileId"?: string;
         /**
           * Register a field for partial validation tracking. Called by child u-field components when they mount.
          */
         "registerField": (fieldName: string) => Promise<void>;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         "submitProfile": () => Promise<void>;
         /**
           * Unregister a field from partial validation tracking. Called by child u-field components when they unmount.
@@ -639,6 +699,183 @@ export namespace Components {
           * @default window.location.href
          */
         "redirectUri": string;
+    }
+    interface URegistrationEmailVerification {
+        /**
+          * Whether to automatically send the verification code when this step becomes active.
+          * @default true
+         */
+        "autoSend": boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
+        "inputClassName"?: string;
+    }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName": string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName": string;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName": string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName": string;
+    }
+    interface URegistrationNewsletter {
+        /**
+          * Whether the checkbox is initially checked.
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
+        "name": string;
+    }
+    interface URegistrationNewsletterPreference {
+        /**
+          * Whether the checkbox is initially checked.
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
+        "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
+        "preference": string;
+    }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
+    interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
+    interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
+    interface URegistrationRoot {
+        /**
+          * Programmatically advance to the next step in the registration flow.
+         */
+        "advanceToNextStep": () => Promise<void>;
+        /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
+          * @default true
+         */
+        "autoResume": boolean;
+        /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Returns the configured brand ID, if any.
+         */
+        "getBrandId": () => Promise<number | undefined>;
+        /**
+          * Returns the registration URL. Falls back to the current page URL if not explicitly set.
+         */
+        "getRegistrationUrl": () => Promise<string>;
+        /**
+          * Programmatically go back to the previous step in the registration flow.
+         */
+        "goToPreviousStep": () => Promise<void>;
+        /**
+          * Returns whether the registration flow has been completed.
+         */
+        "isComplete": () => Promise<boolean>;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
+          * @default "[]"
+         */
+        "steps": string;
+    }
+    interface URegistrationStep {
+        /**
+          * If true, the step's content is always rendered regardless of which step is active.
+          * @default false
+         */
+        "alwaysRender": boolean;
+        /**
+          * Returns whether this step is currently the active step in the registration flow.
+         */
+        "isActive": () => Promise<boolean>;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
+        "name": string;
+        /**
+          * If true, this step is automatically skipped when the user's email is already verified.
+          * @default false
+         */
+        "requiresEmailVerification": boolean;
+        /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
+          * @default false
+         */
+        "requiresPassword": boolean;
+        /**
+          * Returns whether this step should be skipped based on the current flow state (e.g. email already verified, passwordless flow).
+         */
+        "shouldSkip": () => Promise<boolean>;
+        /**
+          * Submits the current step. Creates or updates the registration flow, then advances to the next step or finalizes registration.
+         */
+        "submit": () => Promise<void>;
     }
     interface UResetPasswordButton {
         /**
@@ -826,6 +1063,22 @@ export interface UProfileCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUProfileElement;
 }
+export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURawFieldElement;
+}
+export interface URegistrationInternalMatchingCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationInternalMatchingElement;
+}
+export interface URegistrationResumeCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationResumeElement;
+}
+export interface URegistrationRootCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationRootElement;
+}
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
@@ -850,6 +1103,23 @@ declare global {
     var HTMLUBrandConnectButtonElement: {
         prototype: HTMLUBrandConnectButtonElement;
         new (): HTMLUBrandConnectButtonElement;
+    };
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface HTMLUCaptchaFieldElement extends Components.UCaptchaField, HTMLStencilElement {
+    }
+    var HTMLUCaptchaFieldElement: {
+        prototype: HTMLUCaptchaFieldElement;
+        new (): HTMLUCaptchaFieldElement;
     };
     interface HTMLUConditionalRenderElement extends Components.UConditionalRender, HTMLStencilElement {
     }
@@ -1086,6 +1356,7 @@ declare global {
         new (): HTMLUPasswordFieldElement;
     };
     interface HTMLUProfileElementEventMap {
+        "uProfileChange": { data: ProfileRaw; field?: string };
         "uProfileSuccess": { message: string; payload: ProfileRaw };
         "uProfileError": {
     error: string;
@@ -1110,7 +1381,18 @@ declare global {
         prototype: HTMLUProfileElement;
         new (): HTMLUProfileElement;
     };
+    interface HTMLURawFieldElementEventMap {
+        "uFieldSubmit": { field: string };
+    }
     interface HTMLURawFieldElement extends Components.URawField, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURawFieldElementEventMap>(type: K, listener: (this: HTMLURawFieldElement, ev: URawFieldCustomEvent<HTMLURawFieldElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLURawFieldElement: {
         prototype: HTMLURawFieldElement;
@@ -1121,6 +1403,96 @@ declare global {
     var HTMLURegistrationButtonElement: {
         prototype: HTMLURegistrationButtonElement;
         new (): HTMLURegistrationButtonElement;
+    };
+    interface HTMLURegistrationEmailVerificationElement extends Components.URegistrationEmailVerification, HTMLStencilElement {
+    }
+    var HTMLURegistrationEmailVerificationElement: {
+        prototype: HTMLURegistrationEmailVerificationElement;
+        new (): HTMLURegistrationEmailVerificationElement;
+    };
+    interface HTMLURegistrationInternalMatchingElementEventMap {
+        "matchFound": MatchFoundEventDetail;
+    }
+    interface HTMLURegistrationInternalMatchingElement extends Components.URegistrationInternalMatching, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationInternalMatchingElement: {
+        prototype: HTMLURegistrationInternalMatchingElement;
+        new (): HTMLURegistrationInternalMatchingElement;
+    };
+    interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
+    }
+    var HTMLURegistrationNewsletterElement: {
+        prototype: HTMLURegistrationNewsletterElement;
+        new (): HTMLURegistrationNewsletterElement;
+    };
+    interface HTMLURegistrationNewsletterPreferenceElement extends Components.URegistrationNewsletterPreference, HTMLStencilElement {
+    }
+    var HTMLURegistrationNewsletterPreferenceElement: {
+        prototype: HTMLURegistrationNewsletterPreferenceElement;
+        new (): HTMLURegistrationNewsletterPreferenceElement;
+    };
+    interface HTMLURegistrationPasskeyElement extends Components.URegistrationPasskey, HTMLStencilElement {
+    }
+    var HTMLURegistrationPasskeyElement: {
+        prototype: HTMLURegistrationPasskeyElement;
+        new (): HTMLURegistrationPasskeyElement;
+    };
+    interface HTMLURegistrationResendElement extends Components.URegistrationResend, HTMLStencilElement {
+    }
+    var HTMLURegistrationResendElement: {
+        prototype: HTMLURegistrationResendElement;
+        new (): HTMLURegistrationResendElement;
+    };
+    interface HTMLURegistrationResumeElementEventMap {
+        "resumeSent": void;
+        "resumeError": { error: string };
+    }
+    interface HTMLURegistrationResumeElement extends Components.URegistrationResume, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationResumeElementEventMap>(type: K, listener: (this: HTMLURegistrationResumeElement, ev: URegistrationResumeCustomEvent<HTMLURegistrationResumeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationResumeElementEventMap>(type: K, listener: (this: HTMLURegistrationResumeElement, ev: URegistrationResumeCustomEvent<HTMLURegistrationResumeElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationResumeElement: {
+        prototype: HTMLURegistrationResumeElement;
+        new (): HTMLURegistrationResumeElement;
+    };
+    interface HTMLURegistrationRootElementEventMap {
+        "registrationComplete": RegistrationFlowResponse;
+        "stepChange": { stepName: string; stepIndex: number };
+        "errorEvent": { error: string };
+    }
+    interface HTMLURegistrationRootElement extends Components.URegistrationRoot, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationRootElementEventMap>(type: K, listener: (this: HTMLURegistrationRootElement, ev: URegistrationRootCustomEvent<HTMLURegistrationRootElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationRootElementEventMap>(type: K, listener: (this: HTMLURegistrationRootElement, ev: URegistrationRootCustomEvent<HTMLURegistrationRootElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationRootElement: {
+        prototype: HTMLURegistrationRootElement;
+        new (): HTMLURegistrationRootElement;
+    };
+    interface HTMLURegistrationStepElement extends Components.URegistrationStep, HTMLStencilElement {
+    }
+    var HTMLURegistrationStepElement: {
+        prototype: HTMLURegistrationStepElement;
+        new (): HTMLURegistrationStepElement;
     };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
@@ -1228,6 +1600,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "u-back-button": HTMLUBackButtonElement;
         "u-brand-connect-button": HTMLUBrandConnectButtonElement;
+        "u-captcha-field": HTMLUCaptchaFieldElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
         "u-email-field": HTMLUEmailFieldElement;
@@ -1262,6 +1635,15 @@ declare global {
         "u-profile": HTMLUProfileElement;
         "u-raw-field": HTMLURawFieldElement;
         "u-registration-button": HTMLURegistrationButtonElement;
+        "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
+        "u-registration-internal-matching": HTMLURegistrationInternalMatchingElement;
+        "u-registration-newsletter": HTMLURegistrationNewsletterElement;
+        "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
+        "u-registration-passkey": HTMLURegistrationPasskeyElement;
+        "u-registration-resend": HTMLURegistrationResendElement;
+        "u-registration-resume": HTMLURegistrationResumeElement;
+        "u-registration-root": HTMLURegistrationRootElement;
+        "u-registration-step": HTMLURegistrationStepElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
@@ -1282,7 +1664,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * If true, restarts the entire flow instead of going back one step. Use this for "Start over" buttons.
+          * If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow.
           * @default false
          */
         "restart"?: boolean;
@@ -1298,6 +1680,34 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    /**
+     * Captcha field component that renders a captcha widget when required
+     * Usage:
+     * ```html
+     * <u-captcha-field feature="login"></u-captcha-field>
+     * ```
+     * The component automatically:
+     * - Hides itself when captcha is not configured or not enabled for the feature
+     * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+     * - Is invisible for reCAPTCHA v3 (score-based)
+     */
+    interface UCaptchaField {
+        /**
+          * Accessible label for the captcha
+          * @default "Security verification"
+         */
+        "ariaLabel"?: string;
+        /**
+          * Custom CSS class for the container
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * The feature this captcha protects (login, registration, newsletter)
+          * @default "login"
+         */
+        "feature"?: CaptchaFeature;
     }
     interface UConditionalRender {
         "conditionFunction"?: (state: AuthState) => boolean;
@@ -1453,14 +1863,23 @@ declare namespace LocalJSX {
     }
     interface UFullProfile {
         /**
-          * For phone fields: how to display country code selector ('icon' or 'label').
+          * How to display country codes in select fields: "icon" for flag emoji, "label" for text.
           * @default "label"
          */
         "countryCodeDisplayOption"?: "icon" | "label";
         /**
-          * Comma-separated list of field names to display. If not provided, shows all fields.
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave"?: boolean;
+        /**
+          * Comma-separated list of field names to display. If not provided, all fields are shown.
          */
         "fields"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
     }
     interface UJumpToService {
         /**
@@ -1568,6 +1987,10 @@ declare namespace LocalJSX {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -1794,12 +2217,21 @@ declare namespace LocalJSX {
     }
     interface UProfile {
         /**
+          * Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.
+          * @default false
+         */
+        "enableAutosave"?: boolean;
+        /**
           * Initial profile data as JSON string or object. If provided, skips fetching from API.
           * @default ""
          */
         "initialData"?: string | Record<string, string>;
         /**
-          * Fired on profile update failure. Contains error code and details including field errors.
+          * Emitted whenever profile data changes. Useful for external state synchronization.
+         */
+        "onUProfileChange"?: (event: UProfileCustomEvent<{ data: ProfileRaw; field?: string }>) => void;
+        /**
+          * Emitted when profile save fails, with error details including field-level errors.
          */
         "onUProfileError"?: (event: UProfileCustomEvent<{
     error: string;
@@ -1810,7 +2242,7 @@ declare namespace LocalJSX {
     };
   }>) => void;
         /**
-          * Fired on successful profile update. Contains success message and updated profile data.
+          * Emitted when profile is successfully saved.
          */
         "onUProfileSuccess"?: (event: UProfileCustomEvent<{ message: string; payload: ProfileRaw }>) => void;
         /**
@@ -1819,9 +2251,13 @@ declare namespace LocalJSX {
          */
         "partialValidation"?: boolean;
         /**
-          * Optional profile ID (for multi-profile scenarios).
+          * Optional profile ID for multi-profile scenarios.
          */
         "profileId"?: string;
+        /**
+          * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
+         */
+        "saveDelay"?: number;
         /**
           * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
          */
@@ -1850,6 +2286,10 @@ declare namespace LocalJSX {
          */
         "invalidPhoneMessage"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
+        /**
+          * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
+         */
+        "onUFieldSubmit"?: (event: URawFieldCustomEvent<{ field: string }>) => void;
         "options"?: string | Option[];
         "pattern"?: string;
         "patternErrorMessage"?: string;
@@ -1879,6 +2319,175 @@ declare namespace LocalJSX {
           * @default window.location.href
          */
         "redirectUri"?: string;
+    }
+    interface URegistrationEmailVerification {
+        /**
+          * Whether to automatically send the verification code when this step becomes active.
+          * @default true
+         */
+        "autoSend"?: boolean;
+        /**
+          * CSS classes to apply to the fieldset container.
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to each individual digit input.
+         */
+        "inputClassName"?: string;
+    }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName"?: string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName"?: string;
+        /**
+          * Fired when an internal match is found after submitting the form. Use this event to populate a custom `slot="match-preview"` element with the matched account data.
+         */
+        "onMatchFound"?: (event: URegistrationInternalMatchingCustomEvent<MatchFoundEventDetail>) => void;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName"?: string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName"?: string;
+    }
+    interface URegistrationNewsletter {
+        /**
+          * Whether the checkbox is initially checked.
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The internal name of the newsletter (must match the newsletter configured in Unidy).
+         */
+        "name": string;
+    }
+    interface URegistrationNewsletterPreference {
+        /**
+          * Whether the checkbox is initially checked.
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * CSS classes to apply to the checkbox element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The internal name of the parent newsletter.
+         */
+        "name": string;
+        /**
+          * The preference key (e.g. "football", "tennis").
+         */
+        "preference": string;
+    }
+    interface URegistrationPasskey {
+        /**
+          * CSS classes to apply to the button element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * Disable the button.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Optional name for the passkey (defaults to "Passkey").
+         */
+        "passkeyName"?: string;
+    }
+    interface URegistrationResend {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
+    interface URegistrationResume {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * Fired when sending the resume link fails. Contains the error identifier.
+         */
+        "onResumeError"?: (event: URegistrationResumeCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the resume link email has been sent successfully.
+         */
+        "onResumeSent"?: (event: URegistrationResumeCustomEvent<void>) => void;
+    }
+    interface URegistrationRoot {
+        /**
+          * Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage.
+          * @default true
+         */
+        "autoResume"?: boolean;
+        /**
+          * Brand ID to associate with the registration flow. Only needed in multi-brand setups.
+         */
+        "brandId"?: number;
+        /**
+          * Fired when an error occurs during the registration flow.
+         */
+        "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when the registration flow is finalized and the user account is created.
+         */
+        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
+        /**
+          * Fired when the active step changes.
+         */
+        "onStepChange"?: (event: URegistrationRootCustomEvent<{ stepName: string; stepIndex: number }>) => void;
+        /**
+          * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
+         */
+        "registrationUrl"?: string;
+        /**
+          * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
+          * @default "[]"
+         */
+        "steps"?: string;
+    }
+    interface URegistrationStep {
+        /**
+          * If true, the step's content is always rendered regardless of which step is active.
+          * @default false
+         */
+        "alwaysRender"?: boolean;
+        /**
+          * The step identifier. Must match an entry in the parent `<u-registration-root>`'s `steps` array.
+         */
+        "name": string;
+        /**
+          * If true, this step is automatically skipped when the user's email is already verified.
+          * @default false
+         */
+        "requiresEmailVerification"?: boolean;
+        /**
+          * If true, this step is automatically skipped for social login or passwordless flows.
+          * @default false
+         */
+        "requiresPassword"?: boolean;
     }
     interface UResetPasswordButton {
         /**
@@ -2071,6 +2680,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "u-back-button": UBackButton;
         "u-brand-connect-button": UBrandConnectButton;
+        "u-captcha-field": UCaptchaField;
         "u-conditional-render": UConditionalRender;
         "u-config": UConfig;
         "u-email-field": UEmailField;
@@ -2105,6 +2715,15 @@ declare namespace LocalJSX {
         "u-profile": UProfile;
         "u-raw-field": URawField;
         "u-registration-button": URegistrationButton;
+        "u-registration-email-verification": URegistrationEmailVerification;
+        "u-registration-internal-matching": URegistrationInternalMatching;
+        "u-registration-newsletter": URegistrationNewsletter;
+        "u-registration-newsletter-preference": URegistrationNewsletterPreference;
+        "u-registration-passkey": URegistrationPasskey;
+        "u-registration-resend": URegistrationResend;
+        "u-registration-resume": URegistrationResume;
+        "u-registration-root": URegistrationRoot;
+        "u-registration-step": URegistrationStep;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
@@ -2123,6 +2742,18 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
             "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
+            /**
+             * Captcha field component that renders a captcha widget when required
+             * Usage:
+             * ```html
+             * <u-captcha-field feature="login"></u-captcha-field>
+             * ```
+             * The component automatically:
+             * - Hides itself when captcha is not configured or not enabled for the feature
+             * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
+             * - Is invisible for reCAPTCHA v3 (score-based)
+             */
+            "u-captcha-field": LocalJSX.UCaptchaField & JSXBase.HTMLAttributes<HTMLUCaptchaFieldElement>;
             "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
             "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
             "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
@@ -2157,6 +2788,15 @@ declare module "@stencil/core" {
             "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
+            "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
+            "u-registration-internal-matching": LocalJSX.URegistrationInternalMatching & JSXBase.HTMLAttributes<HTMLURegistrationInternalMatchingElement>;
+            "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
+            "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
+            "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
+            "u-registration-resend": LocalJSX.URegistrationResend & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
+            "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
+            "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
+            "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;

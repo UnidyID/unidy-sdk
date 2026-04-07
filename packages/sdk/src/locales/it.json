@@ -55,14 +55,28 @@
   "errors": {
     "account_locked": "Account bloccato",
     "account_not_found": "Account non trovato",
+    "account_unconfirmed": "L'indirizzo email dell'account non è stato confermato",
+    "auth_method_required": "Imposta una password o verifica la tua email per continuare",
     "authentication_failed": "Autenticazione fallita",
     "bad_request": "Richiesta non valida",
+    "cannot_finalize": "Impossibile completare la registrazione. Compila tutti i campi obbligatori",
+    "captcha_execution_failed": "Verifica di sicurezza fallita. Riprova",
+    "captcha_score_too_low": "Verifica di sicurezza fallita. Riprova",
+    "captcha_token_missing": "Completa la verifica di sicurezza",
+    "captcha_verification_failed": "Verifica di sicurezza fallita. Riprova",
+    "code_expired": "Il codice di verifica è scaduto. Richiedine uno nuovo",
     "connection_failed": "Impossibile connettersi al server Unidy",
+    "email_already_registered": "Questa email è già registrata. Accedi invece",
     "expired": "Scaduto",
     "failed_to_load_profile": "Impossibile caricare i dati del profilo. Controlla la configurazione",
+    "field_required": "Questo campo è obbligatorio",
+    "invalid_code": "Codice di verifica non valido. Riprova",
     "invalid_id_token": "Token ID non valido",
+    "invalid_format": "Formato non valido",
+    "invalid_input": "Input non valido",
     "invalid_passkey": "Passkey non valida",
     "invalid_password": "Password non valida",
+    "invalid_phone": "Inserisci un numero di telefono valido",
     "invalid_refresh_token": "Token di aggiornamento non valido",
     "invalid_required_fields_payload": "Payload dei campi obbligatori non valido",
     "invalid_reset_token": "Token di reimpostazione non valido. Richiedi una nuova email di reimpostazione password",
@@ -83,6 +97,7 @@
     "passkey_security_error": "Errore di sicurezza passkey",
     "password_not_set": "Password non impostata",
     "password_required": "Password richiesta",
+    "password_validation_failed": "La password non soddisfa i requisiti",
     "password_requirements": {
       "is too short (minimum is 6 characters)": "La password è troppo corta (minimo 6 caratteri)",
       "min_length": "La lunghezza minima è di 6 caratteri",
@@ -94,6 +109,9 @@
     "prefix": "ERRORE: ",
     "refresh_failed": "Impossibile aggiornare il token. Accedi di nuovo",
     "refresh_token_revoked": "Token di aggiornamento revocato",
+    "registration_expired": "Sessione di registrazione scaduta. Ricomincia",
+    "registration_flow_already_exists": "Una registrazione è già in corso per questa email",
+    "registration_not_found": "Sessione di registrazione non trovata. Ricomincia",
     "required_field": "{{field}} è obbligatorio",
     "reset_password_already_sent": "Reimpostazione password già inviata",
     "reset_token_expired": "Il token di reimpostazione è scaduto. Richiedi una nuova email di reimpostazione password",
@@ -120,6 +138,7 @@
     "sign_out_failed": "Uscita fallita, motivo: {{reason}}",
     "unknown": "Si è verificato un errore sconosciuto",
     "used": "Usato",
+    "verification_code_recently_sent": "Un codice di verifica è stato inviato di recente. Attendi prima di richiederne uno nuovo",
     "verification_failed": "Verifica fallita"
   },
   "loading": "Caricamento...",
@@ -169,5 +188,28 @@
   "profile": {
     "signInToView": "Accedi per visualizzare il tuo profilo",
     "updated": "Il profilo è stato aggiornato"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Cerca account",
+      "checking": "Ricerca...",
+      "confirm_button": "Sì, usa questo account",
+      "confirming": "Collegamento...",
+      "default_primary_label": "Numero cliente",
+      "error_expired": "La tua sessione di registrazione è scaduta. Ricomincia dall'inizio.",
+      "error_generic": "Si è verificato un errore. Riprova.",
+      "error_match_mismatch": "Le informazioni inserite non corrispondono ad alcun account. Verifica i tuoi dati e riprova.",
+      "error_match_not_found": "Nessun account trovato per le informazioni fornite. Verifica i tuoi dati e riprova.",
+      "error_no_match": "Nessun account corrispondente trovato. Puoi continuare senza collegamento.",
+      "match_confirm_question": "Vuoi collegare questo account esistente?",
+      "match_found_description": "Abbiamo trovato un account collegato ai tuoi dati.",
+      "match_found_title": "Account trovato!",
+      "preview_created_at": "Registrato il:",
+      "preview_email": "E-mail:",
+      "reject_button": "No, crea nuovo account",
+      "rejecting": "Continua...",
+      "skip_button": "Continua senza collegamento",
+      "skipping": "Continua..."
+    }
   }
 }

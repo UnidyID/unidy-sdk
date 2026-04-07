@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/browser";
-import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop, State } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
@@ -9,31 +9,36 @@ import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import { buildPayload, validateRequiredFields } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
+import { ProfileAutosave } from "./autosave";
 
-@Component({
-  tag: "u-profile",
-  shadow: false,
-})
+@Component({ tag: "u-profile", shadow: false })
 export class Profile {
-  @Element() el!: HTMLElement;
-
-  /** Optional profile ID (for multi-profile scenarios). */
+  /** Optional profile ID for multi-profile scenarios. */
   @Prop() profileId?: string;
+
   /** Initial profile data as JSON string or object. If provided, skips fetching from API. */
   @Prop() initialData: string | Record<string, string> = "";
+
   /**
    * When true, only validates and submits fields rendered as u-field components.
    * Use when your form shows a subset of profile fields.
    */
   @Prop() partialValidation = false;
+
   /**
    * Comma-separated list of fields to validate. Overrides auto-detection when partialValidation is true.
    */
   @Prop() validateFields?: string;
 
-  /** Fired on successful profile update. Contains success message and updated profile data. */
+  @State() fetchingProfileData = false;
+
+  /** Emitted whenever profile data changes. Useful for external state synchronization. */
+  @Event() uProfileChange!: EventEmitter<{ data: ProfileRaw; field?: string }>;
+
+  /** Emitted when profile is successfully saved. */
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
-  /** Fired on profile update failure. Contains error code and details including field errors. */
+
+  /** Emitted when profile save fails, with error details including field-level errors. */
   @Event() uProfileError!: EventEmitter<{
     error: string;
     details: {
@@ -43,7 +48,25 @@ export class Profile {
     };
   }>;
 
-  @State() fetchingProfileData = false;
+  @Listen("uFieldSubmit")
+  handleFieldSubmit(event: CustomEvent<{ field: string }>) {
+    event.stopPropagation();
+    if (this.enableAutosave) {
+      this.getAutosaveManager().submitField(event.detail.field);
+    }
+  }
+
+  /** Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set. */
+  @Prop() enableAutosave = false;
+
+  /** Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead. */
+  @Prop() saveDelay?: number;
+
+  private autoSaveManager: ProfileAutosave | null = null;
+  private dataChangeUnsubscribe: (() => void) | null = null;
+  private activeFieldUnsubscribe: (() => void) | null = null;
+  private initialLoadComplete = false;
+  private previousActiveField: string | null = null;
 
   /**
    * Fields registered by child u-field components for partial validation.
@@ -124,6 +147,13 @@ export class Profile {
     }
   }
 
+  private getAutosaveManager(): ProfileAutosave {
+    if (!this.autoSaveManager) {
+      this.autoSaveManager = new ProfileAutosave(this.saveDelay ?? 0, () => this.submitProfile());
+    }
+    return this.autoSaveManager;
+  }
+
   @Method()
   async submitProfile() {
     profileState.loading = true;
@@ -192,6 +222,36 @@ export class Profile {
         this.fetchProfileData();
       }
     });
+
+    // Set up data change listener - always emit event, optionally debounced autosave
+    this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
+      if (this.initialLoadComplete) {
+        this.uProfileChange.emit({ data: data as ProfileRaw });
+
+        // Only use debounced autosave if delay is explicitly set
+        if (this.enableAutosave && this.saveDelay) {
+          this.getAutosaveManager().debouncedSave();
+        }
+      }
+    });
+
+    // Set flag after listener to ensure no data change events are missed
+    this.initialLoadComplete = true;
+
+    // Save on blur: when activeField goes from a field to null, trigger save
+    this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {
+      if (this.enableAutosave && !this.saveDelay && this.previousActiveField && field === null) {
+        this.getAutosaveManager().submitField(this.previousActiveField);
+      }
+      this.previousActiveField = field;
+    });
+  }
+
+  disconnectedCallback() {
+    this.autoSaveManager?.destroy();
+    this.dataChangeUnsubscribe?.();
+    this.activeFieldUnsubscribe?.();
+    profileState.activeField = null;
   }
 
   /**
