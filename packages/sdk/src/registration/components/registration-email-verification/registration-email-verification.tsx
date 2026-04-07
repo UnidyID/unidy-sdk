@@ -1,6 +1,7 @@
 import { Component, Element, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { onChange, registrationState, registrationStore } from "../../store/registration-store";
+import { getParentRegistrationStepName } from "../helpers";
 
 const CODE_LENGTH = 4;
 
@@ -58,7 +59,7 @@ export class RegistrationEmailVerification {
       !this.autoSend ||
       registrationState.verificationCodeSent ||
       !registrationState.rid ||
-      this.element?.closest("u-registration-step")?.getAttribute("name") !== registrationState.currentStepName
+      getParentRegistrationStepName(this.element) !== registrationState.currentStepName
     )
       return;
     this.sendCode();
