@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { onChange, registrationState, registrationStore } from "../../store/registration-store";
 
@@ -10,6 +10,8 @@ const CODE_LENGTH = 4;
   shadow: false,
 })
 export class RegistrationEmailVerification {
+  @Element() element!: HTMLElement;
+
   /** Whether to automatically send the verification code when this step becomes active. */
   @Prop({ attribute: "auto-send" }) autoSend = true;
 
@@ -52,7 +54,13 @@ export class RegistrationEmailVerification {
   }
 
   private tryAutoSend(): void {
-    if (!this.autoSend || registrationState.verificationCodeSent || !registrationState.rid) return;
+    if (
+      !this.autoSend ||
+      registrationState.verificationCodeSent ||
+      !registrationState.rid ||
+      this.element?.closest("u-registration-step")?.getAttribute("name") !== registrationState.currentStepName
+    )
+      return;
     this.sendCode();
   }
 
