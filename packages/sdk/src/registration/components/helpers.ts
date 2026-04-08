@@ -2,10 +2,6 @@ export function getParentRegistrationStep(element: HTMLElement): HTMLURegistrati
   return element.closest("u-registration-step") as HTMLURegistrationStepElement;
 }
 
-export function getParentRegistrationStepName(element: HTMLElement): string | null {
-  return getParentRegistrationStep(element)?.getAttribute("name") ?? null;
-}
-
 export function getParentRegistrationRoot(element: HTMLElement): HTMLURegistrationRootElement | null {
   return element.closest("u-registration-root") as HTMLURegistrationRootElement;
 }
