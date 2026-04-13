@@ -174,12 +174,16 @@ export class AuthService extends BaseService {
   // Jump-to methods
   // ============================================
 
-  jumpToService(serviceId: string, request: JumpToServiceRequest): Promise<jumpTo.JumpToServiceResult> {
-    return jumpTo.jumpToService(this.client, serviceId, request, this.respond);
+  async jumpToService(serviceId: string, request: JumpToServiceRequest): Promise<jumpTo.JumpToServiceResult> {
+    const idToken = await this.getIdToken();
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    return jumpTo.jumpToService(this.client, serviceId, request, this.respond, headers);
   }
 
-  jumpToUnidy(request: JumpToUnidyRequest): Promise<jumpTo.JumpToUnidyResult> {
-    return jumpTo.jumpToUnidy(this.client, request, this.respond);
+  async jumpToUnidy(request: JumpToUnidyRequest): Promise<jumpTo.JumpToUnidyResult> {
+    const idToken = await this.getIdToken();
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    return jumpTo.jumpToUnidy(this.client, request, this.respond, headers);
   }
 
   // ============================================

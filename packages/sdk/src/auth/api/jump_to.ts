@@ -23,6 +23,7 @@ export type JumpToServiceResult =
   | ["application_not_found", ErrorResponse]
   | ["invalid_redirect_uri", ErrorResponse]
   | ["invalid_scope", ErrorResponse]
+  | ["invalid_path", ErrorResponse]
   | [null, string];
 
 export type JumpToUnidyResult = CommonErrors | ["user_not_found", ErrorResponse] | ["invalid_path", ErrorResponse] | [null, string];
@@ -40,9 +41,10 @@ export async function jumpToService(
   serviceId: string,
   request: JumpToServiceRequest,
   handleResponse: HandleResponseFn,
+  headers?: HeadersInit,
 ): Promise<JumpToServiceResult> {
   const validatedRequest = JumpToServiceRequestSchema.parse(request);
-  const response = await client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest);
+  const response = await client.post<unknown>(`/api/sdk/v1/jump_to/service/${serviceId}`, validatedRequest, headers);
 
   return handleResponse(response, () => {
     if (!response.success) {
@@ -50,7 +52,7 @@ export async function jumpToService(
       if (errorParse.success) {
         const errorIdentifier = errorParse.data.error_identifier;
         return [
-          errorIdentifier as "user_not_found" | "application_not_found" | "invalid_redirect_uri" | "invalid_scope",
+          errorIdentifier as "user_not_found" | "application_not_found" | "invalid_redirect_uri" | "invalid_scope" | "invalid_path",
           { error_identifier: errorIdentifier },
         ];
       }
@@ -75,9 +77,10 @@ export async function jumpToUnidy(
   client: ApiClientInterface,
   request: JumpToUnidyRequest,
   handleResponse: HandleResponseFn,
+  headers?: HeadersInit,
 ): Promise<JumpToUnidyResult> {
   const validatedRequest = JumpToUnidyRequestSchema.parse(request);
-  const response = await client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest);
+  const response = await client.post<unknown>("/api/sdk/v1/jump_to/unidy", validatedRequest, headers);
 
   return handleResponse(response, () => {
     if (!response.success) {

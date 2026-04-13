@@ -120,6 +120,12 @@ export const JumpToServiceRequestSchema = z.object({
   redirect_uri: z.string().nullish(),
   scopes: z.array(z.string()).nullish(),
   skip_oauth_authorization: z.boolean().optional(),
+  path: z
+    .string()
+    .refine((val) => val.startsWith("/"), {
+      message: "Path must start with '/'",
+    })
+    .optional(),
 });
 
 export const JumpToUnidyRequestSchema = z.object({

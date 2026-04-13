@@ -7,14 +7,15 @@
 
 ## Properties
 
-| Property                 | Attribute                  | Description                                                                                          | Type      | Default     |
-| ------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------- | --------- | ----------- |
-| `componentClassName`     | `class-name`               | Custom CSS class name(s) to apply to the button element.                                             | `string`  | `""`        |
-| `newtab`                 | `newtab`                   | If true, opens the URL in a new tab. Defaults to false.                                              | `boolean` | `false`     |
-| `redirectUri`            | `redirect-uri`             | Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs. | `string`  | `undefined` |
-| `scopes`                 | `scopes`                   | Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.             | `string`  | `undefined` |
-| `serviceId` _(required)_ | `service-id`               | The OAuth Application ID (service ID) to jump to.                                                    | `string`  | `undefined` |
-| `skipOauthAuthorization` | `skip-oauth-authorization` | If true, skips the OAuth authorization step (if already authorized once). Defaults to false.         | `boolean` | `false`     |
+| Property                 | Attribute                  | Description                                                                                                                                                                                                  | Type      | Default     |
+| ------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ----------- |
+| `componentClassName`     | `class-name`               | Custom CSS class name(s) to apply to the button element.                                                                                                                                                     | `string`  | `""`        |
+| `newtab`                 | `newtab`                   | If true, opens the URL in a new tab. Defaults to false.                                                                                                                                                      | `boolean` | `false`     |
+| `path`                   | `path`                     | Optional internal Unidy path to redirect to after authentication (e.g. "/profile"). When provided, the user is signed in and redirected to this path instead of the OAuth redirect_uri. Must start with "/". | `string`  | `undefined` |
+| `redirectUri`            | `redirect-uri`             | Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.                                                                                                         | `string`  | `undefined` |
+| `scopes`                 | `scopes`                   | Comma-separated list of OAuth scopes to request. Defaults to ["openid"] if not provided.                                                                                                                     | `string`  | `undefined` |
+| `serviceId` _(required)_ | `service-id`               | The OAuth Application ID (service ID) to jump to.                                                                                                                                                            | `string`  | `undefined` |
+| `skipOauthAuthorization` | `skip-oauth-authorization` | If true, skips the OAuth authorization step (if already authorized once). Defaults to false.                                                                                                                 | `boolean` | `false`     |
 
 
 ## Dependencies

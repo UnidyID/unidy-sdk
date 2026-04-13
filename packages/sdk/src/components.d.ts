@@ -280,6 +280,11 @@ export namespace Components {
          */
         "newtab": boolean;
         /**
+          * Optional internal Unidy path to redirect to after authentication (e.g. "/profile"). When provided, the user is signed in and redirected to this path instead of the OAuth redirect_uri. Must start with "/".
+          * @example "/profile"
+         */
+        "path"?: string;
+        /**
           * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
          */
         "redirectUri"?: string;
@@ -1892,6 +1897,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "newtab"?: boolean;
+        /**
+          * Optional internal Unidy path to redirect to after authentication (e.g. "/profile"). When provided, the user is signed in and redirected to this path instead of the OAuth redirect_uri. Must start with "/".
+          * @example "/profile"
+         */
+        "path"?: string;
         /**
           * Optional redirect URI for the OAuth flow. Must match one of the application's allowed redirect URIs.
          */

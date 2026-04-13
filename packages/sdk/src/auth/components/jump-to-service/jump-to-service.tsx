@@ -47,6 +47,14 @@ export class JumpToService extends UnidyComponent(HasSlotContent) {
    */
   @Prop({ attribute: "skip-oauth-authorization" }) skipOauthAuthorization = false;
 
+  /**
+   * Optional internal Unidy path to redirect to after authentication (e.g. "/profile").
+   * When provided, the user is signed in and redirected to this path instead of the OAuth redirect_uri.
+   * Must start with "/".
+   * @example "/profile"
+   */
+  @Prop() path?: string;
+
   @State() loading = false;
 
   private handleClick = async (event: Event) => {
@@ -80,6 +88,7 @@ export class JumpToService extends UnidyComponent(HasSlotContent) {
         redirect_uri: this.redirectUri,
         scopes: scopesArray,
         skip_oauth_authorization: this.skipOauthAuthorization,
+        path: this.path,
       });
 
       if (error) {
