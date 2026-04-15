@@ -431,6 +431,10 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * Optional URL used as the `redirect_uri` when sending the login email. When provided, overrides the default (current page URL).  The URL is passed as-is to the backend — no client-side substitution is performed. The following placeholders are substituted server-side: - `{preference_token}` — the user's preference token - `{email}` — the subscriber's email address - `{newsletter_internal_name}` — the newsletter's internal name  **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts` list (configurable in the Unidy dashboard), otherwise the API will return 403.
+         */
+        "redirectUri"?: string;
         "submit": (forType?: NewsletterButtonFor) => Promise<void>;
     }
     interface UNewsletterToggleSubscriptionButton {
@@ -2038,6 +2042,10 @@ declare namespace LocalJSX {
           * Fired on successful newsletter subscription. Contains the email and subscribed newsletters.
          */
         "onUNewsletterSuccess"?: (event: UNewsletterRootCustomEvent<{ email: string; newsletters: string[] }>) => void;
+        /**
+          * Optional URL used as the `redirect_uri` when sending the login email. When provided, overrides the default (current page URL).  The URL is passed as-is to the backend — no client-side substitution is performed. The following placeholders are substituted server-side: - `{preference_token}` — the user's preference token - `{email}` — the subscriber's email address - `{newsletter_internal_name}` — the newsletter's internal name  **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts` list (configurable in the Unidy dashboard), otherwise the API will return 403.
+         */
+        "redirectUri"?: string;
     }
     interface UNewsletterToggleSubscriptionButton {
         /**
