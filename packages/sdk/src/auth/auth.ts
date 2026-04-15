@@ -49,6 +49,7 @@ export type AuthError = Error & {
  */
 export class Auth {
   private static instance: Auth;
+  private static initializationPromise: Promise<Auth> | null = null;
 
   /** Helper methods for redirects, token refresh, and sign-in step recovery. */
   readonly helpers: AuthHelpers;
@@ -86,15 +87,22 @@ export class Auth {
 
   /**
    * Returns the singleton Auth instance, initializing it (and waiting for config) if needed.
+   * Multiple concurrent callers share the same in-flight initialization promise so that
+   * initialize() — and therefore recoverSignInStep() — is never called more than once.
    */
-  static async getInstance(): Promise<Auth> {
-    if (!Auth.isInitialized()) {
-      await waitForConfig();
-
-      return Auth.initialize(getUnidyClient());
+  static getInstance(): Promise<Auth> {
+    if (Auth.instance) {
+      return Promise.resolve(Auth.instance);
     }
-
-    return Auth.instance;
+    if (!Auth.initializationPromise) {
+      Auth.initializationPromise = waitForConfig()
+        .then(() => Auth.initialize(getUnidyClient()))
+        .catch((err) => {
+          Auth.initializationPromise = null;
+          throw err;
+        });
+    }
+    return Auth.initializationPromise;
   }
 
   /**
@@ -121,6 +129,7 @@ export class Auth {
     // Resume auth flow after page reload or new tab by recovering the sign-in step
     Auth.instance.helpers.recoverSignInStep();
 
+    Auth.initializationPromise = null;
     return Auth.instance;
   }
 
