@@ -285,13 +285,10 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
       // Don't allow toggling if subscription is unconfirmed
       if (!sub.confirmed) return false;
 
-      const currentIds =
-        sub.preference_identifiers.length > 0 ? sub.preference_identifiers : allPreferenceIds;
+      const currentIds = sub.preference_identifiers.length > 0 ? sub.preference_identifiers : allPreferenceIds;
       const isSelected = currentIds.includes(preferenceId);
 
-      const newIds = isSelected
-        ? currentIds.filter((id) => id !== preferenceId)
-        : [...currentIds, preferenceId];
+      const newIds = isSelected ? currentIds.filter((id) => id !== preferenceId) : [...currentIds, preferenceId];
 
       if (newIds.length === 0) {
         return unsubscribe(internalName);

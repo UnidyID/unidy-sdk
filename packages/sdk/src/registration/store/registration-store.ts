@@ -320,4 +320,4 @@ class RegistrationStore {
 }
 
 export const registrationStore = new RegistrationStore();
-export { state as registrationState, registrationStoreOnChange as onChange };
+export { registrationStoreOnChange as onChange, state as registrationState };

@@ -80,4 +80,4 @@ function getUnidyClient(): UnidyClient {
   return instance;
 }
 
-export { getUnidyClient, ApiClient, ApiResponse };
+export { ApiClient, ApiResponse, getUnidyClient };
