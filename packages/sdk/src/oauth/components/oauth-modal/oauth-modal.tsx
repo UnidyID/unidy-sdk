@@ -77,6 +77,8 @@ export class OAuthModal extends UnidyComponent() {
       return null;
     }
 
+    const isActive = oauthState.step === "consent" || oauthState.step === "submitting";
+
     return (
       // biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose
       <dialog
@@ -84,6 +86,7 @@ export class OAuthModal extends UnidyComponent() {
         onClose={this.handleDialogClose}
         onClick={this.handleBackdropClick}
         class={this.componentClassName}
+        style={isActive ? undefined : { display: "none" }}
         aria-labelledby="oauth-modal-title"
         aria-describedby="oauth-modal-description"
       >
