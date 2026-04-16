@@ -28,6 +28,10 @@ export class OAuthModal extends UnidyComponent() {
   private dialogRef?: HTMLDialogElement;
   private unsubscribe?: () => void;
 
+  private get isActive() {
+    return oauthState.step === "consent" || oauthState.step === "submitting";
+  }
+
   connectedCallback() {
     this.provider = getOAuthProvider(this.element);
 
@@ -46,18 +50,15 @@ export class OAuthModal extends UnidyComponent() {
   }
 
   componentDidRender() {
-    const shouldBeOpen = oauthState.step === "consent" || oauthState.step === "submitting";
-
-    if (shouldBeOpen && this.dialogRef && !this.dialogRef.open) {
+    if (this.isActive && this.dialogRef && !this.dialogRef.open) {
       this.dialogRef.showModal();
-    } else if (!shouldBeOpen && this.dialogRef?.open) {
+    } else if (!this.isActive && this.dialogRef?.open) {
       this.dialogRef.close();
     }
   }
 
   private handleDialogClose = () => {
-    const isOpen = oauthState.step === "consent" || oauthState.step === "submitting";
-    if (isOpen) {
+    if (this.isActive) {
       this.provider?.cancel();
     }
   };
@@ -77,8 +78,6 @@ export class OAuthModal extends UnidyComponent() {
       return null;
     }
 
-    const isActive = oauthState.step === "consent" || oauthState.step === "submitting";
-
     return (
       // biome-ignore lint/a11y/useKeyWithClickEvents: dialog handles keyboard via onClose
       <dialog
@@ -86,7 +85,7 @@ export class OAuthModal extends UnidyComponent() {
         onClose={this.handleDialogClose}
         onClick={this.handleBackdropClick}
         class={this.componentClassName}
-        style={isActive ? undefined : { display: "none" }}
+        style={this.isActive ? undefined : { display: "none" }}
         aria-labelledby="oauth-modal-title"
         aria-describedby="oauth-modal-description"
       >
