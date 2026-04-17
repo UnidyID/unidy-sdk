@@ -1,6 +1,15 @@
 import type { HookCallbacks } from "../types";
 
-export type AuthStep = "idle" | "email" | "verification" | "password" | "magic-code" | "reset-password" | "connect-brand" | "missing-fields" | "authenticated";
+export type AuthStep =
+  | "idle"
+  | "email"
+  | "verification"
+  | "password"
+  | "magic-code"
+  | "reset-password"
+  | "connect-brand"
+  | "missing-fields"
+  | "authenticated";
 
 export interface LoginOptions {
   magic_link: boolean;

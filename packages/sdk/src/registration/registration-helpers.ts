@@ -1,4 +1,6 @@
 import type { UnidyClient } from "../api";
+import { authStore } from "../auth";
+import type { TokenResponse } from "../auth/api";
 import type {
   CreateRegistrationPayload,
   InternalMatchingConfig,
@@ -8,8 +10,6 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "../auth/api/register";
-import type { TokenResponse } from "../auth/api";
-import { authStore } from "../auth";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
 import { buildPublicKeyCreationOptions, formatCreationCredentialForServer, PASSKEY_ERRORS } from "../shared/passkey-utils";

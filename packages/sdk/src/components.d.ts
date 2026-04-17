@@ -18,7 +18,7 @@ import { Option } from "./shared/components/raw-field/components/Select";
 import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
 import { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
-import { RegistrationFlowResponse } from "./auth/api/register";
+import { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
@@ -39,7 +39,7 @@ export { Option } from "./shared/components/raw-field/components/Select";
 export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
 export { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
-export { RegistrationFlowResponse } from "./auth/api/register";
+export { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
@@ -1474,7 +1474,7 @@ declare global {
         new (): HTMLURegistrationResumeElement;
     };
     interface HTMLURegistrationRootElementEventMap {
-        "registrationComplete": RegistrationFlowResponse;
+        "registrationComplete": RegistrationCompleteEvent;
         "stepChange": { stepName: string; stepIndex: number };
         "errorEvent": { error: string };
     }
@@ -2461,7 +2461,7 @@ declare namespace LocalJSX {
         /**
           * Fired when the registration flow is finalized and the user account is created.
          */
-        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
+        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationCompleteEvent>) => void;
         /**
           * Fired when the active step changes.
          */
