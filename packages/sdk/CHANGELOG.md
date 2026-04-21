@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.4.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* [UD-2421] guard auto-send in componentWillLoad against inactive step ([#247](https://github.com/UnidyID/unidy-sdk/issues/247)) ([9fd9159](https://github.com/UnidyID/unidy-sdk/commit/9fd9159ed0f2e5c5fa5348b245c78e2beb1fe660))
+
 ## [1.4.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.4.0) (2026-04-17)
 
 
