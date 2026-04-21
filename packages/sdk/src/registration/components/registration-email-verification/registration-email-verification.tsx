@@ -33,9 +33,7 @@ export class RegistrationEmailVerification {
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
 
-    if (this.autoSend && !registrationState.verificationCodeSent && registrationState.rid) {
-      await this.sendCode();
-    }
+    this.tryAutoSend();
 
     // Subscribe to step changes to handle auto-send when this step becomes active
     // (needed for slotted components where componentWillLoad fires before rid is available)
