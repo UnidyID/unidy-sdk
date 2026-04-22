@@ -3,6 +3,7 @@ import { NewsletterService } from "../newsletter/api/newsletters";
 import { ProfileService } from "../profile/api/profile";
 import { SubscriptionsService } from "../ticketable/api/subscriptions";
 import { TicketsService } from "../ticketable/api/tickets";
+import { TransactionsService } from "../transaction/api/transactions";
 import { BaseApiClient } from "./base-client";
 import type { ServiceDependencies } from "./base-service";
 
@@ -47,6 +48,8 @@ export type * from "../ticketable/api/subscriptions";
 export { SubscriptionsService } from "../ticketable/api/subscriptions";
 export type * from "../ticketable/api/tickets";
 export { TicketsService } from "../ticketable/api/tickets";
+export type * from "../transaction/api/transactions";
+export { TransactionsService } from "../transaction/api/transactions";
 export type { ApiClientConfig, ApiResponse, QueryParams } from "./base-client";
 export type {
   ApiClientInterface,
@@ -121,6 +124,7 @@ export class StandaloneUnidyClient {
   public profile: ProfileService;
   public tickets: TicketsService;
   public subscriptions: SubscriptionsService;
+  public transactions: TransactionsService;
 
   constructor(config: StandaloneUnidyClientConfig) {
     const apiClient = new StandaloneApiClient(config);
@@ -131,6 +135,7 @@ export class StandaloneUnidyClient {
     this.profile = new ProfileService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
+    this.transactions = new TransactionsService(apiClient, deps);
   }
 }
 

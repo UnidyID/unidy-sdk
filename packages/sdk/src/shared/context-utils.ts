@@ -8,6 +8,7 @@ type ParentComponentMap = {
   "u-signin-step": HTMLUSigninStepElement;
   "u-newsletter-root": HTMLUNewsletterRootElement;
   "u-ticketable-list": HTMLUTicketableListElement;
+  "u-transaction-list": HTMLUTransactionListElement;
   "u-oauth-provider": HTMLUOauthProviderElement;
   "u-registration-root": HTMLURegistrationRootElement;
 };
@@ -72,6 +73,23 @@ export function findParentTicketableList(element: HTMLElement): HTMLUTicketableL
 }
 
 /**
+ * Find the parent u-transaction-list component.
+ */
+export function findParentTransactionList(element: HTMLElement): HTMLUTransactionListElement | null {
+  return findParent(element, "u-transaction-list");
+}
+
+/**
+ * Find the nearest paginated list ancestor (u-ticketable-list or u-transaction-list).
+ * Used by pagination controls to locate the list whose `page` attribute they drive.
+ */
+export function findParentPaginatedList(element: HTMLElement): HTMLUTicketableListElement | HTMLUTransactionListElement | null {
+  return (
+    (element.closest("u-ticketable-list, u-transaction-list") as HTMLUTicketableListElement | HTMLUTransactionListElement | null) ?? null
+  );
+}
+
+/**
  * Find the parent u-oauth-provider component.
  */
 export function findParentOAuthProvider(element: HTMLElement): HTMLUOauthProviderElement | null {
@@ -123,7 +141,7 @@ export function detectContext(element: HTMLElement): ComponentContext | null {
     return "newsletter";
   }
 
-  if (findParentTicketableList(element)) {
+  if (findParentTicketableList(element) || findParentTransactionList(element)) {
     return "ticketable";
   }
 

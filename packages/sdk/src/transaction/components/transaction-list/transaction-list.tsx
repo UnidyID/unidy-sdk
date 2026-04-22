@@ -9,9 +9,8 @@ import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { createSkeletonLoader, replaceTextNodesWithSkeletons } from "../../../shared/skeleton-helpers";
 import { unidyState, waitForConfig } from "../../../shared/store/unidy-store";
-import type { Subscription } from "../../api/subscriptions";
-import type { Ticket } from "../../api/tickets";
-import type { PaginationStore } from "../../store/pagination-store";
+import type { PaginationStore } from "../../../ticketable/store/pagination-store";
+import type { Transaction } from "../../api/transactions";
 
 const LOCALES: Record<string, Locale> = {};
 
@@ -19,23 +18,17 @@ const LOCALES: Record<string, Locale> = {};
  * Extracts a nested value from an object using a path string.
  * Supports dot notation for object properties and bracket notation for arrays.
  * Paths must use dot notation throughout, e.g., "metadata.foo.bar.[1]"
- * Examples:
- *   - "metadata.foo.bar" -> item.metadata.foo.bar
- *   - "metadata.foo.bar.[1]" -> item.metadata.foo.bar[1]
- *   - "wallet_export.[0].address" -> item.wallet_export[0].address
  */
 // biome-ignore lint/suspicious/noExplicitAny: Dynamic nested property access requires any
 function getNestedValue(obj: any, path: string): any {
   if (!path || !obj) return undefined;
 
-  // Split by dots and process each part
   const parts = path.split(".").filter(Boolean);
   let result = obj;
 
   for (const part of parts) {
     if (result == null) return undefined;
 
-    // Check if this part is an array index like "[1]"
     if (part.startsWith("[") && part.endsWith("]")) {
       const indexStr = part.slice(1, -1);
       const index = /^\d+$/.test(indexStr) ? Number.parseInt(indexStr, 10) : indexStr;
@@ -53,7 +46,6 @@ function getNestedValue(obj: any, path: string): any {
 }
 
 async function loadLocales() {
-  // TODO: This should be pulled into a shared component
   await Promise.all([
     !LOCALES.en &&
       import("date-fns/locale/en-GB").then((module) => {
@@ -82,14 +74,14 @@ async function loadLocales() {
   ]);
 }
 
-@Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList extends UnidyComponent() {
+@Component({ tag: "u-transaction-list", shadow: false })
+export class TransactionList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
 
-  // TODO: move into a generic store, since we'll have this kind of fetching all over the app (also implement SWR and other things inside of it)
-  @State() items: Subscription[] | Ticket[] = [];
+  @State() items: Transaction[] = [];
   @State() loading = true;
   @State() error: string | null = null;
+
   /** Pagination metadata from the API response. */
   @Prop() paginationMeta: PaginationMeta | null = null;
 
@@ -98,11 +90,9 @@ export class TicketableList extends UnidyComponent() {
   /** CSS classes to apply to the container element. */
   @Prop() containerClass?: string;
 
-  // TODO: add a component that can override this
-  /** Filter string for API queries (e.g., 'state=active;payment_state=paid'). */
+  /** Filter string for API queries (e.g., 'state=completed;financial_status=paid'). */
   @Prop({ mutable: true }) filter = "";
 
-  // TODO: Add pagination component to override all of this
   /** Number of items per page. */
   @Prop({ mutable: true }) limit = 10;
   /** Current page number. */
@@ -112,8 +102,6 @@ export class TicketableList extends UnidyComponent() {
   @Prop() skeletonCount?: number;
   /** If true, replaces all text content with skeleton loaders. */
   @Prop() skeletonAllText?: boolean = false;
-  /** The type of ticketable items to list ('ticket' or 'subscription'). */
-  @Prop() ticketableType!: "ticket" | "subscription";
 
   @Watch("page")
   @Watch("limit")
@@ -125,23 +113,21 @@ export class TicketableList extends UnidyComponent() {
   /** Pagination store instance for external state management. */
   @Prop() store: PaginationStore | null = null;
 
-  /** Fired when items are successfully fetched. Contains items and pagination metadata. */
-  @Event() uTicketableListSuccess!: EventEmitter<{
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+  /** Fired when transactions are successfully fetched. Contains items and pagination metadata. */
+  @Event() uTransactionListSuccess!: EventEmitter<{
+    items: Transaction[];
     paginationMeta: PaginationMeta | null;
   }>;
 
-  /** Fired when fetching items fails. Contains the error message. */
-  @Event() uTicketableListError!: EventEmitter<{
-    ticketableType?: "ticket" | "subscription";
+  /** Fired when fetching transactions fails. Contains the error message. */
+  @Event() uTransactionListError!: EventEmitter<{
     error: string;
   }>;
 
   async componentWillLoad() {
     await waitForConfig();
     loadLocales().catch((err) => {
-      console.error("[u-ticketable-list] Failed to load locales, falling back to 'en'", err);
+      console.error("[u-transaction-list] Failed to load locales, falling back to 'en'", err);
     });
   }
 
@@ -175,33 +161,16 @@ export class TicketableList extends UnidyComponent() {
   private async loadData() {
     this.loading = true;
 
-    if (!this.ticketableType) {
-      this.error = "[u-ticketable-list] ticketable-type attribute is required";
-      this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
-      return;
-    }
-
-    if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
-      this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
-      this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
-      return;
-    }
-
-    // TODO: Add a simple shared way of doing this
     const auth = await Auth.getInstance();
     if (!auth) {
-      this.error = "[u-ticketable-list] Auth instance not found";
+      this.error = "[u-transaction-list] Auth instance not found";
       this.loading = false;
       return;
     }
-
-    // TODO: Handle auth on change THAT SHOULD EXIST ON THE AUTH INSTANCE
 
     const idToken = await auth.getToken();
     if (typeof idToken !== "string") {
-      this.error = "[u-ticketable-list] Failed to get ID token";
+      this.error = "[u-transaction-list] Failed to get ID token";
       this.loading = false;
       return;
     }
@@ -212,33 +181,22 @@ export class TicketableList extends UnidyComponent() {
       // Parse filter string into typed args using URLSearchParams (treats ; as separator)
       const filterArgs: Record<string, string> = Object.fromEntries(new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries());
 
-      // Common args for both services
-      const commonArgs = {
+      const [error, data] = await unidyClient.transactions.list({
         page: this.page,
         perPage: this.limit,
         state: filterArgs.state,
-        paymentState: filterArgs.payment_state,
-        orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
+        financialStatus: filterArgs.financial_status,
+        orderType: filterArgs.order_type,
+        sourcePlatform: filterArgs.source_platform,
+        externalId: filterArgs.external_id,
+        orderBy: filterArgs.order_by as "placed_at" | "created_at" | "total" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
-        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
-      };
-
-      // Call the appropriate service with type-safe args
-      const [error, data] =
-        this.ticketableType === "ticket"
-          ? await unidyClient.tickets.list({
-              ...commonArgs,
-              ticketCategoryId: filterArgs.ticket_category_id,
-            })
-          : await unidyClient.subscriptions.list({
-              ...commonArgs,
-              subscriptionCategoryId: filterArgs.subscription_category_id,
-            });
+      });
 
       if (error !== null || !data || !("results" in data)) {
         this.error = this.getTranslatedError(error);
         this.loading = false;
-        this.uTicketableListError.emit({ error: this.error });
+        this.uTransactionListError.emit({ error: this.error });
         return;
       }
 
@@ -252,17 +210,17 @@ export class TicketableList extends UnidyComponent() {
 
       this.loading = false;
 
-      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      this.uTransactionListSuccess.emit({ items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
-      this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
+      this.error = err instanceof Error ? err.message : "[u-transaction-list] An error occurred";
       this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
+      this.uTransactionListError.emit({ error: this.error });
     }
   }
 
   private getTranslatedError(error: string | null): string {
     if (!error) {
-      return t("ticketable.errors.fetch_failed", { defaultValue: "Failed to load data" });
+      return t("transaction.errors.fetch_failed", { defaultValue: "Failed to load transactions" });
     }
 
     const errorMessages: Record<string, string> = {
@@ -278,10 +236,11 @@ export class TicketableList extends UnidyComponent() {
     return errorMessages[error] || t("errors.unknown", { defaultValue: "An unknown error occurred." });
   }
 
-  private renderFragment(template: HTMLTemplateElement, item?: Subscription | Ticket): DocumentFragment {
+  private renderFragment(template: HTMLTemplateElement, item?: Transaction): DocumentFragment {
     const fragment = template.content.cloneNode(true) as DocumentFragment;
     const isSkeleton = !item;
 
+    // Process unidy-attr-* attribute substitutions.
     for (const elem of fragment.querySelectorAll("[unidy-attr]")) {
       for (const [unidyAttr, newValue] of Array.from(elem.attributes)
         .filter((attr) => attr.name.startsWith("unidy-attr-"))
@@ -291,7 +250,6 @@ export class TicketableList extends UnidyComponent() {
           }
 
           let value = attr.value;
-          // Find all template strings like {{path}} and replace them with nested values
           const templateRegex = /\{\{([^}]+)\}\}/g;
           value = value.replace(templateRegex, (match, path) => {
             const nestedValue = getNestedValue(item, path.trim());
@@ -306,10 +264,10 @@ export class TicketableList extends UnidyComponent() {
     }
 
     if (isSkeleton && this.skeletonAllText) {
-      replaceTextNodesWithSkeletons(fragment, { skipInsideTags: ["ticketable-value"] });
+      replaceTextNodesWithSkeletons(fragment, { skipInsideTags: ["transaction-value"] });
     }
 
-    for (const valueEl of fragment.querySelectorAll("ticketable-value")) {
+    for (const valueEl of fragment.querySelectorAll("transaction-value")) {
       if (isSkeleton) {
         valueEl.innerHTML = createSkeletonLoader("Sample Text");
       } else {
@@ -323,7 +281,10 @@ export class TicketableList extends UnidyComponent() {
 
         if (typeof value === "object" && value instanceof Date) {
           finalValue = format(value, dateFormatAttr || "yyyy-MM-dd", { locale: LOCALES[unidyState.locale] || LOCALES.en });
-        } else if (typeof value === "number" && key === "price") {
+        } else if (
+          typeof value === "number" &&
+          (key === "total" || key === "unit_price" || key.endsWith(".total") || key.endsWith(".unit_price"))
+        ) {
           finalValue = new Intl.NumberFormat(unidyState.locale, { style: "currency", currency: item.currency || "EUR" }).format(value);
         } else if (typeof value === "number") {
           if (Number.isInteger(value)) {
@@ -345,58 +306,38 @@ export class TicketableList extends UnidyComponent() {
       }
     }
 
-    // Process ticketable-conditional elements
-    // Shows/hides content based on item property values.
+    // Process transaction-conditional elements.
+    // Shows/hides content based on transaction property values.
     // Example:
-    //   <ticketable-conditional when="metadata.vip">
+    //   <transaction-conditional when="metadata.vip">
     //     <span class="vip-badge">VIP</span>
-    //   </ticketable-conditional>
-    // The children are rendered only if the "when" property is truthy.
-    // Convert to array to avoid issues when modifying the DOM
-    const conditionalElements = Array.from(fragment.querySelectorAll("ticketable-conditional"));
+    //   </transaction-conditional>
+    const conditionalElements = Array.from(fragment.querySelectorAll("transaction-conditional"));
     for (const conditionalEl of conditionalElements) {
       const whenAttr = conditionalEl.getAttribute("when");
       if (!whenAttr) {
-        // If no 'when' attribute, remove the element
         conditionalEl.remove();
         continue;
       }
 
       if (isSkeleton) {
-        // For skeleton state, remove conditionals
         conditionalEl.remove();
         continue;
       }
 
-      // Check if the item property is truthy
       const value = getNestedValue(item, whenAttr);
       const isTruthy = Boolean(value);
 
       if (isTruthy) {
-        // Replace the conditional element with its children
         const parent = conditionalEl.parentNode;
         if (parent) {
-          // Move all children before the conditional element
           while (conditionalEl.firstChild) {
             parent.insertBefore(conditionalEl.firstChild, conditionalEl);
           }
-          // Remove the conditional element
           parent.removeChild(conditionalEl);
         }
       } else {
-        // Remove the conditional element and its children
         conditionalEl.remove();
-      }
-    }
-
-    // Set ticketable context on export buttons
-    for (const exportEl of fragment.querySelectorAll("u-ticketable-export")) {
-      if (item) {
-        exportEl.setAttribute("data-ticketable-id", item.id);
-        exportEl.setAttribute("data-ticketable-type", this.ticketableType);
-        exportEl.setAttribute("exportable", item.exportable_to_wallet ? "true" : "false");
-      } else {
-        exportEl.setAttribute("exportable", "false");
       }
     }
 
@@ -425,14 +366,12 @@ export class TicketableList extends UnidyComponent() {
       return;
     }
 
-    // Clear existing content
     targetElement.innerHTML = "";
     this.renderContent(targetElement, template);
   }
 
   private renderContent(target: Element, template: HTMLTemplateElement) {
     if (this.loading) {
-      // Use skeletonCount if provided, otherwise use limit
       const skeletonCount = this.skeletonCount || this.limit;
       for (const _item of Array.from({ length: skeletonCount })) {
         target.appendChild(this.renderFragment(template));

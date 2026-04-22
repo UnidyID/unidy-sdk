@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Unidy Transactions Demo</title>
+    <script type="module" src="/build/sdk.esm.js"></script>
+    <script nomodule src="/build/sdk.js"></script>
+    <link rel="stylesheet" href="/demo.css">
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+    <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
+      <div class="logo">
+        <a href="/" aria-label="Home">Unidy</a>
+      </div>
+      <nav class="flex gap-2 items-center">
+        <a href="/" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">Home</a>
+        <a href="/auth" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">Auth</a>
+        <a href="/ticketable" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50">Tickets</a>
+        <a href="/transaction" class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50">Transactions</a>
+      </nav>
+      <div>
+        <u-signed-in>
+          <u-logout-button class-name="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white"></u-logout-button>
+        </u-signed-in>
+        <u-signed-in not>
+          <a href="/auth" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white">Login</a>
+        </u-signed-in>
+      </div>
+    </header>
+
+    <main class="flex-1 p-5 max-w-4xl mx-auto w-full">
+      <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key"></u-config>
+
+      <u-signed-in not>
+        <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Transactions Demo</h1>
+        <p class="text-center text-gray-600 text-sm">You need to sign in to view your transactions</p>
+      </u-signed-in>
+
+      <u-signed-in>
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">My Transactions</h1>
+
+        <u-transaction-list limit="10" container-class="grid gap-4">
+          <template>
+            <div class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+              <div class="flex items-start justify-between p-6">
+                <div class="flex-1">
+                  <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                    <transaction-value name="reference" default="—"></transaction-value>
+                  </h2>
+
+                  <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-500">External ID:</span>
+                      <span class="text-base text-gray-700">
+                        <transaction-value name="external_id" default="—"></transaction-value>
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-500">Placed:</span>
+                      <span class="text-base text-gray-700">
+                        <transaction-value name="placed_at" date-format="dd.MM.yyyy HH:mm"></transaction-value>
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-500">Source:</span>
+                      <span class="text-base text-gray-700">
+                        <transaction-value name="source_platform" default="—"></transaction-value>
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-500">Status:</span>
+                      <span class="text-base text-gray-700">
+                        <transaction-value name="state" default="—"></transaction-value>
+                      </span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium text-gray-500">Total:</span>
+                      <span class="text-lg font-semibold text-blue-600">
+                        <transaction-value name="total"></transaction-value>
+                      </span>
+                    </div>
+
+                    <transaction-conditional when="financial_status">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-500">Payment:</span>
+                        <span class="text-sm text-gray-700">
+                          <transaction-value name="financial_status"></transaction-value>
+                        </span>
+                      </div>
+                    </transaction-conditional>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </u-transaction-list>
+
+        <div class="flex items-center gap-2 mt-6">
+          <u-pagination-button
+            direction="prev"
+            class-name="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span slot="icon">⬅️</span>
+          </u-pagination-button>
+          <u-pagination-page class-name="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
+          <u-pagination-button
+            direction="next"
+            class-name="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          ></u-pagination-button>
+        </div>
+      </u-signed-in>
+    </main>
+
+    <footer class="text-center py-5 mt-8 bg-gray-800 text-white text-sm">
+      <p>&copy; <span id="year"></span> Unidy. All rights reserved.</p>
+      <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+      </script>
+    </footer>
+  </body>
+</html>
