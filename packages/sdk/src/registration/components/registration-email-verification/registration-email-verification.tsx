@@ -1,6 +1,7 @@
-import { Component, h, Prop, State } from "@stencil/core";
+import { Component, Element, h, Prop, State } from "@stencil/core";
 import { Registration } from "../../registration";
 import { onChange, registrationState, registrationStore } from "../../store/registration-store";
+import { getParentRegistrationStep } from "../helpers";
 
 const CODE_LENGTH = 4;
 
@@ -10,6 +11,8 @@ const CODE_LENGTH = 4;
   shadow: false,
 })
 export class RegistrationEmailVerification {
+  @Element() element!: HTMLElement;
+
   /** Whether to automatically send the verification code when this step becomes active. */
   @Prop({ attribute: "auto-send" }) autoSend = true;
 
@@ -30,9 +33,7 @@ export class RegistrationEmailVerification {
   async componentWillLoad() {
     this.registrationInstance = await Registration.getInstance();
 
-    if (this.autoSend && !registrationState.verificationCodeSent && registrationState.rid) {
-      await this.sendCode();
-    }
+    this.tryAutoSend();
 
     // Subscribe to step changes to handle auto-send when this step becomes active
     // (needed for slotted components where componentWillLoad fires before rid is available)
@@ -52,7 +53,13 @@ export class RegistrationEmailVerification {
   }
 
   private tryAutoSend(): void {
-    if (!this.autoSend || registrationState.verificationCodeSent || !registrationState.rid) return;
+    if (
+      !this.autoSend ||
+      registrationState.verificationCodeSent ||
+      !registrationState.rid ||
+      getParentRegistrationStep(this.element)?.getAttribute("name") !== registrationState.currentStepName
+    )
+      return;
     this.sendCode();
   }
 

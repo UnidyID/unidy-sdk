@@ -23,10 +23,10 @@ export type {
 export { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";
 // Auth utilities
 export { authStorage } from "./auth/auth-storage";
-export { getSocialAuthUrl } from "./auth/social-auth";
 // Auth hooks
 export { useLogin } from "./auth/hooks/use-login";
 export { useSession } from "./auth/hooks/use-session";
+export { getSocialAuthUrl } from "./auth/social-auth";
 export type {
   AuthErrors,
   AuthStep,

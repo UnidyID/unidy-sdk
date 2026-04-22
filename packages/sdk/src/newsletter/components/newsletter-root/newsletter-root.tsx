@@ -19,6 +19,21 @@ export class NewsletterRoot extends UnidyComponent() {
   /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
+  /**
+   * Optional URL used as the `redirect_uri` when sending the login email.
+   * When provided, overrides the default (current page URL).
+   *
+   * The URL is passed as-is to the backend — no client-side substitution is performed.
+   * The following placeholders are substituted server-side:
+   * - `{preference_token}` — the user's preference token
+   * - `{email}` — the subscriber's email address
+   * - `{newsletter_internal_name}` — the newsletter's internal name
+   *
+   * **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts`
+   * list (configurable in the Unidy dashboard), otherwise the API will return 403.
+   */
+  @Prop({ attribute: "redirect-uri" }) redirectUri?: string;
+
   /** Fired on successful newsletter subscription. Contains the email and subscribed newsletters. */
   @Event() uNewsletterSuccess!: EventEmitter<{ email: string; newsletters: string[] }>;
   /** Fired on newsletter subscription failure. Contains the email and error code. */
@@ -76,7 +91,7 @@ export class NewsletterRoot extends UnidyComponent() {
     }
 
     if (forType === "login") {
-      const result = await NewsletterHelpers.sendLoginEmail(email);
+      const result = await NewsletterHelpers.sendLoginEmail(email, this.redirectUri);
       if (result.success === true) {
         this.uNewsletterSuccess.emit({ email, newsletters: [] });
       } else if (result.success === false) {
@@ -100,7 +115,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    const success = await NewsletterHelpers.createSubscriptions({ email });
+    const success = await NewsletterHelpers.createSubscriptions({ email, redirectUri: this.redirectUri });
 
     if (success) {
       this.uNewsletterSuccess.emit({ email, newsletters });

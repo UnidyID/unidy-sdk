@@ -314,7 +314,14 @@ class AuthStore {
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
 
-    if (!authenticated) {
+    if (authenticated) {
+      // Clear stale sign-in flow tracking so it cannot be recovered on the next page load
+      state._pendingRecoveryStep = null;
+      state._stepHistory = [];
+      saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+      saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
+      saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+    } else {
       state.token = null;
       state.refreshToken = null;
       state.sid = null;
@@ -415,4 +422,4 @@ class AuthStore {
 }
 
 export const authStore = new AuthStore();
-export { state as authState, authStoreOnChange as onChange };
+export { authStoreOnChange as onChange, state as authState };

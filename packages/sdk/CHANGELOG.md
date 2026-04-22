@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.4.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.4.0) (2026-04-17)
+
+
+### Features
+
+* [UD-2261] support keyed newsletter consent checkboxes ([#229](https://github.com/UnidyID/unidy-sdk/issues/229)) ([af9fb5c](https://github.com/UnidyID/unidy-sdk/commit/af9fb5c559350efc2bd261b99be644966781ea38))
+* [UD-2344] add redirect-uri prop to u-newsletter-root ([#240](https://github.com/UnidyID/unidy-sdk/issues/240)) ([5214e5c](https://github.com/UnidyID/unidy-sdk/commit/5214e5cc8d6f2c2a04b8d4db4a9e51d2065d3adf))
+* add u-registration-internal-matching component ([#230](https://github.com/UnidyID/unidy-sdk/issues/230)) ([52b3d4a](https://github.com/UnidyID/unidy-sdk/commit/52b3d4a99287496eb2fd94782ca1385d8a5c45db))
+
+
+### Bug Fixes
+
+* [UD-2373] only auto-send verification code when verification step is active ([#243](https://github.com/UnidyID/unidy-sdk/issues/243)) ([d522e8b](https://github.com/UnidyID/unidy-sdk/commit/d522e8b708a1ea3e58d5b538604cf9c89b64fa47))
+* [UD-2405] [UD-2406] registration confirmation event, oauth modal visibility, stale auth state ([#245](https://github.com/UnidyID/unidy-sdk/issues/245)) ([1ec8440](https://github.com/UnidyID/unidy-sdk/commit/1ec84400494dbef2f30b41531c28b38b15c35c67))
+* [URGENT] registration email truncated to first character when transitioning from auth flow ([#231](https://github.com/UnidyID/unidy-sdk/issues/231)) ([76c5494](https://github.com/UnidyID/unidy-sdk/commit/76c5494ec5399df133941b90c1a285898af32b59))
+* add optional password confirmation to registration flow ([#217](https://github.com/UnidyID/unidy-sdk/issues/217)) ([74f7571](https://github.com/UnidyID/unidy-sdk/commit/74f75710c6050755204210e15b3fbce1d2290ade))
+* add unidy_sid query param parsing and keep the sid as the fallback ([#227](https://github.com/UnidyID/unidy-sdk/issues/227)) ([a6b7598](https://github.com/UnidyID/unidy-sdk/commit/a6b7598cfbb61733e74102432851974f4323c3e8))
+* apply nullable price fix to subscriptions ([#234](https://github.com/UnidyID/unidy-sdk/issues/234)) ([5255d68](https://github.com/UnidyID/unidy-sdk/commit/5255d68b0c2281ecf47f770ce586aa8460839eb0))
+* button styling ([#241](https://github.com/UnidyID/unidy-sdk/issues/241)) ([a8ab28e](https://github.com/UnidyID/unidy-sdk/commit/a8ab28ea1ffdc862fcf8952c144191964bf9fea1))
+* **ci:** update bun to 1.3.9 and fix workspace filter glob ([#224](https://github.com/UnidyID/unidy-sdk/issues/224)) ([ba97fbb](https://github.com/UnidyID/unidy-sdk/commit/ba97fbbe6766f253f2f4fcd06a0857543c92c9e6))
+* handle account_locked and account_unconfirmed sign-in errors ([#233](https://github.com/UnidyID/unidy-sdk/issues/233)) ([14a2917](https://github.com/UnidyID/unidy-sdk/commit/14a2917633b68a8bc6808ebef134328d35258ae4))
+* phone validation rejecting valid numbers ([#220](https://github.com/UnidyID/unidy-sdk/issues/220)) ([d7fc3f6](https://github.com/UnidyID/unidy-sdk/commit/d7fc3f6b3ead3a79f60d2a1522c1558963ace7a5))
+* tickets SDK breaking cause of price being NULL ([#219](https://github.com/UnidyID/unidy-sdk/issues/219)) ([62036fd](https://github.com/UnidyID/unidy-sdk/commit/62036fd65d1042e52ed830d69b312d9cdd5240e8))
+
 ## [1.3.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.2.0...@unidy.io/sdk-v1.3.0) (2026-02-20)
 
 

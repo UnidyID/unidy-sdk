@@ -5,6 +5,11 @@ import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
+export type RegistrationCompleteEvent = RegistrationFlowResponse & {
+  /** Whether the newly created account requires email confirmation before becoming active. */
+  requiresEmailConfirmation: boolean;
+};
+
 @Component({
   tag: "u-registration-root",
   shadow: false,
@@ -23,7 +28,7 @@ export class RegistrationRoot extends UnidyComponent() {
   @Prop({ attribute: "auto-resume" }) autoResume = true;
 
   /** Fired when the registration flow is finalized and the user account is created. */
-  @Event() registrationComplete!: EventEmitter<RegistrationFlowResponse>;
+  @Event() registrationComplete!: EventEmitter<RegistrationCompleteEvent>;
 
   /** Fired when the active step changes. */
   @Event() stepChange!: EventEmitter<{ stepName: string; stepIndex: number }>;
@@ -166,7 +171,7 @@ export class RegistrationRoot extends UnidyComponent() {
   }
 
   onComplete(response: RegistrationFlowResponse) {
-    this.registrationComplete.emit(response);
+    this.registrationComplete.emit({ ...response, requiresEmailConfirmation: !response.auth });
   }
 
   onStepChange(stepName: string, stepIndex: number) {
