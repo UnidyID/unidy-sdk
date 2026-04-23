@@ -42,6 +42,19 @@ The resend button exposes a `data-countdown` attribute with the remaining second
 | `resumeSent`  | Fired when the resume link email has been sent successfully.             | `CustomEvent<void>`               |
 
 
+## Dependencies
+
+### Used by
+
+ - [u-registration-root](../registration-root)
+
+### Graph
+```mermaid
+graph TD;
+  u-registration-root --> u-registration-resume
+  style u-registration-resume fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
