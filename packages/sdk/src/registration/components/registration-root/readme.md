@@ -77,9 +77,13 @@ Provide button text via the `resume` slot and style it with `resume-class-name`:
 </u-registration-root>
 ```
 
+### Slot limitations
+
+The auto-rendered button only supports the `resume` slot (button label). The `success` and `resend` slots of `<u-registration-resume>` — shown after the resume email is sent — are not forwarded and will be empty. If you need to customise those, use `disable-resume-button` and place the component manually (see below).
+
 ### Custom positioning
 
-If you need the resume button in a different position (e.g. inline inside a specific step), set `disable-resume-button` and place `<u-registration-resume>` yourself:
+If you need the resume button in a different position or need to customise the `success`/`resend` slots, set `disable-resume-button` and place `<u-registration-resume>` yourself:
 
 ```html
 <u-registration-root steps='["email", "profile"]' disable-resume-button>
