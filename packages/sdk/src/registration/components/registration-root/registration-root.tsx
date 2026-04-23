@@ -32,7 +32,7 @@ export class RegistrationRoot extends UnidyComponent() {
   @Prop({ attribute: "resume-class-name" }) resumeClassName?: string;
 
   /** When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root. */
-  @Prop({ attribute: "disable-auto-resume" }) disableAutoResume = false;
+  @Prop({ attribute: "disable-resume-button" }) disableResumeButton = false;
 
   /** Fired when the registration flow is finalized and the user account is created. */
   @Event() registrationComplete!: EventEmitter<RegistrationCompleteEvent>;
@@ -239,7 +239,7 @@ export class RegistrationRoot extends UnidyComponent() {
   render() {
     return (
       <Host>
-        {!this.disableAutoResume && (
+        {!this.disableResumeButton && (
           <u-registration-resume class-name={this.resumeClassName}>
             <slot name="resume" />
           </u-registration-resume>

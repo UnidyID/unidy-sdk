@@ -826,7 +826,7 @@ export namespace Components {
           * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
           * @default false
          */
-        "disableAutoResume": boolean;
+        "disableResumeButton": boolean;
         /**
           * Returns the configured brand ID, if any.
          */
@@ -2467,7 +2467,7 @@ declare namespace LocalJSX {
           * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
           * @default false
          */
-        "disableAutoResume"?: boolean;
+        "disableResumeButton"?: boolean;
         /**
           * Fired when an error occurs during the registration flow.
          */

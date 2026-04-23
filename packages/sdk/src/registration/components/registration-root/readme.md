@@ -79,10 +79,10 @@ Provide button text via the `resume` slot and style it with `resume-class-name`:
 
 ### Custom positioning
 
-If you need the resume button in a different position (e.g. inline inside a specific step), set `disable-auto-resume` and place `<u-registration-resume>` yourself:
+If you need the resume button in a different position (e.g. inline inside a specific step), set `disable-resume-button` and place `<u-registration-resume>` yourself:
 
 ```html
-<u-registration-root steps='["email", "profile"]' disable-auto-resume>
+<u-registration-root steps='["email", "profile"]' disable-resume-button>
   <u-registration-step name="email">
     <!-- resume button sits between the email field and the submit button -->
     <u-registration-resume class-name="...">Send resume link</u-registration-resume>
@@ -98,14 +98,14 @@ If you need the resume button in a different position (e.g. inline inside a spec
 
 ## Properties
 
-| Property            | Attribute             | Description                                                                                                                                                           | Type      | Default     |
-| ------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
-| `autoResume`        | `auto-resume`         | Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage. | `boolean` | `true`      |
-| `brandId`           | `brand-id`            | Brand ID to associate with the registration flow. Only needed in multi-brand setups.                                                                                  | `number`  | `undefined` |
-| `disableAutoResume` | `disable-auto-resume` | When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.  | `boolean` | `false`     |
-| `registrationUrl`   | `registration-url`    | URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.                          | `string`  | `undefined` |
-| `resumeClassName`   | `resume-class-name`   | CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.                                                                           | `string`  | `undefined` |
-| `steps`             | `steps`               | JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.                             | `string`  | `"[]"`      |
+| Property              | Attribute               | Description                                                                                                                                                           | Type      | Default     |
+| --------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------- |
+| `autoResume`          | `auto-resume`           | Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage. | `boolean` | `true`      |
+| `brandId`             | `brand-id`              | Brand ID to associate with the registration flow. Only needed in multi-brand setups.                                                                                  | `number`  | `undefined` |
+| `disableResumeButton` | `disable-resume-button` | When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.  | `boolean` | `false`     |
+| `registrationUrl`     | `registration-url`      | URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.                          | `string`  | `undefined` |
+| `resumeClassName`     | `resume-class-name`     | CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.                                                                           | `string`  | `undefined` |
+| `steps`               | `steps`                 | JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.                             | `string`  | `"[]"`      |
 
 
 ## Events
