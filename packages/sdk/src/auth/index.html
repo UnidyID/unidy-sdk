@@ -232,7 +232,8 @@
 
         <u-registration-root
           id="registration"
-          steps='["email","verification","profile","password","passkey","newsletters"]'>
+          steps='["email","verification","profile","password","passkey","newsletters"]'
+          resume-class-name="w-full mb-4 px-4 py-2 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200">
 
           <u-error-message for="registration" class-name="mb-4 text-sm text-red-500"></u-error-message>
 
@@ -250,10 +251,6 @@
               </u-raw-field>
               <u-error-message id="reg-email-error" for="email" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>
-
-            <u-registration-resume class-name="w-full mb-4 px-4 py-2 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hover:bg-yellow-200">
-              Send resume link
-            </u-registration-resume>
 
             <u-submit-button class-name="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50">
               Continue
@@ -446,6 +443,8 @@
               </u-submit-button>
             </div>
           </u-registration-step>
+
+          <span slot="resume">Send resume link</span>
 
         </u-registration-root>
       </u-signin-step>

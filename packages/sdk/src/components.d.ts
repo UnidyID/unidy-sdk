@@ -823,6 +823,11 @@ export namespace Components {
          */
         "brandId"?: number;
         /**
+          * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
+          * @default false
+         */
+        "disableResumeButton": boolean;
+        /**
           * Returns the configured brand ID, if any.
          */
         "getBrandId": () => Promise<number | undefined>;
@@ -842,6 +847,10 @@ export namespace Components {
           * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
          */
         "registrationUrl"?: string;
+        /**
+          * CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.
+         */
+        "resumeClassName"?: string;
         /**
           * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
@@ -2455,6 +2464,11 @@ declare namespace LocalJSX {
          */
         "brandId"?: number;
         /**
+          * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
+          * @default false
+         */
+        "disableResumeButton"?: boolean;
+        /**
           * Fired when an error occurs during the registration flow.
          */
         "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
@@ -2470,6 +2484,10 @@ declare namespace LocalJSX {
           * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
          */
         "registrationUrl"?: string;
+        /**
+          * CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.
+         */
+        "resumeClassName"?: string;
         /**
           * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
