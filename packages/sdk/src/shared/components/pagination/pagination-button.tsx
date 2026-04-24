@@ -1,7 +1,7 @@
 import { Component, Host, h, Prop, State } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
-import { UnidyComponent } from "../../../shared/base/component";
-import { findParentPaginatedList } from "../../../shared/context-utils";
+import { UnidyComponent } from "../../base/component";
+import { findParentPaginatedList } from "../../context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
 
 @Component({ tag: "u-pagination-button", shadow: false })

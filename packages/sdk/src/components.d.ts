@@ -23,9 +23,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
 import { PaginationMeta } from "./api";
-import { PaginationStore } from "./ticketable/store/pagination-store";
-import { Subscription } from "./ticketable/api/subscriptions";
-import { Ticket } from "./ticketable/api/tickets";
+import { PaginationStore } from "./shared/store/pagination-store";
 import { Transaction } from "./transaction/api/transactions";
 export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
@@ -45,9 +43,7 @@ export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
 export { PaginationMeta } from "./api";
-export { PaginationStore } from "./ticketable/store/pagination-store";
-export { Subscription } from "./ticketable/api/subscriptions";
-export { Ticket } from "./ticketable/api/tickets";
+export { PaginationStore } from "./shared/store/pagination-store";
 export { Transaction } from "./transaction/api/transactions";
 export namespace Components {
     interface UBackButton {
@@ -1046,7 +1042,7 @@ export namespace Components {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
     }
     interface UTransactionList {
         /**
@@ -1628,12 +1624,12 @@ declare global {
     };
     interface HTMLUTicketableListElementEventMap {
         "uTicketableListSuccess": {
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   };
         "uTicketableListError": {
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   };
     }
@@ -2715,15 +2711,15 @@ declare namespace LocalJSX {
           * Fired when fetching items fails. Contains the error message.
          */
         "onUTicketableListError"?: (event: UTicketableListCustomEvent<{
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   }>) => void;
         /**
           * Fired when items are successfully fetched. Contains items and pagination metadata.
          */
         "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   }>) => void;
         /**
@@ -2757,7 +2753,7 @@ declare namespace LocalJSX {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
     }
     interface UTransactionList {
         /**

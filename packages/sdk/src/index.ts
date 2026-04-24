@@ -16,5 +16,6 @@ export * from "./oauth";
 export * from "./profile";
 export * from "./registration";
 export { Flash } from "./shared/store/flash-store";
+export * from "./shared/store/pagination-store";
 export * from "./ticketable";
 export * from "./transaction";

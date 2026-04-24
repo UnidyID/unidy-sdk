@@ -94,6 +94,28 @@
                         </span>
                       </div>
                     </transaction-conditional>
+
+                    <transaction-conditional when="line_items.[0]">
+                      <div class="border-t border-gray-200 pt-3 mt-3">
+                        <div class="text-sm font-medium text-gray-500 mb-2">Items</div>
+                        <ul class="space-y-1 text-sm text-gray-700">
+                          <li class="flex justify-between gap-4">
+                            <span>
+                              <transaction-value name="line_items.[0].description" default="(unnamed)"></transaction-value>
+                              <transaction-conditional when="line_items.[0].quantity">
+                                <span class="text-gray-500">
+                                  ×
+                                  <transaction-value name="line_items.[0].quantity"></transaction-value>
+                                </span>
+                              </transaction-conditional>
+                            </span>
+                            <span class="font-medium">
+                              <transaction-value name="line_items.[0].total"></transaction-value>
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    </transaction-conditional>
                   </div>
                 </div>
               </div>

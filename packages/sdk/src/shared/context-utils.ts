@@ -16,7 +16,7 @@ type ParentComponentMap = {
 /**
  * Component context types used throughout the SDK.
  */
-export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth" | "registration";
+export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "transaction" | "oauth" | "registration";
 
 // ============================================================================
 // Parent Component Lookup Utilities
@@ -141,8 +141,12 @@ export function detectContext(element: HTMLElement): ComponentContext | null {
     return "newsletter";
   }
 
-  if (findParentTicketableList(element) || findParentTransactionList(element)) {
+  if (findParentTicketableList(element)) {
     return "ticketable";
+  }
+
+  if (findParentTransactionList(element)) {
+    return "transaction";
   }
 
   return null;
@@ -165,7 +169,7 @@ export function detectContextOrThrow(element: HTMLElement, componentName: string
 
   if (!context) {
     throw new Error(
-      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, u-oauth-provider, or u-registration-root.`,
+      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, u-transaction-list, u-oauth-provider, or u-registration-root.`,
     );
   }
 
