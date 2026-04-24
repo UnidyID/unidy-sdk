@@ -25,7 +25,9 @@ export const TransactionLineItemSchema = z.object({
   unit_price: z.number().nullable(),
   total: z.number().nullable(),
   currency: z.string().nullable(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
+  // User-supplied JSON — the backend does not enforce an object shape, so we
+  // accept any value (object, array, scalar, null) instead of z.record(...).
+  metadata: z.unknown().nullable().optional(),
 });
 
 export const TransactionSchema = z.object({
@@ -42,7 +44,8 @@ export const TransactionSchema = z.object({
   placed_at: nullableDateTransformer,
   created_at: dateTransformer,
   updated_at: dateTransformer,
-  metadata: z.record(z.string(), z.unknown()).nullable(),
+  // User-supplied JSON — same reasoning as TransactionLineItemSchema.metadata.
+  metadata: z.unknown().nullable().optional(),
   line_items: z.array(TransactionLineItemSchema).default([]),
 });
 

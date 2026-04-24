@@ -57,6 +57,10 @@ export class TransactionList extends UnidyComponent() {
   @Watch("limit")
   @Watch("filter")
   async fetchData() {
+    // Skip when the host app tweaks props before auth lands — otherwise
+    // loadData() would surface a "Failed to get ID token" error to the user.
+    const auth = await Auth.getInstance();
+    if (!auth || !(await auth.isAuthenticated())) return;
     await this.loadData();
   }
 
