@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
 import { onChange as authOnChange, authState, authStore } from "../../../auth/store/auth-store";
 import { UnidyComponent } from "../../../shared/base/component";
@@ -12,6 +12,7 @@ export type RegistrationCompleteEvent = RegistrationFlowResponse & {
 
 @Component({
   tag: "u-registration-root",
+  styleUrl: "registration-root.css",
   shadow: false,
 })
 export class RegistrationRoot extends UnidyComponent() {
@@ -26,6 +27,12 @@ export class RegistrationRoot extends UnidyComponent() {
 
   /** Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage. */
   @Prop({ attribute: "auto-resume" }) autoResume = true;
+
+  /** CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes. */
+  @Prop({ attribute: "resume-class-name" }) resumeClassName?: string;
+
+  /** When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root. */
+  @Prop({ attribute: "disable-resume-button" }) disableResumeButton = false;
 
   /** Fired when the registration flow is finalized and the user account is created. */
   @Event() registrationComplete!: EventEmitter<RegistrationCompleteEvent>;
@@ -230,6 +237,15 @@ export class RegistrationRoot extends UnidyComponent() {
   }
 
   render() {
-    return <slot />;
+    return (
+      <Host>
+        {!this.disableResumeButton && (
+          <u-registration-resume class-name={this.resumeClassName}>
+            <slot name="resume" />
+          </u-registration-resume>
+        )}
+        <slot />
+      </Host>
+    );
   }
 }
