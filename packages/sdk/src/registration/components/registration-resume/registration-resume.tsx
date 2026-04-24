@@ -104,6 +104,7 @@ export class RegistrationResume {
           aria-busy={registrationState.loading ? "true" : "false"}
         >
           <slot />
+          <slot name="resume" />
         </button>
       </Host>
     );
