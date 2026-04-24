@@ -443,11 +443,13 @@ export class RawField extends UnidyComponent() {
       this.type === "textarea" ||
       this.type === "select";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === "string") {
+    const isEmpty = current === undefined || current === null || current === "";
+    if (isType && isEmpty && typeof this.value === "string" && this.value !== "") {
       this.writeStore(this.field, this.value);
+      this.selected = this.value;
+    } else {
+      this.selected = current;
     }
-
-    this.selected = current;
   }
 
   componentDidRender() {
