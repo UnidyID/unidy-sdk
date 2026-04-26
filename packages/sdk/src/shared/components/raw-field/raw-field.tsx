@@ -134,10 +134,12 @@ export class RawField extends UnidyComponent() {
 
     if (fieldName.startsWith("custom_attributes.")) {
       const key = fieldName.replace("custom_attributes.", "");
+      if (!(key in registrationState.customAttributes)) return undefined;
       const value = registrationState.customAttributes[key];
       return value != null ? String(value) : "";
     }
 
+    if (!(fieldName in registrationState.profileData)) return undefined;
     const value = registrationState.profileData[fieldName];
     return value != null ? String(value) : "";
   }
@@ -443,11 +445,13 @@ export class RawField extends UnidyComponent() {
       this.type === "textarea" ||
       this.type === "select";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === "string") {
+    const isUnset = current === undefined || current === null;
+    if (isType && isUnset && typeof this.value === "string" && this.value !== "") {
       this.writeStore(this.field, this.value);
+      this.selected = this.value;
+    } else {
+      this.selected = current;
     }
-
-    this.selected = current;
   }
 
   componentDidRender() {
