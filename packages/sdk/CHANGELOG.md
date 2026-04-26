@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.1...@unidy.io/sdk-v1.4.2) (2026-04-26)
+
+
+### Bug Fixes
+
+* [UD-2375] value attribute on u-raw-field select does not initialize registration store ([#254](https://github.com/UnidyID/unidy-sdk/issues/254)) ([4aa9190](https://github.com/UnidyID/unidy-sdk/commit/4aa9190ddba00fa4047ec224bbe898aad699b0e2))
+* [UD-2419] u-registration-root renders resume button automatically ([#250](https://github.com/UnidyID/unidy-sdk/issues/250)) ([5cb88f7](https://github.com/UnidyID/unidy-sdk/commit/5cb88f793fccf6bc8d6da7f9bb7448a14f8336ca))
+* [UD-2432] u-passkey sign-in fails when challenge contains base64url characters ([#252](https://github.com/UnidyID/unidy-sdk/issues/252)) ([20776b4](https://github.com/UnidyID/unidy-sdk/commit/20776b4eec41aa1263da03e504769b6ebc8dbeb2))
+* [UD-2437] [UD-2439] discoverable passkey prop, profile custom attribute bugs, and CI fix ([6bc8851](https://github.com/UnidyID/unidy-sdk/commit/6bc8851e625b325a6b8434d1a86515dffe831c9a))
+
 ## [1.4.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.4.1) (2026-04-21)
 
 
