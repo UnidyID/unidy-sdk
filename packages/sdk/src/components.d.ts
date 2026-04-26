@@ -595,6 +595,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * @default false
+         */
+        "discoverable": boolean;
     }
     interface UPasswordField {
         /**
@@ -2214,6 +2219,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * @default false
+         */
+        "discoverable"?: boolean;
     }
     interface UPasswordField {
         /**
