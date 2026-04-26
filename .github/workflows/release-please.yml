@@ -152,7 +152,7 @@ jobs:
   # Fallback: publish if a GitHub release exists but npm publish was missed
   publish-stable-fallback:
     needs: release-please
-    if: needs.release-please.outputs.release_created != 'true'
+    if: needs.release-please.outputs.release_created != 'true' && github.ref_name != 'master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
