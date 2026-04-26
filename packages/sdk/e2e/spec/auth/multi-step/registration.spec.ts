@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { routes, userLogin } from "../../../config";
 import { ModelCountAssert } from "../../../lib/assert/count";
 import { EmailAssert } from "../../../lib/assert/emails";
+import { Database } from "../../../lib/database";
 import { randomEmail } from "../../../lib/helpers/random";
 
 /**
@@ -135,7 +136,7 @@ test.describe("Registration - full flow", () => {
     // Step 3: Profile
     await page.getByRole("textbox", { name: "First Name" }).fill("Test");
     await page.getByRole("textbox", { name: "Last Name" }).fill("User");
-    await page.getByRole("combobox").selectOption("blue");
+    await page.locator("u-raw-field[field='custom_attributes.favorite_color'] select").selectOption("blue");
     await clickContinue(page);
 
     // Step 4: Password
@@ -217,6 +218,40 @@ test.describe("Registration - full flow", () => {
 
     // Should advance to passkey step
     await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
+  });
+
+  test("should persist pre-selected select value without user interaction", async ({ page }) => {
+    const email = randomEmail();
+    const registrationCompletePromise = page.waitForEvent("console", {
+      predicate: (msg) => msg.text().includes("Registration complete:"),
+      timeout: 30000,
+    });
+
+    await startRegistrationFlow(page, email);
+    await submitEmailAndVerify(page, email);
+
+    // Salutation select is rendered with value="mr" but we never touch it.
+    await expect(page.locator("u-raw-field[field='salutation'] select")).toHaveJSProperty("value", "mr");
+
+    await page.getByRole("textbox", { name: "First Name" }).fill("Test");
+    await clickContinue(page);
+
+    await expect(page.getByRole("heading", { name: "Create a password" })).toBeVisible();
+    await page.locator("u-raw-field[field='password'] input").fill("Test1234!");
+    await page.locator("u-raw-field[field='password_confirmation'] input").fill("Test1234!");
+    await clickContinue(page);
+
+    await expect(page.getByRole("heading", { name: "Add a passkey" })).toBeVisible();
+    await clickContinue(page);
+
+    await expect(page.getByRole("heading", { name: "Newsletter preferences" })).toBeVisible();
+    await page.getByRole("button", { name: "Complete Registration" }).click();
+
+    await registrationCompletePromise;
+
+    const users = new Database("User", { scope: { email } });
+    const user = await users.ensureLast();
+    expect(user.salutation).toBe("mr");
   });
 
   test("should navigate back between registration steps", async ({ page }) => {
