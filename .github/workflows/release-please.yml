@@ -49,11 +49,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           TAG="${{ needs.release-please.outputs.tag_name }}"
-<<<<<<< HEAD
-          VERSION="${TAG#v}"
-=======
           VERSION="${TAG#*v}"
->>>>>>> 67ddae5 (fix: [UD-2437] [UD-2439] passkey discoverable prop, profile custom attribute bugs, and CI release fix (#255))
           MAJOR=$(echo "$VERSION" | cut -d. -f1)
           MINOR=$(echo "$VERSION" | cut -d. -f2)
           BRANCH="${MAJOR}-${MINOR}-stable"
