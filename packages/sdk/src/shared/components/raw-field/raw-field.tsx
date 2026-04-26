@@ -330,7 +330,7 @@ export class RawField extends UnidyComponent() {
   }
 
   private onMultiToggle = (optValue: string, checked: boolean) => {
-    const currentValues = Array.isArray(this.selected) ? this.selected : [];
+    const currentValues = (this.readStore(this.field) as string[]) ?? [];
     let updatedValues: string[];
     if (checked) {
       updatedValues = currentValues.includes(optValue) ? currentValues : [...currentValues, optValue];
@@ -506,7 +506,7 @@ export class RawField extends UnidyComponent() {
 
     if (this.type === "checkbox") {
       if (Array.isArray(this.multiSelectOptions) && this.multiSelectOptions.length) {
-        const selected = Array.isArray(this.selected) ? this.selected : [];
+        const selected = (this.readStore(this.field) as string[]) ?? [];
         return (
           <MultiSelect
             value={selected}
