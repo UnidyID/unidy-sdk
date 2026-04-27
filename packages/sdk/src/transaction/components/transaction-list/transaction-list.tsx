@@ -90,6 +90,7 @@ export class TransactionList extends UnidyComponent() {
 
   private async loadData() {
     this.loading = true;
+    this.error = null;
 
     const auth = await Auth.getInstance();
     if (!auth) {

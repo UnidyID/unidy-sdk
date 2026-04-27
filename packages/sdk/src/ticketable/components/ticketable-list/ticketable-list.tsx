@@ -11,8 +11,8 @@ import { waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
 
-type TicketableType = "ticket" | "subscription";
-type TicketableItem = Ticket | Subscription;
+export type TicketableType = "ticket" | "subscription";
+export type TicketableItem = Ticket | Subscription;
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
@@ -98,6 +98,7 @@ export class TicketableList extends UnidyComponent() {
 
   private async loadData() {
     this.loading = true;
+    this.error = null;
 
     if (!this.ticketableType) {
       this.error = "[u-ticketable-list] ticketable-type attribute is required";

@@ -23,6 +23,7 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
 import { PaginationMeta } from "./api";
+import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 import { PaginationStore } from "./shared/store/pagination-store";
 import { Transaction } from "./transaction/api/transactions";
 export { CaptchaFeature } from "./shared/captcha";
@@ -43,6 +44,7 @@ export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
 export { PaginationMeta } from "./api";
+export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 export { PaginationStore } from "./shared/store/pagination-store";
 export { Transaction } from "./transaction/api/transactions";
 export namespace Components {
