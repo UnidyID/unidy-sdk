@@ -69,5 +69,9 @@ export function buildPayload(stateData: ProfileRaw, fieldsToInclude?: Set<string
 export function hasProfileChanged(): boolean {
   const currentData = buildPayload(profileState.data);
   const savedData = buildPayload(profileState.configuration);
-  return JSON.stringify(currentData, Object.keys(currentData).sort()) !== JSON.stringify(savedData, Object.keys(savedData).sort());
+  const sortKeys = (_: string, val: unknown) =>
+    val !== null && typeof val === "object" && !Array.isArray(val)
+      ? Object.fromEntries(Object.entries(val as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)))
+      : val;
+  return JSON.stringify(currentData, sortKeys) !== JSON.stringify(savedData, sortKeys);
 }

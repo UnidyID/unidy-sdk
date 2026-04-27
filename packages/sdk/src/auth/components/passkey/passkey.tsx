@@ -11,6 +11,8 @@ export class Passkey {
   @Prop() disabled = false;
   @Prop({ attribute: "class-name" }) componentClassName = "";
   @Prop() ariaDescribedBy? = "";
+  /** When true, renders and triggers a discoverable-credential flow without requiring a prior email step. */
+  @Prop() discoverable = false;
 
   @State() isSupported = false;
 
@@ -28,7 +30,7 @@ export class Passkey {
   };
 
   render() {
-    if (!authState.availableLoginOptions?.passkey) {
+    if (!this.discoverable && !authState.availableLoginOptions?.passkey) {
       return null;
     }
 
