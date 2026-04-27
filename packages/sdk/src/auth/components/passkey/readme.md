@@ -1,6 +1,18 @@
 # u-passkey
 
+## Slots
 
+| Slot   | Description                                                                 |
+| ------ | --------------------------------------------------------------------------- |
+| `icon` | Override the default passkey icon. Falls back to a built-in fingerprint SVG. |
+
+### Custom icon example
+
+```html
+<u-passkey discoverable>
+  <img slot="icon" src="/assets/images/passkey.svg" alt="" />
+</u-passkey>
+```
 
 <!-- Auto Generated Below -->
 
