@@ -2,9 +2,13 @@ import { Component, Host, h, Prop, State } from "@stencil/core";
 import { t } from "../../../i18n";
 import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
+import { PasskeyIcon } from "./passkey-icon";
+
+const ICON_CLASSNAME = "u:w-5 u:h-5 u:block";
 
 @Component({
   tag: "u-passkey",
+  styleUrl: "passkey.css",
   shadow: false,
 })
 export class Passkey {
@@ -52,6 +56,11 @@ export class Passkey {
           aria-live="polite"
           aria-describedby={this.ariaDescribedBy || undefined}
         >
+          <slot name="icon">
+            <span aria-hidden="true">
+              <PasskeyIcon className={ICON_CLASSNAME} />
+            </span>
+          </slot>
           {authState.loading ? loadingText : text}
         </button>
       </Host>
