@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.2...@unidy.io/sdk-v1.4.3) (2026-04-28)
+
+
+### Bug Fixes
+
+* add icon slot to u-passkey with default passkey SVG ([#257](https://github.com/UnidyID/unidy-sdk/issues/257)) ([7034cab](https://github.com/UnidyID/unidy-sdk/commit/7034cab4d81bb04f6863a08e8fb5c6f0c6be49e7))
+
 ## [1.4.2](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.1...@unidy.io/sdk-v1.4.2) (2026-04-26)
 
 
