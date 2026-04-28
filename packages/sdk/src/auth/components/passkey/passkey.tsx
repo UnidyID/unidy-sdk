@@ -56,12 +56,14 @@ export class Passkey {
           aria-live="polite"
           aria-describedby={this.ariaDescribedBy || undefined}
         >
-          <slot name="icon">
-            <span aria-hidden="true">
-              <PasskeyIcon className={ICON_CLASSNAME} />
-            </span>
-          </slot>
-          {authState.loading ? loadingText : text}
+          <div class="u:flex u:items-center u:justify-center">
+            <slot name="icon">
+              <span aria-hidden="true">
+                <PasskeyIcon className={ICON_CLASSNAME} />
+              </span>
+            </slot>
+            <span class="u:ml-4">{authState.loading ? loadingText : text}</span>
+          </div>
         </button>
       </Host>
     );
