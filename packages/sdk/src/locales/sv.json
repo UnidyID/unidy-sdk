@@ -29,6 +29,11 @@
       "button_text_set": "Ange lösenord",
       "success_message": "E-post för lösenordsåterställning har skickats. Kontrollera din inkorg"
     },
+    "resendConfirmation": {
+      "button_text": "Skicka bekräftelsemail igen",
+      "description": "Kontrollera din inkorg för att bekräfta din e-postadress. Om du inte har fått det kan du begära ett nytt bekräftelsemail.",
+      "title": "Bekräfta din e-postadress"
+    },
     "single-login": {
       "button_text": "Logga in"
     },
@@ -52,7 +57,9 @@
   "errors": {
     "account_locked": "Kontot är låst",
     "account_not_found": "Kontot hittades inte",
+    "account_already_confirmed": "Din e-postadress har redan bekräftats. Vänligen logga in",
     "account_unconfirmed": "Kontots e-postadress har inte bekräftats",
+    "confirmation_recently_sent": "Ett bekräftelsemail har nyligen skickats. Vänligen vänta innan du begär ett nytt",
     "auth_method_required": "Ange ett lösenord eller verifiera din e-postadress för att fortsätta",
     "authentication_failed": "Autentisering misslyckades",
     "bad_request": "Ogiltig begäran",

@@ -12,7 +12,8 @@ export type AuthStep =
   | "missing-fields"
   | "reset-password"
   | "registration"
-  | "single-login";
+  | "single-login"
+  | "unconfirmed";
 
 export interface AuthState {
   step: AuthStep;
@@ -34,6 +35,8 @@ export interface AuthState {
   loading: boolean;
   errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
+
+  enableResendAfter: number;
 
   authenticated: boolean;
   token: string | null;
@@ -116,6 +119,7 @@ const initialState: AuthState = {
     passkey: null,
   },
   globalErrors: {},
+  enableResendAfter: 0,
   authenticated: false,
   missingRequiredFields: undefined,
   availableLoginOptions: storedLoginOptions ?? {
@@ -284,6 +288,10 @@ class AuthStore {
   setRefreshToken(refreshToken: string | null) {
     state.refreshToken = refreshToken;
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+  }
+
+  setEnableResendAfter(seconds: number) {
+    state.enableResendAfter = seconds;
   }
 
   setMagicCodeStep(step: null | "requested" | "sent") {

@@ -895,6 +895,12 @@ export namespace Components {
          */
         "submit": () => Promise<void>;
     }
+    interface UResendConfirmationEmail {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
     interface UResetPasswordButton {
         /**
           * CSS classes to apply to the button element.
@@ -950,7 +956,8 @@ export namespace Components {
     | "reset-password"
     | "single-login"
     | "missing-fields"
-    | "registration";
+    | "registration"
+    | "unconfirmed";
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
@@ -1512,6 +1519,12 @@ declare global {
         prototype: HTMLURegistrationStepElement;
         new (): HTMLURegistrationStepElement;
     };
+    interface HTMLUResendConfirmationEmailElement extends Components.UResendConfirmationEmail, HTMLStencilElement {
+    }
+    var HTMLUResendConfirmationEmailElement: {
+        prototype: HTMLUResendConfirmationEmailElement;
+        new (): HTMLUResendConfirmationEmailElement;
+    };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
     var HTMLUResetPasswordButtonElement: {
@@ -1662,6 +1675,7 @@ declare global {
         "u-registration-resume": HTMLURegistrationResumeElement;
         "u-registration-root": HTMLURegistrationRootElement;
         "u-registration-step": HTMLURegistrationStepElement;
+        "u-resend-confirmation-email": HTMLUResendConfirmationEmailElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
@@ -2525,6 +2539,12 @@ declare namespace LocalJSX {
          */
         "requiresPassword"?: boolean;
     }
+    interface UResendConfirmationEmail {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+    }
     interface UResetPasswordButton {
         /**
           * CSS classes to apply to the button element.
@@ -2587,7 +2607,8 @@ declare namespace LocalJSX {
     | "reset-password"
     | "single-login"
     | "missing-fields"
-    | "registration";
+    | "registration"
+    | "unconfirmed";
     }
     interface USocialLoginButton {
         /**
@@ -2760,6 +2781,7 @@ declare namespace LocalJSX {
         "u-registration-resume": URegistrationResume;
         "u-registration-root": URegistrationRoot;
         "u-registration-step": URegistrationStep;
+        "u-resend-confirmation-email": UResendConfirmationEmail;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
@@ -2833,6 +2855,7 @@ declare module "@stencil/core" {
             "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
             "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
             "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
+            "u-resend-confirmation-email": LocalJSX.UResendConfirmationEmail & JSXBase.HTMLAttributes<HTMLUResendConfirmationEmailElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;

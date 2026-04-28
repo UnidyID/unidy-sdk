@@ -28,6 +28,11 @@
       "button_text_set": "Salva password",
       "success_message": "Email di reimpostazione password inviata. Controlla la tua casella di posta"
     },
+    "resendConfirmation": {
+      "button_text": "Reinvia email di conferma",
+      "description": "Controlla la tua casella di posta per confermare il tuo indirizzo email. Se non l'hai ricevuta, puoi richiedere una nuova email di conferma.",
+      "title": "Conferma il tuo indirizzo email"
+    },
     "single-login": {
       "button_text": "Accedi"
     },
@@ -55,7 +60,9 @@
   "errors": {
     "account_locked": "Account bloccato",
     "account_not_found": "Account non trovato",
+    "account_already_confirmed": "Il tuo indirizzo email è già stato confermato. Effettua l'accesso",
     "account_unconfirmed": "L'indirizzo email dell'account non è stato confermato",
+    "confirmation_recently_sent": "Un'email di conferma è stata inviata di recente. Attendi prima di richiederne una nuova",
     "auth_method_required": "Imposta una password o verifica la tua email per continuare",
     "authentication_failed": "Autenticazione fallita",
     "bad_request": "Richiesta non valida",

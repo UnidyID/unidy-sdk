@@ -28,6 +28,11 @@
       "button_text_set": "Passwort speichern",
       "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang"
     },
+    "resendConfirmation": {
+      "button_text": "Bestätigungs-E-Mail erneut senden",
+      "description": "Bitte überprüfen Sie Ihren Posteingang, um Ihre E-Mail-Adresse zu bestätigen. Falls Sie keine E-Mail erhalten haben, können Sie eine neue Bestätigungs-E-Mail anfordern.",
+      "title": "E-Mail-Adresse bestätigen"
+    },
     "single-login": {
       "button_text": "Anmelden"
     },
@@ -55,7 +60,9 @@
   "errors": {
     "account_locked": "Konto gesperrt",
     "account_not_found": "Konto nicht gefunden",
+    "account_already_confirmed": "Ihre E-Mail-Adresse wurde bereits bestätigt. Bitte melden Sie sich an",
     "account_unconfirmed": "Die E-Mail-Adresse des Kontos wurde noch nicht bestätigt",
+    "confirmation_recently_sent": "Eine Bestätigungs-E-Mail wurde kürzlich gesendet. Bitte warten Sie, bevor Sie eine neue anfordern",
     "auth_method_required": "Bitte legen Sie ein Passwort fest oder bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren",
     "authentication_failed": "Authentifizierung fehlgeschlagen",
     "bad_request": "Ungültige Anfrage",

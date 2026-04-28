@@ -25,20 +25,24 @@ export const CreateSignInResponseSchema = z.object({
 // Generic error response (re-export of base error for backwards compatibility)
 export const ErrorSchema = BaseErrorSchema;
 
-// Magic code response
-export const SendMagicCodeResponseSchema = z.object({
+// Successful response carrying a resend cooldown.
+export const ResendDelayResponseSchema = z.object({
   enable_resend_after: z.number(),
+});
+
+// Rate-limit error carrying a resend cooldown.
+export const ResendDelayErrorSchema = BaseErrorSchema.extend({
+  enable_resend_after: z.number(),
+});
+
+// Magic code response: resend cooldown plus optional sign-in context.
+export const SendMagicCodeResponseSchema = ResendDelayResponseSchema.extend({
   sid: z.string().nullish(),
   login_options: z
     .object({
       magic_link: z.boolean(),
     })
     .optional(),
-});
-
-// Magic code error extends base error with resend timing
-export const SendMagicCodeErrorSchema = BaseErrorSchema.extend({
-  enable_resend_after: z.number(),
 });
 
 // JWT token response
@@ -145,7 +149,8 @@ export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;
 export type RequiredFieldsResponse = z.infer<typeof RequiredFieldsResponseSchema>;
-export type SendMagicCodeError = z.infer<typeof SendMagicCodeErrorSchema>;
+export type ResendDelayResponse = z.infer<typeof ResendDelayResponseSchema>;
+export type ResendDelayError = z.infer<typeof ResendDelayErrorSchema>;
 export type InvalidPasswordResponse = z.infer<typeof InvalidPasswordResponseSchema>;
 export type PasskeyOptionsResponse = z.infer<typeof PasskeyOptionsResponseSchema>;
 export type PasskeyCredential = z.infer<typeof PasskeyCredentialSchema>;

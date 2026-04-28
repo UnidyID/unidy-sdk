@@ -53,7 +53,8 @@ export type {
   PasskeyCredential,
   PasskeyOptionsResponse,
   RequiredFieldsResponse,
-  SendMagicCodeError,
+  ResendDelayError,
+  ResendDelayResponse,
   SendMagicCodeResponse,
   TokenResponse,
 } from "./schemas";
@@ -74,6 +75,8 @@ export type {
   GetPasskeyOptionsResult,
   RefreshTokenArgs,
   RefreshTokenResult,
+  ResendConfirmationArgs,
+  ResendConfirmationResult,
   ResetPasswordArgs,
   ResetPasswordResult,
   SendMagicCodeArgs,
@@ -148,6 +151,10 @@ export class AuthService extends BaseService {
 
   signedIn(): Promise<signIn.SignedInResult> {
     return signIn.signedIn(this.client, this.respond);
+  }
+
+  resendConfirmation(args: signIn.ResendConfirmationArgs): Promise<signIn.ResendConfirmationResult> {
+    return signIn.resendConfirmation(this.client, args, this.respond);
   }
 
   // ============================================
