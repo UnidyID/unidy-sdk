@@ -8,5 +8,13 @@
  * to consume components of this package as outlined in the `README.md`.
  */
 
-export * from "./api/schemas";
+// Schemas (zod runtime + the one type unique to this file)
+export type { TransactionListParams } from "./api/schemas";
+export {
+  TransactionLineItemSchema,
+  TransactionListParamsSchema,
+  TransactionSchema,
+  TransactionsListResponseSchema,
+} from "./api/schemas";
+// Service + the inferred entity types it re-exports
 export * from "./api/transactions";

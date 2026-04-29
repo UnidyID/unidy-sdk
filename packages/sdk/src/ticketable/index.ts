@@ -9,6 +9,19 @@
  */
 
 export * from "../shared/store/pagination-store";
-export * from "./api/schemas";
+// Schemas (zod runtime + types unique to this file). `ExportFormat` is both a
+// zod enum and an inferred type — re-exporting the value also re-exports the type.
+export type { ExportLinkResponse, TicketableListParams } from "./api/schemas";
+export {
+  ExportFormat,
+  ExportLinkResponseSchema,
+  SubscriptionSchema,
+  SubscriptionsListResponseSchema,
+  TicketableListParamsSchema,
+  TicketableSchema,
+  TicketSchema,
+  TicketsListResponseSchema,
+} from "./api/schemas";
+// Services + the inferred entity types they re-export
 export * from "./api/subscriptions";
 export * from "./api/tickets";

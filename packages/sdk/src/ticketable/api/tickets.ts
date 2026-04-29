@@ -1,4 +1,8 @@
 import type { ApiClientInterface, CommonErrors, ServiceDependencies } from "../../api/base-service";
+
+// Re-export types for consumers importing from this module directly.
+export type { Ticket, TicketsListResponse } from "./schemas";
+
 import {
   type ExportFormat,
   type ExportLinkResponse,
@@ -9,9 +13,6 @@ import {
   TicketsListResponseSchema,
 } from "./schemas";
 import { type TicketableGetResult, type TicketableListArgs, type TicketableListResult, TicketableService } from "./ticketable-service";
-
-// Re-export types for external use
-export type { Ticket, TicketsListResponse } from "./schemas";
 
 // Argument types extending base ticketable args
 export interface TicketsListArgs extends TicketableListArgs {

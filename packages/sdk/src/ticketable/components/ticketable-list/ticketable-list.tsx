@@ -101,14 +101,16 @@ export class TicketableList extends UnidyComponent() {
     this.error = null;
 
     if (!this.ticketableType) {
-      this.error = "[u-ticketable-list] ticketable-type attribute is required";
+      this.logger.error("ticketable-type attribute is required");
+      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
-      this.error = `[u-ticketable-list] Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`;
+      this.logger.error(`Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`);
+      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
       return;
@@ -116,15 +118,18 @@ export class TicketableList extends UnidyComponent() {
 
     const auth = await Auth.getInstance();
     if (!auth) {
-      this.error = "[u-ticketable-list] Auth instance not found";
+      this.logger.error("Auth instance not found");
+      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
     const idToken = await auth.getToken();
     if (typeof idToken !== "string") {
-      this.error = "[u-ticketable-list] Failed to get ID token";
+      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "missing_id_token");
       this.loading = false;
+      this.uTicketableListError.emit({ error: this.error });
       return;
     }
 
@@ -173,7 +178,8 @@ export class TicketableList extends UnidyComponent() {
 
       this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
-      this.error = err instanceof Error ? err.message : "[u-ticketable-list] An error occurred";
+      this.logger.error("Unexpected error while loading data", err);
+      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
       this.loading = false;
       this.uTicketableListError.emit({ error: this.error });
     }

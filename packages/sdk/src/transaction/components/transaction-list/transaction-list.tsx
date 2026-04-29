@@ -94,15 +94,18 @@ export class TransactionList extends UnidyComponent() {
 
     const auth = await Auth.getInstance();
     if (!auth) {
-      this.error = "[u-transaction-list] Auth instance not found";
+      this.logger.error("Auth instance not found");
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "internal_error");
       this.loading = false;
+      this.uTransactionListError.emit({ error: this.error });
       return;
     }
 
     const idToken = await auth.getToken();
     if (typeof idToken !== "string") {
-      this.error = "[u-transaction-list] Failed to get ID token";
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "missing_id_token");
       this.loading = false;
+      this.uTransactionListError.emit({ error: this.error });
       return;
     }
 
@@ -141,7 +144,8 @@ export class TransactionList extends UnidyComponent() {
 
       this.uTransactionListSuccess.emit({ items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
-      this.error = err instanceof Error ? err.message : "[u-transaction-list] An error occurred";
+      this.logger.error("Unexpected error while loading transactions", err);
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "internal_error");
       this.loading = false;
       this.uTransactionListError.emit({ error: this.error });
     }
