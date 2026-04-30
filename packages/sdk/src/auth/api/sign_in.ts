@@ -14,8 +14,10 @@ import {
   PasskeyOptionsResponseSchema,
   type RequiredFieldsResponse,
   RequiredFieldsResponseSchema,
-  type SendMagicCodeError,
-  SendMagicCodeErrorSchema,
+  type ResendDelayError,
+  ResendDelayErrorSchema,
+  type ResendDelayResponse,
+  ResendDelayResponseSchema,
   type SendMagicCodeResponse,
   SendMagicCodeResponseSchema,
   type TokenResponse,
@@ -34,6 +36,7 @@ export type CreateSignInArgs = Payload<{
   originUrl?: string;
   captchaToken?: string;
 }>;
+export type ResendConfirmationArgs = Payload<{ email: string; captchaToken?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;
@@ -81,7 +84,7 @@ export type AuthenticateResultShared =
 
 export type SendMagicCodeResult =
   | CommonErrors
-  | ["magic_code_recently_created", SendMagicCodeError]
+  | ["magic_code_recently_created", ResendDelayError]
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
@@ -134,6 +137,14 @@ export type SignOutResult =
   | [null, null];
 
 export type SignedInResult = CommonErrors | ["not_found", ErrorResponse] | [null, TokenResponse];
+
+export type ResendConfirmationResult =
+  | CommonErrors
+  | CaptchaErrors
+  | ["account_not_found", ErrorResponse]
+  | ["account_already_confirmed", ErrorResponse]
+  | ["confirmation_recently_sent", ResendDelayError]
+  | [null, ResendDelayResponse];
 
 export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
 
@@ -220,7 +231,7 @@ export async function sendMagicCode(
 
   return handleResponse(response, () => {
     if (!response.success) {
-      const magicCodeError = SendMagicCodeErrorSchema.safeParse(response.data);
+      const magicCodeError = ResendDelayErrorSchema.safeParse(response.data);
       if (magicCodeError.success) {
         return ["magic_code_recently_created", magicCodeError.data];
       }
@@ -435,6 +446,32 @@ export async function signOut(
     }
 
     return [null, null];
+  });
+}
+
+export async function resendConfirmation(
+  client: ApiClientInterface,
+  args: ResendConfirmationArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ResendConfirmationResult> {
+  const { email, captchaToken } = args.payload;
+  const response = await client.post<ResendDelayResponse>("/api/sdk/v1/sign_ins/resend_confirmation", {
+    email,
+    captcha_token: captchaToken,
+  });
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const rateLimitParsed = ResendDelayErrorSchema.safeParse(response.data);
+      if (rateLimitParsed.success && rateLimitParsed.data.error_identifier === "confirmation_recently_sent") {
+        return ["confirmation_recently_sent", rateLimitParsed.data];
+      }
+
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "account_not_found" | "account_already_confirmed", error_response];
+    }
+
+    return [null, ResendDelayResponseSchema.parse(response.data)];
   });
 }
 

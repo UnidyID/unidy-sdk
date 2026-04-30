@@ -28,6 +28,11 @@
       "button_text_set": "Wachtwoord opslaan",
       "success_message": "E-mail voor wachtwoordherstel verzonden. Controleer uw inbox"
     },
+    "resendConfirmation": {
+      "button_text": "Bevestigingsmail opnieuw verzenden",
+      "description": "Controleer uw inbox om uw e-mailadres te bevestigen. Als u de e-mail niet hebt ontvangen, kunt u een nieuwe bevestigingsmail aanvragen.",
+      "title": "Bevestig uw e-mailadres"
+    },
     "single-login": {
       "button_text": "Aanmelden"
     },
@@ -55,7 +60,9 @@
   "errors": {
     "account_locked": "Account vergrendeld",
     "account_not_found": "Account niet gevonden",
+    "account_already_confirmed": "Uw e-mailadres is al bevestigd. Meld u aan",
     "account_unconfirmed": "Het e-mailadres van het account is nog niet bevestigd",
+    "confirmation_recently_sent": "Er is onlangs een bevestigingsmail verzonden. Wacht voordat u een nieuwe aanvraagt",
     "auth_method_required": "Stel een wachtwoord in of verifieer uw e-mailadres om door te gaan",
     "authentication_failed": "Authenticatie mislukt",
     "bad_request": "Ongeldige aanvraag",

@@ -28,6 +28,11 @@
       "button_text_set": "Enregistrer le mot de passe",
       "success_message": "E-mail de réinitialisation du mot de passe envoyé. Veuillez vérifier votre boîte de réception"
     },
+    "resendConfirmation": {
+      "button_text": "Renvoyer l'e-mail de confirmation",
+      "description": "Veuillez vérifier votre boîte de réception pour confirmer votre adresse e-mail. Si vous ne l'avez pas reçue, vous pouvez demander un nouvel e-mail de confirmation.",
+      "title": "Confirmez votre adresse e-mail"
+    },
     "single-login": {
       "button_text": "Se connecter"
     },
@@ -55,7 +60,9 @@
   "errors": {
     "account_locked": "Compte verrouillé",
     "account_not_found": "Compte introuvable",
+    "account_already_confirmed": "Votre adresse e-mail est déjà confirmée. Veuillez vous connecter",
     "account_unconfirmed": "L'adresse e-mail du compte n'a pas été confirmée",
+    "confirmation_recently_sent": "Un e-mail de confirmation a été récemment envoyé. Veuillez patienter avant d'en demander un nouveau",
     "auth_method_required": "Veuillez définir un mot de passe ou vérifier votre adresse e-mail pour continuer",
     "authentication_failed": "Échec de l'authentification",
     "bad_request": "Mauvaise requête",
