@@ -35,7 +35,7 @@ export const Select: FunctionalComponent<SelectProps> = (props) => {
       name={props.name}
       class={props.componentClassName}
       data-value={props.value as string | undefined}
-      part={`select_field ${props.specificPartKey ? `select_field--${props.specificPartKey}` : ""}`}
+      part={`select_field ${props.specificPartKey ? `select_field--${props.specificPartKey}` : ""}${props.disabled ? " select_field--disabled" : ""}`}
       disabled={props.disabled}
       title={props.title}
       onChange={(e) => props.onChange((e.target as HTMLSelectElement).value)}

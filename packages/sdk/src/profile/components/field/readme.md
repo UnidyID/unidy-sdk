@@ -33,6 +33,8 @@
 | `"field-save-indicator--saved"`     | Shown after successful save (displays checkmark, disappears after 2s).                                                                                                                                                    |
 | `"field-save-indicator--saving"`    | Shown while the field is being saved (displays spinner).                                                                                                                                                                  |
 | `"input_field"`                     |                                                                                                                                                                                                                           |
+| `"input_field--disabled"`           | Present on input when the field is disabled.                                                                                                                                                                              |
+| `"input_field--readonly"`           | Present on the readonly value display element.                                                                                                                                                                            |
 | `"multi-select-group_field"`        |                                                                                                                                                                                                                           |
 | `"multi-select-item_checkbox"`      |                                                                                                                                                                                                                           |
 | `"multi-select-item_label"`         |                                                                                                                                                                                                                           |
@@ -45,8 +47,10 @@
 | `"readonly-indicator"`              |                                                                                                                                                                                                                           |
 | `"required-indicator"`              |                                                                                                                                                                                                                           |
 | `"select_field"`                    | Styles the base <select> element.                                                                                                                                                                                         |
+| `"select_field--disabled"`          | Present on select when the field is disabled.                                                                                                                                                                             |
 | `"select_field--example_field"`     | Example of a field-specific selector. Replace `example_field` with your field name. e.g. `custom_attributes.favorite_nut` → `select_field--custom_attributes-favorite_nut`, `country_code` → `select_field--country-code` |
 | `"textarea_field"`                  |                                                                                                                                                                                                                           |
+| `"textarea_field--disabled"`        | Present on textarea when the field is disabled.                                                                                                                                                                           |
 
 
 ## Dependencies
