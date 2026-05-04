@@ -49,8 +49,10 @@
 | `"select_field"`                    | Styles the base <select> element.                                                                                                                                                                                         |
 | `"select_field--disabled"`          | Present on select when the field is disabled.                                                                                                                                                                             |
 | `"select_field--example_field"`     | Example of a field-specific selector. Replace `example_field` with your field name. e.g. `custom_attributes.favorite_nut` → `select_field--custom_attributes-favorite_nut`, `country_code` → `select_field--country-code` |
+| `"select_field--readonly"`          | Present on the readonly value display element.                                                                                                                                                                            |
 | `"textarea_field"`                  |                                                                                                                                                                                                                           |
 | `"textarea_field--disabled"`        | Present on textarea when the field is disabled.                                                                                                                                                                           |
+| `"textarea_field--readonly"`        | Present on the readonly value display element.                                                                                                                                                                            |
 
 
 ## Dependencies

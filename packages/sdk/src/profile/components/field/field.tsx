@@ -9,6 +9,7 @@ import { state as profileState } from "../../store/profile-store";
  *   Replace `example_field` with your field name.
  *   e.g. `custom_attributes.favorite_nut` → `select_field--custom_attributes-favorite_nut`, `country_code` → `select_field--country-code`
  * @part select_field--disabled - Present on select when the field is disabled.
+ * @part select_field--readonly - Present on the readonly value display element.
  * @part radio-group-item_radio
  * @part radio-group_field
  * @part radio-group-item_label
@@ -18,6 +19,7 @@ import { state as profileState } from "../../store/profile-store";
  * @part multi-select-item_label
  * @part textarea_field
  * @part textarea_field--disabled - Present on textarea when the field is disabled.
+ * @part textarea_field--readonly - Present on the readonly value display element.
  * @part input_field
  * @part input_field--disabled - Present on input when the field is disabled.
  * @part input_field--readonly - Present on the readonly value display element.
@@ -161,7 +163,7 @@ export class Field extends UnidyComponent() {
           </label>
         )}
         {isReadonly && fieldData?.type !== "checkbox" ? (
-          <span id={this.field} part="readonly-indicator input_field--readonly">
+          <span id={this.field} part="readonly-indicator input_field--readonly select_field--readonly textarea_field--readonly">
             {fieldData?.value || readonlyPlaceholder}
           </span>
         ) : null}

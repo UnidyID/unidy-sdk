@@ -25,7 +25,7 @@ export const Input: FunctionalComponent<InputProps> = (props) => (
     class={props.componentClassName}
     disabled={props.disabled}
     required={props.required}
-    part={`input_field ${props.specificPartKey ? `input_field--${props.specificPartKey}` : ""}${props.disabled ? " input_field--disabled" : ""}`}
+    part={`input_field${props.specificPartKey ? ` input_field--${props.specificPartKey}` : ""}${props.disabled ? " input_field--disabled" : ""}`}
     title={props.title}
     placeholder={props.placeholder}
     onInput={(e) => props.onInput((e.target as HTMLInputElement).value)}
