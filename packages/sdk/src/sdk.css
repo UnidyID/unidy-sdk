@@ -41,3 +41,26 @@ u-submit-button,
 u-ticketable-list {
   visibility: hidden;
 }
+
+/* Light-DOM wrapper elements: style-neutral by default.
+   Consumers use class-name prop or external selectors for layout. */
+u-signed-in,
+u-ticketable-list,
+u-transaction-list {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Value substitution elements: inline, no visual chrome.
+   Skeleton loaders style child <span>s, not the element itself. */
+ticketable-value,
+transaction-value {
+  display: inline;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
