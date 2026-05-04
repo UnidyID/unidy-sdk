@@ -3,12 +3,19 @@ import { routes } from "../../../config";
 import { Database } from "../../../lib/database";
 import { randomEmail } from "../../../lib/helpers/random";
 
+async function getDefaultBrandId() {
+  const brands = new Database("Brand", { scope: { default: true } });
+  const [brand] = await brands.list();
+  return brand.id;
+}
+
 async function createUnconfirmedUser(email: string) {
+  const brandId = await getDefaultBrandId();
   const users = new Database("User", { scope: { email } });
   await users.create({
     email,
     password: "Ch4ngeme!",
-    current_brand: 1,
+    current_brand: brandId,
     confirmed_at: null,
     // Place confirmation_sent_at well outside the resend rate-limit window so the resend button is enabled.
     confirmation_sent_at: new Date(0).toISOString(),
@@ -58,7 +65,7 @@ test.describe("Auth - Unconfirmed step", () => {
 
     await expect(page.getByRole("heading", { name: "Confirm your email" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Back", exact: true }).click();
+    await page.getByRole("button", { name: "← Back" }).click();
 
     await expect(emailInput).toBeVisible();
     await expect(emailInput).toHaveValue(email);
