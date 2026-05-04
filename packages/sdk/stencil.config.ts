@@ -28,6 +28,7 @@ export const config: Config = {
         { src: "auth/index.html", dest: "auth/index.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
+        { src: "transaction/index.html", dest: "transaction/index.html" },
         { src: "auth/single-step.html", dest: "auth/single-step.html" },
         { src: "oauth/index.html", dest: "oauth/index.html" },
         { src: "profile/index.html", dest: "profile/index.html" },

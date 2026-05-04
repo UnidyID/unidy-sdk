@@ -5,20 +5,16 @@ import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
+import { getParentOfNestedValue, loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
 import type { PaginationStore } from "../../../shared/store/pagination-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
-import type { Subscription } from "../../api/subscriptions";
-import type { Ticket } from "../../api/tickets";
+import type { Transaction, TransactionLineItem } from "../../api/transactions";
 
-export type TicketableType = "ticket" | "subscription";
-export type TicketableItem = Ticket | Subscription;
-
-@Component({ tag: "u-ticketable-list", shadow: false })
-export class TicketableList extends UnidyComponent() {
+@Component({ tag: "u-transaction-list", shadow: false })
+export class TransactionList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
 
-  @State() items: TicketableItem[] = [];
+  @State() items: Transaction[] = [];
   @State() loading = true;
   @State() error: string | null = null;
 
@@ -30,7 +26,7 @@ export class TicketableList extends UnidyComponent() {
   /** CSS classes to apply to the container element. */
   @Prop() containerClass?: string;
 
-  /** Filter string for API queries (e.g., 'state=active;payment_state=paid'). */
+  /** Filter string for API queries (e.g., 'state=completed;financial_status=paid'). */
   @Prop({ mutable: true }) filter = "";
 
   /** Number of items per page. */
@@ -42,22 +38,18 @@ export class TicketableList extends UnidyComponent() {
   @Prop() skeletonCount?: number;
   /** If true, replaces all text content with skeleton loaders. */
   @Prop() skeletonAllText?: boolean = false;
-  /** The type of ticketable items to list ('ticket' or 'subscription'). */
-  @Prop() ticketableType!: TicketableType;
 
   /** Pagination store instance for external state management. */
   @Prop() store: PaginationStore | null = null;
 
-  /** Fired when items are successfully fetched. Contains items and pagination metadata. */
-  @Event() uTicketableListSuccess!: EventEmitter<{
-    ticketableType: TicketableType;
-    items: TicketableItem[];
+  /** Fired when transactions are successfully fetched. Contains items and pagination metadata. */
+  @Event() uTransactionListSuccess!: EventEmitter<{
+    items: Transaction[];
     paginationMeta: PaginationMeta | null;
   }>;
 
-  /** Fired when fetching items fails. Contains the error message. */
-  @Event() uTicketableListError!: EventEmitter<{
-    ticketableType?: TicketableType;
+  /** Fired when fetching transactions fails. Contains the error message. */
+  @Event() uTransactionListError!: EventEmitter<{
     error: string;
   }>;
 
@@ -100,70 +92,44 @@ export class TicketableList extends UnidyComponent() {
     this.loading = true;
     this.error = null;
 
-    if (!this.ticketableType) {
-      this.logger.error("ticketable-type attribute is required");
-      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
-      this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
-      return;
-    }
-
-    if (this.ticketableType !== "ticket" && this.ticketableType !== "subscription") {
-      this.logger.error(`Invalid ticketable-type: ${this.ticketableType}. Must be 'ticket' or 'subscription'`);
-      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
-      this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
-      return;
-    }
-
     const auth = await Auth.getInstance();
     if (!auth) {
       this.logger.error("Auth instance not found");
-      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "internal_error");
       this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
+      this.uTransactionListError.emit({ error: this.error });
       return;
     }
 
     const idToken = await auth.getToken();
     if (typeof idToken !== "string") {
-      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "missing_id_token");
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "missing_id_token");
       this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
+      this.uTransactionListError.emit({ error: this.error });
       return;
     }
 
     try {
       const unidyClient = await getUnidyClient();
 
-      // URLSearchParams with ';' swapped for '&' lets consumers write compact filter strings.
       const filterArgs: Record<string, string> = Object.fromEntries(new URLSearchParams((this.filter || "").replace(/;/g, "&")).entries());
 
-      const commonArgs = {
+      const [error, data] = await unidyClient.transactions.list({
         page: this.page,
         perPage: this.limit,
         state: filterArgs.state,
-        paymentState: filterArgs.payment_state,
-        orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
+        financialStatus: filterArgs.financial_status,
+        orderType: filterArgs.order_type,
+        sourcePlatform: filterArgs.source_platform,
+        externalId: filterArgs.external_id,
+        orderBy: filterArgs.order_by as "placed_at" | "created_at" | "total" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
-        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
-      };
-
-      const [error, data] =
-        this.ticketableType === "ticket"
-          ? await unidyClient.tickets.list({
-              ...commonArgs,
-              ticketCategoryId: filterArgs.ticket_category_id,
-            })
-          : await unidyClient.subscriptions.list({
-              ...commonArgs,
-              subscriptionCategoryId: filterArgs.subscription_category_id,
-            });
+      });
 
       if (error !== null || !data || !("results" in data)) {
-        this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", error);
+        this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", error);
         this.loading = false;
-        this.uTicketableListError.emit({ error: this.error });
+        this.uTransactionListError.emit({ error: this.error });
         return;
       }
 
@@ -176,34 +142,32 @@ export class TicketableList extends UnidyComponent() {
 
       this.loading = false;
 
-      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      this.uTransactionListSuccess.emit({ items: this.items, paginationMeta: this.paginationMeta });
     } catch (err) {
-      this.logger.error("Unexpected error while loading data", err);
-      this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
+      this.logger.error("Unexpected error while loading transactions", err);
+      this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "internal_error");
       this.loading = false;
-      this.uTicketableListError.emit({ error: this.error });
+      this.uTransactionListError.emit({ error: this.error });
     }
   }
 
   private buildRenderConfig() {
-    const ticketableType = this.ticketableType;
     return {
-      valueTag: "ticketable-value",
-      conditionalTag: "ticketable-conditional",
-      isCurrencyKey: (key: string) => key === "price",
-      resolveCurrency: (item: TicketableItem) => item.currency ?? "EUR",
-      skeletonAllText: this.skeletonAllText,
-      postProcess: (fragment: DocumentFragment, item: TicketableItem | undefined) => {
-        for (const exportEl of fragment.querySelectorAll("u-ticketable-export")) {
-          if (item) {
-            exportEl.setAttribute("data-ticketable-id", item.id);
-            exportEl.setAttribute("data-ticketable-type", ticketableType);
-            exportEl.setAttribute("exportable", item.exportable_to_wallet ? "true" : "false");
-          } else {
-            exportEl.setAttribute("exportable", "false");
-          }
-        }
+      valueTag: "transaction-value",
+      conditionalTag: "transaction-conditional",
+      isCurrencyKey: (key: string) => {
+        const leaf = key.split(".").pop() ?? key;
+        return leaf === "total" || leaf === "unit_price";
       },
+      resolveCurrency: (item: Transaction, key: string): string => {
+        // For nested keys (e.g. "line_items.[0].total"), read the currency of the
+        // enclosing object — otherwise a multi-currency order renders every line
+        // item in the transaction's top-level currency.
+        const parent = getParentOfNestedValue(item, key) as { currency?: string } | undefined;
+        const lineItemCurrency = parent && parent !== (item as unknown) ? (parent as TransactionLineItem).currency : null;
+        return lineItemCurrency ?? item.currency ?? "EUR";
+      },
+      skeletonAllText: this.skeletonAllText,
     };
   }
 

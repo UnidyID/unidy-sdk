@@ -23,9 +23,9 @@ import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
 import { PaginationMeta } from "./api";
-import { PaginationStore } from "./ticketable/store/pagination-store";
-import { Subscription } from "./ticketable/api/subscriptions";
-import { Ticket } from "./ticketable/api/tickets";
+import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
+import { PaginationStore } from "./shared/store/pagination-store";
+import { Transaction } from "./transaction/api/transactions";
 export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
@@ -44,9 +44,9 @@ export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
 export { PaginationMeta } from "./api";
-export { PaginationStore } from "./ticketable/store/pagination-store";
-export { Subscription } from "./ticketable/api/subscriptions";
-export { Ticket } from "./ticketable/api/tickets";
+export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
+export { PaginationStore } from "./shared/store/pagination-store";
+export { Transaction } from "./transaction/api/transactions";
 export namespace Components {
     interface UBackButton {
         /**
@@ -1065,7 +1065,51 @@ export namespace Components {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
+    }
+    interface UTransactionList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Filter string for API queries (e.g., 'state=completed;financial_status=paid').
+          * @default ""
+         */
+        "filter": string;
+        /**
+          * Number of items per page.
+          * @default 10
+         */
+        "limit": number;
+        /**
+          * Current page number.
+          * @default 1
+         */
+        "page": number;
+        /**
+          * Pagination metadata from the API response.
+          * @default null
+         */
+        "paginationMeta": PaginationMeta | null;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
+        "skeletonCount"?: number;
+        /**
+          * Pagination store instance for external state management.
+          * @default null
+         */
+        "store": PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
     }
 }
 export interface UConfigCustomEvent<T> extends CustomEvent<T> {
@@ -1115,6 +1159,10 @@ export interface UTicketableExportCustomEvent<T> extends CustomEvent<T> {
 export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUTicketableListElement;
+}
+export interface UTransactionListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTransactionListElement;
 }
 declare global {
     interface HTMLUBackButtonElement extends Components.UBackButton, HTMLStencilElement {
@@ -1605,12 +1653,12 @@ declare global {
     };
     interface HTMLUTicketableListElementEventMap {
         "uTicketableListSuccess": {
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   };
         "uTicketableListError": {
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   };
     }
@@ -1627,6 +1675,29 @@ declare global {
     var HTMLUTicketableListElement: {
         prototype: HTMLUTicketableListElement;
         new (): HTMLUTicketableListElement;
+    };
+    interface HTMLUTransactionListElementEventMap {
+        "uTransactionListSuccess": {
+    items: Transaction[];
+    paginationMeta: PaginationMeta | null;
+  };
+        "uTransactionListError": {
+    error: string;
+  };
+    }
+    interface HTMLUTransactionListElement extends Components.UTransactionList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTransactionListElementEventMap>(type: K, listener: (this: HTMLUTransactionListElement, ev: UTransactionListCustomEvent<HTMLUTransactionListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTransactionListElementEventMap>(type: K, listener: (this: HTMLUTransactionListElement, ev: UTransactionListCustomEvent<HTMLUTransactionListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTransactionListElement: {
+        prototype: HTMLUTransactionListElement;
+        new (): HTMLUTransactionListElement;
     };
     interface HTMLElementTagNameMap {
         "u-back-button": HTMLUBackButtonElement;
@@ -1686,6 +1757,7 @@ declare global {
         "u-submit-button": HTMLUSubmitButtonElement;
         "u-ticketable-export": HTMLUTicketableExportElement;
         "u-ticketable-list": HTMLUTicketableListElement;
+        "u-transaction-list": HTMLUTransactionListElement;
     }
 }
 declare namespace LocalJSX {
@@ -2690,15 +2762,15 @@ declare namespace LocalJSX {
           * Fired when fetching items fails. Contains the error message.
          */
         "onUTicketableListError"?: (event: UTicketableListCustomEvent<{
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   }>) => void;
         /**
           * Fired when items are successfully fetched. Contains items and pagination metadata.
          */
         "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   }>) => void;
         /**
@@ -2732,7 +2804,64 @@ declare namespace LocalJSX {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
+    }
+    interface UTransactionList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Filter string for API queries (e.g., 'state=completed;financial_status=paid').
+          * @default ""
+         */
+        "filter"?: string;
+        /**
+          * Number of items per page.
+          * @default 10
+         */
+        "limit"?: number;
+        /**
+          * Fired when fetching transactions fails. Contains the error message.
+         */
+        "onUTransactionListError"?: (event: UTransactionListCustomEvent<{
+    error: string;
+  }>) => void;
+        /**
+          * Fired when transactions are successfully fetched. Contains items and pagination metadata.
+         */
+        "onUTransactionListSuccess"?: (event: UTransactionListCustomEvent<{
+    items: Transaction[];
+    paginationMeta: PaginationMeta | null;
+  }>) => void;
+        /**
+          * Current page number.
+          * @default 1
+         */
+        "page"?: number;
+        /**
+          * Pagination metadata from the API response.
+          * @default null
+         */
+        "paginationMeta"?: PaginationMeta | null;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
+        "skeletonCount"?: number;
+        /**
+          * Pagination store instance for external state management.
+          * @default null
+         */
+        "store"?: PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
     }
     interface IntrinsicElements {
         "u-back-button": UBackButton;
@@ -2792,6 +2921,7 @@ declare namespace LocalJSX {
         "u-submit-button": USubmitButton;
         "u-ticketable-export": UTicketableExport;
         "u-ticketable-list": UTicketableList;
+        "u-transaction-list": UTransactionList;
     }
 }
 export { LocalJSX as JSX };
@@ -2866,6 +2996,7 @@ declare module "@stencil/core" {
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
             "u-ticketable-export": LocalJSX.UTicketableExport & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
+            "u-transaction-list": LocalJSX.UTransactionList & JSXBase.HTMLAttributes<HTMLUTransactionListElement>;
         }
     }
 }
