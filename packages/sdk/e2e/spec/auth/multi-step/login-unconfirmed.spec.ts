@@ -7,6 +7,8 @@ async function createUnconfirmedUser(email: string) {
   const users = new Database("User", { scope: { email } });
   await users.create({
     email,
+    password: "Ch4ngeme!",
+    current_brand: 1,
     confirmed_at: null,
     // Place confirmation_sent_at well outside the resend rate-limit window so the resend button is enabled.
     confirmation_sent_at: new Date(0).toISOString(),
