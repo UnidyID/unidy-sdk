@@ -148,7 +148,11 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
       if (errorCode === "consent_not_granted" || errorCode === "missing_required_fields") {
         const consentData = data as CheckConsentResponse;
         dispatch({ type: "set_consent", consent: consentData });
-        dispatch({ type: "error", error: errorCode });
+        const fieldErrors =
+          errorCode === "missing_required_fields" && data && typeof data === "object" && "error_details" in data
+            ? ((data as { error_details?: Record<string, unknown> }).error_details ?? {})
+            : {};
+        dispatch({ type: "error", error: errorCode, fieldErrors });
         callbacksRef.current?.onError?.(errorCode);
         return false;
       }
