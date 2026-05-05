@@ -78,6 +78,7 @@ export type AuthenticateResultShared =
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
+  | ["account_unconfirmed", ErrorResponse]
   | ["brand_connection_required", BrandConnectionRequiredResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
   | [null, TokenResponse];

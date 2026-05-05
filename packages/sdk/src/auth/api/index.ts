@@ -49,6 +49,8 @@ export type {
   CreateSignInResponse,
   ErrorResponse,
   InvalidPasswordResponse,
+  JumpToServiceRequest,
+  JumpToUnidyRequest,
   LoginOptions,
   PasskeyCredential,
   PasskeyOptionsResponse,
