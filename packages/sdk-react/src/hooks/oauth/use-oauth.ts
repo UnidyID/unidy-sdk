@@ -145,11 +145,16 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
         callbacksRef.current?.onSuccess?.("Connected");
         return true;
       }
-      if (errorCode === "consent_not_granted" || errorCode === "missing_required_fields") {
+      if (errorCode === "consent_not_granted") {
+        const consentData = data as CheckConsentResponse;
+        dispatch({ type: "set_consent", consent: consentData });
+        return false;
+      }
+      if (errorCode === "missing_required_fields") {
         const consentData = data as CheckConsentResponse;
         dispatch({ type: "set_consent", consent: consentData });
         const fieldErrors =
-          errorCode === "missing_required_fields" && data && typeof data === "object" && "error_details" in data
+          data && typeof data === "object" && "error_details" in data
             ? ((data as { error_details?: Record<string, unknown> }).error_details ?? {})
             : {};
         dispatch({ type: "error", error: errorCode, fieldErrors });
