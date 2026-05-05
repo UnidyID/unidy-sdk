@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-05)
+
+
+### Bug Fixes
+
+* add missing exports and types to standalone client ([#261](https://github.com/UnidyID/unidy-sdk/issues/261)) ([f72c828](https://github.com/UnidyID/unidy-sdk/commit/f72c828a47c204b7af5431009e53abd5799b9b56))
+
 ## [1.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.5.0) (2026-05-04)
 
 
