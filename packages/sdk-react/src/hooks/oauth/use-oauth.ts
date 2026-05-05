@@ -79,6 +79,7 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
     const [errorCode, data] = await client.oauth.checkConsent(clientId);
     if (errorCode === null) {
       dispatch({ type: "set_consent", consent: data as CheckConsentResponse });
+      callbacksRef.current?.onSuccess?.("Consent checked");
       return true;
     }
     dispatch({ type: "error", error: errorCode });

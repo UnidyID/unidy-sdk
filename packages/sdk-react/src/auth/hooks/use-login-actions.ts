@@ -578,6 +578,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
         return false;
       }
 
+      callbacks?.onSuccess?.("Reset password token is valid");
       return true;
     },
     [client, callbacks, dispatch, stateRef],

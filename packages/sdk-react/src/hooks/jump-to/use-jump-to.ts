@@ -16,17 +16,17 @@ export interface UseJumpToReturn {
 
 export function useJumpTo(options?: UseJumpToOptions): UseJumpToReturn {
   const client = useUnidyClient();
-  const [isLoading, setIsLoading] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const callbacksRef = useRef(options?.callbacks);
   callbacksRef.current = options?.callbacks;
 
   const jumpToService = useCallback(
     async (serviceId: string, request: JumpToServiceRequest): Promise<string | null> => {
-      setIsLoading(true);
+      setPendingCount((c) => c + 1);
       setError(null);
       const [errorCode, data] = await client.auth.jumpToService(serviceId, request);
-      setIsLoading(false);
+      setPendingCount((c) => c - 1);
       if (errorCode === null) {
         callbacksRef.current?.onSuccess?.("Jump token created");
         return data as string;
@@ -40,10 +40,10 @@ export function useJumpTo(options?: UseJumpToOptions): UseJumpToReturn {
 
   const jumpToUnidy = useCallback(
     async (request: JumpToUnidyRequest): Promise<string | null> => {
-      setIsLoading(true);
+      setPendingCount((c) => c + 1);
       setError(null);
       const [errorCode, data] = await client.auth.jumpToUnidy(request);
-      setIsLoading(false);
+      setPendingCount((c) => c - 1);
       if (errorCode === null) {
         callbacksRef.current?.onSuccess?.("Jump token created");
         return data as string;
@@ -56,7 +56,7 @@ export function useJumpTo(options?: UseJumpToOptions): UseJumpToReturn {
   );
 
   return {
-    isLoading,
+    isLoading: pendingCount > 0,
     error,
     jumpToService,
     jumpToUnidy,
