@@ -103,8 +103,7 @@ export function useInternalMatching(options: UseInternalMatchingOptions): UseInt
         return "found";
       }
       if (errorCode === "internal_matching_match_not_found") {
-        dispatch({ type: "error", error: errorCode });
-        callbacksRef.current?.onError?.(errorCode);
+        dispatch({ type: "clear_match" });
         return "not_found";
       }
       dispatch({ type: "error", error: errorCode });
