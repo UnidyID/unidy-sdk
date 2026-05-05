@@ -386,7 +386,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
 
   const sendResetPasswordEmail = useCallback(
     async (returnTo?: string) => {
-      const { signInId } = stateRef.current;
+      const signInId = stateRef.current.signInId ?? authStorage.getSignInId();
       if (!signInId) {
         dispatch({ type: "SET_ERROR", field: "global", message: "No sign-in session" });
         return;
@@ -416,7 +416,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
 
   const resetPassword = useCallback(
     async (token: string, password: string, confirmation: string) => {
-      const { signInId } = stateRef.current;
+      const signInId = stateRef.current.signInId ?? authStorage.getSignInId();
       if (!signInId) {
         dispatch({ type: "SET_ERROR", field: "global", message: "No sign-in session" });
         return;
@@ -559,7 +559,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
 
   const validateResetPasswordToken = useCallback(
     async (token: string): Promise<boolean> => {
-      const { signInId } = stateRef.current;
+      const signInId = stateRef.current.signInId ?? authStorage.getSignInId();
       if (!signInId) {
         dispatch({ type: "SET_ERROR", field: "resetPassword", message: "No sign-in session" });
         return false;
