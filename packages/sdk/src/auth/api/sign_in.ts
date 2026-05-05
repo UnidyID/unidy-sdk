@@ -78,6 +78,7 @@ export type AuthenticateResultShared =
   | ["sign_in_not_found", ErrorResponse]
   | ["sign_in_expired", ErrorResponse]
   | ["account_locked", ErrorResponse]
+  | ["account_unconfirmed", ErrorResponse]
   | ["brand_connection_required", BrandConnectionRequiredResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
   | [null, TokenResponse];
@@ -268,7 +269,12 @@ export async function authenticateWithPassword(
 
       const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "invalid_password",
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "sign_in_expired"
+          | "account_locked"
+          | "account_unconfirmed"
+          | "invalid_password",
         error_response,
       ];
     }
@@ -302,7 +308,14 @@ export async function authenticateWithMagicCode(
 
       const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "not_valid" | "used" | "expired",
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "sign_in_expired"
+          | "account_locked"
+          | "account_unconfirmed"
+          | "not_valid"
+          | "used"
+          | "expired",
         error_response,
       ];
     }
@@ -328,7 +341,10 @@ export async function updateMissingFields(
       }
 
       const error_response = parseErrorResponse(response.data);
-      return [error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked", error_response];
+      return [
+        error_response.error_identifier as "sign_in_not_found" | "sign_in_expired" | "account_locked" | "account_unconfirmed",
+        error_response,
+      ];
     }
 
     return [null, TokenResponseSchema.parse(response.data)];
