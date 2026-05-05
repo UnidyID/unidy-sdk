@@ -25,6 +25,8 @@ export type LoginActions = Pick<
   | "handleSocialAuthCallback"
   | "sendResetPasswordEmail"
   | "resetPassword"
+  | "validateResetPasswordToken"
+  | "resendConfirmation"
   | "connectBrand"
   | "cancelBrandConnect"
   | "submitMissingFields"
@@ -115,6 +117,10 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       if (error) {
         dispatch({ type: "SET_LOADING", loading: false });
 
+        if (error === "account_unconfirmed") {
+          dispatch({ type: "SET_STEP", step: "unconfirmed" });
+          return;
+        }
         if (error === "brand_connection_required") {
           const brandResponse = response as { sid?: string | null };
           if (brandResponse?.sid) {
@@ -218,6 +224,10 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       if (error) {
         dispatch({ type: "SET_LOADING", loading: false });
 
+        if (error === "account_unconfirmed") {
+          dispatch({ type: "SET_STEP", step: "unconfirmed" });
+          return;
+        }
         if (error === "brand_connection_required") {
           const brandResponse = response as { sid?: string | null };
           if (brandResponse?.sid) {
@@ -547,6 +557,54 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client],
   );
 
+  const validateResetPasswordToken = useCallback(
+    async (token: string): Promise<boolean> => {
+      const { signInId } = stateRef.current;
+      if (!signInId) {
+        dispatch({ type: "SET_ERROR", field: "resetPassword", message: "No sign-in session" });
+        return false;
+      }
+
+      dispatch({ type: "SET_LOADING", loading: true });
+      dispatch({ type: "CLEAR_ERRORS" });
+
+      const [error] = await client.auth.validateResetPasswordToken({ signInId, token });
+
+      dispatch({ type: "SET_LOADING", loading: false });
+
+      if (error) {
+        dispatch({ type: "SET_ERROR", field: "resetPassword", message: error });
+        callbacks?.onError?.(error);
+        return false;
+      }
+
+      return true;
+    },
+    [client, callbacks, dispatch, stateRef],
+  );
+
+  const resendConfirmation = useCallback(
+    async (email: string, captchaToken?: string) => {
+      dispatch({ type: "SET_LOADING", loading: true });
+      dispatch({ type: "CLEAR_ERRORS" });
+
+      const [error] = await client.auth.resendConfirmation({
+        payload: { email, captchaToken },
+      });
+
+      dispatch({ type: "SET_LOADING", loading: false });
+
+      if (error) {
+        dispatch({ type: "SET_ERROR", field: "global", message: error });
+        callbacks?.onError?.(error);
+        return;
+      }
+
+      callbacks?.onSuccess?.("Confirmation email sent");
+    },
+    [client, callbacks, dispatch],
+  );
+
   const goBack = useCallback(() => {
     dispatch({ type: "GO_BACK" });
   }, [dispatch]);
@@ -576,6 +634,8 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     handleSocialAuthCallback,
     sendResetPasswordEmail,
     resetPassword,
+    validateResetPasswordToken,
+    resendConfirmation,
     connectBrand,
     cancelBrandConnect,
     submitMissingFields,

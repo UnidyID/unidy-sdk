@@ -28,7 +28,7 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "@unidy.io/sdk": "workspace:*"
+    "@unidy.io/sdk": "workspace:>=1.5.1"
   },
   "devDependencies": {
     "@tanstack/react-query": "^5.80.7",
