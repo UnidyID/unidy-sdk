@@ -19,12 +19,13 @@ const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
 
 export const TransactionLineItemSchema = z.object({
-  id: z.string(),
-  description: z.string().nullable(),
+  id: z.number(),
+  name: z.string().nullable(),
   quantity: z.number().nullable(),
   unit_price: z.number().nullable(),
-  total: z.number().nullable(),
-  currency: z.string().nullable(),
+  total_price: z.number().nullable(),
+  // Currency is intentionally omitted: the backend exposes it on the parent
+  // transaction only. Consumers should fall back to `transaction.currency`.
   // User-supplied JSON — the backend does not enforce an object shape, so we
   // accept any value (object, array, scalar, null) instead of z.record(...).
   metadata: z.unknown().nullable().optional(),
