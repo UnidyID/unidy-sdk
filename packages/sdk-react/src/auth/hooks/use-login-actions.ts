@@ -561,7 +561,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     async (token: string): Promise<boolean> => {
       const signInId = stateRef.current.signInId ?? authStorage.getSignInId();
       if (!signInId) {
-        dispatch({ type: "SET_ERROR", field: "resetPassword", message: "No sign-in session" });
+        dispatch({ type: "SET_ERROR", field: "global", message: "No sign-in session" });
         return false;
       }
 

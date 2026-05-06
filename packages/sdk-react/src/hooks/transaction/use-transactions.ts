@@ -122,6 +122,8 @@ export function useTransactions(options?: UseTransactionsOptions): UseTransactio
     }
   }, [fetchItems, fetchOnMount]);
 
+  /** Fetch a single transaction by ID. Errors are reported via `callbacks.onError`
+   *  but do not update `state.error` to avoid overwriting the list view's error state. */
   const getTransaction = useCallback(
     async (id: string): Promise<Transaction | null> => {
       const result = await client.transactions.get({ id });

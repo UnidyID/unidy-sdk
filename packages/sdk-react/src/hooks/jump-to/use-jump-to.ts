@@ -16,6 +16,7 @@ export interface UseJumpToReturn {
 
 export function useJumpTo(options?: UseJumpToOptions): UseJumpToReturn {
   const client = useUnidyClient();
+  // Counter instead of boolean so concurrent jumpToService/jumpToUnidy calls don't produce false idle signals.
   const [pendingCount, setPendingCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const callbacksRef = useRef(options?.callbacks);

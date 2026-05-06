@@ -833,7 +833,7 @@ function OAuthConsent({ clientId }: { clientId: string }) {
 
   if (token) {
     // Redirect with the one-time token
-    window.location.href = `${consent?.application.connect_uri}?token=${token}`;
+    window.location.href = `${consent?.application.connect_uri}#token=${token}`;
     return <p>Redirecting...</p>;
   }
 
@@ -957,7 +957,7 @@ function JumpButton({ serviceId, email }: { serviceId: string; email: string }) 
   const handleClick = async () => {
     const token = await jumpToService(serviceId, { email });
     if (token) {
-      window.location.href = `https://service.example.com/auth?token=${token}`;
+      window.location.href = `https://service.example.com/auth#token=${token}`;
     }
   };
 

@@ -122,10 +122,16 @@ export function useInternalMatching(options: UseInternalMatchingOptions): UseInt
         callbacksRef.current?.onSuccess?.("Match confirmed");
         return "ok";
       }
+      if (errorCode === "matching_user_not_found") {
+        dispatch({ type: "clear_match" });
+        return "not_found";
+      }
+      if (errorCode === "matching_user_mismatch") {
+        dispatch({ type: "clear_match" });
+        return "mismatch";
+      }
       dispatch({ type: "error", error: errorCode });
       callbacksRef.current?.onError?.(errorCode);
-      if (errorCode === "matching_user_not_found") return "not_found";
-      if (errorCode === "matching_user_mismatch") return "mismatch";
       return "error";
     },
     [client, rid],

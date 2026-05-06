@@ -8,6 +8,7 @@ import type {
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
+import { extractErrorDetails } from "../../utils";
 
 export interface UseOAuthOptions {
   clientId: string;
@@ -39,6 +40,7 @@ interface State {
 type Action =
   | { type: "start" }
   | { type: "set_consent"; consent: CheckConsentResponse }
+  | { type: "set_consent_error"; consent: CheckConsentResponse; error: string; fieldErrors: Record<string, unknown> }
   | { type: "set_token"; token: string }
   | { type: "error"; error: string; fieldErrors?: Record<string, unknown> }
   | { type: "clear_errors" };
@@ -57,6 +59,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, isLoading: true, error: null, fieldErrors: {} };
     case "set_consent":
       return { ...state, isLoading: false, consent: action.consent, error: null, fieldErrors: {} };
+    case "set_consent_error":
+      return { ...state, isLoading: false, consent: action.consent, error: action.error, fieldErrors: action.fieldErrors };
     case "set_token":
       return { ...state, isLoading: false, token: action.token, error: null, fieldErrors: {} };
     case "error":
@@ -87,6 +91,7 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
     return false;
   }, [client, clientId]);
 
+  // Re-runs when clientId changes via checkConsent's identity.
   const autoCheck = options.autoCheck;
   useEffect(() => {
     if (autoCheck !== false) {
@@ -103,10 +108,7 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
         callbacksRef.current?.onSuccess?.("Consent updated");
         return true;
       }
-      const fieldErrors =
-        errorCode === "invalid_user_updates" && data && typeof data === "object" && "error_details" in data
-          ? ((data as { error_details?: Record<string, unknown> }).error_details ?? {})
-          : {};
+      const fieldErrors = errorCode === "invalid_user_updates" ? extractErrorDetails(data) : {};
       dispatch({ type: "error", error: errorCode, fieldErrors });
       callbacksRef.current?.onError?.(errorCode);
       return false;
@@ -124,10 +126,7 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
         callbacksRef.current?.onSuccess?.("Consent granted");
         return true;
       }
-      const fieldErrors =
-        errorCode === "missing_required_fields" && data && typeof data === "object" && "error_details" in data
-          ? ((data as { error_details?: Record<string, unknown> }).error_details ?? {})
-          : {};
+      const fieldErrors = errorCode === "missing_required_fields" ? extractErrorDetails(data) : {};
       dispatch({ type: "error", error: errorCode, fieldErrors });
       callbacksRef.current?.onError?.(errorCode);
       return false;
@@ -152,12 +151,8 @@ export function useOAuth(options: UseOAuthOptions): UseOAuthReturn {
       }
       if (errorCode === "missing_required_fields") {
         const consentData = data as CheckConsentResponse;
-        dispatch({ type: "set_consent", consent: consentData });
-        const fieldErrors =
-          data && typeof data === "object" && "error_details" in data
-            ? ((data as { error_details?: Record<string, unknown> }).error_details ?? {})
-            : {};
-        dispatch({ type: "error", error: errorCode, fieldErrors });
+        const fieldErrors = extractErrorDetails(data);
+        dispatch({ type: "set_consent_error", consent: consentData, error: errorCode, fieldErrors });
         callbacksRef.current?.onError?.(errorCode);
         return false;
       }
