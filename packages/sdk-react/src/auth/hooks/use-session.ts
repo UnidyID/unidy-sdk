@@ -9,8 +9,11 @@ import type { UseSessionOptions, UseSessionReturn } from "../types";
 export function useSession(options?: UseSessionOptions): UseSessionReturn {
   const client = useUnidyClient();
   const callbacks = options?.callbacks;
-  const authState = useSyncExternalStore(authStorage.subscribe, authStorage.getState, authStorage.getState);
-  const [isLoading, setIsLoading] = useState(false);
+  const authState = useSyncExternalStore(authStorage.subscribe, authStorage.getState, authStorage.getServerState);
+
+  // Start loading so SSR and hydration both render isAuthenticated=false, isLoading=true.
+  // The mount effect resolves the real state and sets isLoading=false.
+  const [isLoading, setIsLoading] = useState(true);
 
   const getToken = useCallback(async (): Promise<string | null> => {
     const currentToken = authStorage.getState().token;
@@ -44,7 +47,10 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally runs once on mount to recover session state
   useEffect(() => {
-    if (options?.autoRecover === false) return;
+    if (options?.autoRecover === false) {
+      setIsLoading(false);
+      return;
+    }
 
     const sidFromUrl = extractSidFromUrl();
     if (sidFromUrl) {
@@ -52,10 +58,14 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
     }
 
     const { token, signInId, refreshToken } = authStorage.getState();
-    if (token && !isTokenExpired(token)) return;
+
+    // Token already valid — resolve immediately
+    if (token && !isTokenExpired(token)) {
+      setIsLoading(false);
+      return;
+    }
 
     if (refreshToken && signInId) {
-      setIsLoading(true);
       void (async () => {
         const refreshed = await getToken();
         setIsLoading(false);
@@ -66,7 +76,6 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
     }
 
     if (sidFromUrl || (signInId && !token && !refreshToken)) {
-      setIsLoading(true);
       void (async () => {
         const [error, response] = await client.auth.signedIn();
         setIsLoading(false);
@@ -82,7 +91,11 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
         const sessionSignInId = tokenResponse.sid ?? signInId;
         if (sessionSignInId) authStorage.setSignInId(sessionSignInId);
       })();
+      return;
     }
+
+    // No stored session — nothing to recover
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,7 +109,7 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
   }, [callbacks, client]);
 
   return {
-    isAuthenticated: !!authState.token && !isTokenExpired(authState.token),
+    isAuthenticated: !isLoading && !!authState.token && !isTokenExpired(authState.token),
     isLoading,
     email: authState.email ?? "",
     signInId: authState.signInId,

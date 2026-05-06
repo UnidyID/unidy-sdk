@@ -24,7 +24,7 @@ export const Textarea: FunctionalComponent<TextareaProps> = (props) => (
     name={props.name}
     class={props.componentClassName}
     required={props.required}
-    part={`textarea_field ${props.specificPartKey ? `textarea_field--${props.specificPartKey}` : ""}`}
+    part={`textarea_field${props.specificPartKey ? ` textarea_field--${props.specificPartKey}` : ""}${props.disabled ? " textarea_field--disabled" : ""}`}
     disabled={props.disabled}
     title={props.title}
     onInput={(e) => props.onInput((e.target as HTMLTextAreaElement).value)}

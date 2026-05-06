@@ -112,6 +112,21 @@ export interface UseNewsletterPreferenceCenterReturn {
   subscribe: (internalName: string, preferenceIdentifiers?: string[]) => Promise<boolean>;
   unsubscribe: (internalName: string) => Promise<boolean>;
   updatePreferences: (internalName: string, preferenceIdentifiers: string[]) => Promise<boolean>;
+  /** Get the subscription for a given newsletter, or undefined if not subscribed. */
+  getSubscription: (internalName: string) => ExistingSubscription | undefined;
+  /** Check if the user is subscribed to a given newsletter. */
+  isSubscribed: (internalName: string) => boolean;
+  /**
+   * Toggle a preference within a newsletter. Handles subscribe/unsubscribe/update
+   * automatically based on the current state:
+   * - If the preference is on and it's the last one, unsubscribes from the newsletter.
+   * - If the preference is off and the newsletter isn't subscribed, subscribes with this preference.
+   * - Otherwise, updates the preference list.
+   * @param internalName - The newsletter internal name
+   * @param preferenceId - The preference to toggle
+   * @param allPreferenceIds - All valid preference IDs for this newsletter (needed to detect full/empty sets)
+   */
+  togglePreference: (internalName: string, preferenceId: string, allPreferenceIds: string[]) => Promise<boolean>;
 }
 
 export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCenterArgs): UseNewsletterPreferenceCenterReturn {
@@ -248,6 +263,42 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
 
   const isMutating = useCallback((internalName: string) => state.mutatingNewsletters.has(internalName), [state.mutatingNewsletters]);
 
+  const getSubscription = useCallback(
+    (internalName: string) => state.subscriptions.find((s) => s.newsletter_internal_name === internalName),
+    [state.subscriptions],
+  );
+
+  const isSubscribedFn = useCallback(
+    (internalName: string) => state.subscriptions.some((s) => s.newsletter_internal_name === internalName),
+    [state.subscriptions],
+  );
+
+  const togglePreference = useCallback(
+    async (internalName: string, preferenceId: string, allPreferenceIds: string[]): Promise<boolean> => {
+      const sub = state.subscriptions.find((s) => s.newsletter_internal_name === internalName);
+
+      // If not subscribed, subscribe with just this preference
+      if (!sub) {
+        return subscribe(internalName, [preferenceId]);
+      }
+
+      // Don't allow toggling if subscription is unconfirmed
+      if (!sub.confirmed) return false;
+
+      const currentIds = sub.preference_identifiers.length > 0 ? sub.preference_identifiers : allPreferenceIds;
+      const isSelected = currentIds.includes(preferenceId);
+
+      const newIds = isSelected ? currentIds.filter((id) => id !== preferenceId) : [...currentIds, preferenceId];
+
+      if (newIds.length === 0) {
+        return unsubscribe(internalName);
+      }
+
+      return updatePreferences(internalName, newIds);
+    },
+    [state.subscriptions, subscribe, unsubscribe, updatePreferences],
+  );
+
   return {
     subscriptions: state.subscriptions,
     preferenceToken: state.preferenceToken,
@@ -259,5 +310,8 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
     subscribe,
     unsubscribe,
     updatePreferences,
+    getSubscription,
+    isSubscribed: isSubscribedFn,
+    togglePreference,
   };
 }

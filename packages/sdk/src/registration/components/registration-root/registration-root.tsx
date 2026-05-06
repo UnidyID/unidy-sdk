@@ -1,12 +1,18 @@
-import { Component, Event, type EventEmitter, h, Method, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import type { RegistrationFlowResponse } from "../../../auth/api/register";
 import { onChange as authOnChange, authState, authStore } from "../../../auth/store/auth-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { Registration } from "../../registration";
 import { registrationState, registrationStore } from "../../store/registration-store";
 
+export type RegistrationCompleteEvent = RegistrationFlowResponse & {
+  /** Whether the newly created account requires email confirmation before becoming active. */
+  requiresEmailConfirmation: boolean;
+};
+
 @Component({
   tag: "u-registration-root",
+  styleUrl: "registration-root.css",
   shadow: false,
 })
 export class RegistrationRoot extends UnidyComponent() {
@@ -22,8 +28,14 @@ export class RegistrationRoot extends UnidyComponent() {
   /** Whether to automatically resume an existing registration flow on load. Checks for `registration_rid` in the URL (from resume emails) or a stored rid in localStorage. */
   @Prop({ attribute: "auto-resume" }) autoResume = true;
 
+  /** CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes. */
+  @Prop({ attribute: "resume-class-name" }) resumeClassName?: string;
+
+  /** When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root. */
+  @Prop({ attribute: "disable-resume-button" }) disableResumeButton = false;
+
   /** Fired when the registration flow is finalized and the user account is created. */
-  @Event() registrationComplete!: EventEmitter<RegistrationFlowResponse>;
+  @Event() registrationComplete!: EventEmitter<RegistrationCompleteEvent>;
 
   /** Fired when the active step changes. */
   @Event() stepChange!: EventEmitter<{ stepName: string; stepIndex: number }>;
@@ -57,10 +69,11 @@ export class RegistrationRoot extends UnidyComponent() {
       registrationStore.setEmail(authState.email);
     }
 
-    // Reactively sync email from auth state (e.g. when user enters email in signin, then gets redirected to registration)
-    this.unsubscribeAuthEmail = authOnChange("email", (email) => {
-      if (email && !registrationState.email) {
-        registrationStore.setEmail(email);
+    // Sync email when auth transitions to the registration step (subscribing to "email" would fire on
+    // every keystroke and lock in just the first character typed).
+    this.unsubscribeAuthEmail = authOnChange("step", (step) => {
+      if (step === "registration" && authState.email) {
+        registrationStore.setEmail(authState.email);
       }
     });
 
@@ -165,7 +178,7 @@ export class RegistrationRoot extends UnidyComponent() {
   }
 
   onComplete(response: RegistrationFlowResponse) {
-    this.registrationComplete.emit(response);
+    this.registrationComplete.emit({ ...response, requiresEmailConfirmation: !response.auth });
   }
 
   onStepChange(stepName: string, stepIndex: number) {
@@ -224,6 +237,15 @@ export class RegistrationRoot extends UnidyComponent() {
   }
 
   render() {
-    return <slot />;
+    return (
+      <Host>
+        {!this.disableResumeButton && (
+          <u-registration-resume class-name={this.resumeClassName}>
+            <slot name="resume" />
+          </u-registration-resume>
+        )}
+        <slot />
+      </Host>
+    );
   }
 }

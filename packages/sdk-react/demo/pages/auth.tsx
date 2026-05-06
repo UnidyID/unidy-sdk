@@ -50,18 +50,42 @@ function VerificationStep({
   loginOptions,
   onPassword,
   onMagicCode,
+  onPasskey,
   onSocial,
   onBack,
+  passkeyError,
+  isLoading,
 }: {
-  loginOptions: { magic_link: boolean; password: boolean; social_logins: string[] } | null;
+  loginOptions: { magic_link: boolean; password: boolean; social_logins: string[]; passkey: boolean } | null;
   onPassword: () => void;
   onMagicCode: () => void;
+  onPasskey: () => void;
   onSocial: (provider: string) => void;
   onBack: () => void;
+  passkeyError: string | null;
+  isLoading: boolean;
 }) {
   return (
     <div className="space-y-4">
       <p className="text-gray-600 text-sm">Choose how to sign in:</p>
+
+      {loginOptions?.passkey && (
+        <div>
+          <button
+            type="button"
+            onClick={onPasskey}
+            disabled={isLoading}
+            className="w-full border border-gray-300 rounded-md py-2 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {isLoading ? "Authenticating..." : "Sign in with passkey"}
+          </button>
+          {passkeyError && (
+            <p role="alert" className="text-red-600 text-sm mt-1">
+              {passkeyError}
+            </p>
+          )}
+        </div>
+      )}
 
       {loginOptions?.password && (
         <button type="button" onClick={onPassword} className="w-full border border-gray-300 rounded-md py-2 hover:bg-gray-50">
@@ -296,6 +320,110 @@ function ResetPasswordStep({
   );
 }
 
+function ConnectBrandStep({
+  onConnect,
+  onCancel,
+  isLoading,
+  error,
+}: {
+  onConnect: () => void;
+  onCancel: () => void;
+  isLoading: boolean;
+  error: string | null;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+        <p className="text-yellow-800 font-medium">Connect your account</p>
+        <p className="text-yellow-700 text-sm mt-1">
+          An account with this email already exists on the platform. Would you like to connect it to your current sign-in?
+        </p>
+      </div>
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={onConnect}
+        disabled={isLoading}
+        className="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 disabled:opacity-50"
+      >
+        {isLoading ? "Connecting..." : "Connect Account"}
+      </button>
+      <button
+        type="button"
+        onClick={onCancel}
+        disabled={isLoading}
+        className="w-full border border-gray-300 rounded-md py-2 hover:bg-gray-50"
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+function MissingFieldsStep({
+  fields,
+  onSubmit,
+  isLoading,
+  error,
+  onCancel,
+}: {
+  fields: Record<string, unknown> | null;
+  onSubmit: (values: Record<string, unknown>) => void;
+  isLoading: boolean;
+  error: string | null;
+  onCancel: () => void;
+}) {
+  const [values, setValues] = useState<Record<string, string>>({});
+
+  const fieldNames = fields ? Object.keys(fields) : [];
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(values);
+      }}
+      className="space-y-4"
+    >
+      <p className="text-gray-600 text-sm">Please fill in the required fields to complete sign-in.</p>
+      {fieldNames.map((name) => (
+        <div key={name}>
+          <label htmlFor={`field-${name}`} className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+            {name.replace(/_/g, " ")}
+          </label>
+          <input
+            id={`field-${name}`}
+            type="text"
+            value={values[name] ?? ""}
+            onChange={(e) => setValues((prev) => ({ ...prev, [name]: e.target.value }))}
+            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            required
+          />
+        </div>
+      ))}
+      {error && (
+        <p role="alert" className="text-red-600 text-sm">
+          {error}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 disabled:opacity-50"
+      >
+        {isLoading ? "Submitting..." : "Submit"}
+      </button>
+      <button type="button" onClick={onCancel} className="text-gray-500 text-sm hover:underline">
+        Cancel
+      </button>
+    </form>
+  );
+}
+
 function AuthenticatedView({ email, onLogout }: { email: string; onLogout: () => void }) {
   return (
     <div className="space-y-4">
@@ -349,10 +477,13 @@ export function Auth() {
           loginOptions={login.loginOptions}
           onPassword={() => login.goToStep("password")}
           onMagicCode={() => login.sendMagicCode()}
+          onPasskey={() => login.authenticateWithPasskey()}
           onSocial={(provider) => {
             window.location.href = login.getSocialAuthUrl(provider, window.location.href);
           }}
           onBack={() => login.goBack()}
+          passkeyError={login.errors.passkey}
+          isLoading={login.isLoading}
         />
       )}
 
@@ -384,6 +515,25 @@ export function Auth() {
           onBack={() => login.goBack()}
           error={login.errors.resetPassword}
           isLoading={login.isLoading}
+        />
+      )}
+
+      {!session.isAuthenticated && login.step === "connect-brand" && (
+        <ConnectBrandStep
+          onConnect={() => login.connectBrand()}
+          onCancel={() => login.cancelBrandConnect()}
+          isLoading={login.isLoading}
+          error={login.errors.global}
+        />
+      )}
+
+      {!session.isAuthenticated && login.step === "missing-fields" && (
+        <MissingFieldsStep
+          fields={login.missingFieldDefinitions}
+          onSubmit={(values) => login.submitMissingFields(values)}
+          isLoading={login.isLoading}
+          error={login.errors.missingFields}
+          onCancel={() => login.cancelBrandConnect()}
         />
       )}
 

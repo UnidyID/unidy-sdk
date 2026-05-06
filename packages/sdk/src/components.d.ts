@@ -17,14 +17,15 @@ import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./shared/components/raw-field/components/Select";
 import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
-import { RegistrationFlowResponse } from "./auth/api/register";
+import { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
+import { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { ExportFormat } from "./ticketable/api/schemas";
 import { PaginationMeta } from "./api";
-import { PaginationStore } from "./ticketable/store/pagination-store";
-import { Subscription } from "./ticketable/api/subscriptions";
-import { Ticket } from "./ticketable/api/tickets";
+import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
+import { PaginationStore } from "./shared/store/pagination-store";
+import { Transaction } from "./transaction/api/transactions";
 export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
@@ -37,14 +38,15 @@ export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./shared/components/raw-field/components/Select";
 export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
-export { RegistrationFlowResponse } from "./auth/api/register";
+export { MatchFoundEventDetail } from "./registration/components/registration-internal-matching/registration-internal-matching";
+export { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { ExportFormat } from "./ticketable/api/schemas";
 export { PaginationMeta } from "./api";
-export { PaginationStore } from "./ticketable/store/pagination-store";
-export { Subscription } from "./ticketable/api/subscriptions";
-export { Ticket } from "./ticketable/api/tickets";
+export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
+export { PaginationStore } from "./shared/store/pagination-store";
+export { Transaction } from "./transaction/api/transactions";
 export namespace Components {
     interface UBackButton {
         /**
@@ -376,6 +378,10 @@ export namespace Components {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
         "setChecked": (checked: boolean) => Promise<void>;
         "toggle": () => Promise<void>;
     }
@@ -425,6 +431,10 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+        /**
+          * Optional URL used as the `redirect_uri` when sending the login email. When provided, overrides the default (current page URL).  The URL is passed as-is to the backend — no client-side substitution is performed. The following placeholders are substituted server-side: - `{preference_token}` — the user's preference token - `{email}` — the subscriber's email address - `{newsletter_internal_name}` — the newsletter's internal name  **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts` list (configurable in the Unidy dashboard), otherwise the API will return 403.
+         */
+        "redirectUri"?: string;
         "submit": (forType?: NewsletterButtonFor) => Promise<void>;
     }
     interface UNewsletterToggleSubscriptionButton {
@@ -585,6 +595,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * @default false
+         */
+        "discoverable": boolean;
     }
     interface UPasswordField {
         /**
@@ -709,6 +724,33 @@ export namespace Components {
          */
         "inputClassName"?: string;
     }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName": string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName": string;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName": string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName": string;
+    }
     interface URegistrationNewsletter {
         /**
           * Whether the checkbox is initially checked.
@@ -786,6 +828,11 @@ export namespace Components {
          */
         "brandId"?: number;
         /**
+          * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
+          * @default false
+         */
+        "disableResumeButton": boolean;
+        /**
           * Returns the configured brand ID, if any.
          */
         "getBrandId": () => Promise<number | undefined>;
@@ -805,6 +852,10 @@ export namespace Components {
           * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
          */
         "registrationUrl"?: string;
+        /**
+          * CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.
+         */
+        "resumeClassName"?: string;
         /**
           * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
@@ -843,6 +894,12 @@ export namespace Components {
           * Submits the current step. Creates or updates the registration flow, then advances to the next step or finalizes registration.
          */
         "submit": () => Promise<void>;
+    }
+    interface UResendConfirmationEmail {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
     }
     interface UResetPasswordButton {
         /**
@@ -899,7 +956,8 @@ export namespace Components {
     | "reset-password"
     | "single-login"
     | "missing-fields"
-    | "registration";
+    | "registration"
+    | "unconfirmed";
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
@@ -1007,7 +1065,51 @@ export namespace Components {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
+    }
+    interface UTransactionList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Filter string for API queries (e.g., 'state=completed;financial_status=paid').
+          * @default ""
+         */
+        "filter": string;
+        /**
+          * Number of items per page.
+          * @default 10
+         */
+        "limit": number;
+        /**
+          * Current page number.
+          * @default 1
+         */
+        "page": number;
+        /**
+          * Pagination metadata from the API response.
+          * @default null
+         */
+        "paginationMeta": PaginationMeta | null;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
+        "skeletonCount"?: number;
+        /**
+          * Pagination store instance for external state management.
+          * @default null
+         */
+        "store": PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
     }
 }
 export interface UConfigCustomEvent<T> extends CustomEvent<T> {
@@ -1034,6 +1136,10 @@ export interface URawFieldCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLURawFieldElement;
 }
+export interface URegistrationInternalMatchingCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLURegistrationInternalMatchingElement;
+}
 export interface URegistrationResumeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLURegistrationResumeElement;
@@ -1053,6 +1159,10 @@ export interface UTicketableExportCustomEvent<T> extends CustomEvent<T> {
 export interface UTicketableListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUTicketableListElement;
+}
+export interface UTransactionListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTransactionListElement;
 }
 declare global {
     interface HTMLUBackButtonElement extends Components.UBackButton, HTMLStencilElement {
@@ -1373,6 +1483,23 @@ declare global {
         prototype: HTMLURegistrationEmailVerificationElement;
         new (): HTMLURegistrationEmailVerificationElement;
     };
+    interface HTMLURegistrationInternalMatchingElementEventMap {
+        "matchFound": MatchFoundEventDetail;
+    }
+    interface HTMLURegistrationInternalMatchingElement extends Components.URegistrationInternalMatching, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLURegistrationInternalMatchingElementEventMap>(type: K, listener: (this: HTMLURegistrationInternalMatchingElement, ev: URegistrationInternalMatchingCustomEvent<HTMLURegistrationInternalMatchingElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLURegistrationInternalMatchingElement: {
+        prototype: HTMLURegistrationInternalMatchingElement;
+        new (): HTMLURegistrationInternalMatchingElement;
+    };
     interface HTMLURegistrationNewsletterElement extends Components.URegistrationNewsletter, HTMLStencilElement {
     }
     var HTMLURegistrationNewsletterElement: {
@@ -1416,7 +1543,7 @@ declare global {
         new (): HTMLURegistrationResumeElement;
     };
     interface HTMLURegistrationRootElementEventMap {
-        "registrationComplete": RegistrationFlowResponse;
+        "registrationComplete": RegistrationCompleteEvent;
         "stepChange": { stepName: string; stepIndex: number };
         "errorEvent": { error: string };
     }
@@ -1439,6 +1566,12 @@ declare global {
     var HTMLURegistrationStepElement: {
         prototype: HTMLURegistrationStepElement;
         new (): HTMLURegistrationStepElement;
+    };
+    interface HTMLUResendConfirmationEmailElement extends Components.UResendConfirmationEmail, HTMLStencilElement {
+    }
+    var HTMLUResendConfirmationEmailElement: {
+        prototype: HTMLUResendConfirmationEmailElement;
+        new (): HTMLUResendConfirmationEmailElement;
     };
     interface HTMLUResetPasswordButtonElement extends Components.UResetPasswordButton, HTMLStencilElement {
     }
@@ -1520,12 +1653,12 @@ declare global {
     };
     interface HTMLUTicketableListElementEventMap {
         "uTicketableListSuccess": {
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   };
         "uTicketableListError": {
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   };
     }
@@ -1542,6 +1675,29 @@ declare global {
     var HTMLUTicketableListElement: {
         prototype: HTMLUTicketableListElement;
         new (): HTMLUTicketableListElement;
+    };
+    interface HTMLUTransactionListElementEventMap {
+        "uTransactionListSuccess": {
+    items: Transaction[];
+    paginationMeta: PaginationMeta | null;
+  };
+        "uTransactionListError": {
+    error: string;
+  };
+    }
+    interface HTMLUTransactionListElement extends Components.UTransactionList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTransactionListElementEventMap>(type: K, listener: (this: HTMLUTransactionListElement, ev: UTransactionListCustomEvent<HTMLUTransactionListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTransactionListElementEventMap>(type: K, listener: (this: HTMLUTransactionListElement, ev: UTransactionListCustomEvent<HTMLUTransactionListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTransactionListElement: {
+        prototype: HTMLUTransactionListElement;
+        new (): HTMLUTransactionListElement;
     };
     interface HTMLElementTagNameMap {
         "u-back-button": HTMLUBackButtonElement;
@@ -1582,6 +1738,7 @@ declare global {
         "u-raw-field": HTMLURawFieldElement;
         "u-registration-button": HTMLURegistrationButtonElement;
         "u-registration-email-verification": HTMLURegistrationEmailVerificationElement;
+        "u-registration-internal-matching": HTMLURegistrationInternalMatchingElement;
         "u-registration-newsletter": HTMLURegistrationNewsletterElement;
         "u-registration-newsletter-preference": HTMLURegistrationNewsletterPreferenceElement;
         "u-registration-passkey": HTMLURegistrationPasskeyElement;
@@ -1589,6 +1746,7 @@ declare global {
         "u-registration-resume": HTMLURegistrationResumeElement;
         "u-registration-root": HTMLURegistrationRootElement;
         "u-registration-step": HTMLURegistrationStepElement;
+        "u-resend-confirmation-email": HTMLUResendConfirmationEmailElement;
         "u-reset-password-button": HTMLUResetPasswordButtonElement;
         "u-send-magic-code-button": HTMLUSendMagicCodeButtonElement;
         "u-signed-in": HTMLUSignedInElement;
@@ -1599,6 +1757,7 @@ declare global {
         "u-submit-button": HTMLUSubmitButtonElement;
         "u-ticketable-export": HTMLUTicketableExportElement;
         "u-ticketable-list": HTMLUTicketableListElement;
+        "u-transaction-list": HTMLUTransactionListElement;
     }
 }
 declare namespace LocalJSX {
@@ -1932,6 +2091,10 @@ declare namespace LocalJSX {
           * CSS classes to apply to the checkbox element.
          */
         "componentClassName"?: string;
+        /**
+          * Unique key used to store this consent state.
+         */
+        "consentKey"?: string;
     }
     interface UNewsletterLogoutButton {
         /**
@@ -1979,6 +2142,10 @@ declare namespace LocalJSX {
           * Fired on successful newsletter subscription. Contains the email and subscribed newsletters.
          */
         "onUNewsletterSuccess"?: (event: UNewsletterRootCustomEvent<{ email: string; newsletters: string[] }>) => void;
+        /**
+          * Optional URL used as the `redirect_uri` when sending the login email. When provided, overrides the default (current page URL).  The URL is passed as-is to the backend — no client-side substitution is performed. The following placeholders are substituted server-side: - `{preference_token}` — the user's preference token - `{email}` — the subscriber's email address - `{newsletter_internal_name}` — the newsletter's internal name  **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts` list (configurable in the Unidy dashboard), otherwise the API will return 403.
+         */
+        "redirectUri"?: string;
     }
     interface UNewsletterToggleSubscriptionButton {
         /**
@@ -2138,6 +2305,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * @default false
+         */
+        "discoverable"?: boolean;
     }
     interface UPasswordField {
         /**
@@ -2276,6 +2448,37 @@ declare namespace LocalJSX {
          */
         "inputClassName"?: string;
     }
+    interface URegistrationInternalMatching {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to error message elements.
+          * @default ""
+         */
+        "errorClassName"?: string;
+        /**
+          * CSS classes to apply to text and date input fields.
+          * @default ""
+         */
+        "inputClassName"?: string;
+        /**
+          * Fired when an internal match is found after submitting the form. Use this event to populate a custom `slot="match-preview"` element with the matched account data.
+         */
+        "onMatchFound"?: (event: URegistrationInternalMatchingCustomEvent<MatchFoundEventDetail>) => void;
+        /**
+          * CSS classes to apply to primary action buttons ("Find Account" and "Yes, use this account").
+          * @default ""
+         */
+        "primaryButtonClassName"?: string;
+        /**
+          * CSS classes to apply to secondary action buttons ("Continue without linking" and "No, create new account").
+          * @default ""
+         */
+        "secondaryButtonClassName"?: string;
+    }
     interface URegistrationNewsletter {
         /**
           * Whether the checkbox is initially checked.
@@ -2357,13 +2560,18 @@ declare namespace LocalJSX {
          */
         "brandId"?: number;
         /**
+          * When true, suppresses the automatically-rendered `<u-registration-resume>` so you can place your own `<u-registration-resume>` at a custom position inside the root.
+          * @default false
+         */
+        "disableResumeButton"?: boolean;
+        /**
           * Fired when an error occurs during the registration flow.
          */
         "onErrorEvent"?: (event: URegistrationRootCustomEvent<{ error: string }>) => void;
         /**
           * Fired when the registration flow is finalized and the user account is created.
          */
-        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationFlowResponse>) => void;
+        "onRegistrationComplete"?: (event: URegistrationRootCustomEvent<RegistrationCompleteEvent>) => void;
         /**
           * Fired when the active step changes.
          */
@@ -2372,6 +2580,10 @@ declare namespace LocalJSX {
           * URL of the registration page. Used as the redirect target in resume emails. Defaults to the current page URL (origin + pathname) if not set.
          */
         "registrationUrl"?: string;
+        /**
+          * CSS classes to apply to the automatically-rendered resume button. Accepts Tailwind classes.
+         */
+        "resumeClassName"?: string;
         /**
           * JSON array string of step names that define the registration flow order. Each name must match a `<u-registration-step name="...">` child.
           * @default "[]"
@@ -2398,6 +2610,12 @@ declare namespace LocalJSX {
           * @default false
          */
         "requiresPassword"?: boolean;
+    }
+    interface UResendConfirmationEmail {
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
     }
     interface UResetPasswordButton {
         /**
@@ -2461,7 +2679,8 @@ declare namespace LocalJSX {
     | "reset-password"
     | "single-login"
     | "missing-fields"
-    | "registration";
+    | "registration"
+    | "unconfirmed";
     }
     interface USocialLoginButton {
         /**
@@ -2543,15 +2762,15 @@ declare namespace LocalJSX {
           * Fired when fetching items fails. Contains the error message.
          */
         "onUTicketableListError"?: (event: UTicketableListCustomEvent<{
-    ticketableType?: "ticket" | "subscription";
+    ticketableType?: TicketableType;
     error: string;
   }>) => void;
         /**
           * Fired when items are successfully fetched. Contains items and pagination metadata.
          */
         "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
-    ticketableType: "ticket" | "subscription";
-    items: Subscription[] | Ticket[];
+    ticketableType: TicketableType;
+    items: TicketableItem[];
     paginationMeta: PaginationMeta | null;
   }>) => void;
         /**
@@ -2585,7 +2804,64 @@ declare namespace LocalJSX {
         /**
           * The type of ticketable items to list ('ticket' or 'subscription').
          */
-        "ticketableType": "ticket" | "subscription";
+        "ticketableType": TicketableType;
+    }
+    interface UTransactionList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Filter string for API queries (e.g., 'state=completed;financial_status=paid').
+          * @default ""
+         */
+        "filter"?: string;
+        /**
+          * Number of items per page.
+          * @default 10
+         */
+        "limit"?: number;
+        /**
+          * Fired when fetching transactions fails. Contains the error message.
+         */
+        "onUTransactionListError"?: (event: UTransactionListCustomEvent<{
+    error: string;
+  }>) => void;
+        /**
+          * Fired when transactions are successfully fetched. Contains items and pagination metadata.
+         */
+        "onUTransactionListSuccess"?: (event: UTransactionListCustomEvent<{
+    items: Transaction[];
+    paginationMeta: PaginationMeta | null;
+  }>) => void;
+        /**
+          * Current page number.
+          * @default 1
+         */
+        "page"?: number;
+        /**
+          * Pagination metadata from the API response.
+          * @default null
+         */
+        "paginationMeta"?: PaginationMeta | null;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading. Defaults to limit.
+         */
+        "skeletonCount"?: number;
+        /**
+          * Pagination store instance for external state management.
+          * @default null
+         */
+        "store"?: PaginationStore | null;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
     }
     interface IntrinsicElements {
         "u-back-button": UBackButton;
@@ -2626,6 +2902,7 @@ declare namespace LocalJSX {
         "u-raw-field": URawField;
         "u-registration-button": URegistrationButton;
         "u-registration-email-verification": URegistrationEmailVerification;
+        "u-registration-internal-matching": URegistrationInternalMatching;
         "u-registration-newsletter": URegistrationNewsletter;
         "u-registration-newsletter-preference": URegistrationNewsletterPreference;
         "u-registration-passkey": URegistrationPasskey;
@@ -2633,6 +2910,7 @@ declare namespace LocalJSX {
         "u-registration-resume": URegistrationResume;
         "u-registration-root": URegistrationRoot;
         "u-registration-step": URegistrationStep;
+        "u-resend-confirmation-email": UResendConfirmationEmail;
         "u-reset-password-button": UResetPasswordButton;
         "u-send-magic-code-button": USendMagicCodeButton;
         "u-signed-in": USignedIn;
@@ -2643,6 +2921,7 @@ declare namespace LocalJSX {
         "u-submit-button": USubmitButton;
         "u-ticketable-export": UTicketableExport;
         "u-ticketable-list": UTicketableList;
+        "u-transaction-list": UTransactionList;
     }
 }
 export { LocalJSX as JSX };
@@ -2698,6 +2977,7 @@ declare module "@stencil/core" {
             "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
             "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
             "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
+            "u-registration-internal-matching": LocalJSX.URegistrationInternalMatching & JSXBase.HTMLAttributes<HTMLURegistrationInternalMatchingElement>;
             "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
             "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
             "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
@@ -2705,6 +2985,7 @@ declare module "@stencil/core" {
             "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
             "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
             "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
+            "u-resend-confirmation-email": LocalJSX.UResendConfirmationEmail & JSXBase.HTMLAttributes<HTMLUResendConfirmationEmailElement>;
             "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
             "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
             "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
@@ -2715,6 +2996,7 @@ declare module "@stencil/core" {
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
             "u-ticketable-export": LocalJSX.UTicketableExport & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
+            "u-transaction-list": LocalJSX.UTransactionList & JSXBase.HTMLAttributes<HTMLUTransactionListElement>;
         }
     }
 }

@@ -526,6 +526,28 @@ Renders a checkbox for a newsletter sub-preference (e.g., "Football" under "Spor
 -   `checked`: Whether the checkbox is initially checked. Defaults to `false`.
 -   `class-name`: CSS classes to apply to the checkbox element.
 
+#### `<u-registration-internal-matching>`
+
+Optional step component that lets users link a new registration to an existing legacy account by entering a matching attribute (e.g. customer number). Place it inside a `<u-registration-step name="internal-matching">`.
+
+When the step becomes active the component fetches the internal matching configuration from the server. If the feature is disabled, it silently skips the step and advances the flow. If enabled, it renders a form with the configured matching fields.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the wrapper element.
+-   `input-class-name`: CSS classes to apply to text and date input fields.
+-   `primary-button-class-name`: CSS classes to apply to the primary action buttons ("Find Account" and "Yes, use this account").
+-   `secondary-button-class-name`: CSS classes to apply to the secondary action buttons ("Continue without linking" and "No, create new account").
+-   `error-class-name`: CSS classes to apply to error message elements.
+
+**Slots:**
+
+-   `match-preview`: Custom rendering for the matched account preview card. When provided, replaces the default masked-email / registration-date list. Listen to the `matchFound` event to receive the match data and populate this slot.
+
+**Events:**
+
+-   `matchFound`: Fired when a match is found after form submission. Payload: `{ emailMasked: string, createdAt: string }`.
+
 ### Navigation Components
 
 These components allow authenticated users to navigate to external services or the Unidy platform with single sign-on (SSO).
@@ -705,16 +727,20 @@ Newsletter components allow you to create newsletter subscription and preference
 The root component for newsletter subscription forms. This component handles initialization, authentication, and subscription management. It must wrap all other newsletter components.
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the host element.
 
 **Methods:**
+
 -   `submit()`: Programmatically submit the newsletter form. This is called internally by `<u-submit-button>` or `<u-email-field>` when used within the newsletter context.
 
 **Events:**
+
 -   `uNewsletterSuccess`: Fired when newsletter subscription is successful. `event.detail` contains `{ email: string, newsletters: string[] }`.
 -   `uNewsletterError`: Fired when newsletter subscription fails. `event.detail` contains `{ email: string, error: string }`.
 
 **Slots:**
+
 -   The default slot allows you to provide the newsletter form content.
 
 #### `<u-email-field>`
@@ -722,6 +748,7 @@ The root component for newsletter subscription forms. This component handles ini
 Renders a pre-configured input for the user's email address. This component works in both auth and newsletter contexts, automatically detecting its parent container.
 
 **Attributes:**
+
 -   `placeholder`: The placeholder text for the input field. Defaults to `Enter your email`.
 -   `class-name`: A string of classes to pass to the input field.
 -   `disabled`: If set to `true`, the input will be disabled. Defaults to `false`.
@@ -732,11 +759,13 @@ Renders a pre-configured input for the user's email address. This component work
 Renders a checkbox for subscribing to a specific newsletter. When checked, the newsletter is added to the subscription list for submission.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
 
 **Methods:**
+
 -   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
 -   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`. Disabled if already subscribed.
 
@@ -745,12 +774,14 @@ Renders a checkbox for subscribing to a specific newsletter. When checked, the n
 Renders a checkbox for managing newsletter preferences. Used within a newsletter to subscribe to specific topics or preferences. If the user is already subscribed and confirmed, changes are persisted immediately.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `preference-identifier` (required): The preference identifier for this checkbox.
 -   `checked`: If set to `true`, the checkbox will be checked by default. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the checkbox.
 
 **Methods:**
+
 -   `toggle()`: Toggles the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
 -   `setChecked(checked: boolean)`: Sets the preference checkbox state programmatically. Returns `Promise<void>`. If subscribed and confirmed, persists changes immediately.
 
@@ -759,6 +790,7 @@ Renders a checkbox for managing newsletter preferences. Used within a newsletter
 Renders a button that toggles subscription status for a specific newsletter. The button text and behavior change based on whether the user is already subscribed.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `class-name`: A string of classes to pass to the button.
 -   `subscribe-class-name`: Additional classes to apply when the user is not subscribed.
@@ -769,6 +801,7 @@ Renders a button that toggles subscription status for a specific newsletter. The
 Renders a button to resend the double opt-in (DOI) confirmation email. This button only appears for subscribed but unconfirmed newsletters.
 
 **Attributes:**
+
 -   `internal-name` (required): The internal name of the newsletter in Unidy.
 -   `class-name`: A string of classes to pass to the button.
 
@@ -777,12 +810,15 @@ Renders a button to resend the double opt-in (DOI) confirmation email. This butt
 Renders a logout button for newsletter preference management sessions. This button is only visible when the user is logged in via preference token (not authenticated users).
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the button.
 
 **Slots:**
+
 -   The default slot allows you to provide custom button content. If not provided, defaults to "x".
 
 **CSS Shadow Parts:**
+
 -   `button`: The logout button element.
 
 #### `<u-newsletter-consent-checkbox>`
@@ -790,9 +826,11 @@ Renders a logout button for newsletter preference management sessions. This butt
 Renders a checkbox for collecting GDPR consent before newsletter subscription. This checkbox is required when consent collection is enabled for the newsletter form.
 
 **Attributes:**
+
 -   `class-name`: A string of classes to pass to the checkbox input.
 
 **Methods:**
+
 -   `toggle()`: Toggles the checkbox state programmatically. Returns `Promise<void>`.
 -   `setChecked(checked: boolean)`: Sets the checkbox state programmatically. Returns `Promise<void>`.
 
@@ -817,12 +855,14 @@ Renders a checkbox for collecting GDPR consent before newsletter subscription. T
 A universal submit button that works across different contexts (auth, newsletter, profile). The button automatically adapts its behavior based on its parent container (`<u-signin-root>`, `<u-newsletter-root>`, or `<u-profile>`).
 
 **Attributes:**
+
 -   `for`: The step or context the button is for (e.g., `email`, `password` for auth context). Optional for newsletter and profile contexts.
 -   `text`: The text to display on the button.
 -   `disabled`: If set to `true`, the button will be disabled. Defaults to `false`.
 -   `class-name`: A string of classes to pass to the button.
 
 **Slots:**
+
 -   The default slot allows you to provide custom button content.
 
 **Note:** In the newsletter context, the button is automatically disabled if no email is entered or no newsletters are selected.
@@ -1806,6 +1846,7 @@ The SDK uses browser storage to persist authentication state:
 | Email | `localStorage` | Pre-fills email field on return visits |
 
 **Storage Keys:**
+
 - `unidy_token` - Access token
 - `unidy_refresh_token` - Refresh token
 - `unidy_signin_id` - Sign-in session ID
@@ -2378,11 +2419,13 @@ All interactive components support keyboard navigation:
 The SDK API key is designed to be used in client-side code. It identifies your application but does not grant administrative access.
 
 **What the API key allows:**
+
 - Creating sign-in sessions
 - Authenticating users
 - Accessing user's own profile and subscriptions
 
 **What the API key does NOT allow:**
+
 - Accessing other users' data
 - Administrative operations
 - Modifying backend configuration
@@ -2390,11 +2433,13 @@ The SDK API key is designed to be used in client-side code. It identifies your a
 ### Token Security
 
 **Access Tokens:**
+
 - Stored in `sessionStorage` (cleared when tab closes)
 - Short-lived (typically 15 minutes)
 - Contains user claims (ID, email, custom claims)
 
 **Refresh Tokens:**
+
 - Stored in `localStorage` (persists across sessions)
 - Long-lived but can be revoked server-side
 - Used only to obtain new access tokens
@@ -2402,18 +2447,13 @@ The SDK API key is designed to be used in client-side code. It identifies your a
 ### Recommendations
 
 1. **Use HTTPS**: Always serve your application over HTTPS to protect tokens in transit
-
 2. **Domain Whitelisting**: Ensure only your domains are whitelisted in the Unidy SDK client configuration
-
 3. **Content Security Policy**: Consider adding CSP headers to prevent XSS attacks:
    ```
    Content-Security-Policy: script-src 'self' https://cdn.jsdelivr.net;
    ```
-
 4. **Avoid Logging Tokens**: Never log access or refresh tokens to the console in production
-
 5. **Handle Token Errors**: Always check for `requiresReauth` on auth errors and redirect users to sign in again
-
 6. **Secure Custom Attributes**: Be mindful of what data you store in custom profile attributes
 
 ### CORS Configuration

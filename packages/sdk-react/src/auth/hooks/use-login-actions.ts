@@ -1,8 +1,16 @@
-import type { CreateSignInResponse, InvalidPasswordResponse, SendMagicCodeResponse, TokenResponse } from "@unidy.io/sdk/standalone";
+import type {
+  CreateSignInResponse,
+  InvalidPasswordResponse,
+  PasskeyOptionsResponse,
+  RequiredFieldsResponse,
+  SendMagicCodeResponse,
+  TokenResponse,
+} from "@unidy.io/sdk/standalone";
 import { type Dispatch, type MutableRefObject, useCallback } from "react";
 import type { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { authStorage } from "../auth-storage";
+import { buildPublicKeyRequestOptions, formatAssertionCredentialForServer, isWebAuthnSupported, PASSKEY_ERRORS } from "../passkey-utils";
 import { cleanSocialAuthParams, getSocialAuthUrl, parseSocialAuthCallback } from "../social-auth";
 import type { AuthAction, AuthState, UseLoginReturn } from "../types";
 
@@ -12,13 +20,19 @@ export type LoginActions = Pick<
   | "submitPassword"
   | "sendMagicCode"
   | "submitMagicCode"
+  | "authenticateWithPasskey"
   | "getSocialAuthUrl"
   | "handleSocialAuthCallback"
   | "sendResetPasswordEmail"
   | "resetPassword"
+  | "connectBrand"
+  | "cancelBrandConnect"
+  | "submitMissingFields"
+  | "checkPendingRegistration"
   | "goBack"
   | "goToStep"
   | "restart"
+  | "reset"
 >;
 
 interface UseLoginActionsOptions {
@@ -101,14 +115,23 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       if (error) {
         dispatch({ type: "SET_LOADING", loading: false });
 
-        if (error === "missing_required_fields") {
-          dispatch({ type: "SET_ERROR", field: "global", message: error });
-          callbacks?.onError?.(error);
+        if (error === "brand_connection_required") {
+          const brandResponse = response as { sid?: string | null };
+          if (brandResponse?.sid) {
+            dispatch({ type: "SET_SIGNIN_ID", signInId: brandResponse.sid });
+            authStorage.setSignInId(brandResponse.sid);
+          }
+          dispatch({ type: "SET_STEP", step: "connect-brand" });
           return;
         }
-        if (error === "brand_connection_required") {
-          dispatch({ type: "SET_ERROR", field: "global", message: error });
-          callbacks?.onError?.(error);
+        if (error === "missing_required_fields") {
+          const fieldsResponse = response as RequiredFieldsResponse;
+          if (fieldsResponse?.sid) {
+            dispatch({ type: "SET_SIGNIN_ID", signInId: fieldsResponse.sid });
+            authStorage.setSignInId(fieldsResponse.sid);
+          }
+          dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: fieldsResponse.fields as Record<string, unknown> });
+          dispatch({ type: "SET_STEP", step: "missing-fields" });
           return;
         }
         if (error === "invalid_password") {
@@ -195,14 +218,23 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       if (error) {
         dispatch({ type: "SET_LOADING", loading: false });
 
-        if (error === "missing_required_fields") {
-          dispatch({ type: "SET_ERROR", field: "global", message: error });
-          callbacks?.onError?.(error);
+        if (error === "brand_connection_required") {
+          const brandResponse = response as { sid?: string | null };
+          if (brandResponse?.sid) {
+            dispatch({ type: "SET_SIGNIN_ID", signInId: brandResponse.sid });
+            authStorage.setSignInId(brandResponse.sid);
+          }
+          dispatch({ type: "SET_STEP", step: "connect-brand" });
           return;
         }
-        if (error === "brand_connection_required") {
-          dispatch({ type: "SET_ERROR", field: "global", message: error });
-          callbacks?.onError?.(error);
+        if (error === "missing_required_fields") {
+          const fieldsResponse = response as RequiredFieldsResponse;
+          if (fieldsResponse?.sid) {
+            dispatch({ type: "SET_SIGNIN_ID", signInId: fieldsResponse.sid });
+            authStorage.setSignInId(fieldsResponse.sid);
+          }
+          dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: fieldsResponse.fields as Record<string, unknown> });
+          dispatch({ type: "SET_STEP", step: "missing-fields" });
           return;
         }
 
@@ -223,10 +255,74 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client, callbacks, dispatch, stateRef],
   );
 
+  const authenticateWithPasskey = useCallback(async () => {
+    if (!isWebAuthnSupported()) {
+      dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_not_supported" });
+      callbacks?.onError?.("passkey_not_supported");
+      return;
+    }
+
+    dispatch({ type: "SET_LOADING", loading: true });
+    dispatch({ type: "CLEAR_ERRORS" });
+
+    try {
+      const { signInId } = stateRef.current;
+      const [optionsError, options] = await client.auth.getPasskeyOptions(signInId ? { signInId } : undefined);
+
+      if (optionsError || !options) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: optionsError || "bad_request" });
+        callbacks?.onError?.(optionsError || "bad_request");
+        return;
+      }
+
+      const publicKeyOptions = buildPublicKeyRequestOptions(options as PasskeyOptionsResponse);
+      const credential = (await navigator.credentials.get({ publicKey: publicKeyOptions })) as PublicKeyCredential | null;
+
+      if (!credential) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: "passkey_cancelled" });
+        callbacks?.onError?.("passkey_cancelled");
+        return;
+      }
+
+      const formattedCredential = formatAssertionCredentialForServer(credential);
+      const [verifyError, tkResponse] = await client.auth.authenticateWithPasskey({
+        payload: { credential: formattedCredential },
+      });
+
+      const tokenResponse = tkResponse as TokenResponse;
+      if (verifyError || !tokenResponse) {
+        dispatch({ type: "SET_LOADING", loading: false });
+        dispatch({ type: "SET_ERROR", field: "passkey", message: verifyError || "authentication_failed" });
+        callbacks?.onError?.(verifyError || "authentication_failed");
+        return;
+      }
+
+      dispatch({
+        type: "AUTH_SUCCESS",
+        token: tokenResponse.jwt,
+        refreshToken: tokenResponse.refresh_token,
+        signInId: tokenResponse.sid ?? stateRef.current.signInId ?? undefined,
+      });
+      callbacks?.onSuccess?.("Authenticated successfully");
+    } catch (error) {
+      dispatch({ type: "SET_LOADING", loading: false });
+      let errorMessage = "passkey_error";
+      if (error instanceof DOMException) {
+        errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
+      }
+      dispatch({ type: "SET_ERROR", field: "passkey", message: errorMessage });
+      callbacks?.onError?.(errorMessage);
+    }
+  }, [client, callbacks, dispatch, stateRef]);
+
   const buildSocialAuthUrl = useCallback(
     (provider: string, redirectUri: string): string => {
-      const baseUrl = "baseUrl" in client ? (client.baseUrl as string) : "";
-      return getSocialAuthUrl(baseUrl, provider, redirectUri);
+      if (!("baseUrl" in client) || typeof client.baseUrl !== "string" || !client.baseUrl) {
+        throw new Error("[useLogin] getSocialAuthUrl: client does not expose a baseUrl");
+      }
+      return getSocialAuthUrl(client.baseUrl, provider, redirectUri);
     },
     [client],
   );
@@ -245,6 +341,30 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
         signInId: socialCallback.result.signInId,
       });
       callbacks?.onSuccess?.("Authenticated successfully");
+      return;
+    }
+
+    if (socialCallback.error === "brand_connection_required") {
+      // Social auth returned brand connection required — extract sid from URL
+      const params = new URLSearchParams(window.location.search);
+      const sid = params.get("sid");
+      if (sid) {
+        dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
+        authStorage.setSignInId(sid);
+      }
+      dispatch({ type: "SET_STEP", step: "connect-brand" });
+      return;
+    }
+
+    if (socialCallback.error === "missing_required_fields" && socialCallback.fields) {
+      const params = new URLSearchParams(window.location.search);
+      const sid = params.get("sid");
+      if (sid) {
+        dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
+        authStorage.setSignInId(sid);
+      }
+      dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: socialCallback.fields });
+      dispatch({ type: "SET_STEP", step: "missing-fields" });
       return;
     }
 
@@ -316,6 +436,117 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client, callbacks, dispatch, stateRef],
   );
 
+  const connectBrand = useCallback(async () => {
+    const { signInId } = stateRef.current;
+    if (!signInId) {
+      dispatch({ type: "SET_ERROR", field: "global", message: "No sign-in session" });
+      return;
+    }
+
+    dispatch({ type: "SET_LOADING", loading: true });
+    dispatch({ type: "CLEAR_ERRORS" });
+
+    const [error, response] = await client.auth.connectBrand({ signInId });
+
+    dispatch({ type: "SET_LOADING", loading: false });
+
+    if (error) {
+      if (error === "missing_required_fields") {
+        const fieldsResponse = response as RequiredFieldsResponse;
+        if (fieldsResponse?.sid) {
+          dispatch({ type: "SET_SIGNIN_ID", signInId: fieldsResponse.sid });
+          authStorage.setSignInId(fieldsResponse.sid);
+        }
+        dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: fieldsResponse.fields as Record<string, unknown> });
+        dispatch({ type: "SET_STEP", step: "missing-fields" });
+        return;
+      }
+
+      dispatch({ type: "SET_ERROR", field: "global", message: error });
+      callbacks?.onError?.(error);
+      return;
+    }
+
+    const tokenResponse = response as TokenResponse;
+    dispatch({
+      type: "AUTH_SUCCESS",
+      token: tokenResponse.jwt,
+      refreshToken: tokenResponse.refresh_token,
+      signInId: tokenResponse.sid ?? signInId,
+    });
+    callbacks?.onSuccess?.("Brand connected successfully");
+  }, [client, callbacks, dispatch, stateRef]);
+
+  const cancelBrandConnect = useCallback(async () => {
+    const { signInId } = stateRef.current;
+    if (signInId) {
+      await client.auth.signOut({ signInId });
+    }
+    authStorage.clearAll();
+    dispatch({ type: "RESTART" });
+  }, [client, dispatch, stateRef]);
+
+  const submitMissingFields = useCallback(
+    async (fields: Record<string, unknown>) => {
+      const { signInId } = stateRef.current;
+      if (!signInId) {
+        dispatch({ type: "SET_ERROR", field: "global", message: "No sign-in session" });
+        return;
+      }
+
+      dispatch({ type: "SET_LOADING", loading: true });
+      dispatch({ type: "CLEAR_ERRORS" });
+
+      const [error, response] = await client.auth.updateMissingFields({
+        signInId,
+        payload: { user: fields },
+      });
+
+      dispatch({ type: "SET_LOADING", loading: false });
+
+      if (error) {
+        if (error === "missing_required_fields") {
+          // Server returned more missing fields
+          const fieldsResponse = response as RequiredFieldsResponse;
+          dispatch({ type: "SET_MISSING_FIELD_DEFINITIONS", fields: fieldsResponse.fields as Record<string, unknown> });
+          dispatch({ type: "SET_ERROR", field: "missingFields", message: "Please fill in all required fields" });
+          return;
+        }
+
+        dispatch({ type: "SET_ERROR", field: "missingFields", message: error });
+        callbacks?.onError?.(error);
+        return;
+      }
+
+      const tokenResponse = response as TokenResponse;
+      dispatch({
+        type: "AUTH_SUCCESS",
+        token: tokenResponse.jwt,
+        refreshToken: tokenResponse.refresh_token,
+        signInId: tokenResponse.sid ?? signInId,
+      });
+      callbacks?.onSuccess?.("Authenticated successfully");
+    },
+    [client, callbacks, dispatch, stateRef],
+  );
+
+  const checkPendingRegistration = useCallback(
+    async (email: string): Promise<"resume-link-sent" | "not-found" | "error"> => {
+      const [errorCode] = await client.auth.sendResumeLink({ email });
+      if (errorCode === null) {
+        return "resume-link-sent";
+      }
+
+      const code = errorCode as string;
+      if (code === "connection_failed" || code === "schema_validation_error" || code === "internal_error") {
+        return "error";
+      }
+
+      return "not-found";
+    },
+    [client],
+  );
+
   const goBack = useCallback(() => {
     dispatch({ type: "GO_BACK" });
   }, [dispatch]);
@@ -331,17 +562,27 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     dispatch({ type: "RESTART" });
   }, [dispatch]);
 
+  const reset = useCallback(() => {
+    dispatch({ type: "RESET" });
+  }, [dispatch]);
+
   return {
     submitEmail,
     submitPassword,
     sendMagicCode,
     submitMagicCode,
+    authenticateWithPasskey,
     getSocialAuthUrl: buildSocialAuthUrl,
     handleSocialAuthCallback,
     sendResetPasswordEmail,
     resetPassword,
+    connectBrand,
+    cancelBrandConnect,
+    submitMissingFields,
+    checkPendingRegistration,
     goBack,
     goToStep,
     restart,
+    reset,
   };
 }

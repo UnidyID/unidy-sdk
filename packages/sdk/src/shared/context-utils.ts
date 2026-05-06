@@ -8,6 +8,7 @@ type ParentComponentMap = {
   "u-signin-step": HTMLUSigninStepElement;
   "u-newsletter-root": HTMLUNewsletterRootElement;
   "u-ticketable-list": HTMLUTicketableListElement;
+  "u-transaction-list": HTMLUTransactionListElement;
   "u-oauth-provider": HTMLUOauthProviderElement;
   "u-registration-root": HTMLURegistrationRootElement;
 };
@@ -15,7 +16,7 @@ type ParentComponentMap = {
 /**
  * Component context types used throughout the SDK.
  */
-export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "oauth" | "registration";
+export type ComponentContext = "auth" | "profile" | "newsletter" | "ticketable" | "transaction" | "oauth" | "registration";
 
 // ============================================================================
 // Parent Component Lookup Utilities
@@ -69,6 +70,23 @@ export function findParentNewsletterRoot(element: HTMLElement): HTMLUNewsletterR
  */
 export function findParentTicketableList(element: HTMLElement): HTMLUTicketableListElement | null {
   return findParent(element, "u-ticketable-list");
+}
+
+/**
+ * Find the parent u-transaction-list component.
+ */
+export function findParentTransactionList(element: HTMLElement): HTMLUTransactionListElement | null {
+  return findParent(element, "u-transaction-list");
+}
+
+/**
+ * Find the nearest paginated list ancestor (u-ticketable-list or u-transaction-list).
+ * Used by pagination controls to locate the list whose `page` attribute they drive.
+ */
+export function findParentPaginatedList(element: HTMLElement): HTMLUTicketableListElement | HTMLUTransactionListElement | null {
+  return (
+    (element.closest("u-ticketable-list, u-transaction-list") as HTMLUTicketableListElement | HTMLUTransactionListElement | null) ?? null
+  );
 }
 
 /**
@@ -127,6 +145,10 @@ export function detectContext(element: HTMLElement): ComponentContext | null {
     return "ticketable";
   }
 
+  if (findParentTransactionList(element)) {
+    return "transaction";
+  }
+
   return null;
 }
 
@@ -147,7 +169,7 @@ export function detectContextOrThrow(element: HTMLElement, componentName: string
 
   if (!context) {
     throw new Error(
-      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, u-oauth-provider, or u-registration-root.`,
+      `No context found for ${componentName}. Make sure you are using the component within a u-signin-root, u-profile, u-newsletter-root, u-ticketable-list, u-transaction-list, u-oauth-provider, or u-registration-root.`,
     );
   }
 

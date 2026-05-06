@@ -12,7 +12,8 @@ export type AuthStep =
   | "missing-fields"
   | "reset-password"
   | "registration"
-  | "single-login";
+  | "single-login"
+  | "unconfirmed";
 
 export interface AuthState {
   step: AuthStep;
@@ -34,6 +35,8 @@ export interface AuthState {
   loading: boolean;
   errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
+
+  enableResendAfter: number;
 
   authenticated: boolean;
   token: string | null;
@@ -116,6 +119,7 @@ const initialState: AuthState = {
     passkey: null,
   },
   globalErrors: {},
+  enableResendAfter: 0,
   authenticated: false,
   missingRequiredFields: undefined,
   availableLoginOptions: storedLoginOptions ?? {
@@ -286,6 +290,10 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
   }
 
+  setEnableResendAfter(seconds: number) {
+    state.enableResendAfter = seconds;
+  }
+
   setMagicCodeStep(step: null | "requested" | "sent") {
     state.magicCodeStep = step;
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, step);
@@ -314,7 +322,14 @@ class AuthStore {
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
 
-    if (!authenticated) {
+    if (authenticated) {
+      // Clear stale sign-in flow tracking so it cannot be recovered on the next page load
+      state._pendingRecoveryStep = null;
+      state._stepHistory = [];
+      saveToStorage(localStorage, SESSION_KEYS.STEP, null);
+      saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
+      saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+    } else {
       state.token = null;
       state.refreshToken = null;
       state.sid = null;
@@ -415,4 +430,4 @@ class AuthStore {
 }
 
 export const authStore = new AuthStore();
-export { state as authState, authStoreOnChange as onChange };
+export { authStoreOnChange as onChange, state as authState };

@@ -28,6 +28,11 @@
       "button_text_set": "Passwort speichern",
       "success_message": "E-Mail zum Zurücksetzen des Passworts gesendet. Bitte überprüfen Sie Ihren Posteingang"
     },
+    "resendConfirmation": {
+      "button_text": "Bestätigungs-E-Mail erneut senden",
+      "description": "Bitte überprüfen Sie Ihren Posteingang, um Ihre E-Mail-Adresse zu bestätigen. Falls Sie keine E-Mail erhalten haben, können Sie eine neue Bestätigungs-E-Mail anfordern.",
+      "title": "E-Mail-Adresse bestätigen"
+    },
     "single-login": {
       "button_text": "Anmelden"
     },
@@ -55,6 +60,9 @@
   "errors": {
     "account_locked": "Konto gesperrt",
     "account_not_found": "Konto nicht gefunden",
+    "account_already_confirmed": "Ihre E-Mail-Adresse wurde bereits bestätigt. Bitte melden Sie sich an",
+    "account_unconfirmed": "Die E-Mail-Adresse des Kontos wurde noch nicht bestätigt",
+    "confirmation_recently_sent": "Eine Bestätigungs-E-Mail wurde kürzlich gesendet. Bitte warten Sie, bevor Sie eine neue anfordern",
     "auth_method_required": "Bitte legen Sie ein Passwort fest oder bestätigen Sie Ihre E-Mail-Adresse, um fortzufahren",
     "authentication_failed": "Authentifizierung fehlgeschlagen",
     "bad_request": "Ungültige Anfrage",
@@ -187,5 +195,28 @@
   "profile": {
     "signInToView": "Bitte melden Sie sich an, um Ihr Profil anzuzeigen",
     "updated": "Profil wurde aktualisiert"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Konto suchen",
+      "checking": "Suche...",
+      "confirm_button": "Ja, dieses Konto verknüpfen",
+      "confirming": "Wird verknüpft...",
+      "default_primary_label": "Kundennummer",
+      "error_expired": "Ihre Registrierungssitzung ist abgelaufen. Bitte beginnen Sie von vorne.",
+      "error_generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "error_match_mismatch": "Die eingegebenen Informationen stimmen mit keinem Konto überein. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+      "error_match_not_found": "Für die angegebenen Informationen wurde kein Konto gefunden. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
+      "error_no_match": "Kein passendes Konto gefunden. Sie können ohne Verknüpfung fortfahren.",
+      "match_confirm_question": "Möchten Sie dieses bestehende Konto verknüpfen?",
+      "match_found_description": "Wir haben ein Konto gefunden, das mit Ihren Daten verknüpft ist.",
+      "match_found_title": "Konto gefunden!",
+      "preview_created_at": "Registriert:",
+      "preview_email": "E-Mail:",
+      "reject_button": "Nein, neues Konto erstellen",
+      "rejecting": "Wird fortgesetzt...",
+      "skip_button": "Ohne Verknüpfung fortfahren",
+      "skipping": "Wird fortgesetzt..."
+    }
   }
 }

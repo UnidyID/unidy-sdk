@@ -7,7 +7,7 @@ export default defineConfig(({ command }) => ({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@unidy.io/sdk-react": path.resolve(__dirname, "../src"),
+      "@unidy.io/sdk-react": path.resolve(__dirname, "../src/index.ts"),
       ...(command === "serve" && {
         "@unidy.io/sdk/standalone": path.resolve(__dirname, "../../sdk/src/api/standalone.ts"),
       }),

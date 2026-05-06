@@ -1,8 +1,10 @@
 import { AuthService } from "../auth/api/auth";
 import { NewsletterService } from "../newsletter/api/newsletters";
+import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile/api/profile";
 import { SubscriptionsService } from "../ticketable/api/subscriptions";
 import { TicketsService } from "../ticketable/api/tickets";
+import { TransactionsService } from "../transaction/api/transactions";
 import { BaseApiClient } from "./base-client";
 import type { ServiceDependencies } from "./base-service";
 
@@ -41,12 +43,16 @@ export type * from "../auth/api/auth";
 export { AuthService } from "../auth/api/auth";
 export type * from "../newsletter/api/newsletters";
 export { NewsletterService } from "../newsletter/api/newsletters";
+export type * from "../oauth/api/oauth";
+export { OAuthService } from "../oauth/api/oauth";
 export type * from "../profile/api/profile";
 export { ProfileService } from "../profile/api/profile";
 export type * from "../ticketable/api/subscriptions";
 export { SubscriptionsService } from "../ticketable/api/subscriptions";
 export type * from "../ticketable/api/tickets";
 export { TicketsService } from "../ticketable/api/tickets";
+export type * from "../transaction/api/transactions";
+export { TransactionsService } from "../transaction/api/transactions";
 export type { ApiClientConfig, ApiResponse, QueryParams } from "./base-client";
 export type {
   ApiClientInterface,
@@ -118,9 +124,11 @@ export interface StandaloneUnidyClientConfig extends ApiClientConfig {
 export class StandaloneUnidyClient {
   public auth: AuthService;
   public newsletters: NewsletterService;
+  public oauth: OAuthService;
   public profile: ProfileService;
   public tickets: TicketsService;
   public subscriptions: SubscriptionsService;
+  public transactions: TransactionsService;
 
   constructor(config: StandaloneUnidyClientConfig) {
     const apiClient = new StandaloneApiClient(config);
@@ -128,9 +136,11 @@ export class StandaloneUnidyClient {
 
     this.auth = new AuthService(apiClient, deps);
     this.newsletters = new NewsletterService(apiClient, deps);
+    this.oauth = new OAuthService(apiClient, deps);
     this.profile = new ProfileService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
+    this.transactions = new TransactionsService(apiClient, deps);
   }
 }
 

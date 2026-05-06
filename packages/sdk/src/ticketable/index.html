@@ -33,6 +33,8 @@
           class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Newsletters</a>
         <a href="/ticketable"
           class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Tickets</a>
+        <a href="/transaction"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Transactions</a>
       </nav>
 
       <div>
@@ -115,13 +117,13 @@
               <div class="flex items-center gap-2">
                 <u-ticketable-export
                   format="pdf"
-                  custom-class="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50"
+                  class-name="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   PDF
                 </u-ticketable-export>
                 <u-ticketable-export
                   format="pkpass"
-                  custom-class="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 whitespace-nowrap disabled:opacity-50"
+                  class-name="px-4 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Wallet
                 </u-ticketable-export>
@@ -129,7 +131,7 @@
                 <a
                   unidy-attr
                   unidy-attr-href="{{button_cta_url}}"
-                  class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+                  class="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap [&[href='']]:opacity-50 [&[href='']]:pointer-events-none"
                 >
                   View Details
                 </a>
@@ -177,14 +179,14 @@
           <div class="flex items-center gap-2 mt-4">
             <u-pagination-button
               direction="prev"
-              custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+              class-name="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
             >
               <span slot="icon">⬅️</span>
             </u-pagination-button>
-            <u-pagination-page custom-class="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
+            <u-pagination-page class-name="text-sm text-gray-700 px-3 py-2"></u-pagination-page>
             <u-pagination-button
               direction="next"
-              custom-class="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+              class-name="px-3 py-2 border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
             ></u-pagination-button>
           </div>
         </div>
@@ -216,19 +218,19 @@
                 <a
                   unidy-attr
                   unidy-attr-href="{{button_cta_url}}"
-                  class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap"
+                  class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap [&[href='']]:opacity-50 [&[href='']]:pointer-events-none"
                 >
                   View Details
                 </a>
                 <u-ticketable-export
                   format="pdf"
-                  custom-class="px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50"
+                  class-name="px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   PDF
                 </u-ticketable-export>
                 <u-ticketable-export
                   format="pkpass"
-                  custom-class="px-3 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 disabled:opacity-50"
+                  class-name="px-3 py-2 bg-black text-white text-sm font-medium rounded-md hover:bg-gray-900 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Wallet
                 </u-ticketable-export>

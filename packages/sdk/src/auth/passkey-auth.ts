@@ -9,7 +9,7 @@ const logger = createLogger("PasskeyAuth");
 
 function buildPublicKeyOptions(options: PasskeyOptionsResponse): PublicKeyCredentialRequestOptions {
   return {
-    challenge: Uint8Array.from(atob(options.challenge), (c) => c.charCodeAt(0)),
+    challenge: decodeBase64Url(options.challenge).buffer as ArrayBuffer,
     timeout: options.timeout || 60000,
     rpId: options.rpId,
     userVerification: (options.userVerification as UserVerificationRequirement) || "required",

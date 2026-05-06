@@ -7,7 +7,7 @@ import { Flash } from "../../../shared/store/flash-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import { clearUrlParam } from "../../../shared/utils/url-utils";
 import * as NewsletterHelpers from "../../newsletter-helpers";
-import { type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
+import { hasAllRequiredConsent, type NewsletterErrorIdentifier, newsletterStore, persist } from "../../store/newsletter-store";
 import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-button";
 
 @Component({
@@ -18,6 +18,21 @@ export class NewsletterRoot extends UnidyComponent() {
   @Element() el!: HTMLElement;
   /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
+
+  /**
+   * Optional URL used as the `redirect_uri` when sending the login email.
+   * When provided, overrides the default (current page URL).
+   *
+   * The URL is passed as-is to the backend — no client-side substitution is performed.
+   * The following placeholders are substituted server-side:
+   * - `{preference_token}` — the user's preference token
+   * - `{email}` — the subscriber's email address
+   * - `{newsletter_internal_name}` — the newsletter's internal name
+   *
+   * **Note:** The hostname of this URL must be present in the SDK client's `allowed_hosts`
+   * list (configurable in the Unidy dashboard), otherwise the API will return 403.
+   */
+  @Prop({ attribute: "redirect-uri" }) redirectUri?: string;
 
   /** Fired on successful newsletter subscription. Contains the email and subscribed newsletters. */
   @Event() uNewsletterSuccess!: EventEmitter<{ email: string; newsletters: string[] }>;
@@ -65,6 +80,7 @@ export class NewsletterRoot extends UnidyComponent() {
   async submit(forType?: NewsletterButtonFor) {
     const { email, checkedNewsletters, consentGiven, consentRequired } = newsletterStore.state;
     const newsletters = Object.keys(checkedNewsletters);
+    const allRequiredConsentSatisfied = hasAllRequiredConsent({ consentGiven, consentRequired });
 
     // Check email first for better UX
     if (!email) {
@@ -75,7 +91,7 @@ export class NewsletterRoot extends UnidyComponent() {
     }
 
     if (forType === "login") {
-      const result = await NewsletterHelpers.sendLoginEmail(email);
+      const result = await NewsletterHelpers.sendLoginEmail(email, this.redirectUri);
       if (result.success === true) {
         this.uNewsletterSuccess.emit({ email, newsletters: [] });
       } else if (result.success === false) {
@@ -90,7 +106,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    if (consentRequired && !consentGiven) {
+    if (!allRequiredConsentSatisfied) {
       newsletterStore.state.errors = {
         ...newsletterStore.state.errors,
         consent: "consent_required",
@@ -99,7 +115,7 @@ export class NewsletterRoot extends UnidyComponent() {
       return;
     }
 
-    const success = await NewsletterHelpers.createSubscriptions({ email });
+    const success = await NewsletterHelpers.createSubscriptions({ email, redirectUri: this.redirectUri });
 
     if (success) {
       this.uNewsletterSuccess.emit({ email, newsletters });

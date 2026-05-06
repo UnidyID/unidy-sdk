@@ -134,10 +134,12 @@ export class RawField extends UnidyComponent() {
 
     if (fieldName.startsWith("custom_attributes.")) {
       const key = fieldName.replace("custom_attributes.", "");
+      if (!(key in registrationState.customAttributes)) return undefined;
       const value = registrationState.customAttributes[key];
       return value != null ? String(value) : "";
     }
 
+    if (!(fieldName in registrationState.profileData)) return undefined;
     const value = registrationState.profileData[fieldName];
     return value != null ? String(value) : "";
   }
@@ -275,6 +277,10 @@ export class RawField extends UnidyComponent() {
     }
 
     if (this.pattern && typeof value === "string") {
+      // NOTE: This component receives `pattern` as an HTML attribute string (e.g. pattern="^(?=.*[0-9]).{8,}$").
+      // When callers set this attribute in Astro JSX string literals, escape sequences like \d and \w are silently
+      // dropped by the JavaScript compiler (string literals treat \d as 'd', \w as 'w', etc.).
+      // Always use character classes in pattern strings: [0-9] instead of \d, [a-zA-Z0-9_] instead of \w, etc.
       const regex = new RegExp(this.pattern);
       if (!regex.test(value)) {
         return { valid: false, message: this.patternErrorMessage || "invalid_format" };
@@ -324,7 +330,7 @@ export class RawField extends UnidyComponent() {
   }
 
   private onMultiToggle = (optValue: string, checked: boolean) => {
-    const currentValues = Array.isArray(this.selected) ? this.selected : [];
+    const currentValues = (this.readStore(this.field) as string[]) ?? [];
     let updatedValues: string[];
     if (checked) {
       updatedValues = currentValues.includes(optValue) ? currentValues : [...currentValues, optValue];
@@ -439,11 +445,13 @@ export class RawField extends UnidyComponent() {
       this.type === "textarea" ||
       this.type === "select";
 
-    if (isType && (current === undefined || current === null) && typeof this.value === "string") {
+    const isUnset = current === undefined || current === null;
+    if (isType && isUnset && typeof this.value === "string" && this.value !== "") {
       this.writeStore(this.field, this.value);
+      this.selected = this.value;
+    } else {
+      this.selected = current;
     }
-
-    this.selected = current;
   }
 
   componentDidRender() {
@@ -498,7 +506,7 @@ export class RawField extends UnidyComponent() {
 
     if (this.type === "checkbox") {
       if (Array.isArray(this.multiSelectOptions) && this.multiSelectOptions.length) {
-        const selected = Array.isArray(this.selected) ? this.selected : [];
+        const selected = (this.readStore(this.field) as string[]) ?? [];
         return (
           <MultiSelect
             value={selected}

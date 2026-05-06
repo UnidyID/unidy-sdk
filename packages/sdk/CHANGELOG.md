@@ -1,5 +1,55 @@
 # Changelog
 
+## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-05)
+
+
+### Bug Fixes
+
+* add missing exports and types to standalone client ([#261](https://github.com/UnidyID/unidy-sdk/issues/261)) ([f72c828](https://github.com/UnidyID/unidy-sdk/commit/f72c828a47c204b7af5431009e53abd5799b9b56))
+
+## [1.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.5.0) (2026-05-04)
+
+
+### Features
+
+* [UD-2369] add u-transaction-list web component ([#251](https://github.com/UnidyID/unidy-sdk/issues/251)) ([8205f21](https://github.com/UnidyID/unidy-sdk/commit/8205f21bbaf0b9024446938da8f0760f296571bf))
+* [UD-2371] handle account unconfirmed error in sign in flow with ([#259](https://github.com/UnidyID/unidy-sdk/issues/259)) ([2973b80](https://github.com/UnidyID/unidy-sdk/commit/2973b800502a1d26e96af5bc922fb28298f1cc95))
+
+
+### Bug Fixes
+
+* [UD-2375] value attribute on u-raw-field select does not initialize registration store ([#254](https://github.com/UnidyID/unidy-sdk/issues/254)) ([ab3305b](https://github.com/UnidyID/unidy-sdk/commit/ab3305be8a47aa2decf62934d9ca047d4cafa99e))
+* [UD-2419] u-registration-root renders resume button automatically ([#250](https://github.com/UnidyID/unidy-sdk/issues/250)) ([5fa84ea](https://github.com/UnidyID/unidy-sdk/commit/5fa84eaf4cd8d50d2dfb432bec04cafa010f76b5))
+* [UD-2421] guard auto-send in componentWillLoad against inactive step ([#247](https://github.com/UnidyID/unidy-sdk/issues/247)) ([3428c70](https://github.com/UnidyID/unidy-sdk/commit/3428c708a08c6e4b5f91c55d8f69ba781aa1df6f))
+* [UD-2432] u-passkey sign-in fails when challenge contains base64url characters ([#252](https://github.com/UnidyID/unidy-sdk/issues/252)) ([59a55da](https://github.com/UnidyID/unidy-sdk/commit/59a55daaa6237766af3e198f38d186d16bb16d54))
+* [UD-2437] [UD-2439] passkey discoverable prop, profile custom attribute bugs, and CI release fix ([#255](https://github.com/UnidyID/unidy-sdk/issues/255)) ([67ddae5](https://github.com/UnidyID/unidy-sdk/commit/67ddae5085052cc54bfb5a3891843ab0d96ba180))
+* add icon slot to u-passkey with default passkey SVG ([#257](https://github.com/UnidyID/unidy-sdk/issues/257)) ([871a32f](https://github.com/UnidyID/unidy-sdk/commit/871a32fc1a722e78c27e220d09b23312bbf802d5))
+* light-DOM style resets and ::part names for disabled/readonly fields ([#260](https://github.com/UnidyID/unidy-sdk/issues/260)) ([d83cf94](https://github.com/UnidyID/unidy-sdk/commit/d83cf9436c3577531a3a4447bd65a66ddda85019))
+
+## [1.4.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.4.0) (2026-04-17)
+
+
+### Features
+
+* [UD-2261] support keyed newsletter consent checkboxes ([#229](https://github.com/UnidyID/unidy-sdk/issues/229)) ([af9fb5c](https://github.com/UnidyID/unidy-sdk/commit/af9fb5c559350efc2bd261b99be644966781ea38))
+* [UD-2344] add redirect-uri prop to u-newsletter-root ([#240](https://github.com/UnidyID/unidy-sdk/issues/240)) ([5214e5c](https://github.com/UnidyID/unidy-sdk/commit/5214e5cc8d6f2c2a04b8d4db4a9e51d2065d3adf))
+* add u-registration-internal-matching component ([#230](https://github.com/UnidyID/unidy-sdk/issues/230)) ([52b3d4a](https://github.com/UnidyID/unidy-sdk/commit/52b3d4a99287496eb2fd94782ca1385d8a5c45db))
+
+
+### Bug Fixes
+
+* [UD-2373] only auto-send verification code when verification step is active ([#243](https://github.com/UnidyID/unidy-sdk/issues/243)) ([d522e8b](https://github.com/UnidyID/unidy-sdk/commit/d522e8b708a1ea3e58d5b538604cf9c89b64fa47))
+* [UD-2405] [UD-2406] registration confirmation event, oauth modal visibility, stale auth state ([#245](https://github.com/UnidyID/unidy-sdk/issues/245)) ([1ec8440](https://github.com/UnidyID/unidy-sdk/commit/1ec84400494dbef2f30b41531c28b38b15c35c67))
+* [URGENT] registration email truncated to first character when transitioning from auth flow ([#231](https://github.com/UnidyID/unidy-sdk/issues/231)) ([76c5494](https://github.com/UnidyID/unidy-sdk/commit/76c5494ec5399df133941b90c1a285898af32b59))
+* add optional password confirmation to registration flow ([#217](https://github.com/UnidyID/unidy-sdk/issues/217)) ([74f7571](https://github.com/UnidyID/unidy-sdk/commit/74f75710c6050755204210e15b3fbce1d2290ade))
+* add unidy_sid query param parsing and keep the sid as the fallback ([#227](https://github.com/UnidyID/unidy-sdk/issues/227)) ([a6b7598](https://github.com/UnidyID/unidy-sdk/commit/a6b7598cfbb61733e74102432851974f4323c3e8))
+* apply nullable price fix to subscriptions ([#234](https://github.com/UnidyID/unidy-sdk/issues/234)) ([5255d68](https://github.com/UnidyID/unidy-sdk/commit/5255d68b0c2281ecf47f770ce586aa8460839eb0))
+* button styling ([#241](https://github.com/UnidyID/unidy-sdk/issues/241)) ([a8ab28e](https://github.com/UnidyID/unidy-sdk/commit/a8ab28ea1ffdc862fcf8952c144191964bf9fea1))
+* **ci:** update bun to 1.3.9 and fix workspace filter glob ([#224](https://github.com/UnidyID/unidy-sdk/issues/224)) ([ba97fbb](https://github.com/UnidyID/unidy-sdk/commit/ba97fbbe6766f253f2f4fcd06a0857543c92c9e6))
+* handle account_locked and account_unconfirmed sign-in errors ([#233](https://github.com/UnidyID/unidy-sdk/issues/233)) ([14a2917](https://github.com/UnidyID/unidy-sdk/commit/14a2917633b68a8bc6808ebef134328d35258ae4))
+* phone validation rejecting valid numbers ([#220](https://github.com/UnidyID/unidy-sdk/issues/220)) ([d7fc3f6](https://github.com/UnidyID/unidy-sdk/commit/d7fc3f6b3ead3a79f60d2a1522c1558963ace7a5))
+* tickets SDK breaking cause of price being NULL ([#219](https://github.com/UnidyID/unidy-sdk/issues/219)) ([62036fd](https://github.com/UnidyID/unidy-sdk/commit/62036fd65d1042e52ed830d69b312d9cdd5240e8))
+
 ## [1.3.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.2.0...@unidy.io/sdk-v1.3.0) (2026-02-20)
 
 

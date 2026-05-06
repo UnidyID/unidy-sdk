@@ -26,28 +26,31 @@ export const TicketableListParamsSchema = z.object({
 const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
 
-// Ticket schema based on TicketSerializer
-export const TicketSchema = z.object({
+export const TicketableSchema = z.object({
   id: z.uuid(), // unidy_id
   title: z.string(),
-  text: z.string().nullable(),
   reference: z.string(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
-  wallet_export: z.record(z.string(), z.unknown()).nullable(),
   exportable_to_wallet: z.boolean(),
   state: z.string(),
+  created_at: dateTransformer, // ISO8601(3) -> Date
+  updated_at: dateTransformer, // ISO8601(3) -> Date
+  user_id: z.uuid(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
+  wallet_export: z.record(z.string(), z.unknown()).nullable(),
   payment_state: z.string().nullable(),
+  currency: z.string().nullable(),
   button_cta_url: z.string().nullable(),
+});
+
+// Ticket schema based on TicketSerializer
+export const TicketSchema = TicketableSchema.extend({
+  text: z.string().nullable(),
   info_banner: z.string().nullable(),
   seating: z.string().nullable(),
   venue: z.string().nullable(),
-  currency: z.string().nullable(),
   starts_at: dateTransformer, // ISO8601(3) -> Date
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  created_at: dateTransformer, // ISO8601(3) -> Date
-  updated_at: dateTransformer, // ISO8601(3) -> Date
   price: z.number().nullable(), // decimal(8, 2) -> float
-  user_id: z.uuid(),
   ticket_category_id: z.uuid(),
 });
 
@@ -58,26 +61,13 @@ export const TicketsListResponseSchema = z.object({
 });
 
 // Subscription schema based on SubscriptionSerializer
-export const SubscriptionSchema = z.object({
-  id: z.uuid(), // unidy_id
-  title: z.string(),
+export const SubscriptionSchema = TicketableSchema.extend({
   text: z.string(),
   payment_frequency: z.string().nullable(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
-  wallet_export: z.record(z.string(), z.unknown()).nullable(),
-  exportable_to_wallet: z.boolean(),
-  state: z.string(),
-  reference: z.string(),
-  payment_state: z.string().nullable(),
-  currency: z.string().nullable(),
-  button_cta_url: z.string().nullable(),
-  created_at: dateTransformer, // ISO8601(3) -> Date
-  updated_at: dateTransformer, // ISO8601(3) -> Date
   starts_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   next_payment_at: nullableDateTransformer, // ISO8601(3) -> Date | null
-  price: z.number(), // decimal(8, 2) -> float
-  user_id: z.uuid(),
+  price: z.number().nullable(), // decimal(8, 2) -> float
   subscription_category_id: z.uuid(),
 });
 

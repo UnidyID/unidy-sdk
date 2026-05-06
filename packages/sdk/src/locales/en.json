@@ -29,6 +29,11 @@
       "button_text_save": "Save New Password",
       "success_message": "Password reset email sent. Please check your inbox"
     },
+    "resendConfirmation": {
+      "button_text": "Resend confirmation email",
+      "description": "Please check your inbox to confirm your email. If you didn't receive it, you can request a new confirmation email.",
+      "title": "Confirm your email"
+    },
     "single-login": {
       "button_text": "Sign in"
     },
@@ -56,6 +61,9 @@
   "errors": {
     "account_locked": "Account locked",
     "account_not_found": "Account not found",
+    "account_already_confirmed": "Your email has already been confirmed. Please sign in",
+    "account_unconfirmed": "Account email has not been confirmed",
+    "confirmation_recently_sent": "A confirmation email was recently sent. Please wait before requesting a new one",
     "auth_method_required": "Please set a password or verify your email to continue",
     "authentication_failed": "Authentication failed",
     "bad_request": "Bad request",
@@ -189,5 +197,28 @@
   "profile": {
     "signInToView": "Please sign in to view your profile",
     "updated": "Profile is updated"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Find Account",
+      "checking": "Searching...",
+      "confirm_button": "Yes, use this account",
+      "confirming": "Linking...",
+      "default_primary_label": "Customer Number",
+      "error_expired": "Your registration session has expired. Please start over.",
+      "error_generic": "An error occurred. Please try again.",
+      "error_match_mismatch": "The entered information does not match any account. Please check your details and try again.",
+      "error_match_not_found": "No account found for the provided information. Please check your details and try again.",
+      "error_no_match": "No matching account found. You can continue without linking.",
+      "match_confirm_question": "Would you like to link this existing account?",
+      "match_found_description": "We found an account linked to your details.",
+      "match_found_title": "Account Found!",
+      "preview_created_at": "Registered:",
+      "preview_email": "Email:",
+      "reject_button": "No, create new account",
+      "rejecting": "Continuing...",
+      "skip_button": "Continue without linking",
+      "skipping": "Continuing..."
+    }
   }
 }
