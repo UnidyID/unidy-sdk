@@ -126,7 +126,7 @@
                     <div class="text-sm font-medium text-gray-500 mb-2">First line item</div>
                     <div class="flex justify-between gap-4 text-sm text-gray-700">
                       <span>
-                        <transaction-value name="line_items.[0].description" default="(unnamed)"></transaction-value>
+                        <transaction-value name="line_items.[0].name" default="(unnamed)"></transaction-value>
                         <transaction-conditional when="line_items.[0].quantity">
                           <span class="text-gray-500">
                             ×
@@ -135,7 +135,7 @@
                         </transaction-conditional>
                       </span>
                       <span class="font-medium">
-                        <transaction-value name="line_items.[0].total"></transaction-value>
+                        <transaction-value name="line_items.[0].total_price"></transaction-value>
                       </span>
                     </div>
                   </div>
@@ -234,7 +234,7 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-700">
-                <transaction-value name="line_items.[0].description" default="—"></transaction-value>
+                <transaction-value name="line_items.[0].name" default="—"></transaction-value>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right">

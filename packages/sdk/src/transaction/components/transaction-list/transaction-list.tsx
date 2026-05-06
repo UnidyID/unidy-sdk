@@ -5,10 +5,10 @@ import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { getParentOfNestedValue, loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
+import { loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
 import type { PaginationStore } from "../../../shared/store/pagination-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
-import type { Transaction, TransactionLineItem } from "../../api/transactions";
+import type { Transaction } from "../../api/transactions";
 
 @Component({ tag: "u-transaction-list", shadow: false })
 export class TransactionList extends UnidyComponent() {
@@ -157,16 +157,9 @@ export class TransactionList extends UnidyComponent() {
       conditionalTag: "transaction-conditional",
       isCurrencyKey: (key: string) => {
         const leaf = key.split(".").pop() ?? key;
-        return leaf === "total" || leaf === "unit_price";
+        return leaf === "total" || leaf === "total_price" || leaf === "unit_price";
       },
-      resolveCurrency: (item: Transaction, key: string): string => {
-        // For nested keys (e.g. "line_items.[0].total"), read the currency of the
-        // enclosing object — otherwise a multi-currency order renders every line
-        // item in the transaction's top-level currency.
-        const parent = getParentOfNestedValue(item, key) as { currency?: string } | undefined;
-        const lineItemCurrency = parent && parent !== (item as unknown) ? (parent as TransactionLineItem).currency : null;
-        return lineItemCurrency ?? item.currency ?? "EUR";
-      },
+      resolveCurrency: (item: Transaction): string => item.currency ?? "EUR",
       skeletonAllText: this.skeletonAllText,
     };
   }
