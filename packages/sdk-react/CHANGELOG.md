@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.1.0...@unidy.io/sdk-react-v0.2.0) (2026-05-07)
+
+
+### Features
+
+* add missing hooks for OAuth, transactions, internal matching, jump-to, and login improvements ([52a0743](https://github.com/UnidyID/unidy-sdk/commit/52a07439a620855cee70828665819e506b3712d7))
+
+
+### Bug Fixes
+
+* treat consent_not_granted as normal flow state in connect() ([0b3d8ae](https://github.com/UnidyID/unidy-sdk/commit/0b3d8aefe618909e56774d0d05537bd2af824464))
+* fall back to persisted signInId for reset password actions ([8b87deb](https://github.com/UnidyID/unidy-sdk/commit/8b87deb3080a00fc8ce77a6d5b65ab7bebf8d20e))
+* extract fieldErrors in connect() and treat not_found as expected outcome ([38e6d97](https://github.com/UnidyID/unidy-sdk/commit/38e6d97effb10e9745c0079743a60d03f2ad1bdd))
+* treat not_found as expected outcome in useInternalMatching ([a1b2571](https://github.com/UnidyID/unidy-sdk/commit/a1b25714ed59f316ed6a69f9e38708f41243b6f9))
+
+
+### ⚠ BREAKING CHANGES
+
+* **auth:** The `AuthStep` type now includes `"unconfirmed"`. Consumers with exhaustive `switch (step)` checks (the recommended pattern) will see a TypeScript error until they add a case for the new step.
+
 ## [0.1.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.0.2...@unidy.io/sdk-react-v0.1.0) (2026-05-07)
 
 
