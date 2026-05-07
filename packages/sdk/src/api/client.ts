@@ -26,7 +26,7 @@ export class ApiClient extends BaseApiClient {
   }
 
   protected getLocale(): string | undefined {
-    return unidyState.locale || undefined;
+    return unidyState.locale;
   }
 
   protected handleConnectionError(error: unknown, endpoint: string, method: string): void {
