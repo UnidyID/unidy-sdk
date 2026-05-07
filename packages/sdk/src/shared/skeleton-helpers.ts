@@ -1,5 +1,7 @@
 /**
- * Creates a skeleton loader HTML string with animated placeholder
+ * Creates a skeleton loader HTML string with animated placeholder.
+ * The text is rendered transparent and overlaid with an animated rectangle,
+ * which keeps the skeleton at the same intrinsic width as the final content.
  * @param text - The text to use as a placeholder (will be transparent)
  * @returns HTML string for skeleton loader
  */
@@ -17,27 +19,38 @@ export function createSkeletonLoader(text: string): string {
 }
 
 /**
- * Replaces text nodes in a DOM tree with skeleton loaders
- * Skips text nodes inside ticketable-value elements
+ * Replaces text nodes in a DOM tree with skeleton loaders.
+ * Text nodes whose ancestor chain includes any tag in `skipInsideTags`
+ * are left untouched — the per-list component already replaces those values.
  * @param node - The root node to process
- * @param createSkeletonFn - Function to create skeleton HTML (defaults to createSkeletonLoader)
+ * @param options - Options object
+ * @param options.skipInsideTags - Lowercase tag names whose descendant text nodes should be left alone.
+ * @param options.createSkeletonFn - Function to create skeleton HTML (defaults to createSkeletonLoader)
  */
-export function replaceTextNodesWithSkeletons(node: Node, createSkeletonFn: (text: string) => string = createSkeletonLoader): void {
+export function replaceTextNodesWithSkeletons(
+  node: Node,
+  options: {
+    skipInsideTags: readonly string[];
+    createSkeletonFn?: (text: string) => string;
+  },
+): void {
+  const { skipInsideTags, createSkeletonFn = createSkeletonLoader } = options;
+  const skipSet = new Set(skipInsideTags.map((t) => t.toLowerCase()));
   const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
 
   const textNodes: Text[] = [];
   for (let curTextNode = walker.nextNode(); curTextNode; curTextNode = walker.nextNode()) {
     if (curTextNode.textContent?.trim()) {
       let parent = curTextNode.parentNode;
-      let isInsideTicketableValue = false;
+      let insideSkippedNode = false;
       while (parent) {
-        if (parent.nodeName.toLowerCase() === "ticketable-value") {
-          isInsideTicketableValue = true;
+        if (skipSet.has(parent.nodeName.toLowerCase())) {
+          insideSkippedNode = true;
           break;
         }
         parent = parent.parentNode;
       }
-      if (!isInsideTicketableValue) {
+      if (!insideSkippedNode) {
         textNodes.push(curTextNode as Text);
       }
     }

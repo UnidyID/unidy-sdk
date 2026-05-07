@@ -1,6 +1,18 @@
 # u-social-login-button
 
+## Slots
 
+| Slot   | Description                                                                                        |
+| ------ | -------------------------------------------------------------------------------------------------- |
+| `icon` | Override the default provider icon. Falls back to built-in logos for Google, LinkedIn, Apple, Discord, and Facebook. |
+
+### Custom icon example
+
+```html
+<u-social-login-button provider="google">
+  <img slot="icon" src="/assets/icons/google.svg" alt="" />
+</u-social-login-button>
+```
 
 <!-- Auto Generated Below -->
 

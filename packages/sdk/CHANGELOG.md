@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-05)
+
+
+### Bug Fixes
+
+* add missing exports and types to standalone client ([#261](https://github.com/UnidyID/unidy-sdk/issues/261)) ([f72c828](https://github.com/UnidyID/unidy-sdk/commit/f72c828a47c204b7af5431009e53abd5799b9b56))
+
+## [1.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.5.0) (2026-05-04)
+
+
+### Features
+
+* [UD-2369] add u-transaction-list web component ([#251](https://github.com/UnidyID/unidy-sdk/issues/251)) ([8205f21](https://github.com/UnidyID/unidy-sdk/commit/8205f21bbaf0b9024446938da8f0760f296571bf))
+* [UD-2371] handle account unconfirmed error in sign in flow with ([#259](https://github.com/UnidyID/unidy-sdk/issues/259)) ([2973b80](https://github.com/UnidyID/unidy-sdk/commit/2973b800502a1d26e96af5bc922fb28298f1cc95))
+
+
+### Bug Fixes
+
+* [UD-2375] value attribute on u-raw-field select does not initialize registration store ([#254](https://github.com/UnidyID/unidy-sdk/issues/254)) ([ab3305b](https://github.com/UnidyID/unidy-sdk/commit/ab3305be8a47aa2decf62934d9ca047d4cafa99e))
+* [UD-2419] u-registration-root renders resume button automatically ([#250](https://github.com/UnidyID/unidy-sdk/issues/250)) ([5fa84ea](https://github.com/UnidyID/unidy-sdk/commit/5fa84eaf4cd8d50d2dfb432bec04cafa010f76b5))
+* [UD-2421] guard auto-send in componentWillLoad against inactive step ([#247](https://github.com/UnidyID/unidy-sdk/issues/247)) ([3428c70](https://github.com/UnidyID/unidy-sdk/commit/3428c708a08c6e4b5f91c55d8f69ba781aa1df6f))
+* [UD-2432] u-passkey sign-in fails when challenge contains base64url characters ([#252](https://github.com/UnidyID/unidy-sdk/issues/252)) ([59a55da](https://github.com/UnidyID/unidy-sdk/commit/59a55daaa6237766af3e198f38d186d16bb16d54))
+* [UD-2437] [UD-2439] passkey discoverable prop, profile custom attribute bugs, and CI release fix ([#255](https://github.com/UnidyID/unidy-sdk/issues/255)) ([67ddae5](https://github.com/UnidyID/unidy-sdk/commit/67ddae5085052cc54bfb5a3891843ab0d96ba180))
+* add icon slot to u-passkey with default passkey SVG ([#257](https://github.com/UnidyID/unidy-sdk/issues/257)) ([871a32f](https://github.com/UnidyID/unidy-sdk/commit/871a32fc1a722e78c27e220d09b23312bbf802d5))
+* light-DOM style resets and ::part names for disabled/readonly fields ([#260](https://github.com/UnidyID/unidy-sdk/issues/260)) ([d83cf94](https://github.com/UnidyID/unidy-sdk/commit/d83cf9436c3577531a3a4447bd65a66ddda85019))
+
 ## [1.4.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.3.0...@unidy.io/sdk-v1.4.0) (2026-04-17)
 
 

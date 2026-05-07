@@ -17,7 +17,8 @@ export class SigninStep {
     | "reset-password"
     | "single-login"
     | "missing-fields"
-    | "registration";
+    | "registration"
+    | "unconfirmed";
   /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
@@ -60,6 +61,8 @@ export class SigninStep {
       shouldShow = authState.step === "single-login";
     } else if (this.name === "missing-fields") {
       shouldShow = authState.step === "missing-fields";
+    } else if (this.name === "unconfirmed") {
+      shouldShow = authState.step === "unconfirmed";
     }
 
     return (

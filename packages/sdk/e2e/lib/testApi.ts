@@ -1,5 +1,5 @@
 // copied from UnidyCode
-const apiURL = process.env.E2E_API_URL || "http://127.0.0.1:3000";
+const apiURL = process.env.E2E_API_URL || "http://localhost:3000";
 const apiToken = process.env.E2E_API_TOKEN || "";
 
 export class TestApi {

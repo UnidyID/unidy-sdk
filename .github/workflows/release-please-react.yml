@@ -1,0 +1,211 @@
+name: Release SDK React
+
+on:
+  push:
+    branches:
+      - master
+      - '*-stable'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'stable'
+        type: choice
+        options:
+          - stable
+          - alpha
+          - beta
+          - next
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    if: github.event_name == 'push' || github.event.inputs.release_type == 'stable'
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.releases_created || steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs['packages/sdk-react--tag_name'] || steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config-react.json
+          manifest-file: .release-please-manifest-react.json
+          target-branch: ${{ github.ref_name }}
+
+  create-maintenance-branch:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create maintenance branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          VERSION="${TAG#*v}"
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          if [ "$MAJOR" -lt 1 ]; then
+            echo "Skipping maintenance branch for pre-1.0 release ($VERSION)"
+            exit 0
+          fi
+          BRANCH="${MAJOR}-${MINOR}-stable"
+          if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "Branch $BRANCH already exists, skipping"
+          else
+            git checkout -b "$BRANCH"
+            git push origin "$BRANCH"
+            echo "Created maintenance branch $BRANCH"
+          fi
+
+  prerelease:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.release_type != 'stable' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Determine version
+        id: version
+        run: |
+          CURRENT_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-.*$//')
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          PRERELEASE_TYPE="${{ github.event.inputs.release_type }}"
+          NEW_VERSION="${BASE_VERSION}-${PRERELEASE_TYPE}.${TIMESTAMP}"
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "New version: ${NEW_VERSION}"
+
+      - name: Update package.json version
+        run: |
+          cd packages/sdk-react
+          jq --arg v "${{ steps.version.outputs.version }}" '.version = $v' package.json > tmp.json && mv tmp.json package.json
+
+      - name: Build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
+
+      - name: Publish to NPM
+        run: |
+          cd packages/sdk-react
+          bun publish --tag ${{ github.event.inputs.release_type }}
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "@unidy.io/sdk-react@${{ steps.version.outputs.version }}"
+          git push origin "@unidy.io/sdk-react@${{ steps.version.outputs.version }}"
+
+  publish-stable:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
+
+      - name: Publish to NPM
+        run: |
+          cd packages/sdk-react
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Fallback: publish if a GitHub release exists but npm publish was missed
+  publish-stable-fallback:
+    needs: release-please
+    if: needs.release-please.outputs.release_created != 'true' && github.ref_name != 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Determine npm tag
+        id: npm-tag
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          LATEST_VERSION=$(npm view @unidy.io/sdk-react dist-tags.latest 2>/dev/null || echo "0.0.0")
+          if npx semver "$LOCAL_VERSION" -r ">=$LATEST_VERSION" > /dev/null 2>&1; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            BRANCH="${{ github.ref_name }}"
+            VERSION_PART="${BRANCH%-stable}"
+            NPM_TAG="release-${VERSION_PART//-/.}"
+            echo "tag=${NPM_TAG}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if npm publish is needed
+        id: check
+        run: |
+          LOCAL_VERSION=$(jq -r '.version' packages/sdk-react/package.json)
+          NPM_VERSION=$(npm view @unidy.io/sdk-react version 2>/dev/null || echo "0.0.0")
+          if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Version $LOCAL_VERSION not on npm (npm has $NPM_VERSION)"
+          else
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "Version $LOCAL_VERSION already published"
+          fi
+
+      - name: Setup Bun
+        if: steps.check.outputs.needs_publish == 'true'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        if: steps.check.outputs.needs_publish == 'true'
+        run: bun install
+
+      - name: Build
+        if: steps.check.outputs.needs_publish == 'true'
+        run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
+
+      - name: Publish to NPM
+        if: steps.check.outputs.needs_publish == 'true'
+        run: |
+          cd packages/sdk-react
+          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
