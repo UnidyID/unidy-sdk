@@ -4,6 +4,14 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+/** Extract `error_details` from an SDK error response, returning an empty object if absent. */
+export function extractErrorDetails(data: unknown): Record<string, unknown> {
+  if (data && typeof data === "object" && "error_details" in data) {
+    return (data as { error_details?: Record<string, unknown> }).error_details ?? {};
+  }
+  return {};
+}
+
 export function isSuccess<T>(result: [string, unknown] | [null, T]): result is [null, T] {
   return result[0] === null;
 }
