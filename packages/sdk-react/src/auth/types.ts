@@ -9,6 +9,7 @@ export type AuthStep =
   | "reset-password"
   | "connect-brand"
   | "missing-fields"
+  | "unconfirmed"
   | "authenticated";
 
 export interface LoginOptions {
@@ -106,6 +107,12 @@ export interface UseLoginReturn {
   // Actions - Password reset
   sendResetPasswordEmail: (returnTo?: string) => Promise<void>;
   resetPassword: (token: string, password: string, confirmation: string) => Promise<void>;
+  /** Validate a reset password token before showing the reset form. */
+  validateResetPasswordToken: (token: string) => Promise<boolean>;
+
+  // Actions - Unconfirmed account
+  /** Resend the account confirmation email. Handles rate-limit errors. */
+  resendConfirmation: (email: string, captchaToken?: string) => Promise<void>;
 
   // Actions - Brand connection
   /** Accept the brand connection. Transitions to authenticated or missing-fields. */

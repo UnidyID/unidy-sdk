@@ -134,7 +134,7 @@ const login = useLogin({
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"connect-brand"` \| `"missing-fields"` \| `"authenticated"` |
+| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"connect-brand"` \| `"missing-fields"` \| `"unconfirmed"` \| `"authenticated"` |
 | `isAuthenticated` | `boolean` | Whether the user is authenticated |
 | `isLoading` | `boolean` | Whether an async action is in progress |
 | `email` | `string` | The email being used in the login flow |
@@ -161,6 +161,8 @@ const login = useLogin({
 | `checkPendingRegistration(email)` | Check if a pending registration exists for the email and send a resume link. Returns `"resume-link-sent"`, `"not-found"`, or `"error"`. |
 | `sendResetPasswordEmail(returnTo?)` | Send a password reset email |
 | `resetPassword(token, password, confirmation)` | Reset password using a token from the reset email |
+| `validateResetPasswordToken(token)` | Validate a reset password token before showing the reset form. Returns `boolean`. |
+| `resendConfirmation(email, captchaToken?)` | Resend the account confirmation email. Available when `step === "unconfirmed"`. |
 | `goBack()` | Navigate to the previous step |
 | `goToStep(step)` | Navigate to a specific step |
 | `restart()` | Go back to email step, preserving email and loginOptions |
@@ -255,6 +257,19 @@ function LoginPage() {
         {login.errors.missingFields && <p>{login.errors.missingFields}</p>}
         <button type="button" onClick={login.cancelBrandConnect}>Cancel</button>
       </form>
+    );
+  }
+
+  if (login.step === "unconfirmed") {
+    return (
+      <div>
+        <p>Your account is not yet confirmed. Check your email for a confirmation link.</p>
+        <button onClick={() => login.resendConfirmation(login.email)} disabled={login.isLoading}>
+          Resend confirmation email
+        </button>
+        {login.errors.global && <p>{login.errors.global}</p>}
+        <button onClick={login.goBack}>Back</button>
+      </div>
     );
   }
 
@@ -391,6 +406,75 @@ function RegisterPage() {
         disabled={reg.resendAvailableIn > 0}>
         {reg.resendAvailableIn > 0 ? `Resend in ${reg.resendAvailableIn}s` : "Resend"}
       </button>
+    </form>
+  );
+}
+```
+
+#### `useInternalMatching(options)`
+
+Manage the internal matching step during registration. Allows matching a new registration to an existing internal account.
+
+```ts
+const matching = useInternalMatching({
+  rid: string;                // Registration ID from useRegistration
+  autoFetchConfig?: boolean;  // Auto-fetch matching config on mount (default: true)
+  callbacks?: { onSuccess?, onError? };
+});
+```
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `config` | `InternalMatchingConfig \| null` | Matching configuration (field labels, formats, enabled state) |
+| `matchResult` | `InternalMatchResult \| null` | Matched user data after a successful `checkMatch` |
+| `isLoading` | `boolean` | Whether an async action is in progress |
+| `error` | `string \| null` | Error message |
+
+**Actions:**
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `fetchConfig()` | `Promise<boolean>` | Fetch the matching configuration |
+| `checkMatch(value, additionalAttrs?)` | `Promise<"found" \| "not_found" \| "error">` | Check for a match using the primary value and optional additional attributes |
+| `confirmMatch(matchingUserId)` | `Promise<"ok" \| "not_found" \| "mismatch" \| "error">` | Confirm linking with the matched account |
+| `skipMatch()` | `Promise<"ok" \| "expired" \| "error">` | Skip matching and continue without linking |
+
+**Example:**
+
+```tsx
+import { useRegistration, useInternalMatching } from "@unidy.io/sdk-react";
+
+function InternalMatchingStep() {
+  const { rid } = useRegistration();
+  const { config, matchResult, isLoading, error, checkMatch, confirmMatch, skipMatch } =
+    useInternalMatching({ rid: rid! });
+
+  if (!config?.enabled) return null;
+
+  if (matchResult) {
+    return (
+      <div>
+        <p>We found an existing account: {matchResult.matched_user_preview?.email_masked}</p>
+        <button onClick={() => confirmMatch(matchResult.matching_user_id)}>
+          Yes, link this account
+        </button>
+        <button onClick={skipMatch}>No, create a new account</button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={async (e) => {
+      e.preventDefault();
+      await checkMatch(value);
+    }}>
+      <label>{config.matching_attribute?.label}</label>
+      <input value={value} onChange={(e) => setValue(e.target.value)} />
+      <button type="submit" disabled={isLoading}>Find Account</button>
+      <button type="button" onClick={skipMatch}>Skip</button>
+      {error && <p>{error}</p>}
     </form>
   );
 }
@@ -701,6 +785,183 @@ function TicketList() {
       <button onClick={pagination.nextPage} disabled={!pagination.hasNextPage}>Next</button>
     </div>
   );
+}
+```
+
+---
+
+### OAuth
+
+#### `useOAuth(options)`
+
+Manage the OAuth authorization consent flow for connecting to third-party applications.
+
+```ts
+const oauth = useOAuth({
+  clientId: string;          // OAuth application client ID
+  autoCheck?: boolean;       // Auto-check consent on mount (default: true)
+  callbacks?: { onSuccess?, onError? };
+});
+```
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `consent` | `CheckConsentResponse \| null` | Consent status, application info, required/missing fields |
+| `token` | `string \| null` | One-time login token after consent is granted |
+| `isLoading` | `boolean` | Whether an async action is in progress |
+| `error` | `string \| null` | Error message |
+| `fieldErrors` | `Record<string, unknown>` | Per-field errors from `updateConsent` or `grantConsent` |
+
+**Actions:**
+
+| Method | Description |
+|--------|-------------|
+| `checkConsent()` | Check current consent status for the OAuth application |
+| `updateConsent(request)` | Update user fields (e.g. fill in missing required fields) |
+| `grantConsent(request?)` | Grant consent and receive a one-time login token |
+| `connect(request?)` | Attempt to connect in one step — returns token if consent is already granted, otherwise populates `consent` with missing info |
+
+**Example:**
+
+```tsx
+import { useOAuth } from "@unidy.io/sdk-react";
+
+function OAuthConsent({ clientId }: { clientId: string }) {
+  const { consent, token, isLoading, error, grantConsent, connect } = useOAuth({ clientId });
+
+  if (token) {
+    // Redirect with the one-time token
+    window.location.href = `${consent?.application.connect_uri}#token=${token}`;
+    return <p>Redirecting...</p>;
+  }
+
+  if (!consent) return <p>Loading...</p>;
+
+  return (
+    <div>
+      <h2>{consent.application.name} wants to access your account</h2>
+      <ul>
+        {consent.application.scopes.map((s) => (
+          <li key={s.scope}>{s.name}</li>
+        ))}
+      </ul>
+      {consent.missing_fields.length > 0 && (
+        <p>Missing fields: {consent.missing_fields.join(", ")}</p>
+      )}
+      <button onClick={() => grantConsent()} disabled={isLoading}>
+        Authorize
+      </button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
+
+---
+
+### Transactions
+
+#### `useTransactions(options?)`
+
+Fetch transaction history with filtering and pagination.
+
+```ts
+const { items, isLoading, error, refetch, getTransaction } = useTransactions({
+  pagination?: UsePaginationReturn | { page?: number; perPage?: number };
+  filter?: {
+    state?: string;
+    financialStatus?: string;
+    orderType?: string;
+    sourcePlatform?: string;
+    externalId?: string;
+    orderBy?: "placed_at" | "created_at" | "total";
+    orderDirection?: "asc" | "desc";
+  };
+  fetchOnMount?: boolean; // Default: true
+  callbacks?: { onSuccess?, onError? };
+});
+```
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `items` | `Transaction[]` | List of transactions |
+| `isLoading` | `boolean` | Whether a fetch is in progress |
+| `error` | `string \| null` | Error message |
+| `refetch()` | `() => Promise<void>` | Re-fetch the transaction list |
+| `getTransaction(id)` | `(id: string) => Promise<Transaction \| null>` | Fetch a single transaction by ID |
+
+**Example:**
+
+```tsx
+import { useTransactions, usePagination } from "@unidy.io/sdk-react";
+
+function TransactionHistory() {
+  const pagination = usePagination({ perPage: 20 });
+  const { items, isLoading } = useTransactions({
+    pagination,
+    filter: { orderBy: "placed_at", orderDirection: "desc" },
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+
+  return (
+    <div>
+      {items.map((tx) => (
+        <div key={tx.id}>
+          {tx.reference} — {tx.total} {tx.currency}
+        </div>
+      ))}
+      <button onClick={pagination.prevPage} disabled={!pagination.hasPrevPage}>Prev</button>
+      <span>Page {pagination.page} of {pagination.totalPages}</span>
+      <button onClick={pagination.nextPage} disabled={!pagination.hasNextPage}>Next</button>
+    </div>
+  );
+}
+```
+
+---
+
+### Navigation
+
+#### `useJumpTo(options?)`
+
+Create one-time login tokens for cross-service navigation (jumping to external OAuth services or internal Unidy paths).
+
+```ts
+const { isLoading, error, jumpToService, jumpToUnidy } = useJumpTo({
+  callbacks?: { onSuccess?, onError? };
+});
+```
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `isLoading` | `boolean` | Whether a request is in progress |
+| `error` | `string \| null` | Error message |
+| `jumpToService(serviceId, request)` | `Promise<string \| null>` | Get a one-time token for an external service. Returns the token or `null` on error. |
+| `jumpToUnidy(request)` | `Promise<string \| null>` | Get a one-time token for an internal Unidy path. Returns the token or `null` on error. |
+
+**Example:**
+
+```tsx
+import { useJumpTo } from "@unidy.io/sdk-react";
+
+function JumpButton({ serviceId, email }: { serviceId: string; email: string }) {
+  const { jumpToService, isLoading } = useJumpTo();
+
+  const handleClick = async () => {
+    const token = await jumpToService(serviceId, { email });
+    if (token) {
+      window.location.href = `https://service.example.com/auth#token=${token}`;
+    }
+  };
+
+  return <button onClick={handleClick} disabled={isLoading}>Open Service</button>;
 }
 ```
 

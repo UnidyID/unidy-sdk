@@ -2,12 +2,14 @@ import type { TokenResponse } from "@unidy.io/sdk/standalone";
 import {
   AuthService,
   NewsletterService,
+  OAuthService,
   ProfileService,
   StandaloneApiClient,
   StandaloneUnidyClient,
   type StandaloneUnidyClientConfig,
   SubscriptionsService,
   TicketsService,
+  TransactionsService,
 } from "@unidy.io/sdk/standalone";
 import { jwtDecode } from "jwt-decode";
 import { authStorage } from "./auth/auth-storage";
@@ -85,9 +87,11 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
     const deps = enhancedConfig.deps;
     this.auth = new AuthService(apiClient, deps);
     this.newsletters = new NewsletterService(apiClient, deps);
+    this.oauth = new OAuthService(apiClient, deps);
     this.profile = new ProfileService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
+    this.transactions = new TransactionsService(apiClient, deps);
   }
 
   private async getValidIdToken(token: string | null): Promise<string | null> {
