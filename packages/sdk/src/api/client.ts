@@ -25,6 +25,10 @@ export class ApiClient extends BaseApiClient {
     };
   }
 
+  protected getLocale(): string | undefined {
+    return unidyState.locale || undefined;
+  }
+
   protected handleConnectionError(error: unknown, endpoint: string, method: string): void {
     Sentry.captureException(error, {
       tags: { error_type: "connection_error" },
