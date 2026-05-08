@@ -2,11 +2,21 @@
 
 // Re-export commonly needed SDK types
 export type {
+  CheckConsentResponse,
+  ConnectRequest,
   CreateSignInResponse,
   CreateSubscriptionsPayload,
   CreateSubscriptionsResponse,
+  GrantConsentRequest,
+  InternalMatchingConfig,
+  InternalMatchResult,
+  JumpToServiceRequest,
+  JumpToUnidyRequest,
   Newsletter,
   NewsletterSubscription,
+  OAuthApplication,
+  OAuthScope,
+  OAuthTokenResponse,
   PaginationMeta,
   PasskeyCredential,
   PasskeyOptionsResponse,
@@ -16,6 +26,9 @@ export type {
   Subscription,
   Ticket,
   TokenResponse,
+  Transaction,
+  TransactionLineItem,
+  UpdateConsentRequest,
   UserProfileData,
   UserProfileFormError,
 } from "@unidy.io/sdk/standalone";
@@ -38,6 +51,9 @@ export type {
 } from "./auth/types";
 // Enhanced client (auto-wires getIdToken to auth storage)
 export { createStandaloneClient } from "./client";
+// Jump-to hooks
+export type { UseJumpToOptions, UseJumpToReturn } from "./hooks/jump-to/use-jump-to";
+export { useJumpTo } from "./hooks/jump-to/use-jump-to";
 // Newsletter hooks
 export type { UseNewsletterLoginReturn } from "./hooks/newsletter/use-newsletter-login";
 export { useNewsletterLogin } from "./hooks/newsletter/use-newsletter-login";
@@ -51,9 +67,21 @@ export type { UseNewsletterResendConfirmationReturn } from "./hooks/newsletter/u
 export { useNewsletterResendConfirmation } from "./hooks/newsletter/use-newsletter-resend-confirmation";
 export type { SubscribeArgs, UseNewsletterSubscribeReturn } from "./hooks/newsletter/use-newsletter-subscribe";
 export { useNewsletterSubscribe } from "./hooks/newsletter/use-newsletter-subscribe";
+// OAuth hooks
+export type { UseOAuthOptions, UseOAuthReturn } from "./hooks/oauth/use-oauth";
+export { useOAuth } from "./hooks/oauth/use-oauth";
 export type { UseProfileOptions, UseProfileReturn } from "./hooks/profile/use-profile";
 // Profile hook
 export { useProfile } from "./hooks/profile/use-profile";
+// Internal matching hooks
+export type {
+  CheckMatchOutcome,
+  ConfirmMatchOutcome,
+  SkipMatchOutcome,
+  UseInternalMatchingOptions,
+  UseInternalMatchingReturn,
+} from "./hooks/registration/use-internal-matching";
+export { useInternalMatching } from "./hooks/registration/use-internal-matching";
 // Registration hooks
 export type {
   CreateAndRegisterPasskeyArgs,
@@ -74,6 +102,9 @@ export type {
   UseTicketablesReturn,
 } from "./hooks/ticketable/use-ticketables";
 export { useTicketables } from "./hooks/ticketable/use-ticketables";
+// Transaction hooks
+export type { TransactionFilter, UseTransactionsOptions, UseTransactionsReturn } from "./hooks/transaction/use-transactions";
+export { useTransactions } from "./hooks/transaction/use-transactions";
 export { UnidyProvider, useUnidyClient } from "./provider";
 
 // Types
