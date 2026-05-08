@@ -46,6 +46,10 @@ export class ToggleNewsletterSubscriptionButton {
 
     if (success) {
       Flash.success.addMessage(t("newsletter.success.subscribe"));
+    } else {
+      const errorIdentifier = newsletterStore.state.errors[this.internalName];
+      const fallback = t("errors.unknown", { defaultValue: "An unknown error occurred" });
+      Flash.error.addMessage(errorIdentifier ? t(`newsletter.errors.${errorIdentifier}`, { defaultValue: fallback }) : fallback);
     }
   };
 
