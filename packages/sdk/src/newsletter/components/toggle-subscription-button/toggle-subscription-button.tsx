@@ -40,12 +40,28 @@ export class ToggleNewsletterSubscriptionButton {
       return;
     }
 
+    // Clear any stale identifier from a previous attempt so the post-call read is reliable.
+    if (this.internalName in newsletterStore.state.errors) {
+      const { [this.internalName]: _, ...rest } = newsletterStore.state.errors;
+      newsletterStore.state.errors = rest;
+    }
+
     this.loading = true;
     const success = await NewsletterHelpers.subscribeToNewsletter(this.internalName, email);
     this.loading = false;
 
     if (success) {
       Flash.success.addMessage(t("newsletter.success.subscribe"));
+      return;
+    }
+
+    // The helper already surfaces a Flash for captcha, unauthorized, and unknown errors.
+    // Only the per-newsletter `newsletter_error` branch returns false silently, populating
+    // state.errors[internalName] — that's the case we surface here.
+    const errorIdentifier = newsletterStore.state.errors[this.internalName];
+    if (errorIdentifier) {
+      const fallback = t("errors.unknown", { defaultValue: "An unknown error occurred" });
+      Flash.error.addMessage(t(`newsletter.errors.${errorIdentifier}`, { defaultValue: fallback }));
     }
   };
 

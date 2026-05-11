@@ -131,36 +131,27 @@ export async function fetchSubscriptions(): Promise<void> {
   }
 }
 
-async function handleAlreadySubscribedError(
-  email: string,
-  errors: Array<{ error_identifier: string; meta: { newsletter_internal_name: string } }>,
-  redirectUri?: string,
-): Promise<void> {
-  if (newsletterStore.state.isAuthenticated || newsletterStore.state.preferenceToken) {
-    const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
+function handleAlreadySubscribedError(errors: Array<{ error_identifier: string; meta: { newsletter_internal_name: string } }>): void {
+  if (!newsletterStore.state.isAuthenticated && !newsletterStore.state.preferenceToken) {
+    return;
+  }
 
-    const newSubscriptions: ExistingSubscription[] = errors
-      .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
-      .map((err) => ({
-        newsletter_internal_name: err.meta.newsletter_internal_name,
-        confirmed: false, // We don't know the confirmation status for already_subscribed errors
-        preference_identifiers: [],
-      }));
+  const existingNames = new Set(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name));
 
-    if (newSubscriptions.length > 0) {
-      newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
-    }
-  } else {
-    await sendLoginEmail(email, redirectUri);
+  const newSubscriptions: ExistingSubscription[] = errors
+    .filter((err) => err.error_identifier === "already_subscribed" && !existingNames.has(err.meta.newsletter_internal_name))
+    .map((err) => ({
+      newsletter_internal_name: err.meta.newsletter_internal_name,
+      confirmed: false, // We don't know the confirmation status for already_subscribed errors
+      preference_identifiers: [],
+    }));
+
+  if (newSubscriptions.length > 0) {
+    newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...newSubscriptions];
   }
 }
 
-async function handleCreateSubscriptionRequest(
-  email: string,
-  internalNames: string[],
-  showSuccessMessage = true,
-  redirectUri?: string,
-): Promise<boolean> {
+async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
   const { checkedNewsletters, additionalFields } = newsletterStore.state;
 
   const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
@@ -224,11 +215,12 @@ async function handleCreateSubscriptionRequest(
     const errorMap: Record<string, NewsletterErrorIdentifier> = {};
     const additionalFieldErrors: Record<string, string> = {};
 
-    // special error case which is handled differently: if user is not authenticated, we send a login email, otherwise we add the
-    // already_subscribed subscriptions to the existing subscriptions
+    // For authenticated users (or those with a preference token), add already-subscribed newsletters
+    // to existingSubscriptions. Anonymous users see the per-newsletter "already_subscribed" error and
+    // can click the "Already subscribed? Click here..." link to request a login email.
     const hasAlreadySubscribedError = errors.some((err) => err.error_identifier === "already_subscribed");
     if (hasAlreadySubscribedError) {
-      await handleAlreadySubscribedError(email, errors, redirectUri);
+      handleAlreadySubscribedError(errors);
     }
 
     const newsletterNotFoundError = errors.some((err) => err.error_identifier === "newsletter_not_found");
@@ -268,13 +260,13 @@ async function handleCreateSubscriptionRequest(
   return false;
 }
 
-export async function subscribeToNewsletter(internalName: string, email: string, redirectUri?: string): Promise<boolean> {
-  return handleCreateSubscriptionRequest(email, [internalName], false, redirectUri);
+export async function subscribeToNewsletter(internalName: string, email: string): Promise<boolean> {
+  return handleCreateSubscriptionRequest(email, [internalName], false);
 }
 
-export async function createSubscriptions({ email, redirectUri }: { email: string; redirectUri?: string }): Promise<boolean> {
+export async function createSubscriptions({ email }: { email: string }): Promise<boolean> {
   const internalNames = Object.keys(newsletterStore.state.checkedNewsletters);
-  return handleCreateSubscriptionRequest(email, internalNames, true, redirectUri);
+  return handleCreateSubscriptionRequest(email, internalNames, true);
 }
 
 export async function deleteSubscription(internalName: string): Promise<boolean> {
