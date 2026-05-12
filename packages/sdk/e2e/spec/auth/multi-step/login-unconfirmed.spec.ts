@@ -20,9 +20,10 @@ async function createUnconfirmedUser(email: string) {
     current_brand: brandId,
     confirmed_at: new Date().toISOString(),
   });
+  if (!user) throw new Error("Failed to create user");
   // Then clear confirmed_at to make the user unconfirmed, and set confirmation_sent_at
   // well outside the resend rate-limit window so the resend button is enabled.
-  await users.update(user!.id, {
+  await users.update(user.id, {
     confirmed_at: null,
     confirmation_sent_at: new Date(0).toISOString(),
   });
