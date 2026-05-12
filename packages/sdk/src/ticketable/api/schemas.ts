@@ -30,7 +30,8 @@ const nullableDateTransformer = z.coerce.date().nullable();
 // permits any JSON value (object, array, primitive, null) and Alba forwards it
 // verbatim, so the schema has to match — `z.record(string, unknown)` rejected
 // the non-object shapes legacy records carry (`[]`, `false`, plain strings).
-const jsonbValue = z.json().nullable();
+// `z.json()` already includes `null` per the JSON spec; no `.nullable()` needed.
+const jsonbValue = z.json();
 
 export const TicketableSchema = z.object({
   id: z.uuid(), // unidy_id
