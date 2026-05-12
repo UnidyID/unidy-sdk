@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-12)
+
+
+### Bug Fixes
+
+* [UD-2147] handle already_subscribed without auto-sending login email ([#268](https://github.com/UnidyID/unidy-sdk/issues/268)) ([c051f61](https://github.com/UnidyID/unidy-sdk/commit/c051f61742921affff52d4c688688adaa2ea2ad8))
+* [UD-2374] SDK email language respects UI language ([#267](https://github.com/UnidyID/unidy-sdk/issues/267)) ([41366fb](https://github.com/UnidyID/unidy-sdk/commit/41366fbe5357399f4faa94dee4bd3c25a5172350))
+* [UD-2475] align transaction line_items schema with API response ([#265](https://github.com/UnidyID/unidy-sdk/issues/265)) ([57f52ef](https://github.com/UnidyID/unidy-sdk/commit/57f52ef04623fecd2e4c2548e06432268bf86886))
+* add missing exports and types to standalone client ([#261](https://github.com/UnidyID/unidy-sdk/issues/261)) ([7d35ebc](https://github.com/UnidyID/unidy-sdk/commit/7d35ebc9fa791c37d08c38d5b43edcdaa2496669))
+* align transaction line_items schema with API response ([57f52ef](https://github.com/UnidyID/unidy-sdk/commit/57f52ef04623fecd2e4c2548e06432268bf86886))
+
 ## [1.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.4.0...@unidy.io/sdk-v1.5.0) (2026-05-04)
 
 
