@@ -25,7 +25,7 @@ export class ServicesService extends BaseService {
 
     const headers = this.buildAuthHeaders({ "X-ID-Token": idToken });
 
-    const response = await this.client.get<Service[]>("/api/sdk/v1/services", headers);
+    const response = await this.client.get<Service[]>("/api/sdk/v1/service_connections", headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -44,7 +44,7 @@ export class ServicesService extends BaseService {
 
     const headers = this.buildAuthHeaders({ "X-ID-Token": idToken });
 
-    const response = await this.client.delete(`/api/sdk/v1/services/${encodeURIComponent(clientId)}`, headers);
+    const response = await this.client.delete(`/api/sdk/v1/service_connections/${encodeURIComponent(clientId)}`, headers);
 
     return this.handleResponse(response, () => {
       if (!response.success) {
