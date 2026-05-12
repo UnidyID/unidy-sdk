@@ -77,7 +77,16 @@ export abstract class BaseApiClient {
     h.set("Accept", "application/json");
     h.set("Authorization", `Bearer ${this.api_key}`);
     h.set("SDK-Version", SDK_VERSION);
+    const locale = this.getLocale();
+    if (locale) {
+      h.set("Accept-Language", locale);
+    }
     return h;
+  }
+
+  /** Override in subclasses to provide the active UI locale for the Accept-Language header. */
+  protected getLocale(): string | undefined {
+    return undefined;
   }
 
   protected mergeHeaders(base: Headers, extra?: HeadersInit): Headers {
