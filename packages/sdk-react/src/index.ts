@@ -31,6 +31,9 @@ export type {
   UpdateConsentRequest,
   UserProfileData,
   UserProfileFormError,
+  type Service,
+  type ListServicesResult,
+  type DisconnectServiceResult,
 } from "@unidy.io/sdk/standalone";
 // Re-export the base client class
 export { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";
