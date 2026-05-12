@@ -7,11 +7,13 @@ export type {
   CreateSignInResponse,
   CreateSubscriptionsPayload,
   CreateSubscriptionsResponse,
+  DisconnectServiceResult,
   GrantConsentRequest,
   InternalMatchingConfig,
   InternalMatchResult,
   JumpToServiceRequest,
   JumpToUnidyRequest,
+  ListServicesResult,
   Newsletter,
   NewsletterSubscription,
   OAuthApplication,
@@ -22,6 +24,7 @@ export type {
   PasskeyOptionsResponse,
   Preference,
   PreferenceGroup,
+  Service,
   StandaloneUnidyClientConfig,
   Subscription,
   Ticket,
@@ -31,9 +34,6 @@ export type {
   UpdateConsentRequest,
   UserProfileData,
   UserProfileFormError,
-  type Service,
-  type ListServicesResult,
-  type DisconnectServiceResult,
 } from "@unidy.io/sdk/standalone";
 // Re-export the base client class
 export { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";
