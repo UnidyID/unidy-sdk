@@ -4,14 +4,19 @@ import { expect, test } from "../../fixtures";
 test.describe("Services - Connected services (authenticated)", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
-  test("shows connected services list", async ({ page, authenticatedContext: _authenticatedContext }) => {
+  test("shows connected services or empty state after loading", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.services);
 
-    // Should show either the services list or the empty state
-    const servicesList = page.locator("#services-list");
-    const emptyState = page.locator("#services-empty");
+    // Wait for loading to finish
+    await expect(page.locator("#services-loading")).toBeHidden({ timeout: 10000 });
 
-    await expect(servicesList.or(emptyState)).toBeVisible({ timeout: 10000 });
+    // Either the list has items or the empty state is shown
+    const hasServices = await page.locator("#services-list li").count();
+    if (hasServices > 0) {
+      await expect(page.locator("#services-list li").first()).toBeVisible();
+    } else {
+      await expect(page.locator("#services-empty")).toBeVisible();
+    }
   });
 
   test("loading state disappears after fetch", async ({ page, authenticatedContext: _authenticatedContext }) => {
