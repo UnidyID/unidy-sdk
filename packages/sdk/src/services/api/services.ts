@@ -3,9 +3,13 @@ import { type Service, ServicesListResponseSchema } from "./schemas";
 
 export type { Service } from "./schemas";
 
-export type ListServicesResult = CommonErrors | [null, Service[]];
+export type ListServicesResult = CommonErrors | ["missing_id_token", null] | [null, Service[]];
 
-export type DisconnectServiceResult = CommonErrors | ["not_found", { error_identifier: string }] | [null, null];
+export type DisconnectServiceResult =
+  | CommonErrors
+  | ["missing_id_token", null]
+  | ["not_found", { error_identifier: string }]
+  | [null, null];
 
 export class ServicesService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -15,7 +19,11 @@ export class ServicesService extends BaseService {
   /** List all OAuth services the authenticated user is connected to. */
   async list(): Promise<ListServicesResult> {
     const idToken = await this.getIdToken();
-    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken });
 
     const response = await this.client.get<Service[]>("/api/sdk/v1/services", headers);
 
@@ -30,7 +38,11 @@ export class ServicesService extends BaseService {
   /** Disconnect the authenticated user from an OAuth service by client ID. */
   async disconnect(clientId: string): Promise<DisconnectServiceResult> {
     const idToken = await this.getIdToken();
-    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken ?? undefined });
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken });
 
     const response = await this.client.delete(`/api/sdk/v1/services/${encodeURIComponent(clientId)}`, headers);
 
