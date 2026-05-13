@@ -14,7 +14,6 @@
 * [UD-2374] SDK email language respects UI language ([#267](https://github.com/UnidyID/unidy-sdk/issues/267)) ([8628b4d](https://github.com/UnidyID/unidy-sdk/commit/8628b4deaccd0d00d603ca8a49d5ecf7b58741a0))
 * [UD-2475] align transaction line_items schema with API response ([#265](https://github.com/UnidyID/unidy-sdk/issues/265)) ([a16aa0f](https://github.com/UnidyID/unidy-sdk/commit/a16aa0f55e2e2cead8d8064e985a3daa5aa88953))
 * [UD-2531] tolerate any jsonb shape in ticketable metadata/wallet_export ([#270](https://github.com/UnidyID/unidy-sdk/issues/270)) ([969f292](https://github.com/UnidyID/unidy-sdk/commit/969f2924f84d6e8a3bf2652360da20df31f6d23f))
-* align transaction line_items schema with API response ([a16aa0f](https://github.com/UnidyID/unidy-sdk/commit/a16aa0f55e2e2cead8d8064e985a3daa5aa88953))
 
 ## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-05)
 
