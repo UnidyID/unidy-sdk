@@ -12,12 +12,19 @@ async function getDefaultBrandId() {
 async function createUnconfirmedUser(email: string) {
   const brandId = await getDefaultBrandId();
   const users = new Database("User", { scope: { email } });
-  await users.create({
+  // Create confirmed first to avoid Devise's send_on_create_confirmation_instructions
+  // which requires a Brand instance for current_brand (not just an ID).
+  const user = await users.create({
     email,
     password: "Ch4ngeme!",
     current_brand: brandId,
+    confirmed_at: new Date().toISOString(),
+  });
+  if (!user) throw new Error("Failed to create user");
+  // Then clear confirmed_at to make the user unconfirmed, and set confirmation_sent_at
+  // well outside the resend rate-limit window so the resend button is enabled.
+  await users.update(user.id, {
     confirmed_at: null,
-    // Place confirmation_sent_at well outside the resend rate-limit window so the resend button is enabled.
     confirmation_sent_at: new Date(0).toISOString(),
   });
 }
