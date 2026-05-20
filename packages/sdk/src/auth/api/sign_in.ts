@@ -183,7 +183,7 @@ export async function createSignIn(
   args: CreateSignInArgs,
   handleResponse: HandleResponseFn,
 ): Promise<CreateSignInResult> {
-  const { email, password, sendMagicCode, originUrl = window.location.href, captchaToken } = args.payload;
+  const { email, password, sendMagicCode, originUrl, captchaToken } = args.payload;
   const response = await client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", {
     email,
     password,

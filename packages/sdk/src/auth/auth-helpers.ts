@@ -39,7 +39,9 @@ export class AuthHelpers {
       return;
     }
 
-    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode, captchaToken } });
+    const [error, response] = await this.client.auth.createSignIn({
+      payload: { email, password, sendMagicCode, originUrl: window.location.href, captchaToken },
+    });
 
     if (error) {
       if (error === "magic_code_recently_created") {
