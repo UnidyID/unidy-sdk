@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.0...@unidy.io/sdk-v1.6.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* [UD-2550] remove window.location.href default from standalone createSignIn ([#274](https://github.com/UnidyID/unidy-sdk/issues/274)) ([c9b13f8](https://github.com/UnidyID/unidy-sdk/commit/c9b13f887a9252e1718be19c96f3839abf6fed78))
+
 ## [1.6.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.1...@unidy.io/sdk-v1.6.0) (2026-05-13)
 
 
