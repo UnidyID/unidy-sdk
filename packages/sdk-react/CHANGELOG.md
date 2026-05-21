@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.2.0...@unidy.io/sdk-react-v0.3.0) (2026-05-21)
+
+
+### Features
+
+* [UD-2524] wire ServicesService into React SDK ([#272](https://github.com/UnidyID/unidy-sdk/issues/272)) ([a4e08de](https://github.com/UnidyID/unidy-sdk/commit/a4e08de205fb81b2bfa30f4cb84d96f75011a311))
+
 ## [0.2.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.1.0...@unidy.io/sdk-react-v0.2.0) (2026-05-07)
 
 
