@@ -7,7 +7,7 @@ import {
   type Payload,
   type ServiceDependencies,
 } from "../../api/base-service";
-import { isCaptchaError } from "../../shared/captcha";
+import { isCaptchaError } from "../../shared/captcha/api/schemas";
 import {
   type CreateSubscriptionsPayload,
   CreateSubscriptionsPayloadSchema,
