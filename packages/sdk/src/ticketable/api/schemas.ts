@@ -26,6 +26,13 @@ export const TicketableListParamsSchema = z.object({
 const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
 
+// `metadata` and `wallet_export` are Postgres `jsonb` columns. The column type
+// permits any JSON value (object, array, primitive, null) and Alba forwards it
+// verbatim, so the schema has to match — `z.record(string, unknown)` rejected
+// the non-object shapes legacy records carry (`[]`, `false`, plain strings).
+// `z.json()` already includes `null` per the JSON spec; no `.nullable()` needed.
+const jsonbValue = z.json();
+
 export const TicketableSchema = z.object({
   id: z.uuid(), // unidy_id
   title: z.string(),
@@ -35,8 +42,8 @@ export const TicketableSchema = z.object({
   created_at: dateTransformer, // ISO8601(3) -> Date
   updated_at: dateTransformer, // ISO8601(3) -> Date
   user_id: z.uuid(),
-  metadata: z.record(z.string(), z.unknown()).nullable(),
-  wallet_export: z.record(z.string(), z.unknown()).nullable(),
+  metadata: jsonbValue,
+  wallet_export: jsonbValue,
   payment_state: z.string().nullable(),
   currency: z.string().nullable(),
   button_cta_url: z.string().nullable(),

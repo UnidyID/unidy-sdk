@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.6.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.1...@unidy.io/sdk-v1.6.0) (2026-05-13)
+
+
+### Features
+
+* [UD-2524] add ServicesService with list and disconnect endpoints ([#271](https://github.com/UnidyID/unidy-sdk/issues/271)) ([6dac731](https://github.com/UnidyID/unidy-sdk/commit/6dac7319d42df6c573c7122bc1f4ca23266a0d79))
+
+
+### Bug Fixes
+
+* [UD-2147] handle already_subscribed without auto-sending login email ([#268](https://github.com/UnidyID/unidy-sdk/issues/268)) ([ad829c3](https://github.com/UnidyID/unidy-sdk/commit/ad829c3ab876843af4b31f1e17196d5ac15daa26))
+* [UD-2374] SDK email language respects UI language ([#267](https://github.com/UnidyID/unidy-sdk/issues/267)) ([8628b4d](https://github.com/UnidyID/unidy-sdk/commit/8628b4deaccd0d00d603ca8a49d5ecf7b58741a0))
+* [UD-2475] align transaction line_items schema with API response ([#265](https://github.com/UnidyID/unidy-sdk/issues/265)) ([a16aa0f](https://github.com/UnidyID/unidy-sdk/commit/a16aa0f55e2e2cead8d8064e985a3daa5aa88953))
+* [UD-2531] tolerate any jsonb shape in ticketable metadata/wallet_export ([#270](https://github.com/UnidyID/unidy-sdk/issues/270)) ([969f292](https://github.com/UnidyID/unidy-sdk/commit/969f2924f84d6e8a3bf2652360da20df31f6d23f))
+
 ## [1.5.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.0...@unidy.io/sdk-v1.5.1) (2026-05-05)
 
 
