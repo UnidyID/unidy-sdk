@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
@@ -39,7 +38,7 @@ export class SocialLoginButton extends UnidyComponent() {
 
   componentWillLoad() {
     if (this.isUnsupportedProvider) {
-      Sentry.captureException(`[u-social-login-button] Unsupported provider "${this.provider}".`);
+      this.logger.warn(`Unsupported provider "${this.provider}".`);
       return;
     }
   }
