@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.1...@unidy.io/sdk-v1.6.2) (2026-05-29)
+
+
+### Bug Fixes
+
+* expose missing transaction fields from API response ([#280](https://github.com/UnidyID/unidy-sdk/issues/280)) ([50dd5cb](https://github.com/UnidyID/unidy-sdk/commit/50dd5cb3ae5726ad5e89ae87e847d967ba3d2393))
+
 ## [1.6.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.0...@unidy.io/sdk-v1.6.1) (2026-05-21)
 
 
