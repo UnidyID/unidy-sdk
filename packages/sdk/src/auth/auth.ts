@@ -226,10 +226,11 @@ export class Auth {
   /**
    * Logs the user out (backend call when possible) and clears local auth state. Local state is always cleared even if backend fails.
    *
+   * @param globalLogout - When `true`, requests termination of all sessions on the server (global logout). Defaults to `true` only when the session was detected server-side (SSO); `false` for SDK-initiated logins. Pass `true` explicitly to force a full session termination regardless of how the user authenticated.
    * @returns `true` on success, or an AuthError if backend logout failed.
    */
-  async logout(): Promise<boolean | AuthError> {
-    const [error, _] = await this.helpers.logout();
+  async logout(globalLogout?: boolean): Promise<boolean | AuthError> {
+    const [error, _] = await this.helpers.logout(globalLogout);
 
     // Always clear local tokens, even if backend logout fails
     authStore.reset();

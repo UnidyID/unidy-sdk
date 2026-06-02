@@ -329,6 +329,10 @@ export namespace Components {
          */
         "componentClassName": string;
         /**
+          * When set, overrides the default global-logout behaviour. `true` requests termination of all server-side sessions (full OIDC session teardown). `false` only invalidates the current SDK sign-in record. When unset, the SDK decides based on how the session was established.
+         */
+        "globalLogout"?: boolean;
+        /**
           * If true, reloads the page after successful logout.
           * @default true
          */
@@ -2045,6 +2049,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+        /**
+          * When set, overrides the default global-logout behaviour. `true` requests termination of all server-side sessions (full OIDC session teardown). `false` only invalidates the current SDK sign-in record. When unset, the SDK decides based on how the session was established.
+         */
+        "globalLogout"?: boolean;
         /**
           * Fired after successful logout.
          */
