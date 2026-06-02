@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.0...@unidy.io/sdk-v1.7.0) (2026-06-02)
+
+
+### Features
+
+* [UD-2721] expose global-logout prop on u-logout-button ([#284](https://github.com/UnidyID/unidy-sdk/issues/284)) ([f1501b8](https://github.com/UnidyID/unidy-sdk/commit/f1501b89968f802e8e124d027b4fa5e474f97dfb))
+
+
+### Bug Fixes
+
+* [UD-2550] remove window.location.href default from standalone createSignIn ([#274](https://github.com/UnidyID/unidy-sdk/issues/274)) ([f9e7161](https://github.com/UnidyID/unidy-sdk/commit/f9e71619d3654e2da42e5fa6e236b57bc0b723a8))
+* expose missing transaction fields from API response ([#280](https://github.com/UnidyID/unidy-sdk/issues/280)) ([3cd75e9](https://github.com/UnidyID/unidy-sdk/commit/3cd75e92fc2ea5667d07eb4261e03df08002e6f0))
+* social login button sentry noise ([#279](https://github.com/UnidyID/unidy-sdk/issues/279)) ([0284157](https://github.com/UnidyID/unidy-sdk/commit/0284157e158173863080663e5636c93a58a0635f))
+
 ## [1.6.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.5.1...@unidy.io/sdk-v1.6.0) (2026-05-13)
 
 
