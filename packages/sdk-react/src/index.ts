@@ -108,6 +108,7 @@ export { useTicketables } from "./hooks/ticketable/use-ticketables";
 // Transaction hooks
 export type { TransactionFilter, UseTransactionsOptions, UseTransactionsReturn } from "./hooks/transaction/use-transactions";
 export { useTransactions } from "./hooks/transaction/use-transactions";
+export type { UnidyProviderProps } from "./provider";
 export { UnidyProvider, useUnidyClient } from "./provider";
 
 // Types
