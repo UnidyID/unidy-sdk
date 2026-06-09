@@ -97,11 +97,6 @@ jobs:
       - name: Build SDK
         run: bun run --filter '@unidy.io/sdk' build
 
-      - name: Setup Node.js for npm publish
-        uses: actions/setup-node@v6
-        with:
-          registry-url: 'https://registry.npmjs.org'
-
       - name: Publish to NPM
         run: |
           cd packages/sdk
@@ -145,11 +140,6 @@ jobs:
 
       - name: Build SDK
         run: bun run --filter '@unidy.io/sdk' build
-
-      - name: Setup Node.js for npm publish
-        uses: actions/setup-node@v6
-        with:
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish to NPM
         run: |
@@ -204,12 +194,6 @@ jobs:
       - name: Build SDK
         if: steps.check.outputs.needs_publish == 'true'
         run: bun run --filter '@unidy.io/sdk' build
-
-      - name: Setup Node.js for npm publish
-        if: steps.check.outputs.needs_publish == 'true'
-        uses: actions/setup-node@v6
-        with:
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'
