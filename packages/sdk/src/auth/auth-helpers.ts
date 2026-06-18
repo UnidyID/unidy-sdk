@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import type { CreateSignInResponse, RequiredFieldsResponse, ResendDelayResponse, TokenResponse, UnidyClient } from "../api";
 import { authState, authStore } from "../auth/store/auth-store";
+import type { InvalidPasswordResponse } from "./api";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
 import type { ProfileRaw } from "../profile";
@@ -400,10 +401,9 @@ export class AuthHelpers {
 
       // TODO: add proper password requirements handling --> for now this is fine
       if (error === "invalid_password") {
-        authStore.setFieldError("password", response.error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
+        authStore.setFieldError("password", (response as InvalidPasswordResponse).error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
       }
     } else {
-      authStore.setStep("email");
       authStore.updateResetPassword({
         step: "completed",
         token: null,
@@ -412,10 +412,8 @@ export class AuthHelpers {
       });
 
       clearUrlParam("reset_password_token");
-      Flash.success.addMessage("Password reset successfully");
+      this.handleAuthSuccess(response as TokenResponse);
     }
-
-    authStore.setLoading(false);
   }
 
   async handleResetPasswordRedirect() {

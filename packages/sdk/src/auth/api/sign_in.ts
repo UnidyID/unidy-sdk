@@ -121,7 +121,7 @@ export type ResetPasswordResult =
   | ["invalid_reset_token", ErrorResponse]
   | ["reset_token_expired", ErrorResponse]
   | ["invalid_password", InvalidPasswordResponse]
-  | [null, null];
+  | [null, TokenResponse];
 
 export type ValidateResetPasswordTokenResult =
   | CommonErrors
@@ -422,7 +422,7 @@ export async function resetPassword(
       return [error_response.error_identifier as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired", error_response];
     }
 
-    return [null, null];
+    return [null, TokenResponseSchema.parse(response.data)];
   });
 }
 
