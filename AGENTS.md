@@ -1,3 +1,7 @@
+## Code Insights
+
+`code_insights.md` in this repo contains accumulated architectural knowledge useful for investigations — component inventory, API client structure, connection to the Rails backend, and known gotchas. Read it at the start of any investigation and update it with new findings afterwards.
+
 ## Pre-commit Checklist
 
 - Use biome to lint/format before pushing code
