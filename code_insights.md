@@ -51,20 +51,8 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 ## Observability
 
 - **Sentry** initialized in `packages/sdk/src/globalScript.ts` (production only, via `Build.isDev` guard)
-- DSN points to `de.sentry.io` (EU region), org slug: `unidy`, project slug: `sdk`
-- As of SDK 1.7.0, no `allowUrls` filter is set — Sentry captures all unhandled errors and rejections on the embedding page, including third-party scripts (PostHog, Algolia, PayPal, etc.). A fix to add `allowUrls: [window.location.origin]` is pending.
-- Common Sentry noise to expect until fix lands: PostHog tracker errors, Algolia search plugin errors, PayPal script errors, view transition aborts (all from `shop.sv98.de`)
-
-## Known Customer Deployments
-
-| Site | SDK version (as observed) | Notes |
-|---|---|---|
-| `shop.sv98.de` | current (via `fuexc-unidy-login` bundle) | Most active; view transition + PostHog noise in Sentry |
-| `sportdeutschland.unidy.de` | 1.6.0 | Occasional `Failed to fetch` errors |
-| `holstein-sdk-demo.unidy.de` | 1.3.0 | **Outdated** — still on 1.3.0, causing `u-ticketable-export#undefined` errors (SDK-7P) |
-| `localhost:3333` | dev | Internal dev/CI traffic shows up in Sentry production project (SDK-9P) |
-
-The SDK is typically bundled into customer Shopware plugins with the `fuexc-` prefix (e.g. `fuexc-unidy-login`, `fuexchen-algolia-search`). These are separate from our npm package and deployed independently by customers.
+- Because the SDK is embedded on customer pages, Sentry's default `GlobalHandlers` integration captures all unhandled errors on the page — not just SDK errors. Keep this in mind when triaging: many issues will be third-party noise (payment providers, analytics, search plugins, etc.)
+- The SDK is typically bundled into customer Shopware plugins. Errors from these plugins will appear in our Sentry project but are not SDK bugs.
 
 ## Gotchas
 
