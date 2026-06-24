@@ -73,6 +73,10 @@ test.describe("Registration — internal matching step", () => {
     const email = randomEmail();
     const userCount = await ModelCountAssert.init("User", { scope: { email } });
 
+    // Collect console messages up-front so we never race against the event firing.
+    const consoleLogs: string[] = [];
+    page.on("console", (msg) => consoleLogs.push(msg.text()));
+
     // Mock config as disabled so the component deterministically auto-skips.
     await page.route(/\/api\/sdk\/v1\/registration\/internal_matching\/config/, (route) =>
       route.fulfill({
@@ -82,20 +86,18 @@ test.describe("Registration — internal matching step", () => {
       }),
     );
 
-    const registrationCompletePromise = page.waitForEvent("console", {
-      predicate: (msg) => msg.text().includes("Registration complete:"),
-      timeout: 30000,
-    });
-
     await navigateToInternalMatchingStep(page, email);
 
-    const completeLog = await registrationCompletePromise;
-    expect(completeLog.text()).toContain("Registration complete:");
+    await expect.poll(() => consoleLogs.some((log) => log.includes("Registration complete:")), { timeout: 30000 }).toBe(true);
     await userCount.toHaveChangedBy(1);
   });
 
   test("skip button completes registration when internal matching is enabled", async ({ page }) => {
     const email = randomEmail();
+
+    // Collect console messages up-front so we never race against the event firing.
+    const consoleLogs: string[] = [];
+    page.on("console", (msg) => consoleLogs.push(msg.text()));
 
     // Mock /config so the form renders without needing the feature on the server.
     // Also mock /skip — the component then calls finalizeRegistration() against the
@@ -125,22 +127,16 @@ test.describe("Registration — internal matching step", () => {
     );
 
     await navigateToInternalMatchingStep(page, email);
-
-    // Set up the listener right before the action so the navigation time doesn't
-    // eat into the event timeout.
-    const registrationCompletePromise = page.waitForEvent("console", {
-      predicate: (msg) => msg.text().includes("Registration complete:"),
-      timeout: 30000,
-    });
-
     await page.getByRole("button", { name: /continue without linking/i }).click();
 
-    const completeLog = await registrationCompletePromise;
-    expect(completeLog.text()).toContain("Registration complete:");
+    await expect.poll(() => consoleLogs.some((log) => log.includes("Registration complete:")), { timeout: 30000 }).toBe(true);
   });
 
   test("match found → confirm link completes registration", async ({ page }) => {
     const email = randomEmail();
+
+    const consoleLogs: string[] = [];
+    page.on("console", (msg) => consoleLogs.push(msg.text()));
 
     await mockInternalMatchingEnabled(page);
 
@@ -194,15 +190,9 @@ test.describe("Registration — internal matching step", () => {
     await expect(page.getByText(/account found/i)).toBeVisible({ timeout: 5000 });
     await expect(page.getByText("j***@example.com")).toBeVisible();
 
-    const registrationCompletePromise = page.waitForEvent("console", {
-      predicate: (msg) => msg.text().includes("Registration complete:"),
-      timeout: 30000,
-    });
-
     await page.getByRole("button", { name: /yes, use this account/i }).click();
 
-    const completeLog = await registrationCompletePromise;
-    expect(completeLog.text()).toContain("Registration complete:");
+    await expect.poll(() => consoleLogs.some((log) => log.includes("Registration complete:")), { timeout: 30000 }).toBe(true);
   });
 
   test("generic error is shown when config fetch fails", async ({ page }) => {
