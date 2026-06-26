@@ -427,6 +427,8 @@ export class AuthHelpers {
       return;
     }
 
+    authStore.clearPendingRecovery();
+
     if (authState.sid) {
       authStore.setLoading(true);
 
