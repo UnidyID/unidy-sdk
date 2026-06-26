@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.0...@unidy.io/sdk-v1.7.1) (2026-06-26)
+
+
+### Bug Fixes
+
+* [UD-2217] clear pending recovery step on reset-password redirect ([#290](https://github.com/UnidyID/unidy-sdk/issues/290)) ([544e1f1](https://github.com/UnidyID/unidy-sdk/commit/544e1f15ef328462574c71e07b7dabe9d1feea05))
+
 ## [1.7.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.0...@unidy.io/sdk-v1.7.0) (2026-06-02)
 
 
