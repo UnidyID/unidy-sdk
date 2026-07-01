@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.1...@unidy.io/sdk-v1.8.0) (2026-07-01)
+
+
+### Features
+
+* [UD-3063] SDK invited step and resend invitation flow ([#296](https://github.com/UnidyID/unidy-sdk/issues/296)) ([a74dfc1](https://github.com/UnidyID/unidy-sdk/commit/a74dfc1bf6aa9160ac1eb75e17b4c977b9d141a3))
+* [UD-3063] sdk-react invited step + resend invitation ([#297](https://github.com/UnidyID/unidy-sdk/issues/297)) ([3bbf87b](https://github.com/UnidyID/unidy-sdk/commit/3bbf87bfebe684c93d978f33e73ac7b7ed49fa31))
+* [UD-3064] add Norwegian as a supported language ([#298](https://github.com/UnidyID/unidy-sdk/issues/298)) ([368e912](https://github.com/UnidyID/unidy-sdk/commit/368e912dd069d88682235945cd63f5bbff10909e))
+
 ## [1.7.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.0...@unidy.io/sdk-v1.7.1) (2026-06-26)
 
 
