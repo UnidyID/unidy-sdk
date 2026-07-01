@@ -1,0 +1,224 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Skriv inn e-postadressen din"
+    },
+    "magicCode": {
+      "already_sent_text": "Magisk kode er allerede sendt til e-posten din",
+      "button_text": "Send magisk kode",
+      "resend": {
+        "button_text": "Send magisk kode på nytt"
+      },
+      "sending_text": "Sender..."
+    },
+    "passkey": {
+      "button_text": "Logg inn med Passkey",
+      "loading_text": "Autentiserer..."
+    },
+    "password": {
+      "button_text": "Logg inn med passord",
+      "confirmation": {
+        "placeholder": "Bekreft passordet ditt"
+      },
+      "placeholder": "Skriv inn passordet ditt"
+    },
+    "resetPassword": {
+      "button_text_resend": "Send e-post for tilbakestilling av passord på nytt",
+      "button_text_reset": "Tilbakestill passord",
+      "button_text_save": "Lagre nytt passord",
+      "button_text_set": "Angi passord",
+      "success_message": "E-post for tilbakestilling av passord er sendt. Sjekk innboksen din"
+    },
+    "resendConfirmation": {
+      "button_text": "Send bekreftelsese-post på nytt",
+      "description": "Sjekk innboksen din for å bekrefte e-postadressen din. Hvis du ikke mottok den, kan du be om en ny bekreftelsese-post.",
+      "title": "Bekreft e-postadressen din"
+    },
+    "single-login": {
+      "button_text": "Logg inn"
+    },
+    "socialLogin": {
+      "button_text": "Fortsett med {{provider}}"
+    },
+    "navigation": {
+      "back": "Tilbake",
+      "restart": "Start på nytt"
+    }
+  },
+  "buttons": {
+    "cancel": "Avbryt",
+    "close": "Lukk",
+    "confirm": "Bekreft",
+    "connect": "Koble til",
+    "continue": "Fortsett",
+    "jump_to_service": "Gå til tjenesten",
+    "jump_to_unidy": "Gå til Unidy",
+    "logout": "Logg ut",
+    "registration": "Registrer ny konto",
+    "sign_in": "Logg inn",
+    "submit": "Send inn"
+  },
+  "errors": {
+    "account_locked": "Kontoen er låst",
+    "account_not_found": "Kontoen ble ikke funnet",
+    "account_already_confirmed": "E-postadressen din er allerede bekreftet. Logg inn",
+    "account_unconfirmed": "Kontoens e-postadresse er ikke bekreftet",
+    "confirmation_recently_sent": "En bekreftelsese-post ble nylig sendt. Vent før du ber om en ny",
+    "auth_method_required": "Angi et passord eller bekreft e-postadressen din for å fortsette",
+    "authentication_failed": "Autentisering mislyktes",
+    "bad_request": "Ugyldig forespørsel",
+    "cannot_finalize": "Kan ikke fullføre registreringen. Fyll ut alle obligatoriske felt",
+    "captcha_execution_failed": "Sikkerhetsverifisering mislyktes. Prøv igjen",
+    "captcha_score_too_low": "Sikkerhetsverifisering mislyktes. Prøv igjen",
+    "captcha_token_missing": "Fullfør sikkerhetsverifiseringen",
+    "captcha_verification_failed": "Sikkerhetsverifisering mislyktes. Prøv igjen",
+    "code_expired": "Bekreftelseskoden har utløpt. Be om en ny",
+    "connection_failed": "Kan ikke koble til Unidy-serveren",
+    "email_already_registered": "Denne e-postadressen er allerede registrert. Logg inn i stedet",
+    "expired": "Utløpt",
+    "failed_to_load_profile": "Kunne ikke laste profildata. Sjekk konfigurasjonen",
+    "field_required": "Dette feltet er obligatorisk",
+    "internal_server_error": "Intern serverfeil",
+    "invalid_code": "Ugyldig bekreftelseskode. Prøv igjen",
+    "invalid_id_token": "Ugyldig ID-token",
+    "invalid_format": "Ugyldig format",
+    "invalid_input": "Ugyldig inndata",
+    "invalid_passkey": "Ugyldig passkey",
+    "invalid_password": "Ugyldig passord",
+    "invalid_phone": "Skriv inn et gyldig telefonnummer",
+    "invalid_refresh_token": "Ugyldig oppdateringstoken",
+    "invalid_required_fields_payload": "Ugyldig data for obligatoriske felt",
+    "invalid_reset_token": "Ugyldig tilbakestillingstoken. Be om en ny e-post for tilbakestilling av passord",
+    "invalid_response_format": "Ugyldig svarformat",
+    "magic_code_is_missing": "Magisk kode mangler",
+    "magic_code_not_valid": "Magisk kode er ikke gyldig",
+    "magic_code_recently_created": "Magisk kode ble nylig opprettet",
+    "magic_link_not_enabled": "Innlogging med magisk lenke er ikke aktivert for denne kontoen",
+    "missing_id_token": "ID-token mangler",
+    "missing_refresh_token": "Ingen oppdateringstoken til stede",
+    "missing_required_fields": "Obligatoriske felt mangler",
+    "no_sign_in_id": "Ingen innloggings-ID tilgjengelig",
+    "not_valid": "Ikke gyldig",
+    "passkey_cancelled": "Passkey-autentisering ble avbrutt",
+    "passkey_error": "En ukjent passkey-feil oppstod",
+    "passkey_invalid_state": "Ugyldig passkey-tilstand",
+    "passkey_not_supported": "Passkey støttes ikke",
+    "passkey_security_error": "Passkey-sikkerhetsfeil",
+    "password_not_set": "Passord er ikke angitt",
+    "password_required": "Passord er påkrevd",
+    "password_validation_failed": "Passordet oppfyller ikke kravene",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Passordet er for kort (minimum 6 tegn)",
+      "min_length": "Minimum lengde er 6 tegn",
+      "mixed_case": "Må inneholde både store og små bokstaver",
+      "number": "Må inneholde et tall",
+      "symbol": "Må inneholde et symbol"
+    },
+    "passwords_do_not_match": "Passordene stemmer ikke overens",
+    "prefix": "FEIL: ",
+    "refresh_failed": "Kunne ikke oppdatere token. Logg inn på nytt",
+    "refresh_token_revoked": "Oppdateringstoken er tilbakekalt",
+    "registration_expired": "Registreringsøkten har utløpt. Start på nytt",
+    "registration_flow_already_exists": "En registrering pågår allerede for denne e-postadressen",
+    "registration_not_found": "Registreringsøkt ikke funnet. Start på nytt",
+    "required_field": "{{field}} er obligatorisk",
+    "reset_password_already_sent": "E-post for tilbakestilling av passord er allerede sendt",
+    "reset_token_expired": "Tilbakestillingstoken har utløpt. Be om en ny e-post for tilbakestilling av passord",
+    "reset_token_missing": "Tilbakestillingstoken mangler",
+    "schema_validation_error": "Skjemavalideringsfeil",
+    "sign_in_expired": "Innloggingen har utløpt",
+    "sign_in_not_found": "Innlogging ikke funnet",
+    "sign_out_failed": "Utlogging mislyktes, årsak: {{reason}}",
+    "unknown": "En ukjent feil oppstod",
+    "used": "Brukt",
+    "validation": {
+      "accepted": "må aksepteres",
+      "blank": "kan ikke være tomt",
+      "empty": "kan ikke være tomt",
+      "even": "må være et partall",
+      "exclusion": "er reservert",
+      "in": "er ikke inkludert i listen",
+      "inclusion": "er ikke inkludert i listen",
+      "invalid": "er ugyldig",
+      "not_a_number": "er ikke et tall",
+      "odd": "må være et oddetall",
+      "present": "må være tomt",
+      "taken": "er allerede tatt",
+      "too_long": "er for langt",
+      "too_short": "er for kort"
+    },
+    "verification_code_recently_sent": "En bekreftelseskode ble nylig sendt. Vent før du ber om en ny",
+    "verification_failed": "Verifisering mislyktes"
+  },
+  "loading": "Laster...",
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Send bekreftelse på nytt",
+      "subscribe": "Abonner",
+      "unsubscribe": "Avslutt abonnement"
+    },
+    "errors": {
+      "already_subscribed": "Allerede abonnert",
+      "consent_required": "Aksepter vilkårene for å abonnere",
+      "email_required": "Skriv inn e-postadressen din",
+      "invalid_email": "Ugyldig e-postadresse",
+      "invalid_preference_token": "Ugyldig preferansetoken. Skriv inn e-postadressen din for å motta en ny lenke.",
+      "login_email_not_found": "Abonnement med denne e-postadressen finnes ikke",
+      "newsletter_not_found": "Nyhetsbrev ikke funnet",
+      "preferences_not_found": "Preferanse ikke funnet",
+      "rate_limit_exceeded": "Grensen er overskredet. Prøv igjen senere",
+      "unauthorized": "Økten din har utløpt. Logg inn på nytt",
+      "unconfirmed": "E-posten din er ikke bekreftet for dette nyhetsbrevet",
+      "unsubscribe_failed": "Kunne ikke avslutte abonnementet"
+    },
+    "success": {
+      "doi_sent": "Bekreftelsese-post er sendt til e-postadressen din",
+      "login_email_sent": "Vi sendte en lenke for å administrere det eksisterende abonnementet ditt til e-postadressen din",
+      "logout": "Du har blitt logget ut",
+      "preferences_updated": "Preferansene dine er oppdatert",
+      "subscribe": "Du har abonnert",
+      "unsubscribe": "Du har avsluttet abonnementet"
+    }
+  },
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth-applikasjon ikke funnet",
+      "client_id_required": "client-id er påkrevd",
+      "connection_failed": "Nettverksfeil. Prøv igjen.",
+      "grant_failed": "Kunne ikke gi samtykke",
+      "invalid_field_values": "Ugyldige feltverdier angitt",
+      "missing_required_fields": "Fyll ut alle obligatoriske felt",
+      "not_authenticated": "Brukeren er ikke autentisert. Logg inn først.",
+      "unknown": "En uventet feil oppstod",
+      "update_failed": "Kunne ikke oppdatere brukerdata"
+    }
+  },
+  "profile": {
+    "signInToView": "Logg inn for å se profilen din",
+    "updated": "Profilen er oppdatert"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Finn konto",
+      "checking": "Søker...",
+      "confirm_button": "Ja, bruk denne kontoen",
+      "confirming": "Kobler til...",
+      "default_primary_label": "Kundenummer",
+      "error_expired": "Registreringsøkten din har utløpt. Start på nytt.",
+      "error_generic": "En feil oppstod. Prøv igjen.",
+      "error_match_mismatch": "Den angitte informasjonen samsvarer ikke med noen konto. Sjekk opplysningene dine og prøv igjen.",
+      "error_match_not_found": "Ingen konto funnet for den angitte informasjonen. Sjekk opplysningene dine og prøv igjen.",
+      "error_no_match": "Ingen samsvarende konto funnet. Du kan fortsette uten å koble til.",
+      "match_confirm_question": "Vil du koble til denne eksisterende kontoen?",
+      "match_found_description": "Vi fant en konto knyttet til opplysningene dine.",
+      "match_found_title": "Konto funnet!",
+      "preview_created_at": "Registrert:",
+      "preview_email": "E-post:",
+      "reject_button": "Nei, opprett ny konto",
+      "rejecting": "Fortsetter...",
+      "skip_button": "Fortsett uten å koble til",
+      "skipping": "Fortsetter..."
+    }
+  }
+}

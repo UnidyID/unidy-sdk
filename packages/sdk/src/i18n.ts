@@ -4,6 +4,7 @@ import de from "./locales/de.json";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
 import it from "./locales/it.json";
+import nb from "./locales/nb.json";
 import nl_be from "./locales/nl_be.json";
 import ro from "./locales/ro.json";
 import sv from "./locales/sv.json";
@@ -22,6 +23,7 @@ i18n.use(i18nLogger).init({
     en: { translation: en },
     fr: { translation: fr },
     it: { translation: it },
+    nb: { translation: nb },
     nl_be: { translation: nl_be },
     ro: { translation: ro },
     sv: { translation: sv },
