@@ -177,7 +177,7 @@ Defines a distinct step in the sign-in process (e.g., entering an email, enterin
 
 **Attributes:**
 
--   `name` (required): The name of the step (e.g., `email`, `verification`, `magic-code`, `reset-password`, `single-login`, `missing-fields`, `registration`).
+-   `name` (required): The name of the step (e.g., `email`, `verification`, `magic-code`, `reset-password`, `single-login`, `missing-fields`, `registration`, `unconfirmed`, `invited`).
 -   `always-render`: If set to `true`, the step will always render its content regardless of the current authentication step.
 
 **Methods:**
@@ -315,6 +315,30 @@ Renders a navigation button that allows users to go back to the previous step in
   <!-- rest of reset password step -->
 </u-signin-step>
 ```
+
+#### `<u-resend-confirmation-email>`
+
+Renders a button that resends the account confirmation email. Automatically disables itself with a countdown after a successful resend (rate-limit). Must be used inside a `<u-signin-step name="unconfirmed">`.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the button element.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button text.
+
+#### `<u-resend-invitation-email>`
+
+Renders a button that resends the invitation email for an invited (not yet confirmed) account. Automatically disables itself with a countdown after a successful resend (rate-limit). Must be used inside a `<u-signin-step name="invited">`.
+
+**Attributes:**
+
+-   `class-name`: CSS classes to apply to the button element.
+
+**Slots:**
+
+-   The default slot allows you to provide custom button text.
 
 #### `<u-social-login-button>`
 
