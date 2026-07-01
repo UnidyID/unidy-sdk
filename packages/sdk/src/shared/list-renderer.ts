@@ -60,6 +60,10 @@ export async function loadLocales(logger?: LocaleWarnLogger): Promise<void> {
         import("date-fns/locale/ro").then((module) => {
           LOCALES.ro = module.ro;
         }),
+      !LOCALES.nb &&
+        import("date-fns/locale/nb").then((module) => {
+          LOCALES.nb = module.nb;
+        }),
       !LOCALES.sv &&
         import("date-fns/locale/sv").then((module) => {
           LOCALES.sv = module.sv;
