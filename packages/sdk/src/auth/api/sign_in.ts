@@ -281,6 +281,11 @@ export async function authenticateWithPassword(
         return ["missing_required_fields", missing_fields_check.data];
       }
 
+      const account_unconfirmed_check = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (account_unconfirmed_check.success) {
+        return ["account_unconfirmed", account_unconfirmed_check.data];
+      }
+
       const error_response = parseErrorResponse(response.data);
       return [
         error_response.error_identifier as
@@ -318,6 +323,11 @@ export async function authenticateWithMagicCode(
       const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
       if (missing_fields_check.success) {
         return ["missing_required_fields", missing_fields_check.data];
+      }
+
+      const account_unconfirmed_check = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (account_unconfirmed_check.success) {
+        return ["account_unconfirmed", account_unconfirmed_check.data];
       }
 
       const error_response = parseErrorResponse(response.data);
