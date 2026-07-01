@@ -34,6 +34,11 @@
       "description": "Sjekk innboksen din for å bekrefte e-postadressen din. Hvis du ikke mottok den, kan du be om en ny bekreftelsese-post.",
       "title": "Bekreft e-postadressen din"
     },
+    "resendInvitation": {
+      "button_text": "Send invitasjonspost på nytt",
+      "description": "Du er blitt invitert. Hvis du ikke mottok invitasjonsposten, kan du be om en ny.",
+      "title": "Aksepter invitasjonen din"
+    },
     "single-login": {
       "button_text": "Logg inn"
     },
