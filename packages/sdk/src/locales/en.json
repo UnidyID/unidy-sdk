@@ -34,6 +34,11 @@
       "description": "Please check your inbox to confirm your email. If you didn't receive it, you can request a new confirmation email.",
       "title": "Confirm your email"
     },
+    "resendInvitation": {
+      "button_text": "Resend invitation email",
+      "description": "You've been invited. If you didn't receive the invitation email, you can request a new one.",
+      "title": "Accept your invitation"
+    },
     "single-login": {
       "button_text": "Sign in"
     },

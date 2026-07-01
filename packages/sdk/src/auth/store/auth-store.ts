@@ -13,7 +13,8 @@ export type AuthStep =
   | "reset-password"
   | "registration"
   | "single-login"
-  | "unconfirmed";
+  | "unconfirmed"
+  | "invited";
 
 export interface AuthState {
   step: AuthStep;

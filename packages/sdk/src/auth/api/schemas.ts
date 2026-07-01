@@ -25,6 +25,13 @@ export const CreateSignInResponseSchema = z.object({
 // Generic error response (re-export of base error for backwards compatibility)
 export const ErrorSchema = BaseErrorSchema;
 
+// account_unconfirmed response — includes login_type so the SDK can distinguish invited users
+export const AccountUnconfirmedResponseSchema = z.object({
+  error_identifier: z.literal("account_unconfirmed"),
+  login_type: z.enum(["invited", "unconfirmed"]).optional(),
+});
+export type AccountUnconfirmedResponse = z.infer<typeof AccountUnconfirmedResponseSchema>;
+
 // Successful response carrying a resend cooldown.
 export const ResendDelayResponseSchema = z.object({
   enable_resend_after: z.number(),
