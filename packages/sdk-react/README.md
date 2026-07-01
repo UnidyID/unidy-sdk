@@ -134,7 +134,7 @@ const login = useLogin({
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"connect-brand"` \| `"missing-fields"` \| `"unconfirmed"` \| `"authenticated"` |
+| `step` | `AuthStep` | Current step: `"idle"` \| `"email"` \| `"verification"` \| `"password"` \| `"magic-code"` \| `"reset-password"` \| `"connect-brand"` \| `"missing-fields"` \| `"unconfirmed"` \| `"invited"` \| `"authenticated"` |
 | `isAuthenticated` | `boolean` | Whether the user is authenticated |
 | `isLoading` | `boolean` | Whether an async action is in progress |
 | `email` | `string` | The email being used in the login flow |
@@ -163,6 +163,7 @@ const login = useLogin({
 | `resetPassword(token, password, confirmation)` | Reset password using a token from the reset email |
 | `validateResetPasswordToken(token)` | Validate a reset password token before showing the reset form. Returns `boolean`. |
 | `resendConfirmation(email, captchaToken?)` | Resend the account confirmation email. Available when `step === "unconfirmed"`. |
+| `resendInvitation(email)` | Resend the invitation email for an invited account. Available when `step === "invited"`. |
 | `goBack()` | Navigate to the previous step |
 | `goToStep(step)` | Navigate to a specific step |
 | `restart()` | Go back to email step, preserving email and loginOptions |
@@ -266,6 +267,19 @@ function LoginPage() {
         <p>Your account is not yet confirmed. Check your email for a confirmation link.</p>
         <button onClick={() => login.resendConfirmation(login.email)} disabled={login.isLoading}>
           Resend confirmation email
+        </button>
+        {login.errors.global && <p>{login.errors.global}</p>}
+        <button onClick={login.goBack}>Back</button>
+      </div>
+    );
+  }
+
+  if (login.step === "invited") {
+    return (
+      <div>
+        <p>You've been invited. Check your email for the invitation link.</p>
+        <button onClick={() => login.resendInvitation(login.email)} disabled={login.isLoading}>
+          Resend invitation email
         </button>
         {login.errors.global && <p>{login.errors.global}</p>}
         <button onClick={login.goBack}>Back</button>

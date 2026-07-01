@@ -10,6 +10,7 @@ export type AuthStep =
   | "connect-brand"
   | "missing-fields"
   | "unconfirmed"
+  | "invited"
   | "authenticated";
 
 export interface LoginOptions {
@@ -113,6 +114,8 @@ export interface UseLoginReturn {
   // Actions - Unconfirmed account
   /** Resend the account confirmation email. Handles rate-limit errors. */
   resendConfirmation: (email: string, captchaToken?: string) => Promise<void>;
+  /** Resend the invitation email for an invited (not yet confirmed) account. */
+  resendInvitation: (email: string) => Promise<void>;
 
   // Actions - Brand connection
   /** Accept the brand connection. Transitions to authenticated or missing-fields. */
