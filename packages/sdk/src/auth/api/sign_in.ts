@@ -1,6 +1,7 @@
 // TODO: Add e2e test coverage for sign_in API functions (currently only partially covered via auth component tests)
 import type { ApiClientInterface, Payload } from "../../api/base-service";
 import {
+  AccountUnconfirmedResponseSchema,
   type BrandConnectionRequiredResponse,
   BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
@@ -36,7 +37,8 @@ export type CreateSignInArgs = Payload<{
   originUrl?: string;
   captchaToken?: string;
 }>;
-export type ResendConfirmationArgs = Payload<{ email: string; captchaToken?: string }>;
+export type ResendConfirmationArgs = Payload<{ email: string; captchaToken?: string; returnTo?: string }>;
+export type ResendInvitationArgs = Payload<{ email: string; returnTo?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;
@@ -147,6 +149,14 @@ export type ResendConfirmationResult =
   | ["confirmation_recently_sent", ResendDelayError]
   | [null, ResendDelayResponse];
 
+export type ResendInvitationResult =
+  | CommonErrors
+  | ["account_not_found", ErrorResponse]
+  | ["account_already_confirmed", ErrorResponse]
+  | ["account_not_invited", ErrorResponse]
+  | ["invitation_recently_sent", ResendDelayError]
+  | [null, ResendDelayResponse];
+
 export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
 
 export type AuthenticateWithPasskeyResult =
@@ -197,6 +207,10 @@ export async function createSignIn(
       const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
       if (missing_fields_check.success) {
         return ["missing_required_fields", missing_fields_check.data];
+      }
+      const accountUnconfirmedParsed = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (accountUnconfirmedParsed.success) {
+        return ["account_unconfirmed", accountUnconfirmedParsed.data];
       }
       const error_response = parseErrorResponse(response.data);
       return [
@@ -470,10 +484,11 @@ export async function resendConfirmation(
   args: ResendConfirmationArgs,
   handleResponse: HandleResponseFn,
 ): Promise<ResendConfirmationResult> {
-  const { email, captchaToken } = args.payload;
+  const { email, captchaToken, returnTo } = args.payload;
   const response = await client.post<ResendDelayResponse>("/api/sdk/v1/sign_ins/resend_confirmation", {
     email,
     captcha_token: captchaToken,
+    return_to: returnTo,
   });
 
   return handleResponse(response, () => {
@@ -485,6 +500,32 @@ export async function resendConfirmation(
 
       const error_response = parseErrorResponse(response.data);
       return [error_response.error_identifier as "account_not_found" | "account_already_confirmed", error_response];
+    }
+
+    return [null, ResendDelayResponseSchema.parse(response.data)];
+  });
+}
+
+export async function resendInvitation(
+  client: ApiClientInterface,
+  args: ResendInvitationArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ResendInvitationResult> {
+  const { email, returnTo } = args.payload;
+  const response = await client.post<ResendDelayResponse>("/api/sdk/v1/sign_ins/resend_invitation", {
+    email,
+    return_to: returnTo,
+  });
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const rateLimitParsed = ResendDelayErrorSchema.safeParse(response.data);
+      if (rateLimitParsed.success && rateLimitParsed.data.error_identifier === "invitation_recently_sent") {
+        return ["invitation_recently_sent", rateLimitParsed.data];
+      }
+
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "account_not_found" | "account_already_confirmed" | "account_not_invited", error_response];
     }
 
     return [null, ResendDelayResponseSchema.parse(response.data)];

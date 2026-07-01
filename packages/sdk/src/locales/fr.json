@@ -33,6 +33,11 @@
       "description": "Veuillez vérifier votre boîte de réception pour confirmer votre adresse e-mail. Si vous ne l'avez pas reçue, vous pouvez demander un nouvel e-mail de confirmation.",
       "title": "Confirmez votre adresse e-mail"
     },
+    "resendInvitation": {
+      "button_text": "Renvoyer l'e-mail d'invitation",
+      "description": "Vous avez été invité(e). Si vous n'avez pas reçu l'e-mail d'invitation, vous pouvez en demander un nouveau.",
+      "title": "Accepter votre invitation"
+    },
     "single-login": {
       "button_text": "Se connecter"
     },

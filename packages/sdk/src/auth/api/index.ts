@@ -45,6 +45,7 @@ export type {
 } from "./register";
 // Re-export schema types for external use
 export type {
+  AccountUnconfirmedResponse,
   BrandConnectionRequiredResponse,
   CreateSignInResponse,
   ErrorResponse,
@@ -79,6 +80,8 @@ export type {
   RefreshTokenResult,
   ResendConfirmationArgs,
   ResendConfirmationResult,
+  ResendInvitationArgs,
+  ResendInvitationResult,
   ResetPasswordArgs,
   ResetPasswordResult,
   SendMagicCodeArgs,
@@ -157,6 +160,10 @@ export class AuthService extends BaseService {
 
   resendConfirmation(args: signIn.ResendConfirmationArgs): Promise<signIn.ResendConfirmationResult> {
     return signIn.resendConfirmation(this.client, args, this.respond);
+  }
+
+  resendInvitation(args: signIn.ResendInvitationArgs): Promise<signIn.ResendInvitationResult> {
+    return signIn.resendInvitation(this.client, args, this.respond);
   }
 
   // ============================================

@@ -33,6 +33,11 @@
       "description": "Bitte überprüfen Sie Ihren Posteingang, um Ihre E-Mail-Adresse zu bestätigen. Falls Sie keine E-Mail erhalten haben, können Sie eine neue Bestätigungs-E-Mail anfordern.",
       "title": "E-Mail-Adresse bestätigen"
     },
+    "resendInvitation": {
+      "button_text": "Einladungs-E-Mail erneut senden",
+      "description": "Sie wurden eingeladen. Falls Sie die Einladungs-E-Mail nicht erhalten haben, können Sie eine neue anfordern.",
+      "title": "Einladung annehmen"
+    },
     "single-login": {
       "button_text": "Anmelden"
     },

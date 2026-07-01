@@ -625,6 +625,24 @@
           Resend confirmation email
         </u-resend-confirmation-email>
       </u-signin-step>
+
+      <u-signin-step name="invited">
+        <u-back-button class-name="mb-4 text-sm text-blue-500 hover:text-blue-700 flex items-center gap-1">
+          ← Back
+        </u-back-button>
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-2 text-center">Accept your invitation</h2>
+        <p class="text-gray-600 text-sm mb-6 text-center">
+          You've been invited. If you didn't receive the invitation email, you can request a new one.
+        </p>
+
+        <u-error-message for="auth" class-name="mt-1 mb-4 text-sm text-center text-red-500"></u-error-message>
+
+        <u-resend-invitation-email
+          class-name="px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg w-full transition-colors duration-200 disabled:opacity-50">
+          Resend invitation email
+        </u-resend-invitation-email>
+      </u-signin-step>
     </u-signin-root>
 
     <u-signed-in data-testid="signed.in.view">

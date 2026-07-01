@@ -1,5 +1,12 @@
 import { jwtDecode } from "jwt-decode";
-import type { CreateSignInResponse, RequiredFieldsResponse, ResendDelayResponse, TokenResponse, UnidyClient } from "../api";
+import type {
+  AccountUnconfirmedResponse,
+  CreateSignInResponse,
+  RequiredFieldsResponse,
+  ResendDelayResponse,
+  TokenResponse,
+  UnidyClient,
+} from "../api";
 import { authState, authStore } from "../auth/store/auth-store";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
@@ -316,7 +323,7 @@ export class AuthHelpers {
     }
 
     const [error, response] = await this.client.auth.resendConfirmation({
-      payload: { email: authState.email, captchaToken },
+      payload: { email: authState.email, captchaToken, returnTo: window.location.href },
     });
 
     authStore.setLoading(false);
@@ -330,6 +337,38 @@ export class AuthHelpers {
       if (isCaptchaError(error)) {
         captchaManager.reset();
         authStore.setGlobalError("captcha", error);
+        return false;
+      }
+
+      authStore.setGlobalError("auth", error);
+      return false;
+    }
+
+    const successResponse = response as ResendDelayResponse;
+    authStore.setEnableResendAfter(successResponse?.enable_resend_after ?? 0);
+    return true;
+  }
+
+  async resendInvitationEmail(): Promise<boolean> {
+    if (!authState.email) {
+      authStore.setGlobalError("auth", "email_required");
+      return false;
+    }
+
+    if (authState.loading) return false;
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.resendInvitation({
+      payload: { email: authState.email, returnTo: window.location.href },
+    });
+
+    authStore.setLoading(false);
+
+    if (error) {
+      if (error === "invitation_recently_sent" && response && "enable_resend_after" in response) {
+        authStore.setEnableResendAfter(response.enable_resend_after);
         return false;
       }
 
@@ -599,9 +638,11 @@ export class AuthHelpers {
         authStore.setGlobalError("auth", error);
         break;
 
-      case "account_unconfirmed":
-        authStore.setStep("unconfirmed");
+      case "account_unconfirmed": {
+        const loginType = (response as AccountUnconfirmedResponse)?.login_type;
+        authStore.setStep(loginType === "invited" ? "invited" : "unconfirmed");
         break;
+      }
 
       default:
         if (fallbackField === "password") {
