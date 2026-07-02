@@ -194,6 +194,16 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    if (!authState.sid && authState.token) {
+      // Fallback: decode the stored token to recover the sid (e.g. after a page reload
+      // where initialize() ran before the token was persisted).
+      try {
+        const decoded = jwtDecode<TokenPayload>(authState.token);
+        if (decoded.sid) authStore.setSignInId(decoded.sid);
+      } catch {
+        /* ignore */
+      }
+    }
     if (!authState.sid) {
       this.logger.warn("No sign-in ID in the session");
       return;

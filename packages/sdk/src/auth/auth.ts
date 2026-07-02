@@ -124,6 +124,13 @@ export class Auth {
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
+      // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
+      try {
+        const decoded = jwtDecode<TokenPayload>(authState.token as string);
+        if (decoded.sid) authStore.setSignInId(decoded.sid);
+      } catch {
+        /* ignore — token already passed isTokenValid */
+      }
     }
 
     // Resume auth flow after page reload or new tab by recovering the sign-in step
