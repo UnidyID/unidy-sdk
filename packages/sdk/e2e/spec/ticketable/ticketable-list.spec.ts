@@ -30,6 +30,11 @@ const paginatedResponse = (page: number, last: number) => ({
   meta: { count: last * 10, page, limit: 10, last, prev: page > 1 ? page - 1 : null, next: page < last ? page + 1 : null },
 });
 
+const EMPTY_TICKETS_RESPONSE = {
+  results: [],
+  meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
+};
+
 test.describe("u-ticketable-list - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
@@ -80,6 +85,35 @@ test.describe("u-ticketable-list - authenticated user", () => {
     await expect(page.locator("u-pagination-button[direction='next'] button")).toBeVisible();
     await expect(page.locator("u-pagination-button[direction='next'] button")).toBeEnabled();
     await expect(page.locator("u-pagination-page")).toContainText("Page 1 of 3");
+  });
+
+  test('shows slot="empty" content when the list returns zero items', async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.route("**/api/sdk/v1/tickets**", (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) }),
+    );
+
+    await page.goto(routes.ticketable);
+
+    await expect(page.locator("#empty-message")).toBeVisible();
+    await expect(page.locator("#empty-message")).toHaveText("No tickets found.");
+  });
+
+  test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
+    let releaseRoute!: () => void;
+    const routeHeld = new Promise<void>((resolve) => {
+      releaseRoute = resolve;
+    });
+
+    await page.route("**/api/sdk/v1/tickets**", async (route) => {
+      await routeHeld;
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) });
+    });
+
+    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/sdk/v1/tickets")), page.goto(routes.ticketable)]);
+
+    // Component has made the request but response is held — still in loading state
+    await expect(page.locator("#empty-message")).not.toBeVisible();
+    releaseRoute();
   });
 });
 
