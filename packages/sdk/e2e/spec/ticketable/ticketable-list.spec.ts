@@ -1,6 +1,11 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
 
+const paginatedResponse = (page: number, last: number) => ({
+  results: [],
+  meta: { count: last * 10, page, limit: 10, last, prev: page > 1 ? page - 1 : null, next: page < last ? page + 1 : null },
+});
+
 const EMPTY_TICKETS_RESPONSE = {
   results: [],
   meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
@@ -25,6 +30,37 @@ test.describe("u-ticketable-list - authenticated user", () => {
     await expect(page.locator("u-pagination-button[direction='prev']")).toBeAttached();
     await expect(page.locator("u-pagination-button[direction='next']")).toBeAttached();
     await expect(page.locator("u-pagination-page")).toBeAttached();
+  });
+
+  test("pagination controls render and reflect pagination meta without a manually wired store", async ({
+    page,
+    authenticatedContext: _authenticatedContext,
+  }) => {
+    await page.route("**/api/sdk/v1/tickets**", (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(paginatedResponse(1, 3)) }),
+    );
+
+    // Track both ticket API responses (one per u-ticketable-list on the demo page).
+    // The pagination controls live in the second list, so we must wait for that
+    // list's loadData() to complete before asserting on the store state.
+    let responseCount = 0;
+    const bothResponsesReceived = new Promise<void>((resolve) => {
+      page.on("response", (resp) => {
+        if (resp.url().includes("/api/sdk/v1/tickets") && resp.status() === 200 && ++responseCount >= 2) {
+          resolve();
+        }
+      });
+    });
+
+    await page.goto(routes.ticketable);
+    await bothResponsesReceived;
+
+    // prev disabled on first page, next enabled — store must have been created automatically
+    await expect(page.locator("u-pagination-button[direction='prev'] button")).toBeVisible();
+    await expect(page.locator("u-pagination-button[direction='prev'] button")).toBeDisabled();
+    await expect(page.locator("u-pagination-button[direction='next'] button")).toBeVisible();
+    await expect(page.locator("u-pagination-button[direction='next'] button")).toBeEnabled();
+    await expect(page.locator("u-pagination-page")).toContainText("Page 1 of 3");
   });
 
   test('shows slot="empty" content when the list returns zero items', async ({ page, authenticatedContext: _authenticatedContext }) => {

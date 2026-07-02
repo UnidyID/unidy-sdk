@@ -6,7 +6,7 @@ import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
-import type { PaginationStore } from "../../../shared/store/pagination-store";
+import { createPaginationStore, type PaginationStore } from "../../../shared/store/pagination-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
@@ -45,8 +45,8 @@ export class TicketableList extends UnidyComponent() {
   /** The type of ticketable items to list ('ticket' or 'subscription'). */
   @Prop() ticketableType!: TicketableType;
 
-  /** Pagination store instance for external state management. */
-  @Prop() store: PaginationStore | null = null;
+  /** Pagination store instance for external state management. Created automatically when not provided. */
+  @Prop({ mutable: true }) store: PaginationStore | null = null;
 
   /** Fired when items are successfully fetched. Contains items and pagination metadata. */
   @Event() uTicketableListSuccess!: EventEmitter<{
@@ -73,6 +73,9 @@ export class TicketableList extends UnidyComponent() {
   }
 
   async componentWillLoad() {
+    if (!this.store) {
+      this.store = createPaginationStore();
+    }
     await waitForConfig();
     loadLocales(this.logger);
   }

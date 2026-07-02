@@ -6,7 +6,7 @@ import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { loadLocales, renderFragment, renderListContent, translateListError } from "../../../shared/list-renderer";
-import type { PaginationStore } from "../../../shared/store/pagination-store";
+import { createPaginationStore, type PaginationStore } from "../../../shared/store/pagination-store";
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import type { Transaction } from "../../api/transactions";
 
@@ -39,8 +39,8 @@ export class TransactionList extends UnidyComponent() {
   /** If true, replaces all text content with skeleton loaders. */
   @Prop() skeletonAllText?: boolean = false;
 
-  /** Pagination store instance for external state management. */
-  @Prop() store: PaginationStore | null = null;
+  /** Pagination store instance for external state management. Created automatically when not provided. */
+  @Prop({ mutable: true }) store: PaginationStore | null = null;
 
   /** Fired when transactions are successfully fetched. Contains items and pagination metadata. */
   @Event() uTransactionListSuccess!: EventEmitter<{
@@ -65,6 +65,9 @@ export class TransactionList extends UnidyComponent() {
   }
 
   async componentWillLoad() {
+    if (!this.store) {
+      this.store = createPaginationStore();
+    }
     await waitForConfig();
     loadLocales(this.logger);
   }
