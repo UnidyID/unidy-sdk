@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.8.0...@unidy.io/sdk-v1.8.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* add slot="empty" support to ticketable-list and transaction-list ([#303](https://github.com/UnidyID/unidy-sdk/issues/303)) ([2109d2a](https://github.com/UnidyID/unidy-sdk/commit/2109d2aeb591b8040468491dd8a1d8d74826f098))
+* pagination controls broken without manually wired store  ([#302](https://github.com/UnidyID/unidy-sdk/issues/302)) ([a2ff968](https://github.com/UnidyID/unidy-sdk/commit/a2ff96899eaf85c708f72e6a22c990ca2a6f9712))
+
 ## [1.8.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.1...@unidy.io/sdk-v1.8.0) (2026-07-01)
 
 
