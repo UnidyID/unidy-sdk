@@ -10,6 +10,9 @@ export class PaginationButton extends UnidyComponent() {
   /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
+  // Workaround: @stencil/store auto-subscription doesn't work for slotted shadow:false components
+  // (the Proxy never captures the rendering context). @State() mutations always trigger re-renders,
+  // so we use onChange + renderTrigger instead. Do not simplify to a plain store.state read.
   @State() private renderTrigger = 0;
 
   private store: PaginationStore | null = null;
@@ -21,7 +24,6 @@ export class PaginationButton extends UnidyComponent() {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
-    // Force a render whenever paginationMeta changes so render() reads fresh state.
     this.unsubscribers.push(
       this.store.onChange("paginationMeta", () => {
         this.renderTrigger++;
@@ -52,7 +54,6 @@ export class PaginationButton extends UnidyComponent() {
   };
 
   render() {
-    // Establish renderTrigger dependency so Stencil re-renders on increment.
     void this.renderTrigger;
 
     if (!this.store) {

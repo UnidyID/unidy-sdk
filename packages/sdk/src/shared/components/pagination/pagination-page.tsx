@@ -8,6 +8,9 @@ export class PaginationPage extends UnidyComponent() {
   /** CSS classes to apply to the span element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
+  // Workaround: @stencil/store auto-subscription doesn't work for slotted shadow:false components
+  // (the Proxy never captures the rendering context). @State() mutations always trigger re-renders,
+  // so we use onChange + renderTrigger instead. Do not simplify to a plain store.state read.
   @State() private renderTrigger = 0;
 
   private store: PaginationStore | null = null;
@@ -19,7 +22,6 @@ export class PaginationPage extends UnidyComponent() {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
-    // Force a render whenever paginationMeta changes so render() reads fresh state.
     this.unsubscribers.push(
       this.store.onChange("paginationMeta", () => {
         this.renderTrigger++;
@@ -33,7 +35,6 @@ export class PaginationPage extends UnidyComponent() {
   }
 
   render() {
-    // Establish renderTrigger dependency so Stencil re-renders on increment.
     void this.renderTrigger;
 
     if (!this.store) {
