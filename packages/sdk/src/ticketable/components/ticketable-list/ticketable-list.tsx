@@ -233,6 +233,16 @@ export class TicketableList extends UnidyComponent() {
       skeletonCount: this.skeletonCount || this.limit,
       config: this.buildRenderConfig(),
     });
+
+    if (!this.loading && !this.error && this.items.length === 0) {
+      const emptyEl = this.element.querySelector('[slot="empty"]');
+      if (emptyEl) {
+        const clone = emptyEl.cloneNode(true) as Element;
+        clone.removeAttribute("hidden");
+        clone.removeAttribute("slot");
+        targetElement.appendChild(clone);
+      }
+    }
   }
 
   render() {
@@ -255,6 +265,15 @@ export class TicketableList extends UnidyComponent() {
       return (
         <Host>
           <slot />
+        </Host>
+      );
+    }
+
+    if (!this.loading && !this.error && this.items.length === 0) {
+      return (
+        <Host>
+          <slot name="empty" />
+          <slot name="pagination" />
         </Host>
       );
     }
