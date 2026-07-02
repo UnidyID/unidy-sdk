@@ -39,21 +39,21 @@ test.describe("u-ticketable-list - authenticated user", () => {
   });
 
   test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
-    let resolve!: () => void;
-    const apiCalled = new Promise<void>((r) => {
-      resolve = r;
+    let releaseRoute!: () => void;
+    const routeHeld = new Promise<void>((resolve) => {
+      releaseRoute = resolve;
     });
 
     await page.route("**/api/sdk/v1/tickets**", async (route) => {
-      resolve();
-      await new Promise<void>((r) => setTimeout(r, 2000));
+      await routeHeld;
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) });
     });
 
-    await page.goto(routes.ticketable);
-    await apiCalled;
+    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/sdk/v1/tickets")), page.goto(routes.ticketable)]);
 
+    // Component has made the request but response is held — still in loading state
     await expect(page.locator("#empty-message")).not.toBeVisible();
+    releaseRoute();
   });
 });
 

@@ -226,7 +226,7 @@ export class TransactionList extends UnidyComponent() {
       );
     }
 
-    if (!this.loading && this.items.length === 0) {
+    if (!this.loading && !this.error && this.items.length === 0) {
       return (
         <Host>
           <slot name="empty" />
