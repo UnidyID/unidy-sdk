@@ -1,32 +1,8 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
 
-const FAKE_TICKET = {
-  id: "00000000-0000-0000-0000-000000000001",
-  title: "Test Ticket",
-  reference: "REF-001",
-  exportable_to_wallet: false,
-  state: "active",
-  created_at: "2024-01-01T00:00:00.000Z",
-  updated_at: "2024-01-01T00:00:00.000Z",
-  user_id: "00000000-0000-0000-0000-000000000002",
-  metadata: null,
-  wallet_export: null,
-  payment_state: null,
-  currency: null,
-  button_cta_url: null,
-  text: null,
-  info_banner: null,
-  seating: null,
-  venue: null,
-  starts_at: "2024-06-01T00:00:00.000Z",
-  ends_at: null,
-  price: null,
-  ticket_category_id: "00000000-0000-0000-0000-000000000003",
-};
-
 const paginatedResponse = (page: number, last: number) => ({
-  results: [FAKE_TICKET],
+  results: [],
   meta: { count: last * 10, page, limit: 10, last, prev: page > 1 ? page - 1 : null, next: page < last ? page + 1 : null },
 });
 
