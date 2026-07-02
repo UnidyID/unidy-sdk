@@ -1,6 +1,11 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
 
+const EMPTY_TICKETS_RESPONSE = {
+  results: [],
+  meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
+};
+
 test.describe("u-ticketable-list - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
@@ -20,6 +25,35 @@ test.describe("u-ticketable-list - authenticated user", () => {
     await expect(page.locator("u-pagination-button[direction='prev']")).toBeAttached();
     await expect(page.locator("u-pagination-button[direction='next']")).toBeAttached();
     await expect(page.locator("u-pagination-page")).toBeAttached();
+  });
+
+  test('shows slot="empty" content when the list returns zero items', async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.route("**/api/sdk/v1/tickets**", (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) }),
+    );
+
+    await page.goto(routes.ticketable);
+
+    await expect(page.locator("#empty-message")).toBeVisible();
+    await expect(page.locator("#empty-message")).toHaveText("No tickets found.");
+  });
+
+  test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
+    let resolve!: () => void;
+    const apiCalled = new Promise<void>((r) => {
+      resolve = r;
+    });
+
+    await page.route("**/api/sdk/v1/tickets**", async (route) => {
+      resolve();
+      await new Promise<void>((r) => setTimeout(r, 2000));
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) });
+    });
+
+    await page.goto(routes.ticketable);
+    await apiCalled;
+
+    await expect(page.locator("#empty-message")).not.toBeVisible();
   });
 });
 
