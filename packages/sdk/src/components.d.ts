@@ -1065,7 +1065,7 @@ export namespace Components {
          */
         "skeletonCount"?: number;
         /**
-          * Pagination store instance for external state management.
+          * Pagination store instance for external state management. Created automatically when not provided.
           * @default null
          */
         "store": PaginationStore | null;
@@ -1113,7 +1113,7 @@ export namespace Components {
          */
         "skeletonCount"?: number;
         /**
-          * Pagination store instance for external state management.
+          * Pagination store instance for external state management. Created automatically when not provided.
           * @default null
          */
         "store": PaginationStore | null;
@@ -2822,7 +2822,7 @@ declare namespace LocalJSX {
          */
         "skeletonCount"?: number;
         /**
-          * Pagination store instance for external state management.
+          * Pagination store instance for external state management. Created automatically when not provided.
           * @default null
          */
         "store"?: PaginationStore | null;
@@ -2883,7 +2883,7 @@ declare namespace LocalJSX {
          */
         "skeletonCount"?: number;
         /**
-          * Pagination store instance for external state management.
+          * Pagination store instance for external state management. Created automatically when not provided.
           * @default null
          */
         "store"?: PaginationStore | null;
