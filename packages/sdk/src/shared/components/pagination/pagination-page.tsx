@@ -1,5 +1,4 @@
 import { Component, Host, h, Prop, State } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
 import { UnidyComponent } from "../../base/component";
 import { findParentPaginatedList } from "../../context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
@@ -9,45 +8,48 @@ export class PaginationPage extends UnidyComponent() {
   /** CSS classes to apply to the span element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() paginationMeta: PaginationMeta | null = null;
+  @State() private renderTrigger = 0;
 
   private store: PaginationStore | null = null;
-  private unsubscribe: (() => void) | null = null;
+  private unsubscribers: Array<() => void> = [];
 
-  componentWillLoad() {
+  connectedCallback() {
     this.store = findParentPaginatedList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
-
-    // Get initial state
-    this.paginationMeta = this.store.state.paginationMeta;
-
-    // Subscribe to store changes - watch for changes to paginationMeta
-    this.unsubscribe = this.store.onChange("paginationMeta", (value: PaginationMeta | null) => {
-      this.paginationMeta = value;
-    });
+    // Force a render whenever paginationMeta changes so render() reads fresh state.
+    this.unsubscribers.push(
+      this.store.onChange("paginationMeta", () => {
+        this.renderTrigger++;
+      }),
+    );
   }
 
   disconnectedCallback() {
-    this.unsubscribe?.();
+    for (const unsub of this.unsubscribers) unsub();
+    this.unsubscribers = [];
   }
 
   render() {
+    // Establish renderTrigger dependency so Stencil re-renders on increment.
+    void this.renderTrigger;
+
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return null;
     }
 
-    if (!this.paginationMeta) {
+    const meta = this.store.state.paginationMeta;
+    if (!meta) {
       return null;
     }
 
     return (
       <Host>
         <span class={this.componentClassName}>
-          Page {this.paginationMeta.page} of {this.paginationMeta.last}
+          Page {meta.page} of {meta.last}
         </span>
       </Host>
     );

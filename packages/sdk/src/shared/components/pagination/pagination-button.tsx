@@ -1,5 +1,4 @@
 import { Component, Host, h, Prop, State } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
 import { UnidyComponent } from "../../base/component";
 import { findParentPaginatedList } from "../../context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
@@ -11,45 +10,41 @@ export class PaginationButton extends UnidyComponent() {
   /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() paginationMeta: PaginationMeta | null = null;
+  @State() private renderTrigger = 0;
 
   private store: PaginationStore | null = null;
-  private unsubscribe: (() => void) | null = null;
+  private unsubscribers: Array<() => void> = [];
 
-  componentWillLoad() {
+  connectedCallback() {
     this.store = findParentPaginatedList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
-
-    // Get initial state
-    this.paginationMeta = this.store.state.paginationMeta;
-
-    // Subscribe to store changes - watch for changes to paginationMeta
-    this.unsubscribe = this.store.onChange("paginationMeta", (value: PaginationMeta | null) => {
-      this.paginationMeta = value;
-    });
+    // Force a render whenever paginationMeta changes so render() reads fresh state.
+    this.unsubscribers.push(
+      this.store.onChange("paginationMeta", () => {
+        this.renderTrigger++;
+      }),
+    );
   }
 
   disconnectedCallback() {
-    this.unsubscribe?.();
+    for (const unsub of this.unsubscribers) unsub();
+    this.unsubscribers = [];
   }
 
   private handleClick = () => {
     const parent = findParentPaginatedList(this.element);
-    if (!parent || !this.paginationMeta) {
+    if (!parent || !this.store) {
       return;
     }
 
-    const isPrev = this.direction === "prev";
-    let newPage: number | null = null;
+    const meta = this.store.state.paginationMeta;
+    if (!meta) return;
 
-    if (isPrev && this.paginationMeta.prev !== null) {
-      newPage = this.paginationMeta.prev;
-    } else if (!isPrev && this.paginationMeta.next !== null) {
-      newPage = this.paginationMeta.next;
-    }
+    const isPrev = this.direction === "prev";
+    const newPage = isPrev ? meta.prev : meta.next;
 
     if (newPage !== null) {
       parent.setAttribute("page", String(newPage));
@@ -57,6 +52,9 @@ export class PaginationButton extends UnidyComponent() {
   };
 
   render() {
+    // Establish renderTrigger dependency so Stencil re-renders on increment.
+    void this.renderTrigger;
+
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return null;
@@ -65,8 +63,8 @@ export class PaginationButton extends UnidyComponent() {
     const isPrev = this.direction === "prev";
     const icon = isPrev ? "←" : "→";
 
-    // Determine disabled state based on pagination meta
-    const disabled = !this.paginationMeta || (isPrev ? this.paginationMeta.prev === null : this.paginationMeta.next === null);
+    const meta = this.store.state.paginationMeta;
+    const disabled = !meta || (isPrev ? meta.prev === null : meta.next === null);
 
     return (
       <Host>
