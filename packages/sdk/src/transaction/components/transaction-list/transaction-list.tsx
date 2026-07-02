@@ -65,11 +65,11 @@ export class TransactionList extends UnidyComponent() {
   }
 
   async componentWillLoad() {
-    await waitForConfig();
-    loadLocales(this.logger);
     if (!this.store) {
       this.store = createPaginationStore();
     }
+    await waitForConfig();
+    loadLocales(this.logger);
   }
 
   async componentDidLoad() {

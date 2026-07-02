@@ -59,7 +59,11 @@ test.describe("u-ticketable-list - authenticated user", () => {
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(paginatedResponse(1, 3)) }),
     );
 
-    await page.goto(routes.ticketable);
+    // Wait for the first ticket API response to confirm loadData() has run
+    await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes("/api/sdk/v1/tickets") && resp.status() === 200),
+      page.goto(routes.ticketable),
+    ]);
 
     // prev disabled on first page, next enabled — store must have been created automatically
     await expect(page.locator("u-pagination-button[direction='prev'] button")).toBeVisible();
