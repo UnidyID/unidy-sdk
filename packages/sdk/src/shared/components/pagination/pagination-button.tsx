@@ -18,22 +18,35 @@ export class PaginationButton extends UnidyComponent() {
   private store: PaginationStore | null = null;
   private unsubscribers: Array<() => void> = [];
 
-  connectedCallback() {
+  componentWillLoad() {
+    // Initial store lookup: runs after the parent's componentWillLoad has set its store.
     this.store = findParentPaginatedList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
-    this.unsubscribers.push(
-      this.store.onChange("paginationMeta", () => {
-        this.renderTrigger++;
-      }),
-    );
+    this.subscribe();
+  }
+
+  connectedCallback() {
+    // Re-subscribe after a disconnect/reconnect cycle (slotted components can be temporarily
+    // disconnected when a shadow:false parent re-renders). componentWillLoad only runs once.
+    if (this.store && this.unsubscribers.length === 0) {
+      this.subscribe();
+    }
   }
 
   disconnectedCallback() {
     for (const unsub of this.unsubscribers) unsub();
     this.unsubscribers = [];
+  }
+
+  private subscribe() {
+    this.unsubscribers.push(
+      this.store?.onChange("paginationMeta", () => {
+        this.renderTrigger++;
+      }),
+    );
   }
 
   private handleClick = () => {
