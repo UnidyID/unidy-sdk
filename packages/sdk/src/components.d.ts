@@ -1779,6 +1779,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
+
     interface UBackButton {
         /**
           * CSS classes to apply to the button element.
@@ -2892,74 +2894,396 @@ declare namespace LocalJSX {
          */
         "target"?: string;
     }
+
+    interface UBackButtonAttributes {
+        "componentClassName": string;
+        "restart": boolean;
+    }
+    interface UBrandConnectButtonAttributes {
+        "componentClassName": string;
+        "action": "connect" | "cancel";
+    }
+    interface UCaptchaFieldAttributes {
+        "feature": CaptchaFeature;
+        "componentClassName": string;
+        "ariaLabel": string;
+    }
+    interface UConditionalRenderAttributes {
+        "when": string;
+        "is": string;
+        "not": boolean;
+    }
+    interface UConfigAttributes {
+        "mode": "production" | "development";
+        "baseUrl": string;
+        "apiKey": string;
+        "customTranslations": string | Record<string, TranslationTree>;
+        "fallbackLocale": string;
+        "locale": string;
+        "checkSignedIn": boolean;
+    }
+    interface UEmailFieldAttributes {
+        "componentClassName": string;
+        "ariaLabel": string;
+        "disabled": boolean;
+    }
+    interface UErrorMessageAttributes {
+        "componentClassName": string;
+        "for": string;
+    }
+    interface UFieldAttributes {
+        "field": string;
+        "required": boolean;
+        "readonlyPlaceholder": string;
+        "countryCodeDisplayOption": "icon" | "label";
+        "invalidPhoneMessage": string;
+        "componentClassName": string;
+        "emptyOption": boolean;
+        "placeholder": string;
+        "renderDefaultLabel": boolean;
+        "pattern": string;
+        "patternErrorMessage": string;
+    }
+    interface UFlashMessageAttributes {
+        "componentClassName": string;
+        "removeAfterSeconds": number | null;
+    }
+    interface UFullProfileAttributes {
+        "fields": string;
+        "countryCodeDisplayOption": "icon" | "label";
+        "enableAutosave": boolean;
+        "saveDelay": number;
+    }
+    interface UJumpToServiceAttributes {
+        "serviceId": string;
+        "newtab": boolean;
+        "componentClassName": string;
+        "redirectUri": string;
+        "scopes": string;
+        "skipOauthAuthorization": boolean;
+    }
+    interface UJumpToUnidyAttributes {
+        "path": string;
+        "newtab": boolean;
+        "noAuth": boolean;
+        "componentClassName": string;
+    }
+    interface ULogoutButtonAttributes {
+        "componentClassName": string;
+        "reloadOnSuccess": boolean;
+        "globalLogout": boolean;
+    }
+    interface UMagicCodeFieldAttributes {
+        "componentClassName": string;
+    }
+    interface UMissingFieldAttributes {
+        "componentClassName": string;
+    }
+    interface UMissingFieldsSubmitButtonAttributes {
+        "componentClassName": string;
+    }
+    interface UNewsletterCheckboxAttributes {
+        "internalName": string;
+        "checked": boolean;
+        "componentClassName": string;
+    }
+    interface UNewsletterConsentCheckboxAttributes {
+        "componentClassName": string;
+        "consentKey": string;
+    }
+    interface UNewsletterLogoutButtonAttributes {
+        "componentClassName": string;
+    }
+    interface UNewsletterPreferenceCheckboxAttributes {
+        "internalName": string;
+        "preferenceIdentifier": string;
+        "checked": boolean;
+        "componentClassName": string;
+    }
+    interface UNewsletterResendDoiButtonAttributes {
+        "internalName": string;
+        "componentClassName": string;
+    }
+    interface UNewsletterRootAttributes {
+        "componentClassName": string;
+        "redirectUri": string;
+    }
+    interface UNewsletterToggleSubscriptionButtonAttributes {
+        "internalName": string;
+        "componentClassName": string;
+        "subscribeClassName": string;
+        "unsubscribeClassName": string;
+    }
+    interface UOauthButtonAttributes {
+        "action": OAuthButtonAction;
+        "componentClassName": string;
+    }
+    interface UOauthLogoAttributes {
+        "componentClassName": string;
+        "width": string;
+        "height": string;
+    }
+    interface UOauthMissingFieldsAttributes {
+        "componentClassName": string;
+        "fieldClassName": string;
+    }
+    interface UOauthModalAttributes {
+        "componentClassName": string;
+        "contentClassName": string;
+        "backdropClassName": string;
+    }
+    interface UOauthProviderAttributes {
+        "clientId": string;
+        "scopes": string;
+        "redirectUri": string;
+        "newtab": boolean;
+        "autoRedirect": boolean;
+    }
+    interface UOauthScopesAttributes {
+        "componentClassName": string;
+        "itemClassName": string;
+    }
+    interface UOauthTextAttributes {
+        "type": OAuthTextType;
+    }
+    interface UPaginationButtonAttributes {
+        "direction": "prev" | "next";
+        "componentClassName": string;
+    }
+    interface UPaginationPageAttributes {
+        "componentClassName": string;
+    }
+    interface UPasskeyAttributes {
+        "disabled": boolean;
+        "componentClassName": string;
+        "ariaDescribedBy": string;
+        "discoverable": boolean;
+    }
+    interface UPasswordFieldAttributes {
+        "for": PasswordFieldFor;
+        "componentClassName": string;
+        "ariaLabel": string;
+    }
+    interface UProfileAttributes {
+        "profileId": string;
+        "initialData": string | Record<string, string>;
+        "partialValidation": boolean;
+        "validateFields": string;
+        "enableAutosave": boolean;
+        "saveDelay": number;
+    }
+    interface URawFieldAttributes {
+        "required": boolean;
+        "readonlyPlaceholder": string;
+        "countryCodeDisplayOption": "icon" | "label";
+        "invalidPhoneMessage": string;
+        "componentClassName": string;
+        "field": string;
+        "value": string | string[];
+        "checked": boolean;
+        "disabled": boolean;
+        "tooltip": string;
+        "type": string;
+        "placeholder": string;
+        "options": string | Option[];
+        "emptyOption": boolean;
+        "attrName": string;
+        "specificPartKey": string;
+        "ariaDescribedBy": string;
+        "pattern": string;
+        "patternErrorMessage": string;
+    }
+    interface URegistrationButtonAttributes {
+        "for": "email";
+        "componentClassName": string;
+        "redirectUri": string;
+    }
+    interface URegistrationEmailVerificationAttributes {
+        "autoSend": boolean;
+        "componentClassName": string;
+        "inputClassName": string;
+    }
+    interface URegistrationInternalMatchingAttributes {
+        "componentClassName": string;
+        "inputClassName": string;
+        "primaryButtonClassName": string;
+        "secondaryButtonClassName": string;
+        "errorClassName": string;
+    }
+    interface URegistrationNewsletterAttributes {
+        "name": string;
+        "checked": boolean;
+        "componentClassName": string;
+    }
+    interface URegistrationNewsletterPreferenceAttributes {
+        "name": string;
+        "preference": string;
+        "checked": boolean;
+        "componentClassName": string;
+    }
+    interface URegistrationPasskeyAttributes {
+        "componentClassName": string;
+        "passkeyName": string;
+        "disabled": boolean;
+    }
+    interface URegistrationResendAttributes {
+        "componentClassName": string;
+    }
+    interface URegistrationResumeAttributes {
+        "componentClassName": string;
+    }
+    interface URegistrationRootAttributes {
+        "registrationUrl": string;
+        "brandId": number;
+        "steps": string;
+        "autoResume": boolean;
+        "resumeClassName": string;
+        "disableResumeButton": boolean;
+    }
+    interface URegistrationStepAttributes {
+        "name": string;
+        "alwaysRender": boolean;
+        "requiresEmailVerification": boolean;
+        "requiresPassword": boolean;
+    }
+    interface UResendConfirmationEmailAttributes {
+        "componentClassName": string;
+    }
+    interface UResendInvitationEmailAttributes {
+        "componentClassName": string;
+    }
+    interface UResetPasswordButtonAttributes {
+        "componentClassName": string;
+    }
+    interface USendMagicCodeButtonAttributes {
+        "disabled": boolean;
+        "componentClassName": string;
+    }
+    interface USignedInAttributes {
+        "componentClassName": string;
+        "not": boolean;
+    }
+    interface USigninRootAttributes {
+        "componentClassName": string;
+    }
+    interface USigninStepAttributes {
+        "name": | "email"
+    | "verification"
+    | "magic-code"
+    | "connect-brand"
+    | "reset-password"
+    | "single-login"
+    | "missing-fields"
+    | "registration"
+    | "unconfirmed"
+    | "invited";
+        "alwaysRender": boolean;
+    }
+    interface USocialLoginButtonAttributes {
+        "provider": SocialLoginProvider;
+        "redirectUri": string;
+        "iconOnly": boolean;
+        "theme": "light" | "dark";
+    }
+    interface USubmitButtonAttributes {
+        "for": AuthButtonFor | NewsletterButtonFor;
+        "text": string;
+        "disabled": boolean;
+        "componentClassName": string;
+    }
+    interface UTicketableExportAttributes {
+        "format": ExportFormat;
+        "componentClassName": string;
+        "exportable": boolean;
+    }
+    interface UTicketableListAttributes {
+        "target": string;
+        "containerClass": string;
+        "filter": string;
+        "limit": number;
+        "page": number;
+        "skeletonCount": number;
+        "skeletonAllText": boolean;
+        "ticketableType": TicketableType;
+    }
+    interface UTransactionListAttributes {
+        "target": string;
+        "containerClass": string;
+        "filter": string;
+        "limit": number;
+        "page": number;
+        "skeletonCount": number;
+        "skeletonAllText": boolean;
+    }
+
     interface IntrinsicElements {
-        "u-back-button": UBackButton;
-        "u-brand-connect-button": UBrandConnectButton;
-        "u-captcha-field": UCaptchaField;
-        "u-conditional-render": UConditionalRender;
-        "u-config": UConfig;
-        "u-email-field": UEmailField;
-        "u-error-message": UErrorMessage;
-        "u-field": UField;
-        "u-flash-message": UFlashMessage;
-        "u-full-profile": UFullProfile;
-        "u-jump-to-service": UJumpToService;
-        "u-jump-to-unidy": UJumpToUnidy;
-        "u-logout-button": ULogoutButton;
-        "u-magic-code-field": UMagicCodeField;
-        "u-missing-field": UMissingField;
-        "u-missing-fields-submit-button": UMissingFieldsSubmitButton;
-        "u-newsletter-checkbox": UNewsletterCheckbox;
-        "u-newsletter-consent-checkbox": UNewsletterConsentCheckbox;
-        "u-newsletter-logout-button": UNewsletterLogoutButton;
-        "u-newsletter-preference-checkbox": UNewsletterPreferenceCheckbox;
-        "u-newsletter-resend-doi-button": UNewsletterResendDoiButton;
-        "u-newsletter-root": UNewsletterRoot;
-        "u-newsletter-toggle-subscription-button": UNewsletterToggleSubscriptionButton;
-        "u-oauth-button": UOauthButton;
-        "u-oauth-logo": UOauthLogo;
-        "u-oauth-missing-fields": UOauthMissingFields;
-        "u-oauth-modal": UOauthModal;
-        "u-oauth-provider": UOauthProvider;
-        "u-oauth-scopes": UOauthScopes;
-        "u-oauth-text": UOauthText;
-        "u-pagination-button": UPaginationButton;
-        "u-pagination-page": UPaginationPage;
-        "u-passkey": UPasskey;
-        "u-password-field": UPasswordField;
-        "u-profile": UProfile;
-        "u-raw-field": URawField;
-        "u-registration-button": URegistrationButton;
-        "u-registration-email-verification": URegistrationEmailVerification;
-        "u-registration-internal-matching": URegistrationInternalMatching;
-        "u-registration-newsletter": URegistrationNewsletter;
-        "u-registration-newsletter-preference": URegistrationNewsletterPreference;
-        "u-registration-passkey": URegistrationPasskey;
-        "u-registration-resend": URegistrationResend;
-        "u-registration-resume": URegistrationResume;
-        "u-registration-root": URegistrationRoot;
-        "u-registration-step": URegistrationStep;
-        "u-resend-confirmation-email": UResendConfirmationEmail;
-        "u-resend-invitation-email": UResendInvitationEmail;
-        "u-reset-password-button": UResetPasswordButton;
-        "u-send-magic-code-button": USendMagicCodeButton;
-        "u-signed-in": USignedIn;
-        "u-signin-root": USigninRoot;
-        "u-signin-step": USigninStep;
-        "u-social-login-button": USocialLoginButton;
+        "u-back-button": Omit<UBackButton, keyof UBackButtonAttributes> & { [K in keyof UBackButton & keyof UBackButtonAttributes]?: UBackButton[K] } & { [K in keyof UBackButton & keyof UBackButtonAttributes as `attr:${K}`]?: UBackButtonAttributes[K] } & { [K in keyof UBackButton & keyof UBackButtonAttributes as `prop:${K}`]?: UBackButton[K] };
+        "u-brand-connect-button": Omit<UBrandConnectButton, keyof UBrandConnectButtonAttributes> & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes]?: UBrandConnectButton[K] } & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes as `attr:${K}`]?: UBrandConnectButtonAttributes[K] } & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes as `prop:${K}`]?: UBrandConnectButton[K] };
+        "u-captcha-field": Omit<UCaptchaField, keyof UCaptchaFieldAttributes> & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes]?: UCaptchaField[K] } & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes as `attr:${K}`]?: UCaptchaFieldAttributes[K] } & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes as `prop:${K}`]?: UCaptchaField[K] };
+        "u-conditional-render": Omit<UConditionalRender, keyof UConditionalRenderAttributes> & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes]?: UConditionalRender[K] } & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes as `attr:${K}`]?: UConditionalRenderAttributes[K] } & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes as `prop:${K}`]?: UConditionalRender[K] };
+        "u-config": Omit<UConfig, keyof UConfigAttributes> & { [K in keyof UConfig & keyof UConfigAttributes]?: UConfig[K] } & { [K in keyof UConfig & keyof UConfigAttributes as `attr:${K}`]?: UConfigAttributes[K] } & { [K in keyof UConfig & keyof UConfigAttributes as `prop:${K}`]?: UConfig[K] };
+        "u-email-field": Omit<UEmailField, keyof UEmailFieldAttributes> & { [K in keyof UEmailField & keyof UEmailFieldAttributes]?: UEmailField[K] } & { [K in keyof UEmailField & keyof UEmailFieldAttributes as `attr:${K}`]?: UEmailFieldAttributes[K] } & { [K in keyof UEmailField & keyof UEmailFieldAttributes as `prop:${K}`]?: UEmailField[K] };
+        "u-error-message": Omit<UErrorMessage, keyof UErrorMessageAttributes> & { [K in keyof UErrorMessage & keyof UErrorMessageAttributes]?: UErrorMessage[K] } & { [K in keyof UErrorMessage & keyof UErrorMessageAttributes as `attr:${K}`]?: UErrorMessageAttributes[K] } & { [K in keyof UErrorMessage & keyof UErrorMessageAttributes as `prop:${K}`]?: UErrorMessage[K] } & OneOf<"for", UErrorMessage["for"], UErrorMessageAttributes["for"]>;
+        "u-field": Omit<UField, keyof UFieldAttributes> & { [K in keyof UField & keyof UFieldAttributes]?: UField[K] } & { [K in keyof UField & keyof UFieldAttributes as `attr:${K}`]?: UFieldAttributes[K] } & { [K in keyof UField & keyof UFieldAttributes as `prop:${K}`]?: UField[K] } & OneOf<"field", UField["field"], UFieldAttributes["field"]>;
+        "u-flash-message": Omit<UFlashMessage, keyof UFlashMessageAttributes> & { [K in keyof UFlashMessage & keyof UFlashMessageAttributes]?: UFlashMessage[K] } & { [K in keyof UFlashMessage & keyof UFlashMessageAttributes as `attr:${K}`]?: UFlashMessageAttributes[K] } & { [K in keyof UFlashMessage & keyof UFlashMessageAttributes as `prop:${K}`]?: UFlashMessage[K] };
+        "u-full-profile": Omit<UFullProfile, keyof UFullProfileAttributes> & { [K in keyof UFullProfile & keyof UFullProfileAttributes]?: UFullProfile[K] } & { [K in keyof UFullProfile & keyof UFullProfileAttributes as `attr:${K}`]?: UFullProfileAttributes[K] } & { [K in keyof UFullProfile & keyof UFullProfileAttributes as `prop:${K}`]?: UFullProfile[K] };
+        "u-jump-to-service": Omit<UJumpToService, keyof UJumpToServiceAttributes> & { [K in keyof UJumpToService & keyof UJumpToServiceAttributes]?: UJumpToService[K] } & { [K in keyof UJumpToService & keyof UJumpToServiceAttributes as `attr:${K}`]?: UJumpToServiceAttributes[K] } & { [K in keyof UJumpToService & keyof UJumpToServiceAttributes as `prop:${K}`]?: UJumpToService[K] } & OneOf<"serviceId", UJumpToService["serviceId"], UJumpToServiceAttributes["serviceId"]>;
+        "u-jump-to-unidy": Omit<UJumpToUnidy, keyof UJumpToUnidyAttributes> & { [K in keyof UJumpToUnidy & keyof UJumpToUnidyAttributes]?: UJumpToUnidy[K] } & { [K in keyof UJumpToUnidy & keyof UJumpToUnidyAttributes as `attr:${K}`]?: UJumpToUnidyAttributes[K] } & { [K in keyof UJumpToUnidy & keyof UJumpToUnidyAttributes as `prop:${K}`]?: UJumpToUnidy[K] } & OneOf<"path", UJumpToUnidy["path"], UJumpToUnidyAttributes["path"]>;
+        "u-logout-button": Omit<ULogoutButton, keyof ULogoutButtonAttributes> & { [K in keyof ULogoutButton & keyof ULogoutButtonAttributes]?: ULogoutButton[K] } & { [K in keyof ULogoutButton & keyof ULogoutButtonAttributes as `attr:${K}`]?: ULogoutButtonAttributes[K] } & { [K in keyof ULogoutButton & keyof ULogoutButtonAttributes as `prop:${K}`]?: ULogoutButton[K] };
+        "u-magic-code-field": Omit<UMagicCodeField, keyof UMagicCodeFieldAttributes> & { [K in keyof UMagicCodeField & keyof UMagicCodeFieldAttributes]?: UMagicCodeField[K] } & { [K in keyof UMagicCodeField & keyof UMagicCodeFieldAttributes as `attr:${K}`]?: UMagicCodeFieldAttributes[K] } & { [K in keyof UMagicCodeField & keyof UMagicCodeFieldAttributes as `prop:${K}`]?: UMagicCodeField[K] };
+        "u-missing-field": Omit<UMissingField, keyof UMissingFieldAttributes> & { [K in keyof UMissingField & keyof UMissingFieldAttributes]?: UMissingField[K] } & { [K in keyof UMissingField & keyof UMissingFieldAttributes as `attr:${K}`]?: UMissingFieldAttributes[K] } & { [K in keyof UMissingField & keyof UMissingFieldAttributes as `prop:${K}`]?: UMissingField[K] };
+        "u-missing-fields-submit-button": Omit<UMissingFieldsSubmitButton, keyof UMissingFieldsSubmitButtonAttributes> & { [K in keyof UMissingFieldsSubmitButton & keyof UMissingFieldsSubmitButtonAttributes]?: UMissingFieldsSubmitButton[K] } & { [K in keyof UMissingFieldsSubmitButton & keyof UMissingFieldsSubmitButtonAttributes as `attr:${K}`]?: UMissingFieldsSubmitButtonAttributes[K] } & { [K in keyof UMissingFieldsSubmitButton & keyof UMissingFieldsSubmitButtonAttributes as `prop:${K}`]?: UMissingFieldsSubmitButton[K] };
+        "u-newsletter-checkbox": Omit<UNewsletterCheckbox, keyof UNewsletterCheckboxAttributes> & { [K in keyof UNewsletterCheckbox & keyof UNewsletterCheckboxAttributes]?: UNewsletterCheckbox[K] } & { [K in keyof UNewsletterCheckbox & keyof UNewsletterCheckboxAttributes as `attr:${K}`]?: UNewsletterCheckboxAttributes[K] } & { [K in keyof UNewsletterCheckbox & keyof UNewsletterCheckboxAttributes as `prop:${K}`]?: UNewsletterCheckbox[K] } & OneOf<"internalName", UNewsletterCheckbox["internalName"], UNewsletterCheckboxAttributes["internalName"]>;
+        "u-newsletter-consent-checkbox": Omit<UNewsletterConsentCheckbox, keyof UNewsletterConsentCheckboxAttributes> & { [K in keyof UNewsletterConsentCheckbox & keyof UNewsletterConsentCheckboxAttributes]?: UNewsletterConsentCheckbox[K] } & { [K in keyof UNewsletterConsentCheckbox & keyof UNewsletterConsentCheckboxAttributes as `attr:${K}`]?: UNewsletterConsentCheckboxAttributes[K] } & { [K in keyof UNewsletterConsentCheckbox & keyof UNewsletterConsentCheckboxAttributes as `prop:${K}`]?: UNewsletterConsentCheckbox[K] };
+        "u-newsletter-logout-button": Omit<UNewsletterLogoutButton, keyof UNewsletterLogoutButtonAttributes> & { [K in keyof UNewsletterLogoutButton & keyof UNewsletterLogoutButtonAttributes]?: UNewsletterLogoutButton[K] } & { [K in keyof UNewsletterLogoutButton & keyof UNewsletterLogoutButtonAttributes as `attr:${K}`]?: UNewsletterLogoutButtonAttributes[K] } & { [K in keyof UNewsletterLogoutButton & keyof UNewsletterLogoutButtonAttributes as `prop:${K}`]?: UNewsletterLogoutButton[K] };
+        "u-newsletter-preference-checkbox": Omit<UNewsletterPreferenceCheckbox, keyof UNewsletterPreferenceCheckboxAttributes> & { [K in keyof UNewsletterPreferenceCheckbox & keyof UNewsletterPreferenceCheckboxAttributes]?: UNewsletterPreferenceCheckbox[K] } & { [K in keyof UNewsletterPreferenceCheckbox & keyof UNewsletterPreferenceCheckboxAttributes as `attr:${K}`]?: UNewsletterPreferenceCheckboxAttributes[K] } & { [K in keyof UNewsletterPreferenceCheckbox & keyof UNewsletterPreferenceCheckboxAttributes as `prop:${K}`]?: UNewsletterPreferenceCheckbox[K] } & OneOf<"internalName", UNewsletterPreferenceCheckbox["internalName"], UNewsletterPreferenceCheckboxAttributes["internalName"]> & OneOf<"preferenceIdentifier", UNewsletterPreferenceCheckbox["preferenceIdentifier"], UNewsletterPreferenceCheckboxAttributes["preferenceIdentifier"]>;
+        "u-newsletter-resend-doi-button": Omit<UNewsletterResendDoiButton, keyof UNewsletterResendDoiButtonAttributes> & { [K in keyof UNewsletterResendDoiButton & keyof UNewsletterResendDoiButtonAttributes]?: UNewsletterResendDoiButton[K] } & { [K in keyof UNewsletterResendDoiButton & keyof UNewsletterResendDoiButtonAttributes as `attr:${K}`]?: UNewsletterResendDoiButtonAttributes[K] } & { [K in keyof UNewsletterResendDoiButton & keyof UNewsletterResendDoiButtonAttributes as `prop:${K}`]?: UNewsletterResendDoiButton[K] } & OneOf<"internalName", UNewsletterResendDoiButton["internalName"], UNewsletterResendDoiButtonAttributes["internalName"]>;
+        "u-newsletter-root": Omit<UNewsletterRoot, keyof UNewsletterRootAttributes> & { [K in keyof UNewsletterRoot & keyof UNewsletterRootAttributes]?: UNewsletterRoot[K] } & { [K in keyof UNewsletterRoot & keyof UNewsletterRootAttributes as `attr:${K}`]?: UNewsletterRootAttributes[K] } & { [K in keyof UNewsletterRoot & keyof UNewsletterRootAttributes as `prop:${K}`]?: UNewsletterRoot[K] };
+        "u-newsletter-toggle-subscription-button": Omit<UNewsletterToggleSubscriptionButton, keyof UNewsletterToggleSubscriptionButtonAttributes> & { [K in keyof UNewsletterToggleSubscriptionButton & keyof UNewsletterToggleSubscriptionButtonAttributes]?: UNewsletterToggleSubscriptionButton[K] } & { [K in keyof UNewsletterToggleSubscriptionButton & keyof UNewsletterToggleSubscriptionButtonAttributes as `attr:${K}`]?: UNewsletterToggleSubscriptionButtonAttributes[K] } & { [K in keyof UNewsletterToggleSubscriptionButton & keyof UNewsletterToggleSubscriptionButtonAttributes as `prop:${K}`]?: UNewsletterToggleSubscriptionButton[K] } & OneOf<"internalName", UNewsletterToggleSubscriptionButton["internalName"], UNewsletterToggleSubscriptionButtonAttributes["internalName"]>;
+        "u-oauth-button": Omit<UOauthButton, keyof UOauthButtonAttributes> & { [K in keyof UOauthButton & keyof UOauthButtonAttributes]?: UOauthButton[K] } & { [K in keyof UOauthButton & keyof UOauthButtonAttributes as `attr:${K}`]?: UOauthButtonAttributes[K] } & { [K in keyof UOauthButton & keyof UOauthButtonAttributes as `prop:${K}`]?: UOauthButton[K] };
+        "u-oauth-logo": Omit<UOauthLogo, keyof UOauthLogoAttributes> & { [K in keyof UOauthLogo & keyof UOauthLogoAttributes]?: UOauthLogo[K] } & { [K in keyof UOauthLogo & keyof UOauthLogoAttributes as `attr:${K}`]?: UOauthLogoAttributes[K] } & { [K in keyof UOauthLogo & keyof UOauthLogoAttributes as `prop:${K}`]?: UOauthLogo[K] };
+        "u-oauth-missing-fields": Omit<UOauthMissingFields, keyof UOauthMissingFieldsAttributes> & { [K in keyof UOauthMissingFields & keyof UOauthMissingFieldsAttributes]?: UOauthMissingFields[K] } & { [K in keyof UOauthMissingFields & keyof UOauthMissingFieldsAttributes as `attr:${K}`]?: UOauthMissingFieldsAttributes[K] } & { [K in keyof UOauthMissingFields & keyof UOauthMissingFieldsAttributes as `prop:${K}`]?: UOauthMissingFields[K] };
+        "u-oauth-modal": Omit<UOauthModal, keyof UOauthModalAttributes> & { [K in keyof UOauthModal & keyof UOauthModalAttributes]?: UOauthModal[K] } & { [K in keyof UOauthModal & keyof UOauthModalAttributes as `attr:${K}`]?: UOauthModalAttributes[K] } & { [K in keyof UOauthModal & keyof UOauthModalAttributes as `prop:${K}`]?: UOauthModal[K] };
+        "u-oauth-provider": Omit<UOauthProvider, keyof UOauthProviderAttributes> & { [K in keyof UOauthProvider & keyof UOauthProviderAttributes]?: UOauthProvider[K] } & { [K in keyof UOauthProvider & keyof UOauthProviderAttributes as `attr:${K}`]?: UOauthProviderAttributes[K] } & { [K in keyof UOauthProvider & keyof UOauthProviderAttributes as `prop:${K}`]?: UOauthProvider[K] } & OneOf<"clientId", UOauthProvider["clientId"], UOauthProviderAttributes["clientId"]>;
+        "u-oauth-scopes": Omit<UOauthScopes, keyof UOauthScopesAttributes> & { [K in keyof UOauthScopes & keyof UOauthScopesAttributes]?: UOauthScopes[K] } & { [K in keyof UOauthScopes & keyof UOauthScopesAttributes as `attr:${K}`]?: UOauthScopesAttributes[K] } & { [K in keyof UOauthScopes & keyof UOauthScopesAttributes as `prop:${K}`]?: UOauthScopes[K] };
+        "u-oauth-text": Omit<UOauthText, keyof UOauthTextAttributes> & { [K in keyof UOauthText & keyof UOauthTextAttributes]?: UOauthText[K] } & { [K in keyof UOauthText & keyof UOauthTextAttributes as `attr:${K}`]?: UOauthTextAttributes[K] } & { [K in keyof UOauthText & keyof UOauthTextAttributes as `prop:${K}`]?: UOauthText[K] };
+        "u-pagination-button": Omit<UPaginationButton, keyof UPaginationButtonAttributes> & { [K in keyof UPaginationButton & keyof UPaginationButtonAttributes]?: UPaginationButton[K] } & { [K in keyof UPaginationButton & keyof UPaginationButtonAttributes as `attr:${K}`]?: UPaginationButtonAttributes[K] } & { [K in keyof UPaginationButton & keyof UPaginationButtonAttributes as `prop:${K}`]?: UPaginationButton[K] };
+        "u-pagination-page": Omit<UPaginationPage, keyof UPaginationPageAttributes> & { [K in keyof UPaginationPage & keyof UPaginationPageAttributes]?: UPaginationPage[K] } & { [K in keyof UPaginationPage & keyof UPaginationPageAttributes as `attr:${K}`]?: UPaginationPageAttributes[K] } & { [K in keyof UPaginationPage & keyof UPaginationPageAttributes as `prop:${K}`]?: UPaginationPage[K] };
+        "u-passkey": Omit<UPasskey, keyof UPasskeyAttributes> & { [K in keyof UPasskey & keyof UPasskeyAttributes]?: UPasskey[K] } & { [K in keyof UPasskey & keyof UPasskeyAttributes as `attr:${K}`]?: UPasskeyAttributes[K] } & { [K in keyof UPasskey & keyof UPasskeyAttributes as `prop:${K}`]?: UPasskey[K] };
+        "u-password-field": Omit<UPasswordField, keyof UPasswordFieldAttributes> & { [K in keyof UPasswordField & keyof UPasswordFieldAttributes]?: UPasswordField[K] } & { [K in keyof UPasswordField & keyof UPasswordFieldAttributes as `attr:${K}`]?: UPasswordFieldAttributes[K] } & { [K in keyof UPasswordField & keyof UPasswordFieldAttributes as `prop:${K}`]?: UPasswordField[K] };
+        "u-profile": Omit<UProfile, keyof UProfileAttributes> & { [K in keyof UProfile & keyof UProfileAttributes]?: UProfile[K] } & { [K in keyof UProfile & keyof UProfileAttributes as `attr:${K}`]?: UProfileAttributes[K] } & { [K in keyof UProfile & keyof UProfileAttributes as `prop:${K}`]?: UProfile[K] };
+        "u-raw-field": Omit<URawField, keyof URawFieldAttributes> & { [K in keyof URawField & keyof URawFieldAttributes]?: URawField[K] } & { [K in keyof URawField & keyof URawFieldAttributes as `attr:${K}`]?: URawFieldAttributes[K] } & { [K in keyof URawField & keyof URawFieldAttributes as `prop:${K}`]?: URawField[K] } & OneOf<"field", URawField["field"], URawFieldAttributes["field"]> & OneOf<"type", URawField["type"], URawFieldAttributes["type"]>;
+        "u-registration-button": Omit<URegistrationButton, keyof URegistrationButtonAttributes> & { [K in keyof URegistrationButton & keyof URegistrationButtonAttributes]?: URegistrationButton[K] } & { [K in keyof URegistrationButton & keyof URegistrationButtonAttributes as `attr:${K}`]?: URegistrationButtonAttributes[K] } & { [K in keyof URegistrationButton & keyof URegistrationButtonAttributes as `prop:${K}`]?: URegistrationButton[K] } & OneOf<"for", URegistrationButton["for"], URegistrationButtonAttributes["for"]>;
+        "u-registration-email-verification": Omit<URegistrationEmailVerification, keyof URegistrationEmailVerificationAttributes> & { [K in keyof URegistrationEmailVerification & keyof URegistrationEmailVerificationAttributes]?: URegistrationEmailVerification[K] } & { [K in keyof URegistrationEmailVerification & keyof URegistrationEmailVerificationAttributes as `attr:${K}`]?: URegistrationEmailVerificationAttributes[K] } & { [K in keyof URegistrationEmailVerification & keyof URegistrationEmailVerificationAttributes as `prop:${K}`]?: URegistrationEmailVerification[K] };
+        "u-registration-internal-matching": Omit<URegistrationInternalMatching, keyof URegistrationInternalMatchingAttributes> & { [K in keyof URegistrationInternalMatching & keyof URegistrationInternalMatchingAttributes]?: URegistrationInternalMatching[K] } & { [K in keyof URegistrationInternalMatching & keyof URegistrationInternalMatchingAttributes as `attr:${K}`]?: URegistrationInternalMatchingAttributes[K] } & { [K in keyof URegistrationInternalMatching & keyof URegistrationInternalMatchingAttributes as `prop:${K}`]?: URegistrationInternalMatching[K] };
+        "u-registration-newsletter": Omit<URegistrationNewsletter, keyof URegistrationNewsletterAttributes> & { [K in keyof URegistrationNewsletter & keyof URegistrationNewsletterAttributes]?: URegistrationNewsletter[K] } & { [K in keyof URegistrationNewsletter & keyof URegistrationNewsletterAttributes as `attr:${K}`]?: URegistrationNewsletterAttributes[K] } & { [K in keyof URegistrationNewsletter & keyof URegistrationNewsletterAttributes as `prop:${K}`]?: URegistrationNewsletter[K] } & OneOf<"name", URegistrationNewsletter["name"], URegistrationNewsletterAttributes["name"]>;
+        "u-registration-newsletter-preference": Omit<URegistrationNewsletterPreference, keyof URegistrationNewsletterPreferenceAttributes> & { [K in keyof URegistrationNewsletterPreference & keyof URegistrationNewsletterPreferenceAttributes]?: URegistrationNewsletterPreference[K] } & { [K in keyof URegistrationNewsletterPreference & keyof URegistrationNewsletterPreferenceAttributes as `attr:${K}`]?: URegistrationNewsletterPreferenceAttributes[K] } & { [K in keyof URegistrationNewsletterPreference & keyof URegistrationNewsletterPreferenceAttributes as `prop:${K}`]?: URegistrationNewsletterPreference[K] } & OneOf<"name", URegistrationNewsletterPreference["name"], URegistrationNewsletterPreferenceAttributes["name"]> & OneOf<"preference", URegistrationNewsletterPreference["preference"], URegistrationNewsletterPreferenceAttributes["preference"]>;
+        "u-registration-passkey": Omit<URegistrationPasskey, keyof URegistrationPasskeyAttributes> & { [K in keyof URegistrationPasskey & keyof URegistrationPasskeyAttributes]?: URegistrationPasskey[K] } & { [K in keyof URegistrationPasskey & keyof URegistrationPasskeyAttributes as `attr:${K}`]?: URegistrationPasskeyAttributes[K] } & { [K in keyof URegistrationPasskey & keyof URegistrationPasskeyAttributes as `prop:${K}`]?: URegistrationPasskey[K] };
+        "u-registration-resend": Omit<URegistrationResend, keyof URegistrationResendAttributes> & { [K in keyof URegistrationResend & keyof URegistrationResendAttributes]?: URegistrationResend[K] } & { [K in keyof URegistrationResend & keyof URegistrationResendAttributes as `attr:${K}`]?: URegistrationResendAttributes[K] } & { [K in keyof URegistrationResend & keyof URegistrationResendAttributes as `prop:${K}`]?: URegistrationResend[K] };
+        "u-registration-resume": Omit<URegistrationResume, keyof URegistrationResumeAttributes> & { [K in keyof URegistrationResume & keyof URegistrationResumeAttributes]?: URegistrationResume[K] } & { [K in keyof URegistrationResume & keyof URegistrationResumeAttributes as `attr:${K}`]?: URegistrationResumeAttributes[K] } & { [K in keyof URegistrationResume & keyof URegistrationResumeAttributes as `prop:${K}`]?: URegistrationResume[K] };
+        "u-registration-root": Omit<URegistrationRoot, keyof URegistrationRootAttributes> & { [K in keyof URegistrationRoot & keyof URegistrationRootAttributes]?: URegistrationRoot[K] } & { [K in keyof URegistrationRoot & keyof URegistrationRootAttributes as `attr:${K}`]?: URegistrationRootAttributes[K] } & { [K in keyof URegistrationRoot & keyof URegistrationRootAttributes as `prop:${K}`]?: URegistrationRoot[K] };
+        "u-registration-step": Omit<URegistrationStep, keyof URegistrationStepAttributes> & { [K in keyof URegistrationStep & keyof URegistrationStepAttributes]?: URegistrationStep[K] } & { [K in keyof URegistrationStep & keyof URegistrationStepAttributes as `attr:${K}`]?: URegistrationStepAttributes[K] } & { [K in keyof URegistrationStep & keyof URegistrationStepAttributes as `prop:${K}`]?: URegistrationStep[K] } & OneOf<"name", URegistrationStep["name"], URegistrationStepAttributes["name"]>;
+        "u-resend-confirmation-email": Omit<UResendConfirmationEmail, keyof UResendConfirmationEmailAttributes> & { [K in keyof UResendConfirmationEmail & keyof UResendConfirmationEmailAttributes]?: UResendConfirmationEmail[K] } & { [K in keyof UResendConfirmationEmail & keyof UResendConfirmationEmailAttributes as `attr:${K}`]?: UResendConfirmationEmailAttributes[K] } & { [K in keyof UResendConfirmationEmail & keyof UResendConfirmationEmailAttributes as `prop:${K}`]?: UResendConfirmationEmail[K] };
+        "u-resend-invitation-email": Omit<UResendInvitationEmail, keyof UResendInvitationEmailAttributes> & { [K in keyof UResendInvitationEmail & keyof UResendInvitationEmailAttributes]?: UResendInvitationEmail[K] } & { [K in keyof UResendInvitationEmail & keyof UResendInvitationEmailAttributes as `attr:${K}`]?: UResendInvitationEmailAttributes[K] } & { [K in keyof UResendInvitationEmail & keyof UResendInvitationEmailAttributes as `prop:${K}`]?: UResendInvitationEmail[K] };
+        "u-reset-password-button": Omit<UResetPasswordButton, keyof UResetPasswordButtonAttributes> & { [K in keyof UResetPasswordButton & keyof UResetPasswordButtonAttributes]?: UResetPasswordButton[K] } & { [K in keyof UResetPasswordButton & keyof UResetPasswordButtonAttributes as `attr:${K}`]?: UResetPasswordButtonAttributes[K] } & { [K in keyof UResetPasswordButton & keyof UResetPasswordButtonAttributes as `prop:${K}`]?: UResetPasswordButton[K] };
+        "u-send-magic-code-button": Omit<USendMagicCodeButton, keyof USendMagicCodeButtonAttributes> & { [K in keyof USendMagicCodeButton & keyof USendMagicCodeButtonAttributes]?: USendMagicCodeButton[K] } & { [K in keyof USendMagicCodeButton & keyof USendMagicCodeButtonAttributes as `attr:${K}`]?: USendMagicCodeButtonAttributes[K] } & { [K in keyof USendMagicCodeButton & keyof USendMagicCodeButtonAttributes as `prop:${K}`]?: USendMagicCodeButton[K] };
+        "u-signed-in": Omit<USignedIn, keyof USignedInAttributes> & { [K in keyof USignedIn & keyof USignedInAttributes]?: USignedIn[K] } & { [K in keyof USignedIn & keyof USignedInAttributes as `attr:${K}`]?: USignedInAttributes[K] } & { [K in keyof USignedIn & keyof USignedInAttributes as `prop:${K}`]?: USignedIn[K] };
+        "u-signin-root": Omit<USigninRoot, keyof USigninRootAttributes> & { [K in keyof USigninRoot & keyof USigninRootAttributes]?: USigninRoot[K] } & { [K in keyof USigninRoot & keyof USigninRootAttributes as `attr:${K}`]?: USigninRootAttributes[K] } & { [K in keyof USigninRoot & keyof USigninRootAttributes as `prop:${K}`]?: USigninRoot[K] };
+        "u-signin-step": Omit<USigninStep, keyof USigninStepAttributes> & { [K in keyof USigninStep & keyof USigninStepAttributes]?: USigninStep[K] } & { [K in keyof USigninStep & keyof USigninStepAttributes as `attr:${K}`]?: USigninStepAttributes[K] } & { [K in keyof USigninStep & keyof USigninStepAttributes as `prop:${K}`]?: USigninStep[K] } & OneOf<"name", USigninStep["name"], USigninStepAttributes["name"]>;
+        "u-social-login-button": Omit<USocialLoginButton, keyof USocialLoginButtonAttributes> & { [K in keyof USocialLoginButton & keyof USocialLoginButtonAttributes]?: USocialLoginButton[K] } & { [K in keyof USocialLoginButton & keyof USocialLoginButtonAttributes as `attr:${K}`]?: USocialLoginButtonAttributes[K] } & { [K in keyof USocialLoginButton & keyof USocialLoginButtonAttributes as `prop:${K}`]?: USocialLoginButton[K] };
         "u-spinner": USpinner;
-        "u-submit-button": USubmitButton;
-        "u-ticketable-export": UTicketableExport;
-        "u-ticketable-list": UTicketableList;
-        "u-transaction-list": UTransactionList;
+        "u-submit-button": Omit<USubmitButton, keyof USubmitButtonAttributes> & { [K in keyof USubmitButton & keyof USubmitButtonAttributes]?: USubmitButton[K] } & { [K in keyof USubmitButton & keyof USubmitButtonAttributes as `attr:${K}`]?: USubmitButtonAttributes[K] } & { [K in keyof USubmitButton & keyof USubmitButtonAttributes as `prop:${K}`]?: USubmitButton[K] };
+        "u-ticketable-export": Omit<UTicketableExport, keyof UTicketableExportAttributes> & { [K in keyof UTicketableExport & keyof UTicketableExportAttributes]?: UTicketableExport[K] } & { [K in keyof UTicketableExport & keyof UTicketableExportAttributes as `attr:${K}`]?: UTicketableExportAttributes[K] } & { [K in keyof UTicketableExport & keyof UTicketableExportAttributes as `prop:${K}`]?: UTicketableExport[K] } & OneOf<"format", UTicketableExport["format"], UTicketableExportAttributes["format"]>;
+        "u-ticketable-list": Omit<UTicketableList, keyof UTicketableListAttributes> & { [K in keyof UTicketableList & keyof UTicketableListAttributes]?: UTicketableList[K] } & { [K in keyof UTicketableList & keyof UTicketableListAttributes as `attr:${K}`]?: UTicketableListAttributes[K] } & { [K in keyof UTicketableList & keyof UTicketableListAttributes as `prop:${K}`]?: UTicketableList[K] } & OneOf<"ticketableType", UTicketableList["ticketableType"], UTicketableListAttributes["ticketableType"]>;
+        "u-transaction-list": Omit<UTransactionList, keyof UTransactionListAttributes> & { [K in keyof UTransactionList & keyof UTransactionListAttributes]?: UTransactionList[K] } & { [K in keyof UTransactionList & keyof UTransactionListAttributes as `attr:${K}`]?: UTransactionListAttributes[K] } & { [K in keyof UTransactionList & keyof UTransactionListAttributes as `prop:${K}`]?: UTransactionList[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "u-back-button": LocalJSX.UBackButton & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
-            "u-brand-connect-button": LocalJSX.UBrandConnectButton & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
+            "u-back-button": LocalJSX.IntrinsicElements["u-back-button"] & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
+            "u-brand-connect-button": LocalJSX.IntrinsicElements["u-brand-connect-button"] & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
             /**
              * Captcha field component that renders a captcha widget when required
              * Usage:
@@ -2971,63 +3295,63 @@ declare module "@stencil/core" {
              * - Shows a widget for challenge-based providers (Turnstile, hCaptcha, Friendly Captcha)
              * - Is invisible for reCAPTCHA v3 (score-based)
              */
-            "u-captcha-field": LocalJSX.UCaptchaField & JSXBase.HTMLAttributes<HTMLUCaptchaFieldElement>;
-            "u-conditional-render": LocalJSX.UConditionalRender & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
-            "u-config": LocalJSX.UConfig & JSXBase.HTMLAttributes<HTMLUConfigElement>;
-            "u-email-field": LocalJSX.UEmailField & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
-            "u-error-message": LocalJSX.UErrorMessage & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
-            "u-field": LocalJSX.UField & JSXBase.HTMLAttributes<HTMLUFieldElement>;
-            "u-flash-message": LocalJSX.UFlashMessage & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
-            "u-full-profile": LocalJSX.UFullProfile & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
-            "u-jump-to-service": LocalJSX.UJumpToService & JSXBase.HTMLAttributes<HTMLUJumpToServiceElement>;
-            "u-jump-to-unidy": LocalJSX.UJumpToUnidy & JSXBase.HTMLAttributes<HTMLUJumpToUnidyElement>;
-            "u-logout-button": LocalJSX.ULogoutButton & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
-            "u-magic-code-field": LocalJSX.UMagicCodeField & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
-            "u-missing-field": LocalJSX.UMissingField & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
-            "u-missing-fields-submit-button": LocalJSX.UMissingFieldsSubmitButton & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
-            "u-newsletter-checkbox": LocalJSX.UNewsletterCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
-            "u-newsletter-consent-checkbox": LocalJSX.UNewsletterConsentCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterConsentCheckboxElement>;
-            "u-newsletter-logout-button": LocalJSX.UNewsletterLogoutButton & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
-            "u-newsletter-preference-checkbox": LocalJSX.UNewsletterPreferenceCheckbox & JSXBase.HTMLAttributes<HTMLUNewsletterPreferenceCheckboxElement>;
-            "u-newsletter-resend-doi-button": LocalJSX.UNewsletterResendDoiButton & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
-            "u-newsletter-root": LocalJSX.UNewsletterRoot & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
-            "u-newsletter-toggle-subscription-button": LocalJSX.UNewsletterToggleSubscriptionButton & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
-            "u-oauth-button": LocalJSX.UOauthButton & JSXBase.HTMLAttributes<HTMLUOauthButtonElement>;
-            "u-oauth-logo": LocalJSX.UOauthLogo & JSXBase.HTMLAttributes<HTMLUOauthLogoElement>;
-            "u-oauth-missing-fields": LocalJSX.UOauthMissingFields & JSXBase.HTMLAttributes<HTMLUOauthMissingFieldsElement>;
-            "u-oauth-modal": LocalJSX.UOauthModal & JSXBase.HTMLAttributes<HTMLUOauthModalElement>;
-            "u-oauth-provider": LocalJSX.UOauthProvider & JSXBase.HTMLAttributes<HTMLUOauthProviderElement>;
-            "u-oauth-scopes": LocalJSX.UOauthScopes & JSXBase.HTMLAttributes<HTMLUOauthScopesElement>;
-            "u-oauth-text": LocalJSX.UOauthText & JSXBase.HTMLAttributes<HTMLUOauthTextElement>;
-            "u-pagination-button": LocalJSX.UPaginationButton & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
-            "u-pagination-page": LocalJSX.UPaginationPage & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
-            "u-passkey": LocalJSX.UPasskey & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
-            "u-password-field": LocalJSX.UPasswordField & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
-            "u-profile": LocalJSX.UProfile & JSXBase.HTMLAttributes<HTMLUProfileElement>;
-            "u-raw-field": LocalJSX.URawField & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
-            "u-registration-button": LocalJSX.URegistrationButton & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
-            "u-registration-email-verification": LocalJSX.URegistrationEmailVerification & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
-            "u-registration-internal-matching": LocalJSX.URegistrationInternalMatching & JSXBase.HTMLAttributes<HTMLURegistrationInternalMatchingElement>;
-            "u-registration-newsletter": LocalJSX.URegistrationNewsletter & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
-            "u-registration-newsletter-preference": LocalJSX.URegistrationNewsletterPreference & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
-            "u-registration-passkey": LocalJSX.URegistrationPasskey & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
-            "u-registration-resend": LocalJSX.URegistrationResend & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
-            "u-registration-resume": LocalJSX.URegistrationResume & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
-            "u-registration-root": LocalJSX.URegistrationRoot & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
-            "u-registration-step": LocalJSX.URegistrationStep & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
-            "u-resend-confirmation-email": LocalJSX.UResendConfirmationEmail & JSXBase.HTMLAttributes<HTMLUResendConfirmationEmailElement>;
-            "u-resend-invitation-email": LocalJSX.UResendInvitationEmail & JSXBase.HTMLAttributes<HTMLUResendInvitationEmailElement>;
-            "u-reset-password-button": LocalJSX.UResetPasswordButton & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
-            "u-send-magic-code-button": LocalJSX.USendMagicCodeButton & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
-            "u-signed-in": LocalJSX.USignedIn & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
-            "u-signin-root": LocalJSX.USigninRoot & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
-            "u-signin-step": LocalJSX.USigninStep & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
-            "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
-            "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
-            "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
-            "u-ticketable-export": LocalJSX.UTicketableExport & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
-            "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
-            "u-transaction-list": LocalJSX.UTransactionList & JSXBase.HTMLAttributes<HTMLUTransactionListElement>;
+            "u-captcha-field": LocalJSX.IntrinsicElements["u-captcha-field"] & JSXBase.HTMLAttributes<HTMLUCaptchaFieldElement>;
+            "u-conditional-render": LocalJSX.IntrinsicElements["u-conditional-render"] & JSXBase.HTMLAttributes<HTMLUConditionalRenderElement>;
+            "u-config": LocalJSX.IntrinsicElements["u-config"] & JSXBase.HTMLAttributes<HTMLUConfigElement>;
+            "u-email-field": LocalJSX.IntrinsicElements["u-email-field"] & JSXBase.HTMLAttributes<HTMLUEmailFieldElement>;
+            "u-error-message": LocalJSX.IntrinsicElements["u-error-message"] & JSXBase.HTMLAttributes<HTMLUErrorMessageElement>;
+            "u-field": LocalJSX.IntrinsicElements["u-field"] & JSXBase.HTMLAttributes<HTMLUFieldElement>;
+            "u-flash-message": LocalJSX.IntrinsicElements["u-flash-message"] & JSXBase.HTMLAttributes<HTMLUFlashMessageElement>;
+            "u-full-profile": LocalJSX.IntrinsicElements["u-full-profile"] & JSXBase.HTMLAttributes<HTMLUFullProfileElement>;
+            "u-jump-to-service": LocalJSX.IntrinsicElements["u-jump-to-service"] & JSXBase.HTMLAttributes<HTMLUJumpToServiceElement>;
+            "u-jump-to-unidy": LocalJSX.IntrinsicElements["u-jump-to-unidy"] & JSXBase.HTMLAttributes<HTMLUJumpToUnidyElement>;
+            "u-logout-button": LocalJSX.IntrinsicElements["u-logout-button"] & JSXBase.HTMLAttributes<HTMLULogoutButtonElement>;
+            "u-magic-code-field": LocalJSX.IntrinsicElements["u-magic-code-field"] & JSXBase.HTMLAttributes<HTMLUMagicCodeFieldElement>;
+            "u-missing-field": LocalJSX.IntrinsicElements["u-missing-field"] & JSXBase.HTMLAttributes<HTMLUMissingFieldElement>;
+            "u-missing-fields-submit-button": LocalJSX.IntrinsicElements["u-missing-fields-submit-button"] & JSXBase.HTMLAttributes<HTMLUMissingFieldsSubmitButtonElement>;
+            "u-newsletter-checkbox": LocalJSX.IntrinsicElements["u-newsletter-checkbox"] & JSXBase.HTMLAttributes<HTMLUNewsletterCheckboxElement>;
+            "u-newsletter-consent-checkbox": LocalJSX.IntrinsicElements["u-newsletter-consent-checkbox"] & JSXBase.HTMLAttributes<HTMLUNewsletterConsentCheckboxElement>;
+            "u-newsletter-logout-button": LocalJSX.IntrinsicElements["u-newsletter-logout-button"] & JSXBase.HTMLAttributes<HTMLUNewsletterLogoutButtonElement>;
+            "u-newsletter-preference-checkbox": LocalJSX.IntrinsicElements["u-newsletter-preference-checkbox"] & JSXBase.HTMLAttributes<HTMLUNewsletterPreferenceCheckboxElement>;
+            "u-newsletter-resend-doi-button": LocalJSX.IntrinsicElements["u-newsletter-resend-doi-button"] & JSXBase.HTMLAttributes<HTMLUNewsletterResendDoiButtonElement>;
+            "u-newsletter-root": LocalJSX.IntrinsicElements["u-newsletter-root"] & JSXBase.HTMLAttributes<HTMLUNewsletterRootElement>;
+            "u-newsletter-toggle-subscription-button": LocalJSX.IntrinsicElements["u-newsletter-toggle-subscription-button"] & JSXBase.HTMLAttributes<HTMLUNewsletterToggleSubscriptionButtonElement>;
+            "u-oauth-button": LocalJSX.IntrinsicElements["u-oauth-button"] & JSXBase.HTMLAttributes<HTMLUOauthButtonElement>;
+            "u-oauth-logo": LocalJSX.IntrinsicElements["u-oauth-logo"] & JSXBase.HTMLAttributes<HTMLUOauthLogoElement>;
+            "u-oauth-missing-fields": LocalJSX.IntrinsicElements["u-oauth-missing-fields"] & JSXBase.HTMLAttributes<HTMLUOauthMissingFieldsElement>;
+            "u-oauth-modal": LocalJSX.IntrinsicElements["u-oauth-modal"] & JSXBase.HTMLAttributes<HTMLUOauthModalElement>;
+            "u-oauth-provider": LocalJSX.IntrinsicElements["u-oauth-provider"] & JSXBase.HTMLAttributes<HTMLUOauthProviderElement>;
+            "u-oauth-scopes": LocalJSX.IntrinsicElements["u-oauth-scopes"] & JSXBase.HTMLAttributes<HTMLUOauthScopesElement>;
+            "u-oauth-text": LocalJSX.IntrinsicElements["u-oauth-text"] & JSXBase.HTMLAttributes<HTMLUOauthTextElement>;
+            "u-pagination-button": LocalJSX.IntrinsicElements["u-pagination-button"] & JSXBase.HTMLAttributes<HTMLUPaginationButtonElement>;
+            "u-pagination-page": LocalJSX.IntrinsicElements["u-pagination-page"] & JSXBase.HTMLAttributes<HTMLUPaginationPageElement>;
+            "u-passkey": LocalJSX.IntrinsicElements["u-passkey"] & JSXBase.HTMLAttributes<HTMLUPasskeyElement>;
+            "u-password-field": LocalJSX.IntrinsicElements["u-password-field"] & JSXBase.HTMLAttributes<HTMLUPasswordFieldElement>;
+            "u-profile": LocalJSX.IntrinsicElements["u-profile"] & JSXBase.HTMLAttributes<HTMLUProfileElement>;
+            "u-raw-field": LocalJSX.IntrinsicElements["u-raw-field"] & JSXBase.HTMLAttributes<HTMLURawFieldElement>;
+            "u-registration-button": LocalJSX.IntrinsicElements["u-registration-button"] & JSXBase.HTMLAttributes<HTMLURegistrationButtonElement>;
+            "u-registration-email-verification": LocalJSX.IntrinsicElements["u-registration-email-verification"] & JSXBase.HTMLAttributes<HTMLURegistrationEmailVerificationElement>;
+            "u-registration-internal-matching": LocalJSX.IntrinsicElements["u-registration-internal-matching"] & JSXBase.HTMLAttributes<HTMLURegistrationInternalMatchingElement>;
+            "u-registration-newsletter": LocalJSX.IntrinsicElements["u-registration-newsletter"] & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterElement>;
+            "u-registration-newsletter-preference": LocalJSX.IntrinsicElements["u-registration-newsletter-preference"] & JSXBase.HTMLAttributes<HTMLURegistrationNewsletterPreferenceElement>;
+            "u-registration-passkey": LocalJSX.IntrinsicElements["u-registration-passkey"] & JSXBase.HTMLAttributes<HTMLURegistrationPasskeyElement>;
+            "u-registration-resend": LocalJSX.IntrinsicElements["u-registration-resend"] & JSXBase.HTMLAttributes<HTMLURegistrationResendElement>;
+            "u-registration-resume": LocalJSX.IntrinsicElements["u-registration-resume"] & JSXBase.HTMLAttributes<HTMLURegistrationResumeElement>;
+            "u-registration-root": LocalJSX.IntrinsicElements["u-registration-root"] & JSXBase.HTMLAttributes<HTMLURegistrationRootElement>;
+            "u-registration-step": LocalJSX.IntrinsicElements["u-registration-step"] & JSXBase.HTMLAttributes<HTMLURegistrationStepElement>;
+            "u-resend-confirmation-email": LocalJSX.IntrinsicElements["u-resend-confirmation-email"] & JSXBase.HTMLAttributes<HTMLUResendConfirmationEmailElement>;
+            "u-resend-invitation-email": LocalJSX.IntrinsicElements["u-resend-invitation-email"] & JSXBase.HTMLAttributes<HTMLUResendInvitationEmailElement>;
+            "u-reset-password-button": LocalJSX.IntrinsicElements["u-reset-password-button"] & JSXBase.HTMLAttributes<HTMLUResetPasswordButtonElement>;
+            "u-send-magic-code-button": LocalJSX.IntrinsicElements["u-send-magic-code-button"] & JSXBase.HTMLAttributes<HTMLUSendMagicCodeButtonElement>;
+            "u-signed-in": LocalJSX.IntrinsicElements["u-signed-in"] & JSXBase.HTMLAttributes<HTMLUSignedInElement>;
+            "u-signin-root": LocalJSX.IntrinsicElements["u-signin-root"] & JSXBase.HTMLAttributes<HTMLUSigninRootElement>;
+            "u-signin-step": LocalJSX.IntrinsicElements["u-signin-step"] & JSXBase.HTMLAttributes<HTMLUSigninStepElement>;
+            "u-social-login-button": LocalJSX.IntrinsicElements["u-social-login-button"] & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
+            "u-spinner": LocalJSX.IntrinsicElements["u-spinner"] & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
+            "u-submit-button": LocalJSX.IntrinsicElements["u-submit-button"] & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
+            "u-ticketable-export": LocalJSX.IntrinsicElements["u-ticketable-export"] & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
+            "u-ticketable-list": LocalJSX.IntrinsicElements["u-ticketable-list"] & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
+            "u-transaction-list": LocalJSX.IntrinsicElements["u-transaction-list"] & JSXBase.HTMLAttributes<HTMLUTransactionListElement>;
         }
     }
 }
