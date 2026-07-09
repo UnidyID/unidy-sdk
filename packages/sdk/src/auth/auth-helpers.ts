@@ -467,6 +467,37 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
+  async handleInvitationRedirect() {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const invitationToken = params.get("invitation_token");
+    const signInId = params.get("sign_in_id");
+
+    if (!invitationToken || !signInId) {
+      return;
+    }
+
+    authStore.clearPendingRecovery();
+    authStore.setSignInId(signInId);
+    clearUrlParam("invitation_token");
+    clearUrlParam("sign_in_id");
+
+    authStore.setLoading(true);
+
+    const [error] = await this.client.auth.validateInvitationToken({ signInId, token: invitationToken });
+
+    if (error) {
+      authStore.setFieldError("invitation", error);
+      authStore.setStep("invited");
+      authStore.setLoading(false);
+      return;
+    }
+
+    authStore.setInvitationToken(invitationToken);
+    authStore.setStep("invited");
+    authStore.setLoading(false);
+  }
+
   async handleResetPasswordRedirect() {
     const url = new URL(window.location.href);
     const params = url.searchParams;
@@ -497,6 +528,51 @@ export class AuthHelpers {
     authStore.setResetToken(resetToken);
     authStore.setStep("reset-password");
     authStore.setLoading(false);
+  }
+
+  async acceptInvitation() {
+    if (!authState.invitation.token) {
+      throw new Error("No invitation token available");
+    }
+
+    if (!authState.sid) {
+      throw new Error(t("errors.no_sign_in_id"));
+    }
+
+    if (!authState.invitation.newPassword) {
+      authStore.setFieldError("invitation", "password_required");
+      return;
+    }
+
+    if (authState.invitation.passwordConfirmation && authState.invitation.newPassword !== authState.invitation.passwordConfirmation) {
+      authStore.setFieldError("invitation", "passwords_do_not_match");
+      return;
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.acceptInvitation({
+      signInId: authState.sid,
+      token: authState.invitation.token,
+      payload: {
+        password: authState.invitation.newPassword,
+        passwordConfirmation: authState.invitation.passwordConfirmation,
+      },
+    });
+
+    if (error) {
+      if (error === "missing_required_fields") {
+        const { fields } = response as RequiredFieldsResponse;
+        this.handleMissingFields(fields);
+        return;
+      }
+      authStore.setFieldError("invitation", error);
+      authStore.setLoading(false);
+      return;
+    }
+
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   handleSocialAuthRedirect(): void {

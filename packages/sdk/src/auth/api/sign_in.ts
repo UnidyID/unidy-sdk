@@ -52,6 +52,8 @@ export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
 export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredential }>;
 export type ConnectBrandArgs = { signInId: string };
+export type ValidateInvitationTokenArgs = { signInId: string; token: string };
+export type AcceptInvitationArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string }>;
 
 // ============================================
 // Captcha error types
@@ -131,6 +133,27 @@ export type ValidateResetPasswordTokenResult =
   | ["invalid_reset_token", ErrorResponse]
   | ["reset_token_expired", ErrorResponse]
   | [null, null];
+
+export type ValidateInvitationTokenResult =
+  | CommonErrors
+  | ["sign_in_not_found", ErrorResponse]
+  | ["invitation_token_missing", ErrorResponse]
+  | ["invalid_invitation_token", ErrorResponse]
+  | ["invitation_token_expired", ErrorResponse]
+  | ["invitation_already_accepted", ErrorResponse]
+  | [null, null];
+
+export type AcceptInvitationResult =
+  | CommonErrors
+  | ["sign_in_not_found", ErrorResponse]
+  | ["sign_in_already_processed", ErrorResponse]
+  | ["invitation_token_missing", ErrorResponse]
+  | ["invalid_invitation_token", ErrorResponse]
+  | ["invitation_token_expired", ErrorResponse]
+  | ["invitation_already_accepted", ErrorResponse]
+  | ["password_too_weak", InvalidPasswordResponse]
+  | ["missing_required_fields", RequiredFieldsResponse]
+  | [null, TokenResponse];
 
 export type SignOutResult =
   | CommonErrors
@@ -467,6 +490,75 @@ export async function validateResetPasswordToken(
     }
 
     return [null, null];
+  });
+}
+
+export async function validateInvitationToken(
+  client: ApiClientInterface,
+  args: ValidateInvitationTokenArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ValidateInvitationTokenResult> {
+  const { signInId, token } = args;
+  const response = await client.get<{ valid: boolean }>(
+    `/api/sdk/v1/sign_ins/${signInId}/invitation?invitation_token=${encodeURIComponent(token)}`,
+  );
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const error_response = parseErrorResponse(response.data);
+      return [
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "invitation_token_missing"
+          | "invalid_invitation_token"
+          | "invitation_token_expired"
+          | "invitation_already_accepted",
+        error_response,
+      ];
+    }
+
+    return [null, null];
+  });
+}
+
+export async function acceptInvitation(
+  client: ApiClientInterface,
+  args: AcceptInvitationArgs,
+  handleResponse: HandleResponseFn,
+): Promise<AcceptInvitationResult> {
+  const { signInId, token, payload } = args;
+  const response = await client.patch<TokenResponse>(`/api/sdk/v1/sign_ins/${signInId}/invitation`, {
+    invitation_token: token,
+    password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
+  });
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const invalidPasswordParsed = InvalidPasswordResponseSchema.safeParse(response.data);
+      if (invalidPasswordParsed.success) {
+        return ["password_too_weak", invalidPasswordParsed.data];
+      }
+
+      const requiredFieldsParsed = RequiredFieldsResponseSchema.safeParse(response.data);
+      if (requiredFieldsParsed.success) {
+        return ["missing_required_fields", requiredFieldsParsed.data];
+      }
+
+      const error_response = parseErrorResponse(response.data);
+      return [
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "sign_in_already_processed"
+          | "invitation_token_missing"
+          | "invalid_invitation_token"
+          | "invitation_token_expired"
+          | "invitation_already_accepted",
+        error_response,
+      ];
+    }
+
+    return [null, TokenResponseSchema.parse(response.data)];
   });
 }
 

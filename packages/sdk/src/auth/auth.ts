@@ -121,6 +121,7 @@ export class Auth {
     Auth.instance.helpers.handleSocialAuthRedirect();
     Auth.instance.helpers.extractSidFromUrl();
     await Auth.instance.helpers.handleResetPasswordRedirect();
+    await Auth.instance.helpers.handleInvitationRedirect();
 
     if (Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);

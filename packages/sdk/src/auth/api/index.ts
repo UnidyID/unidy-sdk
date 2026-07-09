@@ -63,6 +63,8 @@ export type {
 } from "./schemas";
 // Re-export sign-in types
 export type {
+  AcceptInvitationArgs,
+  AcceptInvitationResult,
   AuthenticateResultShared,
   AuthenticateWithMagicCodeArgs,
   AuthenticateWithMagicCodeResult,
@@ -92,6 +94,8 @@ export type {
   SignOutArgs,
   SignOutResult,
   UpdateMissingFieldsArgs,
+  ValidateInvitationTokenArgs,
+  ValidateInvitationTokenResult,
   ValidateResetPasswordTokenArgs,
   ValidateResetPasswordTokenResult,
 } from "./sign_in";
@@ -164,6 +168,14 @@ export class AuthService extends BaseService {
 
   resendInvitation(args: signIn.ResendInvitationArgs): Promise<signIn.ResendInvitationResult> {
     return signIn.resendInvitation(this.client, args, this.respond);
+  }
+
+  validateInvitationToken(args: signIn.ValidateInvitationTokenArgs): Promise<signIn.ValidateInvitationTokenResult> {
+    return signIn.validateInvitationToken(this.client, args, this.respond);
+  }
+
+  acceptInvitation(args: signIn.AcceptInvitationArgs): Promise<signIn.AcceptInvitationResult> {
+    return signIn.acceptInvitation(this.client, args, this.respond);
   }
 
   // ============================================
