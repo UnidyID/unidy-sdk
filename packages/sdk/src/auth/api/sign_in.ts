@@ -153,6 +153,7 @@ export type AcceptInvitationResult =
   | ["invitation_already_accepted", ErrorResponse]
   | ["password_too_weak", InvalidPasswordResponse]
   | ["missing_required_fields", RequiredFieldsResponse]
+  | ["brand_connection_required", BrandConnectionRequiredResponse]
   | [null, TokenResponse];
 
 export type SignOutResult =
@@ -543,6 +544,11 @@ export async function acceptInvitation(
       const requiredFieldsParsed = RequiredFieldsResponseSchema.safeParse(response.data);
       if (requiredFieldsParsed.success) {
         return ["missing_required_fields", requiredFieldsParsed.data];
+      }
+
+      const brandConnectionParsed = BrandConnectionRequiredResponseSchema.safeParse(response.data);
+      if (brandConnectionParsed.success) {
+        return ["brand_connection_required", brandConnectionParsed.data];
       }
 
       const error_response = parseErrorResponse(response.data);

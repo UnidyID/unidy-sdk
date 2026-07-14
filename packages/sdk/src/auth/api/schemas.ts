@@ -92,7 +92,8 @@ export const BrandConnectionRequiredResponseSchema = z
 // Invalid password response with field-level errors
 export const InvalidPasswordResponseSchema = z.object({
   error_details: z.object({
-    password: z.array(z.string()),
+    password: z.array(z.string()).optional(),
+    password_confirmation: z.array(z.string()).optional(),
   }),
 });
 

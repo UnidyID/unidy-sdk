@@ -123,7 +123,9 @@ export class Auth {
     await Auth.instance.helpers.handleResetPasswordRedirect();
     await Auth.instance.helpers.handleInvitationRedirect();
 
-    if (Auth.instance.isTokenValid(authState.token)) {
+    // Don't restore an existing authenticated session if an invitation redirect was
+    // just processed — the invitation flow takes precedence over a stored token.
+    if (authState.step !== "invited" && Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
       // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
       try {

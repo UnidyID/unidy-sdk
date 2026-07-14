@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import type {
   AccountUnconfirmedResponse,
+  BrandConnectionRequiredResponse,
   CreateSignInResponse,
   RequiredFieldsResponse,
   ResendDelayResponse,
@@ -449,7 +450,10 @@ export class AuthHelpers {
 
       // TODO: add proper password requirements handling --> for now this is fine
       if (error === "invalid_password") {
-        authStore.setFieldError("password", response.error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
+        authStore.setFieldError(
+          "password",
+          response.error_details?.password?.map((p) => t(`errors.password_requirements.${p}`)).join("\n"),
+        );
       }
     } else {
       authStore.setStep("email");
@@ -479,8 +483,6 @@ export class AuthHelpers {
 
     authStore.clearPendingRecovery();
     authStore.setSignInId(signInId);
-    clearUrlParam("invitation_token");
-    clearUrlParam("sign_in_id");
 
     authStore.setLoading(true);
 
@@ -544,7 +546,7 @@ export class AuthHelpers {
       return;
     }
 
-    if (authState.invitation.passwordConfirmation && authState.invitation.newPassword !== authState.invitation.passwordConfirmation) {
+    if (authState.invitation.newPassword !== authState.invitation.passwordConfirmation) {
       authStore.setFieldError("invitation", "passwords_do_not_match");
       return;
     }
@@ -562,16 +564,27 @@ export class AuthHelpers {
     });
 
     if (error) {
+      if (error === "brand_connection_required") {
+        const { sid } = response as BrandConnectionRequiredResponse;
+        if (sid) authStore.setSignInId(sid);
+        authStore.setStep("connect-brand");
+        authStore.setLoading(false);
+        return;
+      }
+
       if (error === "missing_required_fields") {
         const { fields } = response as RequiredFieldsResponse;
         this.handleMissingFields(fields);
         return;
       }
+
       authStore.setFieldError("invitation", error);
       authStore.setLoading(false);
       return;
     }
 
+    clearUrlParam("invitation_token");
+    clearUrlParam("sign_in_id");
     this.handleAuthSuccess(response as TokenResponse);
   }
 
