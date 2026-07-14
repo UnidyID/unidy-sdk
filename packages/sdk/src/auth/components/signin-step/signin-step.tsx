@@ -40,6 +40,8 @@ export class SigninStep {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     } else if (authState.step === "reset-password") {
       await authInstance.helpers.resetPassword();
+    } else if (authState.step === "invited") {
+      await authInstance.helpers.acceptInvitation();
     }
   }
 

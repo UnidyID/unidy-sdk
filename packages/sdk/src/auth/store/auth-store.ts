@@ -30,11 +30,16 @@ export interface AuthState {
     newPassword: string;
     passwordConfirmation: string;
   };
+  invitation: {
+    token: string | null;
+    newPassword: string;
+    passwordConfirmation: string;
+  };
   missingRequiredFields?: RequiredFieldsResponse["fields"];
   availableLoginOptions: LoginOptions | null;
 
   loading: boolean;
-  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "passkey", string | null>;
+  errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey", string | null>;
   globalErrors: Record<string, string | null>;
 
   enableResendAfter: number;
@@ -110,6 +115,11 @@ const initialState: AuthState = {
     newPassword: "",
     passwordConfirmation: "",
   },
+  invitation: {
+    token: null,
+    newPassword: "",
+    passwordConfirmation: "",
+  },
   sid: localStorage.getItem(SESSION_KEYS.SID),
   loading: false,
   errors: {
@@ -117,6 +127,7 @@ const initialState: AuthState = {
     password: null,
     magicCode: null,
     resetPassword: null,
+    invitation: null,
     passkey: null,
   },
   globalErrors: {},
@@ -192,7 +203,7 @@ class AuthStore {
     state.loading = loading;
   }
 
-  setFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey", error: string | null) {
+  setFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey", error: string | null) {
     if (error === "connection_failed") {
       unidyState.backendConnected = false;
       return;
@@ -243,9 +254,9 @@ class AuthStore {
     return true;
   }
 
-  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "passkey") {
+  clearFieldError(field: "email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey") {
     state.errors = { ...state.errors, [field]: null } as Record<
-      "email" | "password" | "magicCode" | "resetPassword" | "passkey",
+      "email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey",
       string | null
     >;
   }
@@ -320,6 +331,14 @@ class AuthStore {
     state.resetPassword = { ...state.resetPassword, ...updates };
   }
 
+  setInvitationToken(token: string | null) {
+    state.invitation = { ...state.invitation, token };
+  }
+
+  updateInvitation(updates: Partial<AuthState["invitation"]>) {
+    state.invitation = { ...state.invitation, ...updates };
+  }
+
   setAuthenticated(authenticated: boolean) {
     state.authenticated = authenticated;
 
@@ -327,6 +346,7 @@ class AuthStore {
       // Clear stale sign-in flow tracking so it cannot be recovered on the next page load
       state._pendingRecoveryStep = null;
       state._stepHistory = [];
+      state.invitation = { token: null, newPassword: "", passwordConfirmation: "" };
       saveToStorage(localStorage, SESSION_KEYS.STEP, null);
       saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
       saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
