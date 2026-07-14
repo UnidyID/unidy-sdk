@@ -534,11 +534,13 @@ export class AuthHelpers {
 
   async acceptInvitation() {
     if (!authState.invitation.token) {
-      throw new Error("No invitation token available");
+      authStore.setFieldError("invitation", "invalid_invitation_token");
+      return;
     }
 
     if (!authState.sid) {
-      throw new Error(t("errors.no_sign_in_id"));
+      authStore.setFieldError("invitation", "sign_in_not_found");
+      return;
     }
 
     if (!authState.invitation.newPassword) {
