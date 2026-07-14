@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.8.0...@unidy.io/sdk-v1.9.0) (2026-07-14)
+
+
+### Features
+
+* [UD-3099] SDK invitation acceptance ([#308](https://github.com/UnidyID/unidy-sdk/issues/308)) ([9f82a08](https://github.com/UnidyID/unidy-sdk/commit/9f82a0813b78eb2d1f29582ab71c1ffaaa03f022))
+
+
+### Bug Fixes
+
+* add slot="empty" support to ticketable-list and transaction-list ([#303](https://github.com/UnidyID/unidy-sdk/issues/303)) ([797f4c6](https://github.com/UnidyID/unidy-sdk/commit/797f4c6f3a8b9baa71cc4ddd479c5c919b9fb705))
+* pagination controls broken without manually wired store  ([#302](https://github.com/UnidyID/unidy-sdk/issues/302)) ([708887a](https://github.com/UnidyID/unidy-sdk/commit/708887a6040a0685dd75d9de0438c648a298b667))
+
 ## [1.8.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.1...@unidy.io/sdk-v1.8.0) (2026-07-01)
 
 
