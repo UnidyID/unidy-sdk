@@ -1,7 +1,7 @@
 import { Component, Event, type EventEmitter, Host, h, Prop } from "@stencil/core";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { TokenResponse } from "../../api/auth";
-import { authStore } from "../../store/auth-store";
+import { authStore, onChange } from "../../store/auth-store";
 
 @Component({
   tag: "u-signin-root",
@@ -16,9 +16,24 @@ export class SigninRoot extends UnidyComponent() {
   /** Fired on authentication failure. Contains the error code. */
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
+  private unsubscribers: (() => void)[] = [];
+
   componentDidLoad() {
     authStore.setRootComponentRef(this);
+    this.applyInitialStep();
+    this.unsubscribers.push(
+      onChange("authenticated", (authenticated) => {
+        if (!authenticated) this.applyInitialStep();
+      }),
+    );
+  }
 
+  disconnectedCallback() {
+    for (const unsub of this.unsubscribers) unsub();
+    this.unsubscribers = [];
+  }
+
+  private applyInitialStep() {
     const signInSteps = this.element.querySelectorAll("u-signin-step").values();
     if ([...signInSteps].some((step: HTMLUSigninStepElement) => step.name === "single-login")) {
       authStore.setInitialStep("single-login");
