@@ -210,7 +210,7 @@ export class Auth {
     authStore.setGlobalError("auth", null);
     await this.helpers.refreshToken();
 
-    if (authState.globalErrors.auth || !authState.token) {
+    if (authState.globalErrors.auth || !authState.token || !this.isTokenValid(authState.token)) {
       return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 

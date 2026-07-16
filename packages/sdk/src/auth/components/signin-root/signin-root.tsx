@@ -16,21 +16,26 @@ export class SigninRoot extends UnidyComponent() {
   /** Fired on authentication failure. Contains the error code. */
   @Event() errorEvent!: EventEmitter<{ error: string }>;
 
-  private unsubscribers: (() => void)[] = [];
+  private cleanups: (() => void)[] = [];
 
-  componentDidLoad() {
-    authStore.setRootComponentRef(this);
-    this.applyInitialStep();
-    this.unsubscribers.push(
+  connectedCallback() {
+    // Re-apply the initial step after logout so the modal doesn't render empty
+    // when the component stays mounted or is re-inserted after a logout.
+    this.cleanups.push(
       onChange("authenticated", (authenticated) => {
         if (!authenticated) this.applyInitialStep();
       }),
     );
   }
 
+  componentDidLoad() {
+    authStore.setRootComponentRef(this);
+    this.applyInitialStep();
+  }
+
   disconnectedCallback() {
-    for (const unsub of this.unsubscribers) unsub();
-    this.unsubscribers = [];
+    for (const unsub of this.cleanups) unsub();
+    this.cleanups = [];
   }
 
   private applyInitialStep() {

@@ -93,4 +93,31 @@ test.describe("Session restore on init", () => {
     expect(refreshCalled).toBe(true);
     expect(signedInCalled).toBe(false);
   });
+
+  test("does not treat an expired token as valid when the refresh fails with a network error", async ({ page }) => {
+    // Seed an expired token so the SDK has something to (incorrectly) return if the guard is missing
+    await page.addInitScript(
+      ({ expiredJwt, signInId, refreshToken }) => {
+        sessionStorage.setItem("unidy_token", expiredJwt);
+        localStorage.setItem("unidy_signin_id", signInId);
+        localStorage.setItem("unidy_refresh_token", refreshToken);
+      },
+      { expiredJwt: EXPIRED_JWT, signInId: SIGN_IN_ID, refreshToken: REFRESH_TOKEN },
+    );
+
+    // Abort the refresh request to simulate a connection failure
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/.*\/refresh_token/, (route) => {
+      if (route.request().method() === "POST") {
+        route.abort("failed");
+      } else {
+        route.fallback();
+      }
+    });
+
+    await page.goto(routes.auth);
+
+    // The user must NOT be shown as authenticated — the expired token must not have been returned
+    await expect(page.getByTestId("signed.in.view")).not.toBeVisible();
+    await expect(page.getByRole("textbox", { name: /e-?mail/i })).toBeVisible();
+  });
 });
