@@ -12,6 +12,20 @@ const FRESH_JWT =
 const SIGN_IN_ID = "test-sid-123";
 const REFRESH_TOKEN = "valid-refresh-token";
 
+function mockRefreshSuccess(page: import("@playwright/test").Page) {
+  return page.route(/\/api\/sdk\/v1\/sign_ins\/.*\/refresh_token/, (route) => {
+    if (route.request().method() === "POST") {
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
+      });
+    } else {
+      route.fallback();
+    }
+  });
+}
+
 test.describe("Session restore on init", () => {
   test("uses refresh token to restore session when access token is expired, without calling /signed_in", async ({ page }) => {
     // Seed expired access token + valid refresh token before the SDK initialises
@@ -24,18 +38,7 @@ test.describe("Session restore on init", () => {
       { expiredJwt: EXPIRED_JWT, signInId: SIGN_IN_ID, refreshToken: REFRESH_TOKEN },
     );
 
-    // Mock the refresh endpoint to return a fresh token
-    await page.route(/\/api\/sdk\/v1\/sign_ins\/.*\/refresh_token/, (route) => {
-      if (route.request().method() === "POST") {
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
-        });
-      } else {
-        route.fallback();
-      }
-    });
+    await mockRefreshSuccess(page);
 
     // Track whether /signed_in is called
     let signedInCalled = false;
@@ -50,6 +53,44 @@ test.describe("Session restore on init", () => {
     await expect(page.getByTestId("signed.in.view")).toBeVisible();
 
     // The SSO cookie-check endpoint must not have been called
+    expect(signedInCalled).toBe(false);
+  });
+
+  test("uses refresh token to restore session when no access token is present (e.g. after opening a new tab)", async ({ page }) => {
+    // Simulate a user who previously logged in via the SDK (localStorage has SID + refresh token)
+    // but the access token is gone (sessionStorage cleared when they opened a new tab)
+    await page.addInitScript(
+      ({ signInId, refreshToken }) => {
+        localStorage.setItem("unidy_signin_id", signInId);
+        localStorage.setItem("unidy_refresh_token", refreshToken);
+      },
+      { signInId: SIGN_IN_ID, refreshToken: REFRESH_TOKEN },
+    );
+
+    let refreshCalled = false;
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/.*\/refresh_token/, (route) => {
+      if (route.request().method() === "POST") {
+        refreshCalled = true;
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
+        });
+      } else {
+        route.fallback();
+      }
+    });
+
+    let signedInCalled = false;
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/signed_in/, (route) => {
+      signedInCalled = true;
+      route.fallback();
+    });
+
+    await page.goto(routes.auth);
+
+    await expect(page.getByTestId("signed.in.view")).toBeVisible();
+    expect(refreshCalled).toBe(true);
     expect(signedInCalled).toBe(false);
   });
 });
