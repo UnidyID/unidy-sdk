@@ -7,7 +7,7 @@ import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile";
 import { CaptchaService } from "../shared/captcha";
 import { unidyState } from "../shared/store/unidy-store";
-import { SubscriptionsService, TicketsService } from "../ticketable";
+import { SubscriptionsService, TicketsService, TicketTransfersService } from "../ticketable";
 import { TransactionsService } from "../transaction";
 import type { ServiceDependencies } from "./base-service";
 import { ApiClient, ApiResponse } from "./client";
@@ -18,6 +18,7 @@ export * from "../oauth/api/oauth";
 export * from "../profile/api/profile";
 export * from "../shared/captcha";
 export * from "../ticketable/api/subscriptions";
+export * from "../ticketable/api/ticket-transfers";
 export * from "../ticketable/api/tickets";
 export * from "../transaction/api/transactions";
 export * from "./base-service";
@@ -50,6 +51,7 @@ export class UnidyClient {
   oauth: OAuthService;
   captcha: CaptchaService;
   tickets: TicketsService;
+  ticketTransfers: TicketTransfersService;
   subscriptions: SubscriptionsService;
   transactions: TransactionsService;
 
@@ -63,6 +65,7 @@ export class UnidyClient {
     this.oauth = new OAuthService(this.apiClient, createBrowserDeps("OAuthService"));
     this.captcha = new CaptchaService(this.apiClient, createBrowserDeps("CaptchaService"));
     this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));
+    this.ticketTransfers = new TicketTransfersService(this.apiClient, createBrowserDeps("TicketTransfersService"));
     this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
     this.transactions = new TransactionsService(this.apiClient, createBrowserDeps("TransactionsService"));
   }

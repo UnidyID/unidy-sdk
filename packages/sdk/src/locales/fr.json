@@ -223,5 +223,36 @@
       "skip_button": "Continuer sans association",
       "skipping": "Continuation..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Accepter",
+      "cancel": "Annuler le transfert",
+      "decline": "Refuser"
+    },
+    "errors": {
+      "feature_disabled": "Les transferts de billets ne sont pas disponibles",
+      "fetch_failed": "Impossible de charger les transferts de billets",
+      "generic": "Une erreur est survenue. Veuillez réessayer",
+      "missing_ticket": "Aucun billet sélectionné pour le transfert",
+      "not_found": "Offre de transfert introuvable",
+      "not_ticket_owner": "Vous ne pouvez transférer que vos propres billets",
+      "not_transfer_sender": "Seul l'expéditeur peut annuler ce transfert",
+      "offer_email_failed": "L'e-mail de transfert n'a pas pu être envoyé. Veuillez réessayer",
+      "recipient_invite_failed": "Le destinataire n'a pas pu être invité. Veuillez réessayer",
+      "recipient_is_owner": "Vous ne pouvez pas transférer un billet à vous-même",
+      "recipient_mismatch": "Cette offre de transfert est destinée à un autre compte",
+      "ticket_already_transferred": "Ce billet a déjà été transféré",
+      "ticket_not_active": "Ce billet n'est pas actif",
+      "transfer_already_pending": "Un transfert est déjà en attente pour ce billet",
+      "transfer_expired": "Cette offre de transfert a expiré",
+      "transfer_not_pending": "Cette offre de transfert n'est plus en attente"
+    },
+    "form": {
+      "email_label": "Adresse e-mail du destinataire",
+      "email_placeholder": "Saisissez l'e-mail du destinataire",
+      "submit": "Transférer le billet",
+      "success": "Offre de transfert envoyée à {{email}}"
+    }
   }
 }

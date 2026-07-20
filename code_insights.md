@@ -21,9 +21,12 @@ Web components (Stencil) + API clients:
 | Newsletter | `<u-newsletter-root>`, `<u-newsletter-checkbox>`, `<u-newsletter-preference-checkbox>` |
 | Registration | `<u-registration-root>`, `<u-registration-step>` |
 | Ticketable | `<u-ticketable-list>`, `<u-ticketable-export>` |
+| Ticket transfers | `<u-ticket-transfer-list>`, `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` |
 | Utilities | `<u-config>`, `<u-signed-in>`, `<u-flash-message>`, `<u-conditional-render>` |
 
-API classes: `Auth` (token management, passkey, magic-code), `UnidyClient` singleton (profile, newsletters, tickets, subscriptions), standalone client (Node.js/serverless compatible).
+API classes: `Auth` (token management, passkey, magic-code), `UnidyClient` singleton (profile, newsletters, tickets, ticketTransfers, subscriptions), standalone client (Node.js/serverless compatible).
+
+New services must be registered in THREE places: `UnidyClient` (api/index.ts), `StandaloneUnidyClient` (api/standalone.ts, plus its `export`/`export type *` lines), and `ReactUnidyClient` (sdk-react/src/client.ts re-instantiates every service with its token-refreshing deps).
 
 ### `@unidy.io/sdk-react`
 React hooks: `useLogin`, `useSession`, `useProfile`, `useNewsletterSubscribe`, `useTicketables`, etc.
@@ -60,5 +63,14 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 - **Tailwind**: components accept `class-name` props; an empty CSS file with `styleUrl` is required for Tailwind injection to work
 - **i18n**: built-in translation system; customizable via `<u-config custom-translations="{...}">`
 - **Preference token flow**: newsletter management via URL params (`preference_token`, `email`) without sign-in
-- **Error codes**: consistent constants (e.g. `account_not_found`, `magic_code_expired`) — check `packages/sdk/src/api/` for full list
-- **Build**: `bun run build` regenerates README from JSDoc; biome for lint/format
+- **Error codes**: consistent constants (e.g. `account_not_found`, `magic_code_expired`) — check `packages/sdk/src/api/` for full list. Ticket-transfer endpoints return domain errors via `error_identifier` in the body (`transfer_already_pending`, `recipient_mismatch`, …) — see `ticketable/api/ticket-transfers.ts`
+- **Build**: `bun run build` regenerates README from JSDoc; biome for lint/format. Note: `bun run build` runs `clean` (removes `www/`, `.stencil`), which corrupts a concurrently-running `bun run dev` watcher — its TypeScript diagnostics go stale and its error overlay blocks e2e clicks. Restart the dev server after a prod build
+- **Stencil slots (shadow: false)**: a component must render at least one `<slot>` outlet in EVERY render state, otherwise Stencil's slot handling never runs and slotted content (e.g. `slot="empty"`) stays visible alongside rendered items. Never re-parent a slot outlet between renders (e.g. moving it into a `<div hidden>` wrapper) — relocated light-DOM content gets dropped from the DOM. See `ticket-transfer-list.tsx` / `ticketable-list.tsx` (both keep a constant trailing slot outlet)
+- **Result tuples**: destructuring `const [error, data] = ...` doesn't narrow `data` (the `schema_validation_error` payload is non-null) — guard with `!("token" in data)`-style checks like `ticketable-export` does
+
+## E2E (local)
+
+- Requires the Rails backend on `localhost:3000`; specs manipulate backend state via test-only routes `/test/db/<Model>` (`e2e/lib/database`, `X-Test-Secret` header, blank secret in dev)
+- `auth.setup.ts` signs in through the real UI — a `CaptchaConfig` with `login_enabled: true` on the backend breaks the entire suite ("Security verification failed"). Toggle via `PATCH /test/db/CaptchaConfig/:id {"data":{"login_enabled":false}}` and restore afterwards
+- Full-suite runs against the stencil dev server flake under parallel worker load (stalled hydration/lazy chunks). The CI profile is reliable locally: `bun run build && bun run e2e:configure && E2E_SDK_BASE_URL=http://localhost:3000 bunx playwright test --project=chromium` (serves static `www/`)
+- `newsletter-logged-out` / `manage-subscriptions-logged-out` specs fail locally as of 2026-07 regardless of branch (backend test-data issue, captcha-independent) — pre-existing, not a regression signal

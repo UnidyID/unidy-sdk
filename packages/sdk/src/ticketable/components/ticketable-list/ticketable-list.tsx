@@ -206,6 +206,14 @@ export class TicketableList extends UnidyComponent() {
             exportEl.setAttribute("exportable", "false");
           }
         }
+        // Only tickets are transferable; forms in subscription templates stay unstamped.
+        if (ticketableType === "ticket") {
+          for (const transferEl of fragment.querySelectorAll("u-ticket-transfer-form")) {
+            if (item) {
+              transferEl.setAttribute("ticket-id", item.id);
+            }
+          }
+        }
       },
     };
   }

@@ -21,7 +21,9 @@ import { MatchFoundEventDetail } from "./registration/components/registration-in
 import { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
-import { ExportFormat } from "./ticketable/api/schemas";
+import { TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
+import { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
+import { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
 import { PaginationMeta } from "./api";
 import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 import { PaginationStore } from "./shared/store/pagination-store";
@@ -42,7 +44,9 @@ export { MatchFoundEventDetail } from "./registration/components/registration-in
 export { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
-export { ExportFormat } from "./ticketable/api/schemas";
+export { TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
+export { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
+export { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
 export { PaginationMeta } from "./api";
 export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 export { PaginationStore } from "./shared/store/pagination-store";
@@ -1015,6 +1019,90 @@ export namespace Components {
          */
         "text"?: string;
     }
+    /**
+     * Button performing an action on a pending ticket transfer.
+     * Used standalone with an explicit `token`, or inside a
+     * `u-ticket-transfer-list` template where the list stamps the `token`
+     * attribute automatically and refetches when the action succeeds.
+     */
+    interface UTicketTransferAction {
+        /**
+          * The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one.
+         */
+        "action": TicketTransferActionType;
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * The transfer token. Stamped automatically inside a u-ticket-transfer-list template.
+         */
+        "token"?: string;
+    }
+    /**
+     * Form to send a ticket transfer offer to an email address.
+     * Used standalone with an explicit `ticket-id`, or inside a
+     * `u-ticketable-list` ticket template where the list stamps the
+     * `ticket-id` attribute automatically.
+     */
+    interface UTicketTransferForm {
+        /**
+          * CSS classes to apply to the submit button element.
+         */
+        "buttonClassName"?: string;
+        /**
+          * CSS classes to apply to the form element.
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to the error message element.
+         */
+        "errorClassName"?: string;
+        /**
+          * CSS classes to apply to the email input element.
+         */
+        "inputClassName"?: string;
+        /**
+          * CSS classes to apply to the success message element.
+         */
+        "successClassName"?: string;
+        /**
+          * The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template.
+         */
+        "ticketId"?: string;
+    }
+    /**
+     * Lists the user's pending ticket transfers for one direction.
+     * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
+     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
+     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
+     * the template get the transfer `token` stamped automatically, and the list
+     * refetches after a successful action.
+     */
+    interface UTicketTransferList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Which side of the user's pending transfers to display ('incoming' or 'outgoing').
+         */
+        "direction": TicketTransferDirection;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading.
+          * @default 3
+         */
+        "skeletonCount": number;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
+    }
     interface UTicketableExport {
         /**
           * CSS classes to apply to the button element.
@@ -1162,6 +1250,18 @@ export interface URegistrationRootCustomEvent<T> extends CustomEvent<T> {
 export interface USigninRootCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUSigninRootElement;
+}
+export interface UTicketTransferActionCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTicketTransferActionElement;
+}
+export interface UTicketTransferFormCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTicketTransferFormElement;
+}
+export interface UTicketTransferListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUTicketTransferListElement;
 }
 export interface UTicketableExportCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1650,6 +1750,86 @@ declare global {
         prototype: HTMLUSubmitButtonElement;
         new (): HTMLUSubmitButtonElement;
     };
+    interface HTMLUTicketTransferActionElementEventMap {
+        "uTicketTransferActionSuccess": { action: TicketTransferActionType; transfer: TicketTransfer };
+        "uTicketTransferActionError": { action: TicketTransferActionType; error: string };
+    }
+    /**
+     * Button performing an action on a pending ticket transfer.
+     * Used standalone with an explicit `token`, or inside a
+     * `u-ticket-transfer-list` template where the list stamps the `token`
+     * attribute automatically and refetches when the action succeeds.
+     */
+    interface HTMLUTicketTransferActionElement extends Components.UTicketTransferAction, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTicketTransferActionElementEventMap>(type: K, listener: (this: HTMLUTicketTransferActionElement, ev: UTicketTransferActionCustomEvent<HTMLUTicketTransferActionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTicketTransferActionElementEventMap>(type: K, listener: (this: HTMLUTicketTransferActionElement, ev: UTicketTransferActionCustomEvent<HTMLUTicketTransferActionElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTicketTransferActionElement: {
+        prototype: HTMLUTicketTransferActionElement;
+        new (): HTMLUTicketTransferActionElement;
+    };
+    interface HTMLUTicketTransferFormElementEventMap {
+        "uTicketTransferCreateSuccess": { transfer: TicketTransfer };
+        "uTicketTransferCreateError": { error: string };
+    }
+    /**
+     * Form to send a ticket transfer offer to an email address.
+     * Used standalone with an explicit `ticket-id`, or inside a
+     * `u-ticketable-list` ticket template where the list stamps the
+     * `ticket-id` attribute automatically.
+     */
+    interface HTMLUTicketTransferFormElement extends Components.UTicketTransferForm, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTicketTransferFormElementEventMap>(type: K, listener: (this: HTMLUTicketTransferFormElement, ev: UTicketTransferFormCustomEvent<HTMLUTicketTransferFormElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTicketTransferFormElementEventMap>(type: K, listener: (this: HTMLUTicketTransferFormElement, ev: UTicketTransferFormCustomEvent<HTMLUTicketTransferFormElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTicketTransferFormElement: {
+        prototype: HTMLUTicketTransferFormElement;
+        new (): HTMLUTicketTransferFormElement;
+    };
+    interface HTMLUTicketTransferListElementEventMap {
+        "uTicketTransferListSuccess": {
+    direction: TicketTransferDirection;
+    items: TicketTransfer[];
+  };
+        "uTicketTransferListError": {
+    direction?: TicketTransferDirection;
+    error: string;
+  };
+    }
+    /**
+     * Lists the user's pending ticket transfers for one direction.
+     * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
+     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
+     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
+     * the template get the transfer `token` stamped automatically, and the list
+     * refetches after a successful action.
+     */
+    interface HTMLUTicketTransferListElement extends Components.UTicketTransferList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUTicketTransferListElementEventMap>(type: K, listener: (this: HTMLUTicketTransferListElement, ev: UTicketTransferListCustomEvent<HTMLUTicketTransferListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUTicketTransferListElementEventMap>(type: K, listener: (this: HTMLUTicketTransferListElement, ev: UTicketTransferListCustomEvent<HTMLUTicketTransferListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUTicketTransferListElement: {
+        prototype: HTMLUTicketTransferListElement;
+        new (): HTMLUTicketTransferListElement;
+    };
     interface HTMLUTicketableExportElementEventMap {
         "uTicketableExportSuccess": { url: string; format: ExportFormat };
         "uTicketableExportError": { error: string };
@@ -1773,6 +1953,9 @@ declare global {
         "u-social-login-button": HTMLUSocialLoginButtonElement;
         "u-spinner": HTMLUSpinnerElement;
         "u-submit-button": HTMLUSubmitButtonElement;
+        "u-ticket-transfer-action": HTMLUTicketTransferActionElement;
+        "u-ticket-transfer-form": HTMLUTicketTransferFormElement;
+        "u-ticket-transfer-list": HTMLUTicketTransferListElement;
         "u-ticketable-export": HTMLUTicketableExportElement;
         "u-ticketable-list": HTMLUTicketableListElement;
         "u-transaction-list": HTMLUTransactionListElement;
@@ -2755,6 +2938,120 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    /**
+     * Button performing an action on a pending ticket transfer.
+     * Used standalone with an explicit `token`, or inside a
+     * `u-ticket-transfer-list` template where the list stamps the `token`
+     * attribute automatically and refetches when the action succeeds.
+     */
+    interface UTicketTransferAction {
+        /**
+          * The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one.
+         */
+        "action": TicketTransferActionType;
+        /**
+          * CSS classes to apply to the button element.
+         */
+        "componentClassName"?: string;
+        /**
+          * Fired when the action fails. Contains the action and the error code.
+         */
+        "onUTicketTransferActionError"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; error: string }>) => void;
+        /**
+          * Fired when the action completes successfully. Contains the action and the updated transfer.
+         */
+        "onUTicketTransferActionSuccess"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; transfer: TicketTransfer }>) => void;
+        /**
+          * The transfer token. Stamped automatically inside a u-ticket-transfer-list template.
+         */
+        "token"?: string;
+    }
+    /**
+     * Form to send a ticket transfer offer to an email address.
+     * Used standalone with an explicit `ticket-id`, or inside a
+     * `u-ticketable-list` ticket template where the list stamps the
+     * `ticket-id` attribute automatically.
+     */
+    interface UTicketTransferForm {
+        /**
+          * CSS classes to apply to the submit button element.
+         */
+        "buttonClassName"?: string;
+        /**
+          * CSS classes to apply to the form element.
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to the error message element.
+         */
+        "errorClassName"?: string;
+        /**
+          * CSS classes to apply to the email input element.
+         */
+        "inputClassName"?: string;
+        /**
+          * Fired when sending a transfer offer fails. Contains the error code.
+         */
+        "onUTicketTransferCreateError"?: (event: UTicketTransferFormCustomEvent<{ error: string }>) => void;
+        /**
+          * Fired when a transfer offer was sent successfully. Contains the created transfer.
+         */
+        "onUTicketTransferCreateSuccess"?: (event: UTicketTransferFormCustomEvent<{ transfer: TicketTransfer }>) => void;
+        /**
+          * CSS classes to apply to the success message element.
+         */
+        "successClassName"?: string;
+        /**
+          * The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template.
+         */
+        "ticketId"?: string;
+    }
+    /**
+     * Lists the user's pending ticket transfers for one direction.
+     * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
+     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
+     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
+     * the template get the transfer `token` stamped automatically, and the list
+     * refetches after a successful action.
+     */
+    interface UTicketTransferList {
+        /**
+          * CSS classes to apply to the container element.
+         */
+        "containerClass"?: string;
+        /**
+          * Which side of the user's pending transfers to display ('incoming' or 'outgoing').
+         */
+        "direction": TicketTransferDirection;
+        /**
+          * Fired when fetching transfers fails. Contains the error message.
+         */
+        "onUTicketTransferListError"?: (event: UTicketTransferListCustomEvent<{
+    direction?: TicketTransferDirection;
+    error: string;
+  }>) => void;
+        /**
+          * Fired when transfers are successfully fetched. Contains the direction and items.
+         */
+        "onUTicketTransferListSuccess"?: (event: UTicketTransferListCustomEvent<{
+    direction: TicketTransferDirection;
+    items: TicketTransfer[];
+  }>) => void;
+        /**
+          * If true, replaces all text content with skeleton loaders.
+          * @default false
+         */
+        "skeletonAllText"?: boolean;
+        /**
+          * Number of skeleton items to show while loading.
+          * @default 3
+         */
+        "skeletonCount"?: number;
+        /**
+          * CSS selector for the target element where items will be rendered.
+         */
+        "target"?: string;
+    }
     interface UTicketableExport {
         /**
           * CSS classes to apply to the button element.
@@ -2949,6 +3246,9 @@ declare namespace LocalJSX {
         "u-social-login-button": USocialLoginButton;
         "u-spinner": USpinner;
         "u-submit-button": USubmitButton;
+        "u-ticket-transfer-action": UTicketTransferAction;
+        "u-ticket-transfer-form": UTicketTransferForm;
+        "u-ticket-transfer-list": UTicketTransferList;
         "u-ticketable-export": UTicketableExport;
         "u-ticketable-list": UTicketableList;
         "u-transaction-list": UTransactionList;
@@ -3025,6 +3325,29 @@ declare module "@stencil/core" {
             "u-social-login-button": LocalJSX.USocialLoginButton & JSXBase.HTMLAttributes<HTMLUSocialLoginButtonElement>;
             "u-spinner": LocalJSX.USpinner & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-submit-button": LocalJSX.USubmitButton & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
+            /**
+             * Button performing an action on a pending ticket transfer.
+             * Used standalone with an explicit `token`, or inside a
+             * `u-ticket-transfer-list` template where the list stamps the `token`
+             * attribute automatically and refetches when the action succeeds.
+             */
+            "u-ticket-transfer-action": LocalJSX.UTicketTransferAction & JSXBase.HTMLAttributes<HTMLUTicketTransferActionElement>;
+            /**
+             * Form to send a ticket transfer offer to an email address.
+             * Used standalone with an explicit `ticket-id`, or inside a
+             * `u-ticketable-list` ticket template where the list stamps the
+             * `ticket-id` attribute automatically.
+             */
+            "u-ticket-transfer-form": LocalJSX.UTicketTransferForm & JSXBase.HTMLAttributes<HTMLUTicketTransferFormElement>;
+            /**
+             * Lists the user's pending ticket transfers for one direction.
+             * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
+             * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
+             * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
+             * the template get the transfer `token` stamped automatically, and the list
+             * refetches after a successful action.
+             */
+            "u-ticket-transfer-list": LocalJSX.UTicketTransferList & JSXBase.HTMLAttributes<HTMLUTicketTransferListElement>;
             "u-ticketable-export": LocalJSX.UTicketableExport & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;
             "u-ticketable-list": LocalJSX.UTicketableList & JSXBase.HTMLAttributes<HTMLUTicketableListElement>;
             "u-transaction-list": LocalJSX.UTransactionList & JSXBase.HTMLAttributes<HTMLUTransactionListElement>;
