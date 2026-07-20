@@ -36,9 +36,9 @@ export class PasswordField extends UnidyComponent() {
       case "login":
         return authState.password;
       case "new-password":
-        return authState.resetPassword.newPassword;
+        return authState.step === "invited" ? authState.invitation.newPassword : authState.resetPassword.newPassword;
       case "password-confirmation":
-        return authState.resetPassword.passwordConfirmation;
+        return authState.step === "invited" ? authState.invitation.passwordConfirmation : authState.resetPassword.passwordConfirmation;
     }
   }
 
@@ -71,14 +71,24 @@ export class PasswordField extends UnidyComponent() {
         authStore.setPassword(target.value);
         break;
       case "new-password":
-        authStore.setNewPassword(target.value);
-        authStore.clearFieldError("resetPassword");
-        authStore.clearFieldError("password");
+        if (authState.step === "invited") {
+          authStore.updateInvitation({ newPassword: target.value });
+          authStore.clearFieldError("invitation");
+        } else {
+          authStore.setNewPassword(target.value);
+          authStore.clearFieldError("resetPassword");
+          authStore.clearFieldError("password");
+        }
         break;
       case "password-confirmation":
-        authStore.setConfirmPassword(target.value);
-        authStore.clearFieldError("resetPassword");
-        authStore.clearFieldError("password");
+        if (authState.step === "invited") {
+          authStore.updateInvitation({ passwordConfirmation: target.value });
+          authStore.clearFieldError("invitation");
+        } else {
+          authStore.setConfirmPassword(target.value);
+          authStore.clearFieldError("resetPassword");
+          authStore.clearFieldError("password");
+        }
         break;
     }
   };
@@ -99,7 +109,7 @@ export class PasswordField extends UnidyComponent() {
         return false;
       case "new-password":
       case "password-confirmation":
-        return authState.step === "reset-password";
+        return authState.step === "reset-password" || authState.step === "invited";
     }
   }
 

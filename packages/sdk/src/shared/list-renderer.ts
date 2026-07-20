@@ -28,17 +28,29 @@ interface LocaleWarnLogger {
 export async function loadLocales(logger?: LocaleWarnLogger): Promise<void> {
   try {
     await Promise.all([
-      !LOCALES.en &&
-        import("date-fns/locale/en-GB").then((module) => {
-          LOCALES.en = module.enGB;
+      !LOCALES.cs &&
+        import("date-fns/locale/cs").then((module) => {
+          LOCALES.cs = module.cs;
         }),
       !LOCALES.de &&
         import("date-fns/locale/de").then((module) => {
           LOCALES.de = module.de;
         }),
+      !LOCALES.en &&
+        import("date-fns/locale/en-GB").then((module) => {
+          LOCALES.en = module.enGB;
+        }),
       !LOCALES.fr &&
         import("date-fns/locale/fr").then((module) => {
           LOCALES.fr = module.fr;
+        }),
+      !LOCALES.it &&
+        import("date-fns/locale/it").then((module) => {
+          LOCALES.it = module.it;
+        }),
+      !LOCALES.ka &&
+        import("date-fns/locale/ka").then((module) => {
+          LOCALES.ka = module.ka;
         }),
       !LOCALES.nl_be &&
         import("date-fns/locale/nl-BE").then((module) => {
@@ -47,6 +59,10 @@ export async function loadLocales(logger?: LocaleWarnLogger): Promise<void> {
       !LOCALES.ro &&
         import("date-fns/locale/ro").then((module) => {
           LOCALES.ro = module.ro;
+        }),
+      !LOCALES.nb &&
+        import("date-fns/locale/nb").then((module) => {
+          LOCALES.nb = module.nb;
         }),
       !LOCALES.sv &&
         import("date-fns/locale/sv").then((module) => {

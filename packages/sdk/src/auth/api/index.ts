@@ -45,6 +45,7 @@ export type {
 } from "./register";
 // Re-export schema types for external use
 export type {
+  AccountUnconfirmedResponse,
   BrandConnectionRequiredResponse,
   CreateSignInResponse,
   ErrorResponse,
@@ -62,6 +63,8 @@ export type {
 } from "./schemas";
 // Re-export sign-in types
 export type {
+  AcceptInvitationArgs,
+  AcceptInvitationResult,
   AuthenticateResultShared,
   AuthenticateWithMagicCodeArgs,
   AuthenticateWithMagicCodeResult,
@@ -79,6 +82,8 @@ export type {
   RefreshTokenResult,
   ResendConfirmationArgs,
   ResendConfirmationResult,
+  ResendInvitationArgs,
+  ResendInvitationResult,
   ResetPasswordArgs,
   ResetPasswordResult,
   SendMagicCodeArgs,
@@ -89,6 +94,8 @@ export type {
   SignOutArgs,
   SignOutResult,
   UpdateMissingFieldsArgs,
+  ValidateInvitationTokenArgs,
+  ValidateInvitationTokenResult,
   ValidateResetPasswordTokenArgs,
   ValidateResetPasswordTokenResult,
 } from "./sign_in";
@@ -157,6 +164,18 @@ export class AuthService extends BaseService {
 
   resendConfirmation(args: signIn.ResendConfirmationArgs): Promise<signIn.ResendConfirmationResult> {
     return signIn.resendConfirmation(this.client, args, this.respond);
+  }
+
+  resendInvitation(args: signIn.ResendInvitationArgs): Promise<signIn.ResendInvitationResult> {
+    return signIn.resendInvitation(this.client, args, this.respond);
+  }
+
+  validateInvitationToken(args: signIn.ValidateInvitationTokenArgs): Promise<signIn.ValidateInvitationTokenResult> {
+    return signIn.validateInvitationToken(this.client, args, this.respond);
+  }
+
+  acceptInvitation(args: signIn.AcceptInvitationArgs): Promise<signIn.AcceptInvitationResult> {
+    return signIn.acceptInvitation(this.client, args, this.respond);
   }
 
   // ============================================

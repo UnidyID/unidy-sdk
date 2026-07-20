@@ -18,7 +18,8 @@ export class SigninStep {
     | "single-login"
     | "missing-fields"
     | "registration"
-    | "unconfirmed";
+    | "unconfirmed"
+    | "invited";
   /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
@@ -39,6 +40,8 @@ export class SigninStep {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     } else if (authState.step === "reset-password") {
       await authInstance.helpers.resetPassword();
+    } else if (authState.step === "invited") {
+      await authInstance.helpers.acceptInvitation();
     }
   }
 
@@ -63,6 +66,8 @@ export class SigninStep {
       shouldShow = authState.step === "missing-fields";
     } else if (this.name === "unconfirmed") {
       shouldShow = authState.step === "unconfirmed";
+    } else if (this.name === "invited") {
+      shouldShow = authState.step === "invited";
     }
 
     return (

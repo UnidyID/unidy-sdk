@@ -1,6 +1,7 @@
 // TODO: Add e2e test coverage for sign_in API functions (currently only partially covered via auth component tests)
 import type { ApiClientInterface, Payload } from "../../api/base-service";
 import {
+  AccountUnconfirmedResponseSchema,
   type BrandConnectionRequiredResponse,
   BrandConnectionRequiredResponseSchema,
   type CreateSignInResponse,
@@ -36,7 +37,8 @@ export type CreateSignInArgs = Payload<{
   originUrl?: string;
   captchaToken?: string;
 }>;
-export type ResendConfirmationArgs = Payload<{ email: string; captchaToken?: string }>;
+export type ResendConfirmationArgs = Payload<{ email: string; captchaToken?: string; returnTo?: string }>;
+export type ResendInvitationArgs = Payload<{ email: string; returnTo?: string }>;
 export type SendMagicCodeArgs = { signInId: string };
 export type AuthenticateWithPasswordArgs = { signInId: string } & Payload<{ password: string; captchaToken?: string }>;
 export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ code: string; captchaToken?: string }>;
@@ -50,6 +52,8 @@ export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
 export type AuthenticateWithPasskeyArgs = Payload<{ credential: PasskeyCredential }>;
 export type ConnectBrandArgs = { signInId: string };
+export type ValidateInvitationTokenArgs = { signInId: string; token: string };
+export type AcceptInvitationArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string }>;
 
 // ============================================
 // Captcha error types
@@ -130,6 +134,28 @@ export type ValidateResetPasswordTokenResult =
   | ["reset_token_expired", ErrorResponse]
   | [null, null];
 
+export type ValidateInvitationTokenResult =
+  | CommonErrors
+  | ["sign_in_not_found", ErrorResponse]
+  | ["invitation_token_missing", ErrorResponse]
+  | ["invalid_invitation_token", ErrorResponse]
+  | ["invitation_token_expired", ErrorResponse]
+  | ["invitation_already_accepted", ErrorResponse]
+  | [null, null];
+
+export type AcceptInvitationResult =
+  | CommonErrors
+  | ["sign_in_not_found", ErrorResponse]
+  | ["sign_in_already_processed", ErrorResponse]
+  | ["invitation_token_missing", ErrorResponse]
+  | ["invalid_invitation_token", ErrorResponse]
+  | ["invitation_token_expired", ErrorResponse]
+  | ["invitation_already_accepted", ErrorResponse]
+  | ["password_too_weak", InvalidPasswordResponse]
+  | ["missing_required_fields", RequiredFieldsResponse]
+  | ["brand_connection_required", BrandConnectionRequiredResponse]
+  | [null, TokenResponse];
+
 export type SignOutResult =
   | CommonErrors
   | ["sign_in_not_found", ErrorResponse]
@@ -145,6 +171,14 @@ export type ResendConfirmationResult =
   | ["account_not_found", ErrorResponse]
   | ["account_already_confirmed", ErrorResponse]
   | ["confirmation_recently_sent", ResendDelayError]
+  | [null, ResendDelayResponse];
+
+export type ResendInvitationResult =
+  | CommonErrors
+  | ["account_not_found", ErrorResponse]
+  | ["account_already_confirmed", ErrorResponse]
+  | ["account_not_invited", ErrorResponse]
+  | ["invitation_recently_sent", ResendDelayError]
   | [null, ResendDelayResponse];
 
 export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
@@ -183,7 +217,7 @@ export async function createSignIn(
   args: CreateSignInArgs,
   handleResponse: HandleResponseFn,
 ): Promise<CreateSignInResult> {
-  const { email, password, sendMagicCode, originUrl = window.location.href, captchaToken } = args.payload;
+  const { email, password, sendMagicCode, originUrl, captchaToken } = args.payload;
   const response = await client.post<CreateSignInResponse>("/api/sdk/v1/sign_ins", {
     email,
     password,
@@ -197,6 +231,10 @@ export async function createSignIn(
       const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
       if (missing_fields_check.success) {
         return ["missing_required_fields", missing_fields_check.data];
+      }
+      const accountUnconfirmedParsed = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (accountUnconfirmedParsed.success) {
+        return ["account_unconfirmed", accountUnconfirmedParsed.data];
       }
       const error_response = parseErrorResponse(response.data);
       return [
@@ -267,6 +305,11 @@ export async function authenticateWithPassword(
         return ["missing_required_fields", missing_fields_check.data];
       }
 
+      const account_unconfirmed_check = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (account_unconfirmed_check.success) {
+        return ["account_unconfirmed", account_unconfirmed_check.data];
+      }
+
       const error_response = parseErrorResponse(response.data);
       return [
         error_response.error_identifier as
@@ -304,6 +347,11 @@ export async function authenticateWithMagicCode(
       const missing_fields_check = RequiredFieldsResponseSchema.safeParse(response.data);
       if (missing_fields_check.success) {
         return ["missing_required_fields", missing_fields_check.data];
+      }
+
+      const account_unconfirmed_check = AccountUnconfirmedResponseSchema.safeParse(response.data);
+      if (account_unconfirmed_check.success) {
+        return ["account_unconfirmed", account_unconfirmed_check.data];
       }
 
       const error_response = parseErrorResponse(response.data);
@@ -446,6 +494,80 @@ export async function validateResetPasswordToken(
   });
 }
 
+export async function validateInvitationToken(
+  client: ApiClientInterface,
+  args: ValidateInvitationTokenArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ValidateInvitationTokenResult> {
+  const { signInId, token } = args;
+  const response = await client.get<{ valid: boolean }>(
+    `/api/sdk/v1/sign_ins/${signInId}/invitation?invitation_token=${encodeURIComponent(token)}`,
+  );
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const error_response = parseErrorResponse(response.data);
+      return [
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "invitation_token_missing"
+          | "invalid_invitation_token"
+          | "invitation_token_expired"
+          | "invitation_already_accepted",
+        error_response,
+      ];
+    }
+
+    return [null, null];
+  });
+}
+
+export async function acceptInvitation(
+  client: ApiClientInterface,
+  args: AcceptInvitationArgs,
+  handleResponse: HandleResponseFn,
+): Promise<AcceptInvitationResult> {
+  const { signInId, token, payload } = args;
+  const response = await client.patch<TokenResponse>(`/api/sdk/v1/sign_ins/${signInId}/invitation`, {
+    invitation_token: token,
+    password: payload.password,
+    password_confirmation: payload.passwordConfirmation,
+  });
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const invalidPasswordParsed = InvalidPasswordResponseSchema.safeParse(response.data);
+      if (invalidPasswordParsed.success) {
+        return ["password_too_weak", invalidPasswordParsed.data];
+      }
+
+      const requiredFieldsParsed = RequiredFieldsResponseSchema.safeParse(response.data);
+      if (requiredFieldsParsed.success) {
+        return ["missing_required_fields", requiredFieldsParsed.data];
+      }
+
+      const brandConnectionParsed = BrandConnectionRequiredResponseSchema.safeParse(response.data);
+      if (brandConnectionParsed.success) {
+        return ["brand_connection_required", brandConnectionParsed.data];
+      }
+
+      const error_response = parseErrorResponse(response.data);
+      return [
+        error_response.error_identifier as
+          | "sign_in_not_found"
+          | "sign_in_already_processed"
+          | "invitation_token_missing"
+          | "invalid_invitation_token"
+          | "invitation_token_expired"
+          | "invitation_already_accepted",
+        error_response,
+      ];
+    }
+
+    return [null, TokenResponseSchema.parse(response.data)];
+  });
+}
+
 export async function signOut(
   client: ApiClientInterface,
   args: SignOutArgs,
@@ -470,10 +592,11 @@ export async function resendConfirmation(
   args: ResendConfirmationArgs,
   handleResponse: HandleResponseFn,
 ): Promise<ResendConfirmationResult> {
-  const { email, captchaToken } = args.payload;
+  const { email, captchaToken, returnTo } = args.payload;
   const response = await client.post<ResendDelayResponse>("/api/sdk/v1/sign_ins/resend_confirmation", {
     email,
     captcha_token: captchaToken,
+    return_to: returnTo,
   });
 
   return handleResponse(response, () => {
@@ -485,6 +608,32 @@ export async function resendConfirmation(
 
       const error_response = parseErrorResponse(response.data);
       return [error_response.error_identifier as "account_not_found" | "account_already_confirmed", error_response];
+    }
+
+    return [null, ResendDelayResponseSchema.parse(response.data)];
+  });
+}
+
+export async function resendInvitation(
+  client: ApiClientInterface,
+  args: ResendInvitationArgs,
+  handleResponse: HandleResponseFn,
+): Promise<ResendInvitationResult> {
+  const { email, returnTo } = args.payload;
+  const response = await client.post<ResendDelayResponse>("/api/sdk/v1/sign_ins/resend_invitation", {
+    email,
+    return_to: returnTo,
+  });
+
+  return handleResponse(response, () => {
+    if (!response.success) {
+      const rateLimitParsed = ResendDelayErrorSchema.safeParse(response.data);
+      if (rateLimitParsed.success && rateLimitParsed.data.error_identifier === "invitation_recently_sent") {
+        return ["invitation_recently_sent", rateLimitParsed.data];
+      }
+
+      const error_response = parseErrorResponse(response.data);
+      return [error_response.error_identifier as "account_not_found" | "account_already_confirmed" | "account_not_invited", error_response];
     }
 
     return [null, ResendDelayResponseSchema.parse(response.data)];

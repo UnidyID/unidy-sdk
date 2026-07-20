@@ -1,5 +1,13 @@
 import { jwtDecode } from "jwt-decode";
-import type { CreateSignInResponse, RequiredFieldsResponse, ResendDelayResponse, TokenResponse, UnidyClient } from "../api";
+import type {
+  AccountUnconfirmedResponse,
+  BrandConnectionRequiredResponse,
+  CreateSignInResponse,
+  RequiredFieldsResponse,
+  ResendDelayResponse,
+  TokenResponse,
+  UnidyClient,
+} from "../api";
 import { authState, authStore } from "../auth/store/auth-store";
 import { t } from "../i18n";
 import { createLogger } from "../logger";
@@ -39,7 +47,9 @@ export class AuthHelpers {
       return;
     }
 
-    const [error, response] = await this.client.auth.createSignIn({ payload: { email, password, sendMagicCode, captchaToken } });
+    const [error, response] = await this.client.auth.createSignIn({
+      payload: { email, password, sendMagicCode, originUrl: window.location.href, captchaToken },
+    });
 
     if (error) {
       if (error === "magic_code_recently_created") {
@@ -171,10 +181,10 @@ export class AuthHelpers {
     return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
   }
 
-  async logout() {
+  async logout(globalLogout?: boolean) {
     const [error, _] = await this.client.auth.signOut({
       signInId: authState.sid as string,
-      globalLogout: authState.backendSignedIn,
+      globalLogout: globalLogout ?? authState.backendSignedIn,
     });
 
     if (error) {
@@ -185,6 +195,16 @@ export class AuthHelpers {
   }
 
   async refreshToken() {
+    if (!authState.sid && authState.token) {
+      // Fallback: decode the stored token to recover the sid (e.g. after a page reload
+      // where initialize() ran before the token was persisted).
+      try {
+        const decoded = jwtDecode<TokenPayload>(authState.token);
+        if (decoded.sid) authStore.setSignInId(decoded.sid);
+      } catch {
+        /* ignore */
+      }
+    }
     if (!authState.sid) {
       this.logger.warn("No sign-in ID in the session");
       return;
@@ -314,7 +334,7 @@ export class AuthHelpers {
     }
 
     const [error, response] = await this.client.auth.resendConfirmation({
-      payload: { email: authState.email, captchaToken },
+      payload: { email: authState.email, captchaToken, returnTo: window.location.href },
     });
 
     authStore.setLoading(false);
@@ -328,6 +348,38 @@ export class AuthHelpers {
       if (isCaptchaError(error)) {
         captchaManager.reset();
         authStore.setGlobalError("captcha", error);
+        return false;
+      }
+
+      authStore.setGlobalError("auth", error);
+      return false;
+    }
+
+    const successResponse = response as ResendDelayResponse;
+    authStore.setEnableResendAfter(successResponse?.enable_resend_after ?? 0);
+    return true;
+  }
+
+  async resendInvitationEmail(): Promise<boolean> {
+    if (!authState.email) {
+      authStore.setGlobalError("auth", "email_required");
+      return false;
+    }
+
+    if (authState.loading) return false;
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.resendInvitation({
+      payload: { email: authState.email, returnTo: window.location.href },
+    });
+
+    authStore.setLoading(false);
+
+    if (error) {
+      if (error === "invitation_recently_sent" && response && "enable_resend_after" in response) {
+        authStore.setEnableResendAfter(response.enable_resend_after);
         return false;
       }
 
@@ -398,7 +450,10 @@ export class AuthHelpers {
 
       // TODO: add proper password requirements handling --> for now this is fine
       if (error === "invalid_password") {
-        authStore.setFieldError("password", response.error_details?.password.map((p) => t(`errors.password_requirements.${p}`)).join("\n"));
+        authStore.setFieldError(
+          "password",
+          response.error_details?.password?.map((p) => t(`errors.password_requirements.${p}`)).join("\n"),
+        );
       }
     } else {
       authStore.setStep("email");
@@ -416,6 +471,35 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
+  async handleInvitationRedirect() {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const invitationToken = params.get("invitation_token");
+    const signInId = params.get("sign_in_id");
+
+    if (!invitationToken || !signInId) {
+      return;
+    }
+
+    authStore.clearPendingRecovery();
+    authStore.setSignInId(signInId);
+
+    authStore.setLoading(true);
+
+    const [error] = await this.client.auth.validateInvitationToken({ signInId, token: invitationToken });
+
+    if (error) {
+      authStore.setFieldError("invitation", error);
+      authStore.setStep("invited");
+      authStore.setLoading(false);
+      return;
+    }
+
+    authStore.setInvitationToken(invitationToken);
+    authStore.setStep("invited");
+    authStore.setLoading(false);
+  }
+
   async handleResetPasswordRedirect() {
     const url = new URL(window.location.href);
     const params = url.searchParams;
@@ -424,6 +508,8 @@ export class AuthHelpers {
     if (!resetToken) {
       return;
     }
+
+    authStore.clearPendingRecovery();
 
     if (authState.sid) {
       authStore.setLoading(true);
@@ -444,6 +530,64 @@ export class AuthHelpers {
     authStore.setResetToken(resetToken);
     authStore.setStep("reset-password");
     authStore.setLoading(false);
+  }
+
+  async acceptInvitation() {
+    if (!authState.invitation.token) {
+      authStore.setFieldError("invitation", "invalid_invitation_token");
+      return;
+    }
+
+    if (!authState.sid) {
+      authStore.setFieldError("invitation", "sign_in_not_found");
+      return;
+    }
+
+    if (!authState.invitation.newPassword) {
+      authStore.setFieldError("invitation", "password_required");
+      return;
+    }
+
+    if (authState.invitation.newPassword !== authState.invitation.passwordConfirmation) {
+      authStore.setFieldError("invitation", "passwords_do_not_match");
+      return;
+    }
+
+    authStore.setLoading(true);
+    authStore.clearErrors();
+
+    const [error, response] = await this.client.auth.acceptInvitation({
+      signInId: authState.sid,
+      token: authState.invitation.token,
+      payload: {
+        password: authState.invitation.newPassword,
+        passwordConfirmation: authState.invitation.passwordConfirmation,
+      },
+    });
+
+    if (error) {
+      if (error === "brand_connection_required") {
+        const { sid } = response as BrandConnectionRequiredResponse;
+        if (sid) authStore.setSignInId(sid);
+        authStore.setStep("connect-brand");
+        authStore.setLoading(false);
+        return;
+      }
+
+      if (error === "missing_required_fields") {
+        const { fields } = response as RequiredFieldsResponse;
+        this.handleMissingFields(fields);
+        return;
+      }
+
+      authStore.setFieldError("invitation", error);
+      authStore.setLoading(false);
+      return;
+    }
+
+    clearUrlParam("invitation_token");
+    clearUrlParam("sign_in_id");
+    this.handleAuthSuccess(response as TokenResponse);
   }
 
   handleSocialAuthRedirect(): void {
@@ -595,9 +739,11 @@ export class AuthHelpers {
         authStore.setGlobalError("auth", error);
         break;
 
-      case "account_unconfirmed":
-        authStore.setStep("unconfirmed");
+      case "account_unconfirmed": {
+        const loginType = (response as AccountUnconfirmedResponse)?.login_type;
+        authStore.setStep(loginType === "invited" ? "invited" : "unconfirmed");
         break;
+      }
 
       default:
         if (fallbackField === "password") {

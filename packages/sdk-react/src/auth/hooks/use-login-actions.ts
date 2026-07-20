@@ -27,6 +27,7 @@ export type LoginActions = Pick<
   | "resetPassword"
   | "validateResetPasswordToken"
   | "resendConfirmation"
+  | "resendInvitation"
   | "connectBrand"
   | "cancelBrandConnect"
   | "submitMissingFields"
@@ -62,6 +63,13 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
           dispatch({ type: "SET_LOADING", loading: false });
           dispatch({ type: "SET_STEP", step: "magic-code" });
           dispatch({ type: "SET_ERROR", field: "magicCode", message: error });
+          return;
+        }
+
+        if (error === "account_unconfirmed") {
+          const loginType = (response as { login_type?: string })?.login_type;
+          dispatch({ type: "SET_LOADING", loading: false });
+          dispatch({ type: "SET_STEP", step: loginType === "invited" ? "invited" : "unconfirmed" });
           return;
         }
 
@@ -118,7 +126,8 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
         dispatch({ type: "SET_LOADING", loading: false });
 
         if (error === "account_unconfirmed") {
-          dispatch({ type: "SET_STEP", step: "unconfirmed" });
+          const loginType = (response as { login_type?: string })?.login_type;
+          dispatch({ type: "SET_STEP", step: loginType === "invited" ? "invited" : "unconfirmed" });
           return;
         }
         if (error === "brand_connection_required") {
@@ -225,7 +234,8 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
         dispatch({ type: "SET_LOADING", loading: false });
 
         if (error === "account_unconfirmed") {
-          dispatch({ type: "SET_STEP", step: "unconfirmed" });
+          const loginType = (response as { login_type?: string })?.login_type;
+          dispatch({ type: "SET_STEP", step: loginType === "invited" ? "invited" : "unconfirmed" });
           return;
         }
         if (error === "brand_connection_required") {
@@ -606,6 +616,28 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     [client, callbacks, dispatch],
   );
 
+  const resendInvitation = useCallback(
+    async (email: string) => {
+      dispatch({ type: "SET_LOADING", loading: true });
+      dispatch({ type: "CLEAR_ERRORS" });
+
+      const [error] = await client.auth.resendInvitation({
+        payload: { email, returnTo: window.location.href },
+      });
+
+      dispatch({ type: "SET_LOADING", loading: false });
+
+      if (error) {
+        dispatch({ type: "SET_ERROR", field: "global", message: error });
+        callbacks?.onError?.(error);
+        return;
+      }
+
+      callbacks?.onSuccess?.("Invitation email sent");
+    },
+    [client, callbacks, dispatch],
+  );
+
   const goBack = useCallback(() => {
     dispatch({ type: "GO_BACK" });
   }, [dispatch]);
@@ -637,6 +669,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     resetPassword,
     validateResetPasswordToken,
     resendConfirmation,
+    resendInvitation,
     connectBrand,
     cancelBrandConnect,
     submitMissingFields,

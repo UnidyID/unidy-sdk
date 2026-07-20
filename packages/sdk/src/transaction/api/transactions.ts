@@ -3,7 +3,7 @@ import { type Transaction, TransactionSchema, type TransactionsListResponse, Tra
 import { type TransactionGetResult, type TransactionListArgs, type TransactionListResult, TransactionService } from "./transaction-service";
 
 // Re-export types for consumers importing from this module directly.
-export type { Transaction, TransactionLineItem, TransactionsListResponse } from "./schemas";
+export type { Address, Transaction, TransactionLineItem, TransactionsListResponse } from "./schemas";
 
 export type TransactionsListArgs = TransactionListArgs;
 export type TransactionsGetArgs = { id: string };

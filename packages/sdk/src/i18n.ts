@@ -1,9 +1,12 @@
 import { Build } from "@stencil/core";
 import i18n from "i18next";
+import cs from "./locales/cs.json";
 import de from "./locales/de.json";
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
 import it from "./locales/it.json";
+import ka from "./locales/ka.json";
+import nb from "./locales/nb.json";
 import nl_be from "./locales/nl_be.json";
 import ro from "./locales/ro.json";
 import sv from "./locales/sv.json";
@@ -18,10 +21,13 @@ i18n.use(i18nLogger).init({
     escapeValue: false,
   },
   resources: {
+    cs: { translation: cs },
     de: { translation: de },
     en: { translation: en },
     fr: { translation: fr },
     it: { translation: it },
+    ka: { translation: ka },
+    nb: { translation: nb },
     nl_be: { translation: nl_be },
     ro: { translation: ro },
     sv: { translation: sv },

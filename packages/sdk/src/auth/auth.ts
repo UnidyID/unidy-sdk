@@ -121,9 +121,19 @@ export class Auth {
     Auth.instance.helpers.handleSocialAuthRedirect();
     Auth.instance.helpers.extractSidFromUrl();
     await Auth.instance.helpers.handleResetPasswordRedirect();
+    await Auth.instance.helpers.handleInvitationRedirect();
 
-    if (Auth.instance.isTokenValid(authState.token)) {
+    // Don't restore an existing authenticated session if an invitation redirect was
+    // just processed — the invitation flow takes precedence over a stored token.
+    if (authState.step !== "invited" && Auth.instance.isTokenValid(authState.token)) {
       authStore.setAuthenticated(true);
+      // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
+      try {
+        const decoded = jwtDecode<TokenPayload>(authState.token as string);
+        if (decoded.sid) authStore.setSignInId(decoded.sid);
+      } catch {
+        /* ignore — token already passed isTokenValid */
+      }
     }
 
     // Resume auth flow after page reload or new tab by recovering the sign-in step
@@ -226,10 +236,11 @@ export class Auth {
   /**
    * Logs the user out (backend call when possible) and clears local auth state. Local state is always cleared even if backend fails.
    *
+   * @param globalLogout - When `true`, requests termination of all sessions on the server (global logout). Defaults to `true` only when the session was detected server-side (SSO); `false` for SDK-initiated logins. Pass `true` explicitly to force a full session termination regardless of how the user authenticated.
    * @returns `true` on success, or an AuthError if backend logout failed.
    */
-  async logout(): Promise<boolean | AuthError> {
-    const [error, _] = await this.helpers.logout();
+  async logout(globalLogout?: boolean): Promise<boolean | AuthError> {
+    const [error, _] = await this.helpers.logout(globalLogout);
 
     // Always clear local tokens, even if backend logout fails
     authStore.reset();

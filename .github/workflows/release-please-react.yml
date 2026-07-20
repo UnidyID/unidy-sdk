@@ -21,6 +21,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release-please:
@@ -30,7 +31,7 @@ jobs:
       release_created: ${{ steps.release.outputs.releases_created || steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs['packages/sdk-react--tag_name'] || steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           config-file: release-please-config-react.json
@@ -100,12 +101,15 @@ jobs:
       - name: Build
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
+      - name: Setup Node.js for npm publish
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
-          bun publish --tag ${{ github.event.inputs.release_type }}
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --provenance --tag ${{ github.event.inputs.release_type }}
 
       - name: Create Git tag
         run: |
@@ -146,12 +150,15 @@ jobs:
       - name: Build
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
+      - name: Setup Node.js for npm publish
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
-          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}
 
   # Fallback: publish if a GitHub release exists but npm publish was missed
   publish-stable-fallback:
@@ -202,10 +209,14 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
+      - name: Setup Node.js for npm publish
+        if: steps.check.outputs.needs_publish == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'
         run: |
           cd packages/sdk-react
-          bun publish --tag ${{ steps.npm-tag.outputs.tag }}
-        env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}
