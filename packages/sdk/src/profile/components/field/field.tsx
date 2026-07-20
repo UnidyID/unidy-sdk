@@ -1,7 +1,6 @@
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
-import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -61,19 +60,7 @@ export class Field extends UnidyComponent() {
   /** Custom validation function. Returns { valid: boolean, message?: string }. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  /** Reference to parent u-profile element for field registration */
-  private parentProfile: HTMLUProfileElement | null = null;
-
-  componentWillLoad() {
-    // Find parent u-profile and register this field for partial validation tracking
-    this.parentProfile = findParentProfile(this.element);
-    this.parentProfile?.registerField(this.field);
-  }
-
-  disconnectedCallback() {
-    // Unregister this field when component is removed
-    this.parentProfile?.unregisterField(this.field);
-  }
+  disconnectedCallback() {}
 
   private getFieldData() {
     return this.field.startsWith("custom_attributes.")

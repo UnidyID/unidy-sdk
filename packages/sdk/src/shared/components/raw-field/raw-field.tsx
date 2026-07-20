@@ -3,7 +3,7 @@ import { newsletterStore } from "../../../newsletter/store/newsletter-store";
 import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
 import { onChange as onRegistrationChange, registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
-import { type ComponentContext, detectContext } from "../../context-utils";
+import { type ComponentContext, detectContext, findParentProfile } from "../../context-utils";
 import { Input } from "./components/Input";
 import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
 import { RadioGroup, type RadioOption } from "./components/RadioGroup";
@@ -45,6 +45,7 @@ export class RawField extends UnidyComponent() {
   @State() selected?: string | string[];
 
   private unsubscribers: (() => void)[] = [];
+  private parentProfile: HTMLUProfileElement | null = null;
 
   // Subscribe to password changes so the confirmation field re-validates when the password changes
   connectedCallback() {
@@ -64,6 +65,8 @@ export class RawField extends UnidyComponent() {
       unsub();
     }
     this.unsubscribers = [];
+    this.parentProfile?.unregisterField(this.field);
+    this.parentProfile = null;
   }
 
   private get context(): ComponentContext | null {
@@ -451,6 +454,11 @@ export class RawField extends UnidyComponent() {
       this.selected = this.value;
     } else {
       this.selected = current;
+    }
+
+    if (this.context === "profile") {
+      this.parentProfile = findParentProfile(this.element);
+      this.parentProfile?.registerField(this.field);
     }
   }
 
