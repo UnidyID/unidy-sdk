@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.9.0...@unidy.io/sdk-v1.9.1) (2026-07-21)
+
+
+### Bug Fixes
+
+* [UD-3155] SDK auth session restore and modal regression ([#309](https://github.com/UnidyID/unidy-sdk/issues/309)) ([35b8a46](https://github.com/UnidyID/unidy-sdk/commit/35b8a46889c0366d43e82530105093a8504e0512))
+* u-full-profile submit button theming and u-raw-field partial-validation data loss ([#310](https://github.com/UnidyID/unidy-sdk/issues/310)) ([4005377](https://github.com/UnidyID/unidy-sdk/commit/4005377dac50ca95510f3c616d3f5e2e99e3e1c1))
+
 ## [1.9.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.8.0...@unidy.io/sdk-v1.9.0) (2026-07-14)
 
 
