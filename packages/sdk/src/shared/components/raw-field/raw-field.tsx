@@ -456,7 +456,10 @@ export class RawField extends UnidyComponent() {
       this.selected = current;
     }
 
-    if (this.context === "profile") {
+    // u-field (shadow: true) registers via its own host element which is in the light DOM.
+    // u-raw-field inside u-field's shadow root cannot cross that boundary, so skip registration
+    // there to avoid a no-op attempt. Standalone u-raw-field registers directly.
+    if (this.context === "profile" && !this.element.closest("u-field")) {
       this.parentProfile = findParentProfile(this.element);
       this.parentProfile?.registerField(this.field);
     }
