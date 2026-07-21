@@ -49,7 +49,9 @@ const initialState: OAuthState = {
 // Global OAuth store
 const { state: oauthState, onChange, reset } = createStore<OAuthState>({ ...initialState });
 
-export { oauthState, onChange };
+const oauthOnChange: <K extends keyof OAuthState>(prop: K, cb: (value: OAuthState[K]) => void) => () => void = onChange;
+
+export { oauthOnChange as onChange, oauthState };
 
 export function resetOAuthState() {
   reset();
