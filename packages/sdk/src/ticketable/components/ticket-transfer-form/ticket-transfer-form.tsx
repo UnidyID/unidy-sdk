@@ -16,6 +16,8 @@ import { translateTransferError } from "../../transfer-error";
 export class TicketTransferForm extends UnidyComponent() {
   /** The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template. */
   @Prop({ attribute: "ticket-id", mutable: true }) ticketId?: string;
+  /** Disables the form controls. Stamped automatically on skeleton items inside a u-ticketable-list template. */
+  @Prop({ reflect: true }) disabled = false;
   /** CSS classes to apply to the form element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
   /** CSS classes to apply to the email input element. */
@@ -39,12 +41,13 @@ export class TicketTransferForm extends UnidyComponent() {
 
   private handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
-    if (this.loading) return;
+    if (this.loading || this.disabled) return;
 
     const ticketId = this.ticketId;
     if (!ticketId) {
       this.logger.warn("Missing ticket-id attribute");
       this.error = translateTransferError("missing_ticket");
+      this.success = null;
       this.uTicketTransferCreateError.emit({ error: "missing_ticket" });
       return;
     }
@@ -88,10 +91,10 @@ export class TicketTransferForm extends UnidyComponent() {
             }}
             placeholder={t("ticketTransfer.form.email_placeholder")}
             aria-label={t("ticketTransfer.form.email_label")}
-            disabled={this.loading}
+            disabled={this.loading || this.disabled}
             class={this.inputClassName}
           />
-          <button type="submit" disabled={this.loading} class={this.buttonClassName}>
+          <button type="submit" disabled={this.loading || this.disabled} class={this.buttonClassName}>
             <slot>{t("ticketTransfer.form.submit")}</slot>
           </button>
         </form>

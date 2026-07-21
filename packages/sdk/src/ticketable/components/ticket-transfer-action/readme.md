@@ -15,11 +15,12 @@ attribute automatically and refetches when the action succeeds.
 
 ## Properties
 
-| Property              | Attribute    | Description                                                                                         | Type                                | Default     |
-| --------------------- | ------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------- |
-| `action` _(required)_ | `action`     | The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one. | `"accept" \| "cancel" \| "decline"` | `undefined` |
-| `componentClassName`  | `class-name` | CSS classes to apply to the button element.                                                         | `string`                            | `undefined` |
-| `token`               | `token`      | The transfer token. Stamped automatically inside a u-ticket-transfer-list template.                 | `string`                            | `undefined` |
+| Property              | Attribute    | Description                                                                                            | Type                                | Default     |
+| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------ | ----------------------------------- | ----------- |
+| `action` _(required)_ | `action`     | The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one.    | `"accept" \| "cancel" \| "decline"` | `undefined` |
+| `componentClassName`  | `class-name` | CSS classes to apply to the button element.                                                            | `string`                            | `undefined` |
+| `disabled`            | `disabled`   | Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template. | `boolean`                           | `false`     |
+| `token`               | `token`      | The transfer token. Stamped automatically inside a u-ticket-transfer-list template.                    | `string`                            | `undefined` |
 
 
 ## Events

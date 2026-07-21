@@ -1035,6 +1035,11 @@ export namespace Components {
          */
         "componentClassName"?: string;
         /**
+          * Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * The transfer token. Stamped automatically inside a u-ticket-transfer-list template.
          */
         "token"?: string;
@@ -1054,6 +1059,11 @@ export namespace Components {
           * CSS classes to apply to the form element.
          */
         "componentClassName"?: string;
+        /**
+          * Disables the form controls. Stamped automatically on skeleton items inside a u-ticketable-list template.
+          * @default false
+         */
+        "disabled": boolean;
         /**
           * CSS classes to apply to the error message element.
          */
@@ -2954,6 +2964,11 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
+          * Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Fired when the action fails. Contains the action and the error code.
          */
         "onUTicketTransferActionError"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; error: string }>) => void;
@@ -2981,6 +2996,11 @@ declare namespace LocalJSX {
           * CSS classes to apply to the form element.
          */
         "componentClassName"?: string;
+        /**
+          * Disables the form controls. Stamped automatically on skeleton items inside a u-ticketable-list template.
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * CSS classes to apply to the error message element.
          */

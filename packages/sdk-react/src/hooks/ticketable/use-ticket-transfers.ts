@@ -1,4 +1,4 @@
-import type { TicketTransfer, TicketTransferActionResult } from "@unidy.io/sdk/standalone";
+import type { TicketTransfer, TicketTransferActionResult, TicketTransfersListResult } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
@@ -79,11 +79,26 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
 
   const fetchOnMount = options.fetchOnMount;
 
+  const fetchIdRef = useRef(0);
+
   const fetchTransfers = useCallback(async () => {
+    // Overlapping fetches (mount fetch vs post-mutation refetch) must not let
+    // an older response overwrite a newer one — only the latest fetch dispatches.
+    const fetchId = ++fetchIdRef.current;
     dispatch({ type: "fetch_start" });
     const callbacks = optionsRef.current.callbacks;
 
-    const [errorCode, data] = await client.ticketTransfers.list();
+    // The try only wraps the SDK call — a throwing consumer callback must not
+    // be converted into a spurious fetch_error after a successful fetch.
+    let result: TicketTransfersListResult;
+    try {
+      result = await client.ticketTransfers.list();
+    } catch {
+      result = ["internal_error", null];
+    }
+    if (fetchId !== fetchIdRef.current) return;
+
+    const [errorCode, data] = result;
     if (errorCode === null && data) {
       dispatch({ type: "fetch_success", incoming: data.incoming, outgoing: data.outgoing });
       callbacks?.onSuccess?.("Fetched successfully");
@@ -103,7 +118,19 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
   const runTransferMutation = useCallback(
     async (sdkCall: () => Promise<TicketTransferActionResult>): Promise<TicketTransfer | null> => {
       let transfer: TicketTransfer | null = null;
-      const ok = await runMutation(sdkCall, {
+
+      // A thrown SDK call (instead of an error tuple, e.g. a rejecting token
+      // provider) becomes a normal error tuple so isMutating is always resolved
+      // and the error callback fires exactly once.
+      const safeCall = async (): Promise<TicketTransferActionResult> => {
+        try {
+          return await sdkCall();
+        } catch {
+          return ["internal_error", null];
+        }
+      };
+
+      const ok = await runMutation(safeCall, {
         onMutate: () => dispatch({ type: "mutate_start" }),
         onSuccess: (data) => {
           transfer = data;

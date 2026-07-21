@@ -211,6 +211,8 @@ export class TicketableList extends UnidyComponent() {
           for (const transferEl of fragment.querySelectorAll("u-ticket-transfer-form")) {
             if (item) {
               transferEl.setAttribute("ticket-id", item.id);
+            } else {
+              transferEl.setAttribute("disabled", "true");
             }
           }
         }

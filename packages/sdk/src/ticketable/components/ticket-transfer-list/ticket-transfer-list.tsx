@@ -23,6 +23,10 @@ export type TicketTransferDirection = "incoming" | "outgoing";
 @Component({ tag: "u-ticket-transfer-list", shadow: false })
 export class TicketTransferList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
+  /** Monotonic id guarding overlapping loadData() calls — only the latest applies its response. */
+  private loadId = 0;
+  /** The element last populated via `target`, so it can be cleared when the target changes or the list unmounts. */
+  private lastTargetElement: Element | null = null;
 
   @State() items: TicketTransfer[] = [];
   @State() loading = true;
@@ -53,8 +57,18 @@ export class TicketTransferList extends UnidyComponent() {
     error: string;
   }>;
 
+  @Watch("target")
+  targetChanged() {
+    // The old container would otherwise keep stale content (including live
+    // action buttons whose events no longer reach this list).
+    this.clearTargetElement();
+  }
+
   @Watch("direction")
   async fetchData() {
+    // Supersede any in-flight load immediately so its response can't apply
+    // items for the old direction while we await the auth checks below.
+    this.loadId++;
     // Skip when the host app tweaks props before auth lands — otherwise
     // loadData() would surface a "Failed to get ID token" error to the user.
     const auth = await Auth.getInstance();
@@ -90,14 +104,33 @@ export class TicketTransferList extends UnidyComponent() {
 
   disconnectedCallback() {
     this.unsubscribeAuth?.();
+    // Deferred one frame: disconnectedCallback also fires on a synchronous DOM
+    // move (reparenting), where Stencil never re-renders to repopulate the
+    // target — only clear it when the element is really gone.
+    requestAnimationFrame(() => {
+      if (!this.element.isConnected) {
+        this.clearTargetElement();
+      }
+    });
+  }
+
+  private clearTargetElement() {
+    if (this.lastTargetElement) {
+      this.lastTargetElement.innerHTML = "";
+      this.lastTargetElement = null;
+    }
   }
 
   private async loadData() {
+    const loadId = ++this.loadId;
     this.loading = true;
     this.error = null;
 
-    if (this.direction !== "incoming" && this.direction !== "outgoing") {
-      this.logger.error(`Invalid direction: ${this.direction}. Must be 'incoming' or 'outgoing'`);
+    // Capture the validated direction — the prop can change while the request
+    // is in flight (the @Watch then starts a new load that supersedes this one).
+    const direction = this.direction;
+    if (direction !== "incoming" && direction !== "outgoing") {
+      this.logger.error(`Invalid direction: ${direction}. Must be 'incoming' or 'outgoing'`);
       this.error = translateTransferError("internal_error");
       this.loading = false;
       this.uTicketTransferListError.emit({ error: this.error });
@@ -108,22 +141,25 @@ export class TicketTransferList extends UnidyComponent() {
       const unidyClient = await getUnidyClient();
       const [error, data] = await unidyClient.ticketTransfers.list();
 
+      if (loadId !== this.loadId) return;
+
       if (error !== null || !data || !("incoming" in data)) {
         this.error = translateTransferError(error ?? "invalid_response");
         this.loading = false;
-        this.uTicketTransferListError.emit({ direction: this.direction, error: this.error });
+        this.uTicketTransferListError.emit({ direction, error: this.error });
         return;
       }
 
-      this.items = data[this.direction];
+      this.items = data[direction];
       this.loading = false;
 
-      this.uTicketTransferListSuccess.emit({ direction: this.direction, items: this.items });
+      this.uTicketTransferListSuccess.emit({ direction, items: this.items });
     } catch (err) {
+      if (loadId !== this.loadId) return;
       this.logger.error("Unexpected error while loading transfers", err);
       this.error = translateTransferError("internal_error");
       this.loading = false;
-      this.uTicketTransferListError.emit({ direction: this.direction, error: this.error });
+      this.uTicketTransferListError.emit({ direction, error: this.error });
     }
   }
 
@@ -138,6 +174,8 @@ export class TicketTransferList extends UnidyComponent() {
         for (const actionEl of fragment.querySelectorAll("u-ticket-transfer-action")) {
           if (item) {
             actionEl.setAttribute("token", item.token);
+          } else {
+            actionEl.setAttribute("disabled", "true");
           }
         }
       },
@@ -146,7 +184,14 @@ export class TicketTransferList extends UnidyComponent() {
 
   componentDidRender() {
     if (this.target) {
-      requestAnimationFrame(() => this.renderToTarget());
+      // Stencil re-renders detached components on late state writes; without the
+      // isConnected guard this deferred callback would repopulate the external
+      // target after disconnectedCallback already cleared it.
+      requestAnimationFrame(() => {
+        if (this.element.isConnected) {
+          this.renderToTarget();
+        }
+      });
     }
   }
 
@@ -157,8 +202,14 @@ export class TicketTransferList extends UnidyComponent() {
     const targetElement = document.querySelector(this.target);
     if (!targetElement) {
       this.logger.warn("targetElement not found");
+      this.lastTargetElement = null;
       return;
     }
+
+    if (this.lastTargetElement && this.lastTargetElement !== targetElement) {
+      this.lastTargetElement.innerHTML = "";
+    }
+    this.lastTargetElement = targetElement;
 
     targetElement.innerHTML = "";
     renderListContent({

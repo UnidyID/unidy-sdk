@@ -15,14 +15,15 @@ Used standalone with an explicit `ticket-id`, or inside a
 
 ## Properties
 
-| Property             | Attribute            | Description                                                                                  | Type     | Default     |
-| -------------------- | -------------------- | -------------------------------------------------------------------------------------------- | -------- | ----------- |
-| `buttonClassName`    | `button-class-name`  | CSS classes to apply to the submit button element.                                           | `string` | `undefined` |
-| `componentClassName` | `class-name`         | CSS classes to apply to the form element.                                                    | `string` | `undefined` |
-| `errorClassName`     | `error-class-name`   | CSS classes to apply to the error message element.                                           | `string` | `undefined` |
-| `inputClassName`     | `input-class-name`   | CSS classes to apply to the email input element.                                             | `string` | `undefined` |
-| `successClassName`   | `success-class-name` | CSS classes to apply to the success message element.                                         | `string` | `undefined` |
-| `ticketId`           | `ticket-id`          | The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template. | `string` | `undefined` |
+| Property             | Attribute            | Description                                                                                              | Type      | Default     |
+| -------------------- | -------------------- | -------------------------------------------------------------------------------------------------------- | --------- | ----------- |
+| `buttonClassName`    | `button-class-name`  | CSS classes to apply to the submit button element.                                                       | `string`  | `undefined` |
+| `componentClassName` | `class-name`         | CSS classes to apply to the form element.                                                                | `string`  | `undefined` |
+| `disabled`           | `disabled`           | Disables the form controls. Stamped automatically on skeleton items inside a u-ticketable-list template. | `boolean` | `false`     |
+| `errorClassName`     | `error-class-name`   | CSS classes to apply to the error message element.                                                       | `string`  | `undefined` |
+| `inputClassName`     | `input-class-name`   | CSS classes to apply to the email input element.                                                         | `string`  | `undefined` |
+| `successClassName`   | `success-class-name` | CSS classes to apply to the success message element.                                                     | `string`  | `undefined` |
+| `ticketId`           | `ticket-id`          | The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template.             | `string`  | `undefined` |
 
 
 ## Events

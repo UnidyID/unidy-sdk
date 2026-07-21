@@ -115,6 +115,9 @@ test.describe("ticket transfers - authenticated user", () => {
 
     await page.goto(routes.ticketTransfers);
 
+    // Skeleton fragments briefly duplicate the action buttons — wait for the loaded item.
+    await expect(page.getByRole("button", { name: "Accept" })).toHaveCount(1);
+
     const acceptRequest = page.waitForRequest(
       (req) => req.url().includes("/api/sdk/v1/ticket_transfers/incomingToken123/accept") && req.method() === "POST",
     );
@@ -133,6 +136,8 @@ test.describe("ticket transfers - authenticated user", () => {
     );
 
     await page.goto(routes.ticketTransfers);
+
+    await expect(page.getByRole("button", { name: "Decline" })).toHaveCount(1);
     await page.getByRole("button", { name: "Decline" }).click();
 
     await expect(page.locator("#transfer-flash")).toBeVisible();
@@ -155,6 +160,9 @@ test.describe("ticket transfers - authenticated user", () => {
 
     await page.goto(routes.ticketTransfers);
 
+    // The ticket list renders skeleton fragments (each containing a disabled form)
+    // while loading — wait until exactly the one loaded form remains.
+    await expect(page.getByPlaceholder("Enter the recipient's email")).toHaveCount(1);
     await page.getByPlaceholder("Enter the recipient's email").fill("bob@example.com");
 
     const createRequest = page.waitForRequest(
@@ -181,6 +189,7 @@ test.describe("ticket transfers - authenticated user", () => {
 
     await page.goto(routes.ticketTransfers);
 
+    await expect(page.getByPlaceholder("Enter the recipient's email")).toHaveCount(1);
     await page.getByPlaceholder("Enter the recipient's email").fill("bob@example.com");
     await page.getByRole("button", { name: "Transfer ticket" }).click();
 

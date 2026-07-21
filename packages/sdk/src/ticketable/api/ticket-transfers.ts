@@ -51,7 +51,7 @@ export class TicketTransfersService extends BaseService {
 
   /** Lists the user's pending, unexpired transfers, split into incoming and outgoing. */
   async list(): Promise<TicketTransfersListResult> {
-    const idToken = await this.getIdToken();
+    const idToken = await this.resolveIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
@@ -96,7 +96,7 @@ export class TicketTransfersService extends BaseService {
   }
 
   private async postAction(endpoint: string, body: object): Promise<TicketTransferActionResult> {
-    const idToken = await this.getIdToken();
+    const idToken = await this.resolveIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
@@ -117,6 +117,19 @@ export class TicketTransfersService extends BaseService {
 
       return [null, parsed.data];
     });
+  }
+
+  /**
+   * A consumer-injected getIdToken may reject instead of returning null —
+   * methods must still resolve to the documented [error, data] tuple.
+   */
+  private async resolveIdToken(): Promise<string | null> {
+    try {
+      return await this.getIdToken();
+    } catch (err) {
+      this.logger.error("Failed to resolve ID token", err);
+      return null;
+    }
   }
 
   /**

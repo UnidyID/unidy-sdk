@@ -21,6 +21,8 @@ export class TicketTransferAction extends UnidyComponent() {
   @Prop() action!: TicketTransferActionType;
   /** The transfer token. Stamped automatically inside a u-ticket-transfer-list template. */
   @Prop({ mutable: true }) token?: string;
+  /** Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template. */
+  @Prop({ reflect: true }) disabled = false;
   /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
@@ -32,7 +34,7 @@ export class TicketTransferAction extends UnidyComponent() {
   @Event() uTicketTransferActionError!: EventEmitter<{ action: TicketTransferActionType; error: string }>;
 
   private handleClick = async () => {
-    if (this.loading) return;
+    if (this.loading || this.disabled) return;
 
     const token = this.token;
     if (!token || !ACTIONS.includes(this.action)) {
@@ -64,7 +66,7 @@ export class TicketTransferAction extends UnidyComponent() {
   render() {
     return (
       <Host>
-        <button type="button" onClick={this.handleClick} disabled={this.loading} class={this.componentClassName}>
+        <button type="button" onClick={this.handleClick} disabled={this.loading || this.disabled} class={this.componentClassName}>
           <slot>{t(`ticketTransfer.actions.${this.action}`)}</slot>
         </button>
       </Host>
