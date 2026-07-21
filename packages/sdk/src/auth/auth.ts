@@ -125,14 +125,18 @@ export class Auth {
 
     // Don't restore an existing authenticated session if an invitation redirect was
     // just processed — the invitation flow takes precedence over a stored token.
-    if (authState.step !== "invited" && Auth.instance.isTokenValid(authState.token)) {
-      authStore.setAuthenticated(true);
-      // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
-      try {
-        const decoded = jwtDecode<TokenPayload>(authState.token as string);
-        if (decoded.sid) authStore.setSignInId(decoded.sid);
-      } catch {
-        /* ignore — token already passed isTokenValid */
+    if (authState.step !== "invited") {
+      if (Auth.instance.isTokenValid(authState.token)) {
+        authStore.setAuthenticated(true);
+        // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
+        try {
+          const decoded = jwtDecode<TokenPayload>(authState.token as string);
+          if (decoded.sid) authStore.setSignInId(decoded.sid);
+        } catch {
+          /* ignore — token already passed isTokenValid */
+        }
+      } else if (authState.refreshToken) {
+        await Auth.instance.helpers.refreshToken();
       }
     }
 
@@ -202,9 +206,11 @@ export class Auth {
       return currentToken;
     }
 
+    // Clear a stale auth error so a successful refresh isn't blocked by a previous failure.
+    authStore.setGlobalError("auth", null);
     await this.helpers.refreshToken();
 
-    if (authState.globalErrors.auth || !authState.token) {
+    if (authState.globalErrors.auth || !authState.token || !this.isTokenValid(authState.token)) {
       return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 
