@@ -223,5 +223,36 @@
       "skip_button": "Continua senza collegamento",
       "skipping": "Continua..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Accetta",
+      "cancel": "Annulla trasferimento",
+      "decline": "Rifiuta"
+    },
+    "errors": {
+      "feature_disabled": "I trasferimenti dei biglietti non sono disponibili",
+      "fetch_failed": "Impossibile caricare i trasferimenti dei biglietti",
+      "generic": "Qualcosa è andato storto. Riprova",
+      "missing_ticket": "Nessun biglietto selezionato per il trasferimento",
+      "not_found": "Offerta di trasferimento non trovata",
+      "not_ticket_owner": "Puoi trasferire solo i tuoi biglietti",
+      "not_transfer_sender": "Solo il mittente può annullare questo trasferimento",
+      "offer_email_failed": "Impossibile inviare l'e-mail di trasferimento. Riprova",
+      "recipient_invite_failed": "Impossibile invitare il destinatario. Riprova",
+      "recipient_is_owner": "Non puoi trasferire un biglietto a te stesso",
+      "recipient_mismatch": "Questa offerta di trasferimento è destinata a un altro account",
+      "ticket_already_transferred": "Questo biglietto è già stato trasferito",
+      "ticket_not_active": "Questo biglietto non è attivo",
+      "transfer_already_pending": "Un trasferimento è già in sospeso per questo biglietto",
+      "transfer_expired": "Questa offerta di trasferimento è scaduta",
+      "transfer_not_pending": "Questa offerta di trasferimento non è più in sospeso"
+    },
+    "form": {
+      "email_label": "Indirizzo e-mail del destinatario",
+      "email_placeholder": "Inserisci l'e-mail del destinatario",
+      "submit": "Trasferisci biglietto",
+      "success": "Offerta di trasferimento inviata a {{email}}"
+    }
   }
 }

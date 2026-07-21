@@ -225,5 +225,36 @@
       "skip_button": "Continue without linking",
       "skipping": "Continuing..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Accept",
+      "cancel": "Cancel transfer",
+      "decline": "Decline"
+    },
+    "errors": {
+      "feature_disabled": "Ticket transfers are not available",
+      "fetch_failed": "Failed to load ticket transfers",
+      "generic": "Something went wrong. Please try again",
+      "missing_ticket": "No ticket selected for transfer",
+      "not_found": "Transfer offer not found",
+      "not_ticket_owner": "You can only transfer tickets you own",
+      "not_transfer_sender": "Only the sender can cancel this transfer",
+      "offer_email_failed": "The transfer email could not be sent. Please try again",
+      "recipient_invite_failed": "The recipient could not be invited. Please try again",
+      "recipient_is_owner": "You cannot transfer a ticket to yourself",
+      "recipient_mismatch": "This transfer offer is addressed to a different account",
+      "ticket_already_transferred": "This ticket has already been transferred",
+      "ticket_not_active": "This ticket is not active",
+      "transfer_already_pending": "A transfer offer is already pending for this ticket",
+      "transfer_expired": "This transfer offer has expired",
+      "transfer_not_pending": "This transfer offer is no longer pending"
+    },
+    "form": {
+      "email_label": "Recipient email address",
+      "email_placeholder": "Enter the recipient's email",
+      "submit": "Transfer ticket",
+      "success": "Transfer offer sent to {{email}}"
+    }
   }
 }
