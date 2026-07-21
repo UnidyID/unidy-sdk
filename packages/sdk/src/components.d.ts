@@ -264,6 +264,11 @@ export namespace Components {
          */
         "saveDelay"?: number;
         /**
+          * CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop.
+          * @default ""
+         */
+        "submitButtonClassName": string;
+        /**
           * Programmatically submit the profile form. Delegates to the inner u-profile component.
          */
         "submitProfile": () => Promise<void>;
@@ -2004,6 +2009,11 @@ declare namespace LocalJSX {
           * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
          */
         "saveDelay"?: number;
+        /**
+          * CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop.
+          * @default ""
+         */
+        "submitButtonClassName"?: string;
     }
     interface UJumpToService {
         /**

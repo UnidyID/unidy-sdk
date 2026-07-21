@@ -22,6 +22,9 @@ export class FullProfile {
   /** Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead. */
   @Prop() saveDelay?: number;
 
+  /** CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop. */
+  @Prop({ attribute: "submit-button-class-name" }) submitButtonClassName = "";
+
   private profileRef?: HTMLUProfileElement;
 
   /** Programmatically submit the profile form. Delegates to the inner u-profile component. */
@@ -57,7 +60,7 @@ export class FullProfile {
           <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
         ))}
         <div class="u:flex u:justify-end">
-          <u-submit-button>{t("buttons.submit")}</u-submit-button>
+          <u-submit-button class-name={this.submitButtonClassName}>{t("buttons.submit")}</u-submit-button>
         </div>
       </u-profile>
     );

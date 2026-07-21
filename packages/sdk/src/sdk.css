@@ -53,6 +53,30 @@ u-transaction-list {
   outline: none;
 }
 
+button[part="profile-submit-button"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 16px;
+  background: #0055fe;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  --spinner-font-size: 16px;
+  --spinner-color-primary: #fff;
+  --spinner-color-secondary: rgba(255, 255, 255, 0.4);
+}
+
+button[part="profile-submit-button"]:hover:not(:disabled) {
+  background: #0044cc;
+}
+
 /* Value substitution elements: inline, no visual chrome.
    Skeleton loaders style child <span>s, not the element itself. */
 ticketable-value,
