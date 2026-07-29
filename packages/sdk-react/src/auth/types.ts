@@ -19,6 +19,7 @@ export interface LoginOptions {
   social_logins: string[];
   passkey: boolean;
   social_login_labels?: Record<string, string>;
+  social_login_icons?: Record<string, string>;
 }
 
 export interface AuthErrors {

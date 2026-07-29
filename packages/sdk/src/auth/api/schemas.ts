@@ -12,6 +12,7 @@ export const LoginOptionsSchema = z.object({
   social_logins: z.array(z.string()),
   passkey: z.boolean(),
   social_login_labels: z.record(z.string(), z.string()).optional(),
+  social_login_icons: z.record(z.string(), z.string()).optional(),
 });
 
 // Sign-in creation response

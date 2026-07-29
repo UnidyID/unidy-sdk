@@ -85,7 +85,16 @@ export class SocialLoginButton extends UnidyComponent() {
   };
 
   private renderIcon() {
-    if (this.isUnsupportedProvider || this.provider === "unidy" || this.provider.startsWith("oidc_")) {
+    if (this.isUnsupportedProvider || this.provider === "unidy") {
+      return null;
+    }
+
+    const iconUrl = authState.availableLoginOptions?.social_login_icons?.[this.provider];
+    if (iconUrl) {
+      return <img src={iconUrl} alt="" class={SHARED_ICON_CLASSNAME} />;
+    }
+
+    if (this.provider.startsWith("oidc_")) {
       return null;
     }
 
