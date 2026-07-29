@@ -983,7 +983,7 @@ export namespace Components {
          */
         "iconOnly": boolean;
         /**
-          * The OAuth provider (google, linkedin, apple, discord, facebook, or unidy).
+          * The OAuth provider (google, linkedin, apple, discord, facebook, unidy, or oidc_<slug> for OpenID Connect providers).
           * @default "google"
          */
         "provider": SocialLoginProvider;
@@ -2730,7 +2730,7 @@ declare namespace LocalJSX {
          */
         "iconOnly"?: boolean;
         /**
-          * The OAuth provider (google, linkedin, apple, discord, facebook, or unidy).
+          * The OAuth provider (google, linkedin, apple, discord, facebook, unidy, or oidc_<slug> for OpenID Connect providers).
           * @default "google"
          */
         "provider"?: SocialLoginProvider;
@@ -2963,6 +2963,7 @@ declare namespace LocalJSX {
         "countryCodeDisplayOption": "icon" | "label";
         "enableAutosave": boolean;
         "saveDelay": number;
+        "submitButtonClassName": string;
     }
     interface UJumpToServiceAttributes {
         "serviceId": string;
