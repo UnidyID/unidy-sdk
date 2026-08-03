@@ -2963,6 +2963,7 @@ declare namespace LocalJSX {
         "countryCodeDisplayOption": "icon" | "label";
         "enableAutosave": boolean;
         "saveDelay": number;
+        "submitButtonClassName": string;
     }
     interface UJumpToServiceAttributes {
         "serviceId": string;

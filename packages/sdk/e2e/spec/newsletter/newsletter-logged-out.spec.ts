@@ -132,6 +132,42 @@ test.describe("Newsletter (logged out)", () => {
     await expect(page.getByRole("heading", { name: "Your subscriptions", exact: true })).toBeVisible();
   });
 
+  test("subscribes with checked preferences included in the initial create call", async ({ page }) => {
+    await newsletterSubscriptions.destroy_all();
+
+    const email = randomEmail();
+
+    // Track any PATCH (preference-update) requests that fire during the subscribe flow
+    const patchRequests: string[] = [];
+    page.on("request", (req) => {
+      if (req.method() === "PATCH" && req.url().includes("newsletter_subscription")) {
+        patchRequests.push(req.url());
+      }
+    });
+
+    const createRequest = page.waitForRequest(
+      (req) => req.url().includes("/newsletters/newsletter_subscription") && req.method() === "POST",
+    );
+
+    await page.getByRole("textbox", { name: "Email" }).fill(email);
+    await page.getByTestId("nl.consent.checkbox").check();
+    await page.getByRole("button", { name: "Subscribe", exact: true }).click();
+
+    const req = await createRequest;
+    const body = req.postDataJSON();
+
+    const mainSub = (body.newsletter_subscriptions as { newsletter_internal_name: string; preference_identifiers: string[] }[])?.find(
+      (s) => s.newsletter_internal_name === "main",
+    );
+
+    expect(mainSub).toBeDefined();
+    expect(mainSub?.preference_identifiers).toContain("club_news");
+
+    await expect(page.getByText("You have successfully subscribed")).toBeVisible();
+
+    expect(patchRequests).toHaveLength(0);
+  });
+
   test("requires consent to be accepted before subscribing", async ({ page }) => {
     const email = randomEmail();
     const emailInput = page.getByRole("textbox", { name: "Email" });
