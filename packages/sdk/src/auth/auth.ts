@@ -279,13 +279,18 @@ export class Auth {
    * @returns `true` on success, or an AuthError if backend logout failed.
    */
   async logout(globalLogout?: boolean): Promise<boolean | AuthError> {
+    // Capture sign-in context before reset — helpers.logout() needs these to call the
+    // sign-out endpoint, but authStore.reset() clears them synchronously.
+    const signInId = authState.sid;
+    const backendSignedIn = authState.backendSignedIn;
+
     // Clear local state immediately so any navigation during the sign-out network
     // call finds no tokens to restore (prevents session-restore race on the next page).
     authStore.reset();
     // Re-arm ready so SPA routes that await auth.ready wait for sign-out to settle.
     this.resetReady();
 
-    const [error, _] = await this.helpers.logout(globalLogout);
+    const [error, _] = await this.helpers.logout(globalLogout, signInId, backendSignedIn);
 
     // Mark settled regardless of outcome — local state is already cleared.
     this.markReady();
