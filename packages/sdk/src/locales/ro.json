@@ -213,6 +213,7 @@
       "error_match_mismatch": "Informațiile introduse nu corespund niciunui cont. Verificați datele și încercați din nou.",
       "error_match_not_found": "Nu a fost găsit niciun cont pentru informațiile furnizate. Verificați datele și încercați din nou.",
       "error_no_match": "Nu a fost găsit niciun cont corespunzător. Puteți continua fără să asociați.",
+      "error_rate_limited": "Prea multe încercări. Vă rugăm să așteptați un moment și să încercați din nou.",
       "match_confirm_question": "Doriți să asociați acest cont existent?",
       "match_found_description": "Am găsit un cont asociat cu datele dvs.",
       "match_found_title": "Cont găsit!",

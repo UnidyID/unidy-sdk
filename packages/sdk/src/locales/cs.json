@@ -215,6 +215,7 @@
       "error_match_mismatch": "Zadané informace neodpovídají žádnému účtu. Zkontrolujte prosím své údaje a zkuste to znovu.",
       "error_match_not_found": "Pro zadané informace nebyl nalezen žádný účet. Zkontrolujte prosím své údaje a zkuste to znovu.",
       "error_no_match": "Nebyl nalezen žádný odpovídající účet. Můžete pokračovat bez propojení.",
+      "error_rate_limited": "Příliš mnoho pokusů. Počkejte chvíli a zkuste to znovu.",
       "match_confirm_question": "Chcete propojit tento existující účet?",
       "match_found_description": "Nalezli jsme účet propojený s vašimi údaji.",
       "match_found_title": "Účet nalezen!",

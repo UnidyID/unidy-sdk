@@ -215,6 +215,7 @@
       "error_match_mismatch": "Den angitte informasjonen samsvarer ikke med noen konto. Sjekk opplysningene dine og prøv igjen.",
       "error_match_not_found": "Ingen konto funnet for den angitte informasjonen. Sjekk opplysningene dine og prøv igjen.",
       "error_no_match": "Ingen samsvarende konto funnet. Du kan fortsette uten å koble til.",
+      "error_rate_limited": "For mange forsøk. Vent litt og prøv igjen.",
       "match_confirm_question": "Vil du koble til denne eksisterende kontoen?",
       "match_found_description": "Vi fant en konto knyttet til opplysningene dine.",
       "match_found_title": "Konto funnet!",
