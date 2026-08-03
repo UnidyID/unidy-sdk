@@ -95,6 +95,12 @@ export class SocialLoginButton extends UnidyComponent() {
     }
 
     if (this.provider.startsWith("oidc_")) {
+      if (this.iconOnly) {
+        const customLabel = authState.availableLoginOptions?.social_login_labels?.[this.provider];
+        const slug = this.provider.slice(5);
+        const abbreviation = (customLabel ?? slug).slice(0, 2).toUpperCase();
+        return <span class="u:text-xs u:font-bold">{abbreviation}</span>;
+      }
       return null;
     }
 
