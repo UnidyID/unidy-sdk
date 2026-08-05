@@ -9,15 +9,7 @@ const DEFAULT_SKEW_MS = 30_000;
 // Refresh tokens rotate on use — concurrent callers must share one in-flight request per client.
 const inflightMap = new WeakMap<StandaloneUnidyClient, Promise<string | null>>();
 
-/**
- * Refresh the access token using the stored refresh token, deduping concurrent
- * callers. Returns a valid token, or null when there is no recoverable session
- * (in which case storage is cleared).
- *
- * Pass `force` to refresh even when the current token still looks valid — used
- * by the pre-expiry timer, which fires while the token is technically still
- * within its lifetime.
- */
+/** Returns a valid token, or null (and clears storage) when the session is unrecoverable. */
 export async function refreshSession(
   client: StandaloneUnidyClient,
   callbacks?: HookCallbacks,
@@ -68,14 +60,7 @@ export interface SessionAutoRefreshOptions {
   callbacks?: HookCallbacks;
 }
 
-/**
- * Keep the session alive in the background: refresh the access token shortly
- * before it expires, and whenever the tab regains focus/visibility (covers the
- * case where a backgrounded tab had its timers throttled past expiry).
- *
- * Intended to be started once (from `UnidyProvider`). Returns a cleanup
- * function. No-op during SSR.
- */
+/** Keeps the session alive: refreshes before expiry and on tab focus/visibility. Returns cleanup. No-op during SSR. */
 export function startSessionAutoRefresh(client: StandaloneUnidyClient, options: SessionAutoRefreshOptions = {}): () => void {
   if (typeof window === "undefined") return () => {};
 
@@ -126,7 +111,7 @@ export function startSessionAutoRefresh(client: StandaloneUnidyClient, options: 
     void refreshSession(client, callbacks, { force: true });
   };
 
-  const onFocus = () => refreshIfNeeded();
+  const onFocus = refreshIfNeeded;
   const onVisibility = () => {
     if (document.visibilityState === "visible") refreshIfNeeded();
   };

@@ -1,5 +1,5 @@
 import type { TokenResponse } from "@unidy.io/sdk/standalone";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useUnidyClient } from "../../provider";
 import { authStorage } from "../auth-storage";
 import { isTokenExpired } from "../helpers/jwt";
@@ -16,9 +16,16 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
   // The mount effect resolves the real state and sets isLoading=false.
   const [isLoading, setIsLoading] = useState(true);
 
-  // Delegates to the shared, deduped refresh so concurrent callers don't race
-  // the rotating refresh token. See token-refresh.ts.
-  const getToken = useCallback((): Promise<string | null> => refreshSession(client, callbacks), [callbacks, client]);
+  const callbacksRef = useRef(callbacks);
+  callbacksRef.current = callbacks;
+  const getToken = useCallback(
+    (): Promise<string | null> =>
+      refreshSession(client, {
+        onSuccess: (msg) => callbacksRef.current?.onSuccess?.(msg),
+        onError: (err) => callbacksRef.current?.onError?.(err),
+      }),
+    [client],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally runs once on mount to recover session state
   useEffect(() => {
