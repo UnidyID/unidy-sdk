@@ -6,8 +6,8 @@ import { getTokenExpiryMs, isTokenExpired, isTokenExpiringWithin } from "./helpe
 /** How long before `exp` to refresh the access token by default. */
 const DEFAULT_SKEW_MS = 30_000;
 
-// Refresh tokens rotate on use — concurrent callers must share one in-flight request per client.
-const inflightMap = new WeakMap<StandaloneUnidyClient, Promise<string | null>>();
+// Refresh tokens rotate on use — all clients share one storage, so one in-flight request serves all.
+let inflight: Promise<string | null> | null = null;
 
 /** Returns a valid token, or null (and clears storage) when the session is unrecoverable. */
 export async function refreshSession(
@@ -20,10 +20,9 @@ export async function refreshSession(
     return currentToken;
   }
 
-  const existing = inflightMap.get(client);
-  if (existing) return existing;
+  if (inflight) return inflight;
 
-  const p = (async () => {
+  inflight = (async () => {
     const { signInId, refreshToken } = authStorage.getState();
     if (!signInId || !refreshToken) {
       authStorage.clearAll();
@@ -44,12 +43,10 @@ export async function refreshSession(
     return tokenResponse.jwt;
   })();
 
-  inflightMap.set(client, p);
-
   try {
-    return await p;
+    return await inflight;
   } finally {
-    inflightMap.delete(client);
+    inflight = null;
   }
 }
 
