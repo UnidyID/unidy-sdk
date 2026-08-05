@@ -6,13 +6,8 @@ import { getTokenExpiryMs, isTokenExpired, isTokenExpiringWithin } from "./helpe
 /** How long before `exp` to refresh the access token by default. */
 const DEFAULT_SKEW_MS = 30_000;
 
-/**
- * Shared in-flight refresh promise. The refresh token rotates on every refresh
- * (`setRefreshToken(response.refresh_token)`), so two concurrent callers must
- * share a single request — otherwise the second call would use a refresh token
- * the first one already invalidated.
- */
-let inflight: Promise<string | null> | null = null;
+// Refresh tokens rotate on use — concurrent callers must share one in-flight request per client.
+const inflightMap = new WeakMap<StandaloneUnidyClient, Promise<string | null>>();
 
 /**
  * Refresh the access token using the stored refresh token, deduping concurrent
@@ -33,9 +28,10 @@ export async function refreshSession(
     return currentToken;
   }
 
-  if (inflight) return inflight;
+  const existing = inflightMap.get(client);
+  if (existing) return existing;
 
-  inflight = (async () => {
+  const p = (async () => {
     const { signInId, refreshToken } = authStorage.getState();
     if (!signInId || !refreshToken) {
       authStorage.clearAll();
@@ -56,10 +52,12 @@ export async function refreshSession(
     return tokenResponse.jwt;
   })();
 
+  inflightMap.set(client, p);
+
   try {
-    return await inflight;
+    return await p;
   } finally {
-    inflight = null;
+    inflightMap.delete(client);
   }
 }
 
@@ -133,9 +131,20 @@ export function startSessionAutoRefresh(client: StandaloneUnidyClient, options: 
     if (document.visibilityState === "visible") refreshIfNeeded();
   };
 
+  // One refresh writes token + refreshToken + signInId, each firing subscribers — dedup via microtask.
+  let schedulePending = false;
+  const debouncedSchedule = () => {
+    if (schedulePending) return;
+    schedulePending = true;
+    queueMicrotask(() => {
+      schedulePending = false;
+      if (!disposed) schedule();
+    });
+  };
+
   // Re-arm the timer whenever auth storage changes (token rotated, login,
   // logout, or a change propagated from another tab).
-  const unsubscribe = authStorage.subscribe(schedule);
+  const unsubscribe = authStorage.subscribe(debouncedSchedule);
   window.addEventListener("focus", onFocus);
   document.addEventListener("visibilitychange", onVisibility);
 

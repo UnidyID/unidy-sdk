@@ -1,5 +1,5 @@
 import type { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { startSessionAutoRefresh } from "./auth/token-refresh";
 import type { HookCallbacks } from "./types";
 
@@ -20,13 +20,19 @@ export interface UnidyProviderProps {
 }
 
 export function UnidyProvider({ client, children, autoRefresh = true, autoRefreshSkewMs, autoRefreshCallbacks }: UnidyProviderProps) {
+  const callbacksRef = useRef(autoRefreshCallbacks);
+  callbacksRef.current = autoRefreshCallbacks;
+
   useEffect(() => {
     if (!autoRefresh) return;
     return startSessionAutoRefresh(client, {
       skewMs: autoRefreshSkewMs,
-      callbacks: autoRefreshCallbacks,
+      callbacks: {
+        onSuccess: (msg) => callbacksRef.current?.onSuccess?.(msg),
+        onError: (err) => callbacksRef.current?.onError?.(err),
+      },
     });
-  }, [client, autoRefresh, autoRefreshSkewMs, autoRefreshCallbacks]);
+  }, [client, autoRefresh, autoRefreshSkewMs]);
 
   return <UnidyContext value={client}>{children}</UnidyContext>;
 }
