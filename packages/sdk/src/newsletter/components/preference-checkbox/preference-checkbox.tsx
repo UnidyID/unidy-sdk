@@ -50,6 +50,10 @@ export class NewsletterPreferenceCheckbox {
   }
 
   private initializeCheckedState() {
+    if (NewsletterHelpers.isSubscribed(this.internalName)) {
+      return;
+    }
+
     if (this.checked) {
       this.syncToStore(true);
     }
