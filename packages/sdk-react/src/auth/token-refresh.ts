@@ -30,6 +30,9 @@ export async function refreshSession(
     }
 
     const [error, response] = await client.auth.refreshToken({ signInId, refreshToken });
+    // Storage was mutated while in-flight (logout or new login) — discard stale result.
+    if (authStorage.getState().refreshToken !== refreshToken) return null;
+
     if (error) {
       authStorage.clearAll();
       callbacks?.onError?.(error);
@@ -37,8 +40,6 @@ export async function refreshSession(
     }
 
     const tokenResponse = response as TokenResponse;
-    // Storage was mutated while in-flight (logout or new login) — discard stale result.
-    if (authStorage.getState().refreshToken !== refreshToken) return null;
     authStorage.setToken(tokenResponse.jwt);
     authStorage.setRefreshToken(tokenResponse.refresh_token);
     authStorage.setSignInId(tokenResponse.sid ?? signInId);
