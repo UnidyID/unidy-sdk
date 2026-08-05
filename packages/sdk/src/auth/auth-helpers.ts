@@ -181,10 +181,10 @@ export class AuthHelpers {
     return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
   }
 
-  async logout(globalLogout?: boolean) {
+  async logout(globalLogout?: boolean, signInId?: string | null, backendSignedIn?: boolean) {
     const [error, _] = await this.client.auth.signOut({
-      signInId: authState.sid as string,
-      globalLogout: globalLogout ?? authState.backendSignedIn,
+      signInId: (signInId ?? authState.sid) as string,
+      globalLogout: globalLogout ?? backendSignedIn ?? authState.backendSignedIn,
     });
 
     if (error) {

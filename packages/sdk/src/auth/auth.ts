@@ -54,8 +54,41 @@ export class Auth {
   /** Helper methods for redirects, token refresh, and sign-in step recovery. */
   readonly helpers: AuthHelpers;
 
+  private _ready: Promise<void>;
+  private _resolveReady!: () => void;
+
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
+    this._ready = new Promise((resolve) => {
+      this._resolveReady = resolve;
+    });
+  }
+
+  /**
+   * Resolves when the current auth operation has settled — either the initial session-restore
+   * check-signed-in has completed, or a logout has finished. Await this before performing
+   * one-shot auth state reads to avoid races with async session restore or in-flight sign-out.
+   *
+   * @example
+   * ```js
+   * const auth = await Auth.getInstance();
+   * await auth.ready;
+   * console.log(authState.authenticated); // reliable after restore/logout settles
+   * ```
+   */
+  get ready(): Promise<void> {
+    return this._ready;
+  }
+
+  /** @internal — called by <u-config> once checkSignedIn() completes. */
+  markReady(): void {
+    this._resolveReady();
+  }
+
+  private resetReady(): void {
+    this._ready = new Promise((resolve) => {
+      this._resolveReady = resolve;
+    });
   }
 
   /** Known error codes for email, magic code, password, and general auth flows. */
@@ -246,10 +279,21 @@ export class Auth {
    * @returns `true` on success, or an AuthError if backend logout failed.
    */
   async logout(globalLogout?: boolean): Promise<boolean | AuthError> {
-    const [error, _] = await this.helpers.logout(globalLogout);
+    // Capture sign-in context before reset — helpers.logout() needs these to call the
+    // sign-out endpoint, but authStore.reset() clears them synchronously.
+    const signInId = authState.sid;
+    const backendSignedIn = authState.backendSignedIn;
 
-    // Always clear local tokens, even if backend logout fails
+    // Clear local state immediately so any navigation during the sign-out network
+    // call finds no tokens to restore (prevents session-restore race on the next page).
     authStore.reset();
+    // Re-arm ready so SPA routes that await auth.ready wait for sign-out to settle.
+    this.resetReady();
+
+    const [error, _] = await this.helpers.logout(globalLogout, signInId, backendSignedIn);
+
+    // Mark settled regardless of outcome — local state is already cleared.
+    this.markReady();
 
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
