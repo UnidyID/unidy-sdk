@@ -277,7 +277,41 @@ export class Profile {
       return undefined;
     }
 
+    this.warnAboutUnregisteredChanges(this.renderedFields);
     return this.renderedFields;
+  }
+
+  private warnAboutUnregisteredChanges(registeredFields: Set<string>): void {
+    const data = profileState.data;
+    const config = profileState.configuration;
+    if (!data || !config) return;
+
+    const omitted: string[] = [];
+
+    for (const [key, field] of Object.entries(data)) {
+      if (key === "custom_attributes") continue;
+      if (registeredFields.has(key)) continue;
+      const configField = config[key as keyof typeof config];
+      if (JSON.stringify((field as { value?: unknown })?.value) !== JSON.stringify((configField as { value?: unknown })?.value)) {
+        omitted.push(key);
+      }
+    }
+
+    for (const [key, field] of Object.entries(data.custom_attributes ?? {})) {
+      const fieldName = `custom_attributes.${key}`;
+      if (registeredFields.has(fieldName)) continue;
+      const configField = config.custom_attributes?.[key];
+      if (JSON.stringify((field as { value?: unknown })?.value) !== JSON.stringify((configField as { value?: unknown })?.value)) {
+        omitted.push(fieldName);
+      }
+    }
+
+    if (omitted.length > 0) {
+      console.warn(
+        `[u-profile] partialValidation is active but the following modified fields are not registered and will be excluded from the save payload: ${omitted.join(", ")}. ` +
+          "Render them as u-field or u-raw-field children so they register automatically, or use the validateFields prop to include them explicitly.",
+      );
+    }
   }
 
   render() {

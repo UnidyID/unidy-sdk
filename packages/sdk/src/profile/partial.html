@@ -79,6 +79,16 @@
       </u-profile>
     </div>
 
+    <!-- Profile 4: Mix of u-field and standalone u-raw-field with partial validation -->
+    <div id="profile-section-4" class="profile-section">
+      <h2 class="text-lg font-semibold mb-2">Profile 4: u-field + standalone u-raw-field (partial-validation)</h2>
+      <u-profile partial-validation="true" id="profile-4">
+        <u-field field="first_name" data-testid="profile4-first-name"></u-field>
+        <u-raw-field field="last_name" type="text" data-testid="profile4-last-name"></u-raw-field>
+        <u-submit-button data-testid="profile4-submit">Save</u-submit-button>
+      </u-profile>
+    </div>
+
     <!-- Profile 3: Multiple fields with explicit validateFields prop -->
     <div id="profile-section-3" class="profile-section">
       <h2 class="text-lg font-semibold mb-2">Profile 3: Explicit validateFields prop</h2>

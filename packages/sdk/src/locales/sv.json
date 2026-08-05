@@ -34,6 +34,11 @@
       "description": "Kontrollera din inkorg för att bekräfta din e-postadress. Om du inte har fått det kan du begära ett nytt bekräftelsemail.",
       "title": "Bekräfta din e-postadress"
     },
+    "resendInvitation": {
+      "button_text": "Skicka inbjudningsmail igen",
+      "description": "Du har blivit inbjuden. Om du inte har fått inbjudningsmailet kan du begära ett nytt.",
+      "title": "Acceptera din inbjudan"
+    },
     "single-login": {
       "button_text": "Logga in"
     },

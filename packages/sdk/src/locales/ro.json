@@ -33,6 +33,11 @@
       "description": "Vă rugăm să vă verificați inbox-ul pentru a confirma adresa de e-mail. Dacă nu ați primit-o, puteți solicita un nou e-mail de confirmare.",
       "title": "Confirmați-vă adresa de e-mail"
     },
+    "resendInvitation": {
+      "button_text": "Retrimite e-mailul de invitație",
+      "description": "Ați fost invitat(ă). Dacă nu ați primit e-mailul de invitație, puteți solicita unul nou.",
+      "title": "Acceptați invitația"
+    },
     "single-login": {
       "button_text": "Conectare"
     },

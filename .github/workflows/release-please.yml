@@ -100,12 +100,12 @@ jobs:
       - name: Setup Node.js for npm publish
         uses: actions/setup-node@v6
         with:
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24'
 
       - name: Publish to NPM
         run: |
           cd packages/sdk
-          npm publish --tag ${{ github.event.inputs.release_type }}
+          npm publish --provenance --tag ${{ github.event.inputs.release_type }}
 
       - name: Create Git tag
         run: |
@@ -149,12 +149,12 @@ jobs:
       - name: Setup Node.js for npm publish
         uses: actions/setup-node@v6
         with:
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24'
 
       - name: Publish to NPM
         run: |
           cd packages/sdk
-          npm publish --tag ${{ steps.npm-tag.outputs.tag }}
+          npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}
 
   # Fallback: publish if a GitHub release exists but npm publish was missed
   publish-stable-fallback:
@@ -209,10 +209,10 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         uses: actions/setup-node@v6
         with:
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '24'
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'
         run: |
           cd packages/sdk
-          npm publish --tag ${{ steps.npm-tag.outputs.tag }}
+          npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}
