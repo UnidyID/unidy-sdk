@@ -1,9 +1,10 @@
 import type { TokenResponse } from "@unidy.io/sdk/standalone";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useUnidyClient } from "../../provider";
 import { authStorage } from "../auth-storage";
 import { isTokenExpired } from "../helpers/jwt";
 import { extractSidFromUrl } from "../helpers/url";
+import { refreshSession } from "../token-refresh";
 import type { UseSessionOptions, UseSessionReturn } from "../types";
 
 export function useSession(options?: UseSessionOptions): UseSessionReturn {
@@ -15,35 +16,16 @@ export function useSession(options?: UseSessionOptions): UseSessionReturn {
   // The mount effect resolves the real state and sets isLoading=false.
   const [isLoading, setIsLoading] = useState(true);
 
-  const getToken = useCallback(async (): Promise<string | null> => {
-    const currentToken = authStorage.getState().token;
-    if (currentToken && !isTokenExpired(currentToken)) {
-      return currentToken;
-    }
-
-    const { signInId, refreshToken } = authStorage.getState();
-    if (!signInId || !refreshToken) {
-      authStorage.clearAll();
-      return null;
-    }
-
-    const [error, response] = await client.auth.refreshToken({
-      signInId,
-      refreshToken,
-    });
-
-    if (error) {
-      authStorage.clearAll();
-      callbacks?.onError?.(error);
-      return null;
-    }
-
-    const tokenResponse = response as TokenResponse;
-    authStorage.setToken(tokenResponse.jwt);
-    authStorage.setRefreshToken(tokenResponse.refresh_token);
-    authStorage.setSignInId(tokenResponse.sid ?? signInId);
-    return tokenResponse.jwt;
-  }, [callbacks, client]);
+  const callbacksRef = useRef(callbacks);
+  callbacksRef.current = callbacks;
+  const getToken = useCallback(
+    (): Promise<string | null> =>
+      refreshSession(client, {
+        onSuccess: (msg) => callbacksRef.current?.onSuccess?.(msg),
+        onError: (err) => callbacksRef.current?.onError?.(err),
+      }),
+    [client],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally runs once on mount to recover session state
   useEffect(() => {
