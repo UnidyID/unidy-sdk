@@ -17,6 +17,7 @@ export const routes = {
   profile: "/profile",
   profilePartial: "/profile/partial.html",
   ticketable: "/ticketable",
+  ticketTransfers: "/ticketable/transfers.html",
   services: "/services",
   transaction: "/transaction",
 } as const;

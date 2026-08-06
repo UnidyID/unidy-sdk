@@ -217,5 +217,36 @@
       "skip_button": "Fortsätt utan att koppla",
       "skipping": "Fortsätter..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Acceptera",
+      "cancel": "Avbryt överföring",
+      "decline": "Avböj"
+    },
+    "errors": {
+      "feature_disabled": "Biljettöverföringar är inte tillgängliga",
+      "fetch_failed": "Det gick inte att ladda biljettöverföringar",
+      "generic": "Något gick fel. Försök igen",
+      "missing_ticket": "Ingen biljett vald för överföring",
+      "not_found": "Överföringserbjudandet hittades inte",
+      "not_ticket_owner": "Du kan bara överföra dina egna biljetter",
+      "not_transfer_sender": "Endast avsändaren kan avbryta denna överföring",
+      "offer_email_failed": "Överförings-e-postmeddelandet kunde inte skickas. Försök igen",
+      "recipient_invite_failed": "Mottagaren kunde inte bjudas in. Försök igen",
+      "recipient_is_owner": "Du kan inte överföra en biljett till dig själv",
+      "recipient_mismatch": "Det här överföringserbjudandet är riktat till ett annat konto",
+      "ticket_already_transferred": "Den här biljetten har redan överförts",
+      "ticket_not_active": "Den här biljetten är inte aktiv",
+      "transfer_already_pending": "En överföring väntar redan för den här biljetten",
+      "transfer_expired": "Det här överföringserbjudandet har gått ut",
+      "transfer_not_pending": "Det här överföringserbjudandet väntar inte längre"
+    },
+    "form": {
+      "email_label": "Mottagarens e-postadress",
+      "email_placeholder": "Ange mottagarens e-post",
+      "submit": "Överför biljett",
+      "success": "Överföringserbjudande skickat till {{email}}"
+    }
   }
 }

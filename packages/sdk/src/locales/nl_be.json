@@ -210,5 +210,36 @@
       "skip_button": "Doorgaan zonder koppeling",
       "skipping": "Doorgaan..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Accepteren",
+      "cancel": "Overdracht annuleren",
+      "decline": "Weigeren"
+    },
+    "errors": {
+      "feature_disabled": "Ticketoverdrachten zijn niet beschikbaar",
+      "fetch_failed": "Kan ticketoverdrachten niet laden",
+      "generic": "Er is iets misgegaan. Probeer het opnieuw",
+      "missing_ticket": "Geen ticket geselecteerd voor overdracht",
+      "not_found": "Overdrachtsaanbod niet gevonden",
+      "not_ticket_owner": "U kunt alleen uw eigen tickets overdragen",
+      "not_transfer_sender": "Alleen de afzender kan deze overdracht annuleren",
+      "offer_email_failed": "De overdrachts-e-mail kon niet worden verzonden. Probeer het opnieuw",
+      "recipient_invite_failed": "De ontvanger kon niet worden uitgenodigd. Probeer het opnieuw",
+      "recipient_is_owner": "U kunt een ticket niet aan uzelf overdragen",
+      "recipient_mismatch": "Dit overdrachtsaanbod is gericht aan een ander account",
+      "ticket_already_transferred": "Dit ticket is al overgedragen",
+      "ticket_not_active": "Dit ticket is niet actief",
+      "transfer_already_pending": "Er is al een overdracht in behandeling voor dit ticket",
+      "transfer_expired": "Dit overdrachtsaanbod is verlopen",
+      "transfer_not_pending": "Dit overdrachtsaanbod is niet langer in behandeling"
+    },
+    "form": {
+      "email_label": "E-mailadres van de ontvanger",
+      "email_placeholder": "Voer het e-mailadres van de ontvanger in",
+      "submit": "Ticket overdragen",
+      "success": "Overdrachtsaanbod verzonden naar {{email}}"
+    }
   }
 }

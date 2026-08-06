@@ -21,7 +21,11 @@ export {
   TicketableSchema,
   TicketSchema,
   TicketsListResponseSchema,
+  TicketTransferSchema,
+  TicketTransferStatusSchema,
+  TicketTransfersListResponseSchema,
 } from "./api/schemas";
 // Services + the inferred entity types they re-export
 export * from "./api/subscriptions";
+export * from "./api/ticket-transfers";
 export * from "./api/tickets";
