@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.10.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.9.0...@unidy.io/sdk-v1.10.0) (2026-08-06)
+
+
+### Features
+
+* [UD-3120] Ticket transfer SDK implementation ([#311](https://github.com/UnidyID/unidy-sdk/issues/311)) ([751b169](https://github.com/UnidyID/unidy-sdk/commit/751b1696160be1c78ff31db02ba959b2a1d51d55))
+
+
+### Bug Fixes
+
+* [UD-3072] resolve auth session-restore and logout timing races ([#315](https://github.com/UnidyID/unidy-sdk/issues/315)) ([850ec56](https://github.com/UnidyID/unidy-sdk/commit/850ec56fed0e53ef064e317d1f7bd24aaddafb3c))
+* [UD-3155] SDK auth session restore and modal regression ([#309](https://github.com/UnidyID/unidy-sdk/issues/309)) ([35b8a46](https://github.com/UnidyID/unidy-sdk/commit/35b8a46889c0366d43e82530105093a8504e0512))
+* [UD-3244] newsletter subscription creates with empty preferences ([#316](https://github.com/UnidyID/unidy-sdk/issues/316)) ([f725378](https://github.com/UnidyID/unidy-sdk/commit/f7253788f0f307cddfce2cd62544cb5eb7416c9f))
+* u-full-profile submit button theming and u-raw-field partial-validation data loss ([#310](https://github.com/UnidyID/unidy-sdk/issues/310)) ([4005377](https://github.com/UnidyID/unidy-sdk/commit/4005377dac50ca95510f3c616d3f5e2e99e3e1c1))
+
 ## [1.9.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.8.0...@unidy.io/sdk-v1.9.0) (2026-07-14)
 
 
