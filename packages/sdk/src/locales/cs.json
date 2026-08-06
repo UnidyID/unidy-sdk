@@ -1,0 +1,229 @@
+{
+  "auth": {
+    "email": {
+      "placeholder": "Zadejte svůj e-mail"
+    },
+    "magicCode": {
+      "already_sent_text": "Magický kód již byl odeslán na váš e-mail",
+      "button_text": "Odeslat magický kód",
+      "resend": {
+        "button_text": "Odeslat magický kód znovu"
+      },
+      "sending_text": "Odesílání..."
+    },
+    "passkey": {
+      "button_text": "Přihlásit se pomocí passkey",
+      "loading_text": "Ověřování..."
+    },
+    "password": {
+      "button_text": "Přihlásit se heslem",
+      "confirmation": {
+        "placeholder": "Potvrďte své heslo"
+      },
+      "placeholder": "Zadejte své heslo"
+    },
+    "resetPassword": {
+      "button_text_resend": "Znovu odeslat e-mail pro obnovení hesla",
+      "button_text_reset": "Obnovit heslo",
+      "button_text_save": "Uložit nové heslo",
+      "button_text_set": "Nastavit heslo",
+      "success_message": "E-mail pro obnovení hesla byl odeslán. Zkontrolujte prosím svou schránku"
+    },
+    "resendConfirmation": {
+      "button_text": "Znovu odeslat potvrzovací e-mail",
+      "description": "Zkontrolujte prosím svou schránku a potvrďte svůj e-mail. Pokud jste jej neobdrželi, můžete požádat o nový potvrzovací e-mail.",
+      "title": "Potvrďte svůj e-mail"
+    },
+    "resendInvitation": {
+      "button_text": "Znovu odeslat pozvánku",
+      "description": "Byli jste pozváni. Pokud jste neobdrželi pozvánku, můžete požádat o novou.",
+      "title": "Přijměte svou pozvánku"
+    },
+    "single-login": {
+      "button_text": "Přihlásit se"
+    },
+    "socialLogin": {
+      "button_text": "Pokračovat přes {{provider}}"
+    },
+    "navigation": {
+      "back": "Zpět",
+      "restart": "Začít znovu"
+    }
+  },
+  "buttons": {
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "confirm": "Potvrdit",
+    "connect": "Připojit",
+    "continue": "Pokračovat",
+    "jump_to_service": "Přejít na službu",
+    "jump_to_unidy": "Přejít na Unidy",
+    "logout": "Odhlásit se",
+    "registration": "Registrovat nový účet",
+    "sign_in": "Přihlásit se",
+    "submit": "Odeslat"
+  },
+  "errors": {
+    "account_locked": "Účet je zablokován",
+    "account_not_found": "Účet nebyl nalezen",
+    "account_already_confirmed": "Váš e-mail byl již potvrzen. Přihlaste se prosím",
+    "account_unconfirmed": "E-mail účtu nebyl potvrzen",
+    "confirmation_recently_sent": "Potvrzovací e-mail byl nedávno odeslán. Před žádostí o nový prosím počkejte",
+    "auth_method_required": "Pro pokračování nastavte heslo nebo ověřte svůj e-mail",
+    "authentication_failed": "Ověření selhalo",
+    "bad_request": "Neplatný požadavek",
+    "cannot_finalize": "Registraci nelze dokončit. Vyplňte prosím všechna povinná pole",
+    "captcha_execution_failed": "Bezpečnostní ověření selhalo. Zkuste to prosím znovu",
+    "captcha_score_too_low": "Bezpečnostní ověření selhalo. Zkuste to prosím znovu",
+    "captcha_token_missing": "Dokončete prosím bezpečnostní ověření",
+    "captcha_verification_failed": "Bezpečnostní ověření selhalo. Zkuste to prosím znovu",
+    "code_expired": "Ověřovací kód vypršel. Požádejte prosím o nový",
+    "connection_failed": "Nelze se připojit k serveru Unidy",
+    "email_already_registered": "Tento e-mail je již registrován. Přihlaste se prosím",
+    "expired": "Vypršelo",
+    "failed_to_load_profile": "Nepodařilo se načíst data profilu. Zkontrolujte prosím konfiguraci",
+    "field_required": "Toto pole je povinné",
+    "invalid_code": "Neplatný ověřovací kód. Zkuste to prosím znovu",
+    "invalid_id_token": "Neplatný token ID",
+    "invalid_format": "Neplatný formát",
+    "invalid_input": "Neplatný vstup",
+    "invalid_passkey": "Neplatný passkey",
+    "invalid_password": "Neplatné heslo",
+    "invalid_phone": "Zadejte prosím platné telefonní číslo",
+    "invalid_refresh_token": "Neplatný obnovovací token",
+    "invalid_required_fields_payload": "Neplatná data povinných polí",
+    "invalid_reset_token": "Neplatný token obnovení. Požádejte prosím o nový e-mail pro obnovení hesla",
+    "invalid_response_format": "Neplatný formát odpovědi",
+    "internal_server_error": "Interní chyba serveru",
+    "magic_code_not_valid": "Magický kód není platný",
+    "magic_code_is_missing": "Magický kód chybí",
+    "magic_code_recently_created": "Magický kód byl nedávno vytvořen",
+    "magic_link_not_enabled": "Přihlášení magickým odkazem není pro tento účet povoleno",
+    "missing_id_token": "Chybí token ID",
+    "missing_refresh_token": "Není k dispozici žádný obnovovací token",
+    "missing_required_fields": "Chybějí povinná pole",
+    "no_sign_in_id": "Není k dispozici žádné ID přihlášení",
+    "not_valid": "Neplatné",
+    "passkey_cancelled": "Ověření passkey bylo zrušeno",
+    "passkey_error": "Došlo k neznámé chybě passkey",
+    "passkey_invalid_state": "Neplatný stav passkey",
+    "passkey_not_supported": "Passkey není podporován",
+    "passkey_security_error": "Bezpečnostní chyba passkey",
+    "password_not_set": "Heslo není nastaveno",
+    "password_required": "Heslo je povinné",
+    "password_validation_failed": "Heslo nesplňuje požadavky",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Heslo je příliš krátké (minimálně 6 znaků)",
+      "min_length": "Minimální délka je 6 znaků",
+      "mixed_case": "Musí obsahovat velká i malá písmena",
+      "number": "Musí obsahovat číslo",
+      "symbol": "Musí obsahovat symbol"
+    },
+    "passwords_do_not_match": "Hesla se neshodují",
+    "prefix": "CHYBA: ",
+    "refresh_failed": "Obnovení tokenu selhalo. Přihlaste se prosím znovu",
+    "refresh_token_revoked": "Obnovovací token byl odvolán",
+    "registration_expired": "Registrační relace vypršela. Začněte prosím znovu",
+    "registration_flow_already_exists": "Pro tento e-mail již probíhá registrace",
+    "registration_not_found": "Registrační relace nebyla nalezena. Začněte prosím znovu",
+    "required_field": "{{field}} je povinné",
+    "reset_password_already_sent": "E-mail pro obnovení hesla byl již odeslán",
+    "reset_token_expired": "Token obnovení vypršel. Požádejte prosím o nový e-mail pro obnovení hesla",
+    "reset_token_missing": "Token obnovení chybí",
+    "schema_validation_error": "Chyba ověření schématu",
+    "validation": {
+      "accepted": "musí být přijato",
+      "blank": "nesmí být prázdné",
+      "empty": "nesmí být prázdné",
+      "even": "musí být sudé",
+      "exclusion": "je rezervováno",
+      "in": "není zahrnuto v seznamu",
+      "inclusion": "není zahrnuto v seznamu",
+      "invalid": "je neplatné",
+      "not_a_number": "není číslo",
+      "odd": "musí být liché",
+      "present": "musí být prázdné",
+      "taken": "je již obsazeno",
+      "too_long": "je příliš dlouhé",
+      "too_short": "je příliš krátké"
+    },
+    "sign_in_expired": "Přihlášení vypršelo",
+    "sign_in_not_found": "Přihlášení nebylo nalezeno",
+    "sign_out_failed": "Odhlášení selhalo, důvod: {{reason}}",
+    "unknown": "Došlo k neznámé chybě",
+    "used": "Použito",
+    "verification_code_recently_sent": "Ověřovací kód byl nedávno odeslán. Před žádostí o nový prosím počkejte",
+    "verification_failed": "Ověření selhalo"
+  },
+  "loading": "Načítání...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "Aplikace OAuth nebyla nalezena",
+      "client_id_required": "client-id je povinné",
+      "connection_failed": "Chyba sítě. Zkuste to prosím znovu.",
+      "grant_failed": "Udělení souhlasu selhalo",
+      "invalid_field_values": "Byly zadány neplatné hodnoty polí",
+      "missing_required_fields": "Vyplňte prosím všechna povinná pole",
+      "not_authenticated": "Uživatel není přihlášen. Přihlaste se prosím nejdříve.",
+      "unknown": "Došlo k neočekávané chybě",
+      "update_failed": "Aktualizace uživatelských dat selhala"
+    }
+  },
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Znovu odeslat potvrzení",
+      "subscribe": "Přihlásit se k odběru",
+      "unsubscribe": "Odhlásit se z odběru"
+    },
+    "errors": {
+      "already_subscribed": "Již přihlášen k odběru",
+      "consent_required": "Pro přihlášení k odběru přijměte podmínky",
+      "email_required": "Zadejte prosím svou e-mailovou adresu",
+      "invalid_email": "Neplatná e-mailová adresa",
+      "invalid_preference_token": "Neplatný token předvoleb. Zadejte svou e-mailovou adresu pro získání nového odkazu.",
+      "login_email_not_found": "Odběr s tímto e-mailem neexistuje",
+      "newsletter_not_found": "Newsletter nebyl nalezen",
+      "preferences_not_found": "Předvolba nebyla nalezena",
+      "rate_limit_exceeded": "Překročen limit požadavků. Zkuste to prosím později",
+      "unauthorized": "Vaše relace vypršela. Přihlaste se prosím znovu",
+      "unconfirmed": "Váš e-mail není potvrzen pro tento newsletter",
+      "unsubscribe_failed": "Odhlášení z odběru selhalo"
+    },
+    "success": {
+      "doi_sent": "Potvrzovací e-mail byl odeslán na vaši e-mailovou adresu",
+      "login_email_sent": "Odeslali jsme odkaz pro správu vašeho stávajícího odběru na vaši e-mailovou adresu",
+      "logout": "Byli jste úspěšně odhlášeni",
+      "preferences_updated": "Vaše předvolby byly úspěšně aktualizovány",
+      "subscribe": "Úspěšně jste se přihlásili k odběru",
+      "unsubscribe": "Úspěšně jste se odhlásili z odběru"
+    }
+  },
+  "profile": {
+    "signInToView": "Pro zobrazení profilu se přihlaste",
+    "updated": "Profil byl aktualizován"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Najít účet",
+      "checking": "Vyhledávání...",
+      "confirm_button": "Ano, použít tento účet",
+      "confirming": "Propojování...",
+      "default_primary_label": "Číslo zákazníka",
+      "error_expired": "Vaše registrační relace vypršela. Začněte prosím znovu.",
+      "error_generic": "Došlo k chybě. Zkuste to prosím znovu.",
+      "error_match_mismatch": "Zadané informace neodpovídají žádnému účtu. Zkontrolujte prosím své údaje a zkuste to znovu.",
+      "error_match_not_found": "Pro zadané informace nebyl nalezen žádný účet. Zkontrolujte prosím své údaje a zkuste to znovu.",
+      "error_no_match": "Nebyl nalezen žádný odpovídající účet. Můžete pokračovat bez propojení.",
+      "match_confirm_question": "Chcete propojit tento existující účet?",
+      "match_found_description": "Nalezli jsme účet propojený s vašimi údaji.",
+      "match_found_title": "Účet nalezen!",
+      "preview_created_at": "Registrováno:",
+      "preview_email": "E-mail:",
+      "reject_button": "Ne, vytvořit nový účet",
+      "rejecting": "Pokračování...",
+      "skip_button": "Pokračovat bez propojení",
+      "skipping": "Pokračování..."
+    }
+  }
+}

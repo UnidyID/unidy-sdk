@@ -699,7 +699,7 @@ This example demonstrates how to implement a modal login form using the Unidy SD
     </u-signed-in>
 
   <script type="module">
-    import { Auth } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
+    import { authState, onAuthChange } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
 
     const loginBtn = document.getElementById('loginBtn');
     const loginModal = document.getElementById('loginModal');
@@ -731,33 +731,20 @@ This example demonstrates how to implement a modal login form using the Unidy SD
       closeModal();
     });
 
-    async function checkAuthState() {
-      try {
-        const auth = await Auth.getInstance();
-        const isAuth = await auth.isAuthenticated();
-
-        console.log('🔐 Auth check:', isAuth ? 'authenticated' : 'not authenticated');
-
-        if (isAuth) {
-          loginBtn.classList.add('hidden');
-            closeModal();
-        } else {
-          loginBtn.classList.remove('hidden');
-        }
-      } catch (error) {
-        console.error('❌ Auth check error:', error);
+    // Reactively update login button based on auth state.
+    // authState.authenticated gives the current value; onAuthChange fires whenever
+    // it changes (session restore settling, sign-in, sign-out) — no setTimeout needed.
+    function updateLoginButton(isAuthenticated) {
+      if (isAuthenticated) {
+        loginBtn.classList.add('hidden');
+        closeModal();
+      } else {
         loginBtn.classList.remove('hidden');
       }
     }
 
-    // Initialize after DOM and Unidy SDK are ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(checkAuthState, 500);
-      });
-    } else {
-      setTimeout(checkAuthState, 500);
-    }
+    updateLoginButton(authState.authenticated);
+    onAuthChange("authenticated", updateLoginButton);
   </script>
 </body>
 </html>
@@ -892,9 +879,7 @@ This example demonstrates how to generate a QR code containing user profile data
 
   <script type="module">
     import QRCode from "https://esm.sh/qrcode@1.5.4";
-    import { Auth, getUnidyClient } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
-
-    const auth = await Auth.getInstance();
+    import { authState, onAuthChange, getUnidyClient } from "https://cdn.jsdelivr.net/npm/@unidy.io/sdk@latest/dist/sdk/index.esm.js";
 
     async function generateProfileQR() {
       const canvas = document.querySelector("#profile-qr");
@@ -919,14 +904,13 @@ This example demonstrates how to generate a QR code containing user profile data
       }
     }
 
-    window.addEventListener("appload", () => {
+    // Generate QR immediately if already authenticated, and whenever auth state changes.
+    function onAuthStateChange(isAuthenticated) {
+      if (isAuthenticated) generateProfileQR();
+    }
 
-      auth.isAuthenticated().then((isAuthenticated) => {
-        if (isAuthenticated) {
-          generateProfileQR();
-        }
-      });
-    });
+    onAuthStateChange(authState.authenticated);
+    onAuthChange("authenticated", onAuthStateChange);
   </script>
 </body>
 </html>
@@ -935,5 +919,7 @@ This example demonstrates how to generate a QR code containing user profile data
 **Notes:**
 - The QR code encodes a simple greeting with the user's first and last name
 - The `qrcode` library is loaded from esm.sh CDN
-- The QR code is generated on `appload` if the user is authenticated
+- The QR code is generated reactively: immediately if the user is already authenticated on page load, and again whenever auth state changes (e.g. after session restore completes or after sign-in)
 - You can adjust QR code options like `width`, `margin`, and `errorCorrectionLevel` as needed
+
+> **Page-load timing:** `<u-config check-signed-in="true">` restores sessions asynchronously. Reading `authState.authenticated` once at `DOMContentLoaded` (or using `auth.isAuthenticated()`) races against the restore network call and will often return `false` for signed-in users. Use `onAuthChange("authenticated", cb)` so your UI reacts when the restore settles — or `await auth.ready` for a one-shot read after everything settles.

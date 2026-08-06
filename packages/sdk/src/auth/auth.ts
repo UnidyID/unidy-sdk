@@ -54,8 +54,41 @@ export class Auth {
   /** Helper methods for redirects, token refresh, and sign-in step recovery. */
   readonly helpers: AuthHelpers;
 
+  private _ready: Promise<void>;
+  private _resolveReady!: () => void;
+
   private constructor(client: UnidyClient) {
     this.helpers = new AuthHelpers(client);
+    this._ready = new Promise((resolve) => {
+      this._resolveReady = resolve;
+    });
+  }
+
+  /**
+   * Resolves when the current auth operation has settled — either the initial session-restore
+   * check-signed-in has completed, or a logout has finished. Await this before performing
+   * one-shot auth state reads to avoid races with async session restore or in-flight sign-out.
+   *
+   * @example
+   * ```js
+   * const auth = await Auth.getInstance();
+   * await auth.ready;
+   * console.log(authState.authenticated); // reliable after restore/logout settles
+   * ```
+   */
+  get ready(): Promise<void> {
+    return this._ready;
+  }
+
+  /** @internal — called by <u-config> once checkSignedIn() completes. */
+  markReady(): void {
+    this._resolveReady();
+  }
+
+  private resetReady(): void {
+    this._ready = new Promise((resolve) => {
+      this._resolveReady = resolve;
+    });
   }
 
   /** Known error codes for email, magic code, password, and general auth flows. */
@@ -121,9 +154,23 @@ export class Auth {
     Auth.instance.helpers.handleSocialAuthRedirect();
     Auth.instance.helpers.extractSidFromUrl();
     await Auth.instance.helpers.handleResetPasswordRedirect();
+    await Auth.instance.helpers.handleInvitationRedirect();
 
-    if (Auth.instance.isTokenValid(authState.token)) {
-      authStore.setAuthenticated(true);
+    // Don't restore an existing authenticated session if an invitation redirect was
+    // just processed — the invitation flow takes precedence over a stored token.
+    if (authState.step !== "invited") {
+      if (Auth.instance.isTokenValid(authState.token)) {
+        authStore.setAuthenticated(true);
+        // Restore sid from the stored JWT so refreshToken() can use it on the first refresh.
+        try {
+          const decoded = jwtDecode<TokenPayload>(authState.token as string);
+          if (decoded.sid) authStore.setSignInId(decoded.sid);
+        } catch {
+          /* ignore — token already passed isTokenValid */
+        }
+      } else if (authState.refreshToken) {
+        await Auth.instance.helpers.refreshToken();
+      }
     }
 
     // Resume auth flow after page reload or new tab by recovering the sign-in step
@@ -192,9 +239,11 @@ export class Auth {
       return currentToken;
     }
 
+    // Clear a stale auth error so a successful refresh isn't blocked by a previous failure.
+    authStore.setGlobalError("auth", null);
     await this.helpers.refreshToken();
 
-    if (authState.globalErrors.auth || !authState.token) {
+    if (authState.globalErrors.auth || !authState.token || !this.isTokenValid(authState.token)) {
       return this.createAuthError(t("errors.refresh_failed"), "REFRESH_FAILED", true);
     }
 
@@ -230,10 +279,21 @@ export class Auth {
    * @returns `true` on success, or an AuthError if backend logout failed.
    */
   async logout(globalLogout?: boolean): Promise<boolean | AuthError> {
-    const [error, _] = await this.helpers.logout(globalLogout);
+    // Capture sign-in context before reset — helpers.logout() needs these to call the
+    // sign-out endpoint, but authStore.reset() clears them synchronously.
+    const signInId = authState.sid;
+    const backendSignedIn = authState.backendSignedIn;
 
-    // Always clear local tokens, even if backend logout fails
+    // Clear local state immediately so any navigation during the sign-out network
+    // call finds no tokens to restore (prevents session-restore race on the next page).
     authStore.reset();
+    // Re-arm ready so SPA routes that await auth.ready wait for sign-out to settle.
+    this.resetReady();
+
+    const [error, _] = await this.helpers.logout(globalLogout, signInId, backendSignedIn);
+
+    // Mark settled regardless of outcome — local state is already cleared.
+    this.markReady();
 
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);

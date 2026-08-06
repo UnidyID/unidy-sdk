@@ -101,6 +101,11 @@ jobs:
       - name: Build
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
 
+      - name: Setup Node.js for npm publish
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
@@ -144,6 +149,11 @@ jobs:
 
       - name: Build
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
+
+      - name: Setup Node.js for npm publish
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
 
       - name: Publish to NPM
         run: |
@@ -198,6 +208,12 @@ jobs:
       - name: Build
         if: steps.check.outputs.needs_publish == 'true'
         run: bun run --filter '@unidy.io/sdk' build && bun run --filter '@unidy.io/sdk-react' build
+
+      - name: Setup Node.js for npm publish
+        if: steps.check.outputs.needs_publish == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'

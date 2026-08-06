@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.9.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.8.0...@unidy.io/sdk-v1.9.0) (2026-07-14)
+
+
+### Features
+
+* [UD-3099] SDK invitation acceptance ([#308](https://github.com/UnidyID/unidy-sdk/issues/308)) ([9f82a08](https://github.com/UnidyID/unidy-sdk/commit/9f82a0813b78eb2d1f29582ab71c1ffaaa03f022))
+
+
+### Bug Fixes
+
+* add slot="empty" support to ticketable-list and transaction-list ([#303](https://github.com/UnidyID/unidy-sdk/issues/303)) ([797f4c6](https://github.com/UnidyID/unidy-sdk/commit/797f4c6f3a8b9baa71cc4ddd479c5c919b9fb705))
+* pagination controls broken without manually wired store  ([#302](https://github.com/UnidyID/unidy-sdk/issues/302)) ([708887a](https://github.com/UnidyID/unidy-sdk/commit/708887a6040a0685dd75d9de0438c648a298b667))
+
+## [1.8.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.1...@unidy.io/sdk-v1.8.0) (2026-07-01)
+
+
+### Features
+
+* [UD-3063] SDK invited step and resend invitation flow ([#296](https://github.com/UnidyID/unidy-sdk/issues/296)) ([a74dfc1](https://github.com/UnidyID/unidy-sdk/commit/a74dfc1bf6aa9160ac1eb75e17b4c977b9d141a3))
+* [UD-3063] sdk-react invited step + resend invitation ([#297](https://github.com/UnidyID/unidy-sdk/issues/297)) ([3bbf87b](https://github.com/UnidyID/unidy-sdk/commit/3bbf87bfebe684c93d978f33e73ac7b7ed49fa31))
+* [UD-3064] add Norwegian as a supported language ([#298](https://github.com/UnidyID/unidy-sdk/issues/298)) ([368e912](https://github.com/UnidyID/unidy-sdk/commit/368e912dd069d88682235945cd63f5bbff10909e))
+
+## [1.7.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.7.0...@unidy.io/sdk-v1.7.1) (2026-06-26)
+
+
+### Bug Fixes
+
+* [UD-2217] clear pending recovery step on reset-password redirect ([#290](https://github.com/UnidyID/unidy-sdk/issues/290)) ([544e1f1](https://github.com/UnidyID/unidy-sdk/commit/544e1f15ef328462574c71e07b7dabe9d1feea05))
+
 ## [1.7.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.6.0...@unidy.io/sdk-v1.7.0) (2026-06-02)
 
 

@@ -33,6 +33,11 @@
       "description": "Controleer uw inbox om uw e-mailadres te bevestigen. Als u de e-mail niet hebt ontvangen, kunt u een nieuwe bevestigingsmail aanvragen.",
       "title": "Bevestig uw e-mailadres"
     },
+    "resendInvitation": {
+      "button_text": "Uitnodigingsmail opnieuw verzenden",
+      "description": "U bent uitgenodigd. Als u de uitnodigingsmail niet hebt ontvangen, kunt u een nieuwe aanvragen.",
+      "title": "Accepteer uw uitnodiging"
+    },
     "single-login": {
       "button_text": "Aanmelden"
     },

@@ -33,6 +33,11 @@
       "description": "Controlla la tua casella di posta per confermare il tuo indirizzo email. Se non l'hai ricevuta, puoi richiedere una nuova email di conferma.",
       "title": "Conferma il tuo indirizzo email"
     },
+    "resendInvitation": {
+      "button_text": "Reinvia email di invito",
+      "description": "Sei stato invitato/a. Se non hai ricevuto l'email di invito, puoi richiederne una nuova.",
+      "title": "Accetta il tuo invito"
+    },
     "single-login": {
       "button_text": "Accedi"
     },

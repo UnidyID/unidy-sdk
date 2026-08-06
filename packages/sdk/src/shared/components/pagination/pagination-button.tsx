@@ -1,5 +1,4 @@
 import { Component, Host, h, Prop, State } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
 import { UnidyComponent } from "../../base/component";
 import { findParentPaginatedList } from "../../context-utils";
 import type { PaginationStore } from "../../store/pagination-store";
@@ -11,45 +10,56 @@ export class PaginationButton extends UnidyComponent() {
   /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
-  @State() paginationMeta: PaginationMeta | null = null;
+  // Workaround: @stencil/store auto-subscription doesn't work for slotted shadow:false components
+  // (the Proxy never captures the rendering context). @State() mutations always trigger re-renders,
+  // so we use onChange + renderTrigger instead. Do not simplify to a plain store.state read.
+  @State() private renderTrigger = 0;
 
   private store: PaginationStore | null = null;
-  private unsubscribe: (() => void) | null = null;
+  private unsubscribers: Array<() => void> = [];
 
   componentWillLoad() {
+    // Initial store lookup: runs after the parent's componentWillLoad has set its store.
     this.store = findParentPaginatedList(this.element)?.store ?? null;
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return;
     }
+    this.subscribe();
+  }
 
-    // Get initial state
-    this.paginationMeta = this.store.state.paginationMeta;
-
-    // Subscribe to store changes - watch for changes to paginationMeta
-    this.unsubscribe = this.store.onChange("paginationMeta", (value: PaginationMeta | null) => {
-      this.paginationMeta = value;
-    });
+  connectedCallback() {
+    // Re-subscribe after a disconnect/reconnect cycle (slotted components can be temporarily
+    // disconnected when a shadow:false parent re-renders). componentWillLoad only runs once.
+    if (this.store && this.unsubscribers.length === 0) {
+      this.subscribe();
+    }
   }
 
   disconnectedCallback() {
-    this.unsubscribe?.();
+    for (const unsub of this.unsubscribers) unsub();
+    this.unsubscribers = [];
+  }
+
+  private subscribe() {
+    this.unsubscribers.push(
+      this.store?.onChange("paginationMeta", () => {
+        this.renderTrigger++;
+      }),
+    );
   }
 
   private handleClick = () => {
     const parent = findParentPaginatedList(this.element);
-    if (!parent || !this.paginationMeta) {
+    if (!parent || !this.store) {
       return;
     }
 
-    const isPrev = this.direction === "prev";
-    let newPage: number | null = null;
+    const meta = this.store.state.paginationMeta;
+    if (!meta) return;
 
-    if (isPrev && this.paginationMeta.prev !== null) {
-      newPage = this.paginationMeta.prev;
-    } else if (!isPrev && this.paginationMeta.next !== null) {
-      newPage = this.paginationMeta.next;
-    }
+    const isPrev = this.direction === "prev";
+    const newPage = isPrev ? meta.prev : meta.next;
 
     if (newPage !== null) {
       parent.setAttribute("page", String(newPage));
@@ -57,6 +67,8 @@ export class PaginationButton extends UnidyComponent() {
   };
 
   render() {
+    void this.renderTrigger;
+
     if (!this.store) {
       this.logger.warn("Paginated list component not found (expected u-ticketable-list or u-transaction-list)");
       return null;
@@ -65,8 +77,8 @@ export class PaginationButton extends UnidyComponent() {
     const isPrev = this.direction === "prev";
     const icon = isPrev ? "←" : "→";
 
-    // Determine disabled state based on pagination meta
-    const disabled = !this.paginationMeta || (isPrev ? this.paginationMeta.prev === null : this.paginationMeta.next === null);
+    const meta = this.store.state.paginationMeta;
+    const disabled = !meta || (isPrev ? meta.prev === null : meta.next === null);
 
     return (
       <Host>

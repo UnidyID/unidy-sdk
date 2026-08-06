@@ -3,7 +3,7 @@ import type { SubmitButtonContext } from "../../../shared/components/submit-butt
 import { findParentSigninRoot, findParentSigninStep } from "../../../shared/context-utils";
 import { authState } from "../../store/auth-store";
 
-export type AuthButtonFor = "email" | "password" | "resetPassword" | "single-login";
+export type AuthButtonFor = "email" | "password" | "resetPassword" | "acceptInvitation" | "single-login";
 
 function getEmailInput(element: HTMLElement) {
   const signinRoot = findParentSigninRoot(element) || findParentSigninStep(element);
@@ -43,6 +43,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
       return !authState.resetPassword.newPassword || !authState.resetPassword.passwordConfirmation;
     }
 
+    if (authState.step === "invited" && forProp === "acceptInvitation") {
+      return !authState.invitation.newPassword || !authState.invitation.passwordConfirmation;
+    }
+
     return false;
   },
 
@@ -64,6 +68,11 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
       case "reset-password":
         if (forProp === "resetPassword") {
           return t("auth.resetPassword.save_new_password", { defaultValue: "Set Password" });
+        }
+        return t("buttons.submit");
+      case "invited":
+        if (forProp === "acceptInvitation") {
+          return t("auth.invitation.accept_button", { defaultValue: "Accept Invitation" });
         }
         return t("buttons.submit");
       case "single-login":
@@ -95,6 +104,10 @@ export const authContext: SubmitButtonContext<AuthButtonFor> = {
 
     if (authState.step === "reset-password") {
       return forProp === "resetPassword";
+    }
+
+    if (authState.step === "invited") {
+      return forProp === "acceptInvitation";
     }
 
     return false;

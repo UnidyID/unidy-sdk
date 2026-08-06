@@ -69,6 +69,7 @@
       <h1 class="text-4xl font-bold text-gray-900 mb-8">My Tickets</h1>
 
       <u-ticketable-list ticketable-type="ticket" filter="category_id=49fb3404-808d-4da6-9153-8d0f956d93a0;state=inactive" container-class="grid grid-cols-2 gap-4" limit="1">
+        <div slot="empty" id="empty-message">No tickets found.</div>
         <template>
           <div class="rounded-lg border border-gray-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
             <div class="flex items-start justify-between p-6">
