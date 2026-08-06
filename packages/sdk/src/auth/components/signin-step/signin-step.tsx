@@ -23,6 +23,9 @@ export class SigninStep {
   /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
+  /** If true, the user will be automatically logged in after a successful password reset. Only applies when name="reset-password". */
+  @Prop({ attribute: "auto-login" }) autoLogin = false;
+
   @Method()
   async isActive(): Promise<boolean> {
     return authState.step === this.name || this.alwaysRender;
@@ -39,7 +42,7 @@ export class SigninStep {
     } else if (authState.step === "verification") {
       await authInstance.helpers.authenticateWithPassword(authState.password);
     } else if (authState.step === "reset-password") {
-      await authInstance.helpers.resetPassword();
+      await authInstance.helpers.resetPassword(this.autoLogin);
     } else if (authState.step === "invited") {
       await authInstance.helpers.acceptInvitation();
     }
