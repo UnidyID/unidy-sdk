@@ -17,6 +17,7 @@ export function createInitialState(initialStep: AuthState["step"] = "email"): Au
     email: "",
     signInId: null,
     loginOptions: null,
+    brands: [],
     isAuthenticated: false,
     token: null,
     isLoading: false,
@@ -69,6 +70,9 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
 
     case "SET_LOGIN_OPTIONS":
       return { ...state, loginOptions: action.options };
+
+    case "SET_BRANDS":
+      return { ...state, brands: action.brands };
 
     case "SET_ERROR":
       return {
@@ -135,6 +139,7 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
         ...createInitialState("email"),
         email: state.email,
         loginOptions: state.loginOptions,
+        brands: state.brands,
       };
     }
 

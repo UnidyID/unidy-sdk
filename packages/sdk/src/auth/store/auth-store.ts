@@ -1,6 +1,6 @@
 import { createStore } from "@stencil/store";
 import { unidyState } from "../../shared/store/unidy-store";
-import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
+import type { Brand, LoginOptions, RequiredFieldsResponse } from "../api/auth";
 import { Auth } from "../auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 
@@ -37,6 +37,8 @@ export interface AuthState {
   };
   missingRequiredFields?: RequiredFieldsResponse["fields"];
   availableLoginOptions: LoginOptions | null;
+  /** Brands the user is connected to that this API key is authorized for, current brand first. */
+  brands: Brand[];
 
   loading: boolean;
   errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey", string | null>;
@@ -64,6 +66,7 @@ const SESSION_KEYS = {
   STEP_HISTORY: "unidy_step_history",
   LOGIN_OPTIONS: "unidy_login_options",
   MAGIC_CODE_STEP: "unidy_magic_code_step",
+  BRANDS: "unidy_brands",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -101,6 +104,7 @@ const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
 const storedStep = localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
 const storedStepHistory = loadJsonFromStorage<AuthStep[]>(localStorage, SESSION_KEYS.STEP_HISTORY);
 const storedLoginOptions = loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
+const storedBrands = loadJsonFromStorage<Brand[]>(localStorage, SESSION_KEYS.BRANDS);
 const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
 
 const initialState: AuthState = {
@@ -140,6 +144,7 @@ const initialState: AuthState = {
     social_logins: [],
     passkey: true,
   },
+  brands: storedBrands ?? [],
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
   backendSignedIn: false,
@@ -197,6 +202,21 @@ class AuthStore {
   setLoginOptions(availableLoginOptions: LoginOptions) {
     state.availableLoginOptions = availableLoginOptions;
     saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, availableLoginOptions);
+  }
+
+  setBrands(brands: Brand[]) {
+    state.brands = brands;
+    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? brands : null);
+  }
+
+  /** The brand matching the host the SDK is pointed at, if the user is connected to it. */
+  get currentBrand(): Brand | null {
+    return state.brands.find((brand) => brand.current) ?? null;
+  }
+
+  /** Brands the user can switch to — everything except the one they are already on. */
+  get otherBrands(): Brand[] {
+    return state.brands.filter((brand) => !brand.current);
   }
 
   setLoading(loading: boolean) {
@@ -369,6 +389,7 @@ class AuthStore {
     saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+    saveToStorage(localStorage, SESSION_KEYS.BRANDS, null);
   }
 
   getPendingRecoveryStep(): AuthStep | null {
@@ -428,6 +449,7 @@ class AuthStore {
     // Preserve user context for convenience
     const email = state.email;
     const loginOptions = state.availableLoginOptions;
+    const brands = state.brands;
     reset();
 
     state.email = email;
@@ -435,6 +457,9 @@ class AuthStore {
 
     state.availableLoginOptions = loginOptions;
     saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, loginOptions);
+
+    state.brands = brands;
+    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? brands : null);
 
     state.step = initialStep;
     state._initialStep = initialStep;

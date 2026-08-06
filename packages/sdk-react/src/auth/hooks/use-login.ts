@@ -21,6 +21,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
 
     const { token, signInId: signInIdFromStorage, email } = authStorage.getState();
     const loginOptions = authStorage.getLoginOptions();
+    const brands = authStorage.getBrands();
 
     const socialCallback = parseSocialAuthCallback(window.location.search);
     if (socialCallback) {
@@ -90,6 +91,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
 
     if (email) dispatch({ type: "SET_EMAIL", email });
     if (loginOptions) dispatch({ type: "SET_LOGIN_OPTIONS", options: loginOptions });
+    if (brands) dispatch({ type: "SET_BRANDS", brands });
 
     const storedStep = authStorage.getRecoverableStep();
     if (storedStep && isRecoverableStep(storedStep) && signInId) {
@@ -100,6 +102,8 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
   }, []);
 
   const loginActions = useLoginActions({ client, stateRef, dispatch, callbacks });
+
+  const otherBrands = useMemo(() => state.brands.filter((brand) => !brand.current), [state.brands]);
 
   // Internalized resend countdown timer
   const [resendAvailableIn, setResendAvailableIn] = useState(0);
@@ -129,6 +133,8 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
     isLoading: state.isLoading,
     email: state.email,
     loginOptions: state.loginOptions,
+    brands: state.brands,
+    otherBrands: otherBrands,
     errors: state.errors,
     magicCodeResendAfter: state.magicCodeResendAfter,
     resendAvailableIn,

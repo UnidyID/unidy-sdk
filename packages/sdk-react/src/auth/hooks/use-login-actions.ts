@@ -12,7 +12,7 @@ import type { HookCallbacks } from "../../types";
 import { authStorage } from "../auth-storage";
 import { buildPublicKeyRequestOptions, formatAssertionCredentialForServer, isWebAuthnSupported, PASSKEY_ERRORS } from "../passkey-utils";
 import { cleanSocialAuthParams, getSocialAuthUrl, parseSocialAuthCallback } from "../social-auth";
-import type { AuthAction, AuthState, UseLoginReturn } from "../types";
+import type { AuthAction, AuthState, Brand, UseLoginReturn } from "../types";
 
 export type LoginActions = Pick<
   UseLoginReturn,
@@ -46,6 +46,14 @@ interface UseLoginActionsOptions {
 }
 
 export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLoginActionsOptions): LoginActions {
+  const setBrands = useCallback(
+    (brands: Brand[]) => {
+      dispatch({ type: "SET_BRANDS", brands });
+      authStorage.setBrands(brands);
+    },
+    [dispatch],
+  );
+
   const submitEmail = useCallback(
     async (email: string, submitOptions?: { sendMagicCode?: boolean }) => {
       dispatch({ type: "SET_EMAIL", email });
@@ -86,6 +94,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
           dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
           authStorage.setSignInId(sid);
         }
+        setBrands(mcResponse.brands ?? []);
         dispatch({ type: "SET_LOADING", loading: false });
         dispatch({ type: "SET_STEP", step: "magic-code" });
         if (mcResponse.enable_resend_after) {
@@ -100,10 +109,11 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       authStorage.setSignInId(signInResponse.sid);
       authStorage.setEmail(email);
       authStorage.setLoginOptions(signInResponse.login_options);
+      setBrands(signInResponse.brands ?? []);
       dispatch({ type: "SET_LOADING", loading: false });
       dispatch({ type: "SET_STEP", step: "verification" });
     },
-    [client, callbacks, dispatch, stateRef],
+    [client, callbacks, dispatch, stateRef, setBrands],
   );
 
   const submitPassword = useCallback(

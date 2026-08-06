@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Doorgaan op {{brand}}",
+      "other_accounts": "Uw andere accounts"
+    },
     "email": {
       "placeholder": "Voer uw e-mailadres in"
     },
