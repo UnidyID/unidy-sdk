@@ -47,16 +47,50 @@ test.describe("Profile - partial validation", () => {
     const profile1FirstName = page.locator('[data-testid="profile1-first-name"]').getByRole("textbox");
     await expect(profile1FirstName).toBeVisible();
 
-    // Fill in a valid first name
     const testFirstName = `ValidName${Date.now()}`;
     await profile1FirstName.fill(testFirstName);
 
-    // Submit profile 1 - should succeed even though other required fields
-    // (like date_of_birth) might be invalid, because partial validation
-    // only validates the rendered fields
+    const patchPromise = page.waitForRequest((req) => req.url().includes("/api/sdk/v1/profile") && req.method() === "PATCH");
     await page.locator('[data-testid="profile1-submit"]').click();
+    const patchRequest = await patchPromise;
 
-    // Should succeed without validation errors for non-rendered fields
+    // Payload must contain only first_name — not every profile field
+    const body = patchRequest.postDataJSON();
+    expect(body.first_name).toBe(testFirstName);
+    expect(body._validate_only_sent_fields).toBe(true);
+    const payloadKeys = Object.keys(body).filter((k) => k !== "_validate_only_sent_fields");
+    expect(payloadKeys).toEqual(["first_name"]);
+
+    await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
+  });
+
+  test("standalone u-raw-field value is included in partial-validation payload", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    await page.goto(routes.profilePartial);
+    await expect(page.locator("#profile-4")).toBeVisible();
+
+    const firstNameInput = page.locator('[data-testid="profile4-first-name"]').getByRole("textbox");
+    const lastNameInput = page.locator('[data-testid="profile4-last-name"]').getByRole("textbox");
+    await expect(firstNameInput).toBeVisible();
+    await expect(lastNameInput).toBeVisible();
+
+    const testFirstName = `RawFirst${Date.now()}`;
+    const testLastName = `RawLast${Date.now()}`;
+    await firstNameInput.fill(testFirstName);
+    await lastNameInput.fill(testLastName);
+
+    const patchPromise = page.waitForRequest((req) => req.url().includes("/api/sdk/v1/profile") && req.method() === "PATCH");
+    await page.locator('[data-testid="profile4-submit"]').click();
+    const patchRequest = await patchPromise;
+
+    const body = patchRequest.postDataJSON();
+    expect(body.first_name).toBe(testFirstName);
+    expect(body.last_name).toBe(testLastName);
+    expect(body._validate_only_sent_fields).toBe(true);
+    // Only the two rendered fields — full-profile keys must not bleed in
+    const payloadKeys = Object.keys(body).filter((k) => k !== "_validate_only_sent_fields");
+    expect(payloadKeys).toEqual(expect.arrayContaining(["first_name", "last_name"]));
+    expect(payloadKeys).toHaveLength(2);
+
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
   });
 

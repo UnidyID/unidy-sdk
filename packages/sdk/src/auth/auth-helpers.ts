@@ -181,10 +181,10 @@ export class AuthHelpers {
     return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
   }
 
-  async logout(globalLogout?: boolean) {
+  async logout(globalLogout?: boolean, signInId?: string | null, backendSignedIn?: boolean) {
     const [error, _] = await this.client.auth.signOut({
-      signInId: authState.sid as string,
-      globalLogout: globalLogout ?? authState.backendSignedIn,
+      signInId: (signInId ?? authState.sid) as string,
+      globalLogout: globalLogout ?? backendSignedIn ?? authState.backendSignedIn,
     });
 
     if (error) {
@@ -196,8 +196,7 @@ export class AuthHelpers {
 
   async refreshToken() {
     if (!authState.sid && authState.token) {
-      // Fallback: decode the stored token to recover the sid (e.g. after a page reload
-      // where initialize() ran before the token was persisted).
+      // Fallback: decode the stored token to recover the sid
       try {
         const decoded = jwtDecode<TokenPayload>(authState.token);
         if (decoded.sid) authStore.setSignInId(decoded.sid);
@@ -221,7 +220,11 @@ export class AuthHelpers {
     });
 
     if (error) {
-      authStore.reset();
+      // Only wipe local auth state for permanent backend rejections.
+      const isPermanent = error === "invalid_refresh_token" || error === "refresh_token_revoked" || error === "sign_in_not_found";
+      if (isPermanent) {
+        authStore.reset();
+      }
       authStore.setGlobalError("auth", error);
     } else {
       authStore.setToken((response as TokenResponse).jwt);
@@ -236,7 +239,8 @@ export class AuthHelpers {
     }
   }
 
-  // Note: This does not validate the SID with an API call to avoid side effects. We assume here that the SID is valid and that next action wont fail because of it.
+  // Note: This does not validate the SID with an API call to avoid side effects. We assume here that
+  // the SID is valid and that the next action won't fail because of it.
   recoverSignInStep(): boolean {
     const pendingStep = authStore.getPendingRecoveryStep();
 
