@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Unidy Ticket Transfers Demo</title>
+    <script type="module" src="/build/sdk.esm.js"></script>
+    <script nomodule src="/build/sdk.js"></script>
+    <link rel="stylesheet" href="/demo.css">
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-gray-100 font-sans text-gray-800">
+
+    <header class="flex items-center justify-between px-5 py-4 bg-white shadow">
+      <nav class="flex gap-2 items-center">
+        <a href="/"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Home</a>
+        <a href="/auth"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Auth</a>
+        <a href="/ticketable"
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200">Tickets</a>
+        <a href="/ticketable/transfers.html"
+          class="px-4 py-2 rounded-lg text-sm font-semibold text-blue-600 bg-blue-50 transition-all duration-200 hover:bg-blue-100">Ticket Transfers</a>
+      </nav>
+
+      <div>
+        <u-signed-in>
+          <u-logout-button
+            class-name="px-4 py-2 rounded-lg text-sm font-medium bg-red-500 hover:bg-red-600 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500">
+          </u-logout-button>
+        </u-signed-in>
+        <u-signed-in not>
+          <a href="/auth"
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200">Login</a>
+        </u-signed-in>
+      </div>
+    </header>
+
+    <main class="flex-1 p-5 max-w-4xl mx-auto w-full">
+    <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+    </div>
+
+    <u-config
+    base-url="http://localhost:3000"
+    api-key="public-newsletter-api-key"></u-config>
+
+    <u-signed-in not>
+      <h1 class="text-4xl font-bold text-gray-900 mb-8 text-center">Ticket Transfers Demo</h1>
+      <p class="text-center text-gray-600 text-sm">You need to sign in to manage your ticket transfers</p>
+    </u-signed-in>
+
+    <u-signed-in>
+      <h1 class="text-4xl font-bold text-gray-900 mb-8">Ticket Transfers</h1>
+
+      <div id="transfer-flash" role="alert" aria-live="polite" hidden
+        class="mb-6 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700"></div>
+
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Incoming transfers</h2>
+      <u-ticket-transfer-list id="incoming-list" direction="incoming" container-class="grid gap-4 mb-12" skeleton-count="2">
+        <div slot="empty" id="incoming-empty" class="text-gray-600 text-sm mb-12">No incoming transfers.</div>
+        <template>
+          <div class="rounded-lg border border-gray-200 bg-white shadow-md p-6 flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">
+                <transfer-value name="ticket.title"></transfer-value>
+              </h3>
+              <div class="space-y-1 text-sm text-gray-700">
+                <p>From: <transfer-value name="sender_email"></transfer-value></p>
+                <p>Starts: <transfer-value name="ticket.starts_at" date-format="yyyy-MM-dd HH:mm"></transfer-value></p>
+                <p>Offer expires: <transfer-value name="expires_at" date-format="yyyy-MM-dd HH:mm"></transfer-value></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <u-ticket-transfer-action
+                action="accept"
+                class-name="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              ></u-ticket-transfer-action>
+              <u-ticket-transfer-action
+                action="decline"
+                class-name="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              ></u-ticket-transfer-action>
+            </div>
+          </div>
+        </template>
+      </u-ticket-transfer-list>
+
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Outgoing transfers</h2>
+      <u-ticket-transfer-list id="outgoing-list" direction="outgoing" container-class="grid gap-4 mb-12" skeleton-count="2">
+        <div slot="empty" id="outgoing-empty" class="text-gray-600 text-sm mb-12">No outgoing transfers.</div>
+        <template>
+          <div class="rounded-lg border border-gray-200 bg-white shadow-md p-6 flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">
+                <transfer-value name="ticket.title"></transfer-value>
+              </h3>
+              <div class="space-y-1 text-sm text-gray-700">
+                <p>To: <transfer-value name="recipient_email"></transfer-value></p>
+                <p>Offer expires: <transfer-value name="expires_at" date-format="yyyy-MM-dd HH:mm"></transfer-value></p>
+              </div>
+            </div>
+            <u-ticket-transfer-action
+              action="cancel"
+              class-name="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            ></u-ticket-transfer-action>
+          </div>
+        </template>
+      </u-ticket-transfer-list>
+
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Transfer a ticket</h2>
+      <u-ticketable-list ticketable-type="ticket" container-class="grid gap-4" limit="5">
+        <div slot="empty" id="tickets-empty" class="text-gray-600 text-sm">No tickets found.</div>
+        <template>
+          <div class="rounded-lg border border-gray-200 bg-white shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">
+              <ticketable-value name="title"></ticketable-value>
+            </h3>
+            <p class="text-sm text-gray-700 mb-4">
+              Starts: <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
+            </p>
+            <u-ticket-transfer-form
+              class-name="flex items-center gap-2"
+              input-class-name="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+              button-class-name="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              error-class-name="mt-2 text-sm text-red-600"
+              success-class-name="mt-2 text-sm text-green-600"
+            ></u-ticket-transfer-form>
+          </div>
+        </template>
+      </u-ticketable-list>
+    </u-signed-in>
+
+    <script>
+      const flash = document.getElementById("transfer-flash");
+      const showFlash = (message) => {
+        flash.textContent = message;
+        flash.hidden = false;
+      };
+
+      document.addEventListener("uTicketTransferActionError", (event) => {
+        showFlash(`Transfer action failed: ${event.detail.error}`);
+      });
+      document.addEventListener("uTicketTransferActionSuccess", () => {
+        flash.hidden = true;
+      });
+
+      window.addEventListener("appload", () => {
+        const spinner = document.getElementById('sdk-initial-spinner');
+        if (spinner) {
+          spinner.remove();
+        }
+      });
+    </script>
+    </main>
+
+    <footer class="text-center py-5 mt-8 bg-gray-800 text-white text-sm">
+      <p>&copy; <span id="year"></span> Unidy. All rights reserved.</p>
+      <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+      </script>
+    </footer>
+  </body>
+</html>

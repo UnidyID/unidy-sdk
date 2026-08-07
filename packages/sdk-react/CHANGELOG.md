@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.4.0...@unidy.io/sdk-react-v0.5.0) (2026-08-06)
+
+
+### Features
+
+* [UD-3120] Ticket transfer SDK implementation ([#311](https://github.com/UnidyID/unidy-sdk/issues/311)) ([751b169](https://github.com/UnidyID/unidy-sdk/commit/751b1696160be1c78ff31db02ba959b2a1d51d55))
+* **sdk-react:** auto-refresh session token on focus and before expiry (UD-2766) ([#285](https://github.com/UnidyID/unidy-sdk/issues/285)) ([590f088](https://github.com/UnidyID/unidy-sdk/commit/590f0883d62b17637dc4441df604c9df77368cd7))
+
 ## [0.4.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.3.0...@unidy.io/sdk-react-v0.4.0) (2026-07-01)
 
 

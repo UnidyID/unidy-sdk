@@ -10,6 +10,7 @@ import {
   type StandaloneUnidyClientConfig,
   SubscriptionsService,
   TicketsService,
+  TicketTransfersService,
   TransactionsService,
 } from "@unidy.io/sdk/standalone";
 import { jwtDecode } from "jwt-decode";
@@ -92,6 +93,7 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
     this.profile = new ProfileService(apiClient, deps);
     this.services = new ServicesService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
+    this.ticketTransfers = new TicketTransfersService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
     this.transactions = new TransactionsService(apiClient, deps);
   }

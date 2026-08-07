@@ -89,9 +89,10 @@ export class UnidyConfig extends UnidyComponent() {
     captchaManager.setConfigLoadingPromise(captchaConfigPromise);
 
     if (this.checkSignedIn) {
-      auth.helpers.checkSignedIn();
+      await auth.helpers.checkSignedIn();
     }
 
+    auth.markReady();
     this.logger.debug("Unidy SDK initialized successfully");
   }
 

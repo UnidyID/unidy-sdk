@@ -152,7 +152,7 @@ function handleAlreadySubscribedError(errors: Array<{ error_identifier: string; 
 }
 
 async function handleCreateSubscriptionRequest(email: string, internalNames: string[], showSuccessMessage = true): Promise<boolean> {
-  const { checkedNewsletters, additionalFields } = newsletterStore.state;
+  const { checkedNewsletters, defaultPreferences, additionalFields } = newsletterStore.state;
 
   const additionalFieldsPayload = buildAdditionalFieldsPayload(additionalFields);
 
@@ -172,7 +172,8 @@ async function handleCreateSubscriptionRequest(email: string, internalNames: str
       email,
       newsletter_subscriptions: internalNames.map((newsletter) => ({
         newsletter_internal_name: newsletter,
-        preference_identifiers: checkedNewsletters[newsletter] || [],
+        preference_identifiers:
+          newsletter in checkedNewsletters ? checkedNewsletters[newsletter] : [...(defaultPreferences[newsletter] ?? [])],
       })),
       redirect_to_after_confirmation: redirectToAfterConfirmationUrl(),
       ...(Object.keys(additionalFieldsPayload).length > 0 && { additional_fields: additionalFieldsPayload }),

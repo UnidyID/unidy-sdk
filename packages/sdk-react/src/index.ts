@@ -28,6 +28,9 @@ export type {
   StandaloneUnidyClientConfig,
   Subscription,
   Ticket,
+  TicketTransfer,
+  TicketTransferStatus,
+  TicketTransfersListResponse,
   TokenResponse,
   Transaction,
   TransactionLineItem,
@@ -96,6 +99,8 @@ export { useRegistration } from "./hooks/registration/use-registration";
 export type { UsePaginationOptions, UsePaginationReturn } from "./hooks/ticketable/use-pagination";
 // Ticketable hooks
 export { usePagination } from "./hooks/ticketable/use-pagination";
+export type { UseTicketTransfersOptions, UseTicketTransfersReturn } from "./hooks/ticketable/use-ticket-transfers";
+export { useTicketTransfers } from "./hooks/ticketable/use-ticket-transfers";
 export type {
   ExportFormat,
   ExportLinkResponse,
@@ -108,6 +113,7 @@ export { useTicketables } from "./hooks/ticketable/use-ticketables";
 // Transaction hooks
 export type { TransactionFilter, UseTransactionsOptions, UseTransactionsReturn } from "./hooks/transaction/use-transactions";
 export { useTransactions } from "./hooks/transaction/use-transactions";
+export type { UnidyProviderProps } from "./provider";
 export { UnidyProvider, useUnidyClient } from "./provider";
 
 // Types

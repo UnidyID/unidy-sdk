@@ -4,6 +4,7 @@ import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile/api/profile";
 import { ServicesService } from "../services/api/services";
 import { SubscriptionsService } from "../ticketable/api/subscriptions";
+import { TicketTransfersService } from "../ticketable/api/ticket-transfers";
 import { TicketsService } from "../ticketable/api/tickets";
 import { TransactionsService } from "../transaction/api/transactions";
 import { BaseApiClient } from "./base-client";
@@ -52,6 +53,8 @@ export type * from "../services/api/services";
 export { ServicesService } from "../services/api/services";
 export type * from "../ticketable/api/subscriptions";
 export { SubscriptionsService } from "../ticketable/api/subscriptions";
+export type * from "../ticketable/api/ticket-transfers";
+export { TicketTransfersService } from "../ticketable/api/ticket-transfers";
 export type * from "../ticketable/api/tickets";
 export { TicketsService } from "../ticketable/api/tickets";
 export type * from "../transaction/api/transactions";
@@ -131,6 +134,7 @@ export class StandaloneUnidyClient {
   public profile: ProfileService;
   public services: ServicesService;
   public tickets: TicketsService;
+  public ticketTransfers: TicketTransfersService;
   public subscriptions: SubscriptionsService;
   public transactions: TransactionsService;
 
@@ -144,6 +148,7 @@ export class StandaloneUnidyClient {
     this.profile = new ProfileService(apiClient, deps);
     this.services = new ServicesService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
+    this.ticketTransfers = new TicketTransfersService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
     this.transactions = new TransactionsService(apiClient, deps);
   }

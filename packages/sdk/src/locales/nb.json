@@ -225,5 +225,36 @@
       "skip_button": "Fortsett uten å koble til",
       "skipping": "Fortsetter..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Godta",
+      "cancel": "Avbryt overføring",
+      "decline": "Avslå"
+    },
+    "errors": {
+      "feature_disabled": "Billettoverføringer er ikke tilgjengelige",
+      "fetch_failed": "Kunne ikke laste billettoverføringer",
+      "generic": "Noe gikk galt. Prøv igjen",
+      "missing_ticket": "Ingen billett valgt for overføring",
+      "not_found": "Overføringstilbudet ble ikke funnet",
+      "not_ticket_owner": "Du kan bare overføre dine egne billetter",
+      "not_transfer_sender": "Bare avsenderen kan avbryte denne overføringen",
+      "offer_email_failed": "Overførings-e-posten kunne ikke sendes. Prøv igjen",
+      "recipient_invite_failed": "Mottakeren kunne ikke inviteres. Prøv igjen",
+      "recipient_is_owner": "Du kan ikke overføre en billett til deg selv",
+      "recipient_mismatch": "Dette overføringstilbudet er adressert til en annen konto",
+      "ticket_already_transferred": "Denne billetten er allerede overført",
+      "ticket_not_active": "Denne billetten er ikke aktiv",
+      "transfer_already_pending": "En overføring venter allerede for denne billetten",
+      "transfer_expired": "Dette overføringstilbudet har utløpt",
+      "transfer_not_pending": "Dette overføringstilbudet er ikke lenger ventende"
+    },
+    "form": {
+      "email_label": "Mottakerens e-postadresse",
+      "email_placeholder": "Skriv inn mottakerens e-post",
+      "submit": "Overfør billett",
+      "success": "Overføringstilbud sendt til {{email}}"
+    }
   }
 }

@@ -1075,9 +1075,23 @@ The available error codes are:
     -   `ACCOUNT_LOCKED`: "account_locked"
     -   `SIGN_IN_EXPIRED`: "sign_in_expired"
 
+#### `auth.ready: Promise<void>`
+
+Resolves when the current auth operation has settled — either the initial session-restore (`check-signed-in`) has completed, or a logout has finished. Await this before performing one-shot auth state reads to avoid races with async session restore or in-flight sign-outs.
+
+```js
+const auth = await Auth.getInstance();
+await auth.ready;
+console.log(authState.authenticated); // reliable — restore has settled
+```
+
+For reactive UIs, prefer `onAuthChange("authenticated", cb)` instead, which fires automatically whenever auth state changes without needing to await `ready` explicitly.
+
 #### `auth.isAuthenticated(): Promise<boolean>`
 
 Checks if the user has a valid, non-expired token. If the token is expired, it will automatically attempt to refresh it using the stored refresh token. Returns `true` if a valid token exists or was successfully refreshed.
+
+> **Note:** `isAuthenticated()` only checks the current token state — it does not wait for session restore to complete. On page load with `check-signed-in="true"`, calling `isAuthenticated()` before `auth.ready` resolves may return `false` for a signed-in user. Use `await auth.ready` first, or use `onAuthChange("authenticated", cb)` for a race-free approach.
 
 #### `auth.getToken(): Promise<string | AuthError>`
 
@@ -1587,6 +1601,31 @@ Ensure your domain is whitelisted in your Unidy SDK client configuration. Contac
 ---
 
 ### Authentication Problems
+
+#### Auth state shows "not authenticated" on page load despite being signed in
+
+This is a page-load timing race. `<u-config check-signed-in="true">` restores the session via a network call that completes asynchronously. Any code that reads auth state before that call resolves will see `false`.
+
+**Use the reactive pattern** — it works regardless of timing:
+
+```js
+import { authState, onAuthChange } from '@unidy.io/sdk';
+
+function render(isAuthenticated) { /* update your UI */ }
+
+render(authState.authenticated);       // current value (may be false until restore settles)
+onAuthChange("authenticated", render); // fires when restore settles, on sign-in, on sign-out
+```
+
+**For a one-shot read after restore**, await `auth.ready`:
+
+```js
+const auth = await Auth.getInstance();
+await auth.ready;
+render(authState.authenticated); // reliable
+```
+
+Avoid `setTimeout(…, 500)` workarounds — they lose on slow networks and are unreliable.
 
 #### Session not persisting after page reload
 

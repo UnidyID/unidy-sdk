@@ -223,5 +223,36 @@
       "skip_button": "Ohne Verknüpfung fortfahren",
       "skipping": "Wird fortgesetzt..."
     }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Annehmen",
+      "cancel": "Übertragung stornieren",
+      "decline": "Ablehnen"
+    },
+    "errors": {
+      "feature_disabled": "Ticket-Übertragungen sind nicht verfügbar",
+      "fetch_failed": "Ticket-Übertragungen konnten nicht geladen werden",
+      "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut",
+      "missing_ticket": "Kein Ticket für die Übertragung ausgewählt",
+      "not_found": "Übertragungsangebot nicht gefunden",
+      "not_ticket_owner": "Sie können nur eigene Tickets übertragen",
+      "not_transfer_sender": "Nur der Absender kann diese Übertragung stornieren",
+      "offer_email_failed": "Die Übertragungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
+      "recipient_invite_failed": "Der Empfänger konnte nicht eingeladen werden. Bitte versuchen Sie es erneut",
+      "recipient_is_owner": "Sie können ein Ticket nicht an sich selbst übertragen",
+      "recipient_mismatch": "Dieses Übertragungsangebot ist an ein anderes Konto gerichtet",
+      "ticket_already_transferred": "Dieses Ticket wurde bereits übertragen",
+      "ticket_not_active": "Dieses Ticket ist nicht aktiv",
+      "transfer_already_pending": "Für dieses Ticket steht bereits eine Übertragung aus",
+      "transfer_expired": "Dieses Übertragungsangebot ist abgelaufen",
+      "transfer_not_pending": "Dieses Übertragungsangebot ist nicht mehr ausstehend"
+    },
+    "form": {
+      "email_label": "E-Mail-Adresse des Empfängers",
+      "email_placeholder": "E-Mail-Adresse des Empfängers eingeben",
+      "submit": "Ticket übertragen",
+      "success": "Übertragungsangebot an {{email}} gesendet"
+    }
   }
 }

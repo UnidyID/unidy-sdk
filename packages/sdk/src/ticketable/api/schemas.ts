@@ -84,11 +84,35 @@ export const SubscriptionsListResponseSchema = z.object({
   results: z.array(SubscriptionSchema),
 });
 
+// Ticket transfer schemas based on Sdk::TicketTransferSerializer
+export const TicketTransferStatusSchema = z.enum(["pending", "accepted", "canceled", "declined", "expired"]);
+
+export const TicketTransferSchema = z.object({
+  token: z.string(),
+  status: TicketTransferStatusSchema,
+  recipient_email: z.string(),
+  sender_email: z.string(),
+  expires_at: dateTransformer, // ISO8601(3) -> Date
+  created_at: dateTransformer, // ISO8601(3) -> Date
+  ticket: TicketSchema,
+});
+
+// Ticket transfers list response schema. Not paginated — the API returns the
+// user's pending, unexpired offers split into incoming and outgoing.
+export const TicketTransfersListResponseSchema = z.object({
+  incoming: z.array(TicketTransferSchema),
+  outgoing: z.array(TicketTransferSchema),
+});
+
 // Export types
 export type Ticket = z.infer<typeof TicketSchema>;
 export type TicketsListResponse = z.infer<typeof TicketsListResponseSchema>;
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
 export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
+
+export type TicketTransfer = z.infer<typeof TicketTransferSchema>;
+export type TicketTransferStatus = z.infer<typeof TicketTransferStatusSchema>;
+export type TicketTransfersListResponse = z.infer<typeof TicketTransfersListResponseSchema>;
 
 export type TicketableListParams = z.infer<typeof TicketableListParamsSchema>;
