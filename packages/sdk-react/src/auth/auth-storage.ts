@@ -1,4 +1,4 @@
-import type { AuthStep, LoginOptions } from "./types";
+import type { AuthStep, Brand, LoginOptions } from "./types";
 
 /** Storage keys matching the Stencil SDK's auth-store.ts */
 const KEYS = {
@@ -8,10 +8,17 @@ const KEYS = {
   EMAIL: "unidy_email",
   STEP: "unidy_step",
   LOGIN_OPTIONS: "unidy_login_options",
+  BRANDS: "unidy_brands",
   MAGIC_CODE_STEP: "unidy_magic_code_step",
   REGISTRATION_RID: "unidy_registration_rid",
   REGISTRATION_EMAIL: "unidy_registration_email",
 } as const;
+
+/** Brands describe one specific sign-in, so they are stored with the sid they belong to. */
+interface PersistedBrands {
+  sid: string | null;
+  brands: Brand[];
+}
 
 interface AuthStorageState {
   token: string | null;
@@ -20,6 +27,7 @@ interface AuthStorageState {
   email: string | null;
   step: AuthStep | null;
   loginOptions: LoginOptions | null;
+  brands: PersistedBrands | null;
   magicCodeStep: string | null;
   registrationRid: string | null;
   registrationEmail: string | null;
@@ -33,6 +41,7 @@ function readStateFromStorage(): AuthStorageState {
     email: localStorage.getItem(KEYS.EMAIL),
     step: localStorage.getItem(KEYS.STEP) as AuthStep | null,
     loginOptions: safeJsonParse<LoginOptions>(localStorage.getItem(KEYS.LOGIN_OPTIONS)),
+    brands: safeJsonParse<PersistedBrands>(localStorage.getItem(KEYS.BRANDS)),
     magicCodeStep: localStorage.getItem(KEYS.MAGIC_CODE_STEP),
     registrationRid: localStorage.getItem(KEYS.REGISTRATION_RID),
     registrationEmail: localStorage.getItem(KEYS.REGISTRATION_EMAIL),
@@ -67,6 +76,7 @@ const SERVER_STATE: AuthStorageState = {
   email: null,
   step: null,
   loginOptions: null,
+  brands: null,
   magicCodeStep: null,
   registrationRid: null,
   registrationEmail: null,
@@ -175,6 +185,20 @@ export const authStorage = {
     emitAuthChange();
   },
 
+  // Brands (JSON in localStorage, scoped to the sign-in they were resolved for)
+  getBrandsFor(sid: string | null): Brand[] | null {
+    const stored = ensureState().brands;
+    if (!stored?.sid || !sid || stored.sid !== sid) return null;
+
+    return stored.brands;
+  },
+  setBrands(brands: Brand[]): void {
+    const stored: PersistedBrands | null = brands.length > 0 ? { sid: ensureState().signInId, brands } : null;
+    setOrRemove(localStorage, KEYS.BRANDS, stored ? JSON.stringify(stored) : null);
+    state = { ...ensureState(), brands: stored };
+    emitAuthChange();
+  },
+
   // Magic code step
   getMagicCodeStep(): string | null {
     return ensureState().magicCodeStep;
@@ -217,6 +241,7 @@ export const authStorage = {
     localStorage.removeItem(KEYS.EMAIL);
     localStorage.removeItem(KEYS.STEP);
     localStorage.removeItem(KEYS.LOGIN_OPTIONS);
+    localStorage.removeItem(KEYS.BRANDS);
     localStorage.removeItem(KEYS.MAGIC_CODE_STEP);
     localStorage.removeItem(KEYS.REGISTRATION_RID);
     localStorage.removeItem(KEYS.REGISTRATION_EMAIL);
@@ -227,6 +252,7 @@ export const authStorage = {
       email: null,
       step: null,
       loginOptions: null,
+      brands: null,
       magicCodeStep: null,
       registrationRid: null,
       registrationEmail: null,

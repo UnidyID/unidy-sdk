@@ -13,13 +13,33 @@ export const LoginOptionsSchema = z.object({
   passkey: z.boolean(),
 });
 
+// A brand the user is connected to and that the API key is authorized for
+export const BrandSchema = z.object({
+  name: z.string(),
+  host: z.string(),
+  url: z.string(),
+  display_name: z.string(),
+  logo_url: z.string().nullish(),
+  colors: z.object({
+    background: z.string(),
+    foreground: z.string(),
+    text: z.string(),
+  }),
+  current: z.boolean(),
+  login_options: LoginOptionsSchema,
+});
+
 // Sign-in creation response
+// `brands` and `connected_to_brand` only exist on backends from 2026-08 onwards, so both default
+// rather than being required — an older Unidy instance must not fail validation here.
 export const CreateSignInResponseSchema = z.object({
   sid: z.string(),
   status: SignInStatusEnum,
   email: z.string(),
   expired: z.boolean(),
   login_options: LoginOptionsSchema,
+  brands: z.array(BrandSchema).default([]),
+  connected_to_brand: z.boolean().nullish(),
 });
 
 // Generic error response (re-export of base error for backwards compatibility)
@@ -43,6 +63,8 @@ export const ResendDelayErrorSchema = BaseErrorSchema.extend({
 });
 
 // Magic code response: resend cooldown plus optional sign-in context.
+// `brands` is only present when this is the single-step POST /sign_ins response, not on the
+// dedicated send_magic_code endpoint — hence the default.
 export const SendMagicCodeResponseSchema = ResendDelayResponseSchema.extend({
   sid: z.string().nullish(),
   login_options: z
@@ -50,6 +72,7 @@ export const SendMagicCodeResponseSchema = ResendDelayResponseSchema.extend({
       magic_link: z.boolean(),
     })
     .optional(),
+  brands: z.array(BrandSchema).default([]),
 });
 
 // JWT token response
@@ -153,6 +176,7 @@ export const JumpToUnidyResponseSchema = z.object({
 export type SignInStatus = z.infer<typeof SignInStatusEnum>;
 export type ErrorResponse = z.infer<typeof ErrorSchema>;
 export type LoginOptions = z.infer<typeof LoginOptionsSchema>;
+export type Brand = z.infer<typeof BrandSchema>;
 export type CreateSignInResponse = z.infer<typeof CreateSignInResponseSchema>;
 export type TokenResponse = z.infer<typeof TokenResponseSchema>;
 export type SendMagicCodeResponse = z.infer<typeof SendMagicCodeResponseSchema>;

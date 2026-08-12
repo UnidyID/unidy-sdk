@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Continuer sur {{brand}}",
+      "other_accounts": "Vos autres comptes"
+    },
     "email": {
       "placeholder": "Entrez votre adresse e-mail"
     },

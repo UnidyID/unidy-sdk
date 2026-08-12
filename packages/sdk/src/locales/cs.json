@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Pokračovat na {{brand}}",
+      "other_accounts": "Vaše další účty"
+    },
     "email": {
       "placeholder": "Zadejte svůj e-mail"
     },

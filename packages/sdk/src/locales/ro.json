@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Continuă pe {{brand}}",
+      "other_accounts": "Celelalte conturi ale tale"
+    },
     "email": {
       "placeholder": "Introduceți adresa dvs. de e-mail"
     },

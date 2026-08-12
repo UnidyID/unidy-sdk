@@ -20,6 +20,22 @@ export interface LoginOptions {
   passkey: boolean;
 }
 
+/**
+ * A brand the signing-in user has an account on, and that this API key is authorized for.
+ * Each brand is a separate login host: continue there by pointing at `url`.
+ */
+export interface Brand {
+  name: string;
+  host: string;
+  url: string;
+  display_name: string;
+  logo_url?: string | null;
+  colors: { background: string; foreground: string; text: string };
+  /** Whether this is the brand resolved from the host the SDK is configured with. */
+  current: boolean;
+  login_options: LoginOptions;
+}
+
 export interface AuthErrors {
   email: string | null;
   password: string | null;
@@ -35,6 +51,8 @@ export interface AuthState {
   email: string;
   signInId: string | null;
   loginOptions: LoginOptions | null;
+  /** Brands the user is connected to that this API key is authorized for, current brand first. */
+  brands: Brand[];
   isAuthenticated: boolean;
   token: string | null;
   isLoading: boolean;
@@ -52,6 +70,7 @@ export type AuthAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SIGNIN_ID"; signInId: string }
   | { type: "SET_LOGIN_OPTIONS"; options: LoginOptions }
+  | { type: "SET_BRANDS"; brands: Brand[] }
   | { type: "SET_ERROR"; field: keyof AuthErrors; message: string | null }
   | { type: "CLEAR_ERRORS" }
   | { type: "AUTH_SUCCESS"; token: string; refreshToken: string; signInId?: string }
@@ -78,6 +97,10 @@ export interface UseLoginReturn {
   isLoading: boolean;
   email: string;
   loginOptions: LoginOptions | null;
+  /** Brands the user is connected to that this API key is authorized for, current brand first. */
+  brands: Brand[];
+  /** Brands the user can switch to — everything except the one the SDK is currently pointed at. */
+  otherBrands: Brand[];
   errors: AuthErrors;
   /** @deprecated Use `resendAvailableIn` instead. Raw value from the server. */
   magicCodeResendAfter: number | null;

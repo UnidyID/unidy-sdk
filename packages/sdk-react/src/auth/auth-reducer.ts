@@ -17,6 +17,7 @@ export function createInitialState(initialStep: AuthState["step"] = "email"): Au
     email: "",
     signInId: null,
     loginOptions: null,
+    brands: [],
     isAuthenticated: false,
     token: null,
     isLoading: false,
@@ -65,10 +66,19 @@ export function authReducer(state: AuthState, action: AuthAction): AuthState {
       };
 
     case "SET_SIGNIN_ID":
-      return { ...state, signInId: action.signInId };
+      // A social-auth redirect can start a new sign-in without a fresh lookup; the previous one's
+      // brands must not carry over.
+      return {
+        ...state,
+        signInId: action.signInId,
+        brands: state.signInId === action.signInId ? state.brands : [],
+      };
 
     case "SET_LOGIN_OPTIONS":
       return { ...state, loginOptions: action.options };
+
+    case "SET_BRANDS":
+      return { ...state, brands: action.brands };
 
     case "SET_ERROR":
       return {

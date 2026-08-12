@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "გაგრძელება {{brand}}-ზე",
+      "other_accounts": "თქვენი სხვა ანგარიშები"
+    },
     "email": {
       "placeholder": "შეიყვანეთ თქვენი ელ-ფოსტა"
     },

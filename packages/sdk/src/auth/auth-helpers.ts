@@ -34,6 +34,8 @@ export class AuthHelpers {
 
     authStore.setLoading(true);
     authStore.clearErrors();
+    // Whatever this lookup returns, the previous one's brands no longer describe it
+    authStore.setBrands([]);
 
     // Execute captcha if enabled for login
     let captchaToken: string | undefined;
@@ -81,6 +83,7 @@ export class AuthHelpers {
     if (sendMagicCode) {
       authStore.setSignInId((response as CreateSignInResponse).sid);
       authStore.setLoginOptions((response as CreateSignInResponse).login_options);
+      authStore.setBrands((response as CreateSignInResponse).brands ?? []);
 
       if ((response as CreateSignInResponse).login_options?.magic_link === false) {
         authStore.setGlobalError("auth", "magic_link_not_enabled");
@@ -99,6 +102,7 @@ export class AuthHelpers {
     authStore.setEmail(email);
     authStore.setSignInId(signInResponse.sid);
     authStore.setLoginOptions(signInResponse.login_options);
+    authStore.setBrands(signInResponse.brands ?? []);
     authStore.setLoading(false);
   }
 

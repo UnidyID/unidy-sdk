@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { BrandSelectedEvent } from "./auth/components/brand-switcher/brand-switcher";
 import { CaptchaFeature } from "./shared/captcha";
 import { AuthState } from "./auth/store/auth-store";
 import { Config, ConfigChange } from "./shared/components/config/config";
@@ -28,6 +29,7 @@ import { PaginationMeta } from "./api";
 import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 import { PaginationStore } from "./shared/store/pagination-store";
 import { Transaction } from "./transaction/api/transactions";
+export { BrandSelectedEvent } from "./auth/components/brand-switcher/brand-switcher";
 export { CaptchaFeature } from "./shared/captcha";
 export { AuthState } from "./auth/store/auth-store";
 export { Config, ConfigChange } from "./shared/components/config/config";
@@ -75,6 +77,39 @@ export namespace Components {
           * @default ""
          */
         "componentClassName": string;
+    }
+    /**
+     * Lists the other brands the signing-in user has an account on, so they can continue there instead.
+     * A brand is a separate login host, so switching is a navigation to that brand's `url` — the backend
+     * derives the brand from the host it is called on. Place this inside the `<u-signin-step>` you want it
+     * to appear in; the step controls visibility.
+     */
+    interface UBrandSwitcher {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName": string;
+        /**
+          * CSS classes to apply to the heading.
+          * @default ""
+         */
+        "headingClassName": string;
+        /**
+          * If true, renders brand names without their logos.
+          * @default false
+         */
+        "hideLogos": boolean;
+        /**
+          * CSS classes to apply to each brand link.
+          * @default ""
+         */
+        "itemClassName": string;
+        /**
+          * If true, also lists the brand the user is currently on, turning this into a full brand selector.
+          * @default false
+         */
+        "showCurrent": boolean;
     }
     /**
      * Captcha field component that renders a captcha widget when required
@@ -1226,6 +1261,10 @@ export namespace Components {
         "target"?: string;
     }
 }
+export interface UBrandSwitcherCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUBrandSwitcherElement;
+}
 export interface UConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLUConfigElement;
@@ -1302,6 +1341,29 @@ declare global {
     var HTMLUBrandConnectButtonElement: {
         prototype: HTMLUBrandConnectButtonElement;
         new (): HTMLUBrandConnectButtonElement;
+    };
+    interface HTMLUBrandSwitcherElementEventMap {
+        "brandSelected": BrandSelectedEvent;
+    }
+    /**
+     * Lists the other brands the signing-in user has an account on, so they can continue there instead.
+     * A brand is a separate login host, so switching is a navigation to that brand's `url` — the backend
+     * derives the brand from the host it is called on. Place this inside the `<u-signin-step>` you want it
+     * to appear in; the step controls visibility.
+     */
+    interface HTMLUBrandSwitcherElement extends Components.UBrandSwitcher, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUBrandSwitcherElementEventMap>(type: K, listener: (this: HTMLUBrandSwitcherElement, ev: UBrandSwitcherCustomEvent<HTMLUBrandSwitcherElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUBrandSwitcherElementEventMap>(type: K, listener: (this: HTMLUBrandSwitcherElement, ev: UBrandSwitcherCustomEvent<HTMLUBrandSwitcherElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUBrandSwitcherElement: {
+        prototype: HTMLUBrandSwitcherElement;
+        new (): HTMLUBrandSwitcherElement;
     };
     /**
      * Captcha field component that renders a captcha widget when required
@@ -1914,6 +1976,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "u-back-button": HTMLUBackButtonElement;
         "u-brand-connect-button": HTMLUBrandConnectButtonElement;
+        "u-brand-switcher": HTMLUBrandSwitcherElement;
         "u-captcha-field": HTMLUCaptchaFieldElement;
         "u-conditional-render": HTMLUConditionalRenderElement;
         "u-config": HTMLUConfigElement;
@@ -2002,6 +2065,43 @@ declare namespace LocalJSX {
           * @default ""
          */
         "componentClassName"?: string;
+    }
+    /**
+     * Lists the other brands the signing-in user has an account on, so they can continue there instead.
+     * A brand is a separate login host, so switching is a navigation to that brand's `url` — the backend
+     * derives the brand from the host it is called on. Place this inside the `<u-signin-step>` you want it
+     * to appear in; the step controls visibility.
+     */
+    interface UBrandSwitcher {
+        /**
+          * CSS classes to apply to the wrapper element.
+          * @default ""
+         */
+        "componentClassName"?: string;
+        /**
+          * CSS classes to apply to the heading.
+          * @default ""
+         */
+        "headingClassName"?: string;
+        /**
+          * If true, renders brand names without their logos.
+          * @default false
+         */
+        "hideLogos"?: boolean;
+        /**
+          * CSS classes to apply to each brand link.
+          * @default ""
+         */
+        "itemClassName"?: string;
+        /**
+          * Fired when a brand is chosen, before navigating to it. Call `preventDefault()` on the event to suppress the navigation and route to the brand yourself.
+         */
+        "onBrandSelected"?: (event: UBrandSwitcherCustomEvent<BrandSelectedEvent>) => void;
+        /**
+          * If true, also lists the brand the user is currently on, turning this into a full brand selector.
+          * @default false
+         */
+        "showCurrent"?: boolean;
     }
     /**
      * Captcha field component that renders a captcha widget when required
@@ -3230,6 +3330,13 @@ declare namespace LocalJSX {
         "componentClassName": string;
         "action": "connect" | "cancel";
     }
+    interface UBrandSwitcherAttributes {
+        "componentClassName": string;
+        "itemClassName": string;
+        "headingClassName": string;
+        "showCurrent": boolean;
+        "hideLogos": boolean;
+    }
     interface UCaptchaFieldAttributes {
         "feature": CaptchaFeature;
         "componentClassName": string;
@@ -3569,6 +3676,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "u-back-button": Omit<UBackButton, keyof UBackButtonAttributes> & { [K in keyof UBackButton & keyof UBackButtonAttributes]?: UBackButton[K] } & { [K in keyof UBackButton & keyof UBackButtonAttributes as `attr:${K}`]?: UBackButtonAttributes[K] } & { [K in keyof UBackButton & keyof UBackButtonAttributes as `prop:${K}`]?: UBackButton[K] };
         "u-brand-connect-button": Omit<UBrandConnectButton, keyof UBrandConnectButtonAttributes> & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes]?: UBrandConnectButton[K] } & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes as `attr:${K}`]?: UBrandConnectButtonAttributes[K] } & { [K in keyof UBrandConnectButton & keyof UBrandConnectButtonAttributes as `prop:${K}`]?: UBrandConnectButton[K] };
+        "u-brand-switcher": Omit<UBrandSwitcher, keyof UBrandSwitcherAttributes> & { [K in keyof UBrandSwitcher & keyof UBrandSwitcherAttributes]?: UBrandSwitcher[K] } & { [K in keyof UBrandSwitcher & keyof UBrandSwitcherAttributes as `attr:${K}`]?: UBrandSwitcherAttributes[K] } & { [K in keyof UBrandSwitcher & keyof UBrandSwitcherAttributes as `prop:${K}`]?: UBrandSwitcher[K] };
         "u-captcha-field": Omit<UCaptchaField, keyof UCaptchaFieldAttributes> & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes]?: UCaptchaField[K] } & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes as `attr:${K}`]?: UCaptchaFieldAttributes[K] } & { [K in keyof UCaptchaField & keyof UCaptchaFieldAttributes as `prop:${K}`]?: UCaptchaField[K] };
         "u-conditional-render": Omit<UConditionalRender, keyof UConditionalRenderAttributes> & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes]?: UConditionalRender[K] } & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes as `attr:${K}`]?: UConditionalRenderAttributes[K] } & { [K in keyof UConditionalRender & keyof UConditionalRenderAttributes as `prop:${K}`]?: UConditionalRender[K] };
         "u-config": Omit<UConfig, keyof UConfigAttributes> & { [K in keyof UConfig & keyof UConfigAttributes]?: UConfig[K] } & { [K in keyof UConfig & keyof UConfigAttributes as `attr:${K}`]?: UConfigAttributes[K] } & { [K in keyof UConfig & keyof UConfigAttributes as `prop:${K}`]?: UConfig[K] };
@@ -3637,6 +3745,13 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "u-back-button": LocalJSX.IntrinsicElements["u-back-button"] & JSXBase.HTMLAttributes<HTMLUBackButtonElement>;
             "u-brand-connect-button": LocalJSX.IntrinsicElements["u-brand-connect-button"] & JSXBase.HTMLAttributes<HTMLUBrandConnectButtonElement>;
+            /**
+             * Lists the other brands the signing-in user has an account on, so they can continue there instead.
+             * A brand is a separate login host, so switching is a navigation to that brand's `url` — the backend
+             * derives the brand from the host it is called on. Place this inside the `<u-signin-step>` you want it
+             * to appear in; the step controls visibility.
+             */
+            "u-brand-switcher": LocalJSX.IntrinsicElements["u-brand-switcher"] & JSXBase.HTMLAttributes<HTMLUBrandSwitcherElement>;
             /**
              * Captcha field component that renders a captcha widget when required
              * Usage:

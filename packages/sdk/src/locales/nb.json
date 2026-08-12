@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Fortsett på {{brand}}",
+      "other_accounts": "Dine andre kontoer"
+    },
     "email": {
       "placeholder": "Skriv inn e-postadressen din"
     },
