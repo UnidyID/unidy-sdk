@@ -14,6 +14,12 @@ const KEYS = {
   REGISTRATION_EMAIL: "unidy_registration_email",
 } as const;
 
+/** Brands describe one specific sign-in, so they are stored with the sid they belong to. */
+interface PersistedBrands {
+  sid: string | null;
+  brands: Brand[];
+}
+
 interface AuthStorageState {
   token: string | null;
   refreshToken: string | null;
@@ -21,7 +27,7 @@ interface AuthStorageState {
   email: string | null;
   step: AuthStep | null;
   loginOptions: LoginOptions | null;
-  brands: Brand[] | null;
+  brands: PersistedBrands | null;
   magicCodeStep: string | null;
   registrationRid: string | null;
   registrationEmail: string | null;
@@ -35,7 +41,7 @@ function readStateFromStorage(): AuthStorageState {
     email: localStorage.getItem(KEYS.EMAIL),
     step: localStorage.getItem(KEYS.STEP) as AuthStep | null,
     loginOptions: safeJsonParse<LoginOptions>(localStorage.getItem(KEYS.LOGIN_OPTIONS)),
-    brands: safeJsonParse<Brand[]>(localStorage.getItem(KEYS.BRANDS)),
+    brands: safeJsonParse<PersistedBrands>(localStorage.getItem(KEYS.BRANDS)),
     magicCodeStep: localStorage.getItem(KEYS.MAGIC_CODE_STEP),
     registrationRid: localStorage.getItem(KEYS.REGISTRATION_RID),
     registrationEmail: localStorage.getItem(KEYS.REGISTRATION_EMAIL),
@@ -179,13 +185,17 @@ export const authStorage = {
     emitAuthChange();
   },
 
-  // Brands (JSON in localStorage)
-  getBrands(): Brand[] | null {
-    return ensureState().brands;
+  // Brands (JSON in localStorage, scoped to the sign-in they were resolved for)
+  getBrandsFor(sid: string | null): Brand[] | null {
+    const stored = ensureState().brands;
+    if (!stored?.sid || !sid || stored.sid !== sid) return null;
+
+    return stored.brands;
   },
   setBrands(brands: Brand[]): void {
-    setOrRemove(localStorage, KEYS.BRANDS, brands.length > 0 ? JSON.stringify(brands) : null);
-    state = { ...ensureState(), brands };
+    const stored: PersistedBrands | null = brands.length > 0 ? { sid: ensureState().signInId, brands } : null;
+    setOrRemove(localStorage, KEYS.BRANDS, stored ? JSON.stringify(stored) : null);
+    state = { ...ensureState(), brands: stored };
     emitAuthChange();
   },
 

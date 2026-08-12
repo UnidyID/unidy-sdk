@@ -16,6 +16,11 @@ export type AuthStep =
   | "unconfirmed"
   | "invited";
 
+interface PersistedBrands {
+  sid: string | null;
+  brands: Brand[];
+}
+
 export interface AuthState {
   step: AuthStep;
   initialStep: AuthStep;
@@ -104,8 +109,13 @@ const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
 const storedStep = localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
 const storedStepHistory = loadJsonFromStorage<AuthStep[]>(localStorage, SESSION_KEYS.STEP_HISTORY);
 const storedLoginOptions = loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
-const storedBrands = loadJsonFromStorage<Brand[]>(localStorage, SESSION_KEYS.BRANDS);
+const storedSid = localStorage.getItem(SESSION_KEYS.SID);
+const storedBrands = loadJsonFromStorage<PersistedBrands>(localStorage, SESSION_KEYS.BRANDS);
 const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
+
+// Brands describe one specific sign-in, so they are only restored while that sign-in is being
+// resumed - never for a fresh lookup or a redirect that started a new one.
+const recoverableBrands = isRecoverableStep(storedStep) && storedBrands?.sid && storedBrands.sid === storedSid ? storedBrands.brands : [];
 
 const initialState: AuthState = {
   step: undefined,
@@ -124,7 +134,7 @@ const initialState: AuthState = {
     newPassword: "",
     passwordConfirmation: "",
   },
-  sid: localStorage.getItem(SESSION_KEYS.SID),
+  sid: storedSid,
   loading: false,
   errors: {
     email: null,
@@ -144,7 +154,7 @@ const initialState: AuthState = {
     social_logins: [],
     passkey: true,
   },
-  brands: storedBrands ?? [],
+  brands: recoverableBrands,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
   backendSignedIn: false,
@@ -206,7 +216,7 @@ class AuthStore {
 
   setBrands(brands: Brand[]) {
     state.brands = brands;
-    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? brands : null);
+    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? { sid: state.sid, brands } : null);
   }
 
   /** The brand matching the host the SDK is pointed at, if the user is connected to it. */
@@ -303,6 +313,10 @@ class AuthStore {
   }
 
   setSignInId(signInId: string) {
+    // A social-auth redirect can start a new sign-in without a fresh lookup, which would otherwise
+    // leave the previous one's brands on display.
+    if (state.sid !== signInId) this.setBrands([]);
+
     state.sid = signInId;
     saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
   }
@@ -449,7 +463,6 @@ class AuthStore {
     // Preserve user context for convenience
     const email = state.email;
     const loginOptions = state.availableLoginOptions;
-    const brands = state.brands;
     reset();
 
     state.email = email;
@@ -457,9 +470,6 @@ class AuthStore {
 
     state.availableLoginOptions = loginOptions;
     saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, loginOptions);
-
-    state.brands = brands;
-    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? brands : null);
 
     state.step = initialStep;
     state._initialStep = initialStep;

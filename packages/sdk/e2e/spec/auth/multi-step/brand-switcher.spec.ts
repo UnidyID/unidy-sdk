@@ -135,4 +135,55 @@ test.describe("Auth - Brand switcher", () => {
     // Navigation was suppressed, so we are still on the auth page
     await expect(page).toHaveURL(new RegExp(`${routes.auth}$`));
   });
+
+  // Brands describe one specific sign-in. Persisting them lets the switcher survive a mid-flow
+  // reload, but they must never leak into an unrelated one.
+  test.describe("persistence is scoped to the sign-in", () => {
+    const STALE_BRAND = {
+      name: "previoususer",
+      host: "previous.example.com",
+      url: "https://previous.example.com",
+      display_name: "Previous Account",
+      logo_url: null,
+      colors: { background: "#0055ff", foreground: "#ffffff", text: "#20262c" },
+      current: false,
+      login_options: { magic_link: false, password: true, social_logins: [], passkey: false },
+    };
+
+    const staleLink = (page: import("@playwright/test").Page) => page.getByRole("link", { name: /continue on previous account/i });
+
+    // No recoverable step: the sign-in is over, so its brands must not come back with a reload.
+    test("does not surface brands when no sign-in is being resumed", async ({ page }) => {
+      await page.addInitScript((brand) => {
+        localStorage.setItem("unidy_signin_id", "stale-sign-in-id");
+        localStorage.setItem("unidy_brands", JSON.stringify({ sid: "stale-sign-in-id", brands: [brand] }));
+      }, STALE_BRAND);
+
+      await page.goto(routes.auth);
+
+      await expect(page.getByRole("textbox", { name: "Email" })).toBeVisible();
+      await expect(staleLink(page)).toHaveCount(0);
+    });
+
+    test("does not carry brands over into a sign-in started by a redirect", async ({ page }) => {
+      await page.route("**/api/sdk/v1/sign_ins", (route) =>
+        route.fulfill({
+          status: 201,
+          contentType: "application/json",
+          body: JSON.stringify(stubSignIn([brand("fanclub", true), brand("partners", false)])),
+        }),
+      );
+
+      // A real lookup, so the brands are persisted against its sid
+      await page.goto(routes.auth);
+      await submitEmail(page);
+      await expect(page.getByRole("link", { name: /continue on partner portal/i })).toBeVisible();
+
+      // A social-auth callback then arrives carrying a different sid
+      await page.goto(`${routes.auth}?error=brand_connection_required&sid=other-sign-in-id`);
+
+      await expect(page.getByRole("link", { name: /continue on partner portal/i })).toHaveCount(0);
+      await expect.poll(() => page.evaluate(() => localStorage.getItem("unidy_brands"))).toBeNull();
+    });
+  });
 });

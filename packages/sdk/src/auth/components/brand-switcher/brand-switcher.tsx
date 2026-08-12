@@ -54,22 +54,11 @@ export class BrandSwitcher extends UnidyComponent() {
     }
   };
 
+  // Decorative only - the brand name next to it carries the meaning.
   private renderLogo(brand: Brand) {
-    if (this.hideLogos) return null;
+    if (this.hideLogos || !brand.logo_url) return null;
 
-    if (brand.logo_url) {
-      return <img src={brand.logo_url} alt="" aria-hidden="true" class="u:size-8 u:shrink-0 u:object-contain" />;
-    }
-
-    // No logo configured: a decorative swatch in the brand's own color. Purely redundant with the
-    // adjacent brand name, so it carries no contrast requirement.
-    return (
-      <span
-        aria-hidden="true"
-        class="u:size-8 u:shrink-0 u:rounded-full u:border u:border-solid u:border-black/10"
-        style={{ backgroundColor: brand.colors.background }}
-      />
-    );
+    return <img src={brand.logo_url} alt="" aria-hidden="true" class="u:size-8 u:shrink-0 u:object-contain" />;
   }
 
   render() {

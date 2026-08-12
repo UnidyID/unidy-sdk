@@ -21,7 +21,6 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
 
     const { token, signInId: signInIdFromStorage, email } = authStorage.getState();
     const loginOptions = authStorage.getLoginOptions();
-    const brands = authStorage.getBrands();
 
     const socialCallback = parseSocialAuthCallback(window.location.search);
     if (socialCallback) {
@@ -91,12 +90,16 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
 
     if (email) dispatch({ type: "SET_EMAIL", email });
     if (loginOptions) dispatch({ type: "SET_LOGIN_OPTIONS", options: loginOptions });
-    if (brands) dispatch({ type: "SET_BRANDS", brands });
 
     const storedStep = authStorage.getRecoverableStep();
     if (storedStep && isRecoverableStep(storedStep) && signInId) {
       dispatch({ type: "SET_SIGNIN_ID", signInId });
       dispatch({ type: "RECOVER_STATE", state: { step: storedStep as AuthStep } });
+
+      // Brands belong to this sign-in, so they are only restored alongside it - never on the email
+      // step, where they would describe the previous lookup.
+      const brands = authStorage.getBrandsFor(signInId);
+      if (brands) dispatch({ type: "SET_BRANDS", brands });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
