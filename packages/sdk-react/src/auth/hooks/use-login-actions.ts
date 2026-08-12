@@ -59,6 +59,8 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
       dispatch({ type: "SET_EMAIL", email });
       dispatch({ type: "SET_LOADING", loading: true });
       dispatch({ type: "CLEAR_ERRORS" });
+      // Whatever this lookup returns, the previous one's brands no longer describe it
+      setBrands([]);
 
       const [error, response] = await client.auth.createSignIn({
         payload: { email, sendMagicCode: submitOptions?.sendMagicCode, originUrl: window.location.href },

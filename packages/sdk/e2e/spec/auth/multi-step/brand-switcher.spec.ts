@@ -165,6 +165,41 @@ test.describe("Auth - Brand switcher", () => {
       await expect(staleLink(page)).toHaveCount(0);
     });
 
+    // Brands are only written on a successful lookup, so an error branch must not leave the previous
+    // lookup's brands standing.
+    test("drops brands when a second lookup fails", async ({ page }) => {
+      let lookups = 0;
+      await page.route("**/api/sdk/v1/sign_ins", (route) => {
+        lookups += 1;
+        if (lookups === 1) {
+          return route.fulfill({
+            status: 201,
+            contentType: "application/json",
+            body: JSON.stringify(stubSignIn([brand("fanclub", true), brand("partners", false)])),
+          });
+        }
+
+        return route.fulfill({
+          status: 404,
+          contentType: "application/json",
+          body: JSON.stringify({ error_identifier: "account_not_found" }),
+        });
+      });
+
+      await page.goto(routes.auth);
+      await submitEmail(page);
+      await expect(page.getByRole("link", { name: /continue on partner portal/i })).toBeVisible();
+
+      // Go back and look up a different address, which this time is not found
+      await page.getByRole("button", { name: /back/i }).first().click();
+      const email = page.getByRole("textbox", { name: "Email" });
+      await email.fill("someone-else@example.com");
+      await email.press("Enter");
+
+      await expect(page.getByRole("link", { name: /continue on partner portal/i })).toHaveCount(0);
+      await expect.poll(() => page.evaluate(() => localStorage.getItem("unidy_brands"))).toBeNull();
+    });
+
     test("does not carry brands over into a sign-in started by a redirect", async ({ page }) => {
       await page.route("**/api/sdk/v1/sign_ins", (route) =>
         route.fulfill({

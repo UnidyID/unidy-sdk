@@ -34,6 +34,8 @@ export class AuthHelpers {
 
     authStore.setLoading(true);
     authStore.clearErrors();
+    // Whatever this lookup returns, the previous one's brands no longer describe it
+    authStore.setBrands([]);
 
     // Execute captcha if enabled for login
     let captchaToken: string | undefined;
