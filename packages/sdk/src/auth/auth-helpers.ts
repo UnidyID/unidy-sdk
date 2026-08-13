@@ -780,6 +780,14 @@ export class AuthHelpers {
     authStore.setToken(response.jwt);
     authStore.setRefreshToken(response.refresh_token);
     authStore.setLoading(false);
-    authStore.getRootComponentRef()?.onAuth(response);
+    const ref = authStore.getRootComponentRef();
+    if (ref) {
+      ref.onAuth(response);
+    } else {
+      // No sign-in root component registered yet (e.g. session restore via checkSignedIn()
+      // races component initialization). Dispatch on document so headless integrations
+      // that listen for authEvent can still react.
+      document.dispatchEvent(new CustomEvent("authEvent", { detail: response, bubbles: false }));
+    }
   }
 }
