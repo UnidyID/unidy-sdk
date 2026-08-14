@@ -523,7 +523,7 @@ export class RegistrationHelpers {
   async checkInternalMatch(
     matchingValue: string,
     additionalAttributes: Record<string, string> = {},
-  ): Promise<{ status: "found"; data: InternalMatchResult } | { status: "not_found" } | { status: "error" }> {
+  ): Promise<{ status: "found"; data: InternalMatchResult } | { status: "not_found" } | { status: "rate_limited" } | { status: "error" }> {
     if (!registrationState.rid) return { status: "error" };
 
     const [error, result] = await this.client.auth.checkInternalMatch(
@@ -532,6 +532,7 @@ export class RegistrationHelpers {
     );
 
     if (error === "internal_matching_match_not_found") return { status: "not_found" };
+    if (error === "internal_matching_rate_limit_exceeded") return { status: "rate_limited" };
     if (error) return { status: "error" };
 
     return { status: "found", data: result as InternalMatchResult };

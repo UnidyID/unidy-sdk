@@ -11,6 +11,8 @@ export const LoginOptionsSchema = z.object({
   password: z.boolean(),
   social_logins: z.array(z.string()),
   passkey: z.boolean(),
+  social_login_labels: z.record(z.string(), z.string()).optional(),
+  social_login_icons: z.record(z.string(), z.string()).optional(),
 });
 
 // A brand the user is connected to and that the API key is authorized for
