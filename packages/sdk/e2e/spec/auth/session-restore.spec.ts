@@ -26,6 +26,41 @@ function mockRefreshSuccess(page: import("@playwright/test").Page) {
   });
 }
 
+test.describe("authEvent DOM fallback (no u-signin-root)", () => {
+  test("dispatches authEvent on document when session is restored on a page without u-signin-root", async ({ page }) => {
+    // Profile page has u-config check-signed-in="true" but no u-signin-root,
+    // so handleAuthSuccess falls back to dispatching authEvent on document.
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/signed_in/, (route) => {
+      if (route.request().method() === "GET") {
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
+        });
+      } else {
+        route.fallback();
+      }
+    });
+
+    // Also stub the profile API so the page doesn't error visibly
+    await page.route(/\/api\/sdk\/v1\/users\/me/, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({}) }),
+    );
+
+    const eventFired = page.evaluate(
+      () =>
+        new Promise<boolean>((resolve) => {
+          document.addEventListener("authEvent", () => resolve(true), { once: true });
+          setTimeout(() => resolve(false), 5000);
+        }),
+    );
+
+    await page.goto("/profile");
+
+    expect(await eventFired).toBe(true);
+  });
+});
+
 test.describe("Session restore on init", () => {
   test("uses refresh token to restore session when access token is expired, without calling /signed_in", async ({ page }) => {
     // Seed expired access token + valid refresh token before the SDK initialises
