@@ -19,7 +19,7 @@ const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
 
 export const TransactionLineItemSchema = z.object({
-  id: z.number(),
+  id: z.union([z.number(), z.string()]),
   name: z.string().nullable(),
   quantity: z.number().nullable(),
   unit_price: z.number().nullable(),
@@ -93,6 +93,11 @@ export const TransactionSchema = z.object({
 export const TransactionsListResponseSchema = z.object({
   meta: PaginationMetaSchema,
   results: z.array(TransactionSchema),
+});
+
+export const TransactionsListResponseRawSchema = z.object({
+  meta: PaginationMetaSchema,
+  results: z.array(z.unknown()),
 });
 
 export type Address = z.infer<typeof AddressSchema>;
