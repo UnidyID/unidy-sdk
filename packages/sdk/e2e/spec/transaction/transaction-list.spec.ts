@@ -96,8 +96,9 @@ test.describe("u-transaction-list - authenticated user", () => {
 
     await page.goto(routes.transaction);
 
-    await expect(page.locator("u-transaction-list")).toBeVisible();
-    await expect(page.locator("u-transaction-list h1")).not.toBeVisible();
+    const list = page.locator("u-transaction-list").first();
+    await expect(list).toBeVisible();
+    await expect(list.locator("h1")).not.toBeVisible();
   });
 
   test("renders valid items and skips invalid ones without showing an error", async ({
@@ -116,8 +117,9 @@ test.describe("u-transaction-list - authenticated user", () => {
 
     await page.goto(routes.transaction);
 
-    await expect(page.locator("u-transaction-list")).toBeVisible();
-    await expect(page.locator("u-transaction-list h1")).not.toBeVisible();
+    const list = page.locator("u-transaction-list").first();
+    await expect(list).toBeVisible();
+    await expect(list.locator("h1")).not.toBeVisible();
   });
 
   test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
