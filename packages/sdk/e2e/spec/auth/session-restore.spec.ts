@@ -47,17 +47,25 @@ test.describe("authEvent DOM fallback (no u-signin-root)", () => {
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({}) }),
     );
 
-    const eventFired = page.evaluate(
-      () =>
-        new Promise<boolean>((resolve) => {
-          document.addEventListener("authEvent", () => resolve(true), { once: true });
-          setTimeout(() => resolve(false), 5000);
-        }),
-    );
+    // addInitScript survives navigation; page.evaluate before goto would be destroyed.
+    await page.addInitScript(() => {
+      (window as unknown as Record<string, unknown>).__authEventFired = false;
+      document.addEventListener(
+        "authEvent",
+        () => {
+          (window as unknown as Record<string, unknown>).__authEventFired = true;
+        },
+        { once: true },
+      );
+    });
 
     await page.goto("/profile");
 
-    expect(await eventFired).toBe(true);
+    const eventFired = await page
+      .waitForFunction(() => (window as unknown as Record<string, unknown>).__authEventFired, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    expect(eventFired).toBe(true);
   });
 });
 
