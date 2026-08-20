@@ -46,6 +46,7 @@ export class RawField extends UnidyComponent() {
 
   private unsubscribers: (() => void)[] = [];
   private parentProfile: HTMLUProfileElement | null = null;
+  private lastFocusedError: string | undefined;
 
   // Subscribe to password changes so the confirmation field re-validates when the password changes
   connectedCallback() {
@@ -466,10 +467,11 @@ export class RawField extends UnidyComponent() {
   }
 
   componentDidRender() {
-    const errs = this.getErrors();
-    if (errs?.[this.field]) {
+    const error = this.getErrors()?.[this.field];
+    if (error && error !== this.lastFocusedError) {
       this.element.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
     }
+    this.lastFocusedError = error;
   }
 
   render() {
