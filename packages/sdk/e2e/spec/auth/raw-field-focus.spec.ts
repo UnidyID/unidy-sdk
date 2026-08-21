@@ -51,7 +51,8 @@ test.describe("u-raw-field focus behaviour", () => {
     await page.getByRole("button", { name: "Continue", exact: true }).click();
 
     await expect(page.getByText(/at least 8 characters/i)).toBeVisible();
-    await expect(page.locator("u-raw-field[field='password'] input")).toBeFocused();
+    // toBeFocused() returns "inactive" in headless CI (document.hasFocus() is false); poll activeElement directly.
+    await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toBe("password");
   });
 
   test("does not re-steal focus when the same error is reasserted during a re-render", async ({ page }) => {
@@ -61,14 +62,14 @@ test.describe("u-raw-field focus behaviour", () => {
     await page.locator("u-raw-field[field='password'] input").fill("short");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await expect(page.getByText(/at least 8 characters/i)).toBeVisible();
-    await expect(page.locator("u-raw-field[field='password'] input")).toBeFocused();
+    await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toBe("password");
 
     const confirmInput = page.locator("u-raw-field[field='password_confirmation'] input");
     await confirmInput.click();
-    await expect(confirmInput).toBeFocused();
+    await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toBe("password_confirmation");
 
     await confirmInput.type("a");
 
-    await expect(confirmInput).toBeFocused();
+    await expect.poll(() => page.evaluate(() => document.activeElement?.id), { timeout: 5000 }).toBe("password_confirmation");
   });
 });

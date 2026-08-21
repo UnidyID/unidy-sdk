@@ -43,13 +43,22 @@ export class RawField extends UnidyComponent() {
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
   @State() selected?: string | string[];
+  // Slotted-component workaround: store changes don't trigger re-renders via reactive tracking alone.
+  @State() private renderTrigger = 0;
 
   private unsubscribers: (() => void)[] = [];
   private parentProfile: HTMLUProfileElement | null = null;
   private lastFocusedError: string | undefined;
 
-  // Subscribe to password changes so the confirmation field re-validates when the password changes
   connectedCallback() {
+    // Re-render when registration errors change so componentDidRender can handle focus (slotted component workaround).
+    this.unsubscribers.push(
+      onRegistrationChange("errors", () => {
+        this.renderTrigger++;
+      }),
+    );
+
+    // Subscribe to password changes so the confirmation field re-validates when the password changes
     if (this.field === "password_confirmation") {
       this.unsubscribers.push(
         onRegistrationChange("password", () => {
@@ -354,6 +363,9 @@ export class RawField extends UnidyComponent() {
   };
 
   private onBlurField = (e: Event) => {
+    // Reset so the same error can re-trigger focus if the user leaves the field and tries to submit again.
+    this.lastFocusedError = undefined;
+
     if (this.context !== "newsletter") {
       profileState.activeField = null;
     }
@@ -469,12 +481,21 @@ export class RawField extends UnidyComponent() {
   componentDidRender() {
     const error = this.getErrors()?.[this.field];
     if (error && error !== this.lastFocusedError) {
-      this.element.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`)?.focus();
+      const input = this.element.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#${CSS.escape(this.field)}`);
+      const activeEl = document.activeElement;
+      const activeTag = activeEl?.tagName.toLowerCase() ?? "";
+      // Don't steal focus from another interactive text field (e.g. user already clicked a different input).
+      const isAnotherInput = ["input", "textarea", "select"].includes(activeTag) && activeEl !== input;
+      if (!isAnotherInput) {
+        input?.focus();
+      }
     }
     this.lastFocusedError = error;
   }
 
   render() {
+    void this.renderTrigger;
+
     if (this.type === "radio") {
       if (Array.isArray(this.radioOptions) && this.radioOptions.length) {
         const checkedOptions = this.radioOptions.map((opt) => ({
