@@ -90,6 +90,48 @@ describe("AuthHelpers.refreshToken", () => {
     expect(authState.globalErrors.auth).toBeFalsy();
   });
 
+  it("keeps retrying while other tabs rotate the token, up to the retry budget", async () => {
+    const freshJwt = makeJwt(3600);
+    let rotation = 0;
+    const staleRejection = () => {
+      rotation += 1;
+      localStorage.setItem("unidy_refresh_token", `rt-rotated-${rotation}`);
+      return Promise.resolve(["invalid_refresh_token", { error_identifier: "invalid_refresh_token" }]);
+    };
+    const refreshMock = jest
+      .fn()
+      .mockImplementationOnce(staleRejection)
+      .mockImplementationOnce(staleRejection)
+      .mockResolvedValueOnce(tokenResponse(freshJwt, "rt-final"));
+    const helpers = new AuthHelpers(makeClient(refreshMock));
+
+    await helpers.refreshToken();
+
+    expect(refreshMock).toHaveBeenCalledTimes(3);
+    expect(refreshMock).toHaveBeenNthCalledWith(3, { signInId: "sid-1", refreshToken: "rt-rotated-2" });
+    expect(authState.token).toBe(freshJwt);
+    expect(authState.refreshToken).toBe("rt-final");
+    expect(authState.authenticated).toBe(true);
+  });
+
+  it("stops retrying after the budget is exhausted but keeps the newest persisted token", async () => {
+    let rotation = 0;
+    const refreshMock = jest.fn().mockImplementation(() => {
+      rotation += 1;
+      localStorage.setItem("unidy_refresh_token", `rt-rotated-${rotation}`);
+      return Promise.resolve(["invalid_refresh_token", { error_identifier: "invalid_refresh_token" }]);
+    });
+    const helpers = new AuthHelpers(makeClient(refreshMock));
+
+    await helpers.refreshToken();
+
+    // 1 initial attempt + MAX_STALE_REFRESH_RETRIES
+    expect(refreshMock).toHaveBeenCalledTimes(4);
+    expect(authState.refreshToken).toBe("rt-rotated-4");
+    expect(localStorage.getItem("unidy_refresh_token")).toBe("rt-rotated-4");
+    expect(authState.globalErrors.auth).toBeFalsy();
+  });
+
   it("does not adopt an expired access token from storage and refreshes instead", async () => {
     const freshJwt = makeJwt(3600);
     const refreshMock = jest
