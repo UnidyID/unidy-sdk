@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { AuthService } from "../auth/api/auth";
 import { Auth } from "../auth/auth";
+import { BrandConnectionsService } from "../brand-connections/api/brand-connections";
 import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
 import { OAuthService } from "../oauth/api/oauth";
@@ -13,6 +14,7 @@ import type { ServiceDependencies } from "./base-service";
 import { ApiClient, ApiResponse } from "./client";
 
 export * from "../auth/api/auth";
+export * from "../brand-connections/api/brand-connections";
 export * from "../newsletter/api/newsletters";
 export * from "../oauth/api/oauth";
 export * from "../profile/api/profile";
@@ -48,6 +50,7 @@ export class UnidyClient {
   newsletters: NewsletterService;
   profile: ProfileService;
   auth: AuthService;
+  brandConnections: BrandConnectionsService;
   oauth: OAuthService;
   captcha: CaptchaService;
   tickets: TicketsService;
@@ -62,6 +65,7 @@ export class UnidyClient {
     this.newsletters = new NewsletterService(this.apiClient, createBrowserDeps("NewsletterService"));
     this.profile = new ProfileService(this.apiClient, createBrowserDeps("ProfileService"));
     this.auth = new AuthService(this.apiClient, createBrowserDeps("AuthService"));
+    this.brandConnections = new BrandConnectionsService(this.apiClient, createBrowserDeps("BrandConnectionsService"));
     this.oauth = new OAuthService(this.apiClient, createBrowserDeps("OAuthService"));
     this.captcha = new CaptchaService(this.apiClient, createBrowserDeps("CaptchaService"));
     this.tickets = new TicketsService(this.apiClient, createBrowserDeps("TicketsService"));

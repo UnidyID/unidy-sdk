@@ -1,6 +1,7 @@
 import type { TokenResponse } from "@unidy.io/sdk/standalone";
 import {
   AuthService,
+  BrandConnectionsService,
   NewsletterService,
   OAuthService,
   ProfileService,
@@ -88,6 +89,7 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
     const apiClient = new ReactStandaloneApiClient(enhancedConfig);
     const deps = enhancedConfig.deps;
     this.auth = new AuthService(apiClient, deps);
+    this.brandConnections = new BrandConnectionsService(apiClient, deps);
     this.newsletters = new NewsletterService(apiClient, deps);
     this.oauth = new OAuthService(apiClient, deps);
     this.profile = new ProfileService(apiClient, deps);
