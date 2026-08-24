@@ -45,6 +45,6 @@ export const config: Config = {
   },
 
   plugins: [tailwind({ injectTailwindConfiguration: (_filename) => '@import "tailwindcss" prefix(u);' }), tailwindHMR()],
-  testing: { browserHeadless: "shell" },
+  testing: { browserHeadless: "shell", testPathIgnorePatterns: ["/node_modules/", "/e2e/"] },
   devServer: { reloadStrategy: "pageReload", openBrowser: false },
 };
