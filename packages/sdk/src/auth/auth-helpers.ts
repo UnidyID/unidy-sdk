@@ -22,6 +22,7 @@ import { authenticateWithPasskey } from "./passkey-auth";
 export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
+  private refreshTokenPromise: Promise<void> | null = null;
 
   constructor(client: UnidyClient) {
     this.client = client;
@@ -198,7 +199,16 @@ export class AuthHelpers {
     return [error, _] as const;
   }
 
-  async refreshToken() {
+  // Single-flight: refresh tokens rotate server-side, so concurrent refreshes with the same
+  // token produce one success and spurious permanent failures. All callers share one request.
+  refreshToken(): Promise<void> {
+    this.refreshTokenPromise ??= this.doRefreshToken().finally(() => {
+      this.refreshTokenPromise = null;
+    });
+    return this.refreshTokenPromise;
+  }
+
+  private async doRefreshToken() {
     if (!authState.sid && authState.token) {
       // Fallback: decode the stored token to recover the sid
       try {
@@ -218,15 +228,23 @@ export class AuthHelpers {
       return;
     }
 
+    const refreshTokenUsed = authState.refreshToken;
     const [error, response] = await this.client.auth.refreshToken({
       signInId: authState.sid,
-      refreshToken: authState.refreshToken,
+      refreshToken: refreshTokenUsed,
     });
 
     if (error) {
       // Only wipe local auth state for permanent backend rejections.
       const isPermanent = error === "invalid_refresh_token" || error === "refresh_token_revoked" || error === "sign_in_not_found";
       if (isPermanent) {
+        if (authStore.getPersistedRefreshToken() !== refreshTokenUsed) {
+          // Another SDK copy or tab already rotated the token while this request was in
+          // flight — adopt its session instead of destroying it with a stale failure.
+          this.logger.warn("Ignoring stale refresh failure; a newer refresh token exists");
+          authStore.syncPersistedTokens();
+          return;
+        }
         authStore.reset();
       }
       authStore.setGlobalError("auth", error);

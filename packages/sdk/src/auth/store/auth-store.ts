@@ -336,6 +336,25 @@ class AuthStore {
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
   }
 
+  /** Refresh token as persisted in localStorage — may be newer than in-memory state when another SDK copy or tab rotated it. */
+  getPersistedRefreshToken(): string | null {
+    return localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
+  }
+
+  /** Adopts tokens persisted by a concurrent refresh (another SDK copy or tab) into in-memory state. */
+  syncPersistedTokens() {
+    const sid = localStorage.getItem(SESSION_KEYS.SID);
+    if (sid) state.sid = sid;
+
+    state.refreshToken = localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
+
+    const token = sessionStorage.getItem(SESSION_KEYS.TOKEN);
+    if (token) {
+      state.token = token;
+      this.setAuthenticated(true);
+    }
+  }
+
   setEnableResendAfter(seconds: number) {
     state.enableResendAfter = seconds;
   }
