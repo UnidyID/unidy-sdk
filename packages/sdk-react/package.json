@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "bun test src",
     "build:demo": "bun run --cwd ../sdk scripts/generate-version.ts && bun run --cwd ../sdk build:standalone && vite build demo",
     "dev": "vite demo"
   },

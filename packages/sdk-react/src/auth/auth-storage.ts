@@ -144,6 +144,19 @@ export const authStorage = {
     state = { ...ensureState(), refreshToken: token };
     emitAuthChange();
   },
+  /**
+   * Refresh token as currently persisted in localStorage. May be newer than the cached
+   * snapshot: a same-page write by another SDK copy (e.g. the Stencil SDK, which shares
+   * these keys) fires no `storage` event, so the snapshot is not resynced.
+   */
+  getPersistedRefreshToken(): string | null {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(KEYS.REFRESH_TOKEN);
+  },
+  /** Re-reads all keys from storage into the cached snapshot, e.g. to adopt a same-page rotation. */
+  syncFromStorage(): void {
+    syncStateFromStorage();
+  },
 
   // Sign-in ID
   getSignInId(): string | null {
