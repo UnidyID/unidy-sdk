@@ -16,6 +16,12 @@ const MAX_STALE_REFRESH_RETRIES = 3;
 
 // Refresh tokens rotate on use — all clients share one storage, so one in-flight request serves all.
 let inflight: Promise<string | null> | null = null;
+// Callbacks from every caller that joined the current flight, so a failure notifies all of them.
+let inflightCallbacks = new Set<HookCallbacks>();
+
+const notifyError = (error: string) => {
+  for (const callbacks of inflightCallbacks) callbacks.onError?.(error);
+};
 
 /** Returns a valid token, or null (and clears storage) when the session is unrecoverable. */
 export async function refreshSession(
@@ -28,6 +34,7 @@ export async function refreshSession(
     return currentToken;
   }
 
+  if (callbacks) inflightCallbacks.add(callbacks);
   if (inflight) return inflight;
 
   inflight = (async () => {
@@ -53,13 +60,13 @@ export async function refreshSession(
 
       // Transient failure (network, 5xx, rate limit) — keep the session recoverable.
       if (!PERMANENT_REFRESH_ERRORS.has(error)) {
-        callbacks?.onError?.(error);
+        notifyError(error);
         return null;
       }
 
       if (authStorage.getPersistedRefreshToken() === refreshToken) {
         authStorage.clearAll();
-        callbacks?.onError?.(error);
+        notifyError(error);
         return null;
       }
 
@@ -80,6 +87,7 @@ export async function refreshSession(
     return await inflight;
   } finally {
     inflight = null;
+    inflightCallbacks = new Set();
   }
 }
 

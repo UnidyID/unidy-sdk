@@ -83,6 +83,25 @@ describe("refreshSession", () => {
     expect(onError).toHaveBeenCalledWith("connection_failed");
   });
 
+  it("notifies every caller that joined the shared flight when the refresh fails", async () => {
+    const refreshMock = mock(
+      () => new Promise((resolve) => setTimeout(() => resolve(["connection_failed", null]), 10)),
+    );
+    const client = makeClient(refreshMock);
+    const initiatorOnError = mock(() => {});
+    const joinerOnError = mock(() => {});
+
+    await Promise.all([
+      refreshSession(client, { onError: initiatorOnError }),
+      refreshSession(client, { onError: joinerOnError }),
+      refreshSession(client),
+    ]);
+
+    expect(refreshMock).toHaveBeenCalledTimes(1);
+    expect(initiatorOnError).toHaveBeenCalledWith("connection_failed");
+    expect(joinerOnError).toHaveBeenCalledWith("connection_failed");
+  });
+
   it("clears storage when the rejected refresh token is still the persisted one", async () => {
     const refreshMock = mock(permanentRejection);
     const onError = mock(() => {});
