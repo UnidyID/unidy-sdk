@@ -7,7 +7,7 @@ import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
 import { authState, authStore } from "./store/auth-store";
 
-const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
+export const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
 
 /**
  * Decoded JWT payload for Unidy auth tokens.

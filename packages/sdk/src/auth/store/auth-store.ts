@@ -1,7 +1,8 @@
 import { createStore } from "@stencil/store";
+import { jwtDecode } from "jwt-decode";
 import { unidyState } from "../../shared/store/unidy-store";
 import type { Brand, LoginOptions, RequiredFieldsResponse } from "../api/auth";
-import { Auth } from "../auth";
+import { Auth, DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS } from "../auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 
 export type AuthStep =
@@ -97,6 +98,15 @@ const saveJsonToStorage = <T>(storage: Storage, key: string, value: T | null) =>
     storage.setItem(key, JSON.stringify(value));
   } else {
     storage.removeItem(key);
+  }
+};
+
+const isUsableJwt = (token: string): boolean => {
+  try {
+    const { exp } = jwtDecode<{ exp?: number }>(token);
+    return typeof exp === "number" && exp > Date.now() / 1000 + DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS;
+  } catch {
+    return false;
   }
 };
 
@@ -341,18 +351,27 @@ class AuthStore {
     return localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
   }
 
-  /** Adopts tokens persisted by a concurrent refresh (another SDK copy or tab) into in-memory state. */
-  syncPersistedTokens() {
+  /**
+   * Adopts tokens persisted by a concurrent refresh (another SDK copy or tab) into in-memory state.
+   * The access token only exists here for a same-tab SDK copy — sessionStorage is per-tab, so a
+   * cross-tab rotation leaves it absent (or expired) and only the refresh token is adopted.
+   *
+   * @returns whether a still-valid access token was adopted.
+   */
+  syncPersistedTokens(): boolean {
     const sid = localStorage.getItem(SESSION_KEYS.SID);
     if (sid) state.sid = sid;
 
     state.refreshToken = localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
 
     const token = sessionStorage.getItem(SESSION_KEYS.TOKEN);
-    if (token) {
+    if (token && isUsableJwt(token)) {
       state.token = token;
       this.setAuthenticated(true);
+      return true;
     }
+
+    return false;
   }
 
   setEnableResendAfter(seconds: number) {

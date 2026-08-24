@@ -208,7 +208,7 @@ export class AuthHelpers {
     return this.refreshTokenPromise;
   }
 
-  private async doRefreshToken() {
+  private async doRefreshToken(allowStaleRetry = true): Promise<void> {
     if (!authState.sid && authState.token) {
       // Fallback: decode the stored token to recover the sid
       try {
@@ -242,7 +242,12 @@ export class AuthHelpers {
           // Another SDK copy or tab already rotated the token while this request was in
           // flight — adopt its session instead of destroying it with a stale failure.
           this.logger.warn("Ignoring stale refresh failure; a newer refresh token exists");
-          authStore.syncPersistedTokens();
+          const adoptedValidToken = authStore.syncPersistedTokens();
+          // A cross-tab rotation can't hand us its access token (sessionStorage is per-tab),
+          // so refresh once more with the adopted refresh token.
+          if (!adoptedValidToken && allowStaleRetry && authState.refreshToken) {
+            await this.doRefreshToken(false);
+          }
           return;
         }
         authStore.reset();

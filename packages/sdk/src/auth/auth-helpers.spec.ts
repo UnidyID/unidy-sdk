@@ -68,6 +68,48 @@ describe("AuthHelpers.refreshToken", () => {
     expect(localStorage.getItem("unidy_refresh_token")).toBe("rt-new");
   });
 
+  it("retries once with the adopted refresh token when the concurrent refresh came from another tab", async () => {
+    const freshJwt = makeJwt(3600);
+    const refreshMock = jest
+      .fn()
+      .mockImplementationOnce(() => {
+        // Another tab rotates the shared refresh token; its access token stays in that tab's sessionStorage.
+        localStorage.setItem("unidy_refresh_token", "rt-new");
+        return Promise.resolve(["invalid_refresh_token", { error_identifier: "invalid_refresh_token" }]);
+      })
+      .mockResolvedValueOnce(tokenResponse(freshJwt, "rt-newer"));
+    const helpers = new AuthHelpers(makeClient(refreshMock));
+
+    await helpers.refreshToken();
+
+    expect(refreshMock).toHaveBeenCalledTimes(2);
+    expect(refreshMock).toHaveBeenNthCalledWith(2, { signInId: "sid-1", refreshToken: "rt-new" });
+    expect(authState.token).toBe(freshJwt);
+    expect(authState.refreshToken).toBe("rt-newer");
+    expect(authState.authenticated).toBe(true);
+    expect(authState.globalErrors.auth).toBeFalsy();
+  });
+
+  it("does not adopt an expired access token from storage and refreshes instead", async () => {
+    const freshJwt = makeJwt(3600);
+    const refreshMock = jest
+      .fn()
+      .mockImplementationOnce(() => {
+        localStorage.setItem("unidy_refresh_token", "rt-new");
+        sessionStorage.setItem("unidy_token", makeJwt(-60));
+        return Promise.resolve(["invalid_refresh_token", { error_identifier: "invalid_refresh_token" }]);
+      })
+      .mockResolvedValueOnce(tokenResponse(freshJwt, "rt-newer"));
+    const helpers = new AuthHelpers(makeClient(refreshMock));
+
+    await helpers.refreshToken();
+
+    expect(refreshMock).toHaveBeenCalledTimes(2);
+    expect(authState.token).toBe(freshJwt);
+    expect(authState.refreshToken).toBe("rt-newer");
+    expect(authState.authenticated).toBe(true);
+  });
+
   it("resets the store when the rejected refresh token is still the current one", async () => {
     const refreshMock = jest.fn().mockResolvedValue(["invalid_refresh_token", { error_identifier: "invalid_refresh_token" }]);
     const helpers = new AuthHelpers(makeClient(refreshMock));
