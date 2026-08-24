@@ -6,6 +6,14 @@ import { getTokenExpiryMs, isTokenExpired, isTokenExpiringWithin } from "./helpe
 /** How long before `exp` to refresh the access token by default. */
 const DEFAULT_SKEW_MS = 30_000;
 
+// Refresh tokens rotate server-side: only a rejection for the token that is still the
+// persisted one means the session is truly dead. Anything else must not clear storage.
+const PERMANENT_REFRESH_ERRORS = new Set(["invalid_refresh_token", "refresh_token_revoked", "sign_in_not_found"]);
+
+// Each stale retry means another tab/copy successfully rotated the token, so a small
+// budget converges even for a burst of tabs while preventing an open-ended loop.
+const MAX_STALE_REFRESH_RETRIES = 3;
+
 // Refresh tokens rotate on use — all clients share one storage, so one in-flight request serves all.
 let inflight: Promise<string | null> | null = null;
 
@@ -13,7 +21,7 @@ let inflight: Promise<string | null> | null = null;
 export async function refreshSession(
   client: StandaloneUnidyClient,
   callbacks?: HookCallbacks,
-  options?: { force?: boolean },
+  options?: { force?: boolean; signInIdFallback?: string | null },
 ): Promise<string | null> {
   const currentToken = authStorage.getState().token;
   if (!options?.force && currentToken && !isTokenExpired(currentToken)) {
@@ -23,27 +31,49 @@ export async function refreshSession(
   if (inflight) return inflight;
 
   inflight = (async () => {
-    const { signInId, refreshToken } = authStorage.getState();
-    if (!signInId || !refreshToken) {
-      authStorage.clearAll();
-      return null;
+    let staleRetriesLeft = MAX_STALE_REFRESH_RETRIES;
+
+    while (true) {
+      const { signInId: storedSignInId, refreshToken } = authStorage.getState();
+      const signInId = storedSignInId ?? options?.signInIdFallback ?? null;
+      if (!signInId || !refreshToken) return null;
+
+      const [error, response] = await client.auth.refreshToken({ signInId, refreshToken });
+
+      if (!error) {
+        // Storage was mutated while in-flight (logout or new login) — discard stale result.
+        if (authStorage.getState().refreshToken !== refreshToken) return null;
+
+        const tokenResponse = response as TokenResponse;
+        authStorage.setToken(tokenResponse.jwt);
+        authStorage.setRefreshToken(tokenResponse.refresh_token);
+        authStorage.setSignInId(tokenResponse.sid ?? signInId);
+        return tokenResponse.jwt;
+      }
+
+      // Transient failure (network, 5xx, rate limit) — keep the session recoverable.
+      if (!PERMANENT_REFRESH_ERRORS.has(error)) {
+        callbacks?.onError?.(error);
+        return null;
+      }
+
+      if (authStorage.getPersistedRefreshToken() === refreshToken) {
+        authStorage.clearAll();
+        callbacks?.onError?.(error);
+        return null;
+      }
+
+      // Another SDK copy or tab rotated the token while this request was in flight —
+      // adopt its session instead of destroying it with a stale failure.
+      authStorage.syncFromStorage();
+      const adoptedToken = authStorage.getState().token;
+      if (adoptedToken && !isTokenExpired(adoptedToken)) return adoptedToken;
+
+      // A cross-tab rotation can't hand us its access token (sessionStorage is per-tab),
+      // so refresh again with the adopted refresh token.
+      if (staleRetriesLeft <= 0) return null;
+      staleRetriesLeft -= 1;
     }
-
-    const [error, response] = await client.auth.refreshToken({ signInId, refreshToken });
-    // Storage was mutated while in-flight (logout or new login) — discard stale result.
-    if (authStorage.getState().refreshToken !== refreshToken) return null;
-
-    if (error) {
-      authStorage.clearAll();
-      callbacks?.onError?.(error);
-      return null;
-    }
-
-    const tokenResponse = response as TokenResponse;
-    authStorage.setToken(tokenResponse.jwt);
-    authStorage.setRefreshToken(tokenResponse.refresh_token);
-    authStorage.setSignInId(tokenResponse.sid ?? signInId);
-    return tokenResponse.jwt;
   })();
 
   try {
