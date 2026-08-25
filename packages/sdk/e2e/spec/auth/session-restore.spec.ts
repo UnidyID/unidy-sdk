@@ -26,6 +26,49 @@ function mockRefreshSuccess(page: import("@playwright/test").Page) {
   });
 }
 
+test.describe("authEvent DOM fallback (no u-signin-root)", () => {
+  test("dispatches authEvent on document when session is restored on a page without u-signin-root", async ({ page }) => {
+    // Profile page has u-config check-signed-in="true" but no u-signin-root,
+    // so handleAuthSuccess falls back to dispatching authEvent on document.
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/signed_in/, (route) => {
+      if (route.request().method() === "GET") {
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
+        });
+      } else {
+        route.fallback();
+      }
+    });
+
+    // Also stub the profile API so the page doesn't error visibly
+    await page.route(/\/api\/sdk\/v1\/users\/me/, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({}) }),
+    );
+
+    // addInitScript survives navigation; page.evaluate before goto would be destroyed.
+    await page.addInitScript(() => {
+      (window as unknown as Record<string, unknown>).__authEventFired = false;
+      document.addEventListener(
+        "authEvent",
+        () => {
+          (window as unknown as Record<string, unknown>).__authEventFired = true;
+        },
+        { once: true },
+      );
+    });
+
+    await page.goto("/profile");
+
+    const eventFired = await page
+      .waitForFunction(() => (window as unknown as Record<string, unknown>).__authEventFired, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    expect(eventFired).toBe(true);
+  });
+});
+
 test.describe("Session restore on init", () => {
   test("uses refresh token to restore session when access token is expired, without calling /signed_in", async ({ page }) => {
     // Seed expired access token + valid refresh token before the SDK initialises
