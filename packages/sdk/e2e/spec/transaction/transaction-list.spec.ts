@@ -6,6 +6,51 @@ const EMPTY_TRANSACTIONS_RESPONSE = {
   meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
 };
 
+const PAGINATION_META = { count: 1, page: 1, limit: 10, last: 1, prev: null, next: null };
+
+const BASE_TRANSACTION = {
+  id: "00000000-0000-0000-0000-000000000001",
+  user_id: "00000000-0000-0000-0000-000000000002",
+  transaction_category_id: "00000000-0000-0000-0000-000000000003",
+  external_id: null,
+  reference: "TEST-001",
+  source_platform: null,
+  order_type: null,
+  state: "completed",
+  financial_status: "paid",
+  fulfillment_status: null,
+  currency: "EUR",
+  payment_method: null,
+  payment_provider_ref: null,
+  coupon_code: null,
+  invoice_number: null,
+  cancel_reason: null,
+  customer_note: null,
+  staff_note: null,
+  source_channel_id: null,
+  prices_include_tax: true,
+  tax_exempt: false,
+  tags: [],
+  total: 9.99,
+  subtotal: null,
+  total_discount: null,
+  total_paid: null,
+  total_refunded: null,
+  total_shipping: null,
+  total_tax: null,
+  exchange_rate: null,
+  placed_at: null,
+  cancelled_at: null,
+  completed_at: null,
+  created_at: "2026-01-01T00:00:00.000Z",
+  updated_at: "2026-01-01T00:00:00.000Z",
+  metadata: null,
+  platform_metadata: null,
+  billing_address: null,
+  shipping_address: null,
+  line_items: [],
+};
+
 test.describe("u-transaction-list - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
@@ -33,6 +78,48 @@ test.describe("u-transaction-list - authenticated user", () => {
 
     await expect(page.locator("#empty-transactions-message")).toBeVisible();
     await expect(page.locator("#empty-transactions-message")).toHaveText("No transactions found.");
+  });
+
+  test("renders successfully when line_items[].id is a string", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    const response = {
+      meta: PAGINATION_META,
+      results: [
+        {
+          ...BASE_TRANSACTION,
+          line_items: [{ id: "some-uuid-string", name: "Product", quantity: 1, unit_price: 9.99, total_price: 9.99, metadata: null }],
+        },
+      ],
+    };
+    await page.route("**/api/sdk/v1/transactions**", (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
+    );
+
+    await page.goto(routes.transaction);
+
+    const list = page.locator("u-transaction-list").first();
+    await expect(list).toBeVisible();
+    await expect(list.locator("h1")).not.toBeVisible();
+  });
+
+  test("renders valid items and skips invalid ones without showing an error", async ({
+    page,
+    authenticatedContext: _authenticatedContext,
+  }) => {
+    const validTransaction = { ...BASE_TRANSACTION, id: "00000000-0000-0000-0000-000000000001", reference: "VALID-001" };
+    const invalidTransaction = { id: "not-a-uuid", reference: "INVALID" };
+    const response = {
+      meta: { ...PAGINATION_META, count: 2 },
+      results: [validTransaction, invalidTransaction],
+    };
+    await page.route("**/api/sdk/v1/transactions**", (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
+    );
+
+    await page.goto(routes.transaction);
+
+    const list = page.locator("u-transaction-list").first();
+    await expect(list).toBeVisible();
+    await expect(list.locator("h1")).not.toBeVisible();
   });
 
   test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
