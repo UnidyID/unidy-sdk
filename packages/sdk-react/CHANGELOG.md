@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.5.0...@unidy.io/sdk-react-v0.6.0) (2026-08-25)
+
+
+### Features
+
+* [UD-2324] support multiple OIDC providers via oidc_&lt;slug&gt; convention ([#314](https://github.com/UnidyID/unidy-sdk/issues/314)) ([14d1697](https://github.com/UnidyID/unidy-sdk/commit/14d1697be13538c4e02abd0f908dcef97deb47cc))
+* [UD-3079] Brand-aware login flow in the SDK ([#318](https://github.com/UnidyID/unidy-sdk/issues/318)) ([ccea1cd](https://github.com/UnidyID/unidy-sdk/commit/ccea1cd17b30a3fc8354d0bd2290bf34402d3175))
+
+
+### Bug Fixes
+
+* [UD-3428] Unify sdk-react token refresh into one single-flight with stale-failure guard ([#325](https://github.com/UnidyID/unidy-sdk/issues/325)) ([11105c9](https://github.com/UnidyID/unidy-sdk/commit/11105c93dc6c4103cbb9b254fdbea98ed13e7ea2))
+
 ## [0.5.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.4.0...@unidy.io/sdk-react-v0.5.0) (2026-08-06)
 
 
