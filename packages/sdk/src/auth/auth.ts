@@ -295,6 +295,8 @@ export class Auth {
     // Mark settled regardless of outcome — local state is already cleared.
     this.markReady();
 
+    document.dispatchEvent(new CustomEvent("unidySignOut", { bubbles: false }));
+
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);
     }
