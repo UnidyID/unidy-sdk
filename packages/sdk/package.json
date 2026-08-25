@@ -66,6 +66,7 @@
     "@types/bun": "latest",
     "@types/eventemitter3": "^2.0.4",
     "@types/events": "^3.0.3",
+    "@types/jest": "^29.5.14",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "baseline-browser-mapping": "^2.10.10",
