@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.11.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* [UD-3361] transaction list dead — widen line_items[].id and add per-row resilience ([#322](https://github.com/UnidyID/unidy-sdk/issues/322)) ([78f6a19](https://github.com/UnidyID/unidy-sdk/commit/78f6a19e50a027094e58ea37ed1af0ba5b902a1a))
+* dispatch DOM events for sign-out and session restore ([#321](https://github.com/UnidyID/unidy-sdk/issues/321)) ([3e98331](https://github.com/UnidyID/unidy-sdk/commit/3e98331142df434e55dfc66e591df4ef071e5fd3))
+
 ## [1.11.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.10.0...@unidy.io/sdk-v1.11.0) (2026-08-24)
 
 
