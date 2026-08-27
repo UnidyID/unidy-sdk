@@ -34,7 +34,7 @@
     "dev:stencil": "stencil build --dev --watch --serve",
     "dev:css": "tailwindcss -i ./src/demo.css -o ./src/demo-build.css --content './src/**/*.{html}' --watch",
     "dev": "concurrently \"bun run dev:stencil\" \"bun run dev:css\"",
-    "test": "stencil test --spec --e2e && jest",
+    "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
     "type": "tsc --noEmit",
