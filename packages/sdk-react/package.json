@@ -15,8 +15,10 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "license": "MIT",
   "files": [
-    "dist/"
+    "dist/",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
