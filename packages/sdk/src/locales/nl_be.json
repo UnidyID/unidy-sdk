@@ -220,7 +220,9 @@
     "actions": {
       "accept": "Accepteren",
       "cancel": "Overdracht annuleren",
-      "decline": "Weigeren"
+      "decline": "Weigeren",
+      "return": "Terugsturen naar eigenaar",
+      "revoke": "Overdracht intrekken"
     },
     "errors": {
       "feature_disabled": "Ticketoverdrachten zijn niet beschikbaar",
@@ -236,6 +238,7 @@
       "recipient_mismatch": "Dit overdrachtsaanbod is gericht aan een ander account",
       "ticket_already_transferred": "Dit ticket is al overgedragen",
       "ticket_not_active": "Dit ticket is niet actief",
+      "ticket_not_transferred": "Dit ticket is niet overgedragen",
       "transfer_already_pending": "Er is al een overdracht in behandeling voor dit ticket",
       "transfer_expired": "Dit overdrachtsaanbod is verlopen",
       "transfer_not_pending": "Dit overdrachtsaanbod is niet langer in behandeling"

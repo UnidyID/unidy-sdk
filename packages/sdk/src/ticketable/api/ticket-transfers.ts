@@ -2,9 +2,16 @@ import type { ApiResponse } from "../../api/base-client";
 import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api/base-service";
 
 // Re-export types for consumers importing from this module directly.
-export type { TicketTransfer, TicketTransferStatus, TicketTransfersListResponse } from "./schemas";
+export type { Ticket, TicketTransfer, TicketTransferStatus, TicketTransfersListResponse } from "./schemas";
 
-import { type TicketTransfer, TicketTransferSchema, type TicketTransfersListResponse, TicketTransfersListResponseSchema } from "./schemas";
+import {
+  type Ticket,
+  TicketSchema,
+  type TicketTransfer,
+  TicketTransferSchema,
+  type TicketTransfersListResponse,
+  TicketTransfersListResponseSchema,
+} from "./schemas";
 
 /**
  * Error identifiers the ticket transfer endpoints return in response bodies.
@@ -20,6 +27,7 @@ const TICKET_TRANSFER_ERROR_IDENTIFIERS = [
   "recipient_mismatch",
   "ticket_already_transferred",
   "ticket_not_active",
+  "ticket_not_transferred",
   "transfer_already_pending",
   "transfer_expired",
   "transfer_not_pending",
@@ -30,6 +38,7 @@ export type TicketTransferErrorIdentifier = (typeof TICKET_TRANSFER_ERROR_IDENTI
 // Argument types
 export type TicketTransferCreateArgs = { ticketId: string; recipientEmail: string };
 export type TicketTransferTokenArgs = { token: string };
+export type TicketTransferTicketArgs = { ticketId: string };
 
 // Result types
 export type TicketTransferError =
@@ -43,6 +52,8 @@ export type TicketTransferError =
 
 export type TicketTransfersListResult = TicketTransferError | [null, TicketTransfersListResponse];
 export type TicketTransferActionResult = TicketTransferError | [null, TicketTransfer];
+/** Result type for revoke/return — the backend returns the updated ticket, not a transfer object. */
+export type TicketTransferTicketActionResult = TicketTransferError | [null, Ticket];
 
 export class TicketTransfersService extends BaseService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
@@ -93,6 +104,41 @@ export class TicketTransfersService extends BaseService {
   /** Cancels a pending transfer offer previously sent by the authenticated user. */
   async cancel(args: TicketTransferTokenArgs): Promise<TicketTransferActionResult> {
     return this.postAction(`/api/sdk/v1/ticket_transfers/${args.token}/cancel`, {});
+  }
+
+  /** Owner pulls a transferred ticket back from its current holder. Returns the updated ticket. */
+  async revoke(args: TicketTransferTicketArgs): Promise<TicketTransferTicketActionResult> {
+    return this.postTicketAction(`/api/sdk/v1/tickets/${args.ticketId}/transfer/revoke`, {});
+  }
+
+  /** Holder returns a transferred ticket back to its owner. Returns the updated ticket. */
+  // eslint-disable-next-line no-restricted-syntax
+  async return(args: TicketTransferTicketArgs): Promise<TicketTransferTicketActionResult> {
+    return this.postTicketAction(`/api/sdk/v1/tickets/${args.ticketId}/transfer/return`, {});
+  }
+
+  private async postTicketAction(endpoint: string, body: object): Promise<TicketTransferTicketActionResult> {
+    const idToken = await this.resolveIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const response = await this.client.post<unknown>(endpoint, body, this.buildAuthHeaders({ "X-ID-Token": idToken }));
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        return this.errorIdentifierResult(response);
+      }
+
+      const parsed = TicketSchema.safeParse(response.data);
+      if (!parsed.success) {
+        this.logger.error("Invalid ticket response", parsed.error);
+        this.errorReporter.captureException(parsed.error, { endpoint });
+        return ["invalid_response", null];
+      }
+
+      return [null, parsed.data];
+    });
   }
 
   private async postAction(endpoint: string, body: object): Promise<TicketTransferActionResult> {

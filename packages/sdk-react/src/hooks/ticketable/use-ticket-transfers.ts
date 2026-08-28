@@ -1,4 +1,10 @@
-import type { TicketTransfer, TicketTransferActionResult, TicketTransfersListResult } from "@unidy.io/sdk/standalone";
+import type {
+  Ticket,
+  TicketTransfer,
+  TicketTransferActionResult,
+  TicketTransfersListResult,
+  TicketTransferTicketActionResult,
+} from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
@@ -18,7 +24,7 @@ export interface UseTicketTransfersReturn {
   /** Pending transfers sent by the authenticated user. */
   outgoing: TicketTransfer[];
   isLoading: boolean;
-  /** True while a create/accept/decline/cancel call is in flight. */
+  /** True while a create/accept/decline/cancel/revoke/return call is in flight. */
   isMutating: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -30,6 +36,10 @@ export interface UseTicketTransfersReturn {
   declineTransfer: (token: string) => Promise<TicketTransfer | null>;
   /** Cancels an outgoing transfer offer. Returns the updated transfer, or null on error. */
   cancelTransfer: (token: string) => Promise<TicketTransfer | null>;
+  /** Owner pulls a transferred ticket back from its current holder. Returns the updated ticket, or null on error. */
+  revokeTransfer: (ticketId: string) => Promise<Ticket | null>;
+  /** Holder returns a transferred ticket to its owner. Returns the updated ticket, or null on error. */
+  returnTransfer: (ticketId: string) => Promise<Ticket | null>;
 }
 
 // --- Reducer ---
@@ -149,6 +159,37 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
     [fetchTransfers],
   );
 
+  const runTicketMutation = useCallback(
+    async (sdkCall: () => Promise<TicketTransferTicketActionResult>): Promise<Ticket | null> => {
+      let ticket: Ticket | null = null;
+
+      const safeCall = async (): Promise<TicketTransferTicketActionResult> => {
+        try {
+          return await sdkCall();
+        } catch {
+          return ["internal_error", null];
+        }
+      };
+
+      const ok = await runMutation(safeCall, {
+        onMutate: () => dispatch({ type: "mutate_start" }),
+        onSuccess: (data) => {
+          ticket = data;
+          dispatch({ type: "mutate_success" });
+        },
+        onError: (errorCode) => {
+          dispatch({ type: "mutate_error", error: errorCode });
+          optionsRef.current.callbacks?.onError?.(errorCode);
+        },
+      });
+
+      if (!ok) return null;
+      await fetchTransfers();
+      return ticket;
+    },
+    [fetchTransfers],
+  );
+
   const createTransfer = useCallback(
     (ticketId: string, recipientEmail: string) => runTransferMutation(() => client.ticketTransfers.create({ ticketId, recipientEmail })),
     [client, runTransferMutation],
@@ -169,6 +210,16 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
     [client, runTransferMutation],
   );
 
+  const revokeTransfer = useCallback(
+    (ticketId: string) => runTicketMutation(() => client.ticketTransfers.revoke({ ticketId })),
+    [client, runTicketMutation],
+  );
+
+  const returnTransfer = useCallback(
+    (ticketId: string) => runTicketMutation(() => client.ticketTransfers.return({ ticketId })),
+    [client, runTicketMutation],
+  );
+
   return {
     incoming: state.incoming,
     outgoing: state.outgoing,
@@ -180,5 +231,7 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
     acceptTransfer,
     declineTransfer,
     cancelTransfer,
+    revokeTransfer,
+    returnTransfer,
   };
 }
