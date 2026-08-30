@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Listen, Prop, State, Watch } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
@@ -65,6 +65,14 @@ export class TicketableList extends UnidyComponent() {
     ticketableType?: TicketableType;
     error: string;
   }>;
+
+  /** Refetch when a revoke or return action inside this list succeeds — ownership changed, so the ticket list is stale. */
+  @Listen("uTicketTransferActionSuccess")
+  async handleTransferActionSuccess(event: CustomEvent<{ action: string }>) {
+    if (this.ticketableType === "ticket" && (event.detail.action === "revoke" || event.detail.action === "return")) {
+      await this.loadData();
+    }
+  }
 
   @Watch("page")
   @Watch("limit")
