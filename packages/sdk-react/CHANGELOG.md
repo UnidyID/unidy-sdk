@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.6.0...@unidy.io/sdk-react-v0.7.0) (2026-09-01)
+
+
+### Features
+
+* expose ticket-transfer revoke and return flow in client SDK ([#331](https://github.com/UnidyID/unidy-sdk/issues/331)) ([53ba5ac](https://github.com/UnidyID/unidy-sdk/commit/53ba5ac2457cec872771f1dca66c9709ce302c9a))
+
 ## [0.6.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.5.0...@unidy.io/sdk-react-v0.6.0) (2026-08-24)
 
 
