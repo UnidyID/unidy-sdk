@@ -235,7 +235,9 @@
     "actions": {
       "accept": "Accept",
       "cancel": "Cancel transfer",
-      "decline": "Decline"
+      "decline": "Decline",
+      "return": "Return to owner",
+      "revoke": "Revoke transfer"
     },
     "errors": {
       "feature_disabled": "Ticket transfers are not available",
@@ -251,6 +253,7 @@
       "recipient_mismatch": "This transfer offer is addressed to a different account",
       "ticket_already_transferred": "This ticket has already been transferred",
       "ticket_not_active": "This ticket is not active",
+      "ticket_not_transferred": "This ticket has not been transferred",
       "transfer_already_pending": "A transfer offer is already pending for this ticket",
       "transfer_expired": "This transfer offer has expired",
       "transfer_not_pending": "This transfer offer is no longer pending"

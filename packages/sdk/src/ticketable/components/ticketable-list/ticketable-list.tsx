@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Listen, Prop, State, Watch } from "@stencil/core";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
@@ -10,6 +10,11 @@ import { createPaginationStore, type PaginationStore } from "../../../shared/sto
 import { waitForConfig } from "../../../shared/store/unidy-store";
 import type { Subscription } from "../../api/subscriptions";
 import type { Ticket } from "../../api/tickets";
+
+/** Returns true when a ticket is currently held by another user (transferred-away state). */
+function isTransferredAway(item: Ticket): boolean {
+  return item.holder_id != null && item.holder_id !== item.user_id;
+}
 
 export type TicketableType = "ticket" | "subscription";
 export type TicketableItem = Ticket | Subscription;
@@ -60,6 +65,14 @@ export class TicketableList extends UnidyComponent() {
     ticketableType?: TicketableType;
     error: string;
   }>;
+
+  /** Refetch when a revoke or return action inside this list succeeds — ownership changed, so the ticket list is stale. */
+  @Listen("uTicketTransferActionSuccess")
+  async handleTransferActionSuccess(event: CustomEvent<{ action: string }>) {
+    if (this.ticketableType === "ticket" && (event.detail.action === "revoke" || event.detail.action === "return")) {
+      await this.loadData();
+    }
+  }
 
   @Watch("page")
   @Watch("limit")
@@ -201,7 +214,10 @@ export class TicketableList extends UnidyComponent() {
           if (item) {
             exportEl.setAttribute("data-ticketable-id", item.id);
             exportEl.setAttribute("data-ticketable-type", ticketableType);
-            exportEl.setAttribute("exportable", item.exportable_to_wallet ? "true" : "false");
+            // Never show QR/wallet/PDF for transferred-away tickets — the API
+            // returns null for wallet_export/metadata while someone else holds it.
+            const transferredAway = ticketableType === "ticket" && isTransferredAway(item as Ticket);
+            exportEl.setAttribute("exportable", !transferredAway && item.exportable_to_wallet ? "true" : "false");
           } else {
             exportEl.setAttribute("exportable", "false");
           }
@@ -213,6 +229,14 @@ export class TicketableList extends UnidyComponent() {
               transferEl.setAttribute("ticket-id", item.id);
             } else {
               transferEl.setAttribute("disabled", "true");
+            }
+          }
+          // Stamp ticket-id for revoke/return action buttons inside ticket templates.
+          for (const actionEl of fragment.querySelectorAll("u-ticket-transfer-action")) {
+            if (item) {
+              actionEl.setAttribute("ticket-id", item.id);
+            } else {
+              actionEl.setAttribute("disabled", "true");
             }
           }
         }

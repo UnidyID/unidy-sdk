@@ -31,6 +31,8 @@ export type {
   TicketTransfer,
   TicketTransferStatus,
   TicketTransfersListResponse,
+  TicketTransferTicketActionResult,
+  TicketTransferTicketArgs,
   TokenResponse,
   Transaction,
   TransactionLineItem,

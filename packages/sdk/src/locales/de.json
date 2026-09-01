@@ -233,7 +233,9 @@
     "actions": {
       "accept": "Annehmen",
       "cancel": "Übertragung stornieren",
-      "decline": "Ablehnen"
+      "decline": "Ablehnen",
+      "return": "An Besitzer zurückgeben",
+      "revoke": "Übertragung widerrufen"
     },
     "errors": {
       "feature_disabled": "Ticket-Übertragungen sind nicht verfügbar",
@@ -249,6 +251,7 @@
       "recipient_mismatch": "Dieses Übertragungsangebot ist an ein anderes Konto gerichtet",
       "ticket_already_transferred": "Dieses Ticket wurde bereits übertragen",
       "ticket_not_active": "Dieses Ticket ist nicht aktiv",
+      "ticket_not_transferred": "Dieses Ticket wurde nicht übertragen",
       "transfer_already_pending": "Für dieses Ticket steht bereits eine Übertragung aus",
       "transfer_expired": "Dieses Übertragungsangebot ist abgelaufen",
       "transfer_not_pending": "Dieses Übertragungsangebot ist nicht mehr ausstehend"

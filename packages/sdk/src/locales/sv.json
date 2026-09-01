@@ -227,7 +227,9 @@
     "actions": {
       "accept": "Acceptera",
       "cancel": "Avbryt överföring",
-      "decline": "Avböj"
+      "decline": "Avböj",
+      "return": "Återlämna till ägaren",
+      "revoke": "Återkalla överlåtelse"
     },
     "errors": {
       "feature_disabled": "Biljettöverföringar är inte tillgängliga",
@@ -243,6 +245,7 @@
       "recipient_mismatch": "Det här överföringserbjudandet är riktat till ett annat konto",
       "ticket_already_transferred": "Den här biljetten har redan överförts",
       "ticket_not_active": "Den här biljetten är inte aktiv",
+      "ticket_not_transferred": "Denna biljett har inte överförts",
       "transfer_already_pending": "En överföring väntar redan för den här biljetten",
       "transfer_expired": "Det här överföringserbjudandet har gått ut",
       "transfer_not_pending": "Det här överföringserbjudandet väntar inte längre"
