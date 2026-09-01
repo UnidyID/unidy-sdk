@@ -1316,6 +1316,25 @@ const client = createStandaloneClient({
 const [error, newsletters] = await client.newsletters.listAll();
 ```
 
+#### Brand Connections API
+
+Authenticated browser, standalone, and React clients expose `brandConnections`. Every method returns the SDK's `[error, data]` tuple and sends the ID token supplied by the client's authentication dependencies.
+
+```javascript
+const [listError, brands] = await client.brandConnections.list();
+
+if (!listError) {
+  const availableBrand = brands.find((brand) => brand.connectable);
+  if (availableBrand) {
+    const [connectError, connectedBrand] = await client.brandConnections.connect({ brandId: availableBrand.id });
+  }
+}
+
+const [disconnectError] = await client.brandConnections.disconnect({ brandId: 42 });
+```
+
+Each brand includes identity and theming fields plus `current`, `default`, `connected`, `connectable`, and `disconnectable` booleans. Known API error identifiers, such as `brand_already_connected` and `protected_brand_cannot_be_disconnected`, are returned as the tuple's first value.
+
 ### Types
 
 #### `TokenPayload`
