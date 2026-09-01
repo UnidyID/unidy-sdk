@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.12.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.12.0) (2026-09-01)
+
+
+### Features
+
+* expose ticket-transfer revoke and return flow in client SDK ([#331](https://github.com/UnidyID/unidy-sdk/issues/331)) ([53ba5ac](https://github.com/UnidyID/unidy-sdk/commit/53ba5ac2457cec872771f1dca66c9709ce302c9a))
+
+
+### Bug Fixes
+
+* [UD-3361] transaction list dead — widen line_items[].id and add per-row resilience ([#322](https://github.com/UnidyID/unidy-sdk/issues/322)) ([37daeef](https://github.com/UnidyID/unidy-sdk/commit/37daeef3433d4864576641a4ecb5b93b55961e0e))
+* dispatch DOM events for sign-out and session restore ([#321](https://github.com/UnidyID/unidy-sdk/issues/321)) ([d05fee3](https://github.com/UnidyID/unidy-sdk/commit/d05fee30517628d2334b42a9529f2274b2743135))
+
 ## [1.11.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.10.0...@unidy.io/sdk-v1.11.0) (2026-08-24)
 
 
