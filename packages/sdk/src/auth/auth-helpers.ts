@@ -16,6 +16,7 @@ import { state as profileState } from "../profile/store/profile-store";
 import { captchaManager, isCaptchaError } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/utils/url-utils";
+import type { InvalidPasswordResponse } from "./api";
 import type { TokenPayload } from "./auth";
 import { authenticateWithPasskey } from "./passkey-auth";
 
@@ -450,7 +451,7 @@ export class AuthHelpers {
     authStore.setLoading(false);
   }
 
-  async resetPassword() {
+  async resetPassword(autoLogin = false) {
     if (!authState.resetPassword.token) {
       throw new Error("No reset token available");
     }
@@ -477,6 +478,7 @@ export class AuthHelpers {
       payload: {
         password: authState.resetPassword.newPassword,
         passwordConfirmation: authState.resetPassword.passwordConfirmation,
+        autoLogin,
       },
     });
 
@@ -487,11 +489,12 @@ export class AuthHelpers {
       if (error === "invalid_password") {
         authStore.setFieldError(
           "password",
-          response.error_details?.password?.map((p) => t(`errors.password_requirements.${p}`)).join("\n"),
+          (response as InvalidPasswordResponse).error_details?.password?.map((p) => t(`errors.password_requirements.${p}`)).join("\n"),
         );
       }
+
+      authStore.setLoading(false);
     } else {
-      authStore.setStep("email");
       authStore.updateResetPassword({
         step: "completed",
         token: null,
@@ -500,10 +503,15 @@ export class AuthHelpers {
       });
 
       clearUrlParam("reset_password_token");
-      Flash.success.addMessage("Password reset successfully");
-    }
 
-    authStore.setLoading(false);
+      if (autoLogin && response) {
+        this.handleAuthSuccess(response as TokenResponse);
+      } else {
+        authStore.setStep("email");
+        authStore.setLoading(false);
+        Flash.success.addMessage("Password reset successfully");
+      }
+    }
   }
 
   async handleInvitationRedirect() {

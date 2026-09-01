@@ -46,7 +46,7 @@ export type AuthenticateWithMagicCodeArgs = { signInId: string } & Payload<{ cod
 export type UpdateMissingFieldsArgs = { signInId: string } & Payload<{ user: Record<string, any> }>;
 export type RefreshTokenArgs = { signInId: string; refreshToken: string };
 export type SendResetPasswordEmailArgs = { signInId: string } & Payload<{ returnTo: string }>;
-export type ResetPasswordArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string }>;
+export type ResetPasswordArgs = { signInId: string; token: string } & Payload<{ password: string; passwordConfirmation: string; autoLogin?: boolean }>;
 export type ValidateResetPasswordTokenArgs = { signInId: string; token: string };
 export type SignOutArgs = { signInId: string; globalLogout?: boolean };
 export type GetPasskeyOptionsArgs = { signInId?: string };
@@ -125,7 +125,7 @@ export type ResetPasswordResult =
   | ["invalid_reset_token", ErrorResponse]
   | ["reset_token_expired", ErrorResponse]
   | ["invalid_password", InvalidPasswordResponse]
-  | [null, null];
+  | [null, TokenResponse | null];
 
 export type ValidateResetPasswordTokenResult =
   | CommonErrors
@@ -457,6 +457,7 @@ export async function resetPassword(
     token,
     password: payload.password,
     password_confirmation: payload.passwordConfirmation,
+    auto_login: payload.autoLogin,
   });
 
   return handleResponse(response, () => {
@@ -470,7 +471,7 @@ export async function resetPassword(
       return [error_response.error_identifier as "reset_token_missing" | "invalid_reset_token" | "reset_token_expired", error_response];
     }
 
-    return [null, null];
+    return [null, TokenResponseSchema.safeParse(response.data).data ?? null];
   });
 }
 

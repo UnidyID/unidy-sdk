@@ -999,6 +999,11 @@ export namespace Components {
           * @default false
          */
         "alwaysRender": boolean;
+        /**
+          * If true, the user will be automatically logged in after a successful password reset. Only applies when name="reset-password".
+          * @default false
+         */
+        "autoLogin": boolean;
         "isActive": () => Promise<boolean>;
         /**
           * The name of this step in the sign-in flow.
@@ -3007,6 +3012,11 @@ declare namespace LocalJSX {
          */
         "alwaysRender"?: boolean;
         /**
+          * If true, the user will be automatically logged in after a successful password reset. Only applies when name="reset-password".
+          * @default false
+         */
+        "autoLogin"?: boolean;
+        /**
           * The name of this step in the sign-in flow.
          */
         "name": | "email"
@@ -3621,6 +3631,7 @@ declare namespace LocalJSX {
     | "unconfirmed"
     | "invited";
         "alwaysRender": boolean;
+        "autoLogin": boolean;
     }
     interface USocialLoginButtonAttributes {
         "provider": SocialLoginProvider;
