@@ -61,10 +61,13 @@ export class EmailField extends UnidyComponent() {
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
 
-    if (this.store.state.email === "") return;
+    if (this.context === "auth") {
+      if (this.store.state.email === "") return;
+      return await findParentSigninStep(this.element)?.submit();
+    }
 
-    if (this.context === "auth") return await findParentSigninStep(this.element)?.submit();
-
+    // Newsletter root validates the email itself and surfaces `email_required` inline,
+    // so an empty submit must reach it instead of being swallowed here (UD-3082).
     if (this.context === "newsletter") return await findParentNewsletterRoot(this.element)?.submit();
   };
 

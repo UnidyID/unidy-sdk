@@ -4,6 +4,7 @@ export type NewsletterErrorIdentifier =
   | "unconfirmed"
   | "already_subscribed"
   | "consent_required"
+  | "email_required"
   | "invalid_email"
   | "newsletter_not_found"
   | "preferences_not_found"

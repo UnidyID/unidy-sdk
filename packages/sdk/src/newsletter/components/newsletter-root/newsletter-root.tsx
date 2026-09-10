@@ -85,7 +85,10 @@ export class NewsletterRoot extends UnidyComponent() {
     // Check email first for better UX
     if (!email) {
       logger.error("Email is required");
-      Flash.error.addMessage(t("newsletter.errors.email_required"));
+      newsletterStore.state.errors = {
+        ...newsletterStore.state.errors,
+        email: "email_required",
+      };
       this.uNewsletterError.emit({ email: "", error: "email_required" });
       return;
     }
