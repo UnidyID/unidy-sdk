@@ -89,6 +89,7 @@ export class NewsletterRoot extends UnidyComponent() {
         ...newsletterStore.state.errors,
         email: "email_required",
       };
+      Flash.error.addMessage(t("newsletter.errors.email_required"));
       this.uNewsletterError.emit({ email: "", error: "email_required" });
       return;
     }
