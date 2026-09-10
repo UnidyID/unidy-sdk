@@ -3,6 +3,14 @@
 // Re-export commonly needed SDK types
 export type {
   CheckConsentResponse,
+  BrandConnection,
+  BrandConnectionArgs,
+  BrandConnectionCreateResult,
+  BrandConnectionDestroyResult,
+  BrandConnectionError,
+  BrandConnectionErrorIdentifier,
+  BrandConnectionErrorResponse,
+  BrandConnectionsListResult,
   ConnectRequest,
   CreateSignInResponse,
   CreateSubscriptionsPayload,
