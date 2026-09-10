@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.12.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* [UD-3082] surface email required error on empty newsletter submit ([#333](https://github.com/UnidyID/unidy-sdk/issues/333)) ([653f05a](https://github.com/UnidyID/unidy-sdk/commit/653f05a210772963915bc9c5b9e81d4a5c1cce68))
+
 ## [1.12.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.12.0) (2026-09-01)
 
 
