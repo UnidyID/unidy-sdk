@@ -26,6 +26,49 @@ function mockRefreshSuccess(page: import("@playwright/test").Page) {
   });
 }
 
+test.describe("authEvent DOM fallback (no u-signin-root)", () => {
+  test("dispatches authEvent on document when session is restored on a page without u-signin-root", async ({ page }) => {
+    // Profile page has u-config check-signed-in="true" but no u-signin-root,
+    // so handleAuthSuccess falls back to dispatching authEvent on document.
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/signed_in/, (route) => {
+      if (route.request().method() === "GET") {
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: "new-refresh-token" }),
+        });
+      } else {
+        route.fallback();
+      }
+    });
+
+    // Also stub the profile API so the page doesn't error visibly
+    await page.route(/\/api\/sdk\/v1\/users\/me/, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({}) }),
+    );
+
+    // addInitScript survives navigation; page.evaluate before goto would be destroyed.
+    await page.addInitScript(() => {
+      (window as unknown as Record<string, unknown>).__authEventFired = false;
+      document.addEventListener(
+        "authEvent",
+        () => {
+          (window as unknown as Record<string, unknown>).__authEventFired = true;
+        },
+        { once: true },
+      );
+    });
+
+    await page.goto("/profile");
+
+    const eventFired = await page
+      .waitForFunction(() => (window as unknown as Record<string, unknown>).__authEventFired, { timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
+    expect(eventFired).toBe(true);
+  });
+});
+
 test.describe("Session restore on init", () => {
   test("uses refresh token to restore session when access token is expired, without calling /signed_in", async ({ page }) => {
     // Seed expired access token + valid refresh token before the SDK initialises
@@ -92,6 +135,61 @@ test.describe("Session restore on init", () => {
     await expect(page.getByTestId("signed.in.view")).toBeVisible();
     expect(refreshCalled).toBe(true);
     expect(signedInCalled).toBe(false);
+  });
+
+  test("concurrent getToken callers share one refresh and a stale failure does not clear the rotated token", async ({ page }) => {
+    await page.addInitScript(
+      ({ signInId, refreshToken }) => {
+        localStorage.setItem("unidy_signin_id", signInId);
+        localStorage.setItem("unidy_refresh_token", refreshToken);
+      },
+      { signInId: SIGN_IN_ID, refreshToken: REFRESH_TOKEN },
+    );
+
+    // Refresh tokens rotate server-side: one success per rotation (init restore + the
+    // concurrent batch below), any duplicate concurrent request gets a permanent 401
+    // that used to wipe the whole auth store (the UD-3406 race).
+    let refreshCalls = 0;
+    await page.route(/\/api\/sdk\/v1\/sign_ins\/.*\/refresh_token/, (route) => {
+      if (route.request().method() !== "POST") return route.fallback();
+
+      refreshCalls += 1;
+      if (refreshCalls <= 2) {
+        route.fulfill({
+          status: 201,
+          contentType: "application/json",
+          body: JSON.stringify({ jwt: FRESH_JWT, refresh_token: `rotated-refresh-token-${refreshCalls}` }),
+        });
+      } else {
+        route.fulfill({
+          status: 401,
+          contentType: "application/json",
+          body: JSON.stringify({ error_identifier: "invalid_refresh_token" }),
+        });
+      }
+    });
+
+    await page.goto(routes.auth);
+    await expect(page.getByTestId("signed.in.view")).toBeVisible();
+    expect(refreshCalls).toBe(1);
+
+    // Same pattern as the WordPress plugin overlay: import the SDK module directly and
+    // call getToken() from several places at once while the access token is expired.
+    await page.evaluate(
+      async ({ expiredJwt }) => {
+        const sdk = await import(new URL("/build/index.esm.js", location.origin).href);
+        sdk.authStore.setToken(expiredJwt);
+        const auth = await sdk.Auth.getInstance();
+        await Promise.all([auth.getToken(), auth.getToken(), auth.getToken()]);
+      },
+      { expiredJwt: EXPIRED_JWT },
+    );
+
+    expect(refreshCalls).toBe(2);
+    await expect(page.getByTestId("signed.in.view")).toBeVisible();
+
+    const storedRefreshToken = await page.evaluate(() => localStorage.getItem("unidy_refresh_token"));
+    expect(storedRefreshToken).toBe("rotated-refresh-token-2");
   });
 
   test("does not treat an expired token as valid when the refresh fails with a network error", async ({ page }) => {

@@ -1,7 +1,8 @@
 import { createStore } from "@stencil/store";
+import { jwtDecode } from "jwt-decode";
 import { unidyState } from "../../shared/store/unidy-store";
-import type { LoginOptions, RequiredFieldsResponse } from "../api/auth";
-import { Auth } from "../auth";
+import type { Brand, LoginOptions, RequiredFieldsResponse } from "../api/auth";
+import { Auth, DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS } from "../auth";
 import type { SigninRoot } from "../components/signin-root/signin-root";
 
 export type AuthStep =
@@ -15,6 +16,11 @@ export type AuthStep =
   | "single-login"
   | "unconfirmed"
   | "invited";
+
+interface PersistedBrands {
+  sid: string | null;
+  brands: Brand[];
+}
 
 export interface AuthState {
   step: AuthStep;
@@ -37,6 +43,8 @@ export interface AuthState {
   };
   missingRequiredFields?: RequiredFieldsResponse["fields"];
   availableLoginOptions: LoginOptions | null;
+  /** Brands the user is connected to that this API key is authorized for, current brand first. */
+  brands: Brand[];
 
   loading: boolean;
   errors: Record<"email" | "password" | "magicCode" | "resetPassword" | "invitation" | "passkey", string | null>;
@@ -64,6 +72,7 @@ const SESSION_KEYS = {
   STEP_HISTORY: "unidy_step_history",
   LOGIN_OPTIONS: "unidy_login_options",
   MAGIC_CODE_STEP: "unidy_magic_code_step",
+  BRANDS: "unidy_brands",
 } as const;
 
 const saveToStorage = (storage: Storage, key: string, value: string | null) => {
@@ -92,6 +101,15 @@ const saveJsonToStorage = <T>(storage: Storage, key: string, value: T | null) =>
   }
 };
 
+const isUsableJwt = (token: string): boolean => {
+  try {
+    const { exp } = jwtDecode<{ exp?: number }>(token);
+    return typeof exp === "number" && exp > Date.now() / 1000 + DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS;
+  } catch {
+    return false;
+  }
+};
+
 const RECOVERABLE_STEPS: AuthStep[] = ["verification", "magic-code", "missing-fields"];
 
 const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
@@ -101,7 +119,13 @@ const isRecoverableStep = (step: AuthStep | undefined): step is AuthStep => {
 const storedStep = localStorage.getItem(SESSION_KEYS.STEP) as AuthStep | null;
 const storedStepHistory = loadJsonFromStorage<AuthStep[]>(localStorage, SESSION_KEYS.STEP_HISTORY);
 const storedLoginOptions = loadJsonFromStorage<LoginOptions>(localStorage, SESSION_KEYS.LOGIN_OPTIONS);
+const storedSid = localStorage.getItem(SESSION_KEYS.SID);
+const storedBrands = loadJsonFromStorage<PersistedBrands>(localStorage, SESSION_KEYS.BRANDS);
 const storedMagicCodeStep = localStorage.getItem(SESSION_KEYS.MAGIC_CODE_STEP) as AuthState["magicCodeStep"];
+
+// Brands describe one specific sign-in, so they are only restored while that sign-in is being
+// resumed - never for a fresh lookup or a redirect that started a new one.
+const recoverableBrands = isRecoverableStep(storedStep) && storedBrands?.sid && storedBrands.sid === storedSid ? storedBrands.brands : [];
 
 const initialState: AuthState = {
   step: undefined,
@@ -120,7 +144,7 @@ const initialState: AuthState = {
     newPassword: "",
     passwordConfirmation: "",
   },
-  sid: localStorage.getItem(SESSION_KEYS.SID),
+  sid: storedSid,
   loading: false,
   errors: {
     email: null,
@@ -140,6 +164,7 @@ const initialState: AuthState = {
     social_logins: [],
     passkey: true,
   },
+  brands: recoverableBrands,
   token: sessionStorage.getItem(SESSION_KEYS.TOKEN),
   refreshToken: localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN),
   backendSignedIn: false,
@@ -197,6 +222,21 @@ class AuthStore {
   setLoginOptions(availableLoginOptions: LoginOptions) {
     state.availableLoginOptions = availableLoginOptions;
     saveJsonToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, availableLoginOptions);
+  }
+
+  setBrands(brands: Brand[]) {
+    state.brands = brands;
+    saveJsonToStorage(localStorage, SESSION_KEYS.BRANDS, brands.length > 0 ? { sid: state.sid, brands } : null);
+  }
+
+  /** The brand matching the host the SDK is pointed at, if the user is connected to it. */
+  get currentBrand(): Brand | null {
+    return state.brands.find((brand) => brand.current) ?? null;
+  }
+
+  /** Brands the user can switch to — everything except the one they are already on. */
+  get otherBrands(): Brand[] {
+    return state.brands.filter((brand) => !brand.current);
   }
 
   setLoading(loading: boolean) {
@@ -283,6 +323,10 @@ class AuthStore {
   }
 
   setSignInId(signInId: string) {
+    // A social-auth redirect can start a new sign-in without a fresh lookup, which would otherwise
+    // leave the previous one's brands on display.
+    if (state.sid !== signInId) this.setBrands([]);
+
     state.sid = signInId;
     saveToStorage(localStorage, SESSION_KEYS.SID, signInId);
   }
@@ -300,6 +344,34 @@ class AuthStore {
   setRefreshToken(refreshToken: string | null) {
     state.refreshToken = refreshToken;
     saveToStorage(localStorage, SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+  }
+
+  /** Refresh token as persisted in localStorage — may be newer than in-memory state when another SDK copy or tab rotated it. */
+  getPersistedRefreshToken(): string | null {
+    return localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
+  }
+
+  /**
+   * Adopts tokens persisted by a concurrent refresh (another SDK copy or tab) into in-memory state.
+   * The access token only exists here for a same-tab SDK copy — sessionStorage is per-tab, so a
+   * cross-tab rotation leaves it absent (or expired) and only the refresh token is adopted.
+   *
+   * @returns whether a still-valid access token was adopted.
+   */
+  syncPersistedTokens(): boolean {
+    const sid = localStorage.getItem(SESSION_KEYS.SID);
+    if (sid) state.sid = sid;
+
+    state.refreshToken = localStorage.getItem(SESSION_KEYS.REFRESH_TOKEN);
+
+    const token = sessionStorage.getItem(SESSION_KEYS.TOKEN);
+    if (token && isUsableJwt(token)) {
+      state.token = token;
+      this.setAuthenticated(true);
+      return true;
+    }
+
+    return false;
   }
 
   setEnableResendAfter(seconds: number) {
@@ -369,6 +441,7 @@ class AuthStore {
     saveJsonToStorage(localStorage, SESSION_KEYS.STEP_HISTORY, null);
     saveToStorage(localStorage, SESSION_KEYS.LOGIN_OPTIONS, null);
     saveToStorage(localStorage, SESSION_KEYS.MAGIC_CODE_STEP, null);
+    saveToStorage(localStorage, SESSION_KEYS.BRANDS, null);
   }
 
   getPendingRecoveryStep(): AuthStep | null {

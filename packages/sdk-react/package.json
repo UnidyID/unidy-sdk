@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk-react",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UnidyID/unidy-sdk.git",
@@ -15,11 +15,14 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "license": "MIT",
   "files": [
-    "dist/"
+    "dist/",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
+    "test": "bun test src",
     "build:demo": "bun run --cwd ../sdk scripts/generate-version.ts && bun run --cwd ../sdk build:standalone && vite build demo",
     "dev": "vite demo"
   },

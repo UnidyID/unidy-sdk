@@ -19,7 +19,7 @@ const ICON_MAP = {
   facebook: () => <FacebookLogo className="u:w-6 u:h-6 u:block" />,
 } as const;
 
-type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
+type SocialLoginProvider = keyof typeof ICON_MAP | "unidy" | `oidc_${string}`;
 
 @Component({
   tag: "u-social-login-button",
@@ -27,7 +27,7 @@ type SocialLoginProvider = keyof typeof ICON_MAP | "unidy";
   shadow: false,
 })
 export class SocialLoginButton extends UnidyComponent() {
-  /** The OAuth provider (google, linkedin, apple, discord, facebook, or unidy). */
+  /** The OAuth provider (google, linkedin, apple, discord, facebook, unidy, or oidc_<slug> for OpenID Connect providers). */
   @Prop() provider: SocialLoginProvider = "google";
   /** The URL to redirect to after authentication. Defaults to current page. */
   @Prop() redirectUri: string = window.location.href;
@@ -44,7 +44,7 @@ export class SocialLoginButton extends UnidyComponent() {
   }
 
   private get isUnsupportedProvider(): boolean {
-    return !Object.hasOwn(ICON_MAP, this.provider) && this.provider !== "unidy";
+    return !Object.hasOwn(ICON_MAP, this.provider) && this.provider !== "unidy" && !this.provider.startsWith("oidc_");
   }
 
   private get isProviderEnabled(): boolean {
@@ -56,7 +56,7 @@ export class SocialLoginButton extends UnidyComponent() {
       return false;
     }
 
-    return authState.availableLoginOptions.social_logins.some((enabled) => enabled.startsWith(this.provider) || enabled === this.provider);
+    return authState.availableLoginOptions.social_logins.includes(this.provider);
   }
 
   private isInsideRegistrationRoot(): boolean {
@@ -89,6 +89,21 @@ export class SocialLoginButton extends UnidyComponent() {
       return null;
     }
 
+    const iconUrl = authState.availableLoginOptions?.social_login_icons?.[this.provider];
+    if (iconUrl) {
+      return <img src={iconUrl} alt="" class={SHARED_ICON_CLASSNAME} />;
+    }
+
+    if (this.provider.startsWith("oidc_")) {
+      if (this.iconOnly) {
+        const customLabel = authState.availableLoginOptions?.social_login_labels?.[this.provider];
+        const slug = this.provider.slice(5);
+        const abbreviation = (customLabel ?? slug).slice(0, 2).toUpperCase();
+        return <span class="u:text-xs u:font-bold">{abbreviation}</span>;
+      }
+      return null;
+    }
+
     return ICON_MAP[this.provider]();
   }
 
@@ -108,7 +123,8 @@ export class SocialLoginButton extends UnidyComponent() {
       return null;
     }
 
-    const providerName = this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
+    const customLabel = authState.availableLoginOptions?.social_login_labels?.[this.provider];
+    const providerName = customLabel ?? this.provider.charAt(0).toUpperCase() + this.provider.slice(1);
     const text = t("auth.socialLogin.button_text", {
       defaultValue: "Continue with {{provider}}",
       provider: providerName,

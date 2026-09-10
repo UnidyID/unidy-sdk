@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.12.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.12.0) (2026-09-01)
+
+
+### Features
+
+* expose ticket-transfer revoke and return flow in client SDK ([#331](https://github.com/UnidyID/unidy-sdk/issues/331)) ([53ba5ac](https://github.com/UnidyID/unidy-sdk/commit/53ba5ac2457cec872771f1dca66c9709ce302c9a))
+
+
+### Bug Fixes
+
+* [UD-3361] transaction list dead — widen line_items[].id and add per-row resilience ([#322](https://github.com/UnidyID/unidy-sdk/issues/322)) ([37daeef](https://github.com/UnidyID/unidy-sdk/commit/37daeef3433d4864576641a4ecb5b93b55961e0e))
+* dispatch DOM events for sign-out and session restore ([#321](https://github.com/UnidyID/unidy-sdk/issues/321)) ([d05fee3](https://github.com/UnidyID/unidy-sdk/commit/d05fee30517628d2334b42a9529f2274b2743135))
+
+## [1.11.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.10.0...@unidy.io/sdk-v1.11.0) (2026-08-24)
+
+
+### Features
+
+* [UD-2324] support multiple OIDC providers via oidc_&lt;slug&gt; convention ([#314](https://github.com/UnidyID/unidy-sdk/issues/314)) ([14d1697](https://github.com/UnidyID/unidy-sdk/commit/14d1697be13538c4e02abd0f908dcef97deb47cc))
+* [UD-3079] Brand-aware login flow in the SDK ([#318](https://github.com/UnidyID/unidy-sdk/issues/318)) ([ccea1cd](https://github.com/UnidyID/unidy-sdk/commit/ccea1cd17b30a3fc8354d0bd2290bf34402d3175))
+
+
+### Bug Fixes
+
+* [UD-3406] Prevent concurrent session refresh race from clearing the refresh token ([#324](https://github.com/UnidyID/unidy-sdk/issues/324)) ([14e600c](https://github.com/UnidyID/unidy-sdk/commit/14e600cdb2e66a5e55bdd7ba44f5428897ffe8fa))
+
 ## [1.10.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.9.0...@unidy.io/sdk-v1.10.0) (2026-08-06)
 
 

@@ -46,6 +46,7 @@ export type {
 // Re-export schema types for external use
 export type {
   AccountUnconfirmedResponse,
+  Brand,
   BrandConnectionRequiredResponse,
   CreateSignInResponse,
   ErrorResponse,

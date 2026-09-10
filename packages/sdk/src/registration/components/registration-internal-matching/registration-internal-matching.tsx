@@ -158,6 +158,11 @@ export class RegistrationInternalMatching extends UnidyComponent(HasSlotContent)
       return;
     }
 
+    if (outcome.status === "rate_limited") {
+      this.setError(t("registration.internal_matching.error_rate_limited"));
+      return;
+    }
+
     if (outcome.status === "not_found") {
       this.setError(t("registration.internal_matching.error_no_match"));
       return;

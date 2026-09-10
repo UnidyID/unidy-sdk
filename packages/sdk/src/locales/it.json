@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Continua su {{brand}}",
+      "other_accounts": "I tuoi altri account"
+    },
     "email": {
       "placeholder": "Inserisci la tua email"
     },
@@ -213,6 +217,7 @@
       "error_match_mismatch": "Le informazioni inserite non corrispondono ad alcun account. Verifica i tuoi dati e riprova.",
       "error_match_not_found": "Nessun account trovato per le informazioni fornite. Verifica i tuoi dati e riprova.",
       "error_no_match": "Nessun account corrispondente trovato. Puoi continuare senza collegamento.",
+      "error_rate_limited": "Troppi tentativi. Attendi un momento e riprova.",
       "match_confirm_question": "Vuoi collegare questo account esistente?",
       "match_found_description": "Abbiamo trovato un account collegato ai tuoi dati.",
       "match_found_title": "Account trovato!",
@@ -228,7 +233,9 @@
     "actions": {
       "accept": "Accetta",
       "cancel": "Annulla trasferimento",
-      "decline": "Rifiuta"
+      "decline": "Rifiuta",
+      "return": "Restituisci al proprietario",
+      "revoke": "Revoca il trasferimento"
     },
     "errors": {
       "feature_disabled": "I trasferimenti dei biglietti non sono disponibili",
@@ -244,6 +251,7 @@
       "recipient_mismatch": "Questa offerta di trasferimento è destinata a un altro account",
       "ticket_already_transferred": "Questo biglietto è già stato trasferito",
       "ticket_not_active": "Questo biglietto non è attivo",
+      "ticket_not_transferred": "Questo biglietto non è stato trasferito",
       "transfer_already_pending": "Un trasferimento è già in sospeso per questo biglietto",
       "transfer_expired": "Questa offerta di trasferimento è scaduta",
       "transfer_not_pending": "Questa offerta di trasferimento non è più in sospeso"

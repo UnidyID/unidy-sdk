@@ -12,6 +12,8 @@ const PREDEFINED_CONDITIONS: Record<string, (...args: unknown[]) => unknown> = {
   "auth.magicCodeEnabled": () => authState.availableLoginOptions?.magic_link,
   "auth.socialLoginsEnabled": () => (authState.availableLoginOptions?.social_logins?.length ?? 0) > 0,
   "auth.hasSocialLogin": (provider: string) => authState.availableLoginOptions?.social_logins?.includes(provider) ?? false,
+  "auth.hasOtherBrands": () => authState.brands.some((brand) => !brand.current),
+  "auth.hasMultipleBrands": () => authState.brands.length > 1,
   "auth.loading": () => authState.loading,
   "auth.authenticated": () => authState.authenticated,
   "auth.magicCodeSent": () => authState.magicCodeStep === "sent" || authState.magicCodeStep === "requested",

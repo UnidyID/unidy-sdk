@@ -301,6 +301,7 @@ export type CheckInternalMatchResult =
   | ["registration_not_found", ErrorResponse]
   | ["registration_expired", ErrorResponse]
   | ["internal_matching_match_not_found", ErrorResponse]
+  | ["internal_matching_rate_limit_exceeded", ErrorResponse]
   | [null, InternalMatchResult];
 
 export type ConfirmInternalMatchResult =
@@ -632,7 +633,11 @@ export async function checkInternalMatch(
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
       return [
-        error_response.error_identifier as "registration_not_found" | "registration_expired" | "internal_matching_match_not_found",
+        error_response.error_identifier as
+          | "registration_not_found"
+          | "registration_expired"
+          | "internal_matching_match_not_found"
+          | "internal_matching_rate_limit_exceeded",
         error_response,
       ];
     }

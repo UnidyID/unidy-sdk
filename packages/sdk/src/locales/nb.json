@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Fortsett på {{brand}}",
+      "other_accounts": "Dine andre kontoer"
+    },
     "email": {
       "placeholder": "Skriv inn e-postadressen din"
     },
@@ -215,6 +219,7 @@
       "error_match_mismatch": "Den angitte informasjonen samsvarer ikke med noen konto. Sjekk opplysningene dine og prøv igjen.",
       "error_match_not_found": "Ingen konto funnet for den angitte informasjonen. Sjekk opplysningene dine og prøv igjen.",
       "error_no_match": "Ingen samsvarende konto funnet. Du kan fortsette uten å koble til.",
+      "error_rate_limited": "For mange forsøk. Vent litt og prøv igjen.",
       "match_confirm_question": "Vil du koble til denne eksisterende kontoen?",
       "match_found_description": "Vi fant en konto knyttet til opplysningene dine.",
       "match_found_title": "Konto funnet!",
@@ -230,7 +235,9 @@
     "actions": {
       "accept": "Godta",
       "cancel": "Avbryt overføring",
-      "decline": "Avslå"
+      "decline": "Avslå",
+      "return": "Returner til eier",
+      "revoke": "Tilbakekall overføring"
     },
     "errors": {
       "feature_disabled": "Billettoverføringer er ikke tilgjengelige",
@@ -246,6 +253,7 @@
       "recipient_mismatch": "Dette overføringstilbudet er adressert til en annen konto",
       "ticket_already_transferred": "Denne billetten er allerede overført",
       "ticket_not_active": "Denne billetten er ikke aktiv",
+      "ticket_not_transferred": "Denne billetten har ikke blitt overført",
       "transfer_already_pending": "En overføring venter allerede for denne billetten",
       "transfer_expired": "Dette overføringstilbudet har utløpt",
       "transfer_not_pending": "Dette overføringstilbudet er ikke lenger ventende"

@@ -59,6 +59,9 @@ export const TicketSchema = TicketableSchema.extend({
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   price: z.number().nullable(), // decimal(8, 2) -> float
   ticket_category_id: z.uuid(),
+  // Non-null when the ticket has been transferred to another user (holder_id ≠ user_id).
+  // wallet_export / metadata are null and exportable_to_wallet is false in that state.
+  holder_id: z.uuid().nullable().optional(),
 });
 
 // Tickets list response schema

@@ -1,4 +1,3 @@
-import type { TokenResponse } from "@unidy.io/sdk/standalone";
 import {
   AuthService,
   NewsletterService,
@@ -15,6 +14,7 @@ import {
 } from "@unidy.io/sdk/standalone";
 import { jwtDecode } from "jwt-decode";
 import { authStorage } from "./auth/auth-storage";
+import { refreshSession } from "./auth/token-refresh";
 
 const TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
 
@@ -60,7 +60,6 @@ class ReactStandaloneApiClient extends StandaloneApiClient {
  */
 export class ReactUnidyClient extends StandaloneUnidyClient {
   public readonly baseUrl: string;
-  private refreshInFlight: Promise<string | null> | null = null;
 
   constructor(config: StandaloneUnidyClientConfig) {
     const customGetIdToken = config.deps?.getIdToken;
@@ -103,38 +102,9 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
       return token;
     }
 
-    return this.refreshTokenIfPossible(token);
-  }
-
-  private async refreshTokenIfPossible(expiredToken: string | null): Promise<string | null> {
-    if (this.refreshInFlight) {
-      return this.refreshInFlight;
-    }
-
-    this.refreshInFlight = (async () => {
-      const refreshToken = authStorage.getRefreshToken();
-      const signInId = authStorage.getSignInId() ?? (expiredToken ? decodeSid(expiredToken) : null);
-
-      if (!refreshToken || !signInId) {
-        return null;
-      }
-
-      const [error, response] = await this.auth.refreshToken({ signInId, refreshToken });
-      if (error) {
-        authStorage.clearAll();
-        return null;
-      }
-
-      const tokenResponse = response as TokenResponse;
-      authStorage.setToken(tokenResponse.jwt);
-      authStorage.setRefreshToken(tokenResponse.refresh_token);
-      authStorage.setSignInId(tokenResponse.sid ?? signInId);
-      return tokenResponse.jwt;
-    })().finally(() => {
-      this.refreshInFlight = null;
-    });
-
-    return this.refreshInFlight;
+    // Shares the page-wide single-flight with useSession/startSessionAutoRefresh — refresh
+    // tokens rotate on use, so a second concurrent request would permanently 401.
+    return refreshSession(this, undefined, { signInIdFallback: token ? decodeSid(token) : null });
   }
 }
 

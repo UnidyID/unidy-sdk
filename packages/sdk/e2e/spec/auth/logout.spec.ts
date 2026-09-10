@@ -40,4 +40,25 @@ test.describe("Logout", () => {
     expect(headers["x-id-token"]).toBeDefined();
     expect(headers["x-id-token"]).not.toBe("");
   });
+
+  test("dispatches unidySignOut DOM event on document after logout", async ({ page }) => {
+    await page.goto(routes.profile);
+    await setAuthToken(page);
+    await page.reload();
+
+    await page.waitForSelector("[data-testid='logout-button'], button:has-text('Logout')", { state: "visible" });
+
+    const eventFired = page.evaluate(
+      () =>
+        new Promise<boolean>((resolve) => {
+          document.addEventListener("unidySignOut", () => resolve(true), { once: true });
+          setTimeout(() => resolve(false), 5000);
+        }),
+    );
+
+    const logoutButton = page.getByRole("button", { name: "Logout" });
+    await logoutButton.click();
+
+    expect(await eventFired).toBe(true);
+  });
 });

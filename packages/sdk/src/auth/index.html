@@ -546,6 +546,18 @@
           </u-reset-password-button>
           <u-error-message for="resetPassword" class-name="mt-1 mb-4 text-sm text-red-500"></u-error-message>
         </u-conditional-render>
+
+        <u-conditional-render when="auth.hasOtherBrands">
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <h3 class="px-3 text-gray-600 font-medium">OR</h3>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+
+          <u-brand-switcher
+            heading-class-name="mb-2 text-sm text-gray-600"
+            item-class-name="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"></u-brand-switcher>
+        </u-conditional-render>
       </u-signin-step>
 
       <u-signin-step name="magic-code">
@@ -573,6 +585,14 @@
           <u-brand-connect-button action="cancel" class="flex-1" class-name="w-full px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors duration-200 cursor-pointer">Cancel</u-brand-connect-button>
           <u-brand-connect-button action="connect" class="flex-1" class-name="w-full px-4 py-2 border text-white bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors duration-200 cursor-pointer">Connect</u-brand-connect-button>
         </div>
+
+        <!-- The user landed on a brand they are not connected to: offer the brands they already have. -->
+        <u-conditional-render when="auth.hasOtherBrands">
+          <u-brand-switcher
+            class-name="mt-6"
+            heading-class-name="mb-2 text-sm text-gray-600"
+            item-class-name="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"></u-brand-switcher>
+        </u-conditional-render>
       </u-signin-step>
 
       <u-signin-step name="missing-fields">

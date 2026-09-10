@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Weiter auf {{brand}}",
+      "other_accounts": "Ihre weiteren Konten"
+    },
     "email": {
       "placeholder": "Geben Sie Ihre E-Mail-Adresse ein"
     },
@@ -213,6 +217,7 @@
       "error_match_mismatch": "Die eingegebenen Informationen stimmen mit keinem Konto überein. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
       "error_match_not_found": "Für die angegebenen Informationen wurde kein Konto gefunden. Bitte überprüfen Sie Ihre Angaben und versuchen Sie es erneut.",
       "error_no_match": "Kein passendes Konto gefunden. Sie können ohne Verknüpfung fortfahren.",
+      "error_rate_limited": "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
       "match_confirm_question": "Möchten Sie dieses bestehende Konto verknüpfen?",
       "match_found_description": "Wir haben ein Konto gefunden, das mit Ihren Daten verknüpft ist.",
       "match_found_title": "Konto gefunden!",
@@ -228,7 +233,9 @@
     "actions": {
       "accept": "Annehmen",
       "cancel": "Übertragung stornieren",
-      "decline": "Ablehnen"
+      "decline": "Ablehnen",
+      "return": "An Besitzer zurückgeben",
+      "revoke": "Übertragung widerrufen"
     },
     "errors": {
       "feature_disabled": "Ticket-Übertragungen sind nicht verfügbar",
@@ -244,6 +251,7 @@
       "recipient_mismatch": "Dieses Übertragungsangebot ist an ein anderes Konto gerichtet",
       "ticket_already_transferred": "Dieses Ticket wurde bereits übertragen",
       "ticket_not_active": "Dieses Ticket ist nicht aktiv",
+      "ticket_not_transferred": "Dieses Ticket wurde nicht übertragen",
       "transfer_already_pending": "Für dieses Ticket steht bereits eine Übertragung aus",
       "transfer_expired": "Dieses Übertragungsangebot ist abgelaufen",
       "transfer_not_pending": "Dieses Übertragungsangebot ist nicht mehr ausstehend"

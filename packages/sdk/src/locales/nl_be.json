@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Doorgaan op {{brand}}",
+      "other_accounts": "Uw andere accounts"
+    },
     "email": {
       "placeholder": "Voer uw e-mailadres in"
     },
@@ -200,6 +204,7 @@
       "error_match_mismatch": "De ingevoerde informatie komt niet overeen met een account. Controleer uw gegevens en probeer het opnieuw.",
       "error_match_not_found": "Geen account gevonden voor de opgegeven informatie. Controleer uw gegevens en probeer het opnieuw.",
       "error_no_match": "Geen overeenkomend account gevonden. U kunt doorgaan zonder te koppelen.",
+      "error_rate_limited": "Te veel pogingen. Wacht even en probeer het opnieuw.",
       "match_confirm_question": "Wilt u dit bestaande account koppelen?",
       "match_found_description": "We hebben een account gevonden dat aan uw gegevens is gekoppeld.",
       "match_found_title": "Account gevonden!",
@@ -215,7 +220,9 @@
     "actions": {
       "accept": "Accepteren",
       "cancel": "Overdracht annuleren",
-      "decline": "Weigeren"
+      "decline": "Weigeren",
+      "return": "Terugsturen naar eigenaar",
+      "revoke": "Overdracht intrekken"
     },
     "errors": {
       "feature_disabled": "Ticketoverdrachten zijn niet beschikbaar",
@@ -231,6 +238,7 @@
       "recipient_mismatch": "Dit overdrachtsaanbod is gericht aan een ander account",
       "ticket_already_transferred": "Dit ticket is al overgedragen",
       "ticket_not_active": "Dit ticket is niet actief",
+      "ticket_not_transferred": "Dit ticket is niet overgedragen",
       "transfer_already_pending": "Er is al een overdracht in behandeling voor dit ticket",
       "transfer_expired": "Dit overdrachtsaanbod is verlopen",
       "transfer_not_pending": "Dit overdrachtsaanbod is niet langer in behandeling"

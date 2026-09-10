@@ -1,5 +1,9 @@
 {
   "auth": {
+    "brands": {
+      "continue_on": "Pokračovat na {{brand}}",
+      "other_accounts": "Vaše další účty"
+    },
     "email": {
       "placeholder": "Zadejte svůj e-mail"
     },
@@ -215,6 +219,7 @@
       "error_match_mismatch": "Zadané informace neodpovídají žádnému účtu. Zkontrolujte prosím své údaje a zkuste to znovu.",
       "error_match_not_found": "Pro zadané informace nebyl nalezen žádný účet. Zkontrolujte prosím své údaje a zkuste to znovu.",
       "error_no_match": "Nebyl nalezen žádný odpovídající účet. Můžete pokračovat bez propojení.",
+      "error_rate_limited": "Příliš mnoho pokusů. Počkejte chvíli a zkuste to znovu.",
       "match_confirm_question": "Chcete propojit tento existující účet?",
       "match_found_description": "Nalezli jsme účet propojený s vašimi údaji.",
       "match_found_title": "Účet nalezen!",
@@ -230,7 +235,9 @@
     "actions": {
       "accept": "Přijmout",
       "cancel": "Zrušit převod",
-      "decline": "Odmítnout"
+      "decline": "Odmítnout",
+      "return": "Vrátit majiteli",
+      "revoke": "Odvolat přenos"
     },
     "errors": {
       "feature_disabled": "Převody vstupenek nejsou k dispozici",
@@ -246,6 +253,7 @@
       "recipient_mismatch": "Tato nabídka převodu je určena jinému účtu",
       "ticket_already_transferred": "Tato vstupenka již byla převedena",
       "ticket_not_active": "Tato vstupenka není aktivní",
+      "ticket_not_transferred": "Tento lístek nebyl přenesen",
       "transfer_already_pending": "Pro tuto vstupenku již existuje čekající převod",
       "transfer_expired": "Platnost této nabídky převodu vypršela",
       "transfer_not_pending": "Tato nabídka převodu již nečeká na vyřízení"
