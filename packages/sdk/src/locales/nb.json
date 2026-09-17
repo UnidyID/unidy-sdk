@@ -235,7 +235,9 @@
     "actions": {
       "accept": "Godta",
       "cancel": "Avbryt overføring",
-      "decline": "Avslå"
+      "decline": "Avslå",
+      "return": "Returner til eier",
+      "revoke": "Tilbakekall overføring"
     },
     "errors": {
       "feature_disabled": "Billettoverføringer er ikke tilgjengelige",
@@ -251,6 +253,7 @@
       "recipient_mismatch": "Dette overføringstilbudet er adressert til en annen konto",
       "ticket_already_transferred": "Denne billetten er allerede overført",
       "ticket_not_active": "Denne billetten er ikke aktiv",
+      "ticket_not_transferred": "Denne billetten har ikke blitt overført",
       "transfer_already_pending": "En overføring venter allerede for denne billetten",
       "transfer_expired": "Dette overføringstilbudet har utløpt",
       "transfer_not_pending": "Dette overføringstilbudet er ikke lenger ventende"

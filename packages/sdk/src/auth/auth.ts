@@ -7,7 +7,7 @@ import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
 import { authState, authStore } from "./store/auth-store";
 
-const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
+export const DEFAULT_TOKEN_EXPIRATION_BUFFER_SECONDS = 10;
 
 /**
  * Decoded JWT payload for Unidy auth tokens.
@@ -294,6 +294,8 @@ export class Auth {
 
     // Mark settled regardless of outcome — local state is already cleared.
     this.markReady();
+
+    document.dispatchEvent(new CustomEvent("unidySignOut", { bubbles: false }));
 
     if (error) {
       return this.createAuthError(t("errors.sign_out_failed", { reason: error }), "SIGN_OUT_FAILED", false);

@@ -64,7 +64,10 @@ test.describe("Profile - partial validation", () => {
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
   });
 
-  test("standalone u-raw-field value is included in partial-validation payload", async ({ page, authenticatedContext: _authenticatedContext }) => {
+  test("standalone u-raw-field value is included in partial-validation payload", async ({
+    page,
+    authenticatedContext: _authenticatedContext,
+  }) => {
     await page.goto(routes.profilePartial);
     await expect(page.locator("#profile-4")).toBeVisible();
 

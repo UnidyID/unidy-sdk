@@ -233,7 +233,9 @@
     "actions": {
       "accept": "Accepter",
       "cancel": "Annuler le transfert",
-      "decline": "Refuser"
+      "decline": "Refuser",
+      "return": "Rendre au propriétaire",
+      "revoke": "Révoquer le transfert"
     },
     "errors": {
       "feature_disabled": "Les transferts de billets ne sont pas disponibles",
@@ -249,6 +251,7 @@
       "recipient_mismatch": "Cette offre de transfert est destinée à un autre compte",
       "ticket_already_transferred": "Ce billet a déjà été transféré",
       "ticket_not_active": "Ce billet n'est pas actif",
+      "ticket_not_transferred": "Ce billet n'a pas été transféré",
       "transfer_already_pending": "Un transfert est déjà en attente pour ce billet",
       "transfer_expired": "Cette offre de transfert a expiré",
       "transfer_not_pending": "Cette offre de transfert n'est plus en attente"

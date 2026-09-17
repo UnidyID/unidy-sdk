@@ -168,6 +168,31 @@ test.describe("Newsletter (logged out)", () => {
     expect(patchRequests).toHaveLength(0);
   });
 
+  test("shows an email required error when submitting with an empty email", async ({ page }) => {
+    const emailInput = page.getByRole("textbox", { name: "Email" });
+    const subscribeButton = page.getByRole("button", { name: "Subscribe", exact: true });
+    const emailError = page.locator('u-error-message[for="email"]');
+
+    const createRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.method() === "POST" && request.url().includes("newsletter_subscription")) {
+        createRequests.push(request.url());
+      }
+    });
+
+    await expect(subscribeButton).toBeDisabled();
+    await expect(emailError).toBeHidden();
+
+    await emailInput.press("Enter");
+
+    await expect(emailError).toBeVisible();
+    await expect(emailError).toHaveText("Please enter your email address");
+    expect(createRequests).toHaveLength(0);
+
+    await emailInput.fill(randomEmail());
+    await expect(emailError).toBeHidden();
+  });
+
   test("requires consent to be accepted before subscribing", async ({ page }) => {
     const email = randomEmail();
     const emailInput = page.getByRole("textbox", { name: "Email" });

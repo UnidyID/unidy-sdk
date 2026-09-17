@@ -233,7 +233,9 @@
     "actions": {
       "accept": "Acceptă",
       "cancel": "Anulează transferul",
-      "decline": "Refuză"
+      "decline": "Refuză",
+      "return": "Înapoiază proprietarului",
+      "revoke": "Revocă transferul"
     },
     "errors": {
       "feature_disabled": "Transferurile de bilete nu sunt disponibile",
@@ -249,6 +251,7 @@
       "recipient_mismatch": "Această ofertă de transfer este adresată altui cont",
       "ticket_already_transferred": "Acest bilet a fost deja transferat",
       "ticket_not_active": "Acest bilet nu este activ",
+      "ticket_not_transferred": "Acest bilet nu a fost transferat",
       "transfer_already_pending": "Un transfer este deja în așteptare pentru acest bilet",
       "transfer_expired": "Această ofertă de transfer a expirat",
       "transfer_not_pending": "Această ofertă de transfer nu mai este în așteptare"

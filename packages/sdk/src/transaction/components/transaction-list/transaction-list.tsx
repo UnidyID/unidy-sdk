@@ -76,15 +76,17 @@ export class TransactionList extends UnidyComponent() {
     await waitForConfig();
 
     const authInstance = await Auth.getInstance();
-    if (await authInstance.isAuthenticated()) {
-      await this.loadData();
-    }
-
+    // Subscribe before the auth check so a token arriving during the await isn't dropped.
+    // Subscribe before the auth check so a token arriving during the await isn't dropped.
     this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
-      if (newToken) {
+      if (newToken && !this.loading) {
         this.loadData();
       }
     });
+
+    if (await authInstance.isAuthenticated()) {
+      await this.loadData();
+    }
   }
 
   disconnectedCallback() {

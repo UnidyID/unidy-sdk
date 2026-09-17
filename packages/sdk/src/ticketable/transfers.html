@@ -107,8 +107,9 @@
         </template>
       </u-ticket-transfer-list>
 
-      <h2 class="text-3xl font-bold text-gray-900 mb-6">Transfer a ticket</h2>
-      <u-ticketable-list ticketable-type="ticket" container-class="grid gap-4" limit="5">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">My tickets</h2>
+      <p class="text-sm text-gray-600 mb-4">Tickets you own — including ones you have transferred to someone else. Use the form to send a new transfer offer, or "Revoke transfer" to pull a transferred-away ticket back.</p>
+      <u-ticketable-list ticketable-type="ticket" container-class="grid gap-4 mb-12" limit="5">
         <div slot="empty" id="tickets-empty" class="text-gray-600 text-sm">No tickets found.</div>
         <template>
           <div class="rounded-lg border border-gray-200 bg-white shadow-md p-6">
@@ -118,13 +119,41 @@
             <p class="text-sm text-gray-700 mb-4">
               Starts: <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
             </p>
-            <u-ticket-transfer-form
-              class-name="flex items-center gap-2"
-              input-class-name="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-              button-class-name="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-              error-class-name="mt-2 text-sm text-red-600"
-              success-class-name="mt-2 text-sm text-green-600"
-            ></u-ticket-transfer-form>
+            <div class="flex flex-col gap-3">
+              <u-ticket-transfer-form
+                class-name="flex items-center gap-2"
+                input-class-name="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                button-class-name="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                error-class-name="mt-2 text-sm text-red-600"
+                success-class-name="mt-2 text-sm text-green-600"
+              ></u-ticket-transfer-form>
+              <u-ticket-transfer-action
+                action="revoke"
+                class-name="self-start px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              ></u-ticket-transfer-action>
+            </div>
+          </div>
+        </template>
+      </u-ticketable-list>
+
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">Tickets held by me (transferred to me)</h2>
+      <p class="text-sm text-gray-600 mb-4">Tickets someone else owns but transferred to you. Use "Return to owner" to give the ticket back.</p>
+      <u-ticketable-list ticketable-type="ticket" container-class="grid gap-4 mb-12" limit="5">
+        <div slot="empty" class="text-gray-600 text-sm">No held tickets found.</div>
+        <template>
+          <div class="rounded-lg border border-gray-200 bg-white shadow-md p-6 flex items-start justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">
+                <ticketable-value name="title"></ticketable-value>
+              </h3>
+              <p class="text-sm text-gray-700">
+                Starts: <ticketable-value name="starts_at" date-format="yyyy-MM-dd HH:mm"></ticketable-value>
+              </p>
+            </div>
+            <u-ticket-transfer-action
+              action="return"
+              class-name="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            ></u-ticket-transfer-action>
           </div>
         </template>
       </u-ticketable-list>

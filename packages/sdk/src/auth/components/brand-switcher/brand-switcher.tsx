@@ -1,4 +1,4 @@
-import { Component, Event, type EventEmitter, h, Host, Prop } from "@stencil/core";
+import { Component, Event, type EventEmitter, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { Brand } from "../../api/auth";

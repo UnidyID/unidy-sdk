@@ -1,6 +1,7 @@
 import type { ZodSchema } from "zod";
 import { BaseService, type CommonErrors } from "../../api/base-service";
-import { type TransactionListParams, TransactionListParamsSchema } from "./schemas";
+import type { PaginationMeta } from "../../api/shared";
+import { type TransactionListParams, TransactionListParamsSchema, TransactionsListResponseRawSchema } from "./schemas";
 
 /** Common list arguments for transaction services */
 export type TransactionListArgs = TransactionListParams;
@@ -98,6 +99,52 @@ export abstract class TransactionService extends BaseService {
       }
 
       return [null, parsed.data];
+    });
+  }
+
+  protected async handleListPerItem<TItem>(
+    endpoint: string,
+    queryString: string,
+    itemSchema: ZodSchema<TItem>,
+    resourceName: string,
+    args: TransactionListArgs = {},
+  ): Promise<TransactionListResult<{ meta: PaginationMeta; results: TItem[] }>> {
+    if (!this.validateListArgs(args)) {
+      return ["invalid_response", null];
+    }
+
+    const idToken = await this.getIdToken();
+    if (!idToken) {
+      return ["missing_id_token", null];
+    }
+
+    const response = await this.client.get<unknown>(`${endpoint}${queryString}`, this.buildAuthHeaders({ "X-ID-Token": idToken }));
+
+    return this.handleResponse(response, () => {
+      if (!response.success) {
+        this.logger.error(`Failed to fetch ${resourceName}`, response);
+        return ["server_error", null];
+      }
+
+      const outer = TransactionsListResponseRawSchema.safeParse(response.data);
+      if (!outer.success) {
+        this.logger.error("Invalid response format", outer.error);
+        this.errorReporter.captureException(outer.error, { resourceName, endpoint });
+        return ["invalid_response", null];
+      }
+
+      const results: TItem[] = [];
+      for (const raw of outer.data.results) {
+        const parsed = itemSchema.safeParse(raw);
+        if (parsed.success) {
+          results.push(parsed.data);
+        } else {
+          this.logger.error(`Skipping invalid ${resourceName} item`, parsed.error);
+          this.errorReporter.captureException(parsed.error, { resourceName, endpoint });
+        }
+      }
+
+      return [null, { meta: outer.data.meta, results }];
     });
   }
 

@@ -235,7 +235,9 @@
     "actions": {
       "accept": "Přijmout",
       "cancel": "Zrušit převod",
-      "decline": "Odmítnout"
+      "decline": "Odmítnout",
+      "return": "Vrátit majiteli",
+      "revoke": "Odvolat přenos"
     },
     "errors": {
       "feature_disabled": "Převody vstupenek nejsou k dispozici",
@@ -251,6 +253,7 @@
       "recipient_mismatch": "Tato nabídka převodu je určena jinému účtu",
       "ticket_already_transferred": "Tato vstupenka již byla převedena",
       "ticket_not_active": "Tato vstupenka není aktivní",
+      "ticket_not_transferred": "Tento lístek nebyl přenesen",
       "transfer_already_pending": "Pro tuto vstupenku již existuje čekající převod",
       "transfer_expired": "Platnost této nabídky převodu vypršela",
       "transfer_not_pending": "Tato nabídka převodu již nečeká na vyřízení"

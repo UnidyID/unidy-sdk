@@ -233,7 +233,9 @@
     "actions": {
       "accept": "Accetta",
       "cancel": "Annulla trasferimento",
-      "decline": "Rifiuta"
+      "decline": "Rifiuta",
+      "return": "Restituisci al proprietario",
+      "revoke": "Revoca il trasferimento"
     },
     "errors": {
       "feature_disabled": "I trasferimenti dei biglietti non sono disponibili",
@@ -249,6 +251,7 @@
       "recipient_mismatch": "Questa offerta di trasferimento è destinata a un altro account",
       "ticket_already_transferred": "Questo biglietto è già stato trasferito",
       "ticket_not_active": "Questo biglietto non è attivo",
+      "ticket_not_transferred": "Questo biglietto non è stato trasferito",
       "transfer_already_pending": "Un trasferimento è già in sospeso per questo biglietto",
       "transfer_expired": "Questa offerta di trasferimento è scaduta",
       "transfer_not_pending": "Questa offerta di trasferimento non è più in sospeso"

@@ -22,7 +22,7 @@ import { MatchFoundEventDetail } from "./registration/components/registration-in
 import { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
-import { TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
+import { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
 import { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
 import { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
 import { PaginationMeta } from "./api";
@@ -46,7 +46,7 @@ export { MatchFoundEventDetail } from "./registration/components/registration-in
 export { RegistrationCompleteEvent } from "./registration/components/registration-root/registration-root";
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
-export { TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
+export { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
 export { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
 export { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
 export { PaginationMeta } from "./api";
@@ -1067,7 +1067,7 @@ export namespace Components {
      */
     interface UTicketTransferAction {
         /**
-          * The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one.
+          * The action this button performs. Token-based: "accept", "decline", "cancel". Ticket-id-based: "revoke", "return".
          */
         "action": TicketTransferActionType;
         /**
@@ -1075,12 +1075,16 @@ export namespace Components {
          */
         "componentClassName"?: string;
         /**
-          * Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template.
+          * Disables the button. Stamped automatically on skeleton items inside list templates.
           * @default false
          */
         "disabled": boolean;
         /**
-          * The transfer token. Stamped automatically inside a u-ticket-transfer-list template.
+          * The ticket id. Required for revoke/return. Stamped automatically inside a u-ticketable-list template.
+         */
+        "ticketId"?: string;
+        /**
+          * The transfer token. Required for accept/decline/cancel. Stamped automatically inside a u-ticket-transfer-list template.
          */
         "token"?: string;
     }
@@ -1828,7 +1832,7 @@ declare global {
         new (): HTMLUSubmitButtonElement;
     };
     interface HTMLUTicketTransferActionElementEventMap {
-        "uTicketTransferActionSuccess": { action: TicketTransferActionType; transfer: TicketTransfer };
+        "uTicketTransferActionSuccess": TicketTransferActionSuccessPayload;
         "uTicketTransferActionError": { action: TicketTransferActionType; error: string };
     }
     /**
@@ -3068,7 +3072,7 @@ declare namespace LocalJSX {
      */
     interface UTicketTransferAction {
         /**
-          * The action this button performs: "accept" or "decline" an incoming offer, "cancel" an outgoing one.
+          * The action this button performs. Token-based: "accept", "decline", "cancel". Ticket-id-based: "revoke", "return".
          */
         "action": TicketTransferActionType;
         /**
@@ -3076,7 +3080,7 @@ declare namespace LocalJSX {
          */
         "componentClassName"?: string;
         /**
-          * Disables the button. Stamped automatically on skeleton items inside a u-ticket-transfer-list template.
+          * Disables the button. Stamped automatically on skeleton items inside list templates.
           * @default false
          */
         "disabled"?: boolean;
@@ -3085,11 +3089,15 @@ declare namespace LocalJSX {
          */
         "onUTicketTransferActionError"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; error: string }>) => void;
         /**
-          * Fired when the action completes successfully. Contains the action and the updated transfer.
+          * Fired when the action completes successfully. Payload differs by action type.
          */
-        "onUTicketTransferActionSuccess"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; transfer: TicketTransfer }>) => void;
+        "onUTicketTransferActionSuccess"?: (event: UTicketTransferActionCustomEvent<TicketTransferActionSuccessPayload>) => void;
         /**
-          * The transfer token. Stamped automatically inside a u-ticket-transfer-list template.
+          * The ticket id. Required for revoke/return. Stamped automatically inside a u-ticketable-list template.
+         */
+        "ticketId"?: string;
+        /**
+          * The transfer token. Required for accept/decline/cancel. Stamped automatically inside a u-ticket-transfer-list template.
          */
         "token"?: string;
     }
@@ -3629,6 +3637,7 @@ declare namespace LocalJSX {
     interface UTicketTransferActionAttributes {
         "action": TicketTransferActionType;
         "token": string;
+        "ticketId": string;
         "disabled": boolean;
         "componentClassName": string;
     }
