@@ -32,7 +32,7 @@ const BRAND_CONNECTION_ERROR_IDENTIFIERS = [
 ] as const;
 
 export type BrandConnectionErrorIdentifier = (typeof BRAND_CONNECTION_ERROR_IDENTIFIERS)[number];
-export type BrandConnectionArgs = { brandId: number };
+export type BrandConnectionArgs = { brand: string };
 
 export type BrandConnectionError =
   | CommonErrors
@@ -82,7 +82,7 @@ export class BrandConnectionsService extends BaseService {
     }
 
     const endpoint = "/api/sdk/v1/brand_connections";
-    const response = await this.client.post<unknown>(endpoint, { brand_id: args.brandId }, this.authHeaders(idToken));
+    const response = await this.client.post<unknown>(endpoint, { brand: args.brand }, this.authHeaders(idToken));
 
     return this.handleResponse(response, () => {
       if (!response.success) {
@@ -105,7 +105,7 @@ export class BrandConnectionsService extends BaseService {
       return ["missing_id_token", null];
     }
 
-    const endpoint = `/api/sdk/v1/brand_connections/${encodeURIComponent(String(args.brandId))}`;
+    const endpoint = `/api/sdk/v1/brand_connections/${encodeURIComponent(args.brand)}`;
     const response = await this.client.delete<unknown>(endpoint, this.authHeaders(idToken));
 
     return this.handleResponse(response, () => {

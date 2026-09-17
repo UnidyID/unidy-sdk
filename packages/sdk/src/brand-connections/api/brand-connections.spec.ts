@@ -3,7 +3,6 @@ import type { ApiClientInterface } from "../../api/base-service";
 import { BrandConnectionsService } from "./brand-connections";
 
 const brandConnection = {
-  id: 42,
   name: "other-brand",
   host: "other.example.com",
   url: "https://other.example.com",
@@ -71,15 +70,17 @@ describe("BrandConnectionsService", () => {
     const connectedBrand = { ...brandConnection, connected: true, connectable: false, disconnectable: true };
     post.mockResolvedValue(apiResponse({ data: connectedBrand, status: 201 }));
 
-    await expect(service().connect({ brandId: 42 })).resolves.toEqual([null, connectedBrand]);
-    expect(post).toHaveBeenCalledWith("/api/sdk/v1/brand_connections", { brand_id: 42 }, { "X-ID-Token": "id-token" });
+    await expect(service().connect({ brand: "other-brand" })).resolves.toEqual([null, connectedBrand]);
+    expect(post).toHaveBeenCalledWith("/api/sdk/v1/brand_connections", { brand: "other-brand" }, { "X-ID-Token": "id-token" });
   });
 
-  it("disconnects a brand by ID", async () => {
+  it("disconnects a brand by slug", async () => {
     deleteRequest.mockResolvedValue(apiResponse({ data: undefined, status: 204 }));
 
-    await expect(service().disconnect({ brandId: 42 })).resolves.toEqual([null, null]);
-    expect(deleteRequest).toHaveBeenCalledWith("/api/sdk/v1/brand_connections/42", { "X-ID-Token": "id-token" });
+    await expect(service().disconnect({ brand: "other/brand" })).resolves.toEqual([null, null]);
+    expect(deleteRequest).toHaveBeenCalledWith("/api/sdk/v1/brand_connections/other%2Fbrand", {
+      "X-ID-Token": "id-token",
+    });
   });
 
   it("returns the backend domain error identifier and details", async () => {
@@ -91,7 +92,7 @@ describe("BrandConnectionsService", () => {
       }),
     );
 
-    await expect(service().connect({ brandId: 42 })).resolves.toEqual([
+    await expect(service().connect({ brand: "other-brand" })).resolves.toEqual([
       "brand_already_connected",
       { error_identifier: "brand_already_connected" },
     ]);
@@ -119,7 +120,7 @@ describe("BrandConnectionsService", () => {
   });
 
   it("reports an invalid success response", async () => {
-    get.mockResolvedValue(apiResponse({ data: [{ id: "not-a-number" }] }));
+    get.mockResolvedValue(apiResponse({ data: [{ name: 42 }] }));
 
     await expect(service().list()).resolves.toEqual(["invalid_response", null]);
     expect(captureException).toHaveBeenCalledWith(expect.anything(), { endpoint: "/api/sdk/v1/brand_connections" });

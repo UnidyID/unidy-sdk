@@ -1326,11 +1326,11 @@ const [listError, brands] = await client.brandConnections.list();
 if (!listError) {
   const availableBrand = brands.find((brand) => brand.connectable);
   if (availableBrand) {
-    const [connectError, connectedBrand] = await client.brandConnections.connect({ brandId: availableBrand.id });
+    const [connectError, connectedBrand] = await client.brandConnections.connect({ brand: availableBrand.name });
   }
 }
 
-const [disconnectError] = await client.brandConnections.disconnect({ brandId: 42 });
+const [disconnectError] = await client.brandConnections.disconnect({ brand: 'partners' });
 ```
 
 Each brand includes identity and theming fields plus `current`, `default`, `connected`, `connectable`, and `disconnectable` booleans. Known API error identifiers, such as `brand_already_connected` and `protected_brand_cannot_be_disconnected`, are returned as the tuple's first value.

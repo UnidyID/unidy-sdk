@@ -2,7 +2,6 @@ import * as z from "zod";
 import { BaseErrorSchema } from "../../api/shared";
 
 export const BrandConnectionSchema = z.object({
-  id: z.number().int(),
   name: z.string(),
   host: z.string(),
   url: z.string(),
