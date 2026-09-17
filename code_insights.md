@@ -75,6 +75,7 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 ## Multi-brand (brand-aware login)
 
 - `POST /api/sdk/v1/sign_ins` returns `brands` — the brands the looked-up user is connected to that the API key is also authorized for, current brand first (`current: true` marks the one matching the host the SDK is pointed at). Each entry carries `name`/`host`/`url`/`display_name`/`logo_url`/`colors` plus its own `login_options`. Backend added 2026-08 (UD-3079); `brands` and `connected_to_brand` are schema-defaulted so older Unidy instances still validate
+- Brand-connection mutations use the stable brand slug: pass `{ brand: connection.name }` to `brandConnections.connect` or `disconnect`; database IDs are not exposed in the SDK representation
 - A brand is a **separate login host** — `Current.brand` is derived server-side from `request.host_with_port`. Switching brand is therefore a navigation to that brand's `url`, not a client-side toggle: `unidyState.baseUrl` is captured when the `UnidyClient` singleton is constructed (`api/index.ts` `getUnidyClient`), so mutating it after `<u-config>` loads does not repoint the existing client
 - `<u-brand-switcher>` renders the *other* brands (`show-current` includes all). It stays empty on the `email` step, since brands in the store belong to the previous lookup until a new email is submitted
 
