@@ -76,17 +76,15 @@ export class TransactionList extends UnidyComponent() {
     await waitForConfig();
 
     const authInstance = await Auth.getInstance();
-    // Subscribe before the auth check so a token arriving during the await isn't dropped.
-    // Subscribe before the auth check so a token arriving during the await isn't dropped.
-    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
-      if (newToken && !this.loading) {
-        this.loadData();
-      }
-    });
-
     if (await authInstance.isAuthenticated()) {
       await this.loadData();
     }
+
+    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
+      if (newToken) {
+        this.loadData();
+      }
+    });
   }
 
   disconnectedCallback() {
@@ -147,7 +145,9 @@ export class TransactionList extends UnidyComponent() {
 
       this.loading = false;
 
-      this.uTransactionListSuccess.emit({ items: this.items, paginationMeta: this.paginationMeta });
+      if (this.element.isConnected) {
+        this.uTransactionListSuccess.emit({ items: this.items, paginationMeta: this.paginationMeta });
+      }
     } catch (err) {
       this.logger.error("Unexpected error while loading transactions", err);
       this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", "internal_error");
@@ -171,7 +171,9 @@ export class TransactionList extends UnidyComponent() {
 
   componentDidRender() {
     if (this.target) {
-      requestAnimationFrame(() => this.renderToTarget());
+      requestAnimationFrame(() => {
+        if (this.element.isConnected) this.renderToTarget();
+      });
     }
   }
 

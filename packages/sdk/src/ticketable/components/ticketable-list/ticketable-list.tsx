@@ -192,7 +192,9 @@ export class TicketableList extends UnidyComponent() {
 
       this.loading = false;
 
-      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      if (this.element.isConnected) {
+        this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      }
     } catch (err) {
       this.logger.error("Unexpected error while loading data", err);
       this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
@@ -246,7 +248,9 @@ export class TicketableList extends UnidyComponent() {
 
   componentDidRender() {
     if (this.target) {
-      requestAnimationFrame(() => this.renderToTarget());
+      requestAnimationFrame(() => {
+        if (this.element.isConnected) this.renderToTarget();
+      });
     }
   }
 

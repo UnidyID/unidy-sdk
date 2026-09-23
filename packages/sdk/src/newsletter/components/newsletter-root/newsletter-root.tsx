@@ -1,5 +1,6 @@
 import { Component, Element, Event, type EventEmitter, Host, h, Method, Prop } from "@stencil/core";
 import { Auth } from "../../../auth/auth";
+import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { logger } from "../../../logger";
 import { UnidyComponent } from "../../../shared/base/component";
@@ -16,6 +17,7 @@ import type { NewsletterButtonFor } from "../submit-button/newsletter-submit-but
 })
 export class NewsletterRoot extends UnidyComponent() {
   @Element() el!: HTMLElement;
+  private unsubscribeAuth?: () => void;
   /** CSS classes to apply to the host element. */
   @Prop({ attribute: "class-name" }) componentClassName = "";
 
@@ -74,6 +76,27 @@ export class NewsletterRoot extends UnidyComponent() {
 
     await waitForConfig();
     await NewsletterHelpers.fetchSubscriptions();
+  }
+
+  componentDidLoad() {
+    this.unsubscribeAuth = authOnChange("token", async (newToken: string | null) => {
+      const isAuthenticated = !!newToken;
+      newsletterStore.state.isAuthenticated = isAuthenticated;
+
+      if (isAuthenticated) {
+        const authInstance = await Auth.getInstance();
+        const userData = await authInstance.userTokenPayload();
+        if (userData) {
+          newsletterStore.state.email = userData.email;
+        }
+      }
+
+      await NewsletterHelpers.fetchSubscriptions();
+    });
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeAuth?.();
   }
 
   @Method()
