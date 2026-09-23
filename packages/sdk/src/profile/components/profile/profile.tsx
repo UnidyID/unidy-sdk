@@ -63,8 +63,9 @@ export class Profile {
   @Prop() saveDelay?: number;
 
   private autoSaveManager: ProfileAutosave | null = null;
-  private dataChangeUnsubscribe: (() => void) | null = null;
+  private profileDataUnsubscribe: (() => void) | null = null;
   private activeFieldUnsubscribe: (() => void) | null = null;
+  private authTokenUnsubscribe: (() => void) | null = null;
   private initialLoadComplete = false;
   private previousActiveField: string | null = null;
 
@@ -215,16 +216,14 @@ export class Profile {
       profileState.data = cfg as ProfileRaw;
     });
 
-    authOnChange("token", (newToken: string | null) => {
-      const token = newToken ?? "";
-
-      if (token) {
+    this.authTokenUnsubscribe = authOnChange("token", (newToken: string | null) => {
+      if (newToken) {
         this.fetchProfileData();
       }
     });
 
     // Set up data change listener - always emit event, optionally debounced autosave
-    this.dataChangeUnsubscribe = profileOnChange("data", (data) => {
+    this.profileDataUnsubscribe = profileOnChange("data", (data) => {
       if (this.initialLoadComplete) {
         this.uProfileChange.emit({ data: data as ProfileRaw });
 
@@ -249,8 +248,9 @@ export class Profile {
 
   disconnectedCallback() {
     this.autoSaveManager?.destroy();
-    this.dataChangeUnsubscribe?.();
+    this.profileDataUnsubscribe?.();
     this.activeFieldUnsubscribe?.();
+    this.authTokenUnsubscribe?.();
     profileState.activeField = null;
   }
 
