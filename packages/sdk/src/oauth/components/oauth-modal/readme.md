@@ -14,6 +14,13 @@
 | `contentClassName`   | `content-class-name`  | Custom CSS class name(s) to apply to the dialog content wrapper.                                                         | `string` | `""`    |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

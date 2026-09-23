@@ -76,6 +76,15 @@ Dynamically sets HTML attributes from ticket/subscription data.
 | `uTicketableListSuccess` | Fired when items are successfully fetched. Contains items and pagination metadata. | `CustomEvent<{ ticketableType: TicketableType; items: TicketableItem[]; paginationMeta: { count: number; page: number; limit: number; last: number; prev?: number; next?: number; }; }>` |
 
 
+## Slots
+
+| Slot           | Description      |
+| -------------- | ---------------- |
+|                | The default slot |
+| `"empty"`      |                  |
+| `"pagination"` |                  |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

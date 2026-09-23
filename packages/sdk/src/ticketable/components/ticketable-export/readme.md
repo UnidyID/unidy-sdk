@@ -22,6 +22,13 @@
 | `uTicketableExportSuccess` |             | `CustomEvent<{ url: string; format: "pdf" \| "pkpass"; }>` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
