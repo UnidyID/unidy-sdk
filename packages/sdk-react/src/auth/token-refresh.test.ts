@@ -84,9 +84,7 @@ describe("refreshSession", () => {
   });
 
   it("notifies every caller that joined the shared flight when the refresh fails", async () => {
-    const refreshMock = mock(
-      () => new Promise((resolve) => setTimeout(() => resolve(["connection_failed", null]), 10)),
-    );
+    const refreshMock = mock(() => new Promise((resolve) => setTimeout(() => resolve(["connection_failed", null]), 10)));
     const client = makeClient(refreshMock);
     const initiatorOnError = mock(() => {});
     const joinerOnError = mock(() => {});

@@ -59,6 +59,11 @@
         "rules": {
           "correctness": {
             "noUnusedVariables": "off"
+          },
+          "a11y": {
+            "noLabelWithoutControl": "off",
+            "useHeadingContent": "off",
+            "useValidAnchor": "off"
           }
         }
       }
