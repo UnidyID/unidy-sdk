@@ -32,6 +32,13 @@ attribute automatically and refetches when the action succeeds.
 | `uTicketTransferActionSuccess` | Fired when the action completes successfully. Payload differs by action type. | `CustomEvent<{ action: "cancel" \| "accept" \| "decline"; transfer: { token: string; status: "expired" \| "pending" \| "accepted" \| "canceled" \| "declined"; recipient_email: string; sender_email: string; expires_at: Date; created_at: Date; ticket: { id: string; title: string; reference: string; exportable_to_wallet: boolean; state: string; created_at: Date; updated_at: Date; user_id: string; starts_at: Date; ticket_category_id: string; metadata?: JSONType; wallet_export?: JSONType; payment_state?: string; currency?: string; button_cta_url?: string; text?: string; info_banner?: string; seating?: string; venue?: string; ends_at?: Date; price?: number; holder_id?: string; }; }; ticket?: never; } \| { action: "revoke" \| "return"; ticket: { id: string; title: string; reference: string; exportable_to_wallet: boolean; state: string; created_at: Date; updated_at: Date; user_id: string; starts_at: Date; ticket_category_id: string; metadata?: JSONType; wallet_export?: JSONType; payment_state?: string; currency?: string; button_cta_url?: string; text?: string; info_banner?: string; seating?: string; venue?: string; ends_at?: Date; price?: number; holder_id?: string; }; transfer?: never; }>` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

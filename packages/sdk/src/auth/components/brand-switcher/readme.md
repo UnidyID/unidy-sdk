@@ -31,6 +31,13 @@ to appear in; the step controls visibility.
 | `brandSelected` | Fired when a brand is chosen, before navigating to it. Call `preventDefault()` on the event to suppress the navigation and route to the brand yourself. | `CustomEvent<BrandSelectedEvent>` |
 
 
+## Slots
+
+| Slot        | Description |
+| ----------- | ----------- |
+| `"heading"` |             |
+
+
 ## Shadow Parts
 
 | Part                    | Description |

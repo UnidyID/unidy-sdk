@@ -34,6 +34,14 @@ refetches after a successful action.
 | `uTicketTransferListSuccess` | Fired when transfers are successfully fetched. Contains the direction and items. | `CustomEvent<{ direction: TicketTransferDirection; items: { token: string; status: "expired" \| "pending" \| "accepted" \| "canceled" \| "declined"; recipient_email: string; sender_email: string; expires_at: Date; created_at: Date; ticket: { id: string; title: string; reference: string; exportable_to_wallet: boolean; state: string; created_at: Date; updated_at: Date; user_id: string; starts_at: Date; ticket_category_id: string; metadata?: JSONType; wallet_export?: JSONType; payment_state?: string; currency?: string; button_cta_url?: string; text?: string; info_banner?: string; seating?: string; venue?: string; ends_at?: Date; price?: number; holder_id?: string; }; }[]; }>` |
 
 
+## Slots
+
+| Slot      | Description      |
+| --------- | ---------------- |
+|           | The default slot |
+| `"empty"` |                  |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

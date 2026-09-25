@@ -27,6 +27,13 @@
 | `theme`       | `theme`        | Button theme: 'light' (white background) or 'dark' (dark background).                                                | `"dark" \| "light"`                                                                               | `"light"`              |
 
 
+## Slots
+
+| Slot     | Description |
+| -------- | ----------- |
+| `"icon"` |             |
+
+
 ## Shadow Parts
 
 | Part                            | Description |

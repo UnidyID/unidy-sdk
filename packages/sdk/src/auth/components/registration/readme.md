@@ -14,6 +14,13 @@
 | `redirectUri`        | `redirect-uri` |             | `string`  | `window.location.href` |
 
 
+## Slots
+
+| Slot                     | Description |
+| ------------------------ | ----------- |
+| `"registration-content"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

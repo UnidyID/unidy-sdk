@@ -42,6 +42,16 @@ The resend button exposes a `data-countdown` attribute with the remaining second
 | `resumeSent`  | Fired when the resume link email has been sent successfully.             | `CustomEvent<void>`               |
 
 
+## Slots
+
+| Slot        | Description      |
+| ----------- | ---------------- |
+|             | The default slot |
+| `"resend"`  |                  |
+| `"resume"`  |                  |
+| `"success"` |                  |
+
+
 ## Dependencies
 
 ### Used by

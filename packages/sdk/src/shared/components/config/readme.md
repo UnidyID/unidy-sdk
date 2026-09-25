@@ -26,6 +26,13 @@
 | `unidyInitialized` | Fired when SDK initialization is complete. Contains configuration details. | `CustomEvent<Config>`       |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
