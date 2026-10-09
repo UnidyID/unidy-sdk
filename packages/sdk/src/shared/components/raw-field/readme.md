@@ -23,7 +23,7 @@
 | `pattern`                  | `pattern`                     |             | `string`                                                               | `undefined`                            |
 | `patternErrorMessage`      | `pattern-error-message`       |             | `string`                                                               | `undefined`                            |
 | `placeholder`              | `placeholder`                 |             | `string`                                                               | `undefined`                            |
-| `radioOptions`             | --                            |             | `RadioOption[]`                                                        | `undefined`                            |
+| `radioOptions`             | --                            |             | `Omit<RadioOption, "checked">[]`                                       | `undefined`                            |
 | `readonlyPlaceholder`      | `readonly-placeholder`        |             | `string`                                                               | `""`                                   |
 | `required`                 | `required`                    |             | `boolean`                                                              | `false`                                |
 | `specificPartKey`          | `specific-part-key`           |             | `string`                                                               | `undefined`                            |

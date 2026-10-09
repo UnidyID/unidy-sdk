@@ -48,7 +48,7 @@ export { NewsletterService } from "../newsletter/api/newsletters";
 export type * from "../oauth/api/oauth";
 export { OAuthService } from "../oauth/api/oauth";
 export type * from "../profile/api/profile";
-export { ProfileService } from "../profile/api/profile";
+export { ProfileService, profileFieldErrors } from "../profile/api/profile";
 export type * from "../services/api/authorized-applications";
 export { AuthorizedApplicationsService } from "../services/api/authorized-applications";
 export type * from "../ticketable/api/subscriptions";

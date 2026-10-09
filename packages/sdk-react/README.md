@@ -668,12 +668,13 @@ const { isLoading, error, success, resendConfirmation, reset } = useNewsletterRe
 
 #### `useProfile(options?)`
 
-Fetch and update the authenticated user's profile.
+Fetch and update the authenticated user's profile (`/api/v2/me`). The values (`profile`) and the profile form describing them (`fields`) are fetched in parallel.
 
 ```ts
-const { profile, isLoading, isMutating, error, fieldErrors, updateProfile, refetch, clearErrors } = useProfile({
+const { profile, fields, isLoading, isMutating, error, fieldErrors, updateProfile, refetch, clearErrors } = useProfile({
   fetchOnMount?: boolean;  // Default: true
-  fields?: string[];       // Partial validation — only validate these fields on update
+  fetchFields?: boolean;   // Also fetch the profile form. Default: true
+  fields?: string[];       // Partial validation — only validate the fields sent on update
   callbacks?: { onSuccess?, onError? };
 });
 ```
@@ -682,14 +683,17 @@ const { profile, isLoading, isMutating, error, fieldErrors, updateProfile, refet
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `profile` | `UserProfileData \| null` | The user's profile data |
+| `profile` | `MeUser \| null` | The signed-in user: `first_name`, `date_of_birth`, `custom_attributes`, … |
+| `fields` | `ProfileField[] \| null` | The profile form in display order: `name`, `custom_attribute`, `type`, `label`, `required`, `readonly`, `locked`, `locked_text`, `options` |
 | `isLoading` | `boolean` | Whether the profile is being fetched |
 | `isMutating` | `boolean` | Whether an update is in progress |
-| `error` | `string \| null` | General error |
-| `fieldErrors` | `Record<string, string>` | Per-field validation errors |
-| `updateProfile(data)` | `(data: Record<string, unknown>) => Promise<boolean>` | Update profile fields |
-| `refetch()` | `Promise<void>` | Re-fetch the profile |
+| `error` | `string \| null` | The error identifier of the last failed call, e.g. `unprocessable_content` |
+| `fieldErrors` | `Record<string, string>` | Messages of a rejected update by field (`first_name`, `custom_attributes.tier`) |
+| `updateProfile(data)` | `(data: MeUserUpdate) => Promise<boolean>` | Update profile fields; `null` clears a field |
+| `refetch()` | `Promise<void>` | Re-fetch the profile and its form |
 | `clearErrors()` | `() => void` | Clear all errors |
+
+A field's value is `profile[field.name]`, or `profile.custom_attributes[field.name]` when `field.custom_attribute` is true. A yes/no radio offers the options `true`, `false` and `null` (not set). After an update fills an empty field, `fields` is refetched, since a brand's lock applies once a field holds a value.
 
 **Example:**
 
@@ -709,12 +713,13 @@ function ProfilePage() {
     const success = await updateProfile({
       first_name: "Jane",
       last_name: "Doe",
+      custom_attributes: { newsletter_ok: true },
     });
   };
 
   return (
     <div>
-      <p>{profile.first_name.value} {profile.last_name.value}</p>
+      <p>{profile.first_name} {profile.last_name}</p>
       <button onClick={handleSave} disabled={isMutating}>Save</button>
       {fieldErrors.first_name && <p>{fieldErrors.first_name}</p>}
     </div>

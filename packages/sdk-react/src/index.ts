@@ -16,6 +16,8 @@ export type {
   JumpToUnidyRequest,
   MeNewsletter,
   MeNewsletterSubscription,
+  MeUser,
+  MeUserUpdate,
   Newsletter,
   NewsletterSubscription,
   OAuthApplication,
@@ -27,6 +29,8 @@ export type {
   PasskeyOptionsResponse,
   Preference,
   PreferenceGroup,
+  ProfileField,
+  ProfileFieldOption,
   StandaloneUnidyClientConfig,
   Subscription,
   Ticket,
@@ -42,8 +46,6 @@ export type {
   Transaction,
   TransactionLineItem,
   UpdateConsentRequest,
-  UserProfileData,
-  UserProfileFormError,
 } from "@unidy.io/sdk/standalone";
 // Re-export the base client class
 export { StandaloneUnidyClient } from "@unidy.io/sdk/standalone";

@@ -1,5 +1,5 @@
 import { Component, forceUpdate, h, Prop, State } from "@stencil/core";
-import { getUnidyClient } from "../../../api";
+import { fetchProfileNodes } from "../../../profile/profile-helpers";
 import { state as profileState } from "../../../profile/store/profile-store";
 import { UnidyComponent } from "../../../shared/base/component";
 import { oauthState, onChange } from "../../store/oauth-store";
@@ -39,7 +39,7 @@ export class OAuthMissingFields extends UnidyComponent() {
 
     this.loading = true;
     try {
-      const [error, data] = await getUnidyClient().profile.get();
+      const [error, data] = await fetchProfileNodes();
 
       if (!error && data) {
         profileState.data = JSON.parse(JSON.stringify(data));

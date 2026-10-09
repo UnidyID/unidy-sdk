@@ -1,15 +1,39 @@
 import * as Sentry from "@sentry/browser";
 import { Component, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
+import type { ApiError } from "../../../api/shared";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
-import { buildPayload, validateRequiredFields } from "../../profile-helpers";
+import { profileFieldErrors } from "../../api/profile";
+import type { MeUser, ProfileField } from "../../api/schemas";
+import {
+  buildProfileNodes,
+  buildUpdateData,
+  fetchProfileNodes,
+  filledEmptyField,
+  getProfileNode,
+  validateRequiredFields,
+  withSavedValues,
+} from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
 import { ProfileAutosave } from "./autosave";
+
+export type ProfileErrorEventDetail = {
+  /** `profile_update_field_errors` when the API rejected fields the form shows, otherwise `profile_update_failed`. */
+  error: "profile_update_field_errors" | "profile_update_failed";
+  details: {
+    /** The API's error identifier, e.g. `unprocessable_content`, or `connection_failed`. */
+    identifier: string;
+    /** Messages by field (`first_name`, `custom_attributes.tier`). */
+    fieldErrors: Record<string, string>;
+    /** The API's error body, when it sent one. */
+    apiError?: ApiError;
+  };
+};
 
 @Component({ tag: "u-profile", shadow: false })
 export class Profile {
@@ -38,15 +62,8 @@ export class Profile {
   /** Emitted when profile is successfully saved. */
   @Event() uProfileSuccess!: EventEmitter<{ message: string; payload: ProfileRaw }>;
 
-  /** Emitted when profile save fails, with error details including field-level errors. */
-  @Event() uProfileError!: EventEmitter<{
-    error: string;
-    details: {
-      fieldErrors?: Record<string, string>;
-      httpStatus?: number;
-      responseData?: unknown;
-    };
-  }>;
+  /** Emitted when profile save fails, with the API's error and the messages by field. */
+  @Event() uProfileError!: EventEmitter<ProfileErrorEventDetail>;
 
   @Listen("uFieldSubmit")
   handleFieldSubmit(event: CustomEvent<{ field: string }>) {
@@ -128,7 +145,7 @@ export class Profile {
 
     this.fetchingProfileData = true;
     try {
-      const [error, data] = await getUnidyClient().profile.get();
+      const [error, data] = await fetchProfileNodes();
 
       if (error) {
         Flash.error.addMessage(String(error));
@@ -168,46 +185,50 @@ export class Profile {
       return;
     }
 
-    let updatedProfileData = buildPayload(stateWithoutConfig.data, fieldsToValidate);
-
-    // Add flag for backend partial validation
-    if (fieldsToValidate) {
-      updatedProfileData = { ...updatedProfileData, _validate_only_sent_fields: true };
-    }
-
-    const [error, data, responseInfo] = await getUnidyClient().profile.update({ payload: updatedProfileData });
+    const data = buildUpdateData(stateWithoutConfig.data, fieldsToValidate);
+    const { profile } = getUnidyClient();
+    const [error, result] = await profile.update({
+      payload: fieldsToValidate ? { data, validate_only_sent_fields: true } : { data },
+    });
 
     if (error) {
-      if (data && "flatErrors" in data) {
-        profileState.errors = data.flatErrors as Record<string, string>;
-        this.uProfileError.emit({
-          error: "profile_update_field_errors",
-          details: {
-            fieldErrors: profileState.errors,
-            httpStatus: responseInfo?.httpStatus,
-            responseData: responseInfo?.responseData,
-          },
-        });
-      } else {
-        Flash.error.addMessage(String(error));
-        this.uProfileError.emit({
-          error: "profile_update_failed",
-          details: {
-            httpStatus: responseInfo?.httpStatus,
-            responseData: responseInfo?.responseData,
-          },
-        });
-      }
+      this.handleUpdateError(error, result && "details" in result ? result : undefined);
       profileState.loading = false;
-    } else {
-      profileState.loading = false;
-      profileState.configuration = JSON.parse(JSON.stringify(data));
-      profileState.configUpdateSource = "submit";
-      profileState.errors = {};
-      Flash.clear("error");
-      Flash.success.addMessage(t("profile.updated"));
-      this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: data as ProfileRaw });
+      return;
     }
+
+    let saved = withSavedValues(stateWithoutConfig.data, result as MeUser);
+    if (filledEmptyField(configuration, saved)) {
+      // A brand's lock applies once its field holds a value.
+      const [fieldsError, fields] = await profile.fields();
+      if (!fieldsError) saved = buildProfileNodes(result as MeUser, fields as ProfileField[]);
+    }
+
+    profileState.loading = false;
+    profileState.configuration = JSON.parse(JSON.stringify(saved));
+    profileState.configUpdateSource = "submit";
+    profileState.errors = {};
+    Flash.clear("error");
+    Flash.success.addMessage(t("profile.updated"));
+    this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: saved });
+  }
+
+  /** Errors on the fields the form shows go next to them; the rest go to the flash messages. */
+  private handleUpdateError(identifier: string, apiError?: ApiError) {
+    const fieldErrors = apiError ? profileFieldErrors(apiError) : {};
+    const shown = Object.fromEntries(Object.entries(fieldErrors).filter(([field]) => getProfileNode(profileState.data, field)));
+    const unshown = Object.entries(fieldErrors)
+      .filter(([field]) => !(field in shown))
+      .map(([, message]) => message);
+    const hasShownErrors = Object.keys(shown).length > 0;
+
+    if (hasShownErrors) profileState.errors = shown;
+    if (unshown.length > 0 || !hasShownErrors) Flash.error.addMessage(unshown.join(" | ") || identifier);
+
+    this.uProfileError.emit({
+      error: hasShownErrors ? "profile_update_field_errors" : "profile_update_failed",
+      details: { identifier, fieldErrors, apiError },
+    });
   }
 
   componentDidLoad() {

@@ -889,8 +889,8 @@ This example demonstrates how to generate a QR code containing user profile data
         const [error, user] = await getUnidyClient().profile.get();
         if (error || !user) return;
 
-        const firstName = user.first_name?.value ?? "";
-        const lastName = user.last_name?.value ?? "";
+        const firstName = user.first_name ?? "";
+        const lastName = user.last_name ?? "";
 
         const text = `hello ${firstName} ${lastName}`;
 
