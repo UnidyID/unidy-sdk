@@ -74,17 +74,19 @@ export const ApiErrorIdentifierSchema = z.enum([
 export type ApiErrorIdentifier = z.infer<typeof ApiErrorIdentifierSchema>;
 
 /** One reason of a V2 error. `field` is a body path (`payload.data.first_name`) or a query parameter. */
-export const ApiErrorDetailSchema = z.looseObject({
+export const ApiErrorDetailSchema = z.object({
   field: z.string().nullish(),
   code: z.string(),
   message: z.string().nullish(),
   index: z.number().nullish(),
+  unknown: z.string().nullish(),
+  allowed: z.array(z.string()).nullish(),
 });
 
 export type ApiErrorDetail = z.infer<typeof ApiErrorDetailSchema>;
 
 /** The V2 error envelope. */
-export const ApiErrorSchema = z.looseObject({
+export const ApiErrorSchema = z.object({
   identifier: ApiErrorIdentifierSchema,
   details: z.array(ApiErrorDetailSchema),
 });

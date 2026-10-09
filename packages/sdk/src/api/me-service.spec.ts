@@ -105,7 +105,7 @@ describe("MeService", () => {
     };
     const { service } = setup(respond(422, body));
 
-    expect(await service.create({})).toEqual(["unprocessable_content", body]);
+    expect(await service.create({})).toEqual(["unprocessable_content", { identifier: body.identifier, details: body.details }]);
   });
 
   it("derives the identifier from the status when the body is not an envelope", async () => {
