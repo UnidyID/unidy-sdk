@@ -1,4 +1,9 @@
-import type { NewsletterSubscription, NewsletterSubscriptionError } from "@unidy.io/sdk/standalone";
+import type {
+  ApiErrorDetail,
+  MeNewsletterSubscription,
+  NewsletterSubscription,
+  NewsletterSubscriptionError,
+} from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
@@ -10,12 +15,17 @@ export interface ExistingSubscription {
   preference_identifiers: string[];
 }
 
-function toExistingSubscription(sub: NewsletterSubscription): ExistingSubscription {
+function toExistingSubscription(sub: NewsletterSubscription | MeNewsletterSubscription): ExistingSubscription {
   return {
-    newsletter_internal_name: sub.newsletter_internal_name,
+    newsletter_internal_name: "newsletter_slug" in sub ? sub.newsletter_slug : sub.newsletter_internal_name,
     confirmed: sub.confirmed_at !== null,
     preference_identifiers: sub.preference_identifiers,
   };
+}
+
+/** The V2 error details of a failed signed-in call; V1 errors carry none. */
+function errorDetails(data: unknown): ApiErrorDetail[] {
+  return data && typeof data === "object" && "details" in data && Array.isArray(data.details) ? data.details : [];
 }
 
 interface State {
@@ -25,6 +35,7 @@ interface State {
   error: string | null;
   mutatingNewsletters: Set<string>;
   mutationError: string | null;
+  mutationErrorDetails: ApiErrorDetail[];
   preferenceToken: string | undefined;
 }
 
@@ -33,7 +44,7 @@ type Action =
   | { type: "fetch_success"; subscriptions: ExistingSubscription[]; email?: string; preferenceToken?: string }
   | { type: "fetch_error"; error: string }
   | { type: "mutate_start"; internalName: string }
-  | { type: "mutate_error"; internalName: string; error: string }
+  | { type: "mutate_error"; internalName: string; error: string; details: ApiErrorDetail[] }
   | { type: "subscribe_success"; internalName: string; subscription: ExistingSubscription }
   | { type: "unsubscribe_success"; internalName: string; newPreferenceToken?: string }
   | { type: "update_success"; internalName: string; preferenceIdentifiers: string[] };
@@ -66,14 +77,20 @@ function reducer(state: State, action: Action): State {
     case "fetch_error":
       return { ...state, isLoading: false, error: action.error, preferenceToken: undefined };
     case "mutate_start":
-      return { ...state, mutatingNewsletters: withMutating(state, action.internalName), mutationError: null };
+      return { ...state, mutatingNewsletters: withMutating(state, action.internalName), mutationError: null, mutationErrorDetails: [] };
     case "mutate_error":
-      return { ...state, mutatingNewsletters: withoutMutating(state, action.internalName), mutationError: action.error };
+      return {
+        ...state,
+        mutatingNewsletters: withoutMutating(state, action.internalName),
+        mutationError: action.error,
+        mutationErrorDetails: action.details,
+      };
     case "subscribe_success":
       return {
         ...state,
         mutatingNewsletters: withoutMutating(state, action.internalName),
         mutationError: null,
+        mutationErrorDetails: [],
         subscriptions: [...state.subscriptions, action.subscription],
       };
     case "unsubscribe_success":
@@ -81,6 +98,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         mutatingNewsletters: withoutMutating(state, action.internalName),
         mutationError: null,
+        mutationErrorDetails: [],
         subscriptions: state.subscriptions.filter((s) => s.newsletter_internal_name !== action.internalName),
         preferenceToken: action.newPreferenceToken ?? undefined,
       };
@@ -89,6 +107,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         mutatingNewsletters: withoutMutating(state, action.internalName),
         mutationError: null,
+        mutationErrorDetails: [],
         subscriptions: state.subscriptions.map((s) =>
           s.newsletter_internal_name === action.internalName ? { ...s, preference_identifiers: action.preferenceIdentifiers } : s,
         ),
@@ -97,6 +116,10 @@ function reducer(state: State, action: Action): State {
 }
 
 export interface UseNewsletterPreferenceCenterArgs {
+  /**
+   * Manages the subscriptions this preference token grants access to (`/api/sdk/v1`). Without one, the hook
+   * manages the signed-in user's own subscriptions (`/api/v2/me`).
+   */
   preferenceToken?: string;
   callbacks?: HookCallbacks;
 }
@@ -107,7 +130,10 @@ export interface UseNewsletterPreferenceCenterReturn {
   isLoading: boolean;
   error: string | null;
   isMutating: (internalName: string) => boolean;
+  /** The error identifier of the last failed mutation: a V2 identifier (e.g. `unprocessable_content`) when signed in. */
   mutationError: string | null;
+  /** The V2 error details of the last failed signed-in mutation, e.g. `{ field: "payload.data.newsletter_id", code: "taken" }`. */
+  mutationErrorDetails: ApiErrorDetail[];
   refetch: () => Promise<void>;
   subscribe: (internalName: string, preferenceIdentifiers?: string[]) => Promise<boolean>;
   unsubscribe: (internalName: string) => Promise<boolean>;
@@ -139,6 +165,7 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
     error: null,
     mutatingNewsletters: new Set<string>(),
     mutationError: null,
+    mutationErrorDetails: [],
     preferenceToken: args?.preferenceToken,
   });
 
@@ -153,6 +180,17 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
 
   const fetchSubscriptions = useCallback(async () => {
     dispatch({ type: "fetch_start" });
+
+    if (!tokenRef.current) {
+      const [errorCode, data] = await client.newsletters.me.listAll();
+      if (errorCode === null) {
+        dispatch({ type: "fetch_success", subscriptions: data.map(toExistingSubscription), email: data[0]?.email });
+      } else {
+        dispatch({ type: "fetch_error", error: errorCode });
+        callbacksRef.current?.onError?.(errorCode);
+      }
+      return;
+    }
 
     const result = await client.newsletters.list({
       options: { preferenceToken: tokenRef.current },
@@ -178,10 +216,31 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
     fetchSubscriptions();
   }, [fetchSubscriptions]);
 
+  const failMutation = useCallback((internalName: string, error: string, data?: unknown) => {
+    dispatch({ type: "mutate_error", internalName, error, details: errorDetails(data) });
+    callbacksRef.current?.onError?.(error);
+  }, []);
+
   const subscribe = useCallback(
     (internalName: string, preferenceIdentifiers?: string[]) => {
-      const resolvedEmail = emailRef.current || "";
       dispatch({ type: "mutate_start", internalName });
+      const onSubscribed = (subscription: ExistingSubscription) => {
+        dispatch({ type: "subscribe_success", internalName, subscription });
+        callbacksRef.current?.onSuccess?.(`Subscribed to ${internalName}`);
+      };
+
+      if (!tokenRef.current) {
+        return runMutation(
+          () => client.newsletters.me.create({ slug: internalName, preferenceIdentifiers, redirectToAfterConfirmation: currentPageUrl() }),
+          {
+            onMutate: () => {},
+            onSuccess: (data) => onSubscribed(toExistingSubscription(data)),
+            onError: (error, data) => failMutation(internalName, error, data),
+          },
+        );
+      }
+
+      const resolvedEmail = emailRef.current || "";
       return runMutation(
         () =>
           client.newsletters.create({
@@ -196,48 +255,64 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
           onMutate: () => {},
           onSuccess: (data) => {
             if (data.errors.length > 0) {
-              const errorMessage = data.errors.map((e: NewsletterSubscriptionError) => e.error_identifier).join(", ");
-              dispatch({ type: "mutate_error", internalName, error: errorMessage });
-              callbacksRef.current?.onError?.(errorMessage);
+              failMutation(internalName, data.errors.map((e: NewsletterSubscriptionError) => e.error_identifier).join(", "));
               return false;
             }
             const sub = data.results[0];
             if (sub) {
-              dispatch({ type: "subscribe_success", internalName, subscription: toExistingSubscription(sub) });
+              onSubscribed(toExistingSubscription(sub));
+            } else {
+              callbacksRef.current?.onSuccess?.(`Subscribed to ${internalName}`);
             }
-            callbacksRef.current?.onSuccess?.(`Subscribed to ${internalName}`);
           },
-          onError: (error) => {
-            dispatch({ type: "mutate_error", internalName, error });
-            callbacksRef.current?.onError?.(error);
-          },
+          onError: (error) => failMutation(internalName, error),
         },
       );
     },
-    [client],
+    [client, failMutation],
   );
 
   const unsubscribe = useCallback(
     (internalName: string) => {
       dispatch({ type: "mutate_start", internalName });
+      const onUnsubscribed = (newPreferenceToken?: string) => {
+        dispatch({ type: "unsubscribe_success", internalName, newPreferenceToken });
+        callbacksRef.current?.onSuccess?.(`Unsubscribed from ${internalName}`);
+      };
+
+      if (!tokenRef.current) {
+        return runMutation(() => client.newsletters.me.delete({ slug: internalName }), {
+          onMutate: () => {},
+          onSuccess: () => onUnsubscribed(),
+          onError: (error, data) => failMutation(internalName, error, data),
+        });
+      }
+
       return runMutation(() => client.newsletters.delete({ internalName, options: { preferenceToken: tokenRef.current } }), {
         onMutate: () => {},
-        onSuccess: (data) => {
-          dispatch({ type: "unsubscribe_success", internalName, newPreferenceToken: data?.new_preference_token });
-          callbacksRef.current?.onSuccess?.(`Unsubscribed from ${internalName}`);
-        },
-        onError: (error) => {
-          dispatch({ type: "mutate_error", internalName, error });
-          callbacksRef.current?.onError?.(error);
-        },
+        onSuccess: (data) => onUnsubscribed(data?.new_preference_token),
+        onError: (error) => failMutation(internalName, error),
       });
     },
-    [client],
+    [client, failMutation],
   );
 
   const updatePreferences = useCallback(
     (internalName: string, preferenceIdentifiers: string[]) => {
       dispatch({ type: "mutate_start", internalName });
+      const onUpdated = () => {
+        dispatch({ type: "update_success", internalName, preferenceIdentifiers });
+        callbacksRef.current?.onSuccess?.(`Preferences updated for ${internalName}`);
+      };
+
+      if (!tokenRef.current) {
+        return runMutation(() => client.newsletters.me.update({ slug: internalName, preferenceIdentifiers }), {
+          onMutate: () => {},
+          onSuccess: onUpdated,
+          onError: (error, data) => failMutation(internalName, error, data),
+        });
+      }
+
       return runMutation(
         () =>
           client.newsletters.update({
@@ -247,18 +322,12 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
           }),
         {
           onMutate: () => {},
-          onSuccess: () => {
-            dispatch({ type: "update_success", internalName, preferenceIdentifiers });
-            callbacksRef.current?.onSuccess?.(`Preferences updated for ${internalName}`);
-          },
-          onError: (error) => {
-            dispatch({ type: "mutate_error", internalName, error });
-            callbacksRef.current?.onError?.(error);
-          },
+          onSuccess: onUpdated,
+          onError: (error) => failMutation(internalName, error),
         },
       );
     },
-    [client],
+    [client, failMutation],
   );
 
   const isMutating = useCallback((internalName: string) => state.mutatingNewsletters.has(internalName), [state.mutatingNewsletters]);
@@ -306,6 +375,7 @@ export function useNewsletterPreferenceCenter(args?: UseNewsletterPreferenceCent
     error: state.error,
     isMutating,
     mutationError: state.mutationError,
+    mutationErrorDetails: state.mutationErrorDetails,
     refetch: fetchSubscriptions,
     subscribe,
     unsubscribe,
