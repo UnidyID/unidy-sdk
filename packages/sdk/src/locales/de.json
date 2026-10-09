@@ -238,17 +238,18 @@
       "revoke": "Übertragung widerrufen"
     },
     "errors": {
-      "feature_disabled": "Ticket-Übertragungen sind nicht verfügbar",
+      "feature_not_enabled": "Ticket-Übertragungen sind nicht verfügbar",
       "fetch_failed": "Ticket-Übertragungen konnten nicht geladen werden",
       "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut",
       "missing_ticket": "Kein Ticket für die Übertragung ausgewählt",
       "not_found": "Übertragungsangebot nicht gefunden",
       "not_ticket_owner": "Sie können nur eigene Tickets übertragen",
-      "not_transfer_sender": "Nur der Absender kann diese Übertragung stornieren",
       "offer_email_failed": "Die Übertragungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
       "recipient_invite_failed": "Der Empfänger konnte nicht eingeladen werden. Bitte versuchen Sie es erneut",
       "recipient_is_owner": "Sie können ein Ticket nicht an sich selbst übertragen",
       "recipient_mismatch": "Dieses Übertragungsangebot ist an ein anderes Konto gerichtet",
+      "recipient_missing": "Für diese Übertragung ist ein Empfänger erforderlich",
+      "ticket_already_entered": "Dieses Ticket wurde bereits für den Einlass verwendet",
       "ticket_already_transferred": "Dieses Ticket wurde bereits übertragen",
       "ticket_not_active": "Dieses Ticket ist nicht aktiv",
       "ticket_not_transferred": "Dieses Ticket wurde nicht übertragen",
@@ -257,8 +258,11 @@
       "transfer_not_pending": "Dieses Übertragungsangebot ist nicht mehr ausstehend"
     },
     "form": {
+      "create_link": "Übertragungslink erstellen",
       "email_label": "E-Mail-Adresse des Empfängers",
       "email_placeholder": "E-Mail-Adresse des Empfängers eingeben",
+      "link_label": "Übertragungslink",
+      "link_success": "Übertragungslink erstellt. Teilen Sie ihn mit dem Empfänger",
       "submit": "Ticket übertragen",
       "success": "Übertragungsangebot an {{email}} gesendet"
     }

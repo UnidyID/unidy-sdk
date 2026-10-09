@@ -6,19 +6,18 @@ import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { loadLocales, renderFragment, renderListContent } from "../../../shared/list-renderer";
 import { waitForConfig } from "../../../shared/store/unidy-store";
-import type { TicketTransfer } from "../../api/schemas";
-import { translateTransferError } from "../../transfer-error";
-
-export type TicketTransferDirection = "incoming" | "outgoing";
+import type { TicketTransfer, TicketTransferDirection } from "../../api/schemas";
+import { transferSucceeded, translateTransferError } from "../../transfer-error";
 
 /**
- * Lists the user's pending ticket transfers for one direction.
+ * Lists the user's open ticket transfer offers for one direction.
  *
  * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
- * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
- * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
- * the template get the transfer `token` stamped automatically, and the list
- * refetches after a successful action.
+ * substitutions (e.g. `ticket.title`, `sender_email`, `recipient_email`,
+ * `expires_at`, `claim_url`) and `<transfer-conditional>` blocks.
+ * `u-ticket-transfer-action` elements inside the template get the transfer
+ * `transfer-id` stamped automatically, and the list refetches after a
+ * successful action.
  */
 @Component({ tag: "u-ticket-transfer-list", shadow: false })
 export class TicketTransferList extends UnidyComponent() {
@@ -32,7 +31,7 @@ export class TicketTransferList extends UnidyComponent() {
   @State() loading = true;
   @State() error: string | null = null;
 
-  /** Which side of the user's pending transfers to display ('incoming' or 'outgoing'). */
+  /** Which side of the user's open offers to display: 'incoming' (offers they can accept) or 'outgoing' (offers they sent). */
   @Prop() direction!: TicketTransferDirection;
 
   /** CSS selector for the target element where items will be rendered. */
@@ -139,18 +138,18 @@ export class TicketTransferList extends UnidyComponent() {
 
     try {
       const unidyClient = await getUnidyClient();
-      const [error, data] = await unidyClient.ticketTransfers.list();
+      const result = await unidyClient.ticketTransfers.listAll();
 
       if (loadId !== this.loadId) return;
 
-      if (error !== null || !data || !("incoming" in data)) {
-        this.error = translateTransferError(error ?? "invalid_response");
+      if (!transferSucceeded(result)) {
+        this.error = translateTransferError(result[0]);
         this.loading = false;
         this.uTicketTransferListError.emit({ direction, error: this.error });
         return;
       }
 
-      this.items = data[direction];
+      this.items = result[1].filter((transfer) => transfer.direction === direction);
       this.loading = false;
 
       this.uTicketTransferListSuccess.emit({ direction, items: this.items });
@@ -173,7 +172,7 @@ export class TicketTransferList extends UnidyComponent() {
       postProcess: (fragment: DocumentFragment, item: TicketTransfer | undefined) => {
         for (const actionEl of fragment.querySelectorAll("u-ticket-transfer-action")) {
           if (item) {
-            actionEl.setAttribute("token", item.token);
+            actionEl.setAttribute("transfer-id", item.id);
           } else {
             actionEl.setAttribute("disabled", "true");
           }

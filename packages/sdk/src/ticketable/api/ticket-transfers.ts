@@ -1,30 +1,34 @@
-import type { ApiResponse } from "../../api/base-client";
-import { type ApiClientInterface, BaseService, type CommonErrors, type ServiceDependencies } from "../../api/base-service";
+import type { ApiClientInterface, ServiceDependencies } from "../../api/base-service";
+import { type MeListQuery, type MeResult, MeService } from "../../api/me-service";
+import type { ApiError, Page } from "../../api/shared";
 
 // Re-export types for consumers importing from this module directly.
-export type { Ticket, TicketTransfer, TicketTransferStatus, TicketTransfersListResponse } from "./schemas";
-
-import {
-  type Ticket,
-  TicketSchema,
-  type TicketTransfer,
-  TicketTransferSchema,
-  type TicketTransfersListResponse,
-  TicketTransfersListResponseSchema,
+export type {
+  OfferedTicket,
+  Ticket,
+  TicketTransfer,
+  TicketTransferDirection,
+  TicketTransferMode,
+  TicketTransferStatus,
 } from "./schemas";
 
+import { type Ticket, TicketSchema, type TicketTransfer, TicketTransferSchema } from "./schemas";
+
+const TRANSFERS_PATH = "/tickets/transfers";
+const LIST_ALL_PER_PAGE = 100;
+
 /**
- * Error identifiers the ticket transfer endpoints return in response bodies.
- * See docs/API.md ("Ticket Transfers") in the Unidy backend.
+ * Reasons the ticket transfer services give for refusing an action. V2 sends them as the `message` of an
+ * error detail (`recipient_is_owner`, or `<reason>: <validation message>`), inside a 422 or 403 envelope.
  */
-const TICKET_TRANSFER_ERROR_IDENTIFIERS = [
-  "feature_disabled",
+export const TICKET_TRANSFER_ERROR_IDENTIFIERS = [
   "not_ticket_owner",
-  "not_transfer_sender",
   "offer_email_failed",
   "recipient_invite_failed",
   "recipient_is_owner",
   "recipient_mismatch",
+  "recipient_missing",
+  "ticket_already_entered",
   "ticket_already_transferred",
   "ticket_not_active",
   "ticket_not_transferred",
@@ -36,170 +40,143 @@ const TICKET_TRANSFER_ERROR_IDENTIFIERS = [
 export type TicketTransferErrorIdentifier = (typeof TICKET_TRANSFER_ERROR_IDENTIFIERS)[number];
 
 // Argument types
-export type TicketTransferCreateArgs = { ticketId: string; recipientEmail: string };
+/** An `email` offer is mailed to `recipientEmail`; a `link` offer returns a `claim_url` to share. */
+export type TicketTransferCreateArgs =
+  | { ticketId: string; mode?: "email"; recipientEmail: string }
+  | { ticketId: string; mode: "link"; recipientEmail?: never };
+export type TicketTransferIdArgs = { id: string };
 export type TicketTransferTokenArgs = { token: string };
 export type TicketTransferTicketArgs = { ticketId: string };
 
-// Result types
-export type TicketTransferError =
-  | CommonErrors
-  | ["missing_id_token", null]
-  | [TicketTransferErrorIdentifier, null]
-  | ["not_found", null]
-  | ["unauthorized", null]
-  | ["server_error", null]
-  | ["invalid_response", null];
+/**
+ * A `/me` result whose refusals carry the transfer reason as their identifier when the API names one
+ * (e.g. `["transfer_expired", envelope]`), so it can be translated; other errors keep the V2 identifier.
+ */
+export type TicketTransferResult<T> = MeResult<T> | [TicketTransferErrorIdentifier, ApiError];
 
-export type TicketTransfersListResult = TicketTransferError | [null, TicketTransfersListResponse];
-export type TicketTransferActionResult = TicketTransferError | [null, TicketTransfer];
-/** Result type for revoke/return — the backend returns the updated ticket, not a transfer object. */
-export type TicketTransferTicketActionResult = TicketTransferError | [null, Ticket];
+export type TicketTransfersListResult = TicketTransferResult<Page<TicketTransfer>>;
+export type TicketTransfersListAllResult = TicketTransferResult<TicketTransfer[]>;
+export type TicketTransferActionResult = TicketTransferResult<TicketTransfer>;
+/** Result type for revoke/return — the API returns the updated ticket, not a transfer. */
+export type TicketTransferTicketActionResult = TicketTransferResult<Ticket>;
 
-export class TicketTransfersService extends BaseService {
+function isTransferErrorIdentifier(value: string): value is TicketTransferErrorIdentifier {
+  return (TICKET_TRANSFER_ERROR_IDENTIFIERS as readonly string[]).includes(value);
+}
+
+function isApiError(value: unknown): value is ApiError {
+  return typeof value === "object" && value !== null && "identifier" in value && "details" in value;
+}
+
+function succeeded<T>(result: TicketTransferResult<T>): result is [null, T] {
+  return result[0] === null;
+}
+
+/**
+ * The SDK identifier for a V2 transfer error: the service reason named by a detail, or `not_found` for an
+ * unknown claim token or ticket id (a 422 detail rather than a 404, since they arrive in the body).
+ */
+function ticketTransferErrorIdentifier(error: ApiError): TicketTransferErrorIdentifier | "not_found" | null {
+  for (const detail of error.details) {
+    const reason = detail.message?.split(":", 1)[0].trim();
+    if (reason && isTransferErrorIdentifier(reason)) return reason;
+  }
+
+  return error.details.some((detail) => detail.code === "not_found") ? "not_found" : null;
+}
+
+/**
+ * The signed-in user's ticket transfer offers on `/api/v2/me/tickets/transfers`, and ending a lend on
+ * `/api/v2/me/tickets/{id}/holder`.
+ */
+export class TicketTransfersService extends MeService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketTransfersService", deps);
   }
 
-  /** Lists the user's pending, unexpired transfers, split into incoming and outgoing. */
-  async list(): Promise<TicketTransfersListResult> {
-    const idToken = await this.resolveIdToken();
-    if (!idToken) {
-      return ["missing_id_token", null];
+  /** One page of the user's open offers, both the ones they sent and the ones they can accept. Each says its `direction`. */
+  async list(query: MeListQuery = {}): Promise<TicketTransfersListResult> {
+    return this.withTransferError(await this.fetchPage(TRANSFERS_PATH, TicketTransferSchema, query));
+  }
+
+  /** Every open offer of the user, following the pagination. */
+  async listAll(): Promise<TicketTransfersListAllResult> {
+    const transfers: TicketTransfer[] = [];
+    let page: number | null = 1;
+
+    while (page !== null) {
+      const result = await this.list({ page, perPage: LIST_ALL_PER_PAGE });
+      if (!succeeded(result)) return result;
+
+      transfers.push(...result[1].records);
+      page = result[1].pagination.next;
     }
 
-    const response = await this.client.get<unknown>("/api/sdk/v1/ticket_transfers", this.buildAuthHeaders({ "X-ID-Token": idToken }));
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        this.logger.error("Failed to fetch ticket transfers", response);
-        return this.errorIdentifierResult(response);
-      }
-
-      const parsed = TicketTransfersListResponseSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid ticket transfers response", parsed.error);
-        this.errorReporter.captureException(parsed.error, { endpoint: "/api/sdk/v1/ticket_transfers" });
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+    return [null, transfers];
   }
 
-  /** Sends a transfer offer for an owned ticket to the given email address. */
+  /** An open offer the user sent or can accept. */
+  async get(args: TicketTransferIdArgs): Promise<TicketTransferActionResult> {
+    return this.withTransferError(await this.fetchRecord(this.transferPath(args.id), TicketTransferSchema));
+  }
+
+  /** Offers an owned ticket, by email (the default) or as a claim link. */
   async create(args: TicketTransferCreateArgs): Promise<TicketTransferActionResult> {
-    return this.postAction(`/api/sdk/v1/tickets/${args.ticketId}/transfer`, { recipient_email: args.recipientEmail });
+    const data =
+      args.mode === "link"
+        ? { ticket_id: args.ticketId, mode: "link" }
+        : { ticket_id: args.ticketId, mode: "email", recipient_email: args.recipientEmail };
+
+    return this.withTransferError(await this.write("POST", TRANSFERS_PATH, TicketTransferSchema, { data }));
   }
 
-  /** Accepts a transfer offer addressed to the authenticated user. The ticket moves to them. */
-  async accept(args: TicketTransferTokenArgs): Promise<TicketTransferActionResult> {
-    return this.postAction(`/api/sdk/v1/ticket_transfers/${args.token}/accept`, {});
+  /** Accepts an incoming offer. The user becomes the ticket's holder. */
+  async accept(args: TicketTransferIdArgs): Promise<TicketTransferActionResult> {
+    return this.withTransferError(await this.write("POST", `${this.transferPath(args.id)}/accept`, TicketTransferSchema));
   }
 
-  /** Declines a transfer offer addressed to the authenticated user. */
-  async decline(args: TicketTransferTokenArgs): Promise<TicketTransferActionResult> {
-    return this.postAction(`/api/sdk/v1/ticket_transfers/${args.token}/decline`, {});
+  /** Declines an incoming offer. */
+  async decline(args: TicketTransferIdArgs): Promise<TicketTransferActionResult> {
+    return this.withTransferError(await this.write("POST", `${this.transferPath(args.id)}/decline`, TicketTransferSchema));
   }
 
-  /** Cancels a pending transfer offer previously sent by the authenticated user. */
-  async cancel(args: TicketTransferTokenArgs): Promise<TicketTransferActionResult> {
-    return this.postAction(`/api/sdk/v1/ticket_transfers/${args.token}/cancel`, {});
+  /** Cancels an outgoing offer. Someone else's offer is `not_found`. */
+  async cancel(args: TicketTransferIdArgs): Promise<TicketTransferActionResult> {
+    return this.withTransferError(await this.write("DELETE", this.transferPath(args.id), TicketTransferSchema));
   }
 
-  /** Owner pulls a transferred ticket back from its current holder. Returns the updated ticket. */
+  /** Accepts the offer behind a claim link, which carries only its token. */
+  async claim(args: TicketTransferTokenArgs): Promise<TicketTransferActionResult> {
+    return this.withTransferError(
+      await this.write("POST", `${TRANSFERS_PATH}/claim`, TicketTransferSchema, { data: { token: args.token } }),
+    );
+  }
+
+  /** Owner takes a lent ticket back from its holder. Returns the updated ticket. */
   async revoke(args: TicketTransferTicketArgs): Promise<TicketTransferTicketActionResult> {
-    return this.postTicketAction(`/api/sdk/v1/tickets/${args.ticketId}/transfer/revoke`, {});
+    return this.releaseHolder(args.ticketId);
   }
 
-  /** Holder returns a transferred ticket back to its owner. Returns the updated ticket. */
+  /** Holder returns a lent ticket to its owner. Returns the updated ticket. */
   // eslint-disable-next-line no-restricted-syntax
   async return(args: TicketTransferTicketArgs): Promise<TicketTransferTicketActionResult> {
-    return this.postTicketAction(`/api/sdk/v1/tickets/${args.ticketId}/transfer/return`, {});
+    return this.releaseHolder(args.ticketId);
   }
 
-  private async postTicketAction(endpoint: string, body: object): Promise<TicketTransferTicketActionResult> {
-    const idToken = await this.resolveIdToken();
-    if (!idToken) {
-      return ["missing_id_token", null];
-    }
-
-    const response = await this.client.post<unknown>(endpoint, body, this.buildAuthHeaders({ "X-ID-Token": idToken }));
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        return this.errorIdentifierResult(response);
-      }
-
-      const parsed = TicketSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid ticket response", parsed.error);
-        this.errorReporter.captureException(parsed.error, { endpoint });
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+  // One endpoint ends a lend from either side; the API tells owner and holder apart.
+  private async releaseHolder(ticketId: string): Promise<TicketTransferTicketActionResult> {
+    return this.withTransferError(await this.write("DELETE", `/tickets/${encodeURIComponent(ticketId)}/holder`, TicketSchema));
   }
 
-  private async postAction(endpoint: string, body: object): Promise<TicketTransferActionResult> {
-    const idToken = await this.resolveIdToken();
-    if (!idToken) {
-      return ["missing_id_token", null];
-    }
-
-    const response = await this.client.post<unknown>(endpoint, body, this.buildAuthHeaders({ "X-ID-Token": idToken }));
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        return this.errorIdentifierResult(response);
-      }
-
-      const parsed = TicketTransferSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid ticket transfer response", parsed.error);
-        this.errorReporter.captureException(parsed.error, { endpoint });
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+  private transferPath(id: string): string {
+    return `${TRANSFERS_PATH}/${encodeURIComponent(id)}`;
   }
 
-  /**
-   * A consumer-injected getIdToken may reject instead of returning null —
-   * methods must still resolve to the documented [error, data] tuple.
-   */
-  private async resolveIdToken(): Promise<string | null> {
-    try {
-      return await this.getIdToken();
-    } catch (err) {
-      this.logger.error("Failed to resolve ID token", err);
-      return null;
-    }
-  }
+  private withTransferError<T>(result: MeResult<T>): TicketTransferResult<T> {
+    const [identifier, error] = result;
+    if (identifier === null || !isApiError(error)) return result;
 
-  /**
-   * Maps a failed response to a typed error tuple. The backend communicates
-   * domain errors via `error_identifier` in the body; status codes are only a
-   * fallback for responses without one (e.g. 404 from a wrong token).
-   */
-  private errorIdentifierResult(
-    response: ApiResponse<unknown>,
-  ): [TicketTransferErrorIdentifier, null] | ["not_found", null] | ["unauthorized", null] | ["server_error", null] {
-    const data = response.data;
-    if (data && typeof data === "object" && "error_identifier" in data) {
-      const identifier = (data as { error_identifier: unknown }).error_identifier;
-      if (typeof identifier === "string" && (TICKET_TRANSFER_ERROR_IDENTIFIERS as readonly string[]).includes(identifier)) {
-        return [identifier as TicketTransferErrorIdentifier, null];
-      }
-    }
-
-    if (response.status === 404) {
-      return ["not_found", null];
-    }
-    if (response.status === 401 || response.status === 403) {
-      return ["unauthorized", null];
-    }
-    return ["server_error", null];
+    const transferIdentifier = ticketTransferErrorIdentifier(error);
+    return transferIdentifier ? [transferIdentifier, error] : result;
   }
 }

@@ -238,17 +238,18 @@
       "revoke": "Revoca il trasferimento"
     },
     "errors": {
-      "feature_disabled": "I trasferimenti dei biglietti non sono disponibili",
+      "feature_not_enabled": "I trasferimenti dei biglietti non sono disponibili",
       "fetch_failed": "Impossibile caricare i trasferimenti dei biglietti",
       "generic": "Qualcosa è andato storto. Riprova",
       "missing_ticket": "Nessun biglietto selezionato per il trasferimento",
       "not_found": "Offerta di trasferimento non trovata",
       "not_ticket_owner": "Puoi trasferire solo i tuoi biglietti",
-      "not_transfer_sender": "Solo il mittente può annullare questo trasferimento",
       "offer_email_failed": "Impossibile inviare l'e-mail di trasferimento. Riprova",
       "recipient_invite_failed": "Impossibile invitare il destinatario. Riprova",
       "recipient_is_owner": "Non puoi trasferire un biglietto a te stesso",
       "recipient_mismatch": "Questa offerta di trasferimento è destinata a un altro account",
+      "recipient_missing": "Per questo trasferimento è necessario un destinatario",
+      "ticket_already_entered": "Questo biglietto è già stato utilizzato per l'ingresso",
       "ticket_already_transferred": "Questo biglietto è già stato trasferito",
       "ticket_not_active": "Questo biglietto non è attivo",
       "ticket_not_transferred": "Questo biglietto non è stato trasferito",
@@ -257,8 +258,11 @@
       "transfer_not_pending": "Questa offerta di trasferimento non è più in sospeso"
     },
     "form": {
+      "create_link": "Crea link di trasferimento",
       "email_label": "Indirizzo e-mail del destinatario",
       "email_placeholder": "Inserisci l'e-mail del destinatario",
+      "link_label": "Link di trasferimento",
+      "link_success": "Link di trasferimento creato. Condividilo con il destinatario",
       "submit": "Trasferisci biglietto",
       "success": "Offerta di trasferimento inviata a {{email}}"
     }
