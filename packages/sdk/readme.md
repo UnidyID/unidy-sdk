@@ -1139,6 +1139,7 @@ const [error, profile] = await client.profile.get();
 | `auth` | `AuthService` | Authentication service for sign-in flows |
 | `profile` | `ProfileService` | User profile management |
 | `newsletters` | `NewsletterService` | Newsletter subscription management |
+| `authorizedApplications` | `AuthorizedApplicationsService` | OAuth applications the signed-in user authorized |
 | `tickets` | `TicketsService` | Ticket management |
 | `subscriptions` | `SubscriptionsService` | Subscription management |
 
@@ -1239,6 +1240,17 @@ Lists all available newsletters (public, no auth required).
 #### `newsletters.getByName(args): Promise<NewsletterGetByNameResult>`
 
 Gets a newsletter definition by its internal name (public, no auth required).
+
+### AuthorizedApplicationsService
+
+The OAuth applications the signed-in user has authorized (`/api/v2/me/authorized_applications`), keyed by their
+client id. Records are `{ id, name, description, name_t, description_t, service_logo_url, brands, authorized_at }`.
+
+```javascript
+const client = getUnidyClient();
+const [error, page] = await client.authorizedApplications.list(); // { records, pagination }
+const [revokeError, application] = await client.authorizedApplications.revoke(page.records[0].id);
+```
 
 ### Ticketable API
 
