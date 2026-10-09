@@ -38,23 +38,24 @@ const respond = (status: number, data: unknown, connectionError = false): ApiRes
 const PAGINATION = { strategy: "page", sort: "-created_at", page: 1, per_page: 50, count: 1, pages: 1, next: null, previous: null };
 
 function setup(response: ApiResponse<unknown>, idToken: string | null = "id-token") {
-  const client = {
-    baseUrl: "https://unidy.example",
-    api_key: "key",
-    get: jest.fn(async () => response),
-    post: jest.fn(async () => response),
-    patch: jest.fn(async () => response),
-    delete: jest.fn(async () => response),
-  } satisfies ApiClientInterface;
+  const mocks = {
+    get: jest.fn(async (..._args: unknown[]) => response),
+    post: jest.fn(async (..._args: unknown[]) => response),
+    patch: jest.fn(async (..._args: unknown[]) => response),
+    delete: jest.fn(async (..._args: unknown[]) => response),
+  };
+  const client = { baseUrl: "https://unidy.example", api_key: "key", ...mocks } as unknown as ApiClientInterface;
   const logger = { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() };
   const service = new TestService(client, "TestService", { getIdToken: async () => idToken, logger });
 
-  return { client, service };
+  return { client: mocks, service };
 }
 
 describe("MeService", () => {
   it("unwraps a page and sends sort and eq filters", async () => {
-    const { client, service } = setup(respond(200, { records: [{ id: "1", name: "A" }], meta: { request_id: "r", pagination: PAGINATION } }));
+    const { client, service } = setup(
+      respond(200, { records: [{ id: "1", name: "A" }], meta: { request_id: "r", pagination: PAGINATION } }),
+    );
 
     const result = await service.page({ page: 2, perPage: 10, sort: "-starts_at", filters: { state: "active", payment_state: undefined } });
 
@@ -97,7 +98,11 @@ describe("MeService", () => {
   });
 
   it("returns a V2 error by its identifier, with the envelope", async () => {
-    const body = { identifier: "unprocessable_content", details: [{ field: "payload.data.name", code: "blank" }], meta: { request_id: "r" } };
+    const body = {
+      identifier: "unprocessable_content",
+      details: [{ field: "payload.data.name", code: "blank" }],
+      meta: { request_id: "r" },
+    };
     const { service } = setup(respond(422, body));
 
     expect(await service.create({})).toEqual(["unprocessable_content", body]);
