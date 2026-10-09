@@ -2,6 +2,7 @@
 
 // Re-export commonly needed SDK types
 export type {
+  ApiErrorDetail,
   CheckConsentResponse,
   ConnectRequest,
   CreateSignInResponse,
@@ -14,6 +15,8 @@ export type {
   JumpToServiceRequest,
   JumpToUnidyRequest,
   ListServicesResult,
+  MeNewsletter,
+  MeNewsletterSubscription,
   Newsletter,
   NewsletterSubscription,
   OAuthApplication,
