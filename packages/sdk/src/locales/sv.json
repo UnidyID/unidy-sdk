@@ -232,17 +232,18 @@
       "revoke": "Återkalla överlåtelse"
     },
     "errors": {
-      "feature_disabled": "Biljettöverföringar är inte tillgängliga",
+      "feature_not_enabled": "Biljettöverföringar är inte tillgängliga",
       "fetch_failed": "Det gick inte att ladda biljettöverföringar",
       "generic": "Något gick fel. Försök igen",
       "missing_ticket": "Ingen biljett vald för överföring",
       "not_found": "Överföringserbjudandet hittades inte",
       "not_ticket_owner": "Du kan bara överföra dina egna biljetter",
-      "not_transfer_sender": "Endast avsändaren kan avbryta denna överföring",
       "offer_email_failed": "Överförings-e-postmeddelandet kunde inte skickas. Försök igen",
       "recipient_invite_failed": "Mottagaren kunde inte bjudas in. Försök igen",
       "recipient_is_owner": "Du kan inte överföra en biljett till dig själv",
       "recipient_mismatch": "Det här överföringserbjudandet är riktat till ett annat konto",
+      "recipient_missing": "Den här överföringen kräver en mottagare",
+      "ticket_already_entered": "Den här biljetten har redan använts för inträde",
       "ticket_already_transferred": "Den här biljetten har redan överförts",
       "ticket_not_active": "Den här biljetten är inte aktiv",
       "ticket_not_transferred": "Denna biljett har inte överförts",
@@ -251,8 +252,11 @@
       "transfer_not_pending": "Det här överföringserbjudandet väntar inte längre"
     },
     "form": {
+      "create_link": "Skapa överföringslänk",
       "email_label": "Mottagarens e-postadress",
       "email_placeholder": "Ange mottagarens e-post",
+      "link_label": "Överföringslänk",
+      "link_success": "Överföringslänk skapad. Dela den med mottagaren",
       "submit": "Överför biljett",
       "success": "Överföringserbjudande skickat till {{email}}"
     }

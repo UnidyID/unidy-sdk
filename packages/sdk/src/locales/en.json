@@ -240,17 +240,18 @@
       "revoke": "Revoke transfer"
     },
     "errors": {
-      "feature_disabled": "Ticket transfers are not available",
+      "feature_not_enabled": "Ticket transfers are not available",
       "fetch_failed": "Failed to load ticket transfers",
       "generic": "Something went wrong. Please try again",
       "missing_ticket": "No ticket selected for transfer",
       "not_found": "Transfer offer not found",
       "not_ticket_owner": "You can only transfer tickets you own",
-      "not_transfer_sender": "Only the sender can cancel this transfer",
       "offer_email_failed": "The transfer email could not be sent. Please try again",
       "recipient_invite_failed": "The recipient could not be invited. Please try again",
       "recipient_is_owner": "You cannot transfer a ticket to yourself",
       "recipient_mismatch": "This transfer offer is addressed to a different account",
+      "recipient_missing": "A recipient is required for this transfer",
+      "ticket_already_entered": "This ticket has already been used for entry",
       "ticket_already_transferred": "This ticket has already been transferred",
       "ticket_not_active": "This ticket is not active",
       "ticket_not_transferred": "This ticket has not been transferred",
@@ -259,8 +260,11 @@
       "transfer_not_pending": "This transfer offer is no longer pending"
     },
     "form": {
+      "create_link": "Create transfer link",
       "email_label": "Recipient email address",
       "email_placeholder": "Enter the recipient's email",
+      "link_label": "Transfer link",
+      "link_success": "Transfer link created. Share it with the recipient",
       "submit": "Transfer ticket",
       "success": "Transfer offer sent to {{email}}"
     }

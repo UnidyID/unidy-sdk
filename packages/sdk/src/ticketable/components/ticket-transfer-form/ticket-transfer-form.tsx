@@ -3,10 +3,14 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { TicketTransfer } from "../../api/schemas";
-import { translateTransferError } from "../../transfer-error";
+import type { TicketTransferCreateArgs } from "../../api/ticket-transfers";
+import { transferSucceeded, translateTransferError } from "../../transfer-error";
+
+/** How the form offers the ticket: mailed to an address, or as a claim link to share. */
+export type TicketTransferFormMode = "email" | "link";
 
 /**
- * Form to send a ticket transfer offer to an email address.
+ * Form to offer a ticket to someone else, by email or as a claim link.
  *
  * Used standalone with an explicit `ticket-id`, or inside a
  * `u-ticketable-list` ticket template where the list stamps the
@@ -16,11 +20,13 @@ import { translateTransferError } from "../../transfer-error";
 export class TicketTransferForm extends UnidyComponent() {
   /** The id of the ticket to transfer. Stamped automatically inside a u-ticketable-list template. */
   @Prop({ attribute: "ticket-id", mutable: true }) ticketId?: string;
+  /** "email" mails the offer to the address entered; "link" creates a claim link to share, shown after submitting. */
+  @Prop() mode: TicketTransferFormMode = "email";
   /** Disables the form controls. Stamped automatically on skeleton items inside a u-ticketable-list template. */
   @Prop({ reflect: true }) disabled = false;
   /** CSS classes to apply to the form element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
-  /** CSS classes to apply to the email input element. */
+  /** CSS classes to apply to the email input element, and to the claim link field in link mode. */
   @Prop() inputClassName?: string;
   /** CSS classes to apply to the submit button element. */
   @Prop() buttonClassName?: string;
@@ -33,11 +39,16 @@ export class TicketTransferForm extends UnidyComponent() {
   @State() loading = false;
   @State() error: string | null = null;
   @State() success: string | null = null;
+  @State() claimUrl: string | null = null;
 
-  /** Fired when a transfer offer was sent successfully. Contains the created transfer. */
+  /** Fired when a transfer offer was created successfully. Contains the created transfer; a link offer carries its `claim_url`. */
   @Event() uTicketTransferCreateSuccess!: EventEmitter<{ transfer: TicketTransfer }>;
-  /** Fired when sending a transfer offer fails. Contains the error code. */
+  /** Fired when creating a transfer offer fails. Contains the error code. */
   @Event() uTicketTransferCreateError!: EventEmitter<{ error: string }>;
+
+  private get linkMode(): boolean {
+    return this.mode === "link";
+  }
 
   private handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
@@ -55,19 +66,30 @@ export class TicketTransferForm extends UnidyComponent() {
     this.loading = true;
     this.error = null;
     this.success = null;
+    this.claimUrl = null;
+
+    const args: TicketTransferCreateArgs = this.linkMode
+      ? { ticketId, mode: "link" }
+      : { ticketId, mode: "email", recipientEmail: this.email.trim() };
 
     try {
       const client = await getUnidyClient();
-      const [error, transfer] = await client.ticketTransfers.create({ ticketId, recipientEmail: this.email.trim() });
+      const result = await client.ticketTransfers.create(args);
 
-      if (error !== null || !transfer || !("token" in transfer)) {
-        this.error = translateTransferError(error ?? "invalid_response");
-        this.uTicketTransferCreateError.emit({ error: error ?? "invalid_response" });
+      if (!transferSucceeded(result)) {
+        this.error = translateTransferError(result[0]);
+        this.uTicketTransferCreateError.emit({ error: result[0] });
         return;
       }
 
-      this.success = t("ticketTransfer.form.success", { email: transfer.recipient_email });
-      this.email = "";
+      const transfer = result[1];
+      if (this.linkMode) {
+        this.success = t("ticketTransfer.form.link_success");
+        this.claimUrl = transfer.claim_url;
+      } else {
+        this.success = t("ticketTransfer.form.success", { email: transfer.recipient_email });
+        this.email = "";
+      }
       this.uTicketTransferCreateSuccess.emit({ transfer });
     } catch (err) {
       this.logger.error("Ticket transfer create error", err);
@@ -82,20 +104,22 @@ export class TicketTransferForm extends UnidyComponent() {
     return (
       <Host>
         <form onSubmit={this.handleSubmit} class={this.componentClassName}>
-          <input
-            type="email"
-            required
-            value={this.email}
-            onInput={(event: InputEvent) => {
-              this.email = (event.target as HTMLInputElement).value;
-            }}
-            placeholder={t("ticketTransfer.form.email_placeholder")}
-            aria-label={t("ticketTransfer.form.email_label")}
-            disabled={this.loading || this.disabled}
-            class={this.inputClassName}
-          />
+          {!this.linkMode && (
+            <input
+              type="email"
+              required
+              value={this.email}
+              onInput={(event: InputEvent) => {
+                this.email = (event.target as HTMLInputElement).value;
+              }}
+              placeholder={t("ticketTransfer.form.email_placeholder")}
+              aria-label={t("ticketTransfer.form.email_label")}
+              disabled={this.loading || this.disabled}
+              class={this.inputClassName}
+            />
+          )}
           <button type="submit" disabled={this.loading || this.disabled} class={this.buttonClassName}>
-            <slot>{t("ticketTransfer.form.submit")}</slot>
+            <slot>{t(this.linkMode ? "ticketTransfer.form.create_link" : "ticketTransfer.form.submit")}</slot>
           </button>
         </form>
         {this.error && (
@@ -107,6 +131,16 @@ export class TicketTransferForm extends UnidyComponent() {
           <p role="status" class={this.successClassName}>
             {this.success}
           </p>
+        )}
+        {this.claimUrl && (
+          <input
+            type="url"
+            readOnly
+            value={this.claimUrl}
+            aria-label={t("ticketTransfer.form.link_label")}
+            class={this.inputClassName}
+            onFocus={(event: FocusEvent) => (event.target as HTMLInputElement).select()}
+          />
         )}
       </Host>
     );
