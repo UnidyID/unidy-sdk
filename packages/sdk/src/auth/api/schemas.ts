@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { BaseErrorSchema } from "../../api/shared";
-import { UserProfileSchema } from "../../profile";
+import { SignInProfileFieldsSchema } from "./sign-in-profile-fields";
 
 // Sign-in status enum
 export const SignInStatusEnum = z.enum(["pending_verification", "authenticated", "completed"]);
@@ -89,9 +89,7 @@ export const RequiredFieldsResponseSchema = z
   .object({
     error_identifier: z.literal("missing_required_fields"),
     meta: z.object({
-      fields: UserProfileSchema.omit({ custom_attributes: true }).partial().extend({
-        custom_attributes: UserProfileSchema.shape.custom_attributes?.optional(),
-      }),
+      fields: SignInProfileFieldsSchema,
       sid: z.string().nullish(),
     }),
   })
