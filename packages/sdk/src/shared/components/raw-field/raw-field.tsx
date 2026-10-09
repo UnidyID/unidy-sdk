@@ -1,6 +1,7 @@
 import { Component, Event, type EventEmitter, h, Prop, State } from "@stencil/core";
 import { newsletterStore } from "../../../newsletter/store/newsletter-store";
-import { type ProfileNode, type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
+import { getProfileNode, optionKey } from "../../../profile/profile-helpers";
+import { type ProfileRaw, state as profileState } from "../../../profile/store/profile-store";
 import { onChange as onRegistrationChange, registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
 import { type ComponentContext, detectContext, findParentProfile } from "../../context-utils";
@@ -31,7 +32,7 @@ export class RawField extends UnidyComponent() {
   @Prop() options?: string | Option[];
   @Prop() emptyOption = false;
   @Prop() attrName?: string;
-  @Prop() radioOptions?: RadioOption[];
+  @Prop() radioOptions?: Omit<RadioOption, "checked">[];
   @Prop() multiSelectOptions?: MultiSelectOption[];
   @Prop() specificPartKey?: string;
   @Prop() ariaDescribedBy = "";
@@ -101,30 +102,19 @@ export class RawField extends UnidyComponent() {
 
     if (!data) return;
 
-    let field: ProfileNode | undefined;
-
-    if (fieldName.startsWith("custom_attributes.")) {
-      const key = fieldName.replace("custom_attributes.", "");
-      field = data.custom_attributes?.[key];
-    } else {
-      field = data[fieldName];
-    }
+    const field = getProfileNode(data, fieldName);
 
     if (!field) return;
 
-    if (field.radio_options) {
-      const checkedOption = field.radio_options.find((option: RadioOption) => option.checked);
-
-      const checkedValue = checkedOption?.value ?? field.value ?? "";
-
-      return String(checkedValue);
+    if (field.type === "radio") {
+      return optionKey(field.value);
     }
 
     if (field.type === "checkbox") {
       return Array.isArray(field.value) ? field.value : [];
     }
 
-    return field.value;
+    return field.value as string | undefined;
   }
 
   private readNewsletterStore(fieldName: string): string | undefined | string[] {
@@ -173,15 +163,18 @@ export class RawField extends UnidyComponent() {
     }
   }
 
-  private writeProfileStore(fieldName: string, value: string | string[]) {
+  private writeProfileStore(fieldName: string, input: string | string[]) {
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
     const isCustomAttribute = fieldName.startsWith("custom_attributes.");
     const key = isCustomAttribute ? fieldName.replace("custom_attributes.", "") : fieldName;
+    const field = getProfileNode(data, fieldName);
+    // A chosen option keeps the option's own value, e.g. `true` or `null` for a yes/no radio.
+    const option = typeof input === "string" ? field?.options?.find((opt) => optionKey(opt.value) === input) : undefined;
+    const value = option ? option.value : input;
 
     if (isCustomAttribute) {
-      const field = data.custom_attributes?.[key];
       profileState.data = {
         ...data,
         custom_attributes: {
@@ -190,7 +183,6 @@ export class RawField extends UnidyComponent() {
         },
       };
     } else {
-      const field = data[key];
       profileState.data = { ...data, [key]: { ...field, value } };
     }
   }
