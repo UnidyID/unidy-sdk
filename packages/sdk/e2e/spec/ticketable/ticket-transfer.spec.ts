@@ -308,7 +308,11 @@ test.describe("ticket transfers - authenticated user", () => {
       json(route, 200, { record: transferFixture({ status: "accepted", mode: "link" }), meta: { request_id: "req" } }),
     );
 
-    await page.goto(`${routes.ticketTransfers}?token=claimToken123`);
+    // The CI static server redirects `.html` paths to clean URLs and drops the query string on the way.
+    await page.goto(routes.ticketTransfers);
+    const claimUrl = new URL(page.url());
+    claimUrl.searchParams.set("token", "claimToken123");
+    await page.goto(claimUrl.toString());
 
     await expect(page.getByRole("heading", { name: "Claim a transfer link" })).toBeVisible();
 
