@@ -1,12 +1,47 @@
 import * as z from "zod";
-import { BaseErrorSchema } from "../../api/shared";
 
-// Field type enum
-export const FieldTypeEnum = z.enum([
+/** A custom attribute's value as `GET /api/v2/me` renders it; a multi-select holds the selected values. */
+export const CustomAttributeValueSchema = z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]).nullable();
+
+/** The signed-in user (`GET /api/v2/me`). */
+export const MeUserSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  first_name: z.string().nullable(),
+  last_name: z.string().nullable(),
+  salutation: z.string().nullable(),
+  gender: z.string().nullable(),
+  /** `YYYY-MM-DD` */
+  date_of_birth: z.string().nullable(),
+  phone_number: z.string().nullable(),
+  address_line_1: z.string().nullable(),
+  address_line_2: z.string().nullable(),
+  city: z.string().nullable(),
+  postal_code: z.string().nullable(),
+  country_code: z.string().nullable(),
+  company_name: z.string().nullable(),
+  preferred_language: z.string().nullable(),
+  verified: z.boolean(),
+  /** Names of the brands the user belongs to. */
+  brands: z.array(z.string()),
+  confirmed_at: z.string().nullable(),
+  verified_at: z.string().nullable(),
+  invitation_created_at: z.string().nullable(),
+  invitation_sent_at: z.string().nullable(),
+  invitation_accepted_at: z.string().nullable(),
+  disabled: z.boolean(),
+  disabled_at: z.string().nullable(),
+  /** The custom attributes the user may read, by name. */
+  custom_attributes: z.record(z.string(), CustomAttributeValueSchema),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+/** Input types of the profile form fields. `checkbox` is a multi-select. */
+export const ProfileFieldTypeSchema = z.enum([
   "text",
   "textarea",
   "number",
-  "boolean",
   "select",
   "radio",
   "date",
@@ -15,145 +50,53 @@ export const FieldTypeEnum = z.enum([
   "tel",
 ]);
 
-// Base field data schema
-export const BaseFieldDataSchema = z
-  .object({
-    required: z.boolean(),
-    label: z.string(),
-    attr_name: z.string(),
-    locked: z.boolean().optional(),
-    locked_text: z.string().nullish(),
-  })
-  .strict();
-
-// Select option schema
-export const SelectOptionSchema = z
-  .object({
-    value: z.string(),
-    label: z.string(),
-  })
-  .strict();
-
-// Radio value type
-export const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
-
-// Radio option schema
-export const RadioOptionSchema = z
-  .object({
-    value: RadioValue,
-    label: z.string(),
-    checked: z.boolean(),
-  })
-  .strict();
-
-// Text field type enum
-const TextFieldTypeEnum = z.enum(["text", "textarea"]);
-
-// Text field schema
-export const TextFieldSchema = BaseFieldDataSchema.extend({
-  value: z.string().nullable(),
-  type: TextFieldTypeEnum,
-}).strict();
-
-// Phone field schema
-export const PhoneFieldSchema = BaseFieldDataSchema.extend({
-  value: z.string().nullable(),
-  type: z.literal("tel"),
-}).strict();
-
-// Radio field schema
-export const RadioFieldSchema = BaseFieldDataSchema.extend({
-  value: RadioValue,
-  type: z.literal("radio"),
-  radio_options: z.array(RadioOptionSchema),
-}).strict();
-
-// Select field schema
-export const SelectFieldSchema = BaseFieldDataSchema.extend({
-  value: z.string().nullable(),
-  type: z.literal("select"),
-  options: z.array(SelectOptionSchema),
-}).strict();
-
-// Date field type enum
-const DateFieldTypeEnum = z.enum(["date", "datetime-local"]);
-
-// Date field schema
-export const DateFieldSchema = BaseFieldDataSchema.extend({
-  value: z.string().nullable(),
-  type: DateFieldTypeEnum,
-}).strict();
-
-// Custom field schema
-export const CustomFieldSchema = BaseFieldDataSchema.extend({
-  value: z.union([z.string(), z.boolean(), z.number(), z.array(z.string())]).nullable(),
-  type: FieldTypeEnum,
-  readonly: z.boolean(),
-  radio_options: z.array(RadioOptionSchema).optional(),
-  options: z.array(SelectOptionSchema).optional(),
-}).strict();
-
-// User profile schema
-export const UserProfileSchema = z.object({
-  salutation: RadioFieldSchema,
-  first_name: TextFieldSchema,
-  last_name: TextFieldSchema,
-  email: TextFieldSchema,
-  phone_number: PhoneFieldSchema,
-  company_name: TextFieldSchema,
-  address_line_1: TextFieldSchema,
-  address_line_2: TextFieldSchema,
-  city: TextFieldSchema,
-  postal_code: TextFieldSchema,
-  country_code: SelectFieldSchema,
-  date_of_birth: DateFieldSchema,
-  preferred_language: TextFieldSchema.optional(),
-  custom_attributes: z.record(z.string(), CustomFieldSchema),
+/** A choice of a select, radio or multi-select field. A yes/no radio offers `true`, `false` and `null` (not set). */
+export const ProfileFieldOptionSchema = z.object({
+  value: z.union([z.string(), z.boolean()]).nullable(),
+  label: z.string(),
 });
 
-// Profile error response schema extends base error
-export const ProfileErrorResponseSchema = BaseErrorSchema;
+/** One field of the profile form (`GET /api/v2/me/profile_fields`); its value is on the user under `name`. */
+export const ProfileFieldSchema = z.object({
+  name: z.string(),
+  /** Whether the value is under `custom_attributes` rather than on the user itself. */
+  custom_attribute: z.boolean(),
+  type: ProfileFieldTypeSchema,
+  label: z.string(),
+  required: z.boolean(),
+  /** The profile shows the field without letting the user change it. */
+  readonly: z.boolean(),
+  /** A filled field the brand locked; the user can no longer change it. */
+  locked: z.boolean(),
+  /** Why the field is locked, or will be once it is filled. */
+  locked_text: z.string().nullable(),
+  options: z.array(ProfileFieldOptionSchema).nullable(),
+});
 
-// Form errors value type
-export const FormErrorsValue = z.union([z.array(z.string()), z.array(z.tuple([z.number(), z.array(z.string())]))]);
+export type CustomAttributeValue = z.infer<typeof CustomAttributeValueSchema>;
+export type MeUser = z.infer<typeof MeUserSchema>;
+export type ProfileFieldType = z.infer<typeof ProfileFieldTypeSchema>;
+export type ProfileFieldOption = z.infer<typeof ProfileFieldOptionSchema>;
+export type ProfileField = z.infer<typeof ProfileFieldSchema>;
 
-// Form errors raw schema
-export const FormErrorsRawSchema = z.record(z.string(), FormErrorsValue);
-
-// User profile form error schema with transformation
-export const UserProfileFormErrorSchema = z
-  .object({
-    errors: FormErrorsRawSchema,
-  })
-  .strict()
-  .transform(({ errors }) => {
-    const flatErrors = Object.fromEntries(
-      Object.entries(errors).map(([field, value]) => {
-        const errorMessages =
-          Array.isArray(value) && value.length > 0 && typeof value[0] === "string"
-            ? (value as string[])
-            : (value as Array<[number, string[]]>).flatMap(([, arr]) => arr);
-        return [field, errorMessages.join(" | ")];
-      }),
-    );
-    return { errors, flatErrors };
-  });
-
-// Rails-style form error schema (error_details instead of errors)
-// This handles the format: { error_details: { field: ["error1", "error2"] } }
-export const UserProfileRailsFormErrorSchema = z
-  .object({
-    error_details: FormErrorsRawSchema,
-  })
-  .passthrough()
-  .transform(({ error_details }) => ({ errors: error_details }))
-  .pipe(UserProfileFormErrorSchema);
-
-// Export types
-export type FieldType = z.infer<typeof FieldTypeEnum>;
-export type UserProfileData = z.infer<typeof UserProfileSchema>;
-export type ProfileErrorResponse = z.infer<typeof ProfileErrorResponseSchema>;
-export type UserProfileFormError = z.infer<typeof UserProfileFormErrorSchema>;
+/** The profile fields `PATCH /api/v2/me` writes. A `null` value clears the field, and deletes a custom attribute. */
+export type MeUserUpdate = Partial<
+  Pick<
+    MeUser,
+    | "first_name"
+    | "last_name"
+    | "salutation"
+    | "phone_number"
+    | "date_of_birth"
+    | "company_name"
+    | "address_line_1"
+    | "address_line_2"
+    | "city"
+    | "postal_code"
+    | "country_code"
+    | "preferred_language"
+  >
+> & { custom_attributes?: Record<string, CustomAttributeValue> };
 
 // Global window type declaration
 declare global {

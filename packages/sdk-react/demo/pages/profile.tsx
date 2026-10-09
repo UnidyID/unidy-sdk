@@ -1,122 +1,91 @@
-import type { UserProfileData } from "@unidy.io/sdk-react";
+import type { MeUser, MeUserUpdate, ProfileField } from "@unidy.io/sdk-react";
 import { useProfile, useSession } from "@unidy.io/sdk-react";
 import type * as React from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 
+type FieldOption = { value: string; label: string };
+
 type ProfileFieldEntry = {
   key: string;
+  field: ProfileField;
   label: string;
-  value: string | null | undefined;
+  value: string;
   type: string;
   required: boolean;
-  locked: boolean;
-  options?: Array<{ value: string; label: string }>;
-  radioOptions?: Array<{ value: string; label: string; checked: boolean }>;
+  disabled: boolean;
+  options?: FieldOption[];
 };
 
-function extractFields(profile: UserProfileData): ProfileFieldEntry[] {
-  const fields: ProfileFieldEntry[] = [];
-  const skipKeys = new Set(["custom_attributes"]);
+// Inputs hold strings: a yes/no radio's `null` ("not set") option is "".
+const toFormValue = (value: unknown): string => (value === null || value === undefined ? "" : String(value));
 
-  for (const [key, field] of Object.entries(profile)) {
-    if (skipKeys.has(key) || !field || typeof field !== "object") continue;
-    if (!("label" in field)) continue;
+function extractFields(profile: MeUser, profileFields: ProfileField[]): ProfileFieldEntry[] {
+  return profileFields.map((field) => {
+    const value = field.custom_attribute ? profile.custom_attributes[field.name] : profile[field.name as keyof MeUser];
 
-    fields.push({
-      key,
-      label: field.label ?? key,
-      value: typeof field.value === "string" ? field.value : field.value != null ? String(field.value) : null,
-      type: field.type ?? "text",
-      required: field.required ?? false,
-      locked: field.locked ?? false,
-      options: "options" in field && Array.isArray(field.options) ? field.options : undefined,
-      radioOptions:
-        "radio_options" in field && Array.isArray(field.radio_options)
-          ? field.radio_options.map((option) => ({
-              value: option.value != null ? String(option.value) : "",
-              label: option.label,
-              checked: option.checked,
-            }))
-          : undefined,
-    });
-  }
+    return {
+      key: field.custom_attribute ? `custom_attributes.${field.name}` : field.name,
+      field,
+      label: field.label,
+      value: toFormValue(value),
+      type: field.type,
+      required: field.required,
+      // The demo has no multi-select (checkbox) input.
+      disabled: field.locked || field.readonly || field.type === "checkbox",
+      options: field.options?.map((option) => ({ value: toFormValue(option.value), label: option.label })),
+    };
+  });
+}
 
-  // Custom attributes
-  if (profile.custom_attributes) {
-    for (const [key, field] of Object.entries(profile.custom_attributes)) {
-      fields.push({
-        key: `custom_attributes.${key}`,
-        label: field.label ?? key,
-        value: typeof field.value === "string" ? field.value : field.value != null ? String(field.value) : null,
-        type: field.type ?? "text",
-        required: field.required ?? false,
-        locked: field.locked ?? false,
-        options: "options" in field && Array.isArray(field.options) ? field.options : undefined,
-        radioOptions:
-          "radio_options" in field && Array.isArray(field.radio_options)
-            ? field.radio_options.map((option) => ({
-                value: option.value != null ? String(option.value) : "",
-                label: option.label,
-                checked: option.checked,
-              }))
-            : undefined,
-      });
-    }
-  }
-
-  return fields;
+/** The value to send: the option's own value (e.g. `true` or `null`), or `null` for a cleared input. */
+function toUpdateValue(entry: ProfileFieldEntry, formValue: string) {
+  const option = entry.field.options?.find((opt) => toFormValue(opt.value) === formValue);
+  if (option) return option.value;
+  return formValue === "" ? null : formValue;
 }
 
 function ProfileForm({
   profile,
+  profileFields,
   fieldErrors,
   isMutating,
   onUpdate,
 }: {
-  profile: UserProfileData;
+  profile: MeUser;
+  profileFields: ProfileField[];
   fieldErrors: Record<string, string>;
   isMutating: boolean;
-  onUpdate: (data: Record<string, unknown>) => Promise<boolean>;
+  onUpdate: (data: MeUserUpdate) => Promise<boolean>;
 }) {
-  const fields = extractFields(profile);
+  const fields = extractFields(profile, profileFields);
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     for (const f of fields) {
-      initial[f.key] = f.value ?? "";
+      initial[f.key] = f.value;
     }
     return initial;
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: Record<string, unknown> = {};
+    const data: Record<string, unknown> = {};
+    const customAttributes: Record<string, unknown> = {};
 
     for (const f of fields) {
-      if (f.locked) continue;
-      const rawValue = values[f.key];
-      let valueToSend = rawValue;
+      if (f.disabled) continue;
+      const value = toUpdateValue(f, values[f.key] ?? "");
 
-      // Match Stencil's country_code semantics: submit ISO country code values.
-      // If we somehow receive a display label, convert it back to the option value.
-      if (f.key === "country_code" && Array.isArray(f.options)) {
-        const matchByLabel = f.options.find((opt) => opt.label === rawValue);
-        if (matchByLabel) {
-          valueToSend = matchByLabel.value;
-        }
-      }
-
-      if (f.key.startsWith("custom_attributes.")) {
-        const attrKey = f.key.replace("custom_attributes.", "");
-        if (!payload.custom_attributes) payload.custom_attributes = {};
-        (payload.custom_attributes as Record<string, unknown>)[attrKey] = valueToSend;
+      if (f.field.custom_attribute) {
+        customAttributes[f.field.name] = value;
       } else {
-        payload[f.key] = valueToSend;
+        data[f.field.name] = value;
       }
     }
 
-    await onUpdate(payload);
+    if (Object.keys(customAttributes).length > 0) data.custom_attributes = customAttributes;
+    await onUpdate(data as MeUserUpdate);
   };
 
   return (
@@ -130,21 +99,21 @@ function ProfileForm({
                 *
               </span>
             )}
-            {field.locked && <span className="text-gray-400 text-xs ml-2">(locked)</span>}
+            {field.field.locked && <span className="text-gray-400 text-xs ml-2">(locked)</span>}
           </label>
-          {field.type === "radio" && Array.isArray(field.radioOptions) ? (
+          {field.type === "radio" && Array.isArray(field.options) ? (
             <fieldset
               className="flex w-full overflow-hidden rounded-md border border-gray-300 bg-white"
               aria-invalid={!!fieldErrors[field.key]}
               aria-describedby={fieldErrors[field.key] ? `field-error-${field.key}` : undefined}
             >
-              {field.radioOptions.map((opt, index) => (
+              {field.options.map((opt, index, options) => (
                 <label
                   key={`${field.key}-${opt.value}`}
                   className={`flex flex-1 items-center justify-center gap-2 px-3 py-2 text-sm transition-colors ${
                     (values[field.key] ?? "") === opt.value ? "bg-blue-600 text-white" : "bg-white text-gray-700 hover:bg-gray-50"
-                  } ${field.locked ? "opacity-60" : ""}`}
-                  style={index < field.radioOptions.length - 1 ? { borderRight: "1px solid #d1d5db" } : undefined}
+                  } ${field.disabled ? "opacity-60" : ""}`}
+                  style={index < options.length - 1 ? { borderRight: "1px solid #d1d5db" } : undefined}
                 >
                   <input
                     type="radio"
@@ -152,7 +121,7 @@ function ProfileForm({
                     value={opt.value}
                     checked={(values[field.key] ?? "") === opt.value}
                     onChange={(e) => setValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                    disabled={field.locked}
+                    disabled={field.disabled}
                     required={field.required}
                     className="sr-only"
                   />
@@ -165,7 +134,7 @@ function ProfileForm({
               id={`field-${field.key}`}
               value={values[field.key] ?? ""}
               onChange={(e) => setValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
-              disabled={field.locked}
+              disabled={field.disabled}
               required={field.required}
               className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-100"
               aria-invalid={!!fieldErrors[field.key]}
@@ -184,7 +153,7 @@ function ProfileForm({
               type={field.type === "tel" ? "tel" : field.type === "date" ? "date" : "text"}
               value={values[field.key] ?? ""}
               onChange={(e) => setValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
-              disabled={field.locked}
+              disabled={field.disabled}
               required={field.required}
               className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-100"
               aria-invalid={!!fieldErrors[field.key]}
@@ -251,9 +220,10 @@ export function Profile() {
         </div>
       )}
 
-      {session.isAuthenticated && profile.profile && (
+      {session.isAuthenticated && profile.profile && profile.fields && (
         <ProfileForm
           profile={profile.profile}
+          profileFields={profile.fields}
           fieldErrors={profile.fieldErrors}
           isMutating={profile.isMutating}
           onUpdate={profile.updateProfile}
