@@ -1,107 +1,155 @@
+import type { ApiResponse } from "../../api/base-client";
 import type { ApiClientInterface } from "../../api/base-service";
-import { ProfileService } from "./profile";
-import { CustomFieldSchema, type UserProfileData } from "./schemas";
+import { ProfileService, profileFieldErrors } from "./profile";
+import type { MeUser, ProfileField } from "./schemas";
 
-const text = (attr_name: string, value: string | null = null) => ({ value, type: "text", label: attr_name, attr_name, required: false });
+const respond = (status: number, data: unknown): ApiResponse<unknown> => ({
+  status,
+  data,
+  success: status >= 200 && status < 300,
+  headers: new Headers(),
+  connectionError: false,
+});
 
-const customAttribute = (attr_name: string, extra: Record<string, unknown> = {}) => ({
-  value: "hazelnut",
-  type: "select",
-  label: attr_name,
-  attr_name,
+const USER: MeUser = {
+  id: "8b0e0d6e-6a0b-4a3c-9a43-1f0f5b2f9d10",
+  email: "ada@example.com",
+  first_name: "Ada",
+  last_name: "Lovelace",
+  salutation: "mrs",
+  gender: "female",
+  date_of_birth: "1990-12-10",
+  phone_number: null,
+  address_line_1: null,
+  address_line_2: null,
+  city: "London",
+  postal_code: null,
+  country_code: "GB",
+  company_name: null,
+  preferred_language: "en",
+  verified: false,
+  brands: ["default"],
+  confirmed_at: "2026-01-01T10:00:00.000Z",
+  verified_at: null,
+  invitation_created_at: null,
+  invitation_sent_at: null,
+  invitation_accepted_at: null,
+  disabled: false,
+  disabled_at: null,
+  custom_attributes: { newsletter_ok: null, tier: "gold" },
+  created_at: "2026-01-01T10:00:00.000Z",
+  updated_at: "2026-01-01T10:00:00.000Z",
+};
+
+const FIELD: ProfileField = {
+  name: "salutation",
+  custom_attribute: false,
+  type: "radio",
+  label: "Salutation",
   required: false,
   readonly: false,
-  options: [{ value: "hazelnut", label: "Hazelnut" }],
-  ...extra,
-});
+  locked: false,
+  locked_text: null,
+  options: [
+    { value: "mr", label: "Mr" },
+    { value: "mrs", label: "Mrs" },
+  ],
+};
 
-const profilePayload = (customAttributes: Record<string, unknown>) => ({
-  salutation: { value: null, type: "radio", label: "Salutation", attr_name: "salutation", required: false, radio_options: [] },
-  first_name: text("first_name", "Jane"),
-  last_name: text("last_name", "Doe"),
-  email: text("email", "jane@example.com"),
-  phone_number: { value: null, type: "tel", label: "Phone", attr_name: "phone_number", required: false },
-  company_name: text("company_name"),
-  address_line_1: text("address_line_1"),
-  address_line_2: text("address_line_2"),
-  city: text("city"),
-  postal_code: text("postal_code"),
-  country_code: { value: null, type: "select", label: "Country", attr_name: "country_code", required: false, options: [] },
-  date_of_birth: { value: null, type: "date", label: "Date of birth", attr_name: "date_of_birth", required: false },
-  custom_attributes: customAttributes,
-});
+function setup(response: ApiResponse<unknown>) {
+  const mocks = {
+    get: jest.fn(async (..._args: unknown[]) => response),
+    post: jest.fn(async (..._args: unknown[]) => response),
+    patch: jest.fn(async (..._args: unknown[]) => response),
+    delete: jest.fn(async (..._args: unknown[]) => response),
+  };
+  const client = { baseUrl: "https://unidy.example", api_key: "key", ...mocks } as unknown as ApiClientInterface;
+  const logger = { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() };
+  const service = new ProfileService(client, { getIdToken: async () => "id-token", logger });
 
-const ownedBrand = { id: 12, name: "fczurich", display_name: "FC Zürich" };
-
-describe("CustomFieldSchema", () => {
-  it("accepts the owning brand and cross-brand visibility", () => {
-    const parsed = CustomFieldSchema.parse(customAttribute("favorite_nut", { brand: ownedBrand, cross_brand_visible: true }));
-
-    expect(parsed.brand).toEqual(ownedBrand);
-    expect(parsed.cross_brand_visible).toBe(true);
-  });
-
-  it("accepts attributes without brand information from backends that do not send it", () => {
-    const parsed = CustomFieldSchema.parse(customAttribute("favorite_nut"));
-
-    expect(parsed.brand).toBeUndefined();
-    expect(parsed.cross_brand_visible).toBeUndefined();
-  });
-
-  it("accepts a null brand for attributes without an owner", () => {
-    const parsed = CustomFieldSchema.parse(customAttribute("favorite_nut", { brand: null, cross_brand_visible: false }));
-
-    expect(parsed.brand).toBeNull();
-    expect(parsed.cross_brand_visible).toBe(false);
-  });
-
-  it("accepts brand keys added by newer backends", () => {
-    const parsed = CustomFieldSchema.safeParse(customAttribute("favorite_nut", { brand: { ...ownedBrand, logo_url: null } }));
-
-    expect(parsed.success).toBe(true);
-  });
-});
+  return { client: mocks, service };
+}
 
 describe("ProfileService", () => {
-  const makeClient = (data: unknown) => {
-    const response = { success: true, status: 200, headers: new Headers(), data };
-    return {
-      baseUrl: "https://unidy.example.com",
-      api_key: "api-key",
-      get: jest.fn().mockResolvedValue(response),
-      post: jest.fn(),
-      patch: jest.fn().mockResolvedValue(response),
-      delete: jest.fn(),
-    } satisfies ApiClientInterface;
-  };
+  it("gets the signed-in user", async () => {
+    const { client, service } = setup(respond(200, { record: USER, meta: { request_id: "r" } }));
 
-  const deps = { getIdToken: async () => "id-token", getLocale: () => "de" };
-  const payload = profilePayload({ favorite_nut: customAttribute("favorite_nut", { brand: ownedBrand, cross_brand_visible: false }) });
-
-  it("requests brand information when fetching the profile", async () => {
-    const client = makeClient(payload);
-
-    const [error, data] = await new ProfileService(client, deps).get();
-
-    expect(error).toBeNull();
-    expect(client.get.mock.calls[0][0]).toBe("/api/sdk/v1/profile?include_brand=1&lang=de");
-    expect((data as UserProfileData).custom_attributes.favorite_nut.brand).toEqual(ownedBrand);
+    expect(await service.get()).toEqual([null, USER]);
+    expect(client.get.mock.calls[0].slice(0, 2)).toEqual(["/api/v2/me", { "X-ID-Token": "id-token" }]);
   });
 
-  it("requests brand information when updating the profile", async () => {
-    const client = makeClient(payload);
+  it("gets the profile form, unpaginated", async () => {
+    const { client, service } = setup(respond(200, { records: [FIELD], meta: { request_id: "r" } }));
 
-    const [error] = await new ProfileService(client, deps).update({ payload: { first_name: "Jane" } });
-
-    expect(error).toBeNull();
-    expect(client.patch.mock.calls[0][0]).toBe("/api/sdk/v1/profile?include_brand=1&lang=de");
+    expect(await service.fields()).toEqual([null, [FIELD]]);
+    expect(client.get.mock.calls[0][0]).toBe("/api/v2/me/profile_fields");
   });
 
-  it("omits lang when no locale is set", async () => {
-    const client = makeClient(payload);
+  it("keeps a yes/no radio's null option", async () => {
+    const yesNo: ProfileField = {
+      ...FIELD,
+      name: "newsletter_ok",
+      custom_attribute: true,
+      options: [
+        { value: true, label: "Yes" },
+        { value: false, label: "No" },
+        { value: null, label: "N/A" },
+      ],
+    };
+    const { service } = setup(respond(200, { records: [yesNo], meta: {} }));
 
-    await new ProfileService(client, { ...deps, getLocale: () => "" }).get();
+    expect(await service.fields()).toEqual([null, [yesNo]]);
+  });
 
-    expect(client.get.mock.calls[0][0]).toBe("/api/sdk/v1/profile?include_brand=1");
+  it("patches the user with the payload, and returns the updated user", async () => {
+    const { client, service } = setup(respond(200, { record: { ...USER, first_name: "Augusta" }, meta: {} }));
+
+    const [error, user] = await service.update({ payload: { data: { first_name: "Augusta" }, validate_only_sent_fields: true } });
+
+    expect(error).toBeNull();
+    expect((user as MeUser).first_name).toBe("Augusta");
+    expect(client.patch).toHaveBeenCalledWith(
+      "/api/v2/me",
+      { payload: { data: { first_name: "Augusta" }, validate_only_sent_fields: true } },
+      { "X-ID-Token": "id-token" },
+    );
+  });
+
+  it("returns a rejected update with the error envelope", async () => {
+    const body = {
+      identifier: "unprocessable_content",
+      details: [{ field: "payload.data.date_of_birth", code: "invalid", message: "Date of birth must be in the past" }],
+    };
+    const { service } = setup(respond(422, { ...body, meta: { request_id: "r" } }));
+
+    expect(await service.update({ payload: { data: { date_of_birth: "2999-01-01" } } })).toEqual(["unprocessable_content", body]);
+  });
+});
+
+describe("profileFieldErrors", () => {
+  it("names the fields without the body path, joining several messages of one field", () => {
+    const errors = profileFieldErrors({
+      identifier: "unprocessable_content",
+      details: [
+        { field: "payload.data.first_name", code: "too_long", message: "First name is too long" },
+        { field: "payload.data.first_name", code: "invalid", message: "First name is invalid" },
+        { field: "payload.data.custom_attributes.tier", code: "invalid", message: "Custom attributes tier cannot be changed" },
+        { field: "payload.data.custom_attributes", code: "not_found", message: "no_such_attribute" },
+        { field: "payload.validate_only_sent_fields", code: "type", message: "must be a boolean" },
+        { field: null, code: "invalid", message: "Something went wrong" },
+      ],
+    });
+
+    expect(errors).toEqual({
+      first_name: "First name is too long | First name is invalid",
+      "custom_attributes.tier": "Custom attributes tier cannot be changed",
+      custom_attributes: "no_such_attribute",
+    });
+  });
+
+  it("falls back to the code without a message", () => {
+    expect(profileFieldErrors({ identifier: "unprocessable_content", details: [{ field: "payload.data.city", code: "blank" }] })).toEqual({
+      city: "blank",
+    });
   });
 });
