@@ -1169,7 +1169,34 @@ const [error, updatedProfile] = await getUnidyClient().profile.update({
 
 ### NewsletterService
 
-The `NewsletterService` provides methods for managing newsletter subscriptions.
+The `NewsletterService` provides methods for managing newsletter subscriptions. Its top-level methods serve the
+newsletter catalog, anonymous sign-ups and the preference-token flows (`/api/sdk/v1`). The signed-in user's own
+subscriptions are on `newsletters.me` (`/api/v2/me`).
+
+#### `newsletters.me` — the signed-in user's subscriptions
+
+V2 addresses a newsletter by its id; `me` resolves the slug (the `internal-name` the components take) against the
+host brand's newsletters, which it loads once. Every method returns a `[error, data]` tuple: `error` is `null`, a V2
+identifier (`not_found`, `unprocessable_content`, `forbidden`, …) with the error envelope's `details`, or
+`missing_id_token` when no user is signed in. Subscriptions carry `newsletter_slug` next to the V2 record
+(`id`, `email`, `newsletter_id`, `preference_identifiers`, `confirmed_at`, `confirmation_requested_at`, …).
+
+```javascript
+const { me } = getUnidyClient().newsletters;
+
+const [error, subscriptions] = await me.listAll(); // every page; me.list({ page, perPage }) returns one
+const [createError, subscription] = await me.create({
+  slug: 'weekly-digest',                 // or { newsletterId: '<uuid>' }
+  preferenceIdentifiers: ['sports'],
+  redirectToAfterConfirmation: location.href,
+});
+// An existing subscription: ["unprocessable_content", { details: [{ field: "payload.data.newsletter_id", code: "taken" }] }]
+
+await me.update({ slug: 'weekly-digest', preferenceIdentifiers: [] }); // a confirmed subscription only
+await me.requestConfirmation({ slug: 'weekly-digest', redirectToAfterConfirmation: location.href });
+await me.delete({ slug: 'weekly-digest' }); // returns the subscription as it was
+const [listError, page] = await me.listNewsletters(); // the brand's newsletters the user can subscribe to
+```
 
 #### `newsletters.create(args): Promise<NewsletterCreateResult>`
 
@@ -1183,7 +1210,7 @@ const [error, result] = await getUnidyClient().newsletters.create({
 
 #### `newsletters.list(args?): Promise<NewsletterListResult>`
 
-Lists all subscriptions for the authenticated user.
+Lists the subscriptions a preference token grants access to. For the signed-in user, use `newsletters.me.listAll()`.
 
 #### `newsletters.get(args): Promise<NewsletterGetResult>`
 
