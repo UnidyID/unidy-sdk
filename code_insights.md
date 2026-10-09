@@ -90,3 +90,10 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 - `auth.setup.ts` signs in through the real UI — a `CaptchaConfig` with `login_enabled: true` on the backend breaks the entire suite ("Security verification failed"). Toggle via `PATCH /test/db/CaptchaConfig/:id {"data":{"login_enabled":false}}` and restore afterwards
 - Full-suite runs against the stencil dev server flake under parallel worker load (stalled hydration/lazy chunks). The CI profile is reliable locally: `bun run build && bun run e2e:configure && E2E_SDK_BASE_URL=http://localhost:3000 bunx playwright test --project=chromium` (serves static `www/`)
 - `newsletter-logged-out` / `manage-subscriptions-logged-out` specs fail locally as of 2026-07 regardless of branch (backend test-data issue, captcha-independent) — pre-existing, not a regression signal
+
+## API V2 `/me` (UD-3681)
+
+- User-scoped services extend `MeService` (`src/api/me-service.ts`): it unwraps `record` / `records` + `meta.pagination`, wraps write bodies in `{ payload }`, and returns V2 errors as `[identifier, ApiError]` with `details[].field` body paths (`payload.data.first_name`). Lists skip and report malformed records instead of failing the page
+- `ApiErrorSchema` must stay an exact `z.object`: with the repo's non-strict tsconfig, `"records" in data` narrowing on result tuples only works when no union member has an index signature
+- `/api/v2/*` requests go out with `credentials: "omit"` (`base-client.ts`): the V2 CORS policy for `/api/v2/me` is bearer-only and refuses credentialed requests
+- V2 is mounted only in local Rails environments until V2 auth lands, and `/me` needs user credentials the e2e user doesn't have: e2e specs must stub every `/api/v2/me/**` call with `page.route`

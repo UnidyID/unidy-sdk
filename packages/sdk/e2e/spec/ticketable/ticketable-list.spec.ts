@@ -1,18 +1,36 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
 
-const paginatedResponse = (page: number, last: number) => ({
-  results: [],
-  meta: { count: last * 10, page, limit: 10, last, prev: page > 1 ? page - 1 : null, next: page < last ? page + 1 : null },
+const TICKETS_ROUTE = "**/api/v2/me/tickets**";
+
+const paginatedResponse = (page: number, pages: number) => ({
+  records: [],
+  meta: {
+    request_id: "e2e",
+    pagination: {
+      strategy: "page",
+      sort: "-created_at",
+      page,
+      per_page: 10,
+      count: pages * 10,
+      pages,
+      previous: page > 1 ? page - 1 : null,
+      next: page < pages ? page + 1 : null,
+    },
+  },
 });
 
-const EMPTY_TICKETS_RESPONSE = {
-  results: [],
-  meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
-};
+const EMPTY_TICKETS_RESPONSE = paginatedResponse(1, 0);
 
 test.describe("u-ticketable-list - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
+
+  // V2 /me authenticates with user credentials the e2e user doesn't have yet, so every test stubs it.
+  test.beforeEach(async ({ page }) => {
+    await page.route(TICKETS_ROUTE, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) }),
+    );
+  });
 
   test("renders ticketable list when signed in", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.ticketable);
@@ -32,11 +50,22 @@ test.describe("u-ticketable-list - authenticated user", () => {
     await expect(page.locator("u-pagination-page")).toBeAttached();
   });
 
+  test("sends V2 paging and eq filters", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    const ticketRequest = page.waitForRequest((req) => req.url().includes("/api/v2/me/tickets") && req.url().includes("filter"));
+
+    await page.goto(routes.ticketable);
+
+    const params = new URL((await ticketRequest).url()).searchParams;
+    expect(params.get("filter[state][eq]")).toBe("inactive");
+    expect(params.get("per_page")).toBe("1");
+    expect(params.get("page")).toBe("1");
+  });
+
   test("pagination controls render and reflect pagination meta without a manually wired store", async ({
     page,
     authenticatedContext: _authenticatedContext,
   }) => {
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
+    await page.route(TICKETS_ROUTE, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(paginatedResponse(1, 3)) }),
     );
 
@@ -46,7 +75,7 @@ test.describe("u-ticketable-list - authenticated user", () => {
     let responseCount = 0;
     const bothResponsesReceived = new Promise<void>((resolve) => {
       page.on("response", (resp) => {
-        if (resp.url().includes("/api/sdk/v1/tickets") && resp.status() === 200 && ++responseCount >= 2) {
+        if (resp.url().includes("/api/v2/me/tickets") && resp.status() === 200 && ++responseCount >= 2) {
           resolve();
         }
       });
@@ -64,7 +93,7 @@ test.describe("u-ticketable-list - authenticated user", () => {
   });
 
   test('shows slot="empty" content when the list returns zero items', async ({ page, authenticatedContext: _authenticatedContext }) => {
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
+    await page.route(TICKETS_ROUTE, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) }),
     );
 
@@ -80,12 +109,12 @@ test.describe("u-ticketable-list - authenticated user", () => {
       releaseRoute = resolve;
     });
 
-    await page.route("**/api/sdk/v1/tickets**", async (route) => {
+    await page.route(TICKETS_ROUTE, async (route) => {
       await routeHeld;
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TICKETS_RESPONSE) });
     });
 
-    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/sdk/v1/tickets")), page.goto(routes.ticketable)]);
+    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/v2/me/tickets")), page.goto(routes.ticketable)]);
 
     // Component has made the request but response is held — still in loading state
     await expect(page.locator("#empty-message")).not.toBeVisible();

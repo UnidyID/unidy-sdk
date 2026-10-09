@@ -1,4 +1,4 @@
-import type { PaginationMeta } from "@unidy.io/sdk/standalone";
+import type { Pagination } from "@unidy.io/sdk/standalone";
 import { useCallback, useMemo, useState } from "react";
 
 export interface UsePaginationOptions {
@@ -26,18 +26,18 @@ export interface UsePaginationReturn {
   /** Go to a specific page (clamped to valid range) */
   goToPage: (page: number) => void;
   /** Called by useTicketables after fetch to update pagination meta */
-  setMeta: (meta: PaginationMeta) => void;
+  setMeta: (meta: Pagination) => void;
 }
 
 export function usePagination(options?: UsePaginationOptions): UsePaginationReturn {
   const perPage = options?.perPage ?? 10;
   const [page, setPage] = useState(options?.initialPage ?? 1);
-  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+  const [meta, setMeta] = useState<Pagination | null>(null);
 
-  const totalPages = meta?.last ?? 0;
+  const totalPages = meta?.pages ?? 0;
   const totalItems = meta?.count ?? 0;
   const hasNextPage = meta?.next !== null && meta?.next !== undefined;
-  const hasPrevPage = meta?.prev !== null && meta?.prev !== undefined;
+  const hasPrevPage = meta?.previous !== null && meta?.previous !== undefined;
 
   const nextPage = useCallback(() => {
     setPage((p) => {
@@ -48,7 +48,7 @@ export function usePagination(options?: UsePaginationOptions): UsePaginationRetu
 
   const prevPage = useCallback(() => {
     setPage((p) => {
-      if (meta?.prev != null) return meta.prev;
+      if (meta?.previous != null) return meta.previous;
       return p;
     });
   }, [meta]);

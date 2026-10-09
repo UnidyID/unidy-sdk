@@ -63,7 +63,7 @@ export class PaginationPage extends UnidyComponent() {
     return (
       <Host>
         <span class={this.componentClassName}>
-          Page {meta.page} of {meta.last}
+          Page {meta.page} of {Math.max(meta.pages, 1)}
         </span>
       </Host>
     );

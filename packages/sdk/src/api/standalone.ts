@@ -75,7 +75,6 @@ export type {
   ApiErrorIdentifier,
   Page,
   Pagination,
-  PaginationMeta,
   PaginationParams,
   SchemaValidationError,
 } from "./shared";

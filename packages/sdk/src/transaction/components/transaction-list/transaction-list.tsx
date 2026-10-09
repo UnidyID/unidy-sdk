@@ -1,5 +1,5 @@
 import { Component, Event, type EventEmitter, Host, h, Prop, State, Watch } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
+import type { Pagination } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
@@ -19,7 +19,7 @@ export class TransactionList extends UnidyComponent() {
   @State() error: string | null = null;
 
   /** Pagination metadata from the API response. */
-  @Prop() paginationMeta: PaginationMeta | null = null;
+  @Prop() paginationMeta: Pagination | null = null;
 
   /** CSS selector for the target element where items will be rendered. */
   @Prop() target?: string;
@@ -45,7 +45,7 @@ export class TransactionList extends UnidyComponent() {
   /** Fired when transactions are successfully fetched. Contains items and pagination metadata. */
   @Event() uTransactionListSuccess!: EventEmitter<{
     items: Transaction[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   }>;
 
   /** Fired when fetching transactions fails. Contains the error message. */
@@ -131,18 +131,18 @@ export class TransactionList extends UnidyComponent() {
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
       });
 
-      if (error !== null || !data || !("results" in data)) {
+      if (error !== null || !data || !("records" in data)) {
         this.error = translateListError("transaction.errors.fetch_failed", "Failed to load transactions", error);
         this.loading = false;
         this.uTransactionListError.emit({ error: this.error });
         return;
       }
 
-      this.items = data.results;
-      this.paginationMeta = data.meta;
+      this.items = data.records;
+      this.paginationMeta = data.pagination;
 
       if (this.store) {
-        this.store.state.paginationMeta = data.meta;
+        this.store.state.paginationMeta = data.pagination;
       }
 
       this.loading = false;
