@@ -1,9 +1,9 @@
 import {
+  AuthorizedApplicationsService,
   AuthService,
   NewsletterService,
   OAuthService,
   ProfileService,
-  ServicesService,
   StandaloneApiClient,
   StandaloneUnidyClient,
   type StandaloneUnidyClientConfig,
@@ -90,7 +90,7 @@ export class ReactUnidyClient extends StandaloneUnidyClient {
     this.newsletters = new NewsletterService(apiClient, deps);
     this.oauth = new OAuthService(apiClient, deps);
     this.profile = new ProfileService(apiClient, deps);
-    this.services = new ServicesService(apiClient, deps);
+    this.authorizedApplications = new AuthorizedApplicationsService(apiClient, deps);
     this.tickets = new TicketsService(apiClient, deps);
     this.ticketTransfers = new TicketTransfersService(apiClient, deps);
     this.subscriptions = new SubscriptionsService(apiClient, deps);
