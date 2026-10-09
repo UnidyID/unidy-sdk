@@ -121,7 +121,7 @@ export abstract class MeService extends BaseService {
     { params, body }: { params?: QueryParams; body?: object },
     parse: (data: unknown) => Parsed<T>,
   ): Promise<MeResult<T>> {
-    const idToken = await this.getIdToken();
+    const idToken = await this.resolveIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
@@ -144,6 +144,16 @@ export abstract class MeService extends BaseService {
 
       return [null, parsed.data];
     });
+  }
+
+  /** A failed token refresh means there is no signed-in user to act for. */
+  private async resolveIdToken(): Promise<string | null> {
+    try {
+      return await this.getIdToken();
+    } catch (error) {
+      this.logger.warn("Could not get an ID token", error);
+      return null;
+    }
   }
 
   private send(
