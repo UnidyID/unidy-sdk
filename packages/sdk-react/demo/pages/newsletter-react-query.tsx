@@ -38,9 +38,10 @@ function NewsletterList() {
   } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: async () => {
-      const result = await client.newsletters.list();
-      if (isSuccess(result)) return result[1];
-      throw new Error(result[0] ?? "Failed to fetch subscriptions");
+      // The signed-in user's own subscriptions (V2 /me); a preference token would use client.newsletters.list().
+      const [error, subscriptions] = await client.newsletters.me.listAll();
+      if (error === null) return subscriptions;
+      throw new Error(error);
     },
   });
 
@@ -80,7 +81,7 @@ function NewsletterList() {
           <ul className="space-y-2">
             {subscriptions.map((sub) => (
               <li key={sub.id} className="border rounded p-3">
-                <div className="font-medium">{sub.newsletter_internal_name}</div>
+                <div className="font-medium">{sub.newsletter_slug}</div>
                 <div className="text-sm text-gray-500">
                   {sub.confirmed_at ? "Confirmed" : "Pending"} &middot; {sub.email}
                 </div>
