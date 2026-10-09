@@ -5,6 +5,7 @@ import { createLogger } from "../logger";
 import { NewsletterService } from "../newsletter";
 import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile";
+import { AuthorizedApplicationsService } from "../services/api/authorized-applications";
 import { CaptchaService } from "../shared/captcha";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService, TicketTransfersService } from "../ticketable";
@@ -16,6 +17,7 @@ export * from "../auth/api/auth";
 export * from "../newsletter/api/newsletters";
 export * from "../oauth/api/oauth";
 export * from "../profile/api/profile";
+export * from "../services/api/authorized-applications";
 export * from "../shared/captcha";
 export * from "../ticketable/api/subscriptions";
 export * from "../ticketable/api/ticket-transfers";
@@ -55,6 +57,7 @@ export class UnidyClient {
   ticketTransfers: TicketTransfersService;
   subscriptions: SubscriptionsService;
   transactions: TransactionsService;
+  authorizedApplications: AuthorizedApplicationsService;
 
   constructor(baseUrl: string, apiKey: string) {
     this.apiClient = new ApiClient(baseUrl, apiKey);
@@ -69,6 +72,7 @@ export class UnidyClient {
     this.ticketTransfers = new TicketTransfersService(this.apiClient, createBrowserDeps("TicketTransfersService"));
     this.subscriptions = new SubscriptionsService(this.apiClient, createBrowserDeps("SubscriptionsService"));
     this.transactions = new TransactionsService(this.apiClient, createBrowserDeps("TransactionsService"));
+    this.authorizedApplications = new AuthorizedApplicationsService(this.apiClient, createBrowserDeps("AuthorizedApplicationsService"));
   }
 }
 
