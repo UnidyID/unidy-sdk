@@ -1,6 +1,6 @@
 import { Component, Event, type EventEmitter, Host, h, Listen, Prop, State, Watch } from "@stencil/core";
 import { jwtDecode } from "jwt-decode";
-import type { PaginationMeta } from "../../../api";
+import type { Pagination } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth, type TokenPayload } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
@@ -23,7 +23,7 @@ function isTransferredAway(item: Ticket): boolean {
  * - `transferable`: the user owns the ticket and currently holds it.
  * - `transferred_away`: the user owns the ticket but someone else holds it.
  * - `held_by_me`: someone else owns the ticket and the user holds it.
- * All three are false when the backend reports transfers as disabled (`meta.transfers_enabled`).
+ * All three are false when ticket transfers are disabled for the brand (`ticketTransfers.isEnabled()`).
  */
 function withTransferState(item: TicketableItem, userId: string | null, transfersEnabled: boolean | undefined): TicketableItem {
   if (transfersEnabled === false) {
@@ -65,7 +65,7 @@ export class TicketableList extends UnidyComponent() {
   @State() error: string | null = null;
 
   /** Pagination metadata from the API response. */
-  @Prop() paginationMeta: PaginationMeta | null = null;
+  @Prop() paginationMeta: Pagination | null = null;
 
   /** CSS selector for the target element where items will be rendered. */
   @Prop() target?: string;
@@ -94,7 +94,7 @@ export class TicketableList extends UnidyComponent() {
   @Event() uTicketableListSuccess!: EventEmitter<{
     ticketableType: TicketableType;
     items: TicketableItem[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   }>;
 
   /** Fired when fetching items fails. Contains the error message. */
@@ -207,8 +207,10 @@ export class TicketableList extends UnidyComponent() {
         paymentState: filterArgs.payment_state,
         orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
-        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
       };
+
+      // V2 lists carry no transfer flag, so the shared, cached probe runs alongside the list request.
+      const transfersEnabled = this.ticketableType === "ticket" ? unidyClient.ticketTransfers.isEnabled() : undefined;
 
       const [error, data] =
         this.ticketableType === "ticket"
@@ -221,24 +223,19 @@ export class TicketableList extends UnidyComponent() {
               subscriptionCategoryId: filterArgs.subscription_category_id,
             });
 
-      if (error !== null || !data || !("results" in data)) {
+      if (error !== null || !data || !("records" in data)) {
         this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", error);
         this.loading = false;
         this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
-      this.items = data.results;
-      this.paginationMeta = data.meta;
-
-      const transfersEnabled = (data.meta as { transfers_enabled?: boolean }).transfers_enabled;
-      this.transfersEnabled = this.ticketableType === "ticket" ? transfersEnabled : undefined;
-      if (typeof this.transfersEnabled === "boolean") {
-        unidyClient.ticketTransfers.setEnabled(this.transfersEnabled);
-      }
+      this.transfersEnabled = await transfersEnabled;
+      this.items = data.records;
+      this.paginationMeta = data.pagination;
 
       if (this.store) {
-        this.store.state.paginationMeta = data.meta;
+        this.store.state.paginationMeta = data.pagination;
       }
 
       this.loading = false;

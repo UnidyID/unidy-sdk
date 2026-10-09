@@ -1,17 +1,12 @@
-import type { PaginationMeta, Subscription, SubscriptionsListResponse, Ticket, TicketsListResponse } from "@unidy.io/sdk/standalone";
+import type { ExportLink, Page, Subscription, SubscriptionsListResponse, Ticket, TicketsListResponse } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
 import { runMutation } from "../../utils";
 import type { UsePaginationReturn } from "./use-pagination";
 
-// These types aren't re-exported from @unidy.io/sdk/standalone by name,
-// so we define them locally to match the SDK's schemas.
 export type ExportFormat = "pdf" | "pkpass";
-export interface ExportLinkResponse {
-  url: string;
-  expires_in: number;
-}
+export type { ExportLink };
 
 // --- Types ---
 
@@ -22,7 +17,6 @@ export interface TicketableFilter {
   paymentState?: string;
   orderBy?: "starts_at" | "ends_at" | "reference" | "created_at";
   orderDirection?: "asc" | "desc";
-  serviceId?: number;
   ticketCategoryId?: string;
   subscriptionCategoryId?: string;
 }
@@ -43,7 +37,7 @@ export interface UseTicketablesReturn<T = Ticket | Subscription> {
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  getExportLink: (id: string, format: ExportFormat) => Promise<ExportLinkResponse | null>;
+  getExportLink: (id: string, format: ExportFormat) => Promise<ExportLink | null>;
 }
 
 // --- Reducer ---
@@ -78,7 +72,7 @@ function hasSetMeta(pagination: PaginationInput | undefined): pagination is UseP
   return pagination != null && "setMeta" in pagination && typeof pagination.setMeta === "function";
 }
 
-function handleListResponse<T extends { meta: PaginationMeta; results: (Ticket | Subscription)[] }>(
+function handleListResponse<T extends Page<Ticket | Subscription>>(
   result: [string, ...unknown[]] | [null, T],
   pagination: PaginationInput | undefined,
   dispatch: React.Dispatch<Action>,
@@ -87,9 +81,9 @@ function handleListResponse<T extends { meta: PaginationMeta; results: (Ticket |
   const [errorCode, data] = result;
   if (errorCode === null) {
     const response = data as T;
-    dispatch({ type: "fetch_success", items: response.results });
+    dispatch({ type: "fetch_success", items: response.records });
     if (hasSetMeta(pagination)) {
-      pagination.setMeta(response.meta);
+      pagination.setMeta(response.pagination);
     }
     callbacks?.onSuccess?.("Fetched successfully");
   } else {
@@ -117,7 +111,6 @@ export function useTicketables(options: UseTicketablesOptions): UseTicketablesRe
   const filterPaymentState = filter?.paymentState;
   const filterOrderBy = filter?.orderBy;
   const filterOrderDirection = filter?.orderDirection;
-  const filterServiceId = filter?.serviceId;
   const filterTicketCategoryId = filter?.ticketCategoryId;
   const filterSubscriptionCategoryId = filter?.subscriptionCategoryId;
 
@@ -133,7 +126,6 @@ export function useTicketables(options: UseTicketablesOptions): UseTicketablesRe
       paymentState: filterPaymentState,
       orderBy: filterOrderBy,
       orderDirection: filterOrderDirection,
-      serviceId: filterServiceId,
     };
 
     if (type === "ticket") {
@@ -158,7 +150,6 @@ export function useTicketables(options: UseTicketablesOptions): UseTicketablesRe
     filterPaymentState,
     filterOrderBy,
     filterOrderDirection,
-    filterServiceId,
     filterTicketCategoryId,
     filterSubscriptionCategoryId,
   ]);
@@ -170,13 +161,13 @@ export function useTicketables(options: UseTicketablesOptions): UseTicketablesRe
   }, [fetchItems, fetchOnMount]);
 
   const getExportLink = useCallback(
-    async (id: string, format: ExportFormat): Promise<ExportLinkResponse | null> => {
+    async (id: string, format: ExportFormat): Promise<ExportLink | null> => {
       const service = optionsRef.current.type === "ticket" ? client.tickets : client.subscriptions;
-      let exportLink: ExportLinkResponse | null = null;
+      let exportLink: ExportLink | null = null;
       const ok = await runMutation(() => service.getExportLink({ id, format }), {
         onMutate: () => {},
         onSuccess: (data) => {
-          exportLink = data as ExportLinkResponse;
+          exportLink = data as ExportLink;
         },
         onError: (errorCode) => {
           optionsRef.current.callbacks?.onError?.(errorCode);

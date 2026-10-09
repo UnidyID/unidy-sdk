@@ -1,10 +1,10 @@
 import * as z from "zod";
-import { PaginationMetaSchema } from "../../api/shared";
+import type { Page } from "../../api/shared";
 
 // Input validation schema for transaction list parameters
 export const TransactionListParamsSchema = z.object({
   page: z.number().int().positive().optional(),
-  perPage: z.number().int().positive().max(250).optional(),
+  perPage: z.number().int().positive().max(500).optional(),
   state: z.string().nullish(),
   financialStatus: z.string().nullish(),
   orderType: z.string().nullish(),
@@ -90,18 +90,8 @@ export const TransactionSchema = z.object({
   line_items: z.array(TransactionLineItemSchema).default([]),
 });
 
-export const TransactionsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(TransactionSchema),
-});
-
-export const TransactionsListResponseRawSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(z.unknown()),
-});
-
 export type Address = z.infer<typeof AddressSchema>;
 export type TransactionLineItem = z.infer<typeof TransactionLineItemSchema>;
 export type Transaction = z.infer<typeof TransactionSchema>;
-export type TransactionsListResponse = z.infer<typeof TransactionsListResponseSchema>;
+export type TransactionsListResponse = Page<Transaction>;
 export type TransactionListParams = z.infer<typeof TransactionListParamsSchema>;

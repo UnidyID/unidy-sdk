@@ -20,7 +20,8 @@ export type {
   OAuthApplication,
   OAuthScope,
   OAuthTokenResponse,
-  PaginationMeta,
+  Page,
+  Pagination,
   PasskeyCredential,
   PasskeyOptionsResponse,
   Preference,
@@ -106,7 +107,7 @@ export type { UseTicketTransfersOptions, UseTicketTransfersReturn } from "./hook
 export { useTicketTransfers } from "./hooks/ticketable/use-ticket-transfers";
 export type {
   ExportFormat,
-  ExportLinkResponse,
+  ExportLink,
   TicketableFilter,
   TicketableType,
   UseTicketablesOptions,

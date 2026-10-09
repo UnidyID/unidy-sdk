@@ -1,4 +1,4 @@
-import type { PaginationMeta, Transaction, TransactionsListResponse } from "@unidy.io/sdk/standalone";
+import type { Transaction, TransactionsListResponse } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
@@ -93,9 +93,9 @@ export function useTransactions(options?: UseTransactionsOptions): UseTransactio
     const [errorCode, data] = result;
     if (errorCode === null) {
       const response = data as TransactionsListResponse;
-      dispatch({ type: "fetch_success", items: response.results });
+      dispatch({ type: "fetch_success", items: response.records });
       if (hasSetMeta(p)) {
-        p.setMeta(response.meta as PaginationMeta);
+        p.setMeta(response.pagination);
       }
       callbacks?.onSuccess?.("Fetched successfully");
     } else {
