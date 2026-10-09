@@ -571,12 +571,12 @@ await sendLoginEmail("user@example.com", "https://example.com/preference-center"
 
 #### `useNewsletterPreferenceCenter(args?)`
 
-Manage newsletter subscriptions and preferences. Works with either a preference token (from a login email link) or an authenticated session.
+Manage newsletter subscriptions and preferences. Works with either a preference token (from a login email link, served by `/api/sdk/v1`) or, without one, the signed-in user's own subscriptions (served by `/api/v2/me` through `client.newsletters.me`).
 
 ```ts
 const {
   subscriptions, preferenceToken, isLoading, error,
-  isMutating, mutationError, refetch,
+  isMutating, mutationError, mutationErrorDetails, refetch,
   subscribe, unsubscribe, updatePreferences,
 } = useNewsletterPreferenceCenter({
   preferenceToken?: string; // From URL query param (for unauthenticated access)
@@ -593,7 +593,8 @@ const {
 | `isLoading` | `boolean` | Whether the initial fetch is in progress |
 | `error` | `string \| null` | Fetch error |
 | `isMutating(internalName)` | `(name: string) => boolean` | Whether a specific newsletter is being mutated |
-| `mutationError` | `string \| null` | Last mutation error |
+| `mutationError` | `string \| null` | Last mutation error. Signed in, a V2 identifier such as `unprocessable_content` |
+| `mutationErrorDetails` | `ApiErrorDetail[]` | V2 details of the last signed-in mutation error, e.g. `{ field: "payload.data.newsletter_id", code: "taken" }` for an existing subscription |
 | `subscribe(internalName, preferenceIdentifiers?)` | `Promise<boolean>` | Subscribe to a newsletter |
 | `unsubscribe(internalName)` | `Promise<boolean>` | Unsubscribe from a newsletter |
 | `updatePreferences(internalName, preferenceIdentifiers)` | `Promise<boolean>` | Update preference selections |
@@ -624,7 +625,7 @@ function PreferenceCenter() {
   const { subscriptions, isLoading, subscribe, unsubscribe, updatePreferences, isMutating } =
     useNewsletterPreferenceCenter({ preferenceToken: token });
 
-  // Authenticated users don't need a preference token — the auth token is used automatically
+  // Without a preference token the hook manages the signed-in user's own subscriptions
   if (!isAuthenticated && !token) {
     return <p>Please log in or use a preference link from your email.</p>;
   }
@@ -648,7 +649,7 @@ function PreferenceCenter() {
 
 #### `useNewsletterResendConfirmation(args?)`
 
-Resend the double opt-in (DOI) confirmation email.
+Resend the double opt-in (DOI) confirmation email: for the subscription a `preferenceToken` grants access to, or without one for the signed-in user.
 
 ```ts
 const { isLoading, error, success, resendConfirmation, reset } = useNewsletterResendConfirmation({
