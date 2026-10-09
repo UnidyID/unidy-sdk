@@ -154,7 +154,7 @@ test.describe("Newsletter (logged in)", () => {
     await page.goto(routes.newsletter);
     await page.getByTestId("manage.nl.group.test.toggle").click();
 
-    await expect(page.getByText("Already subscribed", { exact: true })).toBeVisible();
+    await expect(page.getByRole("alert").getByText("Already subscribed", { exact: true })).toBeVisible();
     await expect(page.getByTestId("manage.nl.group.test.toggle")).toHaveText("Unsubscribe");
   });
 
