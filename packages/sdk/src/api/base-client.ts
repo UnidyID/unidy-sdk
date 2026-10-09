@@ -130,6 +130,8 @@ export abstract class BaseApiClient {
       res = await fetch(`${this.baseUrl}${endpoint}`, {
         method,
         ...this.getRequestOptions(),
+        // V2 authenticates with a bearer token only, and its CORS policy refuses credentialed requests.
+        ...(endpoint.startsWith("/api/v2/") ? { credentials: "omit" as const } : {}),
         headers: this.mergeHeaders(this.baseHeaders(), headers),
         body: body ? JSON.stringify(body) : undefined,
       });
