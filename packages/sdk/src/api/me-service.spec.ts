@@ -37,7 +37,7 @@ const respond = (status: number, data: unknown, connectionError = false): ApiRes
 
 const PAGINATION = { strategy: "page", sort: "-created_at", page: 1, per_page: 50, count: 1, pages: 1, next: null, previous: null };
 
-function setup(response: ApiResponse<unknown>, idToken: string | null = "id-token") {
+function setup(response: ApiResponse<unknown>, getIdToken: () => Promise<string | null> = async () => "id-token") {
   const mocks = {
     get: jest.fn(async (..._args: unknown[]) => response),
     post: jest.fn(async (..._args: unknown[]) => response),
@@ -46,7 +46,7 @@ function setup(response: ApiResponse<unknown>, idToken: string | null = "id-toke
   };
   const client = { baseUrl: "https://unidy.example", api_key: "key", ...mocks } as unknown as ApiClientInterface;
   const logger = { error: jest.fn(), warn: jest.fn(), info: jest.fn(), debug: jest.fn() };
-  const service = new TestService(client, "TestService", { getIdToken: async () => idToken, logger });
+  const service = new TestService(client, "TestService", { getIdToken, logger });
 
   return { client: mocks, service };
 }
@@ -121,7 +121,16 @@ describe("MeService", () => {
   });
 
   it("needs a signed-in user", async () => {
-    const { client, service } = setup(respond(200, {}), null);
+    const { client, service } = setup(respond(200, {}), async () => null);
+
+    expect(await service.one("1")).toEqual(["missing_id_token", null]);
+    expect(client.get).not.toHaveBeenCalled();
+  });
+
+  it("treats a failed token refresh as signed out", async () => {
+    const { client, service } = setup(respond(200, {}), async () => {
+      throw new Error("refresh failed");
+    });
 
     expect(await service.one("1")).toEqual(["missing_id_token", null]);
     expect(client.get).not.toHaveBeenCalled();
