@@ -68,24 +68,22 @@
     </div>
 
     <script type="module">
-      import { createStandaloneClient } from '/build/sdk.esm.js';
+      import { Auth, getUnidyClient } from '/build/index.esm.js';
 
       const listEl = document.getElementById('services-list');
       const loadingEl = document.getElementById('services-loading');
       const emptyEl = document.getElementById('services-empty');
       const errorEl = document.getElementById('services-error');
+      const baseUrl = document.querySelector('u-config').getAttribute('base-url');
 
       async function loadServices() {
-        // Wait for u-config to initialise the SDK
-        await customElements.whenDefined('u-config');
-        await new Promise(r => setTimeout(r, 500));
+        // Auth.getInstance() waits for <u-config>; ready settles once the session is restored.
+        const auth = await Auth.getInstance();
+        await auth.ready;
+        if (!(await auth.isAuthenticated())) return;
 
-        const client = createStandaloneClient({
-          baseUrl: 'http://localhost:3000',
-          apiKey: 'public-newsletter-api-key',
-        });
-
-        const [error, services] = await client.services.list();
+        const client = getUnidyClient();
+        const [error, page] = await client.authorizedApplications.list();
         loadingEl.classList.add('hidden');
 
         if (error) {
@@ -93,23 +91,23 @@
           return;
         }
 
-        if (!services.length) {
+        if (!page.records.length) {
           emptyEl.classList.remove('hidden');
           return;
         }
 
-        for (const service of services) {
+        for (const application of page.records) {
           const li = document.createElement('li');
           li.className = 'bg-white rounded-xl shadow p-5 border border-gray-100 flex items-center justify-between';
-          li.setAttribute('data-service-id', service.id);
+          li.setAttribute('data-service-id', application.id);
 
           const info = document.createElement('div');
           info.className = 'flex items-center gap-4';
 
-          if (service.logo_url) {
+          if (application.service_logo_url) {
             const img = document.createElement('img');
-            img.src = service.logo_url;
-            img.alt = `${service.name} logo`;
+            img.src = new URL(application.service_logo_url, baseUrl).href;
+            img.alt = `${application.name} logo`;
             img.className = 'w-10 h-10 rounded-lg';
             info.appendChild(img);
           }
@@ -117,13 +115,13 @@
           const text = document.createElement('div');
           const name = document.createElement('p');
           name.className = 'font-semibold text-gray-800';
-          name.textContent = service.name;
+          name.textContent = application.name;
           text.appendChild(name);
 
-          if (service.description) {
+          if (application.description) {
             const desc = document.createElement('p');
             desc.className = 'text-sm text-gray-500';
-            desc.textContent = service.description;
+            desc.textContent = application.description;
             text.appendChild(desc);
           }
 
@@ -136,7 +134,7 @@
           btn.addEventListener('click', async () => {
             btn.disabled = true;
             btn.textContent = 'Disconnecting...';
-            const [err] = await client.services.disconnect(service.id);
+            const [err] = await client.authorizedApplications.revoke(application.id);
             if (err) {
               btn.textContent = 'Failed';
               btn.disabled = false;

@@ -8,6 +8,7 @@ import {
   type ServiceDependencies,
 } from "../../api/base-service";
 import { isCaptchaError } from "../../shared/captcha/api/schemas";
+import { MeNewsletterService } from "./me-newsletters";
 import {
   type CreateSubscriptionsPayload,
   CreateSubscriptionsPayloadSchema,
@@ -30,12 +31,23 @@ import {
   UpdateSubscriptionPayloadSchema,
 } from "./schemas";
 
+export type {
+  MeNewsletterCreateArgs,
+  MeNewsletterRequestConfirmationArgs,
+  MeNewsletterSubscription,
+  MeNewsletterUpdateArgs,
+  NewsletterRef,
+} from "./me-newsletters";
+export { MeNewsletterService } from "./me-newsletters";
+
 // Re-export types for external use
 export type {
   AdditionalFields,
   CreateSubscriptionsPayload,
   CreateSubscriptionsResponse,
   LoginEmailPayload,
+  MeNewsletter,
+  MeNewsletterSubscriptionRecord,
   Newsletter,
   NewsletterErrorResponse,
   NewsletterSubscription,
@@ -127,9 +139,17 @@ export type NewsletterGetByNameResult =
   | ["server_error", NewsletterErrorResponse]
   | [null, Newsletter];
 
+/**
+ * Newsletters on `/api/sdk/v1`: the catalog, anonymous sign-ups and the preference-token flows.
+ * The signed-in user's own subscriptions live on `me` (`/api/v2/me`).
+ */
 export class NewsletterService extends BaseService {
+  /** The signed-in user's subscriptions on the host brand (`/api/v2/me`), addressed by newsletter slug or id. */
+  readonly me: MeNewsletterService;
+
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "NewsletterService", deps);
+    this.me = new MeNewsletterService(client, deps);
   }
 
   private async buildNewsletterAuthHeaders(options?: Partial<NewsletterOptions>): Promise<HeadersInit | undefined> {

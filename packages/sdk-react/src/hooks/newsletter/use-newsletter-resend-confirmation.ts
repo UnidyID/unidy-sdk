@@ -27,6 +27,7 @@ function reducer(_state: State, action: Action): State {
 }
 
 export interface UseNewsletterResendConfirmationArgs {
+  /** Resends for the subscription this preference token grants access to (`/api/sdk/v1`); without one, for the signed-in user (`/api/v2/me`). */
   preferenceToken?: string;
   callbacks?: HookCallbacks;
 }
@@ -54,20 +55,30 @@ export function useNewsletterResendConfirmation(args?: UseNewsletterResendConfir
   const resendConfirmation = useCallback(
     (internalName: string, redirectToAfterConfirmation?: string) => {
       const redirectUrl = redirectToAfterConfirmation ?? currentPageUrl();
+      const preferenceToken = preferenceTokenRef.current;
+      const handlers = {
+        ...mutation,
+        onSuccess: () => {
+          dispatch({ type: "success" });
+          callbacksRef.current?.onSuccess?.("Confirmation email resent");
+        },
+      };
+
+      if (!preferenceToken) {
+        return runMutation(
+          () => client.newsletters.me.requestConfirmation({ slug: internalName, redirectToAfterConfirmation: redirectUrl }),
+          handlers,
+        );
+      }
+
       return runMutation(
         () =>
           client.newsletters.resendDoi({
             internalName,
             payload: { redirect_to_after_confirmation: redirectUrl },
-            options: { preferenceToken: preferenceTokenRef.current },
+            options: { preferenceToken },
           }),
-        {
-          ...mutation,
-          onSuccess: () => {
-            dispatch({ type: "success" });
-            callbacksRef.current?.onSuccess?.("Confirmation email resent");
-          },
-        },
+        handlers,
       );
     },
     [client, mutation],
