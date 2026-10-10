@@ -240,17 +240,18 @@
       "revoke": "Odvolat přenos"
     },
     "errors": {
-      "feature_disabled": "Převody vstupenek nejsou k dispozici",
+      "feature_not_enabled": "Převody vstupenek nejsou k dispozici",
       "fetch_failed": "Nepodařilo se načíst převody vstupenek",
       "generic": "Něco se pokazilo. Zkuste to prosím znovu",
       "missing_ticket": "Nebyla vybrána žádná vstupenka k převodu",
       "not_found": "Nabídka převodu nebyla nalezena",
       "not_ticket_owner": "Můžete převádět pouze vlastní vstupenky",
-      "not_transfer_sender": "Převod může zrušit pouze odesílatel",
       "offer_email_failed": "E-mail s nabídkou převodu se nepodařilo odeslat. Zkuste to prosím znovu",
       "recipient_invite_failed": "Příjemce se nepodařilo pozvat. Zkuste to prosím znovu",
       "recipient_is_owner": "Vstupenku nemůžete převést sami sobě",
       "recipient_mismatch": "Tato nabídka převodu je určena jinému účtu",
+      "recipient_missing": "Pro tento převod je vyžadován příjemce",
+      "ticket_already_entered": "Tato vstupenka již byla použita ke vstupu",
       "ticket_already_transferred": "Tato vstupenka již byla převedena",
       "ticket_not_active": "Tato vstupenka není aktivní",
       "ticket_not_transferred": "Tento lístek nebyl přenesen",
@@ -259,8 +260,11 @@
       "transfer_not_pending": "Tato nabídka převodu již nečeká na vyřízení"
     },
     "form": {
+      "create_link": "Vytvořit odkaz na převod",
       "email_label": "E-mailová adresa příjemce",
       "email_placeholder": "Zadejte e-mail příjemce",
+      "link_label": "Odkaz na převod",
+      "link_success": "Odkaz na převod byl vytvořen. Sdílejte ho s příjemcem",
       "submit": "Převést vstupenku",
       "success": "Nabídka převodu odeslána na {{email}}"
     }

@@ -56,6 +56,16 @@
       <div id="transfer-flash" role="alert" aria-live="polite" hidden
         class="mb-6 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700"></div>
 
+      <section id="claim-section" hidden class="mb-12 rounded-lg border border-blue-200 bg-white shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Claim a transfer link</h2>
+        <p class="text-sm text-gray-700 mb-4">Someone shared a ticket with you through a transfer link. Accept it to become the ticket's holder.</p>
+        <u-ticket-transfer-action
+          id="claim-action"
+          action="accept"
+          class-name="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+        ></u-ticket-transfer-action>
+      </section>
+
       <h2 class="text-3xl font-bold text-gray-900 mb-6">Incoming transfers</h2>
       <u-ticket-transfer-list id="incoming-list" direction="incoming" container-class="grid gap-4 mb-12" skeleton-count="2">
         <div slot="empty" id="incoming-empty" class="text-gray-600 text-sm mb-12">No incoming transfers.</div>
@@ -95,8 +105,11 @@
                 <transfer-value name="ticket.title"></transfer-value>
               </h3>
               <div class="space-y-1 text-sm text-gray-700">
-                <p>To: <transfer-value name="recipient_email"></transfer-value></p>
+                <p>To: <transfer-value name="recipient_email" default="Anyone with the link"></transfer-value></p>
                 <p>Offer expires: <transfer-value name="expires_at" date-format="yyyy-MM-dd HH:mm"></transfer-value></p>
+                <transfer-conditional when="claim_url">
+                  <p class="break-all">Transfer link: <transfer-value name="claim_url"></transfer-value></p>
+                </transfer-conditional>
               </div>
             </div>
             <u-ticket-transfer-action
@@ -108,7 +121,7 @@
       </u-ticket-transfer-list>
 
       <h2 class="text-3xl font-bold text-gray-900 mb-6">My tickets</h2>
-      <p class="text-sm text-gray-600 mb-4">Tickets you own — including ones you have transferred to someone else. Use the form to send a new transfer offer, or "Revoke transfer" to pull a transferred-away ticket back.</p>
+      <p class="text-sm text-gray-600 mb-4">Tickets you own — including ones you have transferred to someone else. Use the form to send a new transfer offer by email or to create a transfer link to share, or "Revoke transfer" to pull a transferred-away ticket back.</p>
       <u-ticketable-list ticketable-type="ticket" container-class="grid gap-4 mb-12" limit="5">
         <div slot="empty" id="tickets-empty" class="text-gray-600 text-sm">No tickets found.</div>
         <template>
@@ -123,6 +136,14 @@
               <u-ticket-transfer-form
                 class-name="flex items-center gap-2"
                 input-class-name="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                button-class-name="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                error-class-name="mt-2 text-sm text-red-600"
+                success-class-name="mt-2 text-sm text-green-600"
+              ></u-ticket-transfer-form>
+              <u-ticket-transfer-form
+                mode="link"
+                class-name="flex items-center gap-2"
+                input-class-name="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50"
                 button-class-name="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 error-class-name="mt-2 text-sm text-red-600"
                 success-class-name="mt-2 text-sm text-green-600"
@@ -172,6 +193,13 @@
       document.addEventListener("uTicketTransferActionSuccess", () => {
         flash.hidden = true;
       });
+
+      // A transfer link lands here with its token; accepting it claims the offer behind the link.
+      const claimToken = new URLSearchParams(window.location.search).get("token");
+      if (claimToken) {
+        document.getElementById("claim-action").setAttribute("token", claimToken);
+        document.getElementById("claim-section").hidden = false;
+      }
 
       window.addEventListener("appload", () => {
         const spinner = document.getElementById('sdk-initial-spinner');

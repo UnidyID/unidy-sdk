@@ -238,17 +238,18 @@
       "revoke": "Revocă transferul"
     },
     "errors": {
-      "feature_disabled": "Transferurile de bilete nu sunt disponibile",
+      "feature_not_enabled": "Transferurile de bilete nu sunt disponibile",
       "fetch_failed": "Nu s-au putut încărca transferurile de bilete",
       "generic": "Ceva nu a mers bine. Vă rugăm să încercați din nou",
       "missing_ticket": "Niciun bilet selectat pentru transfer",
       "not_found": "Oferta de transfer nu a fost găsită",
       "not_ticket_owner": "Puteți transfera doar propriile bilete",
-      "not_transfer_sender": "Doar expeditorul poate anula acest transfer",
       "offer_email_failed": "E-mailul de transfer nu a putut fi trimis. Vă rugăm să încercați din nou",
       "recipient_invite_failed": "Destinatarul nu a putut fi invitat. Vă rugăm să încercați din nou",
       "recipient_is_owner": "Nu puteți transfera un bilet către dumneavoastră",
       "recipient_mismatch": "Această ofertă de transfer este adresată altui cont",
+      "recipient_missing": "Pentru acest transfer este necesar un destinatar",
+      "ticket_already_entered": "Acest bilet a fost deja folosit pentru intrare",
       "ticket_already_transferred": "Acest bilet a fost deja transferat",
       "ticket_not_active": "Acest bilet nu este activ",
       "ticket_not_transferred": "Acest bilet nu a fost transferat",
@@ -257,8 +258,11 @@
       "transfer_not_pending": "Această ofertă de transfer nu mai este în așteptare"
     },
     "form": {
+      "create_link": "Creează link de transfer",
       "email_label": "Adresa de e-mail a destinatarului",
       "email_placeholder": "Introduceți e-mailul destinatarului",
+      "link_label": "Link de transfer",
+      "link_success": "Linkul de transfer a fost creat. Distribuiți-l destinatarului",
       "submit": "Transferă biletul",
       "success": "Oferta de transfer a fost trimisă la {{email}}"
     }

@@ -23,8 +23,8 @@ import { RegistrationCompleteEvent } from "./registration/components/registratio
 import { TokenResponse } from "./auth/api/auth";
 import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 import { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
-import { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
-import { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
+import { TicketTransferFormMode } from "./ticketable/components/ticket-transfer-form/ticket-transfer-form";
+import { ExportFormat, TicketTransfer, TicketTransferDirection } from "./ticketable/api/schemas";
 import { Pagination } from "./api";
 import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 import { PaginationStore } from "./shared/store/pagination-store";
@@ -47,8 +47,8 @@ export { RegistrationCompleteEvent } from "./registration/components/registratio
 export { TokenResponse } from "./auth/api/auth";
 export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-button";
 export { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
-export { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
-export { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
+export { TicketTransferFormMode } from "./ticketable/components/ticket-transfer-form/ticket-transfer-form";
+export { ExportFormat, TicketTransfer, TicketTransferDirection } from "./ticketable/api/schemas";
 export { Pagination } from "./api";
 export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 export { PaginationStore } from "./shared/store/pagination-store";
@@ -1060,14 +1060,14 @@ export namespace Components {
         "text"?: string;
     }
     /**
-     * Button performing an action on a pending ticket transfer.
-     * Used standalone with an explicit `token`, or inside a
-     * `u-ticket-transfer-list` template where the list stamps the `token`
-     * attribute automatically and refetches when the action succeeds.
+     * Button performing an action on a ticket transfer offer.
+     * Used standalone with an explicit `transfer-id` (or a claim link's `token`),
+     * or inside a `u-ticket-transfer-list` template where the list stamps the
+     * `transfer-id` attribute automatically and refetches when the action succeeds.
      */
     interface UTicketTransferAction {
         /**
-          * The action this button performs. Token-based: "accept", "decline", "cancel". Ticket-id-based: "revoke", "return".
+          * The action this button performs. By transfer: "accept", "decline", "cancel". By ticket: "revoke" (owner takes it back), "return" (holder gives it back).
          */
         "action": TicketTransferActionType;
         /**
@@ -1084,12 +1084,16 @@ export namespace Components {
          */
         "ticketId"?: string;
         /**
-          * The transfer token. Required for accept/decline/cancel. Stamped automatically inside a u-ticket-transfer-list template.
+          * The token of a claim link. With action "accept" and no `transfer-id`, accepting claims the offer behind the link.
          */
         "token"?: string;
+        /**
+          * The transfer id. Required for decline/cancel, and for accept unless a claim `token` is given. Stamped automatically inside a u-ticket-transfer-list template.
+         */
+        "transferId"?: string;
     }
     /**
-     * Form to send a ticket transfer offer to an email address.
+     * Form to offer a ticket to someone else, by email or as a claim link.
      * Used standalone with an explicit `ticket-id`, or inside a
      * `u-ticketable-list` ticket template where the list stamps the
      * `ticket-id` attribute automatically.
@@ -1113,9 +1117,14 @@ export namespace Components {
          */
         "errorClassName"?: string;
         /**
-          * CSS classes to apply to the email input element.
+          * CSS classes to apply to the email input element, and to the claim link field in link mode.
          */
         "inputClassName"?: string;
+        /**
+          * "email" mails the offer to the address entered; "link" creates a claim link to share, shown after submitting.
+          * @default "email"
+         */
+        "mode": TicketTransferFormMode;
         /**
           * CSS classes to apply to the success message element.
          */
@@ -1126,12 +1135,13 @@ export namespace Components {
         "ticketId"?: string;
     }
     /**
-     * Lists the user's pending ticket transfers for one direction.
+     * Lists the user's open ticket transfer offers for one direction.
      * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
-     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
-     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
-     * the template get the transfer `token` stamped automatically, and the list
-     * refetches after a successful action.
+     * substitutions (e.g. `ticket.title`, `sender_email`, `recipient_email`,
+     * `expires_at`, `claim_url`) and `<transfer-conditional>` blocks.
+     * `u-ticket-transfer-action` elements inside the template get the transfer
+     * `transfer-id` stamped automatically, and the list refetches after a
+     * successful action.
      */
     interface UTicketTransferList {
         /**
@@ -1139,7 +1149,7 @@ export namespace Components {
          */
         "containerClass"?: string;
         /**
-          * Which side of the user's pending transfers to display ('incoming' or 'outgoing').
+          * Which side of the user's open offers to display: 'incoming' (offers they can accept) or 'outgoing' (offers they sent).
          */
         "direction": TicketTransferDirection;
         /**
@@ -1836,10 +1846,10 @@ declare global {
         "uTicketTransferActionError": { action: TicketTransferActionType; error: string };
     }
     /**
-     * Button performing an action on a pending ticket transfer.
-     * Used standalone with an explicit `token`, or inside a
-     * `u-ticket-transfer-list` template where the list stamps the `token`
-     * attribute automatically and refetches when the action succeeds.
+     * Button performing an action on a ticket transfer offer.
+     * Used standalone with an explicit `transfer-id` (or a claim link's `token`),
+     * or inside a `u-ticket-transfer-list` template where the list stamps the
+     * `transfer-id` attribute automatically and refetches when the action succeeds.
      */
     interface HTMLUTicketTransferActionElement extends Components.UTicketTransferAction, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUTicketTransferActionElementEventMap>(type: K, listener: (this: HTMLUTicketTransferActionElement, ev: UTicketTransferActionCustomEvent<HTMLUTicketTransferActionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1860,7 +1870,7 @@ declare global {
         "uTicketTransferCreateError": { error: string };
     }
     /**
-     * Form to send a ticket transfer offer to an email address.
+     * Form to offer a ticket to someone else, by email or as a claim link.
      * Used standalone with an explicit `ticket-id`, or inside a
      * `u-ticketable-list` ticket template where the list stamps the
      * `ticket-id` attribute automatically.
@@ -1890,12 +1900,13 @@ declare global {
   };
     }
     /**
-     * Lists the user's pending ticket transfers for one direction.
+     * Lists the user's open ticket transfer offers for one direction.
      * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
-     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
-     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
-     * the template get the transfer `token` stamped automatically, and the list
-     * refetches after a successful action.
+     * substitutions (e.g. `ticket.title`, `sender_email`, `recipient_email`,
+     * `expires_at`, `claim_url`) and `<transfer-conditional>` blocks.
+     * `u-ticket-transfer-action` elements inside the template get the transfer
+     * `transfer-id` stamped automatically, and the list refetches after a
+     * successful action.
      */
     interface HTMLUTicketTransferListElement extends Components.UTicketTransferList, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUTicketTransferListElementEventMap>(type: K, listener: (this: HTMLUTicketTransferListElement, ev: UTicketTransferListCustomEvent<HTMLUTicketTransferListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3065,14 +3076,14 @@ declare namespace LocalJSX {
         "text"?: string;
     }
     /**
-     * Button performing an action on a pending ticket transfer.
-     * Used standalone with an explicit `token`, or inside a
-     * `u-ticket-transfer-list` template where the list stamps the `token`
-     * attribute automatically and refetches when the action succeeds.
+     * Button performing an action on a ticket transfer offer.
+     * Used standalone with an explicit `transfer-id` (or a claim link's `token`),
+     * or inside a `u-ticket-transfer-list` template where the list stamps the
+     * `transfer-id` attribute automatically and refetches when the action succeeds.
      */
     interface UTicketTransferAction {
         /**
-          * The action this button performs. Token-based: "accept", "decline", "cancel". Ticket-id-based: "revoke", "return".
+          * The action this button performs. By transfer: "accept", "decline", "cancel". By ticket: "revoke" (owner takes it back), "return" (holder gives it back).
          */
         "action": TicketTransferActionType;
         /**
@@ -3085,7 +3096,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Fired when the action fails. Contains the action and the error code.
+          * Fired when the action fails. Contains the action and the error code (a transfer reason such as `transfer_expired`, or a V2 identifier such as `not_found`).
          */
         "onUTicketTransferActionError"?: (event: UTicketTransferActionCustomEvent<{ action: TicketTransferActionType; error: string }>) => void;
         /**
@@ -3097,12 +3108,16 @@ declare namespace LocalJSX {
          */
         "ticketId"?: string;
         /**
-          * The transfer token. Required for accept/decline/cancel. Stamped automatically inside a u-ticket-transfer-list template.
+          * The token of a claim link. With action "accept" and no `transfer-id`, accepting claims the offer behind the link.
          */
         "token"?: string;
+        /**
+          * The transfer id. Required for decline/cancel, and for accept unless a claim `token` is given. Stamped automatically inside a u-ticket-transfer-list template.
+         */
+        "transferId"?: string;
     }
     /**
-     * Form to send a ticket transfer offer to an email address.
+     * Form to offer a ticket to someone else, by email or as a claim link.
      * Used standalone with an explicit `ticket-id`, or inside a
      * `u-ticketable-list` ticket template where the list stamps the
      * `ticket-id` attribute automatically.
@@ -3126,15 +3141,20 @@ declare namespace LocalJSX {
          */
         "errorClassName"?: string;
         /**
-          * CSS classes to apply to the email input element.
+          * CSS classes to apply to the email input element, and to the claim link field in link mode.
          */
         "inputClassName"?: string;
         /**
-          * Fired when sending a transfer offer fails. Contains the error code.
+          * "email" mails the offer to the address entered; "link" creates a claim link to share, shown after submitting.
+          * @default "email"
+         */
+        "mode"?: TicketTransferFormMode;
+        /**
+          * Fired when creating a transfer offer fails. Contains the error code.
          */
         "onUTicketTransferCreateError"?: (event: UTicketTransferFormCustomEvent<{ error: string }>) => void;
         /**
-          * Fired when a transfer offer was sent successfully. Contains the created transfer.
+          * Fired when a transfer offer was created successfully. Contains the created transfer; a link offer carries its `claim_url`.
          */
         "onUTicketTransferCreateSuccess"?: (event: UTicketTransferFormCustomEvent<{ transfer: TicketTransfer }>) => void;
         /**
@@ -3147,12 +3167,13 @@ declare namespace LocalJSX {
         "ticketId"?: string;
     }
     /**
-     * Lists the user's pending ticket transfers for one direction.
+     * Lists the user's open ticket transfer offers for one direction.
      * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
-     * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
-     * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
-     * the template get the transfer `token` stamped automatically, and the list
-     * refetches after a successful action.
+     * substitutions (e.g. `ticket.title`, `sender_email`, `recipient_email`,
+     * `expires_at`, `claim_url`) and `<transfer-conditional>` blocks.
+     * `u-ticket-transfer-action` elements inside the template get the transfer
+     * `transfer-id` stamped automatically, and the list refetches after a
+     * successful action.
      */
     interface UTicketTransferList {
         /**
@@ -3160,7 +3181,7 @@ declare namespace LocalJSX {
          */
         "containerClass"?: string;
         /**
-          * Which side of the user's pending transfers to display ('incoming' or 'outgoing').
+          * Which side of the user's open offers to display: 'incoming' (offers they can accept) or 'outgoing' (offers they sent).
          */
         "direction": TicketTransferDirection;
         /**
@@ -3636,6 +3657,7 @@ declare namespace LocalJSX {
     }
     interface UTicketTransferActionAttributes {
         "action": TicketTransferActionType;
+        "transferId": string;
         "token": string;
         "ticketId": string;
         "disabled": boolean;
@@ -3643,6 +3665,7 @@ declare namespace LocalJSX {
     }
     interface UTicketTransferFormAttributes {
         "ticketId": string;
+        "mode": TicketTransferFormMode;
         "disabled": boolean;
         "componentClassName": string;
         "inputClassName": string;
@@ -3827,26 +3850,27 @@ declare module "@stencil/core" {
             "u-spinner": LocalJSX.IntrinsicElements["u-spinner"] & JSXBase.HTMLAttributes<HTMLUSpinnerElement>;
             "u-submit-button": LocalJSX.IntrinsicElements["u-submit-button"] & JSXBase.HTMLAttributes<HTMLUSubmitButtonElement>;
             /**
-             * Button performing an action on a pending ticket transfer.
-             * Used standalone with an explicit `token`, or inside a
-             * `u-ticket-transfer-list` template where the list stamps the `token`
-             * attribute automatically and refetches when the action succeeds.
+             * Button performing an action on a ticket transfer offer.
+             * Used standalone with an explicit `transfer-id` (or a claim link's `token`),
+             * or inside a `u-ticket-transfer-list` template where the list stamps the
+             * `transfer-id` attribute automatically and refetches when the action succeeds.
              */
             "u-ticket-transfer-action": LocalJSX.IntrinsicElements["u-ticket-transfer-action"] & JSXBase.HTMLAttributes<HTMLUTicketTransferActionElement>;
             /**
-             * Form to send a ticket transfer offer to an email address.
+             * Form to offer a ticket to someone else, by email or as a claim link.
              * Used standalone with an explicit `ticket-id`, or inside a
              * `u-ticketable-list` ticket template where the list stamps the
              * `ticket-id` attribute automatically.
              */
             "u-ticket-transfer-form": LocalJSX.IntrinsicElements["u-ticket-transfer-form"] & JSXBase.HTMLAttributes<HTMLUTicketTransferFormElement>;
             /**
-             * Lists the user's pending ticket transfers for one direction.
+             * Lists the user's open ticket transfer offers for one direction.
              * Renders a user-supplied `<template>` per transfer with `<transfer-value>`
-             * substitutions (e.g. `ticket.title`, `sender_email`, `expires_at`) and
-             * `<transfer-conditional>` blocks. `u-ticket-transfer-action` elements inside
-             * the template get the transfer `token` stamped automatically, and the list
-             * refetches after a successful action.
+             * substitutions (e.g. `ticket.title`, `sender_email`, `recipient_email`,
+             * `expires_at`, `claim_url`) and `<transfer-conditional>` blocks.
+             * `u-ticket-transfer-action` elements inside the template get the transfer
+             * `transfer-id` stamped automatically, and the list refetches after a
+             * successful action.
              */
             "u-ticket-transfer-list": LocalJSX.IntrinsicElements["u-ticket-transfer-list"] & JSXBase.HTMLAttributes<HTMLUTicketTransferListElement>;
             "u-ticketable-export": LocalJSX.IntrinsicElements["u-ticketable-export"] & JSXBase.HTMLAttributes<HTMLUTicketableExportElement>;

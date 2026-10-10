@@ -3,29 +3,33 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { Ticket, TicketTransfer } from "../../api/schemas";
+import type { TicketTransferActionResult, TicketTransfersService } from "../../api/ticket-transfers";
+import { transferSucceeded } from "../../transfer-error";
 
 export type TicketTransferActionType = "accept" | "decline" | "cancel" | "revoke" | "return";
 
-const TOKEN_ACTIONS: TicketTransferActionType[] = ["accept", "decline", "cancel"];
+const TRANSFER_ACTIONS: TicketTransferActionType[] = ["accept", "decline", "cancel"];
 const TICKET_ID_ACTIONS: TicketTransferActionType[] = ["revoke", "return"];
-const ACTIONS: TicketTransferActionType[] = [...TOKEN_ACTIONS, ...TICKET_ID_ACTIONS];
+const ACTIONS: TicketTransferActionType[] = [...TRANSFER_ACTIONS, ...TICKET_ID_ACTIONS];
 
 export type TicketTransferActionSuccessPayload =
   | { action: "accept" | "decline" | "cancel"; transfer: TicketTransfer; ticket?: never }
   | { action: "revoke" | "return"; ticket: Ticket; transfer?: never };
 
 /**
- * Button performing an action on a pending ticket transfer.
+ * Button performing an action on a ticket transfer offer.
  *
- * Used standalone with an explicit `token`, or inside a
- * `u-ticket-transfer-list` template where the list stamps the `token`
- * attribute automatically and refetches when the action succeeds.
+ * Used standalone with an explicit `transfer-id` (or a claim link's `token`),
+ * or inside a `u-ticket-transfer-list` template where the list stamps the
+ * `transfer-id` attribute automatically and refetches when the action succeeds.
  */
 @Component({ tag: "u-ticket-transfer-action", styleUrl: "ticket-transfer-action.css", shadow: false })
 export class TicketTransferAction extends UnidyComponent() {
-  /** The action this button performs. Token-based: "accept", "decline", "cancel". Ticket-id-based: "revoke", "return". */
+  /** The action this button performs. By transfer: "accept", "decline", "cancel". By ticket: "revoke" (owner takes it back), "return" (holder gives it back). */
   @Prop() action!: TicketTransferActionType;
-  /** The transfer token. Required for accept/decline/cancel. Stamped automatically inside a u-ticket-transfer-list template. */
+  /** The transfer id. Required for decline/cancel, and for accept unless a claim `token` is given. Stamped automatically inside a u-ticket-transfer-list template. */
+  @Prop({ attribute: "transfer-id", mutable: true }) transferId?: string;
+  /** The token of a claim link. With action "accept" and no `transfer-id`, accepting claims the offer behind the link. */
   @Prop({ mutable: true }) token?: string;
   /** The ticket id. Required for revoke/return. Stamped automatically inside a u-ticketable-list template. */
   @Prop({ attribute: "ticket-id", mutable: true }) ticketId?: string;
@@ -38,7 +42,7 @@ export class TicketTransferAction extends UnidyComponent() {
 
   /** Fired when the action completes successfully. Payload differs by action type. */
   @Event() uTicketTransferActionSuccess!: EventEmitter<TicketTransferActionSuccessPayload>;
-  /** Fired when the action fails. Contains the action and the error code. */
+  /** Fired when the action fails. Contains the action and the error code (a transfer reason such as `transfer_expired`, or a V2 identifier such as `not_found`). */
   @Event() uTicketTransferActionError!: EventEmitter<{ action: TicketTransferActionType; error: string }>;
 
   private handleClick = async () => {
@@ -55,20 +59,21 @@ export class TicketTransferAction extends UnidyComponent() {
     try {
       const client = await getUnidyClient();
 
-      if (TOKEN_ACTIONS.includes(this.action)) {
-        const token = this.token;
-        if (!token) {
-          this.logger.warn("Missing token attribute for action", this.action);
-          this.uTicketTransferActionError.emit({ action: this.action, error: "missing_context" });
-          return;
-        }
+      if (TRANSFER_ACTIONS.includes(this.action)) {
         const action = this.action as "accept" | "decline" | "cancel";
-        const [error, transfer] = await client.ticketTransfers[action]({ token });
-        if (error !== null || !transfer || !("token" in transfer)) {
-          this.uTicketTransferActionError.emit({ action: this.action, error: error ?? "invalid_response" });
+        const call = this.transferCall(client.ticketTransfers, action);
+        if (!call) {
+          this.logger.warn("Missing transfer-id attribute for action", this.action);
+          this.uTicketTransferActionError.emit({ action, error: "missing_context" });
           return;
         }
-        this.uTicketTransferActionSuccess.emit({ action, transfer });
+
+        const result = await call();
+        if (!transferSucceeded(result)) {
+          this.uTicketTransferActionError.emit({ action, error: result[0] });
+          return;
+        }
+        this.uTicketTransferActionSuccess.emit({ action, transfer: result[1] });
       } else {
         const ticketId = this.ticketId;
         if (!ticketId) {
@@ -77,16 +82,13 @@ export class TicketTransferAction extends UnidyComponent() {
           return;
         }
         const action = this.action as "revoke" | "return";
-        const sdkMethod =
-          action === "revoke"
-            ? client.ticketTransfers.revoke.bind(client.ticketTransfers)
-            : client.ticketTransfers.return.bind(client.ticketTransfers);
-        const [error, ticket] = await sdkMethod({ ticketId });
-        if (error !== null || !ticket || !("id" in ticket)) {
-          this.uTicketTransferActionError.emit({ action: this.action, error: error ?? "invalid_response" });
+        const result =
+          action === "revoke" ? await client.ticketTransfers.revoke({ ticketId }) : await client.ticketTransfers.return({ ticketId });
+        if (!transferSucceeded(result)) {
+          this.uTicketTransferActionError.emit({ action, error: result[0] });
           return;
         }
-        this.uTicketTransferActionSuccess.emit({ action, ticket });
+        this.uTicketTransferActionSuccess.emit({ action, ticket: result[1] });
       }
     } catch (err) {
       this.logger.error("Ticket transfer action error", err);
@@ -95,6 +97,20 @@ export class TicketTransferAction extends UnidyComponent() {
       this.loading = false;
     }
   };
+
+  // A claim link carries only the token, so accepting without a transfer id claims the offer behind it.
+  private transferCall(
+    service: TicketTransfersService,
+    action: "accept" | "decline" | "cancel",
+  ): (() => Promise<TicketTransferActionResult>) | null {
+    const id = this.transferId;
+    if (id) return () => service[action]({ id });
+
+    const token = this.token;
+    if (action === "accept" && token) return () => service.claim({ token });
+
+    return null;
+  }
 
   render() {
     return (
