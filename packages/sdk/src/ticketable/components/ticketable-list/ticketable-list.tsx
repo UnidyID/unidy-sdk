@@ -1,5 +1,5 @@
 import { Component, Event, type EventEmitter, Host, h, Listen, Prop, State, Watch } from "@stencil/core";
-import type { PaginationMeta } from "../../../api";
+import type { Pagination } from "../../../api";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
@@ -28,7 +28,7 @@ export class TicketableList extends UnidyComponent() {
   @State() error: string | null = null;
 
   /** Pagination metadata from the API response. */
-  @Prop() paginationMeta: PaginationMeta | null = null;
+  @Prop() paginationMeta: Pagination | null = null;
 
   /** CSS selector for the target element where items will be rendered. */
   @Prop() target?: string;
@@ -57,7 +57,7 @@ export class TicketableList extends UnidyComponent() {
   @Event() uTicketableListSuccess!: EventEmitter<{
     ticketableType: TicketableType;
     items: TicketableItem[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   }>;
 
   /** Fired when fetching items fails. Contains the error message. */
@@ -162,7 +162,6 @@ export class TicketableList extends UnidyComponent() {
         paymentState: filterArgs.payment_state,
         orderBy: filterArgs.order_by as "starts_at" | "ends_at" | "reference" | "created_at" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
-        serviceId: filterArgs.service_id ? Number(filterArgs.service_id) : undefined,
       };
 
       const [error, data] =
@@ -176,18 +175,18 @@ export class TicketableList extends UnidyComponent() {
               subscriptionCategoryId: filterArgs.subscription_category_id,
             });
 
-      if (error !== null || !data || !("results" in data)) {
+      if (error !== null || !data || !("records" in data)) {
         this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", error);
         this.loading = false;
         this.uTicketableListError.emit({ error: this.error });
         return;
       }
 
-      this.items = data.results;
-      this.paginationMeta = data.meta;
+      this.items = data.records;
+      this.paginationMeta = data.pagination;
 
       if (this.store) {
-        this.store.state.paginationMeta = data.meta;
+        this.store.state.paginationMeta = data.pagination;
       }
 
       this.loading = false;

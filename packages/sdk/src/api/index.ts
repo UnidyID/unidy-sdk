@@ -22,6 +22,7 @@ export * from "../ticketable/api/ticket-transfers";
 export * from "../ticketable/api/tickets";
 export * from "../transaction/api/transactions";
 export * from "./base-service";
+export * from "./me-service";
 export * from "./shared";
 export type { StandaloneUnidyClientConfig } from "./standalone";
 export { createStandaloneClient, StandaloneApiClient, StandaloneUnidyClient } from "./standalone";

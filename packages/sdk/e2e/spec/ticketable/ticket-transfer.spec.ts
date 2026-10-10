@@ -23,6 +23,7 @@ const ticketFixture = (overrides: Record<string, unknown> = {}) => ({
   ends_at: null,
   price: 49.99,
   ticket_category_id: "33333333-3333-4333-8333-333333333333",
+  entered_at: null,
   ...overrides,
 });
 
@@ -45,9 +46,15 @@ const TRANSFERS_RESPONSE = {
 const EMPTY_TRANSFERS_RESPONSE = { incoming: [], outgoing: [] };
 
 const TICKETS_RESPONSE = {
-  results: [ticketFixture()],
-  meta: { count: 1, page: 1, limit: 5, last: 1, prev: null, next: null },
+  records: [ticketFixture()],
+  meta: {
+    request_id: "e2e",
+    pagination: { strategy: "page", sort: "-created_at", page: 1, per_page: 5, count: 1, pages: 1, next: null, previous: null },
+  },
 };
+
+/** The V2 tickets collection only; the transfer routes are stubbed per test. */
+const TICKETS_COLLECTION = /\/api\/v2\/me\/tickets(\?.*)?$/;
 
 test.describe("ticket transfers - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
@@ -55,7 +62,7 @@ test.describe("ticket transfers - authenticated user", () => {
   test.beforeEach(async ({ page }) => {
     // The demo page also mounts a u-ticketable-list; keep it deterministic.
     // Registered first so the more specific transfer routes below take precedence.
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
+    await page.route(TICKETS_COLLECTION, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(TICKETS_RESPONSE) }),
     );
   });

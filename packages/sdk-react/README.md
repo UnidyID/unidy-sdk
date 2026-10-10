@@ -738,7 +738,6 @@ const { items, isLoading, error, refetch, getExportLink } = useTicketables({
     paymentState?: string;
     orderBy?: "starts_at" | "ends_at" | "reference" | "created_at";
     orderDirection?: "asc" | "desc";
-    serviceId?: number;
     ticketCategoryId?: string;
     subscriptionCategoryId?: string;
   };
@@ -751,7 +750,7 @@ The return type is narrowed based on `type`:
 - `type: "ticket"` → `items: Ticket[]`
 - `type: "subscription"` → `items: Subscription[]`
 
-**`getExportLink(id, format)`** returns `{ url: string; expires_in: number } | null`. Supported formats: `"pdf"`, `"pkpass"`.
+**`getExportLink(id, format)`** returns `{ format, download_url: string; expires_at: Date } | null`. Supported formats: `"pdf"`, `"pkpass"`.
 
 #### `usePagination(options?)`
 
@@ -890,7 +889,7 @@ const { items, isLoading, error, refetch, getTransaction } = useTransactions({
     orderType?: string;
     sourcePlatform?: string;
     externalId?: string;
-    orderBy?: "placed_at" | "created_at" | "total";
+    orderBy?: "placed_at" | "created_at";
     orderDirection?: "asc" | "desc";
   };
   fetchOnMount?: boolean; // Default: true

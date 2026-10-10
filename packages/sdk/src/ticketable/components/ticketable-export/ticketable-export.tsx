@@ -51,14 +51,14 @@ export class TicketableExport extends UnidyComponent() {
         return;
       }
 
-      if (!data || !("url" in data)) {
+      if (!data || !("download_url" in data)) {
         this.uTicketableExportError.emit({ error: "invalid_response" });
         this.loading = false;
         return;
       }
 
-      window.open(data.url, "_blank");
-      this.uTicketableExportSuccess.emit({ url: data.url, format: this.format });
+      window.open(data.download_url, "_blank");
+      this.uTicketableExportSuccess.emit({ url: data.download_url, format: this.format });
     } catch (err) {
       this.logger.error("Export link error", err);
       this.uTicketableExportError.emit({ error: "internal_error" });

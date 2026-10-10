@@ -1,8 +1,8 @@
 import { createStore } from "@stencil/store";
-import type { PaginationMeta } from "../../api";
+import type { Pagination } from "../../api";
 
 export interface PaginationState {
-  paginationMeta: PaginationMeta | null;
+  paginationMeta: Pagination | null;
 }
 
 export type PaginationStore = {
