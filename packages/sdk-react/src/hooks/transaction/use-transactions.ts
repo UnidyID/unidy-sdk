@@ -10,7 +10,7 @@ export interface TransactionFilter {
   orderType?: string;
   sourcePlatform?: string;
   externalId?: string;
-  orderBy?: "placed_at" | "created_at" | "total";
+  orderBy?: "placed_at" | "created_at";
   orderDirection?: "asc" | "desc";
 }
 

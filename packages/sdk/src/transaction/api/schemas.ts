@@ -10,7 +10,7 @@ export const TransactionListParamsSchema = z.object({
   orderType: z.string().nullish(),
   sourcePlatform: z.string().nullish(),
   externalId: z.string().nullish(),
-  orderBy: z.enum(["placed_at", "created_at", "total"]).optional(),
+  orderBy: z.enum(["placed_at", "created_at"]).optional(),
   orderDirection: z.enum(["asc", "desc"]).optional(),
 });
 

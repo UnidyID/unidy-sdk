@@ -889,7 +889,7 @@ const { items, isLoading, error, refetch, getTransaction } = useTransactions({
     orderType?: string;
     sourcePlatform?: string;
     externalId?: string;
-    orderBy?: "placed_at" | "created_at" | "total";
+    orderBy?: "placed_at" | "created_at";
     orderDirection?: "asc" | "desc";
   };
   fetchOnMount?: boolean; // Default: true

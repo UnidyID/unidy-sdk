@@ -127,7 +127,7 @@ export class TransactionList extends UnidyComponent() {
         orderType: filterArgs.order_type,
         sourcePlatform: filterArgs.source_platform,
         externalId: filterArgs.external_id,
-        orderBy: filterArgs.order_by as "placed_at" | "created_at" | "total" | undefined,
+        orderBy: filterArgs.order_by as "placed_at" | "created_at" | undefined,
         orderDirection: filterArgs.order_direction as "asc" | "desc" | undefined,
       });
 
