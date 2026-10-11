@@ -71,7 +71,6 @@ export class TicketTransferForm extends UnidyComponent() {
     this.loading = true;
     this.error = null;
     this.success = null;
-    this.claimUrl = null;
 
     const args: TicketTransferCreateArgs = this.linkMode
       ? { ticketId, mode: "link" }
