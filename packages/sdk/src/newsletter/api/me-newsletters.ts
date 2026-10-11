@@ -56,11 +56,12 @@ export class MeNewsletterService extends MeService {
   /** A page of the signed-in user's subscriptions on the host brand. */
   async list(query?: MeListQuery): Promise<MeResult<Page<MeNewsletterSubscription>>> {
     const loadedBefore = this.catalog;
-    const [result] = await Promise.all([
+    const [result, catalog] = await Promise.all([
       this.fetchPage(SUBSCRIPTIONS_PATH, MeNewsletterSubscriptionRecordSchema, query),
       this.newsletters(),
     ]);
     if (!isOk(result)) return result;
+    if (!isOk(catalog)) return catalog;
 
     const records = await this.withSlugs(result[1].records, loadedBefore);
     if (!isOk(records)) return records;
@@ -71,8 +72,12 @@ export class MeNewsletterService extends MeService {
   /** Every subscription of the signed-in user on the host brand, across all pages. */
   async listAll(): Promise<MeResult<MeNewsletterSubscription[]>> {
     const loadedBefore = this.catalog;
-    const [result] = await Promise.all([this.collect(SUBSCRIPTIONS_PATH, MeNewsletterSubscriptionRecordSchema), this.newsletters()]);
+    const [result, catalog] = await Promise.all([
+      this.collect(SUBSCRIPTIONS_PATH, MeNewsletterSubscriptionRecordSchema),
+      this.newsletters(),
+    ]);
     if (!isOk(result)) return result;
+    if (!isOk(catalog)) return catalog;
 
     return this.withSlugs(result[1], loadedBefore);
   }
