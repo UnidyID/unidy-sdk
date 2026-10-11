@@ -75,7 +75,7 @@ describe("ProfileService", () => {
     const { client, service } = setup(respond(200, { record: USER, meta: { request_id: "r" } }));
 
     expect(await service.get()).toEqual([null, USER]);
-    expect(client.get.mock.calls[0].slice(0, 2)).toEqual(["/api/v2/me", { "X-ID-Token": "id-token" }]);
+    expect(client.get.mock.calls[0].slice(0, 2)).toEqual(["/api/v2/me", { "X-ID-Token": "id-token", "Accept-Language": "en" }]);
   });
 
   it("gets the profile form, unpaginated", async () => {
@@ -111,7 +111,7 @@ describe("ProfileService", () => {
     expect(client.patch).toHaveBeenCalledWith(
       "/api/v2/me",
       { payload: { data: { first_name: "Augusta" }, validate_only_sent_fields: true } },
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
     );
   });
 
