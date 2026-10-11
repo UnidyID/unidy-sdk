@@ -113,6 +113,19 @@ describe("newsletter helpers for a signed-in user", () => {
     ]);
   });
 
+  it("keeps a created subscription when reloading after an already-subscribed error fails", async () => {
+    newsletterStore.state.checkedNewsletters = { main: [], test: [] };
+    mockMe.create.mockImplementation(async ({ slug }) =>
+      slug === "main" ? unprocessable("payload.data.newsletter_id", "taken") : [null, subscription(slug, { confirmed_at: null })],
+    );
+    mockMe.listAll.mockResolvedValue(["connection_failed", null]);
+
+    expect(await createSubscriptions({ email: "ada@example.com" })).toBe(false);
+    expect(newsletterStore.state.existingSubscriptions).toEqual([
+      { newsletter_internal_name: "test", confirmed: false, preference_identifiers: [] },
+    ]);
+  });
+
   it("signs the newsletter session out when the token is refused", async () => {
     const flash = jest.spyOn(Flash.error, "addMessage");
     newsletterStore.state.checkedNewsletters = { main: [] };
