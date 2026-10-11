@@ -304,6 +304,7 @@ test.describe("ticket transfers - authenticated user", () => {
     );
 
     await page.goto(routes.ticketTransfers);
+    await expect(page.getByRole("button", { name: "Create transfer link" })).toHaveCount(1);
     await page.getByRole("button", { name: "Create transfer link" }).click();
     await expect(page.getByRole("textbox", { name: "Transfer link" })).toHaveValue(claimUrl);
 
