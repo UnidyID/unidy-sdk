@@ -286,11 +286,12 @@ async function createOwnSubscriptions(internalNames: string[], showSuccessMessag
     }
   }
 
+  if (created.length > 0) {
+    newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...created];
+  }
   if (Object.values(errorMap).includes("already_subscribed")) {
     // Load the existing subscriptions as they are rather than guessing their state.
     await fetchOwnSubscriptions();
-  } else if (created.length > 0) {
-    newsletterStore.state.existingSubscriptions = [...newsletterStore.state.existingSubscriptions, ...created];
   }
 
   if (created.length === results.length) {
