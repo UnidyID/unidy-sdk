@@ -71,17 +71,17 @@ const DateFieldSchema = BaseFieldDataSchema.extend({
 }).strict();
 
 const CustomFieldSchema = BaseFieldDataSchema.extend({
-  value: z
-    .union([z.string(), z.boolean(), z.number(), z.array(z.string())])
-    .nullable()
-    .transform((value) => (value === NOT_SET ? null : value)),
+  value: z.union([z.string(), z.boolean(), z.number(), z.array(z.string())]).nullable(),
   type: FieldTypeEnum,
   readonly: z.boolean(),
   radio_options: RadioOptionsSchema.optional(),
   options: z.array(SelectOptionSchema).optional(),
 })
   .strict()
-  .transform(({ radio_options, ...field }) => (radio_options ? { ...field, options: radio_options } : field));
+  .transform(({ radio_options, ...field }) => {
+    const value = field.type === "radio" && field.value === NOT_SET ? null : field.value;
+    return radio_options ? { ...field, value, options: radio_options } : { ...field, value };
+  });
 
 /** The fields a sign-in still needs, each with its value and form metadata. */
 export const SignInProfileFieldsSchema = z.object({
