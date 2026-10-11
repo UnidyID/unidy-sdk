@@ -127,7 +127,7 @@ export abstract class MeService extends BaseService {
     }
 
     const endpoint = `${ME_PATH}${path}`;
-    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken });
+    const headers = this.buildAuthHeaders({ "X-ID-Token": idToken, "Accept-Language": this.getLocale() });
     const response = await this.send(method, endpoint, headers, params, body);
 
     return this.handleResponse(response, (): MeResult<T> => {

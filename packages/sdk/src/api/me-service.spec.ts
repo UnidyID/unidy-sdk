@@ -93,8 +93,22 @@ describe("MeService", () => {
     await service.create({ name: "A" });
     await service.remove("1");
 
-    expect(client.post).toHaveBeenCalledWith("/api/v2/me/items", { payload: { data: { name: "A" } } }, { "X-ID-Token": "id-token" });
-    expect(client.delete).toHaveBeenCalledWith("/api/v2/me/items/1", { "X-ID-Token": "id-token" });
+    expect(client.post).toHaveBeenCalledWith(
+      "/api/v2/me/items",
+      { payload: { data: { name: "A" } } },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
+    );
+    expect(client.delete).toHaveBeenCalledWith("/api/v2/me/items/1", { "X-ID-Token": "id-token", "Accept-Language": "en" });
+  });
+
+  it("sends the locale the service was given, which a standalone client doesn't add", async () => {
+    const mocks = { get: jest.fn(async (..._args: unknown[]) => respond(200, { record: { id: "1", name: "A" }, meta: {} })) };
+    const client = { baseUrl: "https://unidy.example", api_key: "key", ...mocks } as unknown as ApiClientInterface;
+    const service = new TestService(client, "TestService", { getIdToken: async () => "id-token", getLocale: () => "de" });
+
+    await service.one("1");
+
+    expect(mocks.get.mock.calls[0][1]).toEqual({ "X-ID-Token": "id-token", "Accept-Language": "de" });
   });
 
   it("returns a V2 error by its identifier, with the envelope", async () => {
