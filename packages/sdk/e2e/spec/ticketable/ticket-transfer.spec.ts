@@ -279,6 +279,40 @@ test.describe("ticket transfers - authenticated user", () => {
     await expect(page.getByRole("textbox", { name: "Transfer link" })).toHaveValue(claimUrl);
   });
 
+  test("keeps the created link when creating another one fails", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    const claimUrl = "https://brand.example/ticket_transfers/linkToken789";
+    let created = false;
+    await stubTransfers(
+      page,
+      () => EMPTY_TRANSFERS_RESPONSE,
+      (route) => {
+        if (created) {
+          return json(
+            route,
+            422,
+            transferError("unprocessable_content", [
+              { field: "payload.data.ticket_id", code: "invalid", message: "transfer_already_pending" },
+            ]),
+          );
+        }
+        created = true;
+        return json(route, 201, {
+          record: outgoingFixture({ mode: "link", recipient_email: null, token: "linkToken789", claim_url: claimUrl }),
+          meta: { request_id: "req" },
+        });
+      },
+    );
+
+    await page.goto(routes.ticketTransfers);
+    await page.getByRole("button", { name: "Create transfer link" }).click();
+    await expect(page.getByRole("textbox", { name: "Transfer link" })).toHaveValue(claimUrl);
+
+    await page.getByRole("button", { name: "Create transfer link" }).click();
+
+    await expect(page.getByRole("alert").filter({ hasText: "A transfer offer is already pending for this ticket" })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Transfer link" })).toHaveValue(claimUrl);
+  });
+
   test("shows a translated error when a transfer is already pending", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await stubTransfers(
       page,
