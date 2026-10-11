@@ -1,30 +1,30 @@
 import * as z from "zod";
-import { PaginationMetaSchema } from "../../api/shared";
-
-// Export format and link response schemas
-export const ExportFormat = z.enum(["pdf", "pkpass"]);
-export type ExportFormat = z.infer<typeof ExportFormat>;
-
-export const ExportLinkResponseSchema = z.object({
-  url: z.string().url(),
-  expires_in: z.number(),
-});
-export type ExportLinkResponse = z.infer<typeof ExportLinkResponseSchema>;
-
-// Input validation schemas for ticketable list parameters
-export const TicketableListParamsSchema = z.object({
-  page: z.number().int().positive().optional(),
-  perPage: z.number().int().positive().max(250).optional(),
-  state: z.string().nullish(),
-  paymentState: z.string().nullish(),
-  orderBy: z.enum(["starts_at", "ends_at", "reference", "created_at"]).optional(),
-  orderDirection: z.enum(["asc", "desc"]).optional(),
-  serviceId: z.number().int().positive().optional(),
-});
+import type { Page } from "../../api/shared";
 
 // Date transformer for ISO8601 strings
 const dateTransformer = z.coerce.date();
 const nullableDateTransformer = z.coerce.date().nullable();
+
+export const ExportFormat = z.enum(["pdf", "pkpass"]);
+export type ExportFormat = z.infer<typeof ExportFormat>;
+
+/** A short-lived download link for a ticket's or subscription's PDF or wallet pass. */
+export const ExportLinkSchema = z.object({
+  format: ExportFormat,
+  download_url: z.url(),
+  expires_at: dateTransformer,
+});
+export type ExportLink = z.infer<typeof ExportLinkSchema>;
+
+// Input validation schemas for ticketable list parameters
+export const TicketableListParamsSchema = z.object({
+  page: z.number().int().positive().optional(),
+  perPage: z.number().int().positive().max(500).optional(),
+  state: z.string().nullish(),
+  paymentState: z.string().nullish(),
+  orderBy: z.enum(["starts_at", "ends_at", "reference", "created_at"]).optional(),
+  orderDirection: z.enum(["asc", "desc"]).optional(),
+});
 
 // `metadata` and `wallet_export` are Postgres `jsonb` columns. The column type
 // permits any JSON value (object, array, primitive, null) and Alba forwards it
@@ -44,12 +44,13 @@ export const TicketableSchema = z.object({
   user_id: z.uuid(),
   metadata: jsonbValue,
   wallet_export: jsonbValue,
+  /** `paid` or `not_paid`. */
   payment_state: z.string().nullable(),
   currency: z.string().nullable(),
   button_cta_url: z.string().nullable(),
 });
 
-// Ticket schema based on TicketSerializer
+// Ticket schema based on V2::Me::TicketSerializer
 export const TicketSchema = TicketableSchema.extend({
   text: z.string().nullable(),
   info_banner: z.string().nullable(),
@@ -57,6 +58,7 @@ export const TicketSchema = TicketableSchema.extend({
   venue: z.string().nullable(),
   starts_at: dateTransformer, // ISO8601(3) -> Date
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
+  entered_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   price: z.number().nullable(), // decimal(8, 2) -> float
   ticket_category_id: z.uuid(),
   // Non-null when the ticket has been transferred to another user (holder_id ≠ user_id).
@@ -64,27 +66,15 @@ export const TicketSchema = TicketableSchema.extend({
   holder_id: z.uuid().nullable().optional(),
 });
 
-// Tickets list response schema
-export const TicketsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(TicketSchema),
-});
-
-// Subscription schema based on SubscriptionSerializer
+// Subscription schema based on V2::SubscriptionSerializer
 export const SubscriptionSchema = TicketableSchema.extend({
-  text: z.string(),
+  text: z.string().nullable(),
   payment_frequency: z.string().nullable(),
   starts_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   next_payment_at: nullableDateTransformer, // ISO8601(3) -> Date | null
   price: z.number().nullable(), // decimal(8, 2) -> float
   subscription_category_id: z.uuid(),
-});
-
-// Subscriptions list response schema
-export const SubscriptionsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
-  results: z.array(SubscriptionSchema),
 });
 
 // Ticket transfer schemas based on Sdk::TicketTransferSerializer
@@ -109,10 +99,10 @@ export const TicketTransfersListResponseSchema = z.object({
 
 // Export types
 export type Ticket = z.infer<typeof TicketSchema>;
-export type TicketsListResponse = z.infer<typeof TicketsListResponseSchema>;
+export type TicketsListResponse = Page<Ticket>;
 
 export type Subscription = z.infer<typeof SubscriptionSchema>;
-export type SubscriptionsListResponse = z.infer<typeof SubscriptionsListResponseSchema>;
+export type SubscriptionsListResponse = Page<Subscription>;
 
 export type TicketTransfer = z.infer<typeof TicketTransferSchema>;
 export type TicketTransferStatus = z.infer<typeof TicketTransferStatusSchema>;
