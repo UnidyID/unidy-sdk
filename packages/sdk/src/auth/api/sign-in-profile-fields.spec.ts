@@ -61,4 +61,20 @@ describe("RequiredFieldsResponseSchema", () => {
     });
     expect(parsed.fields.custom_attributes?.newsletter_ok).not.toHaveProperty("radio_options");
   });
+
+  it("keeps _NOT_SET_ as the value of a custom field that isn't a radio", () => {
+    const parsed = RequiredFieldsResponseSchema.parse({
+      error_identifier: "missing_required_fields",
+      meta: {
+        sid: "sid-1",
+        fields: {
+          custom_attributes: {
+            motto: { value: "_NOT_SET_", type: "text", required: true, label: "Motto", attr_name: "motto", readonly: false },
+          },
+        },
+      },
+    });
+
+    expect(parsed.fields.custom_attributes?.motto).toMatchObject({ value: "_NOT_SET_", type: "text" });
+  });
 });
