@@ -83,7 +83,17 @@
         if (!(await auth.isAuthenticated())) return;
 
         const client = getUnidyClient();
-        const [error, page] = await client.authorizedApplications.list();
+        const applications = [];
+        let error = null;
+        for (let pageNumber = 1; pageNumber; ) {
+          const [pageError, page] = await client.authorizedApplications.list({ page: pageNumber });
+          if (pageError) {
+            error = pageError;
+            break;
+          }
+          applications.push(...page.records);
+          pageNumber = page.pagination.next;
+        }
         loadingEl.classList.add('hidden');
 
         if (error) {
@@ -91,12 +101,12 @@
           return;
         }
 
-        if (!page.records.length) {
+        if (!applications.length) {
           emptyEl.classList.remove('hidden');
           return;
         }
 
-        for (const application of page.records) {
+        for (const application of applications) {
           const li = document.createElement('li');
           li.className = 'bg-white rounded-xl shadow p-5 border border-gray-100 flex items-center justify-between';
           li.setAttribute('data-service-id', application.id);
