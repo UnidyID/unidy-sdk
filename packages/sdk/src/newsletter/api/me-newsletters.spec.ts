@@ -240,6 +240,17 @@ describe("MeNewsletterService", () => {
     expect(catalogRequests()).toHaveLength(2);
   });
 
+  it("returns a failed newsletter load from a list without loading the newsletters again", async () => {
+    const disabled = { identifier: "feature_not_enabled", details: [] };
+    const { service, catalogRequests } = setup((_method, endpoint) =>
+      endpoint === "/api/v2/me/newsletters" ? respond(403, disabled) : page([subscription(MAIN_ID)]),
+    );
+
+    expect(await service.list()).toEqual(["feature_not_enabled", disabled]);
+    expect(await service.listAll()).toEqual(["feature_not_enabled", disabled]);
+    expect(catalogRequests()).toHaveLength(2);
+  });
+
   it("needs a signed-in user", async () => {
     const { mocks, service } = setup(withCatalog(catalog), null);
 
