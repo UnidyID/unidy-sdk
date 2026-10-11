@@ -45,6 +45,29 @@ test.describe("Profile - partial validation", () => {
     // profile 2 would have first_name in its renderedFields Set)
   });
 
+  test("an error on a field the form doesn't render goes to the flash messages", async ({
+    page,
+    authenticatedContext: _authenticatedContext,
+  }) => {
+    const details = [{ field: "payload.data.date_of_birth", code: "invalid", message: "Date of birth is invalid" }];
+    await page.route("**/api/v2/me", (route) =>
+      route.request().method() === "PATCH"
+        ? route.fulfill({
+            status: 422,
+            contentType: "application/json",
+            body: JSON.stringify({ identifier: "unprocessable_content", details, meta: { request_id: "e2e" } }),
+          })
+        : route.fallback(),
+    );
+
+    await page.goto(routes.profilePartial);
+    await page.locator('[data-testid="profile1-first-name"]').getByRole("textbox").fill("Ada");
+    await page.locator('[data-testid="profile1-submit"]').click();
+
+    await expect(page.getByText("Date of birth is invalid")).toBeVisible();
+    await expect(page.locator('[data-testid="profile1-submit"]').getByRole("button")).toBeEnabled();
+  });
+
   test("partial validation only submits rendered fields", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profilePartial);
 

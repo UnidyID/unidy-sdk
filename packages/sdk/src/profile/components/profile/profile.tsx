@@ -214,10 +214,13 @@ export class Profile {
     this.uProfileSuccess.emit({ message: "profile_updated_successfully", payload: saved });
   }
 
-  /** Errors on the fields the form shows go next to them; the rest go to the flash messages. */
+  /** Errors on the fields the form renders go next to them; the rest go to the flash messages. */
   private handleUpdateError(identifier: string, apiError?: ApiError) {
     const fieldErrors = apiError ? profileFieldErrors(apiError) : {};
-    const shown = Object.fromEntries(Object.entries(fieldErrors).filter(([field]) => getProfileNode(profileState.data, field)));
+    // Without registered fields (custom form elements) the profile data is the best guess at what the form shows.
+    const rendered = (field: string) =>
+      this.renderedFields.size > 0 ? this.renderedFields.has(field) : Boolean(getProfileNode(profileState.data, field));
+    const shown = Object.fromEntries(Object.entries(fieldErrors).filter(([field]) => rendered(field)));
     const unshown = Object.entries(fieldErrors)
       .filter(([field]) => !(field in shown))
       .map(([, message]) => message);
