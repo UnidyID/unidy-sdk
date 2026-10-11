@@ -174,7 +174,7 @@ export function Ticketables() {
   const handleExport = async (id: string, format: ExportFormat) => {
     const link = await ticketables.getExportLink(id, format);
     if (link) {
-      window.open(link.url, "_blank", "noopener,noreferrer");
+      window.open(link.download_url, "_blank", "noopener,noreferrer");
     }
   };
 
