@@ -18,6 +18,7 @@ const field = (name: string, overrides: Partial<ProfileField> = {}): ProfileFiel
   type: "text",
   label: name,
   required: false,
+  profile_access: "edit",
   readonly: false,
   locked: false,
   locked_text: null,
@@ -35,8 +36,8 @@ const FIELDS: ProfileField[] = [
   field("salutation", { type: "radio", options: [{ value: "mrs", label: "Mrs" }] }),
   field("first_name", { required: true }),
   field("last_name", { locked_text: "Ask the club office" }),
-  field("email", { readonly: true }),
-  field("member_no", { custom_attribute: true, readonly: true }),
+  field("email", { profile_access: "show", readonly: true }),
+  field("member_no", { custom_attribute: true, profile_access: "show", readonly: true }),
   field("newsletter_ok", { custom_attribute: true, type: "radio", options: YES_NO }),
   field("weight", { custom_attribute: true, type: "number" }),
 ];

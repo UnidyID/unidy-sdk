@@ -54,7 +54,7 @@ export class ProfileService extends MeService {
 
   /** The profile form in display order: labels, input types, options, and which fields are required, read-only or locked. */
   async fields(): Promise<MeResult<ProfileField[]>> {
-    return this.fetchAll("/profile_fields", ProfileFieldSchema);
+    return this.fetchAll("/user_attributes", ProfileFieldSchema);
   }
 
   /** Writes profile fields and returns the updated user. */
