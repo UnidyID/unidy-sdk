@@ -1,18 +1,22 @@
 import { createStore } from "@stencil/store";
+import type { ProfileFieldOption } from "../api/schemas";
 
-export type Option = { value: string; label: string; icon?: string | null };
-export type RadioOption = { value: string; label: string; checked: boolean };
+/** A field's value as the API renders it: a yes/no radio holds `true`, `false` or `null`, a multi-select the selected values. */
+export type ProfileValue = string | number | boolean | string[] | null;
 
+/** A choice of a select, radio or multi-select field. */
+export type Option = ProfileFieldOption;
+
+/** A profile field: its value and how the form shows it. */
 export interface ProfileNode {
-  value?: string | undefined | string[];
+  value?: ProfileValue;
   type?: string;
   label?: string;
   required?: boolean;
   readonly?: boolean;
   locked?: boolean;
-  locked_text?: string;
+  locked_text?: string | null;
   options?: Option[];
-  radio_options?: RadioOption[];
   attr_name?: string;
 }
 

@@ -15,6 +15,8 @@ import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
+import { ProfileErrorEventDetail } from "./profile/components/profile/profile";
+import { MeUser, ProfileField } from "./profile/api/schemas";
 import { Option } from "./shared/components/raw-field/components/Select";
 import { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 import { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
@@ -39,6 +41,8 @@ export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-pro
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
+export { ProfileErrorEventDetail } from "./profile/components/profile/profile";
+export { MeUser, ProfileField } from "./profile/api/schemas";
 export { Option } from "./shared/components/raw-field/components/Select";
 export { RadioOption } from "./shared/components/raw-field/components/RadioGroup";
 export { MultiSelectOption } from "./shared/components/raw-field/components/MultiSelect";
@@ -731,7 +735,7 @@ export namespace Components {
         "pattern"?: string;
         "patternErrorMessage"?: string;
         "placeholder"?: string;
-        "radioOptions"?: RadioOption[];
+        "radioOptions"?: Omit<RadioOption, "checked">[];
         /**
           * @default ""
          */
@@ -1633,14 +1637,7 @@ declare global {
     interface HTMLUProfileElementEventMap {
         "uProfileChange": { data: ProfileRaw; field?: string };
         "uProfileSuccess": { message: string; payload: ProfileRaw };
-        "uProfileError": {
-    error: string;
-    details: {
-      fieldErrors?: Record<string, string>;
-      httpStatus?: number;
-      responseData?: unknown;
-    };
-  };
+        "uProfileError": ProfileErrorEventDetail;
     }
     interface HTMLUProfileElement extends Components.UProfile, HTMLStencilElement {
         addEventListener<K extends keyof HTMLUProfileElementEventMap>(type: K, listener: (this: HTMLUProfileElement, ev: UProfileCustomEvent<HTMLUProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2686,16 +2683,9 @@ declare namespace LocalJSX {
          */
         "onUProfileChange"?: (event: UProfileCustomEvent<{ data: ProfileRaw; field?: string }>) => void;
         /**
-          * Emitted when profile save fails, with error details including field-level errors.
+          * Emitted when profile save fails, with the API's error and the messages by field.
          */
-        "onUProfileError"?: (event: UProfileCustomEvent<{
-    error: string;
-    details: {
-      fieldErrors?: Record<string, string>;
-      httpStatus?: number;
-      responseData?: unknown;
-    };
-  }>) => void;
+        "onUProfileError"?: (event: UProfileCustomEvent<ProfileErrorEventDetail>) => void;
         /**
           * Emitted when profile is successfully saved.
          */
@@ -2749,7 +2739,7 @@ declare namespace LocalJSX {
         "pattern"?: string;
         "patternErrorMessage"?: string;
         "placeholder"?: string;
-        "radioOptions"?: RadioOption[];
+        "radioOptions"?: Omit<RadioOption, "checked">[];
         /**
           * @default ""
          */

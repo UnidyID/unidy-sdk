@@ -2,6 +2,7 @@ import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { findParentProfile } from "../../../shared/context-utils";
+import { getProfileNode, optionKey } from "../../profile-helpers";
 import { state as profileState } from "../../store/profile-store";
 /**
  * @part select_field - Styles the base <select> element.
@@ -73,9 +74,7 @@ export class Field extends UnidyComponent() {
   }
 
   private getFieldData() {
-    return this.field.startsWith("custom_attributes.")
-      ? profileState.data.custom_attributes?.[this.field.replace("custom_attributes.", "")]
-      : profileState.data[this.field];
+    return getProfileNode(profileState.data, this.field);
   }
 
   componentDidRender() {
@@ -130,23 +129,19 @@ export class Field extends UnidyComponent() {
       defaultValue: this.readonlyPlaceholder ? this.readonlyPlaceholder : "",
     });
 
+    // The inputs compare options as strings; a yes/no radio's "not set" option translates as `null`.
     const translatedOptions = (fieldData.options || []).map((opt) => {
-      const translationKey = `fields.${this.field}.options.${opt.value}`;
+      const translationKey = `fields.${this.field}.options.${opt.value === null ? "null" : opt.value}`;
       const label = t(translationKey, { defaultValue: opt.label });
-      return { ...opt, label };
-    });
-
-    const translatedRadioOptions = (fieldData.radio_options || []).map((opt) => {
-      const translationKey = `fields.${this.field}.options.${opt.value}`;
-      const label = t(translationKey, { defaultValue: opt.label });
-      return { ...opt, label };
+      return { value: optionKey(opt.value), label };
     });
 
     const errorPrefix = t("errors.prefix", { defaultValue: "ERROR: " });
 
     const isLocked = !!fieldData?.locked;
     const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
-    const isReadonly = fieldData?.readonly === true;
+    // The email can't be changed in the profile, but keeps rendering as a disabled input.
+    const isReadonly = fieldData?.readonly === true && this.field !== "email";
     const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
 
     return (
@@ -179,9 +174,9 @@ export class Field extends UnidyComponent() {
               id={this.field}
               field={this.field}
               type={fieldData.type as string}
-              value={fieldData.value}
+              value={fieldData.value as string | string[]}
               options={fieldData.type === "select" ? translatedOptions : undefined}
-              radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
+              radioOptions={fieldData.type === "radio" ? translatedOptions : undefined}
               multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
               required={fieldData.required || this.required}
               disabled={isLocked || (profileState.loading && profileState.activeField !== this.field) || this.field === "email"}

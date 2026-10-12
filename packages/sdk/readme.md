@@ -658,7 +658,7 @@ This component renders a form for users to view and edit their profile data. It 
 **Events:**
 
 -   `uProfileSuccess`: Fired when profile update is successful. `event.detail` contains `{ message: string, payload: ProfileRaw }`.
--   `uProfileError`: Fired when profile update fails. `event.detail` contains `{ error: string, details: { fieldErrors?: Record<string, string>, httpStatus?: number, responseData?: unknown } }`.
+-   `uProfileError`: Fired when profile update fails. `event.detail` contains `{ error: "profile_update_field_errors" | "profile_update_failed", details: { identifier: string, fieldErrors: Record<string, string>, apiError?: ApiError } }`. `identifier` is the API's error identifier (e.g. `unprocessable_content`), `fieldErrors` the messages by field (`first_name`, `custom_attributes.tier`), and `apiError` the V2 error body with its `details`.
 
 **Slots:**
 
@@ -1145,27 +1145,38 @@ const [error, profile] = await client.profile.get();
 
 ### ProfileService
 
-The `ProfileService` provides methods for fetching and updating user profiles.
+The `ProfileService` reads and updates the signed-in user's profile on `/api/v2/me`. Requires authentication. Results are `[error, data]` tuples; a failed call returns the V2 error identifier (e.g. `unprocessable_content`) with the error body, whose `details` name the offending fields.
 
-#### `profile.get(): Promise<ProfileGetResult>`
+#### `profile.get(): Promise<MeResult<MeUser>>`
 
-Fetches the current user's profile data. Requires authentication.
+Fetches the signed-in user (`GET /api/v2/me`).
 
 ```javascript
-const [error, profile] = await getUnidyClient().profile.get();
+const [error, user] = await getUnidyClient().profile.get();
 if (!error) {
-  console.log(profile.first_name.value);
+  console.log(user.first_name, user.custom_attributes.favorite_nut);
 }
 ```
 
-#### `profile.update(args: { payload: object }): Promise<ProfileUpdateResult>`
+#### `profile.fields(): Promise<MeResult<ProfileField[]>>`
 
-Updates the current user's profile. Returns the updated profile data.
+Fetches the profile form in display order (`GET /api/v2/me/profile_fields`): each field's `name`, whether it is a `custom_attribute`, its input `type`, `label`, `options`, and whether it is `required`, `readonly` or `locked` (with `locked_text`). A field's value is on the user under its name, or under `custom_attributes` for a custom attribute.
+
+#### `profile.update(args: { payload: { data, validate_only_sent_fields? } }): Promise<MeResult<MeUser>>`
+
+Updates profile fields (`PATCH /api/v2/me`) and returns the updated user. A `null` value clears a field, or deletes a custom attribute. `validate_only_sent_fields: true` validates only the fields in `data`, for a form that shows part of the profile.
 
 ```javascript
-const [error, updatedProfile] = await getUnidyClient().profile.update({
-  payload: { first_name: 'John', last_name: 'Doe' }
+import { profileFieldErrors } from '@unidy.io/sdk';
+
+const [error, result] = await getUnidyClient().profile.update({
+  payload: { data: { first_name: 'John', last_name: 'Doe', custom_attributes: { newsletter_ok: true } } }
 });
+
+if (error === 'unprocessable_content') {
+  // { first_name: "First name cannot be changed", ... }
+  console.log(profileFieldErrors(result));
+}
 ```
 
 ### NewsletterService
@@ -1365,26 +1376,38 @@ An object representing the decoded JWT payload. It contains standard claims like
 
 An error object returned on failed authentication operations. It includes a `code` property with a specific error identifier (e.g., `REFRESH_FAILED`) and a `requiresReauth` boolean indicating if the user needs to sign in again.
 
-#### `UserProfile`
+#### `MeUser`
 
-An object representing a user's profile. Each field in the profile is an object with a `value` property and additional metadata.
+The signed-in user, as `profile.get()` and `profile.update()` return it.
 
 | Name | Type | Description |
 |---|---|---|
-| `salutation` | `object` | The user's salutation (e.g., Mr., Ms.). |
-| `first_name` | `object` | The user's first name. |
-| `last_name` | `object` | The user's last name. |
-| `email` | `object` | The user's email address. |
-| `phone_number` | `object` | The user's phone number. |
-| `company_name` | `object` | The user's company name. |
-| `address_line_1` | `object` | The first line of the user's address. |
-| `address_line_2` | `object` | The second line of the user's address. |
-| `city` | `object` | The city of the user's address. |
-| `postal_code` | `object` | The postal code of the user's address. |
-| `country_code` | `object` | The country code of the user's address. |
-| `date_of_birth` | `object` | The user's date of birth. |
-| `preferred_language` | `object` | The user's preferred language. |
-| `custom_attributes` | `Record<string, object>` | A record of custom attributes. |
+| `id` | `string` | The user's Unidy ID. |
+| `email` | `string` | The user's email address. |
+| `salutation` | `string \| null` | `mr`, `mrs` or `mx`. |
+| `first_name`, `last_name` | `string \| null` | The user's name. |
+| `date_of_birth` | `string \| null` | `YYYY-MM-DD`. |
+| `phone_number`, `company_name` | `string \| null` | |
+| `address_line_1`, `address_line_2`, `city`, `postal_code`, `country_code` | `string \| null` | The user's address. |
+| `preferred_language` | `string \| null` | |
+| `custom_attributes` | `Record<string, string \| number \| boolean \| string[] \| null>` | The custom attributes the user may read, by name. |
+| `verified`, `disabled`, `brands`, `confirmed_at`, `created_at`, … | | Account state, read-only. |
+
+#### `ProfileField`
+
+One field of the profile form, as `profile.fields()` returns it.
+
+| Name | Type | Description |
+|---|---|---|
+| `name` | `string` | The field's name, the key of its value on `MeUser` (or in `custom_attributes`). |
+| `custom_attribute` | `boolean` | Whether the value is under `custom_attributes`. |
+| `type` | `string` | `text`, `textarea`, `number`, `select`, `radio`, `date`, `datetime-local`, `checkbox` (multi-select) or `tel`. |
+| `label` | `string` | The label in the request's language. |
+| `required` | `boolean` | Whether the field must be filled. |
+| `readonly` | `boolean` | The profile shows the field without letting the user change it. |
+| `locked` | `boolean` | A filled field the brand locked. |
+| `locked_text` | `string \| null` | Why the field is locked, or will be once it is filled. |
+| `options` | `{ value: string \| boolean \| null, label: string }[] \| null` | The choices of a select, radio or multi-select. A yes/no radio offers `true`, `false` and `null` (not set). |
 
 #### `NewsletterSubscription`
 
@@ -1552,6 +1575,8 @@ The value of this attribute can be a JSON string or a JavaScript object. The key
 ></u-config>
 ```
 
+The options of a yes/no field translate under `true`, `false` and `null` (not set).
+
 ## Advanced Usage: `<u-raw-field>`
 
 While the `<u-field>` component is recommended for most use cases, the `<u-raw-field>` component is available for situations that require complete control over the form field's layout and styling. It renders a bare, unstyled input element (`<input>`, `<select>`, etc.) without a label or any surrounding structure.
@@ -1567,7 +1592,7 @@ This component is best used when you need to integrate with a design system or a
 -   `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
 -   `invalid-phone-message`: The error message to display for an invalid phone number.
 -   `class-name`: A string of classes to pass to the input field.
--   `value`: The value of the input.
+-   `value`: The value of the input. For a radio, the option it stands for; a yes/no field takes `true`, `false`, or an empty value for "not set".
 -   `checked`: If set to `true`, the radio or checkbox will be checked.
 -   `disabled`: If set to `true`, the input will be disabled.
 -   `tooltip`: The tooltip text to display on hover.
