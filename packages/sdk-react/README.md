@@ -684,7 +684,7 @@ const { profile, fields, isLoading, isMutating, error, fieldErrors, updateProfil
 | Field | Type | Description |
 |-------|------|-------------|
 | `profile` | `MeUser \| null` | The signed-in user: `first_name`, `date_of_birth`, `custom_attributes`, … |
-| `fields` | `ProfileField[] \| null` | The profile form in display order: `name`, `custom_attribute`, `type`, `label`, `required`, `readonly`, `locked`, `locked_text`, `options` |
+| `fields` | `ProfileField[] \| null` | The profile form in display order: `name`, `custom_attribute`, `type`, `label`, `required`, `profile_access`, `readonly`, `locked`, `locked_text`, `options` |
 | `isLoading` | `boolean` | Whether the profile is being fetched |
 | `isMutating` | `boolean` | Whether an update is in progress |
 | `error` | `string \| null` | The error identifier of the last failed call, e.g. `unprocessable_content` |
