@@ -19,7 +19,7 @@ test.describe("Profile - authenticated user", () => {
     await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
   });
 
-  test("renders the values from /me with the metadata from /me/profile_fields", async ({
+  test("renders the values from /me with the metadata from /me/user_attributes", async ({
     page,
     authenticatedContext: _authenticatedContext,
   }) => {

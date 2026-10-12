@@ -13,14 +13,14 @@ const field = (name: string, overrides: Record<string, unknown> = {}) => ({
   type: "text",
   label: name.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()),
   required: false,
-  readonly: false,
+  profile_access: "edit",
   locked: false,
   locked_text: null,
   options: null,
   ...overrides,
 });
 
-/** `GET /api/v2/me/profile_fields`, in display order. */
+/** `GET /api/v2/me/user_attributes`, in display order. */
 export const PROFILE_FIELDS = [
   field("salutation", {
     type: "radio",
@@ -47,7 +47,7 @@ export const PROFILE_FIELDS = [
       { value: "AT", label: "Austria" },
     ],
   }),
-  field("email", { readonly: true }),
+  field("email", { profile_access: "show" }),
   field("preferred_language"),
   field("favorite_nut", {
     custom_attribute: true,
@@ -122,14 +122,14 @@ function validate(data: Data) {
 }
 
 /**
- * Stubs the V2 profile endpoints: `GET /api/v2/me`, `GET /api/v2/me/profile_fields`, and a `PATCH /api/v2/me`
+ * Stubs the V2 profile endpoints: `GET /api/v2/me`, `GET /api/v2/me/user_attributes`, and a `PATCH /api/v2/me`
  * that saves into the stubbed user. Returns the PATCH bodies the page sent.
  */
 export async function stubProfile(page: Page): Promise<ProfilePatch[]> {
   const patches: ProfilePatch[] = [];
   let user = structuredClone(ME_USER);
 
-  await page.route("**/api/v2/me/profile_fields", (route) => route.fulfill(json(200, { records: PROFILE_FIELDS, meta: META })));
+  await page.route("**/api/v2/me/user_attributes", (route) => route.fulfill(json(200, { records: PROFILE_FIELDS, meta: META })));
 
   await page.route("**/api/v2/me", (route) => {
     const request = route.request();

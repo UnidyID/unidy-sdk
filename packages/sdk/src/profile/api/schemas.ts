@@ -56,22 +56,24 @@ export const ProfileFieldOptionSchema = z.object({
   label: z.string(),
 });
 
-/** One field of the profile form (`GET /api/v2/me/profile_fields`); its value is on the user under `name`. */
-export const ProfileFieldSchema = z.object({
-  name: z.string(),
-  /** Whether the value is under `custom_attributes` rather than on the user itself. */
-  custom_attribute: z.boolean(),
-  type: ProfileFieldTypeSchema,
-  label: z.string(),
-  required: z.boolean(),
-  /** The profile shows the field without letting the user change it. */
-  readonly: z.boolean(),
-  /** A filled field the brand locked; the user can no longer change it. */
-  locked: z.boolean(),
-  /** Why the field is locked, or will be once it is filled. */
-  locked_text: z.string().nullable(),
-  options: z.array(ProfileFieldOptionSchema).nullable(),
-});
+/** One field of the profile form (`GET /api/v2/me/user_attributes`); its value is on the user under `name`. */
+export const ProfileFieldSchema = z
+  .object({
+    name: z.string(),
+    /** Whether the value is under `custom_attributes` rather than on the user itself. */
+    custom_attribute: z.boolean(),
+    type: ProfileFieldTypeSchema,
+    label: z.string(),
+    required: z.boolean(),
+    /** `show` lets the profile display the field without the user changing it. */
+    profile_access: z.enum(["edit", "show", "hidden"]),
+    /** A filled field the brand locked; the user can no longer change it. */
+    locked: z.boolean(),
+    /** Why the field is locked, or will be once it is filled. */
+    locked_text: z.string().nullable(),
+    options: z.array(ProfileFieldOptionSchema).nullable(),
+  })
+  .transform((field) => ({ ...field, readonly: field.profile_access === "show" }));
 
 export type CustomAttributeValue = z.infer<typeof CustomAttributeValueSchema>;
 export type MeUser = z.infer<typeof MeUserSchema>;

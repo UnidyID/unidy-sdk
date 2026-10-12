@@ -47,6 +47,7 @@ const FIELD: ProfileField = {
   type: "radio",
   label: "Salutation",
   required: false,
+  profile_access: "edit",
   readonly: false,
   locked: false,
   locked_text: null,
@@ -82,7 +83,7 @@ describe("ProfileService", () => {
     const { client, service } = setup(respond(200, { records: [FIELD], meta: { request_id: "r" } }));
 
     expect(await service.fields()).toEqual([null, [FIELD]]);
-    expect(client.get.mock.calls[0][0]).toBe("/api/v2/me/profile_fields");
+    expect(client.get.mock.calls[0][0]).toBe("/api/v2/me/user_attributes");
   });
 
   it("keeps a yes/no radio's null option", async () => {
