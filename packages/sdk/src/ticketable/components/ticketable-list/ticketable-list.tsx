@@ -22,6 +22,7 @@ export type TicketableItem = Ticket | Subscription;
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
+  private hasLoaded = false;
 
   @State() items: TicketableItem[] = [];
   @State() loading = true;
@@ -93,6 +94,17 @@ export class TicketableList extends UnidyComponent() {
     loadLocales(this.logger);
   }
 
+  connectedCallback() {
+    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
+      if (newToken && this.hasLoaded) {
+        this.loadData();
+      }
+    });
+    if (this.hasLoaded && this.target) {
+      this.renderToTarget();
+    }
+  }
+
   async componentDidLoad() {
     await waitForConfig();
 
@@ -101,11 +113,7 @@ export class TicketableList extends UnidyComponent() {
       await this.loadData();
     }
 
-    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
-      if (newToken) {
-        this.loadData();
-      }
-    });
+    this.hasLoaded = true;
   }
 
   disconnectedCallback() {
@@ -192,7 +200,9 @@ export class TicketableList extends UnidyComponent() {
 
       this.loading = false;
 
-      this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      if (this.element.isConnected) {
+        this.uTicketableListSuccess.emit({ ticketableType: this.ticketableType, items: this.items, paginationMeta: this.paginationMeta });
+      }
     } catch (err) {
       this.logger.error("Unexpected error while loading data", err);
       this.error = translateListError("ticketable.errors.fetch_failed", "Failed to load data", "internal_error");
@@ -246,7 +256,9 @@ export class TicketableList extends UnidyComponent() {
 
   componentDidRender() {
     if (this.target) {
-      requestAnimationFrame(() => this.renderToTarget());
+      requestAnimationFrame(() => {
+        if (this.element.isConnected) this.renderToTarget();
+      });
     }
   }
 
