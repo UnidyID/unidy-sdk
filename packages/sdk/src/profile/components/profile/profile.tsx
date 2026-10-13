@@ -211,39 +211,37 @@ export class Profile {
     }
   }
 
-  componentDidLoad() {
-    profileOnChange("configuration", (cfg) => {
-      profileState.data = cfg as ProfileRaw;
-    });
-
+  connectedCallback() {
     this.authTokenUnsubscribe = authOnChange("token", (newToken: string | null) => {
       if (newToken) {
         this.fetchProfileData();
       }
     });
 
-    // Set up data change listener - always emit event, optionally debounced autosave
     this.profileDataUnsubscribe = profileOnChange("data", (data) => {
       if (this.initialLoadComplete) {
         this.uProfileChange.emit({ data: data as ProfileRaw });
 
-        // Only use debounced autosave if delay is explicitly set
         if (this.enableAutosave && this.saveDelay) {
           this.getAutosaveManager().debouncedSave();
         }
       }
     });
 
-    // Set flag after listener to ensure no data change events are missed
-    this.initialLoadComplete = true;
-
-    // Save on blur: when activeField goes from a field to null, trigger save
     this.activeFieldUnsubscribe = profileOnChange("activeField", (field) => {
       if (this.enableAutosave && !this.saveDelay && this.previousActiveField && field === null) {
         this.getAutosaveManager().submitField(this.previousActiveField);
       }
       this.previousActiveField = field;
     });
+  }
+
+  componentDidLoad() {
+    profileOnChange("configuration", (cfg) => {
+      profileState.data = cfg as ProfileRaw;
+    });
+
+    this.initialLoadComplete = true;
   }
 
   disconnectedCallback() {

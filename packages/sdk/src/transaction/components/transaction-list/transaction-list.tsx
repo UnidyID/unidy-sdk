@@ -13,6 +13,7 @@ import type { Transaction } from "../../api/transactions";
 @Component({ tag: "u-transaction-list", shadow: false })
 export class TransactionList extends UnidyComponent() {
   private unsubscribeAuth?: () => void;
+  private hasLoaded = false;
 
   @State() items: Transaction[] = [];
   @State() loading = true;
@@ -72,6 +73,17 @@ export class TransactionList extends UnidyComponent() {
     loadLocales(this.logger);
   }
 
+  connectedCallback() {
+    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
+      if (newToken && this.hasLoaded) {
+        this.loadData();
+      }
+    });
+    if (this.hasLoaded && this.target) {
+      this.renderToTarget();
+    }
+  }
+
   async componentDidLoad() {
     await waitForConfig();
 
@@ -80,11 +92,7 @@ export class TransactionList extends UnidyComponent() {
       await this.loadData();
     }
 
-    this.unsubscribeAuth = authOnChange("token", (newToken: string | null) => {
-      if (newToken) {
-        this.loadData();
-      }
-    });
+    this.hasLoaded = true;
   }
 
   disconnectedCallback() {

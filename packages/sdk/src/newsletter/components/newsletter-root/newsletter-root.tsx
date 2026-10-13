@@ -78,7 +78,7 @@ export class NewsletterRoot extends UnidyComponent() {
     await NewsletterHelpers.fetchSubscriptions();
   }
 
-  componentDidLoad() {
+  connectedCallback() {
     this.unsubscribeAuth = authOnChange("token", async (newToken: string | null) => {
       const isAuthenticated = !!newToken;
       newsletterStore.state.isAuthenticated = isAuthenticated;
