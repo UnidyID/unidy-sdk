@@ -145,6 +145,19 @@ jobs:
           E2E_SDK_BASE_URL: ${{ secrets.E2E_SDK_BASE_URL }}
           E2E_SDK_API_KEY: ${{ secrets.E2E_SDK_API_KEY }}
 
+      - name: Debug E2E connectivity
+        run: |
+          echo "E2E_API_URL=$E2E_API_URL"
+          echo "URL length: ${#E2E_API_URL}"
+          echo "--- curl db/Brand (no token) ---"
+          curl -s -o /dev/null -w "status=%{http_code}\n" "$E2E_API_URL/test/db/Brand?scope=%7B%22default%22%3Atrue%7D"
+          echo "--- curl db/Brand (with token) ---"
+          curl -s -w "status=%{http_code} body=%{size_download}b\n" "$E2E_API_URL/test/db/Brand?scope=%7B%22default%22%3Atrue%7D" \
+            -H "X-Test-Secret: $E2E_API_TOKEN" -o /tmp/brand_response.json && cat /tmp/brand_response.json | head -c 200
+        env:
+          E2E_API_URL: ${{ secrets.E2E_API_URL }}
+          E2E_API_TOKEN: ${{ secrets.E2E_API_TOKEN }}
+
       - name: Run Playwright tests
         run: bunx playwright test --project=setup --project=chromium
         working-directory: packages/sdk
