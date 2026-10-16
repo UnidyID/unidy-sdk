@@ -59,7 +59,7 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 
 ## Gotchas
 
-- **Stencil store reactivity**: direct state access triggers re-renders; slotted components need manual subscription triggers — see `HasSlotContent` mixin + `@State() renderTrigger` pattern in CLAUDE.md
+- **Stencil store reactivity**: direct state access triggers re-renders; slotted components need manual subscription triggers — see `HasSlotContent` mixin + `@State() renderTrigger` pattern in AGENTS.md
 - **Tailwind**: components accept `class-name` props; an empty CSS file with `styleUrl` is required for Tailwind injection to work
 - **i18n**: built-in translation system; customizable via `<u-config custom-translations="{...}">`
 - **Preference token flow**: newsletter management via URL params (`preference_token`, `email`) without sign-in
