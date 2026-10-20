@@ -1,7 +1,8 @@
 import { Component, Event, type EventEmitter, Host, h, Listen, Prop, State, Watch } from "@stencil/core";
+import { jwtDecode } from "jwt-decode";
 import type { PaginationMeta } from "../../../api";
 import { getUnidyClient } from "../../../api";
-import { Auth } from "../../../auth";
+import { Auth, type TokenPayload } from "../../../auth";
 import { onChange as authOnChange } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
@@ -16,11 +17,41 @@ function isTransferredAway(item: Ticket): boolean {
   return item.holder_id != null && item.holder_id !== item.user_id;
 }
 
+/**
+ * Adds transfer state relative to the signed-in user so templates can use it
+ * in `<ticketable-conditional when="...">`. Tickets only.
+ * - `transferable`: the user owns the ticket and currently holds it.
+ * - `transferred_away`: the user owns the ticket but someone else holds it.
+ * - `held_by_me`: someone else owns the ticket and the user holds it.
+ */
+function withTransferState(item: TicketableItem, userId: string | null): TicketableItem {
+  if (!userId || !("holder_id" in item || "user_id" in item)) return item;
+  const ticket = item as Ticket;
+  const holder = ticket.holder_id ?? null;
+  const owned = ticket.user_id === userId;
+  return {
+    ...ticket,
+    transferred_away: owned && holder !== null && holder !== userId,
+    held_by_me: !owned && holder === userId,
+    transferable: owned && (holder === null || holder === userId),
+  } as TicketableItem;
+}
+
+function decodeUserId(token: string): string | null {
+  try {
+    return jwtDecode<TokenPayload>(token).sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export type TicketableType = "ticket" | "subscription";
 export type TicketableItem = Ticket | Subscription;
 
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
+  private currentUserId: string | null = null;
+
   private unsubscribeAuth?: () => void;
 
   @State() items: TicketableItem[] = [];
@@ -150,6 +181,7 @@ export class TicketableList extends UnidyComponent() {
     }
 
     try {
+      this.currentUserId = decodeUserId(idToken);
       const unidyClient = await getUnidyClient();
 
       // URLSearchParams with ';' swapped for '&' lets consumers write compact filter strings.
@@ -266,7 +298,7 @@ export class TicketableList extends UnidyComponent() {
       template,
       loading: this.loading,
       error: this.error,
-      items: this.items,
+      items: this.items.map((item) => withTransferState(item, this.currentUserId)),
       skeletonCount: this.skeletonCount || this.limit,
       config: this.buildRenderConfig(),
     });
@@ -324,7 +356,7 @@ export class TicketableList extends UnidyComponent() {
       }
     } else {
       for (const item of this.items) {
-        container.appendChild(renderFragment(template, item, config));
+        container.appendChild(renderFragment(template, withTransferState(item, this.currentUserId), config));
       }
     }
 
