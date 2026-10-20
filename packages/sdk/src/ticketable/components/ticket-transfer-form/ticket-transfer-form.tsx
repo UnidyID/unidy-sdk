@@ -3,7 +3,7 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { TicketTransfer } from "../../api/schemas";
-import { translateTransferError } from "../../transfer-error";
+import { isTransfersEnabled, translateTransferError } from "../../transfer-error";
 
 /**
  * Form to send a ticket transfer offer to an email address.
@@ -29,6 +29,7 @@ export class TicketTransferForm extends UnidyComponent() {
   /** CSS classes to apply to the success message element. */
   @Prop() successClassName?: string;
 
+  @State() enabled = true;
   @State() email = "";
   @State() loading = false;
   @State() error: string | null = null;
@@ -38,6 +39,10 @@ export class TicketTransferForm extends UnidyComponent() {
   @Event() uTicketTransferCreateSuccess!: EventEmitter<{ transfer: TicketTransfer }>;
   /** Fired when sending a transfer offer fails. Contains the error code. */
   @Event() uTicketTransferCreateError!: EventEmitter<{ error: string }>;
+
+  async componentWillLoad() {
+    this.enabled = await isTransfersEnabled();
+  }
 
   private handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
@@ -79,6 +84,8 @@ export class TicketTransferForm extends UnidyComponent() {
   };
 
   render() {
+    if (!this.enabled) return <Host hidden />;
+
     return (
       <Host>
         <form onSubmit={this.handleSubmit} class={this.componentClassName}>

@@ -23,8 +23,12 @@ function isTransferredAway(item: Ticket): boolean {
  * - `transferable`: the user owns the ticket and currently holds it.
  * - `transferred_away`: the user owns the ticket but someone else holds it.
  * - `held_by_me`: someone else owns the ticket and the user holds it.
+ * All three are false when the backend reports transfers as disabled (`meta.transfers_enabled`).
  */
-function withTransferState(item: TicketableItem, userId: string | null): TicketableItem {
+function withTransferState(item: TicketableItem, userId: string | null, transfersEnabled: boolean | undefined): TicketableItem {
+  if (transfersEnabled === false) {
+    return { ...(item as Ticket), transferable: false, transferred_away: false, held_by_me: false } as TicketableItem;
+  }
   if (!userId || !("holder_id" in item || "user_id" in item)) return item;
   const ticket = item as Ticket;
   const holder = ticket.holder_id ?? null;
@@ -51,6 +55,7 @@ export type TicketableItem = Ticket | Subscription;
 @Component({ tag: "u-ticketable-list", shadow: false })
 export class TicketableList extends UnidyComponent() {
   private currentUserId: string | null = null;
+  private transfersEnabled: boolean | undefined;
 
   private unsubscribeAuth?: () => void;
 
@@ -218,6 +223,12 @@ export class TicketableList extends UnidyComponent() {
       this.items = data.results;
       this.paginationMeta = data.meta;
 
+      const transfersEnabled = (data.meta as { transfers_enabled?: boolean }).transfers_enabled;
+      this.transfersEnabled = this.ticketableType === "ticket" ? transfersEnabled : undefined;
+      if (typeof this.transfersEnabled === "boolean") {
+        unidyClient.ticketTransfers.setEnabled(this.transfersEnabled);
+      }
+
       if (this.store) {
         this.store.state.paginationMeta = data.meta;
       }
@@ -235,6 +246,7 @@ export class TicketableList extends UnidyComponent() {
 
   private buildRenderConfig() {
     const ticketableType = this.ticketableType;
+    const transfersEnabled = this.transfersEnabled;
     return {
       valueTag: "ticketable-value",
       conditionalTag: "ticketable-conditional",
@@ -256,20 +268,13 @@ export class TicketableList extends UnidyComponent() {
         }
         // Only tickets are transferable; forms in subscription templates stay unstamped.
         if (ticketableType === "ticket") {
-          for (const transferEl of fragment.querySelectorAll("u-ticket-transfer-form")) {
-            if (item) {
-              transferEl.setAttribute("ticket-id", item.id);
-            } else {
-              transferEl.setAttribute("disabled", "true");
-            }
-          }
-          // Stamp ticket-id for revoke/return action buttons inside ticket templates.
-          for (const actionEl of fragment.querySelectorAll("u-ticket-transfer-action")) {
-            if (item) {
-              actionEl.setAttribute("ticket-id", item.id);
-            } else {
-              actionEl.setAttribute("disabled", "true");
-            }
+          const transferEls = fragment.querySelectorAll("u-ticket-transfer-form, u-ticket-transfer-action");
+          // Skeletons and lists of a brand with transfers disabled render no transfer controls at all.
+          if (!item || transfersEnabled === false) {
+            for (const el of transferEls) el.remove();
+          } else {
+            // Stamp ticket-id for the send form and the revoke/return buttons inside ticket templates.
+            for (const el of transferEls) el.setAttribute("ticket-id", item.id);
           }
         }
       },
@@ -298,7 +303,7 @@ export class TicketableList extends UnidyComponent() {
       template,
       loading: this.loading,
       error: this.error,
-      items: this.items.map((item) => withTransferState(item, this.currentUserId)),
+      items: this.items.map((item) => withTransferState(item, this.currentUserId, this.transfersEnabled)),
       skeletonCount: this.skeletonCount || this.limit,
       config: this.buildRenderConfig(),
     });
@@ -356,7 +361,7 @@ export class TicketableList extends UnidyComponent() {
       }
     } else {
       for (const item of this.items) {
-        container.appendChild(renderFragment(template, withTransferState(item, this.currentUserId), config));
+        container.appendChild(renderFragment(template, withTransferState(item, this.currentUserId, this.transfersEnabled), config));
       }
     }
 

@@ -29,6 +29,7 @@ export class TicketTransferList extends UnidyComponent() {
   private lastTargetElement: Element | null = null;
 
   @State() items: TicketTransfer[] = [];
+  @State() featureDisabled = false;
   @State() loading = true;
   @State() error: string | null = null;
 
@@ -143,7 +144,15 @@ export class TicketTransferList extends UnidyComponent() {
 
       if (loadId !== this.loadId) return;
 
+      this.featureDisabled = error === "feature_disabled";
+
       if (error !== null || !data || !("incoming" in data)) {
+        if (this.featureDisabled) {
+          this.clearTargetElement();
+          this.loading = false;
+          this.uTicketTransferListError.emit({ direction, error: "feature_disabled" });
+          return;
+        }
         this.error = translateTransferError(error ?? "invalid_response");
         this.loading = false;
         this.uTicketTransferListError.emit({ direction, error: this.error });
@@ -196,6 +205,7 @@ export class TicketTransferList extends UnidyComponent() {
   }
 
   private renderToTarget() {
+    if (this.featureDisabled) return;
     const template = this.element.querySelector("template");
     if (!template) return;
 
@@ -234,6 +244,8 @@ export class TicketTransferList extends UnidyComponent() {
   }
 
   render() {
+    if (this.featureDisabled) return <Host hidden />;
+
     if (this.error) {
       this.logger.error(`can't render content: ${this.error}`);
       return (
