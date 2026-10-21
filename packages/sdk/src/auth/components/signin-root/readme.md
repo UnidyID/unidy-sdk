@@ -20,6 +20,13 @@
 | `errorEvent` | Fired on authentication failure. Contains the error code.               | `CustomEvent<{ error: string; }>`                                    |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

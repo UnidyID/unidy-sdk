@@ -13,6 +13,13 @@
 | `not`                | `not`        | If true, shows content when user is NOT signed in (inverts the condition). | `boolean` | `false` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

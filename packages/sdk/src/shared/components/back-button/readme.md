@@ -13,6 +13,13 @@
 | `restart`            | `restart`    | If true, restarts the entire auth flow instead of going back one step. Only applies when used outside a registration flow. | `boolean` | `false` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
