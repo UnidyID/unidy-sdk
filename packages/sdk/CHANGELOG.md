@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.12.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.12.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* [UD-3082] surface email required error on empty newsletter submit ([#333](https://github.com/UnidyID/unidy-sdk/issues/333)) ([653f05a](https://github.com/UnidyID/unidy-sdk/commit/653f05a210772963915bc9c5b9e81d4a5c1cce68))
+* [UD-3403] react to auth state changes after mount in all data components ([#335](https://github.com/UnidyID/unidy-sdk/issues/335)) ([698705b](https://github.com/UnidyID/unidy-sdk/commit/698705be1e9740ca8d023dc847ec68cf90326736))
+* [UD-3502] publish sdk-react with a resolvable [@unidy](https://github.com/unidy).io/sdk peer range ([#344](https://github.com/UnidyID/unidy-sdk/issues/344)) ([33a6892](https://github.com/UnidyID/unidy-sdk/commit/33a689232d72999cc77b9fb2eb3a18050b11e52f))
+* document ticket transfers and hide transfer UI when disabled ([#343](https://github.com/UnidyID/unidy-sdk/issues/343)) ([63f17e6](https://github.com/UnidyID/unidy-sdk/commit/63f17e670822701563de5af4ed8aff9cb433bf76))
+
 ## [1.12.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.12.0) (2026-09-01)
 
 
