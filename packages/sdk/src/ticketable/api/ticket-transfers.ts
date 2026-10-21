@@ -56,8 +56,37 @@ export type TicketTransferActionResult = TicketTransferError | [null, TicketTran
 export type TicketTransferTicketActionResult = TicketTransferError | [null, Ticket];
 
 export class TicketTransfersService extends BaseService {
+  private enabledPromise: Promise<boolean> | null = null;
+
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketTransfersService", deps);
+  }
+
+  /**
+   * Whether ticket transfers are enabled for the current brand. The backend has no dedicated flag
+   * endpoint, so this probes `list()` and treats `feature_disabled` as "off". Any other outcome
+   * (including auth or network errors) counts as enabled so a transient failure never hides the UI.
+   * Definitive answers are cached per client; inconclusive ones are retried on the next call.
+   */
+  isEnabled(): Promise<boolean> {
+    if (!this.enabledPromise) {
+      const probe = this.list().then(
+        ([error]): { enabled: boolean; definitive: boolean } =>
+          error === "feature_disabled" ? { enabled: false, definitive: true } : { enabled: true, definitive: error === null },
+        () => ({ enabled: true, definitive: false }),
+      );
+      const promise = probe.then(({ enabled, definitive }) => {
+        if (!definitive && this.enabledPromise === promise) this.enabledPromise = null;
+        return enabled;
+      });
+      this.enabledPromise = promise;
+    }
+    return this.enabledPromise;
+  }
+
+  /** Records a known answer, e.g. from `meta.transfers_enabled` of the tickets list, so `isEnabled()` skips the probe. */
+  setEnabled(enabled: boolean): void {
+    this.enabledPromise = Promise.resolve(enabled);
   }
 
   /** Lists the user's pending, unexpired transfers, split into incoming and outgoing. */

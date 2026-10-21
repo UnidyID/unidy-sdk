@@ -3,6 +3,7 @@ import { getUnidyClient } from "../../../api";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import type { Ticket, TicketTransfer } from "../../api/schemas";
+import { isTransfersEnabled } from "../../transfer-error";
 
 export type TicketTransferActionType = "accept" | "decline" | "cancel" | "revoke" | "return";
 
@@ -34,12 +35,17 @@ export class TicketTransferAction extends UnidyComponent() {
   /** CSS classes to apply to the button element. */
   @Prop({ attribute: "class-name" }) componentClassName?: string;
 
+  @State() enabled = true;
   @State() loading = false;
 
   /** Fired when the action completes successfully. Payload differs by action type. */
   @Event() uTicketTransferActionSuccess!: EventEmitter<TicketTransferActionSuccessPayload>;
   /** Fired when the action fails. Contains the action and the error code. */
   @Event() uTicketTransferActionError!: EventEmitter<{ action: TicketTransferActionType; error: string }>;
+
+  async componentWillLoad() {
+    this.enabled = await isTransfersEnabled();
+  }
 
   private handleClick = async () => {
     if (this.loading || this.disabled) return;
@@ -97,6 +103,8 @@ export class TicketTransferAction extends UnidyComponent() {
   };
 
   render() {
+    if (!this.enabled) return <Host hidden />;
+
     return (
       <Host>
         <button type="button" onClick={this.handleClick} disabled={this.loading || this.disabled} class={this.componentClassName}>

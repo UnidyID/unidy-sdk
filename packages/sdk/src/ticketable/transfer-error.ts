@@ -1,3 +1,4 @@
+import { getUnidyClient } from "../api";
 import { t } from "../i18n";
 import { translateListError } from "../shared/list-renderer";
 
@@ -16,4 +17,14 @@ export function translateTransferError(error: string | null): string {
   }
 
   return translateListError("ticketTransfer.errors.generic", "Something went wrong. Please try again", error);
+}
+
+/** Whether the backend has ticket transfers enabled. Resolves to true when it cannot be determined. */
+export async function isTransfersEnabled(): Promise<boolean> {
+  try {
+    const client = await getUnidyClient();
+    return await client.ticketTransfers.isEnabled();
+  } catch {
+    return true;
+  }
 }
