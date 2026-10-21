@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.7.0...@unidy.io/sdk-react-v0.7.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* [UD-3502] publish sdk-react with a resolvable [@unidy](https://github.com/unidy).io/sdk peer range ([#344](https://github.com/UnidyID/unidy-sdk/issues/344)) ([33a6892](https://github.com/UnidyID/unidy-sdk/commit/33a689232d72999cc77b9fb2eb3a18050b11e52f))
+* document ticket transfers and hide transfer UI when disabled ([#343](https://github.com/UnidyID/unidy-sdk/issues/343)) ([63f17e6](https://github.com/UnidyID/unidy-sdk/commit/63f17e670822701563de5af4ed8aff9cb433bf76))
+
 ## [0.7.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.6.0...@unidy.io/sdk-react-v0.7.0) (2026-09-01)
 
 
