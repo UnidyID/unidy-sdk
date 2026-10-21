@@ -23,6 +23,13 @@
 | `matchFound` | Fired when an internal match is found after submitting the form. Use this event to populate a custom `slot="match-preview"` element with the matched account data. | `CustomEvent<MatchFoundEventDetail>` |
 
 
+## Slots
+
+| Slot              | Description |
+| ----------------- | ----------- |
+| `"match-preview"` |             |
+
+
 ## Dependencies
 
 ### Depends on

@@ -23,6 +23,13 @@
 | `validationFunc`           | --                            | Custom validation function. Returns { valid: boolean, message?: string }.    | `(value: string \| string[]) => { valid: boolean; message?: string; }` | `undefined`                            |
 
 
+## Slots
+
+| Slot      | Description |
+| --------- | ----------- |
+| `"label"` |             |
+
+
 ## Shadow Parts
 
 | Part                                | Description                                                                                                                                                                                                               |

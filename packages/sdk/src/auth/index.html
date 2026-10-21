@@ -176,7 +176,7 @@
     </u-signed-in>
 
     <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
-      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" role="status" aria-label="Loading"></div>
     </div>
 
     <u-signin-root id="sign-in-root" class-name="bg-white rounded-xl shadow-xl p-8 border border-gray-100"
@@ -249,7 +249,7 @@
                 required
                 placeholder="you@example.com"
                 class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                aria-described-by="reg-email-error">
+                aria-describedby="reg-email-error">
               </u-raw-field>
               <u-error-message id="reg-email-error" for="email" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>
@@ -362,7 +362,7 @@
                 pattern="^.{8,}$"
                 pattern-error-message="Password must be at least 8 characters"
                 class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                aria-described-by="reg-password-error">
+                aria-describedby="reg-password-error">
               </u-raw-field>
               <u-error-message id="reg-password-error" for="password" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>
@@ -375,7 +375,7 @@
                 required
                 placeholder="Confirm your password"
                 class-name="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                aria-described-by="reg-password-confirmation-error">
+                aria-describedby="reg-password-confirmation-error">
               </u-raw-field>
               <u-error-message id="reg-password-confirmation-error" for="password_confirmation" class-name="mt-1 text-sm text-red-500"></u-error-message>
             </div>

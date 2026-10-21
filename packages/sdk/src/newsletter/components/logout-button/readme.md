@@ -12,6 +12,13 @@
 | `componentClassName` | `class-name` |             | `string` | `""`    |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ## Shadow Parts
 
 | Part       | Description |

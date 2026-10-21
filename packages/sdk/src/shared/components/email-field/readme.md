@@ -14,6 +14,13 @@
 | `disabled`           | `disabled`   | If true, the input will be disabled.       | `boolean` | `false`   |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
