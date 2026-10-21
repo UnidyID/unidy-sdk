@@ -1113,7 +1113,7 @@
 
     "postcss-colormin": ["postcss-colormin@8.0.1", "", { "dependencies": { "@colordx/core": "^5.4.3", "browserslist": "^4.28.2", "caniuse-api": "^4.0.0", "postcss-value-parser": "^4.2.0" }, "peerDependencies": { "postcss": "^8.5.15" } }, "sha512-qBY4ABQ6d8/mk5RRZHwMllrZMxeMey3azVY2dZUEk+RgiUC4ARdPR3/AITzNqqKTbvW/3y/MJKinDrzwqn8RDQ=="],
 
-    "postcss-combine-duplicated-selectors": ["postcss-combine-duplicated-selectors@github:poimen/postcss-combine-duplicated-selectors#690c031", { "dependencies": { "postcss-selector-parser": "^7.0.0" }, "peerDependencies": { "postcss": "^8.1.0" } }, "Poimen-postcss-combine-duplicated-selectors-690c031", "sha512-RbI2vyOG03GqeVqPUuNQJOGQmrY5MvAJ5MNUXxKVjGYG29vozdQFsZIQHSvxMJ2btoonZGIP1ADdk3OwbSwE2A=="],
+    "postcss-combine-duplicated-selectors": ["postcss-combine-duplicated-selectors@github:poimen/postcss-combine-duplicated-selectors#690c031", { "dependencies": { "postcss-selector-parser": "^7.0.0" }, "peerDependencies": { "postcss": "^8.1.0" } }, "shepps79-postcss-combine-duplicated-selectors-690c031", "sha512-dHfqUbDLf+9ZCIUXpUdwSOiz0cEpYp37SDFqP0ph6Xpcy1B27DItlEUDQsWVxl/crZHpLsYMmMT/Ua7Iwv+Slg=="],
 
     "postcss-combine-media-query": ["postcss-combine-media-query@2.1.0", "", { "peerDependencies": { "postcss": "^8.0.0" } }, "sha512-lQOI5S1k0t7ha7krWly/y+io5sO3K2SlUv/ERvD276krQAMGpctMA3jB2whtv/7+OUQ8xxNwdDsVfwE3wcQtaQ=="],
 
