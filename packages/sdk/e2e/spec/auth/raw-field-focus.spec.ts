@@ -20,7 +20,7 @@ async function submitEmailAndVerify(page: import("@playwright/test").Page, email
   await emailAssert.toHaveReceived(1);
 
   const lastEmail = await emailAssert.ensureLast();
-  const codeMatch = lastEmail.body.match(/(\d{4})/);
+  const codeMatch = lastEmail.subject.match(/^(\d{4}) is your verification code/);
   expect(codeMatch).not.toBeNull();
   const code = codeMatch?.[1];
 

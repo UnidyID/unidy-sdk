@@ -39,9 +39,9 @@ async function submitEmailAndVerify(page: import("@playwright/test").Page, email
   // Wait for the verification email to arrive
   await emailAssert.toHaveReceived(1);
 
-  // Extract the 4-digit code from the email body
+  // Extract the 4-digit code from the email subject
   const lastEmail = await emailAssert.ensureLast();
-  const codeMatch = lastEmail.body.match(/(\d{4})/);
+  const codeMatch = lastEmail.subject.match(/^(\d{4}) is your verification code/);
   expect(codeMatch).not.toBeNull();
   const code = codeMatch?.[1];
 
@@ -290,7 +290,7 @@ test.describe("Registration - email verification", () => {
     await emailAssert.toHaveReceived(1);
 
     const lastEmail = await emailAssert.ensureLast();
-    const codeMatch = lastEmail.body.match(/(\d{4})/);
+    const codeMatch = lastEmail.subject.match(/^(\d{4}) is your verification code/);
     expect(codeMatch).not.toBeNull();
     const code = codeMatch?.[1];
 
