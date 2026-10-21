@@ -27,6 +27,13 @@
 | `discoverable`       | `discoverable`      | When true, renders and triggers a discoverable-credential flow without requiring a prior email step. | `boolean` | `false` |
 
 
+## Slots
+
+| Slot     | Description |
+| -------- | ----------- |
+| `"icon"` |             |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

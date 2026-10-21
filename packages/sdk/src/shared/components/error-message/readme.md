@@ -14,6 +14,13 @@
 | `for` _(required)_   | `for`        | The error type to display (e.g., 'email', 'password', 'general', 'connection'). | `string` | `undefined` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

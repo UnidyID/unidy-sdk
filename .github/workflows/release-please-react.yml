@@ -109,6 +109,10 @@ jobs:
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
+          if jq -e '[.dependencies, .peerDependencies, .optionalDependencies] | map(select(. != null) | to_entries[].value) | any(startswith("workspace:"))' package.json > /dev/null; then
+            echo "package.json contains workspace: ranges, refusing to publish"
+            exit 1
+          fi
           npm publish --provenance --tag ${{ github.event.inputs.release_type }}
 
       - name: Create Git tag
@@ -158,6 +162,10 @@ jobs:
       - name: Publish to NPM
         run: |
           cd packages/sdk-react
+          if jq -e '[.dependencies, .peerDependencies, .optionalDependencies] | map(select(. != null) | to_entries[].value) | any(startswith("workspace:"))' package.json > /dev/null; then
+            echo "package.json contains workspace: ranges, refusing to publish"
+            exit 1
+          fi
           npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}
 
   # Fallback: publish if a GitHub release exists but npm publish was missed
@@ -219,4 +227,8 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         run: |
           cd packages/sdk-react
+          if jq -e '[.dependencies, .peerDependencies, .optionalDependencies] | map(select(. != null) | to_entries[].value) | any(startswith("workspace:"))' package.json > /dev/null; then
+            echo "package.json contains workspace: ranges, refusing to publish"
+            exit 1
+          fi
           npm publish --provenance --tag ${{ steps.npm-tag.outputs.tag }}

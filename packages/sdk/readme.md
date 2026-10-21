@@ -16,12 +16,14 @@ The Unidy SDK provides a set of framework-agnostic web components to integrate U
   - [Profile Components](#profile-components)
   - [Newsletter Components](#newsletter-components)
   - [Ticket & Subscription Components](#ticket--subscription-components)
+  - [Ticket Transfer Components](#ticket-transfer-components)
 - [API Reference](#api-reference)
   - [Auth Class](#auth-class)
   - [UnidyClient](#unidyclient)
   - [ProfileService](#profileservice)
   - [NewsletterService](#newsletterservice)
   - [Ticketable API](#ticketable-api)
+  - [Ticket Transfers API](#ticket-transfers-api)
   - [Flash Messages](#flash-messages)
   - [State Stores](#state-stores)
   - [Standalone Client](#standalone-client)
@@ -1044,6 +1046,179 @@ Renders a button to export a ticket or subscription to a file format (e.g., PDF 
 </u-ticketable-list>
 ```
 
+### Ticket Transfer Components
+
+Ticket transfers let a ticket owner send a ticket to another person by email. The recipient accepts or declines the offer, and the owner can cancel a pending offer or revoke the ticket after it was accepted. The recipient (holder) can return it to the owner.
+
+| Component | Purpose |
+|---|---|
+| `<u-ticket-transfer-form>` | Form to send a transfer offer to an email address |
+| `<u-ticket-transfer-list>` | Lists pending incoming or outgoing transfer offers |
+| `<u-ticket-transfer-action>` | Button for `accept`, `decline`, `cancel`, `revoke` and `return` |
+
+All components require a signed-in user and `<u-config>`. If the backend has ticket transfers disabled, requests fail with `feature_disabled`.
+
+#### Ticket lifecycle
+
+-   **Owner** (`user_id`) sends an offer with `<u-ticket-transfer-form>`. While the offer is `pending` the owner can `cancel` it.
+-   **Recipient** sees the offer in an `incoming` list and can `accept` or `decline` it. Offers also expire (`expires_at`).
+-   After acceptance the ticket's `holder_id` is the recipient while `user_id` stays the owner. For the owner, `wallet_export` and `metadata` are `null` and `exportable_to_wallet` is `false`. The owner can `revoke` the ticket.
+-   The **holder** can `return` the ticket to the owner.
+
+#### Transfer state in ticket templates
+
+For tickets, `<u-ticketable-list>` adds three booleans relative to the signed-in user, which you can use in `<ticketable-conditional when="...">` to show the right control:
+
+-   `transferable`: you own the ticket and currently hold it, so you can send it (`<u-ticket-transfer-form>`).
+-   `transferred_away`: you own the ticket but someone else holds it, so you can `revoke` it.
+-   `held_by_me`: someone else owns the ticket and you hold it, so you can `return` it.
+
+All three are `false` when transfers are disabled for the brand. The tickets list response carries this as `meta.transfers_enabled`, and `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` and `<u-ticket-transfer-list>` hide themselves when transfers are disabled. For older backends that don't send the field, the SDK falls back to `client.ticketTransfers.isEnabled()`, which probes `GET /api/sdk/v1/ticket_transfers` for `feature_disabled`.
+
+```html
+<ticketable-conditional when="transferable">
+  <u-ticket-transfer-form></u-ticket-transfer-form>
+</ticketable-conditional>
+<ticketable-conditional when="transferred_away">
+  <u-ticket-transfer-action action="revoke"></u-ticket-transfer-action>
+</ticketable-conditional>
+<ticketable-conditional when="held_by_me">
+  <u-ticket-transfer-action action="return"></u-ticket-transfer-action>
+</ticketable-conditional>
+```
+
+#### `<u-ticket-transfer-form>`
+
+Sends a transfer offer. Use it standalone with an explicit `ticket-id`, or inside a `<u-ticketable-list ticketable-type="ticket">` template, where `ticket-id` is set automatically (and the form is disabled on skeleton items).
+
+**Attributes:**
+
+-   `ticket-id`: The ID of the ticket to transfer. Set automatically inside a `<u-ticketable-list>` template.
+-   `disabled`: Disables the form controls.
+-   `class-name`: Classes for the form element.
+-   `input-class-name`: Classes for the email input.
+-   `button-class-name`: Classes for the submit button.
+-   `error-class-name`: Classes for the error message (`role="alert"`).
+-   `success-class-name`: Classes for the success message (`role="status"`).
+
+**Slots:**
+
+-   The default slot replaces the submit button label.
+
+**Events:**
+
+-   `uTicketTransferCreateSuccess`: Fired when the offer was sent. `event.detail` contains `{ transfer: TicketTransfer }`.
+-   `uTicketTransferCreateError`: Fired when sending fails. `event.detail` contains `{ error: string }` (see [error identifiers](#ticket-transfers-api)).
+
+#### `<u-ticket-transfer-list>`
+
+Renders a `<template>` for each pending transfer. Like `<u-ticketable-list>`, it requires a `<template>` child. It is not paginated.
+
+**Attributes:**
+
+-   `direction` (required): `incoming` (offers addressed to the user) or `outgoing` (offers the user sent).
+-   `container-class`: Classes for the container element.
+-   `target`: A CSS selector for an element to render the list into.
+-   `skeleton-count`: Number of skeleton items while loading. Defaults to `3`.
+-   `skeleton-all-text`: If `true`, all text nodes in the template are replaced by skeleton loaders while loading.
+
+**Slots:**
+
+-   The default slot should contain the `<template>`.
+-   `empty`: Content shown when there are no transfers.
+
+**Template elements:**
+
+-   `<transfer-value name="...">`: Displays a property of the transfer. Supports nested paths such as `ticket.title`, plus `date-format`, `format` and `default` like `<ticketable-value>`. Available properties: `token`, `status`, `sender_email`, `recipient_email`, `expires_at`, `created_at` and `ticket.*` (any [`Ticket`](#ticket) field).
+-   `<transfer-conditional when="...">`: Shows its children when the property is truthy, like `<ticketable-conditional>`.
+-   `<u-ticket-transfer-action>` elements inside the template get the transfer `token` set automatically.
+
+**Events:**
+
+-   `uTicketTransferListSuccess`: Fired when transfers are loaded. `event.detail` contains `{ direction: "incoming" | "outgoing", items: TicketTransfer[] }`.
+-   `uTicketTransferListError`: Fired when loading fails. `event.detail` contains `{ direction?: "incoming" | "outgoing", error: string }`.
+
+The list refetches automatically after a successful `<u-ticket-transfer-action>` inside it.
+
+#### `<u-ticket-transfer-action>`
+
+A button that performs one transfer action.
+
+| `action` | Where | Needs | Who |
+|---|---|---|---|
+| `accept` | `<u-ticket-transfer-list direction="incoming">` template | `token` | Recipient |
+| `decline` | `<u-ticket-transfer-list direction="incoming">` template | `token` | Recipient |
+| `cancel` | `<u-ticket-transfer-list direction="outgoing">` template | `token` | Sender |
+| `revoke` | `<u-ticketable-list ticketable-type="ticket">` template | `ticket-id` | Owner, after the transfer was accepted |
+| `return` | `<u-ticketable-list ticketable-type="ticket">` template | `ticket-id` | Holder |
+
+`token` is set automatically inside a `<u-ticket-transfer-list>` template and `ticket-id` inside a `<u-ticketable-list>` template. Both can also be set manually for standalone use.
+
+**Attributes:**
+
+-   `action` (required): `accept`, `decline`, `cancel`, `revoke` or `return`.
+-   `token`: The transfer token (`accept`, `decline`, `cancel`).
+-   `ticket-id`: The ticket ID (`revoke`, `return`).
+-   `disabled`: Disables the button. Set automatically on skeleton items.
+-   `class-name`: Classes for the button element.
+
+**Slots:**
+
+-   The default slot replaces the button label (defaults are localized, e.g. "Accept", "Return to owner").
+
+**Events:**
+
+-   `uTicketTransferActionSuccess`: Fired when the action succeeds. For `accept`, `decline` and `cancel`, `event.detail` is `{ action, transfer: TicketTransfer }`. For `revoke` and `return`, it is `{ action, ticket: Ticket }`.
+-   `uTicketTransferActionError`: Fired when the action fails. `event.detail` contains `{ action, error: string }`.
+
+After a successful `revoke` or `return`, the surrounding `<u-ticketable-list>` reloads.
+
+#### Example
+
+```html
+<u-config base-url="https://your-unidy.example.com" api-key="your-api-key"></u-config>
+
+<!-- Offers sent to the user -->
+<u-ticket-transfer-list direction="incoming" container-class="grid gap-4">
+  <div slot="empty">No incoming transfers.</div>
+  <template>
+    <div>
+      <h3><transfer-value name="ticket.title"></transfer-value></h3>
+      <p>From: <transfer-value name="sender_email"></transfer-value></p>
+      <p>Expires: <transfer-value name="expires_at" date-format="yyyy-MM-dd HH:mm"></transfer-value></p>
+      <u-ticket-transfer-action action="accept" class-name="btn btn-primary"></u-ticket-transfer-action>
+      <u-ticket-transfer-action action="decline" class-name="btn"></u-ticket-transfer-action>
+    </div>
+  </template>
+</u-ticket-transfer-list>
+
+<!-- Offers the user sent -->
+<u-ticket-transfer-list direction="outgoing" container-class="grid gap-4">
+  <div slot="empty">No outgoing transfers.</div>
+  <template>
+    <div>
+      <h3><transfer-value name="ticket.title"></transfer-value></h3>
+      <p>To: <transfer-value name="recipient_email"></transfer-value></p>
+      <u-ticket-transfer-action action="cancel" class-name="btn"></u-ticket-transfer-action>
+    </div>
+  </template>
+</u-ticket-transfer-list>
+
+<!-- Send, revoke and return from the ticket list -->
+<u-ticketable-list ticketable-type="ticket">
+  <template>
+    <div>
+      <h3><ticketable-value name="title"></ticketable-value></h3>
+      <u-ticket-transfer-form class-name="flex gap-2" input-class-name="input" button-class-name="btn"></u-ticket-transfer-form>
+      <u-ticket-transfer-action action="revoke" class-name="btn"></u-ticket-transfer-action>
+      <u-ticket-transfer-action action="return" class-name="btn"></u-ticket-transfer-action>
+    </div>
+  </template>
+</u-ticketable-list>
+```
+
+Error messages are localized through the `ticketTransfer.*` locale keys; see [Internationalization](#internationalization-i18n). A complete demo is in `src/ticketable/transfers.html`.
+
 ## API Reference
 
 ### Auth Class
@@ -1228,6 +1403,46 @@ The SDK provides two service classes for interacting with the `ticketable` API: 
 -   `list(args: object, params?: SubscriptionsListParams): Promise<ApiResponse<SubscriptionsListResponse>>`: Fetches a paginated list of subscriptions.
 -   `get(args: { id: string }): Promise<ApiResponse<Subscription>>`: Fetches a single subscription by its ID.
 -   `getExportLink(args: { id: string, format: 'pdf' | 'pkpass' }): Promise<ApiResponse<{ url: string }>>`: Gets an export link for the subscription.
+
+### Ticket Transfers API
+
+`TicketTransfersService` is available as `client.ticketTransfers`. All methods resolve to an `[error, data]` tuple like the other services: `error` is `null` on success.
+
+-   `isEnabled(): Promise<boolean>`: Whether transfers are enabled for the brand. Cached per client; `true` when it cannot be determined.
+-   `list(): Promise<[error, { incoming: TicketTransfer[], outgoing: TicketTransfer[] }]>`: Lists the user's pending, unexpired transfers. Not paginated.
+-   `create(args: { ticketId: string, recipientEmail: string }): Promise<[error, TicketTransfer]>`: Sends a transfer offer for an owned ticket.
+-   `accept(args: { token: string }): Promise<[error, TicketTransfer]>`: Accepts an offer addressed to the user.
+-   `decline(args: { token: string }): Promise<[error, TicketTransfer]>`: Declines an offer addressed to the user.
+-   `cancel(args: { token: string }): Promise<[error, TicketTransfer]>`: Cancels an offer the user sent.
+-   `revoke(args: { ticketId: string }): Promise<[error, Ticket]>`: Owner pulls a transferred ticket back. Returns the updated ticket.
+-   `return(args: { ticketId: string }): Promise<[error, Ticket]>`: Holder gives a transferred ticket back to the owner. Returns the updated ticket.
+
+```javascript
+const client = await getUnidyClient();
+
+const [error, transfer] = await client.ticketTransfers.create({
+  ticketId: "ticket-uuid",
+  recipientEmail: "friend@example.com",
+});
+
+if (error === "transfer_already_pending") {
+  // handle domain error
+}
+```
+
+**Error identifiers:** besides the common errors (`missing_id_token`, `unauthorized`, `not_found`, `server_error`, `invalid_response`), the backend returns these domain errors: `feature_disabled`, `not_ticket_owner`, `not_transfer_sender`, `offer_email_failed`, `recipient_invite_failed`, `recipient_is_owner`, `recipient_mismatch`, `ticket_already_transferred`, `ticket_not_active`, `ticket_not_transferred`, `transfer_already_pending`, `transfer_expired` and `transfer_not_pending`.
+
+#### `TicketTransfer`
+
+| Name | Type | Description |
+|---|---|---|
+| `token` | `string` | The transfer token used by `accept`, `decline` and `cancel`. |
+| `status` | `"pending" \| "accepted" \| "canceled" \| "declined" \| "expired"` | The status of the transfer. |
+| `sender_email` | `string` | The email of the ticket owner who sent the offer. |
+| `recipient_email` | `string` | The email the offer was sent to. |
+| `expires_at` | `Date` | When the offer expires. |
+| `created_at` | `Date` | When the offer was created. |
+| `ticket` | `Ticket` | The ticket being transferred. |
 
 ### Flash Messages
 
@@ -1431,6 +1646,7 @@ An object representing a ticket.
 | `price` | `number` | The price of the ticket. |
 | `user_id` | `string` | The ID of the user who owns the ticket. |
 | `ticket_category_id` | `string` | The ID of the ticket category. |
+| `holder_id` | `string \| null \| undefined` | The ID of the user currently holding the ticket after a transfer. Differs from `user_id` while the ticket is transferred away. While transferred, `wallet_export` and `metadata` are `null` and `exportable_to_wallet` is `false`. |
 
 ## Styling
 

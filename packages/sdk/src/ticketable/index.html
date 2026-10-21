@@ -54,7 +54,7 @@
 
     <main class="flex-1 p-5 max-w-4xl mx-auto w-full ">
     <div id="sdk-initial-spinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]">
-      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" aria-label="Loading"></div>
+      <div class="inline-block w-[1em] h-[1em] rounded-full animate-spin border-[0.1em] border-gray-300 border-t-gray-800" style="font-size: 50px" role="status" aria-label="Loading"></div>
     </div>
 
     <u-config
@@ -237,6 +237,29 @@
                 >
                   Wallet
                 </u-ticketable-export>
+              </div>
+              <div class="flex flex-col gap-2 mt-3">
+                <ticketable-conditional when="transferable">
+                  <u-ticket-transfer-form
+                    class-name="flex flex-col gap-2 w-full"
+                    input-class-name="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                    button-class-name="px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                    error-class-name="mt-1 text-sm text-red-600"
+                    success-class-name="mt-1 text-sm text-green-600"
+                  ></u-ticket-transfer-form>
+                </ticketable-conditional>
+                <ticketable-conditional when="transferred_away">
+                  <u-ticket-transfer-action
+                    action="revoke"
+                    class-name="px-3 py-2 bg-orange-500 text-white text-sm font-medium rounded-md hover:bg-orange-600 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                  ></u-ticket-transfer-action>
+                </ticketable-conditional>
+                <ticketable-conditional when="held_by_me">
+                  <u-ticket-transfer-action
+                    action="return"
+                    class-name="px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                  ></u-ticket-transfer-action>
+                </ticketable-conditional>
               </div>
             </td>
           </tr>

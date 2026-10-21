@@ -66,7 +66,8 @@ export const TicketSchema = TicketableSchema.extend({
 
 // Tickets list response schema
 export const TicketsListResponseSchema = z.object({
-  meta: PaginationMetaSchema,
+  // `transfers_enabled` reflects the brand's ticket transfer setting; absent on backends that do not send it yet.
+  meta: PaginationMetaSchema.extend({ transfers_enabled: z.boolean().optional() }),
   results: z.array(TicketSchema),
 });
 

@@ -753,6 +753,48 @@ The return type is narrowed based on `type`:
 
 **`getExportLink(id, format)`** returns `{ url: string; expires_in: number } | null`. Supported formats: `"pdf"`, `"pkpass"`.
 
+#### `useTicketTransfers(options?)`
+
+Manage ticket transfers: list pending offers and send, accept, decline, cancel, revoke or return.
+
+```ts
+const {
+  incoming,        // TicketTransfer[] — pending offers addressed to the user
+  outgoing,        // TicketTransfer[] — pending offers the user sent
+  isLoading,
+  isMutating,      // true while a create/accept/decline/cancel/revoke/return call is in flight
+  error,
+  refetch,
+  createTransfer,  // (ticketId, recipientEmail) => Promise<TicketTransfer | null>
+  acceptTransfer,  // (token) => Promise<TicketTransfer | null>
+  declineTransfer, // (token) => Promise<TicketTransfer | null>
+  cancelTransfer,  // (token) => Promise<TicketTransfer | null>
+  revokeTransfer,  // (ticketId) => Promise<Ticket | null>
+  returnTransfer,  // (ticketId) => Promise<Ticket | null>
+} = useTicketTransfers({
+  fetchOnMount: true, // Default: true
+  callbacks: { onSuccess, onError },
+});
+```
+
+Every mutation resolves to `null` on error (the error code is set on `error` and passed to `callbacks.onError`) and refetches the transfer lists on success. `revokeTransfer` and `returnTransfer` return the updated ticket, so refetch your `useTicketables` list afterwards. Domain error codes such as `transfer_already_pending` or `recipient_is_owner` are listed in the [SDK README](../sdk/README.md#ticket-transfers-api).
+
+```tsx
+import { useTicketTransfers } from "@unidy.io/sdk-react";
+
+function IncomingTransfers() {
+  const { incoming, acceptTransfer, declineTransfer, isMutating } = useTicketTransfers();
+
+  return incoming.map((transfer) => (
+    <div key={transfer.token}>
+      {transfer.ticket.title} from {transfer.sender_email}
+      <button disabled={isMutating} onClick={() => acceptTransfer(transfer.token)}>Accept</button>
+      <button disabled={isMutating} onClick={() => declineTransfer(transfer.token)}>Decline</button>
+    </div>
+  ));
+}
+```
+
 #### `usePagination(options?)`
 
 Pagination state manager designed to pair with `useTicketables`.
