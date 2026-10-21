@@ -12,6 +12,13 @@
 | `componentClassName` | `class-name` | CSS classes to apply to the button element. | `string` | `undefined` |
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

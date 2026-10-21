@@ -174,6 +174,14 @@ Type: `Promise<boolean>`
 
 
 
+## Slots
+
+| Slot       | Description      |
+| ---------- | ---------------- |
+|            | The default slot |
+| `"resume"` |                  |
+
+
 ## Dependencies
 
 ### Depends on

@@ -73,6 +73,13 @@ Type: `Promise<void>`
 
 
 
+## Slots
+
+| Slot | Description      |
+| ---- | ---------------- |
+|      | The default slot |
+
+
 ## Dependencies
 
 ### Used by
