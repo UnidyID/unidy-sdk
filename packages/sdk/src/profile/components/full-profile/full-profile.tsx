@@ -25,6 +25,9 @@ export class FullProfile {
   /** CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop. */
   @Prop({ attribute: "submit-button-class-name" }) submitButtonClassName = "";
 
+  /** If true, hides custom attributes that are not linked to the current brand and only show up because the user has a value for them (also when listed in `fields`). */
+  @Prop({ attribute: "hide-cross-brand" }) hideCrossBrand = false;
+
   private profileRef?: HTMLUProfileElement;
 
   /** Programmatically submit the profile form. Delegates to the inner u-profile component. */
@@ -47,6 +50,12 @@ export class FullProfile {
     ];
   }
 
+  private isHiddenCrossBrand(field: string) {
+    if (!this.hideCrossBrand || !field.startsWith("custom_attributes.")) return false;
+
+    return profileState.data?.custom_attributes?.[field.replace("custom_attributes.", "")]?.cross_brand_visible === true;
+  }
+
   render() {
     return (
       <u-profile
@@ -56,9 +65,11 @@ export class FullProfile {
         enableAutosave={this.enableAutosave}
         saveDelay={this.saveDelay}
       >
-        {this.list().map((field) => (
-          <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
-        ))}
+        {this.list()
+          .filter((field) => !this.isHiddenCrossBrand(field))
+          .map((field) => (
+            <u-field key={field} field={field} countryCodeDisplayOption={this.countryCodeDisplayOption} />
+          ))}
         <div class="u:flex u:justify-end">
           <u-submit-button class-name={this.submitButtonClassName}>{t("buttons.submit")}</u-submit-button>
         </div>

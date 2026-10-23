@@ -84,6 +84,13 @@ export const DateFieldSchema = BaseFieldDataSchema.extend({
   type: DateFieldTypeEnum,
 }).strict();
 
+// Brand that owns a custom attribute definition; not strict so the backend can add keys without breaking parsing
+export const AttributeBrandSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  display_name: z.string(),
+});
+
 // Custom field schema
 export const CustomFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.boolean(), z.number(), z.array(z.string())]).nullable(),
@@ -91,6 +98,8 @@ export const CustomFieldSchema = BaseFieldDataSchema.extend({
   readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional(),
+  brand: AttributeBrandSchema.nullish(),
+  cross_brand_visible: z.boolean().optional(),
 }).strict();
 
 // User profile schema
@@ -150,6 +159,7 @@ export const UserProfileRailsFormErrorSchema = z
   .pipe(UserProfileFormErrorSchema);
 
 // Export types
+export type AttributeBrand = z.infer<typeof AttributeBrandSchema>;
 export type FieldType = z.infer<typeof FieldTypeEnum>;
 export type UserProfileData = z.infer<typeof UserProfileSchema>;
 export type ProfileErrorResponse = z.infer<typeof ProfileErrorResponseSchema>;

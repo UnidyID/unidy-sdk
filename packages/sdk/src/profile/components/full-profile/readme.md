@@ -11,13 +11,14 @@ Events from the inner `u-profile` component (`uProfileChange`, `uProfileSuccess`
 
 ## Properties
 
-| Property                   | Attribute                     | Description                                                                                                       | Type                | Default     |
-| -------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- |
-| `countryCodeDisplayOption` | `country-code-display-option` | How to display country codes in select fields: "icon" for flag emoji, "label" for text.                           | `"icon" \| "label"` | `"label"`   |
-| `enableAutosave`           | `enable-autosave`             | Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set. | `boolean`           | `false`     |
-| `fields`                   | `fields`                      | Comma-separated list of field names to display. If not provided, all fields are shown.                            | `string`            | `undefined` |
-| `saveDelay`                | `save-delay`                  | Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead. | `number`            | `undefined` |
-| `submitButtonClassName`    | `submit-button-class-name`    | CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop.      | `string`            | `""`        |
+| Property                   | Attribute                     | Description                                                                                                                                                      | Type                | Default     |
+| -------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- |
+| `countryCodeDisplayOption` | `country-code-display-option` | How to display country codes in select fields: "icon" for flag emoji, "label" for text.                                                                          | `"icon" \| "label"` | `"label"`   |
+| `enableAutosave`           | `enable-autosave`             | Enable or disable autosave. When enabled, profile saves on blur by default, or after a delay if saveDelay is set.                                                | `boolean`           | `false`     |
+| `fields`                   | `fields`                      | Comma-separated list of field names to display. If not provided, all fields are shown.                                                                           | `string`            | `undefined` |
+| `hideCrossBrand`           | `hide-cross-brand`            | If true, hides custom attributes that are not linked to the current brand and only show up because the user has a value for them (also when listed in `fields`). | `boolean`           | `false`     |
+| `saveDelay`                | `save-delay`                  | Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.                                                | `number`            | `undefined` |
+| `submitButtonClassName`    | `submit-button-class-name`    | CSS classes to apply to the submit button element. Forwarded to the inner u-submit-button's class-name prop.                                                     | `string`            | `""`        |
 
 
 ## Methods
