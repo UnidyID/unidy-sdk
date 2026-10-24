@@ -163,6 +163,8 @@ export function buildProfileNodes(user: MeUser, fields: ProfileField[]): Profile
       locked_text: field.locked_text,
       options: field.options ?? undefined,
       attr_name: field.name,
+      brand: field.brand,
+      cross_brand_visible: field.cross_brand_visible,
     });
 
     if (field.custom_attribute) {

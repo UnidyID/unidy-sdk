@@ -79,6 +79,10 @@ export const ProfileFieldSchema = z
     /** Why the field is locked, or will be once it is filled. */
     locked_text: z.string().nullable(),
     options: z.array(ProfileFieldOptionSchema).nullable(),
+    /** The brand owning a custom attribute's definition, when the API sends it. */
+    brand: AttributeBrandSchema.nullish(),
+    /** A custom attribute not linked to the current brand, shown only because the user has a value. */
+    cross_brand_visible: z.boolean().optional(),
   })
   .transform((field) => ({ ...field, readonly: field.profile_access === "show" }));
 

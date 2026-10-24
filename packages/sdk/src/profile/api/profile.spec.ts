@@ -102,6 +102,19 @@ describe("ProfileService", () => {
     expect(await service.fields()).toEqual([null, [yesNo]]);
   });
 
+  it("reads the owning brand of a custom attribute", async () => {
+    const branded: ProfileField = {
+      ...FIELD,
+      name: "tier",
+      custom_attribute: true,
+      brand: { id: 2, name: "partners", display_name: "Partner Portal" },
+      cross_brand_visible: true,
+    };
+    const { service } = setup(respond(200, { records: [branded], meta: {} }));
+
+    expect(await service.fields()).toEqual([null, [branded]]);
+  });
+
   it("patches the user with the payload, and returns the updated user", async () => {
     const { client, service } = setup(respond(200, { record: { ...USER, first_name: "Augusta" }, meta: {} }));
 

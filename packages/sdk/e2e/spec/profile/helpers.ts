@@ -125,11 +125,11 @@ function validate(data: Data) {
  * Stubs the V2 profile endpoints: `GET /api/v2/me`, `GET /api/v2/me/user_attributes`, and a `PATCH /api/v2/me`
  * that saves into the stubbed user. Returns the PATCH bodies the page sent.
  */
-export async function stubProfile(page: Page): Promise<ProfilePatch[]> {
+export async function stubProfile(page: Page, fields: unknown[] = PROFILE_FIELDS): Promise<ProfilePatch[]> {
   const patches: ProfilePatch[] = [];
   let user = structuredClone(ME_USER);
 
-  await page.route("**/api/v2/me/user_attributes", (route) => route.fulfill(json(200, { records: PROFILE_FIELDS, meta: META })));
+  await page.route("**/api/v2/me/user_attributes", (route) => route.fulfill(json(200, { records: fields, meta: META })));
 
   await page.route("**/api/v2/me", (route) => {
     const request = route.request();
