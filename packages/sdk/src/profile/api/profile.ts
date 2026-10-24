@@ -26,7 +26,7 @@ const DATA_FIELD_PREFIX = "payload.data.";
 
 /**
  * Messages of a failed profile update by field (`first_name`, `custom_attributes.tier`), several joined with " | ".
- * Errors that don't name a profile field are left out.
+ * Errors that don't name a profile field are in `profileErrorMessages`.
  */
 export function profileFieldErrors(error: ApiError): Record<string, string> {
   const messages: Record<string, string[]> = {};
@@ -39,6 +39,11 @@ export function profileFieldErrors(error: ApiError): Record<string, string> {
   }
 
   return Object.fromEntries(Object.entries(messages).map(([name, list]) => [name, list.join(" | ")]));
+}
+
+/** Messages of a failed profile update that name no profile field, such as a record-level validation. */
+export function profileErrorMessages(error: ApiError): string[] {
+  return error.details.filter(({ field }) => !field?.startsWith(DATA_FIELD_PREFIX)).map(({ code, message }) => message || code);
 }
 
 /** The signed-in user's profile on `/api/v2/me`: its values, the form describing them, and updates. */

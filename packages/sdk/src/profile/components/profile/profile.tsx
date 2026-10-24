@@ -7,7 +7,7 @@ import { onChange as authOnChange, authStore } from "../../../auth/store/auth-st
 import { t } from "../../../i18n";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
-import { profileFieldErrors } from "../../api/profile";
+import { profileErrorMessages, profileFieldErrors } from "../../api/profile";
 import type { MeUser, ProfileField } from "../../api/schemas";
 import {
   buildProfileNodes,
@@ -221,9 +221,12 @@ export class Profile {
     const rendered = (field: string) =>
       this.renderedFields.size > 0 ? this.renderedFields.has(field) : Boolean(getProfileNode(profileState.data, field));
     const shown = Object.fromEntries(Object.entries(fieldErrors).filter(([field]) => rendered(field)));
-    const unshown = Object.entries(fieldErrors)
-      .filter(([field]) => !(field in shown))
-      .map(([, message]) => message);
+    const unshown = [
+      ...(apiError ? profileErrorMessages(apiError) : []),
+      ...Object.entries(fieldErrors)
+        .filter(([field]) => !(field in shown))
+        .map(([, message]) => message),
+    ];
     const hasShownErrors = Object.keys(shown).length > 0;
 
     if (hasShownErrors) profileState.errors = shown;
