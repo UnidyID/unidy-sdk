@@ -246,6 +246,8 @@ function subscribeErrorFor(error: string, data: unknown): NewsletterErrorIdentif
 
 /** V2 subscribes to one newsletter per call, so the newsletters are subscribed to side by side and their errors gathered. */
 async function createOwnSubscriptions(internalNames: string[], showSuccessMessage: boolean): Promise<boolean> {
+  if (internalNames.length === 0) return false;
+
   if (Object.keys(buildAdditionalFieldsPayload(newsletterStore.state.additionalFields)).length > 0) {
     logger.warn("Additional fields are not sent for a signed-in user; their profile holds them");
   }

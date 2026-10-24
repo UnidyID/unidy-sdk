@@ -89,6 +89,14 @@ describe("newsletter helpers for a signed-in user", () => {
     expect(newsletterStore.state.existingSubscriptions.map((s) => s.newsletter_internal_name)).toEqual(["main", "test"]);
   });
 
+  it("doesn't report success when no newsletter is checked", async () => {
+    const flash = jest.spyOn(Flash.success, "addMessage");
+
+    expect(await createSubscriptions({ email: "ada@example.com" })).toBe(false);
+    expect(mockMe.create).not.toHaveBeenCalled();
+    expect(flash).not.toHaveBeenCalled();
+  });
+
   it("maps per-newsletter V2 errors onto the newsletter error identifiers", async () => {
     newsletterStore.state.checkedNewsletters = { main: [], test: ["unknown"], gone: [] };
     mockMe.create.mockImplementation(async ({ slug }) => {
