@@ -101,4 +101,4 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 - User-scoped services extend `MeService` (`src/api/me-service.ts`): it unwraps `record` / `records` + `meta.pagination`, wraps write bodies in `{ payload }`, and returns V2 errors as `[identifier, ApiError]` with `details[].field` body paths (`payload.data.first_name`). Lists skip and report malformed records instead of failing the page
 - `ApiErrorSchema` must stay an exact `z.object`: with the repo's non-strict tsconfig, `"records" in data` narrowing on result tuples only works when no union member has an index signature
 - `/api/v2/*` requests go out with `credentials: "omit"` (`base-client.ts`): the V2 CORS policy for `/api/v2/me` is bearer-only and refuses credentialed requests
-- V2 is mounted only in local Rails environments until V2 auth lands, and `/me` needs user credentials the e2e user doesn't have: e2e specs must stub every `/api/v2/me/**` call with `page.route`
+- V2 sits behind the backend's `enable_api_v2` rollout flag, and `/me` only takes a personal API key, which the e2e user doesn't have: e2e specs must stub every `/api/v2/me/**` call with `page.route`
