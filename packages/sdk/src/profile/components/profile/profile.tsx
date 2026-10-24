@@ -17,6 +17,7 @@ import {
   getProfileNode,
   validateRequiredFields,
   withSavedValues,
+  withUnsavedEdits,
 } from "../../profile-helpers";
 import type { ProfileRaw } from "../../store/profile-store";
 import { onChange as profileOnChange, state as profileState } from "../../store/profile-store";
@@ -205,8 +206,11 @@ export class Profile {
       if (!fieldsError) saved = buildProfileNodes(result as MeUser, fields as ProfileField[]);
     }
 
+    const form = withUnsavedEdits(saved, data, { stored: configuration, submitted: stateWithoutConfig.data, live: profileState.data });
     profileState.loading = false;
     profileState.configuration = JSON.parse(JSON.stringify(saved));
+    // Set after the configuration, whose change listener replaces the form data.
+    profileState.data = form;
     profileState.configUpdateSource = "submit";
     profileState.errors = {};
     Flash.clear("error");
