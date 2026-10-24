@@ -15,13 +15,15 @@ export type { ExportLink, TicketableListParams } from "./api/schemas";
 export {
   ExportFormat,
   ExportLinkSchema,
+  OfferedTicketSchema,
   SubscriptionSchema,
   TicketableListParamsSchema,
   TicketableSchema,
   TicketSchema,
+  TicketTransferDirectionSchema,
+  TicketTransferModeSchema,
   TicketTransferSchema,
   TicketTransferStatusSchema,
-  TicketTransfersListResponseSchema,
 } from "./api/schemas";
 // Services + the inferred entity types they re-export
 export * from "./api/subscriptions";

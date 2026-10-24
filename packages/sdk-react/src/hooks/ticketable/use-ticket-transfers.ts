@@ -2,7 +2,8 @@ import type {
   Ticket,
   TicketTransfer,
   TicketTransferActionResult,
-  TicketTransfersListResult,
+  TicketTransferCreateArgs,
+  TicketTransfersListAllResult,
   TicketTransferTicketActionResult,
 } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
@@ -19,26 +20,29 @@ export interface UseTicketTransfersOptions {
 }
 
 export interface UseTicketTransfersReturn {
-  /** Pending transfers addressed to the authenticated user. */
+  /** Open offers the authenticated user can accept. */
   incoming: TicketTransfer[];
-  /** Pending transfers sent by the authenticated user. */
+  /** Open offers the authenticated user sent. */
   outgoing: TicketTransfer[];
   isLoading: boolean;
-  /** True while a create/accept/decline/cancel/revoke/return call is in flight. */
+  /** True while a create/accept/decline/cancel/claim/revoke/return call is in flight. */
   isMutating: boolean;
+  /** A transfer reason (e.g. `transfer_expired`) or a V2 error identifier. */
   error: string | null;
   refetch: () => Promise<void>;
-  /** Sends a transfer offer for an owned ticket. Returns the created transfer, or null on error. */
-  createTransfer: (ticketId: string, recipientEmail: string) => Promise<TicketTransfer | null>;
-  /** Accepts an incoming transfer offer. Returns the updated transfer, or null on error. */
-  acceptTransfer: (token: string) => Promise<TicketTransfer | null>;
-  /** Declines an incoming transfer offer. Returns the updated transfer, or null on error. */
-  declineTransfer: (token: string) => Promise<TicketTransfer | null>;
-  /** Cancels an outgoing transfer offer. Returns the updated transfer, or null on error. */
-  cancelTransfer: (token: string) => Promise<TicketTransfer | null>;
-  /** Owner pulls a transferred ticket back from its current holder. Returns the updated ticket, or null on error. */
+  /** Offers an owned ticket by email, or as a claim link (`mode: "link"`). Returns the created transfer, or null on error. */
+  createTransfer: (args: TicketTransferCreateArgs) => Promise<TicketTransfer | null>;
+  /** Accepts an incoming offer by its id. Returns the updated transfer, or null on error. */
+  acceptTransfer: (id: string) => Promise<TicketTransfer | null>;
+  /** Declines an incoming offer by its id. Returns the updated transfer, or null on error. */
+  declineTransfer: (id: string) => Promise<TicketTransfer | null>;
+  /** Cancels an outgoing offer by its id. Returns the updated transfer, or null on error. */
+  cancelTransfer: (id: string) => Promise<TicketTransfer | null>;
+  /** Accepts the offer behind a claim link by its token. Returns the updated transfer, or null on error. */
+  claimTransfer: (token: string) => Promise<TicketTransfer | null>;
+  /** Owner takes a lent ticket back from its holder. Returns the updated ticket, or null on error. */
   revokeTransfer: (ticketId: string) => Promise<Ticket | null>;
-  /** Holder returns a transferred ticket to its owner. Returns the updated ticket, or null on error. */
+  /** Holder returns a lent ticket to its owner. Returns the updated ticket, or null on error. */
   returnTransfer: (ticketId: string) => Promise<Ticket | null>;
 }
 
@@ -54,7 +58,7 @@ interface State {
 
 type Action =
   | { type: "fetch_start" }
-  | { type: "fetch_success"; incoming: TicketTransfer[]; outgoing: TicketTransfer[] }
+  | { type: "fetch_success"; transfers: TicketTransfer[] }
   | { type: "fetch_error"; error: string }
   | { type: "mutate_start" }
   | { type: "mutate_success" }
@@ -67,7 +71,13 @@ function reducer(state: State, action: Action): State {
     case "fetch_start":
       return { ...state, isLoading: true, error: null };
     case "fetch_success":
-      return { ...state, incoming: action.incoming, outgoing: action.outgoing, isLoading: false, error: null };
+      return {
+        ...state,
+        incoming: action.transfers.filter((transfer) => transfer.direction === "incoming"),
+        outgoing: action.transfers.filter((transfer) => transfer.direction === "outgoing"),
+        isLoading: false,
+        error: null,
+      };
     case "fetch_error":
       return { ...state, isLoading: false, error: action.error };
     case "mutate_start":
@@ -100,22 +110,21 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
 
     // The try only wraps the SDK call — a throwing consumer callback must not
     // be converted into a spurious fetch_error after a successful fetch.
-    let result: TicketTransfersListResult;
+    let result: TicketTransfersListAllResult;
     try {
-      result = await client.ticketTransfers.list();
+      result = await client.ticketTransfers.listAll();
     } catch {
       result = ["internal_error", null];
     }
     if (fetchId !== fetchIdRef.current) return;
 
-    const [errorCode, data] = result;
-    if (errorCode === null && data) {
-      dispatch({ type: "fetch_success", incoming: data.incoming, outgoing: data.outgoing });
+    const [errorCode, transfers] = result;
+    if (errorCode === null) {
+      dispatch({ type: "fetch_success", transfers });
       callbacks?.onSuccess?.("Fetched successfully");
     } else {
-      const error = errorCode ?? "invalid_response";
-      dispatch({ type: "fetch_error", error });
-      callbacks?.onError?.(error);
+      dispatch({ type: "fetch_error", error: errorCode });
+      callbacks?.onError?.(errorCode);
     }
   }, [client]);
 
@@ -191,22 +200,27 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
   );
 
   const createTransfer = useCallback(
-    (ticketId: string, recipientEmail: string) => runTransferMutation(() => client.ticketTransfers.create({ ticketId, recipientEmail })),
+    (args: TicketTransferCreateArgs) => runTransferMutation(() => client.ticketTransfers.create(args)),
     [client, runTransferMutation],
   );
 
   const acceptTransfer = useCallback(
-    (token: string) => runTransferMutation(() => client.ticketTransfers.accept({ token })),
+    (id: string) => runTransferMutation(() => client.ticketTransfers.accept({ id })),
     [client, runTransferMutation],
   );
 
   const declineTransfer = useCallback(
-    (token: string) => runTransferMutation(() => client.ticketTransfers.decline({ token })),
+    (id: string) => runTransferMutation(() => client.ticketTransfers.decline({ id })),
     [client, runTransferMutation],
   );
 
   const cancelTransfer = useCallback(
-    (token: string) => runTransferMutation(() => client.ticketTransfers.cancel({ token })),
+    (id: string) => runTransferMutation(() => client.ticketTransfers.cancel({ id })),
+    [client, runTransferMutation],
+  );
+
+  const claimTransfer = useCallback(
+    (token: string) => runTransferMutation(() => client.ticketTransfers.claim({ token })),
     [client, runTransferMutation],
   );
 
@@ -231,6 +245,7 @@ export function useTicketTransfers(options: UseTicketTransfersOptions = {}): Use
     acceptTransfer,
     declineTransfer,
     cancelTransfer,
+    claimTransfer,
     revokeTransfer,
     returnTransfer,
   };

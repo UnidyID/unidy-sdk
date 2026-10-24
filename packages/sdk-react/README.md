@@ -754,20 +754,21 @@ The return type is narrowed based on `type`:
 
 #### `useTicketTransfers(options?)`
 
-Manage ticket transfers: list pending offers and send, accept, decline, cancel, revoke or return.
+Manage ticket transfers: list pending offers and send, accept, decline, cancel, claim, revoke or return.
 
 ```ts
 const {
   incoming,        // TicketTransfer[] — pending offers addressed to the user
   outgoing,        // TicketTransfer[] — pending offers the user sent
   isLoading,
-  isMutating,      // true while a create/accept/decline/cancel/revoke/return call is in flight
+  isMutating,      // true while a create/accept/decline/cancel/claim/revoke/return call is in flight
   error,
   refetch,
-  createTransfer,  // (ticketId, recipientEmail) => Promise<TicketTransfer | null>
-  acceptTransfer,  // (token) => Promise<TicketTransfer | null>
-  declineTransfer, // (token) => Promise<TicketTransfer | null>
-  cancelTransfer,  // (token) => Promise<TicketTransfer | null>
+  createTransfer,  // ({ ticketId, recipientEmail } | { ticketId, mode: "link" }) => Promise<TicketTransfer | null>
+  acceptTransfer,  // (id) => Promise<TicketTransfer | null>
+  declineTransfer, // (id) => Promise<TicketTransfer | null>
+  cancelTransfer,  // (id) => Promise<TicketTransfer | null>
+  claimTransfer,   // (token) => Promise<TicketTransfer | null> — accepts the offer behind a claim link
   revokeTransfer,  // (ticketId) => Promise<Ticket | null>
   returnTransfer,  // (ticketId) => Promise<Ticket | null>
 } = useTicketTransfers({
@@ -785,10 +786,10 @@ function IncomingTransfers() {
   const { incoming, acceptTransfer, declineTransfer, isMutating } = useTicketTransfers();
 
   return incoming.map((transfer) => (
-    <div key={transfer.token}>
+    <div key={transfer.id}>
       {transfer.ticket.title} from {transfer.sender_email}
-      <button disabled={isMutating} onClick={() => acceptTransfer(transfer.token)}>Accept</button>
-      <button disabled={isMutating} onClick={() => declineTransfer(transfer.token)}>Decline</button>
+      <button disabled={isMutating} onClick={() => acceptTransfer(transfer.id)}>Accept</button>
+      <button disabled={isMutating} onClick={() => declineTransfer(transfer.id)}>Decline</button>
     </div>
   ));
 }
