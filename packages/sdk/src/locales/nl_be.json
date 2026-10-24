@@ -85,6 +85,7 @@
     "email_already_registered": "Dit e-mailadres is al geregistreerd. Meld u aan",
     "expired": "Verlopen",
     "failed_to_load_profile": "Kan profielgegevens niet laden. Controleer de configuratie",
+    "feature_not_enabled": "Deze functie is niet beschikbaar",
     "field_required": "Dit veld is verplicht",
     "forbidden": "U hebt geen toegang tot deze inhoud",
     "invalid_code": "Ongeldige verificatiecode. Probeer het opnieuw",

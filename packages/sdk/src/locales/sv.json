@@ -78,6 +78,7 @@
     "email_already_registered": "Denna e-postadress är redan registrerad. Logga in istället",
     "expired": "Utgången",
     "failed_to_load_profile": "Kunde inte ladda profildata. Kontrollera konfigurationen",
+    "feature_not_enabled": "Den här funktionen är inte tillgänglig",
     "field_required": "Detta fält är obligatoriskt",
     "forbidden": "Du har inte åtkomst till det här innehållet",
     "internal_server_error": "Internt serverfel",

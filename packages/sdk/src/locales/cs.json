@@ -86,6 +86,7 @@
     "email_already_registered": "Tento e-mail je již registrován. Přihlaste se prosím",
     "expired": "Vypršelo",
     "failed_to_load_profile": "Nepodařilo se načíst data profilu. Zkontrolujte prosím konfiguraci",
+    "feature_not_enabled": "Tato funkce není k dispozici",
     "field_required": "Toto pole je povinné",
     "forbidden": "K tomuto obsahu nemáte přístup",
     "invalid_code": "Neplatný ověřovací kód. Zkuste to prosím znovu",

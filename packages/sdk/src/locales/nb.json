@@ -86,6 +86,7 @@
     "email_already_registered": "Denne e-postadressen er allerede registrert. Logg inn i stedet",
     "expired": "Utløpt",
     "failed_to_load_profile": "Kunne ikke laste profildata. Sjekk konfigurasjonen",
+    "feature_not_enabled": "Denne funksjonen er ikke tilgjengelig",
     "field_required": "Dette feltet er obligatorisk",
     "forbidden": "Du har ikke tilgang til dette innholdet",
     "internal_server_error": "Intern serverfeil",

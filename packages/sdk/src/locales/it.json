@@ -85,6 +85,7 @@
     "email_already_registered": "Questa email è già registrata. Accedi invece",
     "expired": "Scaduto",
     "failed_to_load_profile": "Impossibile caricare i dati del profilo. Controlla la configurazione",
+    "feature_not_enabled": "Questa funzionalità non è disponibile",
     "field_required": "Questo campo è obbligatorio",
     "forbidden": "Non hai accesso a questo contenuto",
     "invalid_code": "Codice di verifica non valido. Riprova",

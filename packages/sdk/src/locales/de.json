@@ -85,6 +85,7 @@
     "email_already_registered": "Diese E-Mail-Adresse ist bereits registriert. Bitte melden Sie sich stattdessen an",
     "expired": "Abgelaufen",
     "failed_to_load_profile": "Profildaten konnten nicht geladen werden. Bitte überprüfen Sie die Konfiguration",
+    "feature_not_enabled": "Diese Funktion ist nicht verfügbar",
     "field_required": "Dieses Feld ist erforderlich",
     "forbidden": "Sie haben keinen Zugriff auf diesen Inhalt",
     "invalid_code": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut",

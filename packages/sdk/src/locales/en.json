@@ -86,6 +86,7 @@
     "email_already_registered": "This email is already registered. Please sign in instead",
     "expired": "Expired",
     "failed_to_load_profile": "Failed to load profile data. Please check configuration",
+    "feature_not_enabled": "This feature is not available",
     "field_required": "This field is required",
     "forbidden": "You don't have access to this content",
     "invalid_code": "Invalid verification code. Please try again",

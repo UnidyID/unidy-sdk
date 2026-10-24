@@ -85,6 +85,7 @@
     "email_already_registered": "Această adresă de e-mail este deja înregistrată. Vă rugăm să vă conectați",
     "expired": "Expirat",
     "failed_to_load_profile": "Încărcarea datelor profilului a eșuat. Vă rugăm să verificați configurația",
+    "feature_not_enabled": "Această funcționalitate nu este disponibilă",
     "field_required": "Acest câmp este obligatoriu",
     "forbidden": "Nu aveți acces la acest conținut",
     "invalid_code": "Cod de verificare invalid. Vă rugăm să încercați din nou",
