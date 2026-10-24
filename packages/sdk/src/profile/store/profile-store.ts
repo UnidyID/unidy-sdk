@@ -1,4 +1,5 @@
 import { createStore } from "@stencil/store";
+import type { AttributeBrand } from "../api/schemas";
 
 export type Option = { value: string; label: string; icon?: string | null };
 export type RadioOption = { value: string; label: string; checked: boolean };
@@ -14,6 +15,8 @@ export interface ProfileNode {
   options?: Option[];
   radio_options?: RadioOption[];
   attr_name?: string;
+  brand?: AttributeBrand | null;
+  cross_brand_visible?: boolean;
 }
 
 export type ProfileRaw = {

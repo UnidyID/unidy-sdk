@@ -10,7 +10,7 @@ import {
   UserProfileSchema,
 } from "./schemas";
 
-export type { ProfileErrorResponse, UserProfileData, UserProfileFormError } from "./schemas";
+export type { AttributeBrand, ProfileErrorResponse, UserProfileData, UserProfileFormError } from "./schemas";
 // Re-export types and schemas for external use
 export { UserProfileSchema } from "./schemas";
 
@@ -57,17 +57,21 @@ export class ProfileService extends BaseService {
     };
   }
 
+  /** Opts into the owning brand of each custom attribute; backends that predate it ignore the param */
+  private buildProfilePath(): string {
+    const params = new URLSearchParams({ include_brand: "1" });
+    const lang = this.getLocale();
+    if (lang) params.set("lang", lang);
+    return `/api/sdk/v1/profile?${params}`;
+  }
+
   async get(): Promise<ProfileGetResult> {
     const idToken = await this.getIdToken();
     if (!idToken) {
       return ["missing_id_token", null];
     }
 
-    const lang = this.getLocale();
-    const response = await this.client.get<unknown>(
-      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
-      this.buildAuthHeaders({ "X-ID-Token": idToken }),
-    );
+    const response = await this.client.get<unknown>(this.buildProfilePath(), this.buildAuthHeaders({ "X-ID-Token": idToken }));
 
     const responseInfo = this.buildResponseInfo(response);
 
@@ -106,10 +110,9 @@ export class ProfileService extends BaseService {
     }
 
     const { payload } = args;
-    const lang = this.getLocale();
 
     const response = await this.client.patch<unknown>(
-      `/api/sdk/v1/profile${lang ? `?lang=${lang}` : ""}`,
+      this.buildProfilePath(),
       { ...payload },
       this.buildAuthHeaders({ "X-ID-Token": idToken }),
     );

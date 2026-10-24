@@ -299,6 +299,11 @@ export namespace Components {
          */
         "fields"?: string;
         /**
+          * If true, hides custom attributes that are not linked to the current brand and only show up because the user has a value for them (also when listed in `fields`).
+          * @default false
+         */
+        "hideCrossBrand": boolean;
+        /**
           * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
          */
         "saveDelay"?: number;
@@ -2303,6 +2308,11 @@ declare namespace LocalJSX {
          */
         "fields"?: string;
         /**
+          * If true, hides custom attributes that are not linked to the current brand and only show up because the user has a value for them (also when listed in `fields`).
+          * @default false
+         */
+        "hideCrossBrand"?: boolean;
+        /**
           * Optional delay in milliseconds before autosave triggers after the last change. If not set, saves on blur instead.
          */
         "saveDelay"?: number;
@@ -3396,6 +3406,7 @@ declare namespace LocalJSX {
         "enableAutosave": boolean;
         "saveDelay": number;
         "submitButtonClassName": string;
+        "hideCrossBrand": boolean;
     }
     interface UJumpToServiceAttributes {
         "serviceId": string;

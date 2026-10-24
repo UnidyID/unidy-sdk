@@ -252,10 +252,17 @@
             <h3 class="text-xl font-semibold text-gray-800 mt-4">Profile</h3>
             <p class="text-gray-600 text-sm">Manage your key and login data here at a central place.</p>
           </div>
-          <label class="flex items-center gap-2 cursor-pointer mt-4">
-            <span class="text-sm text-gray-600">Autosave</span>
-            <input type="checkbox" id="autosave-toggle" checked class="w-4 h-4 accent-blue-500" onchange="toggleAutosave(this.checked)">
-          </label>
+          <div class="flex flex-col items-end gap-2 mt-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <span class="text-sm text-gray-600">Autosave</span>
+              <input type="checkbox" id="autosave-toggle" checked class="w-4 h-4 accent-blue-500" onchange="toggleAutosave(this.checked)">
+            </label>
+            <!-- Toggles the hide-cross-brand prop of u-full-profile -->
+            <label class="flex items-center gap-2 cursor-pointer">
+              <span class="text-sm text-gray-600">Hide other brands' attributes</span>
+              <input type="checkbox" id="hide-cross-brand-toggle" class="w-4 h-4 accent-blue-500" onchange="toggleHideCrossBrand(this.checked)">
+            </label>
+          </div>
         </div>
         <u-full-profile id="profile" enable-autosave="true" fields="email,first_name,last_name,date_of_birth,custom_attributes.favorite_nut,custom_attributes.sports_interests"
           country-code-display-option="icon"></u-full-profile>
@@ -583,6 +590,10 @@
       const profile = document.getElementById('profile');
       profile.enableAutosave = enabled;
       localStorage.setItem('demo-autosave', enabled);
+    }
+
+    window.toggleHideCrossBrand = (enabled) => {
+      document.getElementById('profile').hideCrossBrand = enabled;
     }
   </script>
   </main>

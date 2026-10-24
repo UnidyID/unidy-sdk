@@ -2,6 +2,7 @@
 
 // Re-export commonly needed SDK types
 export type {
+  AttributeBrand,
   CheckConsentResponse,
   ConnectRequest,
   CreateSignInResponse,
