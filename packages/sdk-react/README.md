@@ -671,7 +671,7 @@ const { isLoading, error, success, resendConfirmation, reset } = useNewsletterRe
 Fetch and update the authenticated user's profile (`/api/v2/me`). The values (`profile`) and the profile form describing them (`fields`) are fetched in parallel.
 
 ```ts
-const { profile, fields, isLoading, isMutating, error, fieldErrors, updateProfile, refetch, clearErrors } = useProfile({
+const { profile, fields, isLoading, isMutating, error, fieldErrors, errorMessages, updateProfile, refetch, clearErrors } = useProfile({
   fetchOnMount?: boolean;  // Default: true
   fetchFields?: boolean;   // Also fetch the profile form. Default: true
   fields?: string[];       // Partial validation — only validate the fields sent on update
@@ -689,6 +689,7 @@ const { profile, fields, isLoading, isMutating, error, fieldErrors, updateProfil
 | `isMutating` | `boolean` | Whether an update is in progress |
 | `error` | `string \| null` | The error identifier of the last failed call, e.g. `unprocessable_content` |
 | `fieldErrors` | `Record<string, string>` | Messages of a rejected update by field (`first_name`, `custom_attributes.tier`) |
+| `errorMessages` | `string[]` | Messages of a rejected update that name no field, such as a record-level validation |
 | `updateProfile(data)` | `(data: MeUserUpdate) => Promise<boolean>` | Update profile fields; `null` clears a field |
 | `refetch()` | `Promise<void>` | Re-fetch the profile and its form |
 | `clearErrors()` | `() => void` | Clear all errors |

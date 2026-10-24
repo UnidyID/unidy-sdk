@@ -1344,7 +1344,7 @@ Fetches the profile form in display order (`GET /api/v2/me/user_attributes`): ea
 Updates profile fields (`PATCH /api/v2/me`) and returns the updated user. A `null` value clears a field, or deletes a custom attribute. `validate_only_sent_fields: true` validates only the fields in `data`, for a form that shows part of the profile.
 
 ```javascript
-import { profileFieldErrors } from '@unidy.io/sdk';
+import { profileErrorMessages, profileFieldErrors } from '@unidy.io/sdk';
 
 const [error, result] = await getUnidyClient().profile.update({
   payload: { data: { first_name: 'John', last_name: 'Doe', custom_attributes: { newsletter_ok: true } } }
@@ -1353,6 +1353,8 @@ const [error, result] = await getUnidyClient().profile.update({
 if (error === 'unprocessable_content') {
   // { first_name: "First name cannot be changed", ... }
   console.log(profileFieldErrors(result));
+  // Messages that name no field, e.g. a record-level validation
+  console.log(profileErrorMessages(result));
 }
 ```
 

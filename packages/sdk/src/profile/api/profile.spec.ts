@@ -1,6 +1,6 @@
 import type { ApiResponse } from "../../api/base-client";
 import type { ApiClientInterface } from "../../api/base-service";
-import { ProfileService, profileFieldErrors } from "./profile";
+import { ProfileService, profileErrorMessages, profileFieldErrors } from "./profile";
 import type { MeUser, ProfileField } from "./schemas";
 
 const respond = (status: number, data: unknown): ApiResponse<unknown> => ({
@@ -165,5 +165,20 @@ describe("profileFieldErrors", () => {
     expect(profileFieldErrors({ identifier: "unprocessable_content", details: [{ field: "payload.data.city", code: "blank" }] })).toEqual({
       city: "blank",
     });
+  });
+});
+
+describe("profileErrorMessages", () => {
+  it("keeps the messages that name no profile field", () => {
+    const error = {
+      identifier: "unprocessable_content" as const,
+      details: [
+        { field: "payload.data.first_name", code: "invalid", message: "First name is invalid" },
+        { field: null, code: "invalid", message: "Please accept the updated terms" },
+        { field: "base", code: "invalid", message: null },
+      ],
+    };
+
+    expect(profileErrorMessages(error)).toEqual(["Please accept the updated terms", "invalid"]);
   });
 });

@@ -1,4 +1,4 @@
-import { type MeUser, type MeUserUpdate, type ProfileField, profileFieldErrors } from "@unidy.io/sdk/standalone";
+import { type MeUser, type MeUserUpdate, type ProfileField, profileErrorMessages, profileFieldErrors } from "@unidy.io/sdk/standalone";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useUnidyClient } from "../../provider";
 import type { HookCallbacks } from "../../types";
@@ -11,6 +11,7 @@ interface State {
   isMutating: boolean;
   error: string | null;
   fieldErrors: Record<string, string>;
+  errorMessages: string[];
 }
 
 type Action =
@@ -19,7 +20,7 @@ type Action =
   | { type: "fetch_error"; error: string }
   | { type: "update_start" }
   | { type: "update_success"; profile: MeUser }
-  | { type: "update_error"; error: string; fieldErrors: Record<string, string> }
+  | { type: "update_error"; error: string; fieldErrors: Record<string, string>; errorMessages: string[] }
   | { type: "fields_success"; fields: ProfileField[] }
   | { type: "clear_errors" };
 
@@ -30,6 +31,7 @@ const initialState: State = {
   isMutating: false,
   error: null,
   fieldErrors: {},
+  errorMessages: [],
 };
 
 function reducer(state: State, action: Action): State {
@@ -37,19 +39,27 @@ function reducer(state: State, action: Action): State {
     case "fetch_start":
       return { ...state, isLoading: true, error: null };
     case "fetch_success":
-      return { ...state, isLoading: false, error: null, profile: action.profile, fields: action.fields, fieldErrors: {} };
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        profile: action.profile,
+        fields: action.fields,
+        fieldErrors: {},
+        errorMessages: [],
+      };
     case "fetch_error":
       return { ...state, isLoading: false, error: action.error };
     case "update_start":
-      return { ...state, isMutating: true, error: null, fieldErrors: {} };
+      return { ...state, isMutating: true, error: null, fieldErrors: {}, errorMessages: [] };
     case "update_success":
-      return { ...state, isMutating: false, error: null, profile: action.profile, fieldErrors: {} };
+      return { ...state, isMutating: false, error: null, profile: action.profile, fieldErrors: {}, errorMessages: [] };
     case "update_error":
-      return { ...state, isMutating: false, error: action.error, fieldErrors: action.fieldErrors };
+      return { ...state, isMutating: false, error: action.error, fieldErrors: action.fieldErrors, errorMessages: action.errorMessages };
     case "fields_success":
       return { ...state, fields: action.fields };
     case "clear_errors":
-      return { ...state, error: null, fieldErrors: {} };
+      return { ...state, error: null, fieldErrors: {}, errorMessages: [] };
   }
 }
 
@@ -87,6 +97,8 @@ export interface UseProfileReturn {
   error: string | null;
   /** Messages of a failed update by field, e.g. `first_name` or `custom_attributes.tier`. */
   fieldErrors: Record<string, string>;
+  /** Messages of a failed update that name no field, such as a record-level validation. */
+  errorMessages: string[];
   /** Writes profile fields. A `null` value clears the field. */
   updateProfile: (data: MeUserUpdate) => Promise<boolean>;
   refetch: () => Promise<void>;
@@ -142,8 +154,13 @@ export function useProfile(options?: UseProfileOptions): UseProfileReturn {
           optionsRef.current?.callbacks?.onSuccess?.("Profile updated successfully");
         },
         onError: (errorCode, errorData) => {
-          const fieldErrors = errorData && "details" in errorData ? profileFieldErrors(errorData) : {};
-          dispatch({ type: "update_error", error: errorCode, fieldErrors });
+          const apiError = errorData && "details" in errorData ? errorData : null;
+          dispatch({
+            type: "update_error",
+            error: errorCode,
+            fieldErrors: apiError ? profileFieldErrors(apiError) : {},
+            errorMessages: apiError ? profileErrorMessages(apiError) : [],
+          });
           optionsRef.current?.callbacks?.onError?.(errorCode);
         },
       });
@@ -162,6 +179,7 @@ export function useProfile(options?: UseProfileOptions): UseProfileReturn {
     isMutating: state.isMutating,
     error: state.error,
     fieldErrors: state.fieldErrors,
+    errorMessages: state.errorMessages,
     updateProfile,
     refetch: fetchProfile,
     clearErrors,
