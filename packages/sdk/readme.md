@@ -1337,7 +1337,7 @@ if (!error) {
 
 #### `profile.fields(): Promise<MeResult<ProfileField[]>>`
 
-Fetches the profile form in display order (`GET /api/v2/me/profile_fields`): each field's `name`, whether it is a `custom_attribute`, its input `type`, `label`, `options`, and whether it is `required`, `readonly` or `locked` (with `locked_text`). A field's value is on the user under its name, or under `custom_attributes` for a custom attribute.
+Fetches the profile form in display order (`GET /api/v2/me/user_attributes`): each field's `name`, whether it is a `custom_attribute`, its input `type`, `label`, `options`, and whether it is `required`, `readonly` (`profile_access: "show"`) or `locked` (with `locked_text`). When the API sends them, a custom attribute also carries its owning `brand` and `cross_brand_visible`. A field's value is on the user under its name, or under `custom_attributes` for a custom attribute.
 
 #### `profile.update(args: { payload: { data, validate_only_sent_fields? } }): Promise<MeResult<MeUser>>`
 
