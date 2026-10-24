@@ -1,5 +1,5 @@
 import type { MeUser, ProfileField } from "./api/schemas";
-import { buildProfileNodes, buildUpdateData, filledEmptyField, optionKey, withSavedValues } from "./profile-helpers";
+import { buildProfileNodes, buildUpdateData, filledEmptyField, optionKey, withSavedValues, withUnsavedEdits } from "./profile-helpers";
 import type { ProfileRaw } from "./store/profile-store";
 
 const USER = {
@@ -115,6 +115,42 @@ describe("withSavedValues", () => {
     const data = { nickname: { value: "Ada", type: "text" }, custom_attributes: {} } as ProfileRaw;
 
     expect(withSavedValues(data, USER).nickname).toEqual({ value: "Ada", type: "text" });
+  });
+});
+
+describe("withUnsavedEdits", () => {
+  const stored = buildProfileNodes(USER, FIELDS);
+  const edit = (data: ProfileRaw, values: { first_name?: string; last_name?: string; weight?: string }): ProfileRaw =>
+    ({
+      ...data,
+      first_name: { ...data.first_name, value: values.first_name ?? data.first_name.value },
+      last_name: { ...data.last_name, value: values.last_name ?? data.last_name.value },
+      custom_attributes: {
+        ...data.custom_attributes,
+        weight: { ...data.custom_attributes.weight, value: values.weight ?? data.custom_attributes.weight.value },
+      },
+    }) as ProfileRaw;
+
+  it("keeps a field typed into while the update was in flight", () => {
+    const submitted = edit(stored, { first_name: "Augusta" });
+    const live = edit(submitted, { last_name: "Lovelace" });
+    const saved = withSavedValues(submitted, { ...USER, first_name: "Augusta" });
+
+    const form = withUnsavedEdits(saved, { first_name: "Augusta" }, { stored, submitted, live });
+
+    expect(form.first_name.value).toBe("Augusta");
+    expect(form.last_name.value).toBe("Lovelace");
+  });
+
+  it("keeps an edit the update left out, and takes the saved value of the sent fields", () => {
+    const submitted = edit(stored, { first_name: "augusta", weight: "80" });
+    const saved = withSavedValues(submitted, { ...USER, first_name: "Augusta" });
+
+    const form = withUnsavedEdits(saved, { first_name: "augusta" }, { stored, submitted, live: submitted });
+
+    expect(form.first_name.value).toBe("Augusta");
+    expect(form.custom_attributes.weight.value).toBe("80");
+    expect(form.custom_attributes.member_no).toEqual(saved.custom_attributes.member_no);
   });
 });
 

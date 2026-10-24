@@ -193,6 +193,42 @@ export function withSavedValues(data: ProfileRaw, user: MeUser): ProfileRaw {
   return { ...nodes, custom_attributes: customAttributes } as ProfileRaw;
 }
 
+function sameValue(a: ProfileNode | undefined, b: ProfileNode | undefined): boolean {
+  return JSON.stringify(a?.value) === JSON.stringify(b?.value);
+}
+
+/**
+ * The saved nodes with the form's unsaved edits: fields changed while the update was in flight, and changed fields
+ * the update left out.
+ */
+export function withUnsavedEdits(
+  saved: ProfileRaw,
+  sent: MeUserUpdate,
+  { stored, submitted, live }: { stored: ProfileRaw; submitted: ProfileRaw; live: ProfileRaw },
+): ProfileRaw {
+  const sentFields = new Set([
+    ...Object.keys(sent).filter((name) => name !== "custom_attributes"),
+    ...Object.keys(sent.custom_attributes ?? {}).map((name) => `${CUSTOM_ATTRIBUTES_PREFIX}${name}`),
+  ]);
+  const withEdit = (fieldName: string, node: ProfileNode): ProfileNode => {
+    const liveNode = getProfileNode(live, fieldName);
+    if (!liveNode) return node;
+
+    const editedInFlight = !sameValue(liveNode, getProfileNode(submitted, fieldName));
+    const leftOut = !sentFields.has(fieldName) && !sameValue(liveNode, getProfileNode(stored, fieldName));
+    return editedInFlight || leftOut ? { ...node, value: liveNode.value } : node;
+  };
+
+  const nodes = Object.entries(saved).filter(([name]) => name !== "custom_attributes");
+  const customAttributes = Object.entries(saved.custom_attributes ?? {});
+  return {
+    ...Object.fromEntries(nodes.map(([name, node]) => [name, withEdit(name, node)])),
+    custom_attributes: Object.fromEntries(
+      customAttributes.map(([name, node]) => [name, withEdit(`${CUSTOM_ATTRIBUTES_PREFIX}${name}`, node)]),
+    ),
+  } as ProfileRaw;
+}
+
 /** Whether an update filled an empty field: a brand's lock applies to a field once it holds a value. */
 export function filledEmptyField(before: ProfileRaw, after: ProfileRaw): boolean {
   return profileEntries(before).some(([fieldName, node]) => isEmpty(node?.value) && !isEmpty(getProfileNode(after, fieldName)?.value));
