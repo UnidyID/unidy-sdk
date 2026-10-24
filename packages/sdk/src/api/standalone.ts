@@ -68,7 +68,16 @@ export type {
   ServiceDependencies,
   ServiceResult,
 } from "./base-service";
-export type { PaginationMeta, PaginationParams, SchemaValidationError } from "./shared";
+export type { MeFilters, MeListQuery, MeResult } from "./me-service";
+export type {
+  ApiError,
+  ApiErrorDetail,
+  ApiErrorIdentifier,
+  Page,
+  Pagination,
+  PaginationParams,
+  SchemaValidationError,
+} from "./shared";
 
 /**
  * Standalone API client without browser-specific dependencies.

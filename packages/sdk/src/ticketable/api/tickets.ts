@@ -1,78 +1,42 @@
-import type { ApiClientInterface, CommonErrors, ServiceDependencies } from "../../api/base-service";
+import type { ApiClientInterface, ServiceDependencies } from "../../api/base-service";
 
 // Re-export types for consumers importing from this module directly.
-export type { Ticket, TicketsListResponse } from "./schemas";
+export type { ExportLink, Ticket, TicketsListResponse } from "./schemas";
 
+import { type ExportFormat, type Ticket, TicketSchema } from "./schemas";
 import {
-  type ExportFormat,
-  type ExportLinkResponse,
-  ExportLinkResponseSchema,
-  type Ticket,
-  TicketSchema,
-  type TicketsListResponse,
-  TicketsListResponseSchema,
-} from "./schemas";
-import { type TicketableGetResult, type TicketableListArgs, type TicketableListResult, TicketableService } from "./ticketable-service";
+  type TicketableExportLinkResult,
+  type TicketableGetResult,
+  type TicketableListArgs,
+  type TicketableListResult,
+  TicketableService,
+} from "./ticketable-service";
 
-// Argument types extending base ticketable args
 export interface TicketsListArgs extends TicketableListArgs {
   ticketCategoryId?: string;
 }
 export type TicketsGetArgs = { id: string };
 
-// Result types
-export type TicketsListResult = TicketableListResult<TicketsListResponse>;
+export type TicketsListResult = TicketableListResult<Ticket>;
 export type TicketsGetResult = TicketableGetResult<Ticket>;
-export type TicketExportLinkResult =
-  | CommonErrors
-  | ["missing_id_token", null]
-  | ["unauthorized", null]
-  | ["server_error", null]
-  | ["invalid_response", null]
-  | [null, ExportLinkResponse];
+export type TicketExportLinkResult = TicketableExportLinkResult;
 
+/** The signed-in user's tickets on the host brand: owned ones, and held ones when ticket transfers are enabled. */
 export class TicketsService extends TicketableService {
   constructor(client: ApiClientInterface, deps?: ServiceDependencies) {
     super(client, "TicketsService", deps);
   }
 
   async list(args: TicketsListArgs = {}): Promise<TicketsListResult> {
-    const params = this.buildListParams(args, "ticket_category_id", args.ticketCategoryId);
-    const queryString = this.toQueryString(params);
-    return this.handleList("/api/sdk/v1/tickets", queryString, TicketsListResponseSchema, "tickets", args);
+    return this.listTicketables("/tickets", TicketSchema, args, { ticket_category_id: args.ticketCategoryId });
   }
 
   async get(args: TicketsGetArgs): Promise<TicketsGetResult> {
-    return this.handleGet(`/api/sdk/v1/tickets/${args.id}`, TicketSchema, "ticket");
+    return this.fetchRecord(`/tickets/${args.id}`, TicketSchema);
   }
 
+  /** A lent ticket is exported by its holder, not by its owner. */
   async getExportLink(args: { id: string; format: ExportFormat }): Promise<TicketExportLinkResult> {
-    const idToken = await this.getIdToken();
-    if (!idToken) {
-      return ["missing_id_token", null];
-    }
-
-    const response = await this.client.post<unknown>(
-      `/api/sdk/v1/tickets/${args.id}/export_link`,
-      { format: args.format },
-      this.buildAuthHeaders({ "X-ID-Token": idToken }),
-    );
-
-    return this.handleResponse(response, () => {
-      if (!response.success) {
-        if (response.status === 401 || response.status === 403) {
-          return ["unauthorized", null];
-        }
-        return ["server_error", null];
-      }
-
-      const parsed = ExportLinkResponseSchema.safeParse(response.data);
-      if (!parsed.success) {
-        this.logger.error("Invalid export link response", parsed.error);
-        return ["invalid_response", null];
-      }
-
-      return [null, parsed.data];
-    });
+    return this.exportLink(`/tickets/${args.id}`, args.format);
   }
 }
