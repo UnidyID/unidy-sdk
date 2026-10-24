@@ -29,7 +29,7 @@ export type PaginationParams = z.infer<typeof PaginationParamsSchema>;
 /** Pagination of a V2 collection (`meta.pagination`, page strategy). */
 export const PaginationSchema = z.object({
   strategy: z.literal("page"),
-  sort: z.string(),
+  sort: z.string().nullable(),
   page: z.number(),
   per_page: z.number(),
   count: z.number(),

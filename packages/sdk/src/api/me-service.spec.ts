@@ -75,6 +75,18 @@ describe("MeService", () => {
     expect(page && "records" in page ? page.records : []).toEqual([{ id: "1", name: "A" }]);
   });
 
+  it("fails a page whose records are all malformed", async () => {
+    const { service } = setup(respond(200, { records: [{ id: 1 }, { id: 2 }], meta: { pagination: { ...PAGINATION, count: 2 } } }));
+
+    expect(await service.page()).toEqual(["invalid_response", null]);
+  });
+
+  it("accepts an unsorted page", async () => {
+    const { service } = setup(respond(200, { records: [], meta: { pagination: { ...PAGINATION, sort: null, count: 0 } } }));
+
+    expect(await service.page()).toEqual([null, { records: [], pagination: { ...PAGINATION, sort: null, count: 0 } }]);
+  });
+
   it("unwraps an unpaginated collection", async () => {
     const { service } = setup(respond(200, { records: [{ id: "1", name: "A" }], meta: { request_id: "r" } }));
 

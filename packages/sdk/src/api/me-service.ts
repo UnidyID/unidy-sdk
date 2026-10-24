@@ -64,7 +64,10 @@ export abstract class MeService extends BaseService {
       const envelope = CollectionEnvelopeSchema.safeParse(data);
       if (!envelope.success) return { error: envelope.error };
 
-      return { data: { records: this.parseItems(envelope.data.records, itemSchema, path), pagination: envelope.data.meta.pagination } };
+      const records = this.parseItems(envelope.data.records, itemSchema, path);
+      if ("error" in records) return records;
+
+      return { data: { records: records.data, pagination: envelope.data.meta.pagination } };
     });
   }
 
@@ -74,7 +77,7 @@ export abstract class MeService extends BaseService {
       const envelope = UnpaginatedEnvelopeSchema.safeParse(data);
       if (!envelope.success) return { error: envelope.error };
 
-      return { data: this.parseItems(envelope.data.records, itemSchema, path) };
+      return this.parseItems(envelope.data.records, itemSchema, path);
     });
   }
 
@@ -103,16 +106,21 @@ export abstract class MeService extends BaseService {
     return record.success ? { data: record.data } : { error: record.error };
   }
 
-  /** One malformed record must not hide the rest of the page, so invalid items are reported and skipped. */
-  private parseItems<T>(items: unknown[], itemSchema: z.ZodType<T>, path: string): T[] {
-    return items.flatMap((item) => {
-      const parsed = itemSchema.safeParse(item);
-      if (parsed.success) return [parsed.data];
+  /**
+   * One malformed record must not hide the rest of the page, so invalid items are reported and skipped.
+   * A page of nothing but malformed records is an invalid response: an empty list would contradict its pagination.
+   */
+  private parseItems<T>(items: unknown[], itemSchema: z.ZodType<T>, path: string): Parsed<T[]> {
+    const results = items.map((item) => itemSchema.safeParse(item));
+    const records = results.flatMap((result) => (result.success ? [result.data] : []));
+    const errors = results.flatMap((result) => (result.success ? [] : [result.error]));
+    if (records.length === 0 && errors.length > 0) return { error: errors[0] };
 
-      this.logger.error(`Skipping invalid record from ${path}`, parsed.error);
-      this.errorReporter.captureException(parsed.error, { endpoint: `${ME_PATH}${path}` });
-      return [];
-    });
+    for (const error of errors) {
+      this.logger.error(`Skipping invalid record from ${path}`, error);
+      this.errorReporter.captureException(error, { endpoint: `${ME_PATH}${path}` });
+    }
+    return { data: records };
   }
 
   private async request<T>(
