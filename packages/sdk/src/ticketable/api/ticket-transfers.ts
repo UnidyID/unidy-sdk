@@ -137,8 +137,10 @@ export class TicketTransfersService extends MeService {
       const result = await this.list({ page, perPage: LIST_ALL_PER_PAGE });
       if (!succeeded(result)) return result;
 
-      transfers.push(...result[1].records);
-      page = result[1].pagination.next;
+      const { records, pagination } = result[1];
+      transfers.push(...records);
+      // Only a next page that moves forward within the page count, so a bad `next` can't loop forever.
+      page = pagination.next !== null && pagination.next > page && pagination.next <= pagination.pages ? pagination.next : null;
     }
 
     return [null, transfers];

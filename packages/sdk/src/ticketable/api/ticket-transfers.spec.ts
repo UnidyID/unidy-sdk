@@ -149,6 +149,16 @@ describe("TicketTransfersService", () => {
       expect(error).toBe("feature_not_enabled");
     });
 
+    it("stops when the next page doesn't move forward", async () => {
+      const { client, service } = setup(respond(200, { records: [transfer()], meta: { pagination: pagination(1, 1) } }));
+
+      const [error, transfers] = await service.listAll();
+
+      expect(error).toBeNull();
+      expect(Array.isArray(transfers) ? transfers.length : 0).toBe(1);
+      expect(client.get).toHaveBeenCalledTimes(1);
+    });
+
     it("parses dates and keeps a link offer's missing recipient", async () => {
       const { service } = setup(
         respond(200, { record: transfer({ mode: "link", recipient_email: null, direction: "outgoing" }), meta: { request_id: "r" } }),
@@ -157,6 +167,27 @@ describe("TicketTransfersService", () => {
       const [, record] = await service.get({ id: TRANSFER_ID });
 
       expect(record).toMatchObject({ mode: "link", recipient_email: null, expires_at: new Date("2026-08-10T10:00:00.000Z") });
+    });
+  });
+
+  describe("isEnabled", () => {
+    it("is off when the brand has transfers disabled, and caches that", async () => {
+      const { client, service } = setup(
+        respond(403, errorEnvelope("feature_not_enabled", [{ field: "feature", code: "not_enabled", message: "enable_ticket_transfers" }])),
+      );
+
+      expect(await service.isEnabled()).toBe(false);
+      expect(await service.isEnabled()).toBe(false);
+      expect(client.get).toHaveBeenCalledTimes(1);
+      expect(client.get.mock.calls[0][2] as QueryParams).toMatchObject({ per_page: 1 });
+    });
+
+    it("counts an inconclusive probe as on and asks again", async () => {
+      const { client, service } = setup(respond(500, undefined), respond(200, { records: [], meta: { pagination: pagination(1, null) } }));
+
+      expect(await service.isEnabled()).toBe(true);
+      expect(await service.isEnabled()).toBe(true);
+      expect(client.get).toHaveBeenCalledTimes(2);
     });
   });
 
