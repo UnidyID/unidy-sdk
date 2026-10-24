@@ -23,9 +23,9 @@ const pageOf = (records: unknown[]) => ({
 const EMPTY_TRANSACTIONS_RESPONSE = pageOf([]);
 
 const BASE_TRANSACTION = {
-  id: "00000000-0000-0000-0000-000000000001",
-  user_id: "00000000-0000-0000-0000-000000000002",
-  transaction_category_id: "00000000-0000-0000-0000-000000000003",
+  id: "10000000-0000-4000-8000-000000000001",
+  user_id: "20000000-0000-4000-8000-000000000002",
+  transaction_category_id: "30000000-0000-4000-8000-000000000003",
   external_id: null,
   reference: "TEST-001",
   source_platform: null,
@@ -115,7 +115,7 @@ test.describe("u-transaction-list - authenticated user", () => {
     await page.goto(routes.transaction);
 
     const list = page.locator("u-transaction-list").first();
-    await expect(list).toBeVisible();
+    await expect(list.getByText("TEST-001")).toBeVisible();
     await expect(list.locator("h1")).not.toBeVisible();
   });
 
@@ -123,7 +123,7 @@ test.describe("u-transaction-list - authenticated user", () => {
     page,
     authenticatedContext: _authenticatedContext,
   }) => {
-    const validTransaction = { ...BASE_TRANSACTION, id: "00000000-0000-0000-0000-000000000001", reference: "VALID-001" };
+    const validTransaction = { ...BASE_TRANSACTION, reference: "VALID-001" };
     const invalidTransaction = { id: "not-a-uuid", reference: "INVALID" };
     const response = pageOf([validTransaction, invalidTransaction]);
     await page.route(TRANSACTIONS_ROUTE, (route) =>
@@ -133,8 +133,19 @@ test.describe("u-transaction-list - authenticated user", () => {
     await page.goto(routes.transaction);
 
     const list = page.locator("u-transaction-list").first();
-    await expect(list).toBeVisible();
+    await expect(list.getByText("VALID-001")).toBeVisible();
     await expect(list.locator("h1")).not.toBeVisible();
+  });
+
+  test("shows an error when every record is malformed", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    const response = pageOf([{ id: "not-a-uuid", reference: "INVALID" }]);
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
+    );
+
+    await page.goto(routes.transaction);
+
+    await expect(page.locator("u-transaction-list").first().locator("h1")).toContainText("Invalid response from server");
   });
 
   test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
