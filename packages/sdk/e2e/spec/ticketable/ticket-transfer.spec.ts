@@ -219,29 +219,6 @@ test.describe("ticket transfers - authenticated user", () => {
     await expect(page.locator("#outgoing-empty")).not.toBeVisible();
     await expect(page.locator("u-ticket-transfer-list h1")).toHaveCount(0);
   });
-
-  test("hides ticket transfer controls when the tickets meta reports transfers_enabled false", async ({
-    page,
-    authenticatedContext: _authenticatedContext,
-  }) => {
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ ...TICKETS_RESPONSE, meta: { ...TICKETS_RESPONSE.meta, transfers_enabled: false } }),
-      }),
-    );
-    await page.route("**/api/sdk/v1/ticket_transfers", (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TRANSFERS_RESPONSE) }),
-    );
-
-    await page.goto(routes.ticketTransfers);
-
-    await expect(page.getByText("Concert Ticket").first()).toBeVisible();
-    await expect(page.getByPlaceholder("Enter the recipient's email")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Transfer ticket" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Revoke transfer" })).toHaveCount(0);
-  });
 });
 
 test.describe("ticket transfers - unauthenticated user", () => {

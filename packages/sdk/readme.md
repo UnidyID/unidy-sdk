@@ -1073,7 +1073,7 @@ For tickets, `<u-ticketable-list>` adds three booleans relative to the signed-in
 -   `transferred_away`: you own the ticket but someone else holds it, so you can `revoke` it.
 -   `held_by_me`: someone else owns the ticket and you hold it, so you can `return` it.
 
-All three are `false` when transfers are disabled for the brand. The tickets list response carries this as `meta.transfers_enabled`, and `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` and `<u-ticket-transfer-list>` hide themselves when transfers are disabled. For older backends that don't send the field, the SDK falls back to `client.ticketTransfers.isEnabled()`, which probes `GET /api/sdk/v1/ticket_transfers` for `feature_disabled`.
+All three are `false` when transfers are disabled for the brand, and `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` and `<u-ticket-transfer-list>` hide themselves. The SDK learns this from `client.ticketTransfers.isEnabled()`, which probes `GET /api/sdk/v1/ticket_transfers` for `feature_disabled` once per client.
 
 ```html
 <ticketable-conditional when="transferable">
