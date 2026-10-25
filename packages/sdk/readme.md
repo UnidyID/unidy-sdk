@@ -906,7 +906,7 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 -   `ticketable-type` (required): The type of item to fetch. Can be `ticket` or `subscription`.
 -   `limit`: The number of items to fetch per page. Defaults to `10`.
 -   `page`: The current page to fetch. Defaults to `1`.
--   `filter`: A string to filter the results. The format is `key=value;key2=value2`.
+-   `filter`: A string to filter the results. The format is `key=value;key2=value2`. Supported keys: `state`, `payment_state` (`paid` or `not_paid`), `ticket_category_id` / `subscription_category_id`, `order_by` (`starts_at`, `ends_at`, `reference`, `created_at`) and `order_direction` (`asc` or `desc`).
 -   `container-class`: A string of classes to pass to the container element.
 -   `target`: A CSS selector for an element to render the list into. If provided, the component will render the list into the target element instead of its own host.
 -   `skeleton-count`: The number of skeleton loaders to display while loading. Defaults to the `limit`.
@@ -919,7 +919,7 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 
 **Events:**
 
--   `uTicketableListSuccess`: Fired when data is successfully loaded. `event.detail` contains `{ ticketableType: "ticket" | "subscription", items: Ticket[] | Subscription[], paginationMeta: PaginationMeta | null }`.
+-   `uTicketableListSuccess`: Fired when data is successfully loaded. `event.detail` contains `{ ticketableType: "ticket" | "subscription", items: Ticket[] | Subscription[], paginationMeta: Pagination | null }`, where `Pagination` is the V2 page pagination (`page`, `per_page`, `count`, `pages`, `next`, `previous`).
 -   `uTicketableListError`: Fired when loading fails. `event.detail` contains `{ ticketableType?: "ticket" | "subscription", error: string }`.
 
 **Inside the template:**
@@ -1073,7 +1073,7 @@ For tickets, `<u-ticketable-list>` adds three booleans relative to the signed-in
 -   `transferred_away`: you own the ticket but someone else holds it, so you can `revoke` it.
 -   `held_by_me`: someone else owns the ticket and you hold it, so you can `return` it.
 
-All three are `false` when transfers are disabled for the brand. The tickets list response carries this as `meta.transfers_enabled`, and `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` and `<u-ticket-transfer-list>` hide themselves when transfers are disabled. For older backends that don't send the field, the SDK falls back to `client.ticketTransfers.isEnabled()`, which probes `GET /api/sdk/v1/ticket_transfers` for `feature_disabled`.
+All three are `false` when transfers are disabled for the brand, and `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` and `<u-ticket-transfer-list>` hide themselves. The SDK learns this from `client.ticketTransfers.isEnabled()`, which probes `GET /api/sdk/v1/ticket_transfers` for `feature_disabled` once per client.
 
 ```html
 <ticketable-conditional when="transferable">
@@ -1589,7 +1589,7 @@ An object representing a subscription.
 | `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the subscription to a wallet. |
 | `state` | `string` | The state of the subscription. |
 | `reference` | `string` | A reference for the subscription. |
-| `payment_state` | `string \| null` | The payment state of the subscription. |
+| `payment_state` | `string \| null` | The payment state of the subscription: `paid` or `not_paid`. |
 | `currency` | `string \| null` | The currency of the subscription price. |
 | `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
 | `created_at` | `Date` | The creation date of the subscription. |
@@ -1614,7 +1614,7 @@ An object representing a ticket.
 | `metadata` | `Record<string, unknown> \| null` | Additional metadata for the ticket. |
 | `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the ticket to a wallet. |
 | `state` | `string` | The state of the ticket. |
-| `payment_state` | `string \| null` | The payment state of the ticket. |
+| `payment_state` | `string \| null` | The payment state of the ticket: `paid` or `not_paid`. |
 | `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
 | `info_banner` | `string \| null` | An informational banner for the ticket. |
 | `seating` | `string \| null` | Seating information for the ticket. |

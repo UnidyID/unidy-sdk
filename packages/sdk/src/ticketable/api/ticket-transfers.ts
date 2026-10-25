@@ -84,7 +84,7 @@ export class TicketTransfersService extends BaseService {
     return this.enabledPromise;
   }
 
-  /** Records a known answer, e.g. from `meta.transfers_enabled` of the tickets list, so `isEnabled()` skips the probe. */
+  /** Records a known answer so `isEnabled()` skips the probe. */
   setEnabled(enabled: boolean): void {
     this.enabledPromise = Promise.resolve(enabled);
   }

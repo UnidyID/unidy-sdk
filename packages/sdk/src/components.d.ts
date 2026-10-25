@@ -25,7 +25,7 @@ import { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 import { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
 import { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
 import { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
-import { PaginationMeta } from "./api";
+import { Pagination } from "./api";
 import { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 import { PaginationStore } from "./shared/store/pagination-store";
 import { Transaction } from "./transaction/api/transactions";
@@ -49,7 +49,7 @@ export { AuthButtonFor } from "./auth/components/submit-button/auth-submit-butto
 export { TicketTransferActionSuccessPayload, TicketTransferActionType } from "./ticketable/components/ticket-transfer-action/ticket-transfer-action";
 export { ExportFormat, TicketTransfer } from "./ticketable/api/schemas";
 export { TicketTransferDirection } from "./ticketable/components/ticket-transfer-list/ticket-transfer-list";
-export { PaginationMeta } from "./api";
+export { Pagination } from "./api";
 export { TicketableItem, TicketableType } from "./ticketable/components/ticketable-list/ticketable-list";
 export { PaginationStore } from "./shared/store/pagination-store";
 export { Transaction } from "./transaction/api/transactions";
@@ -1201,7 +1201,7 @@ export namespace Components {
           * Pagination metadata from the API response.
           * @default null
          */
-        "paginationMeta": PaginationMeta | null;
+        "paginationMeta": Pagination | null;
         /**
           * If true, replaces all text content with skeleton loaders.
           * @default false
@@ -1249,7 +1249,7 @@ export namespace Components {
           * Pagination metadata from the API response.
           * @default null
          */
-        "paginationMeta": PaginationMeta | null;
+        "paginationMeta": Pagination | null;
         /**
           * If true, replaces all text content with skeleton loaders.
           * @default false
@@ -1938,7 +1938,7 @@ declare global {
         "uTicketableListSuccess": {
     ticketableType: TicketableType;
     items: TicketableItem[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   };
         "uTicketableListError": {
     ticketableType?: TicketableType;
@@ -1962,7 +1962,7 @@ declare global {
     interface HTMLUTransactionListElementEventMap {
         "uTransactionListSuccess": {
     items: Transaction[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   };
         "uTransactionListError": {
     error: string;
@@ -3247,7 +3247,7 @@ declare namespace LocalJSX {
         "onUTicketableListSuccess"?: (event: UTicketableListCustomEvent<{
     ticketableType: TicketableType;
     items: TicketableItem[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   }>) => void;
         /**
           * Current page number.
@@ -3258,7 +3258,7 @@ declare namespace LocalJSX {
           * Pagination metadata from the API response.
           * @default null
          */
-        "paginationMeta"?: PaginationMeta | null;
+        "paginationMeta"?: Pagination | null;
         /**
           * If true, replaces all text content with skeleton loaders.
           * @default false
@@ -3308,7 +3308,7 @@ declare namespace LocalJSX {
          */
         "onUTransactionListSuccess"?: (event: UTransactionListCustomEvent<{
     items: Transaction[];
-    paginationMeta: PaginationMeta | null;
+    paginationMeta: Pagination | null;
   }>) => void;
         /**
           * Current page number.
@@ -3319,7 +3319,7 @@ declare namespace LocalJSX {
           * Pagination metadata from the API response.
           * @default null
          */
-        "paginationMeta"?: PaginationMeta | null;
+        "paginationMeta"?: Pagination | null;
         /**
           * If true, replaces all text content with skeleton loaders.
           * @default false

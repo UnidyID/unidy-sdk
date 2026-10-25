@@ -59,7 +59,7 @@ export class PaginationButton extends UnidyComponent() {
     if (!meta) return;
 
     const isPrev = this.direction === "prev";
-    const newPage = isPrev ? meta.prev : meta.next;
+    const newPage = isPrev ? meta.previous : meta.next;
 
     if (newPage !== null) {
       parent.setAttribute("page", String(newPage));
@@ -78,7 +78,7 @@ export class PaginationButton extends UnidyComponent() {
     const icon = isPrev ? "←" : "→";
 
     const meta = this.store.state.paginationMeta;
-    const disabled = !meta || (isPrev ? meta.prev === null : meta.next === null);
+    const disabled = !meta || (isPrev ? meta.previous === null : meta.next === null);
 
     return (
       <Host>

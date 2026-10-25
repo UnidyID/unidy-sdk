@@ -1,17 +1,31 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
 
-const EMPTY_TRANSACTIONS_RESPONSE = {
-  results: [],
-  meta: { count: 0, page: 1, limit: 10, last: 1, prev: null, next: null },
-};
+const TRANSACTIONS_ROUTE = "**/api/v2/me/transactions**";
 
-const PAGINATION_META = { count: 1, page: 1, limit: 10, last: 1, prev: null, next: null };
+const pageOf = (records: unknown[]) => ({
+  records,
+  meta: {
+    request_id: "e2e",
+    pagination: {
+      strategy: "page",
+      sort: "-created_at",
+      page: 1,
+      per_page: 10,
+      count: records.length,
+      pages: 1,
+      previous: null,
+      next: null,
+    },
+  },
+});
+
+const EMPTY_TRANSACTIONS_RESPONSE = pageOf([]);
 
 const BASE_TRANSACTION = {
-  id: "00000000-0000-0000-0000-000000000001",
-  user_id: "00000000-0000-0000-0000-000000000002",
-  transaction_category_id: "00000000-0000-0000-0000-000000000003",
+  id: "10000000-0000-4000-8000-000000000001",
+  user_id: "20000000-0000-4000-8000-000000000002",
+  transaction_category_id: "30000000-0000-4000-8000-000000000003",
   external_id: null,
   reference: "TEST-001",
   source_platform: null,
@@ -54,6 +68,13 @@ const BASE_TRANSACTION = {
 test.describe("u-transaction-list - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
 
+  // V2 /me authenticates with user credentials the e2e user doesn't have yet, so every test stubs it.
+  test.beforeEach(async ({ page }) => {
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TRANSACTIONS_RESPONSE) }),
+    );
+  });
+
   test("renders transaction list when signed in", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.transaction);
     await expect(page.getByRole("heading", { name: "My Transactions", exact: true })).toBeVisible();
@@ -70,7 +91,7 @@ test.describe("u-transaction-list - authenticated user", () => {
   });
 
   test('shows slot="empty" content when the list returns zero items', async ({ page, authenticatedContext: _authenticatedContext }) => {
-    await page.route("**/api/sdk/v1/transactions**", (route) =>
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TRANSACTIONS_RESPONSE) }),
     );
 
@@ -81,23 +102,20 @@ test.describe("u-transaction-list - authenticated user", () => {
   });
 
   test("renders successfully when line_items[].id is a string", async ({ page, authenticatedContext: _authenticatedContext }) => {
-    const response = {
-      meta: PAGINATION_META,
-      results: [
-        {
-          ...BASE_TRANSACTION,
-          line_items: [{ id: "some-uuid-string", name: "Product", quantity: 1, unit_price: 9.99, total_price: 9.99, metadata: null }],
-        },
-      ],
-    };
-    await page.route("**/api/sdk/v1/transactions**", (route) =>
+    const response = pageOf([
+      {
+        ...BASE_TRANSACTION,
+        line_items: [{ id: "some-uuid-string", name: "Product", quantity: 1, unit_price: 9.99, total_price: 9.99, metadata: null }],
+      },
+    ]);
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
     );
 
     await page.goto(routes.transaction);
 
     const list = page.locator("u-transaction-list").first();
-    await expect(list).toBeVisible();
+    await expect(list.getByText("TEST-001")).toBeVisible();
     await expect(list.locator("h1")).not.toBeVisible();
   });
 
@@ -105,21 +123,29 @@ test.describe("u-transaction-list - authenticated user", () => {
     page,
     authenticatedContext: _authenticatedContext,
   }) => {
-    const validTransaction = { ...BASE_TRANSACTION, id: "00000000-0000-0000-0000-000000000001", reference: "VALID-001" };
+    const validTransaction = { ...BASE_TRANSACTION, reference: "VALID-001" };
     const invalidTransaction = { id: "not-a-uuid", reference: "INVALID" };
-    const response = {
-      meta: { ...PAGINATION_META, count: 2 },
-      results: [validTransaction, invalidTransaction],
-    };
-    await page.route("**/api/sdk/v1/transactions**", (route) =>
+    const response = pageOf([validTransaction, invalidTransaction]);
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
     );
 
     await page.goto(routes.transaction);
 
     const list = page.locator("u-transaction-list").first();
-    await expect(list).toBeVisible();
+    await expect(list.getByText("VALID-001")).toBeVisible();
     await expect(list.locator("h1")).not.toBeVisible();
+  });
+
+  test("shows an error when every record is malformed", async ({ page, authenticatedContext: _authenticatedContext }) => {
+    const response = pageOf([{ id: "not-a-uuid", reference: "INVALID" }]);
+    await page.route(TRANSACTIONS_ROUTE, (route) =>
+      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) }),
+    );
+
+    await page.goto(routes.transaction);
+
+    await expect(page.locator("u-transaction-list").first().locator("h1")).toContainText("Invalid response from server");
   });
 
   test('does not show slot="empty" content while loading', async ({ page, authenticatedContext: _authenticatedContext }) => {
@@ -128,12 +154,12 @@ test.describe("u-transaction-list - authenticated user", () => {
       releaseRoute = resolve;
     });
 
-    await page.route("**/api/sdk/v1/transactions**", async (route) => {
+    await page.route(TRANSACTIONS_ROUTE, async (route) => {
       await routeHeld;
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TRANSACTIONS_RESPONSE) });
     });
 
-    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/sdk/v1/transactions")), page.goto(routes.transaction)]);
+    await Promise.all([page.waitForRequest((req) => req.url().includes("/api/v2/me/transactions")), page.goto(routes.transaction)]);
 
     // Component has made the request but response is held — still in loading state
     await expect(page.locator("#empty-transactions-message")).not.toBeVisible();

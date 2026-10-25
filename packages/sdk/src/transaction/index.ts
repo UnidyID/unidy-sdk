@@ -10,11 +10,6 @@
 
 // Schemas (zod runtime + the one type unique to this file)
 export type { TransactionListParams } from "./api/schemas";
-export {
-  TransactionLineItemSchema,
-  TransactionListParamsSchema,
-  TransactionSchema,
-  TransactionsListResponseSchema,
-} from "./api/schemas";
+export { TransactionLineItemSchema, TransactionListParamsSchema, TransactionSchema } from "./api/schemas";
 // Service + the inferred entity types it re-exports
 export * from "./api/transactions";

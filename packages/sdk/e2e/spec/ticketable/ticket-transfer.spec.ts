@@ -23,6 +23,7 @@ const ticketFixture = (overrides: Record<string, unknown> = {}) => ({
   ends_at: null,
   price: 49.99,
   ticket_category_id: "33333333-3333-4333-8333-333333333333",
+  entered_at: null,
   ...overrides,
 });
 
@@ -45,9 +46,15 @@ const TRANSFERS_RESPONSE = {
 const EMPTY_TRANSFERS_RESPONSE = { incoming: [], outgoing: [] };
 
 const TICKETS_RESPONSE = {
-  results: [ticketFixture()],
-  meta: { count: 1, page: 1, limit: 5, last: 1, prev: null, next: null },
+  records: [ticketFixture()],
+  meta: {
+    request_id: "e2e",
+    pagination: { strategy: "page", sort: "-created_at", page: 1, per_page: 5, count: 1, pages: 1, next: null, previous: null },
+  },
 };
+
+/** The V2 tickets collection only; the transfer routes are stubbed per test. */
+const TICKETS_COLLECTION = /\/api\/v2\/me\/tickets(\?.*)?$/;
 
 test.describe("ticket transfers - authenticated user", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
@@ -55,7 +62,7 @@ test.describe("ticket transfers - authenticated user", () => {
   test.beforeEach(async ({ page }) => {
     // The demo page also mounts a u-ticketable-list; keep it deterministic.
     // Registered first so the more specific transfer routes below take precedence.
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
+    await page.route(TICKETS_COLLECTION, (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(TICKETS_RESPONSE) }),
     );
   });
@@ -211,29 +218,6 @@ test.describe("ticket transfers - authenticated user", () => {
     await expect(page.locator("#incoming-empty")).not.toBeVisible();
     await expect(page.locator("#outgoing-empty")).not.toBeVisible();
     await expect(page.locator("u-ticket-transfer-list h1")).toHaveCount(0);
-  });
-
-  test("hides ticket transfer controls when the tickets meta reports transfers_enabled false", async ({
-    page,
-    authenticatedContext: _authenticatedContext,
-  }) => {
-    await page.route("**/api/sdk/v1/tickets**", (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ ...TICKETS_RESPONSE, meta: { ...TICKETS_RESPONSE.meta, transfers_enabled: false } }),
-      }),
-    );
-    await page.route("**/api/sdk/v1/ticket_transfers", (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(EMPTY_TRANSFERS_RESPONSE) }),
-    );
-
-    await page.goto(routes.ticketTransfers);
-
-    await expect(page.getByText("Concert Ticket").first()).toBeVisible();
-    await expect(page.getByPlaceholder("Enter the recipient's email")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Transfer ticket" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Revoke transfer" })).toHaveCount(0);
   });
 });
 
