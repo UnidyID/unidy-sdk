@@ -44,7 +44,7 @@ describe("AuthorizedApplicationsService", () => {
     expect(result).toEqual([null, { records: [APPLICATION], pagination: PAGINATION }]);
     expect(mocks.get).toHaveBeenCalledWith(
       "/api/v2/me/authorized_applications",
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
       expect.objectContaining({ per_page: 10 }),
     );
   });
@@ -53,7 +53,10 @@ describe("AuthorizedApplicationsService", () => {
     const { mocks, service } = setup(respond(200, { record: APPLICATION, meta: { request_id: "r" } }));
 
     expect(await service.revoke("client/1")).toEqual([null, APPLICATION]);
-    expect(mocks.delete).toHaveBeenCalledWith("/api/v2/me/authorized_applications/client%2F1", { "X-ID-Token": "id-token" });
+    expect(mocks.delete).toHaveBeenCalledWith("/api/v2/me/authorized_applications/client%2F1", {
+      "X-ID-Token": "id-token",
+      "Accept-Language": "en",
+    });
   });
 
   it("returns not_found for an application the user never authorized", async () => {
