@@ -77,24 +77,52 @@ export const SubscriptionSchema = TicketableSchema.extend({
   subscription_category_id: z.uuid(),
 });
 
-// Ticket transfer schemas based on Sdk::TicketTransferSerializer
-export const TicketTransferStatusSchema = z.enum(["pending", "accepted", "canceled", "declined", "expired"]);
+// Ticket transfer schemas based on V2::Me::TicketTransferSerializer
+export const TicketTransferStatusSchema = z.enum(["pending", "accepted", "canceled", "declined", "expired", "reverted"]);
 
-export const TicketTransferSchema = z.object({
-  token: z.string(),
-  status: TicketTransferStatusSchema,
-  recipient_email: z.string(),
-  sender_email: z.string(),
-  expires_at: dateTransformer, // ISO8601(3) -> Date
-  created_at: dateTransformer, // ISO8601(3) -> Date
-  ticket: TicketSchema,
+/** How an offer is addressed: mailed (`email`), a bare claim link (`link`), bound to an account (`user`), or an admin assignment (`direct`). */
+export const TicketTransferModeSchema = z.enum(["email", "link", "user", "direct"]);
+
+/** Which side of the offer the signed-in user is on. */
+export const TicketTransferDirectionSchema = z.enum(["incoming", "outgoing"]);
+
+/** The offered ticket as its recipient sees it: without `metadata` and `wallet_export`, which carry the entry credentials. */
+export const OfferedTicketSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  text: z.string().nullable(),
+  reference: z.string(),
+  venue: z.string().nullable(),
+  seating: z.string().nullable(),
+  currency: z.string().nullable(),
+  price: z.number().nullable(),
+  starts_at: dateTransformer, // ISO8601(3) -> Date
+  ends_at: nullableDateTransformer, // ISO8601(3) -> Date | null
+  ticket_category_id: z.uuid(),
 });
 
-// Ticket transfers list response schema. Not paginated — the API returns the
-// user's pending, unexpired offers split into incoming and outgoing.
-export const TicketTransfersListResponseSchema = z.object({
-  incoming: z.array(TicketTransferSchema),
-  outgoing: z.array(TicketTransferSchema),
+export const TicketTransferSchema = z.object({
+  id: z.uuid(),
+  status: TicketTransferStatusSchema,
+  mode: TicketTransferModeSchema,
+  // Only the sender sees the token and the claim link.
+  token: z.string().nullable(),
+  claim_url: z.string().nullable(),
+  // Null for a link offer.
+  recipient_email: z.string().nullable(),
+  direction: TicketTransferDirectionSchema,
+  sender_email: z.string(),
+  ticket_id: z.uuid(),
+  sender_id: z.uuid(),
+  recipient_id: z.uuid().nullable(),
+  expires_at: dateTransformer, // ISO8601(3) -> Date
+  accepted_at: nullableDateTransformer,
+  canceled_at: nullableDateTransformer,
+  declined_at: nullableDateTransformer,
+  reverted_at: nullableDateTransformer,
+  created_at: dateTransformer,
+  updated_at: dateTransformer,
+  ticket: OfferedTicketSchema,
 });
 
 // Export types
@@ -106,6 +134,8 @@ export type SubscriptionsListResponse = Page<Subscription>;
 
 export type TicketTransfer = z.infer<typeof TicketTransferSchema>;
 export type TicketTransferStatus = z.infer<typeof TicketTransferStatusSchema>;
-export type TicketTransfersListResponse = z.infer<typeof TicketTransfersListResponseSchema>;
+export type TicketTransferMode = z.infer<typeof TicketTransferModeSchema>;
+export type TicketTransferDirection = z.infer<typeof TicketTransferDirectionSchema>;
+export type OfferedTicket = z.infer<typeof OfferedTicketSchema>;
 
 export type TicketableListParams = z.infer<typeof TicketableListParamsSchema>;
