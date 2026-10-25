@@ -139,6 +139,40 @@ export const DeleteSubscriptionResponseSchema = z
 // Generic newsletter error response (extends base error)
 export const NewsletterErrorResponseSchema = BaseErrorSchema;
 
+const TranslationsSchema = z.record(z.string(), z.string().nullable());
+
+/** V2: a newsletter of the host brand the signed-in user can subscribe to (`GET /api/v2/me/newsletters`). */
+export const MeNewsletterSchema = z.object({
+  id: z.string(),
+  /** The newsletter's internal name, which the components take as `internal-name`. */
+  slug: z.string(),
+  default: z.boolean().nullable(),
+  opt_in_type: z.string(),
+  doi_through_unidy: z.boolean(),
+  // The backend may still move to the `{ list, owner }` shape other multi-brand records use.
+  brands: z.union([z.array(z.string()), z.object({ list: z.array(z.string()), owner: z.array(z.string()) })]),
+  title: z.string(),
+  description: z.string().nullable(),
+  title_t: TranslationsSchema,
+  description_t: TranslationsSchema,
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+/** V2: one of the signed-in user's newsletter subscriptions (`/api/v2/me/newsletter_subscriptions`). */
+export const MeNewsletterSubscriptionRecordSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  newsletter_id: z.string(),
+  user_id: z.string().nullable(),
+  preference_identifiers: z.array(z.string()),
+  confirmed_at: z.string().nullable(),
+  confirmation_requested_at: z.string().nullable(),
+  opted_out_at: z.string().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
 // Export types
 export type Salutation = z.infer<typeof SalutationEnum>;
 export type NewsletterSubscription = z.infer<typeof NewsletterSubscriptionSchema>;
@@ -154,3 +188,5 @@ export type NewslettersResponse = z.infer<typeof NewslettersResponseSchema>;
 export type Preference = z.infer<typeof PreferenceSchema>;
 export type PreferenceGroup = z.infer<typeof PreferenceGroupSchema>;
 export type NewsletterErrorResponse = z.infer<typeof NewsletterErrorResponseSchema>;
+export type MeNewsletter = z.infer<typeof MeNewsletterSchema>;
+export type MeNewsletterSubscriptionRecord = z.infer<typeof MeNewsletterSubscriptionRecordSchema>;
