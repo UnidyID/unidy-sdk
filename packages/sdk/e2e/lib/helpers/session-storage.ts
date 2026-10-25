@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import * as path from "node:path";
 import type { BrowserContext } from "@playwright/test";
+import type { SignedInSession } from "./sign-in";
 
 export type SessionStorageData = Record<string, string>;
 
@@ -20,7 +21,11 @@ export async function applySessionStorage(context: BrowserContext, session: Sess
   }, session);
 }
 
-export async function loadAuthenticatedContext(context: BrowserContext, sessionPath = getSessionStoragePath()) {
-  const session = readSessionStorageFromFile(sessionPath);
-  await applySessionStorage(context, session);
+export async function loadAuthenticatedContext(context: BrowserContext, signedIn: SignedInSession, sessionPath = getSessionStoragePath()) {
+  await applySessionStorage(context, { ...readSessionStorageFromFile(sessionPath), unidy_token: signedIn.jwt });
+  // Replaces the sign-in that the stored state from auth.setup carries.
+  await context.addInitScript(({ sid, refreshToken }) => {
+    localStorage.setItem("unidy_signin_id", sid);
+    localStorage.setItem("unidy_refresh_token", refreshToken);
+  }, signedIn);
 }

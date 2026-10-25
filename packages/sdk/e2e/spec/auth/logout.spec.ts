@@ -1,19 +1,17 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
-import { readSessionStorageFromFile } from "../../lib/helpers/session-storage";
 
 test.describe("Logout", () => {
   // Set auth token once without addInitScript (which would restore auth on reload)
-  const setAuthToken = async (page: import("@playwright/test").Page) => {
-    const session = readSessionStorageFromFile();
+  const setAuthToken = async (page: import("@playwright/test").Page, jwt: string) => {
     await page.evaluate((token: string) => {
       sessionStorage.setItem("unidy_token", token);
-    }, session.unidy_token);
+    }, jwt);
   };
 
-  test("logout works correctly", async ({ page }) => {
+  test("logout works correctly", async ({ page, signedIn }) => {
     await page.goto(routes.profile);
-    await setAuthToken(page);
+    await setAuthToken(page, signedIn.jwt);
     await page.reload();
 
     const logoutButton = page.getByRole("button", { name: "Logout" });
@@ -24,9 +22,9 @@ test.describe("Logout", () => {
     await expect(page.getByRole("link", { name: "Login" })).toBeVisible();
   });
 
-  test("logout sends X-ID-Token header", async ({ page }) => {
+  test("logout sends X-ID-Token header", async ({ page, signedIn }) => {
     await page.goto(routes.profile);
-    await setAuthToken(page);
+    await setAuthToken(page, signedIn.jwt);
     await page.reload();
 
     const signOutRequestPromise = page.waitForRequest((request) => request.url().includes("/sign_out") && request.method() === "POST");
@@ -41,9 +39,9 @@ test.describe("Logout", () => {
     expect(headers["x-id-token"]).not.toBe("");
   });
 
-  test("dispatches unidySignOut DOM event on document after logout", async ({ page }) => {
+  test("dispatches unidySignOut DOM event on document after logout", async ({ page, signedIn }) => {
     await page.goto(routes.profile);
-    await setAuthToken(page);
+    await setAuthToken(page, signedIn.jwt);
     await page.reload();
 
     await page.waitForSelector("[data-testid='logout-button'], button:has-text('Logout')", { state: "visible" });

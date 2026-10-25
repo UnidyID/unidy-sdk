@@ -151,6 +151,8 @@ jobs:
         env:
           E2E_API_URL: ${{ secrets.E2E_API_URL }}
           E2E_API_TOKEN: ${{ secrets.E2E_API_TOKEN }}
+          E2E_SDK_BASE_URL: ${{ secrets.E2E_SDK_BASE_URL }}
+          E2E_SDK_API_KEY: ${{ secrets.E2E_SDK_API_KEY }}
           PLAYWRIGHT_BROWSERS_PATH: /opt/ms-playwright
 
       - name: Upload Playwright report
