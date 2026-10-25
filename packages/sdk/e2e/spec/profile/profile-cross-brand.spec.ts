@@ -8,8 +8,8 @@ const withBrands = (brands: Record<string, Record<string, unknown>>) =>
   PROFILE_FIELDS.map((field) => (field.name in brands ? { ...field, ...brands[field.name] } : field));
 
 const brandedFields = withBrands({
-  favorite_nut: { brand: { id: 1, name: "fanclub", display_name: "Fan Club" }, cross_brand_visible: false },
-  sports_interests: { brand: { id: 2, name: "partners", display_name: "Partner Portal" }, cross_brand_visible: true },
+  favorite_nut: { brand: { name: "fanclub", display_name: "Fan Club" }, cross_brand_visible: false },
+  sports_interests: { brand: { name: "partners", display_name: "Partner Portal" }, cross_brand_visible: true },
 });
 
 // u-field rendered by u-full-profile gets `field` as a property, so fields are located by their container part

@@ -107,7 +107,7 @@ describe("ProfileService", () => {
       ...FIELD,
       name: "tier",
       custom_attribute: true,
-      brand: { id: 2, name: "partners", display_name: "Partner Portal" },
+      brand: { name: "partners", display_name: "Partner Portal" },
       cross_brand_visible: true,
     };
     const { service } = setup(respond(200, { records: [branded], meta: {} }));

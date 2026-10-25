@@ -58,7 +58,6 @@ export const ProfileFieldOptionSchema = z.object({
 
 /** The brand owning a custom attribute definition; not strict so the backend can add keys without breaking parsing. */
 export const AttributeBrandSchema = z.object({
-  id: z.number(),
   name: z.string(),
   display_name: z.string(),
 });
