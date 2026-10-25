@@ -1,18 +1,16 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
-import { readSessionStorageFromFile } from "../../lib/helpers/session-storage";
 
 test.describe("Logout → re-login (without page reload)", () => {
-  const setAuthToken = async (page: import("@playwright/test").Page) => {
-    const session = readSessionStorageFromFile();
+  const setAuthToken = async (page: import("@playwright/test").Page, jwt: string) => {
     await page.evaluate((token: string) => {
       sessionStorage.setItem("unidy_token", token);
-    }, session.unidy_token);
+    }, jwt);
   };
 
-  test("signin modal renders email step after logout without full page reload", async ({ page }) => {
+  test("signin modal renders email step after logout without full page reload", async ({ page, signedIn }) => {
     await page.goto(routes.auth);
-    await setAuthToken(page);
+    await setAuthToken(page, signedIn.jwt);
     await page.reload();
 
     // Confirm authenticated state
