@@ -15,6 +15,15 @@ const customAttribute = (attr_name: string, extra: Record<string, unknown> = {})
   ...extra,
 });
 
+const consentAttribute = (value: true | null) => ({
+  value,
+  type: "consent_checkbox",
+  label: "I have read and accepted the Terms and Conditions",
+  attr_name: "terms_accepted",
+  required: true,
+  readonly: false,
+});
+
 const profilePayload = (customAttributes: Record<string, unknown>) => ({
   salutation: { value: null, type: "radio", label: "Salutation", attr_name: "salutation", required: false, radio_options: [] },
   first_name: text("first_name", "Jane"),
@@ -60,6 +69,13 @@ describe("CustomFieldSchema", () => {
 
     expect(parsed.success).toBe(true);
   });
+
+  it.each<true | null>([true, null])("accepts a consent checkbox with value %p", (value) => {
+    const parsed = CustomFieldSchema.parse(consentAttribute(value));
+
+    expect(parsed.type).toBe("consent_checkbox");
+    expect(parsed.value).toBe(value);
+  });
 });
 
 describe("ProfileService", () => {
@@ -95,6 +111,16 @@ describe("ProfileService", () => {
 
     expect(error).toBeNull();
     expect(client.patch.mock.calls[0][0]).toBe("/api/sdk/v1/profile?include_brand=1&lang=de");
+  });
+
+  it("parses a profile containing a consent checkbox", async () => {
+    const consent = consentAttribute(true);
+    const client = makeClient(profilePayload({ terms_accepted: consent }));
+
+    const [error, data] = await new ProfileService(client, deps).get();
+
+    expect(error).toBeNull();
+    expect((data as UserProfileData).custom_attributes.terms_accepted).toEqual(consent);
   });
 
   it("omits lang when no locale is set", async () => {

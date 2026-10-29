@@ -12,6 +12,7 @@ export const FieldTypeEnum = z.enum([
   "date",
   "datetime-local",
   "checkbox",
+  "consent_checkbox",
   "tel",
 ]);
 

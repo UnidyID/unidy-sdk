@@ -4,11 +4,15 @@ import { type ProfileNode, type ProfileRaw, state as profileState } from "../../
 import { onChange as onRegistrationChange, registrationState, registrationStore } from "../../../registration/store/registration-store";
 import { UnidyComponent } from "../../base/component";
 import { type ComponentContext, detectContext, findParentProfile } from "../../context-utils";
+import { ConsentCheckbox } from "./components/ConsentCheckbox";
 import { Input } from "./components/Input";
 import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
 import { RadioGroup, type RadioOption } from "./components/RadioGroup";
 import { type Option, Select } from "./components/Select";
 import { Textarea } from "./components/Textarea";
+
+// Consent checkboxes store `true` (given) or `null` (not given), every other type stores strings
+type FieldValue = string | string[] | boolean | null;
 
 @Component({
   tag: "u-raw-field",
@@ -26,7 +30,14 @@ export class RawField extends UnidyComponent() {
   @Prop() checked?: boolean;
   @Prop() disabled?: boolean;
   @Prop() tooltip?: string;
+  /**
+   * The input type: `text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox`
+   * (multi-select) or `consent_checkbox` (a single checkbox that stores `true` when checked and `null` when unchecked).
+   * Unknown types render as `text`.
+   */
   @Prop() type!: string;
+  /** Text rendered next to the checkbox of a `consent_checkbox`; clicking it toggles the checkbox. Without it, label the checkbox yourself. */
+  @Prop() label?: string;
   @Prop() placeholder?: string;
   @Prop() options?: string | Option[];
   @Prop() emptyOption = false;
@@ -42,7 +53,7 @@ export class RawField extends UnidyComponent() {
   /** Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value. */
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
-  @State() selected?: string | string[];
+  @State() selected?: FieldValue;
   // Slotted-component workaround: store changes don't trigger re-renders via reactive tracking alone.
   @State() private renderTrigger = 0;
 
@@ -83,7 +94,7 @@ export class RawField extends UnidyComponent() {
     return detectContext(this.element);
   }
 
-  private readStore(fieldName: string): string | undefined | string[] {
+  private readStore(fieldName: string): FieldValue | undefined {
     if (!fieldName) return;
 
     switch (this.context) {
@@ -96,7 +107,7 @@ export class RawField extends UnidyComponent() {
     }
   }
 
-  private readProfileStore(fieldName: string): string | undefined | string[] {
+  private readProfileStore(fieldName: string): FieldValue | undefined {
     const data: ProfileRaw = profileState.data;
 
     if (!data) return;
@@ -127,7 +138,7 @@ export class RawField extends UnidyComponent() {
     return field.value;
   }
 
-  private readNewsletterStore(fieldName: string): string | undefined | string[] {
+  private readNewsletterStore(fieldName: string): FieldValue | undefined {
     const field = newsletterStore.state.additionalFields[fieldName];
     return field?.value;
   }
@@ -157,7 +168,7 @@ export class RawField extends UnidyComponent() {
     return value != null ? String(value) : "";
   }
 
-  private writeStore(fieldName: string, value: string | string[]) {
+  private writeStore(fieldName: string, value: FieldValue) {
     if (!fieldName) return;
 
     switch (this.context) {
@@ -173,7 +184,7 @@ export class RawField extends UnidyComponent() {
     }
   }
 
-  private writeProfileStore(fieldName: string, value: string | string[]) {
+  private writeProfileStore(fieldName: string, value: FieldValue) {
     const data: ProfileRaw = profileState.data;
     if (!data) return;
 
@@ -195,7 +206,7 @@ export class RawField extends UnidyComponent() {
     }
   }
 
-  private writeNewsletterStore(fieldName: string, value: string | string[]) {
+  private writeNewsletterStore(fieldName: string, value: FieldValue) {
     const data = newsletterStore.state.additionalFields;
     newsletterStore.state.additionalFields = {
       ...data,
@@ -203,31 +214,34 @@ export class RawField extends UnidyComponent() {
     };
   }
 
-  private writeRegistrationStore(fieldName: string, value: string | string[]) {
-    const stringValue = Array.isArray(value) ? value.join(",") : value;
+  private writeRegistrationStore(fieldName: string, value: FieldValue) {
+    // Consent values stay `true`/`null` so the server receives a boolean rather than a string
+    const storeValue = Array.isArray(value) ? value.join(",") : value;
 
-    if (fieldName === "email") {
-      registrationStore.setEmail(stringValue);
-      return;
-    }
+    if (typeof storeValue === "string") {
+      if (fieldName === "email") {
+        registrationStore.setEmail(storeValue);
+        return;
+      }
 
-    if (fieldName === "password") {
-      registrationStore.setPassword(stringValue);
-      return;
-    }
+      if (fieldName === "password") {
+        registrationStore.setPassword(storeValue);
+        return;
+      }
 
-    if (fieldName === "password_confirmation") {
-      registrationStore.setPasswordConfirmation(stringValue);
-      return;
+      if (fieldName === "password_confirmation") {
+        registrationStore.setPasswordConfirmation(storeValue);
+        return;
+      }
     }
 
     if (fieldName.startsWith("custom_attributes.")) {
       const key = fieldName.replace("custom_attributes.", "");
-      registrationStore.setCustomAttribute(key, stringValue);
+      registrationStore.setCustomAttribute(key, storeValue);
       return;
     }
 
-    registrationStore.setProfileField(fieldName, stringValue);
+    registrationStore.setProfileField(fieldName, storeValue);
   }
 
   private getErrors(): Record<string, string> {
@@ -435,6 +449,22 @@ export class RawField extends UnidyComponent() {
     this.setErrors(newErrors);
   };
 
+  private onConsentChange = (given: boolean) => {
+    this.clearFieldSavedState();
+
+    // Unlike text inputs, an invalid value is still stored: keeping `true` would submit a consent the user withdrew
+    this.writeStore(this.field, given ? true : null);
+
+    const newErrors = { ...this.getErrors() };
+    if (this.required && !given) {
+      newErrors[this.field] = "field_required";
+    } else {
+      delete newErrors[this.field];
+    }
+
+    this.setErrors(newErrors);
+  };
+
   private onEnterSubmit = () => {
     if (!this.getErrors()[this.field]) {
       this.uFieldSubmit.emit({ field: this.field });
@@ -445,7 +475,19 @@ export class RawField extends UnidyComponent() {
     if (!this.field) throw new Error('u-raw-field: "field" is required.');
     if (!this.type) throw new Error('u-raw-field: "type" is required.');
 
-    const allowed: Set<string> = new Set(["text", "email", "tel", "password", "number", "date", "radio", "textarea", "select", "checkbox"]);
+    const allowed: Set<string> = new Set([
+      "text",
+      "email",
+      "tel",
+      "password",
+      "number",
+      "date",
+      "radio",
+      "textarea",
+      "select",
+      "checkbox",
+      "consent_checkbox",
+    ]);
     if (!allowed.has(this.type)) {
       this.type = "text";
     }
@@ -577,6 +619,28 @@ export class RawField extends UnidyComponent() {
           />
         );
       }
+    }
+
+    if (this.type === "consent_checkbox") {
+      // Registration and newsletter stores may hold the string "true"
+      const given = String(this.readStore(this.field)) === "true";
+      return (
+        <ConsentCheckbox
+          id={this.field}
+          checked={given}
+          label={this.label}
+          required={this.required}
+          disabled={this.disabled}
+          invalid={!!this.getErrors()?.[this.field]}
+          title={this.tooltip}
+          componentClassName={this.componentClassName}
+          specificPartKey={this.specificPartKey}
+          onChange={this.onConsentChange}
+          onFocus={this.onFocusField}
+          onBlur={this.onBlurSelect}
+          ariaDescribedBy={this.ariaDescribedBy}
+        />
+      );
     }
 
     if (this.type === "select") {

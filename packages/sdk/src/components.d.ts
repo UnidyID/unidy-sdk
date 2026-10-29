@@ -259,7 +259,7 @@ export namespace Components {
          */
         "readonlyPlaceholder": string;
         /**
-          * If true, renders the default label above the field.
+          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes.
           * @default true
          */
         "renderDefaultLabel": boolean;
@@ -731,6 +731,10 @@ export namespace Components {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
+        /**
+          * Text rendered next to the checkbox of a `consent_checkbox`; clicking it toggles the checkbox. Without it, label the checkbox yourself.
+         */
+        "label"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
         "options"?: string | Option[];
         "pattern"?: string;
@@ -747,6 +751,9 @@ export namespace Components {
         "required": boolean;
         "specificPartKey"?: string;
         "tooltip"?: string;
+        /**
+          * The input type: `text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox` (multi-select) or `consent_checkbox` (a single checkbox that stores `true` when checked and `null` when unchecked). Unknown types render as `text`.
+         */
         "type": string;
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
@@ -2268,7 +2275,7 @@ declare namespace LocalJSX {
          */
         "readonlyPlaceholder"?: string;
         /**
-          * If true, renders the default label above the field.
+          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes.
           * @default true
          */
         "renderDefaultLabel"?: boolean;
@@ -2739,6 +2746,10 @@ declare namespace LocalJSX {
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
+        /**
+          * Text rendered next to the checkbox of a `consent_checkbox`; clicking it toggles the checkbox. Without it, label the checkbox yourself.
+         */
+        "label"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
         /**
           * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
@@ -2759,6 +2770,9 @@ declare namespace LocalJSX {
         "required"?: boolean;
         "specificPartKey"?: string;
         "tooltip"?: string;
+        /**
+          * The input type: `text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox` (multi-select) or `consent_checkbox` (a single checkbox that stores `true` when checked and `null` when unchecked). Unknown types render as `text`.
+         */
         "type": string;
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
@@ -3538,6 +3552,7 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "tooltip": string;
         "type": string;
+        "label": string;
         "placeholder": string;
         "options": string | Option[];
         "emptyOption": boolean;

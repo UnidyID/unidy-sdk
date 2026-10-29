@@ -681,10 +681,12 @@ This component renders a form for users to view and edit their profile data. It 
 
 Used within `<u-profile>` to render a field for a specific user attribute. This component automatically handles rendering the correct input type (e.g., text input, select, radio) based on the attribute's definition in Unidy.
 
+Custom attributes of type `consent_checkbox` (e.g. "I have read and accepted the Terms and Conditions") render as a single checkbox with the attribute label next to it. Checking it stores `true`, unchecking it stores `null`; a required consent must be checked. Readonly consents render as a disabled checkbox. Style it with the `consent-checkbox_field`, `consent-checkbox_label` and `consent-checkbox_text` parts.
+
 **Attributes:**
 
 -   `field` (required): The name of the user attribute (e.g., `first_name` or even `custom_attributes.my_attr`).
--   `render-default-label`: Set to `false` to display a custom label which you need to provide.
+-   `render-default-label`: Set to `false` to display a custom label which you need to provide. For consent checkboxes this hides the label next to the checkbox, so the checkbox has no accessible name unless you provide one.
 -   `required`: If set to `true`, the field will be marked as required.
 -   `readonly-placeholder`: The text to display for a readonly field that has no value.
 -   `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
@@ -1738,7 +1740,8 @@ This component is best used when you need to integrate with a design system or a
 **Attributes:**
 
 -   `field` (required): The name of the user attribute.
--   `type` (required): The input type (`text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select, checkbox`).
+-   `type` (required): The input type (`text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox`, `consent_checkbox`). `checkbox` is a multi-select group; `consent_checkbox` is a single checkbox that stores `true` when checked and `null` when unchecked.
+-   `label`: For `consent_checkbox`, the text rendered next to the checkbox (wrapping it in a `<label>`). Without it, label the checkbox yourself, e.g. with `<label for="custom_attributes.terms_accepted">`.
 -   `required`: If set to `true`, the field will be marked as required.
 -   `readonly-placeholder`: The text to display for a readonly field that has no value.
 -   `country-code-display-option`: How to display country codes in a select field. Can be `icon` or `label`. Defaults to `label`.
@@ -2545,8 +2548,16 @@ The `field` attribute maps to the registration profile data field name. Standard
   <u-raw-field field="custom_attributes.favorite_color" type="select"
     options='[{"value":"red","label":"Red"},{"value":"blue","label":"Blue"}]'
     class-name="..."></u-raw-field>
+
+  <!-- Consent checkbox custom attribute: sends true when checked, null when unchecked -->
+  <u-raw-field field="custom_attributes.terms_accepted" type="consent_checkbox" required
+    label="I have read and accepted the Terms and Conditions"
+    aria-described-by="terms-accepted-error" class-name="..."></u-raw-field>
+  <u-error-message id="terms-accepted-error" for="custom_attributes.terms_accepted" class-name="..."></u-error-message>
 </u-registration-step>
 ```
+
+For a `consent_checkbox`, `aria-described-by` links the checkbox to the `<u-error-message>` with the matching `id`, so screen readers announce the error. The server treats an unchecked (`null`) required consent as missing.
 
 **Password step:**
 
