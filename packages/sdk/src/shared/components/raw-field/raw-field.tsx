@@ -10,6 +10,7 @@ import { MultiSelect, type MultiSelectOption } from "./components/MultiSelect";
 import { RadioGroup, type RadioOption } from "./components/RadioGroup";
 import { type Option, Select } from "./components/Select";
 import { Textarea } from "./components/Textarea";
+import { isConsentGiven } from "./field-helpers";
 
 // Consent checkboxes store `true` (given) or `null` (not given), every other type stores strings
 type FieldValue = string | string[] | boolean | null;
@@ -38,6 +39,8 @@ export class RawField extends UnidyComponent() {
   @Prop() type!: string;
   /** Text rendered next to the checkbox of a `consent_checkbox`; clicking it toggles the checkbox. Without it, label the checkbox yourself. */
   @Prop() label?: string;
+  /** Hides the `label` of a `consent_checkbox` and uses it as the checkbox's accessible name (`aria-label`) instead. */
+  @Prop() hideLabel = false;
   @Prop() placeholder?: string;
   @Prop() options?: string | Option[];
   @Prop() emptyOption = false;
@@ -48,9 +51,13 @@ export class RawField extends UnidyComponent() {
   @Prop() ariaDescribedBy = "";
   @Prop() pattern?: string;
   @Prop() patternErrorMessage?: string;
+  /** Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
-  /** Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value. */
+  /**
+   * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
+   * In a profile it is also emitted when a consent checkbox changes to a valid value, so autosave stores it right away.
+   */
   @Event({ bubbles: true, composed: true }) uFieldSubmit!: EventEmitter<{ field: string }>;
 
   @State() selected?: FieldValue;
@@ -294,7 +301,7 @@ export class RawField extends UnidyComponent() {
     }
   }
 
-  private validateValue(value: string | string[]): { valid: boolean; message: string } {
+  private validateValue(value: FieldValue): { valid: boolean; message: string } {
     // TODO: We should validate this when the component is loading.
     if (this.required) {
       const empty = value === undefined || value === null || value === "";
@@ -314,7 +321,8 @@ export class RawField extends UnidyComponent() {
       }
     }
 
-    const externalResult = this.runExternalValidator(value);
+    // validationFunc takes strings, so consent values (`true`/`null`) skip it
+    const externalResult = typeof value === "boolean" || value === null ? undefined : this.runExternalValidator(value);
 
     if (externalResult && !externalResult.valid) {
       return { valid: false, message: externalResult.message || "invalid_input" };
@@ -450,19 +458,28 @@ export class RawField extends UnidyComponent() {
   };
 
   private onConsentChange = (given: boolean) => {
+    const value = given ? true : null;
+    this.selected = value;
     this.clearFieldSavedState();
 
     // Unlike text inputs, an invalid value is still stored: keeping `true` would submit a consent the user withdrew
-    this.writeStore(this.field, given ? true : null);
+    this.writeStore(this.field, value);
 
+    const result = this.validateValue(value);
     const newErrors = { ...this.getErrors() };
-    if (this.required && !given) {
-      newErrors[this.field] = "field_required";
-    } else {
+
+    if (result.valid) {
       delete newErrors[this.field];
+    } else {
+      newErrors[this.field] = result.message;
     }
 
     this.setErrors(newErrors);
+
+    // Profile autosave without a save-delay saves when the field loses focus, but Safari doesn't focus a clicked checkbox
+    if (result.valid && this.context !== "registration" && this.context !== "newsletter") {
+      this.uFieldSubmit.emit({ field: this.field });
+    }
   };
 
   private onEnterSubmit = () => {
@@ -622,13 +639,12 @@ export class RawField extends UnidyComponent() {
     }
 
     if (this.type === "consent_checkbox") {
-      // Registration and newsletter stores may hold the string "true"
-      const given = String(this.readStore(this.field)) === "true";
       return (
         <ConsentCheckbox
           id={this.field}
-          checked={given}
+          checked={isConsentGiven(this.readStore(this.field))}
           label={this.label}
+          hideLabel={this.hideLabel}
           required={this.required}
           disabled={this.disabled}
           invalid={!!this.getErrors()?.[this.field]}

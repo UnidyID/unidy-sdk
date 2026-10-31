@@ -259,7 +259,7 @@ export namespace Components {
          */
         "readonlyPlaceholder": string;
         /**
-          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes.
+          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes. If false, a consent checkbox keeps the label as its accessible name (`aria-label`).
           * @default true
          */
         "renderDefaultLabel": boolean;
@@ -269,7 +269,7 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * Custom validation function. Returns { valid: boolean, message?: string }.
+          * Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes.
          */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
@@ -728,6 +728,11 @@ export namespace Components {
         "emptyOption": boolean;
         "field": string;
         /**
+          * Hides the `label` of a `consent_checkbox` and uses it as the checkbox's accessible name (`aria-label`) instead.
+          * @default false
+         */
+        "hideLabel": boolean;
+        /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage": string;
@@ -755,6 +760,9 @@ export namespace Components {
           * The input type: `text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox` (multi-select) or `consent_checkbox` (a single checkbox that stores `true` when checked and `null` when unchecked). Unknown types render as `text`.
          */
         "type": string;
+        /**
+          * Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes.
+         */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
@@ -2275,7 +2283,7 @@ declare namespace LocalJSX {
          */
         "readonlyPlaceholder"?: string;
         /**
-          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes.
+          * If true, renders the default label above the field, or next to the checkbox for consent checkboxes. If false, a consent checkbox keeps the label as its accessible name (`aria-label`).
           * @default true
          */
         "renderDefaultLabel"?: boolean;
@@ -2285,7 +2293,7 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * Custom validation function. Returns { valid: boolean, message?: string }.
+          * Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes.
          */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
     }
@@ -2743,6 +2751,11 @@ declare namespace LocalJSX {
         "emptyOption"?: boolean;
         "field": string;
         /**
+          * Hides the `label` of a `consent_checkbox` and uses it as the checkbox's accessible name (`aria-label`) instead.
+          * @default false
+         */
+        "hideLabel"?: boolean;
+        /**
           * @default "Please enter a valid phone number."
          */
         "invalidPhoneMessage"?: string;
@@ -2752,7 +2765,7 @@ declare namespace LocalJSX {
         "label"?: string;
         "multiSelectOptions"?: MultiSelectOption[];
         /**
-          * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value.
+          * Emitted when the user presses Enter (or Cmd/Ctrl+Enter in textareas) to submit the field value. In a profile it is also emitted when a consent checkbox changes to a valid value, so autosave stores it right away.
          */
         "onUFieldSubmit"?: (event: URawFieldCustomEvent<{ field: string }>) => void;
         "options"?: string | Option[];
@@ -2774,6 +2787,9 @@ declare namespace LocalJSX {
           * The input type: `text`, `email`, `tel`, `password`, `number`, `date`, `radio`, `textarea`, `select`, `checkbox` (multi-select) or `consent_checkbox` (a single checkbox that stores `true` when checked and `null` when unchecked). Unknown types render as `text`.
          */
         "type": string;
+        /**
+          * Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes.
+         */
         "validationFunc"?: (value: string | string[]) => { valid: boolean; message?: string };
         "value"?: string | string[];
     }
@@ -3553,6 +3569,7 @@ declare namespace LocalJSX {
         "tooltip": string;
         "type": string;
         "label": string;
+        "hideLabel": boolean;
         "placeholder": string;
         "options": string | Option[];
         "emptyOption": boolean;

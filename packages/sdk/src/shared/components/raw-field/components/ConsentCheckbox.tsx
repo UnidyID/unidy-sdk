@@ -4,6 +4,7 @@ type ConsentCheckboxProps = {
   id: string;
   checked: boolean;
   label?: string;
+  hideLabel?: boolean;
   required?: boolean;
   disabled?: boolean;
   invalid?: boolean;
@@ -32,11 +33,12 @@ export const ConsentCheckbox: FunctionalComponent<ConsentCheckboxProps> = (props
       onBlur={() => props.onBlur?.()}
       aria-invalid={props.invalid ? "true" : undefined}
       aria-describedby={props.ariaDescribedBy || undefined}
+      aria-label={props.label && props.hideLabel ? props.label : undefined}
     />
   );
 
   // Without a label the integrator provides one, e.g. <label for="custom_attributes.terms">
-  if (!props.label) return input;
+  if (!props.label || props.hideLabel) return input;
 
   // Wrapping the input labels it without relying on the id, which can be shared with the u-raw-field host inside u-field
   return (

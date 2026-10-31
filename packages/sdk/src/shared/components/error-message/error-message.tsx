@@ -7,6 +7,7 @@ import { UnidyComponent } from "../../base/component";
 import { HasSlotContent } from "../../base/has-slot-content";
 import { type ComponentContext, detectContext } from "../../context-utils";
 import { unidyState } from "../../store/unidy-store";
+import { CLIENT_VALIDATION_ERROR_CODES, fieldErrorMessage } from "../raw-field/field-helpers";
 
 export type AuthErrorType = "email" | "password" | "magicCode" | "resetPassword" | "general" | "connection" | "passkey" | "captcha";
 
@@ -97,6 +98,11 @@ export class ErrorMessage extends UnidyComponent(HasSlotContent) {
     const generic = t(genericKey);
     if (generic !== genericKey) {
       return generic;
+    }
+
+    // Codes from u-raw-field's own validation, such as "field_required"
+    if (CLIENT_VALIDATION_ERROR_CODES.has(errorIdentifier)) {
+      return fieldErrorMessage(errorIdentifier);
     }
 
     return t("errors.unknown", { defaultValue: "An unknown error occurred" });

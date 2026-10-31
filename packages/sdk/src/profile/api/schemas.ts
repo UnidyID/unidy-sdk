@@ -95,7 +95,8 @@ export const AttributeBrandSchema = z.object({
 // Custom field schema
 export const CustomFieldSchema = BaseFieldDataSchema.extend({
   value: z.union([z.string(), z.boolean(), z.number(), z.array(z.string())]).nullable(),
-  type: FieldTypeEnum,
+  // Types added to the backend later must not fail the whole profile; u-raw-field renders unknown types as text
+  type: FieldTypeEnum.or(z.string()),
   readonly: z.boolean(),
   radio_options: z.array(RadioOptionSchema).optional(),
   options: z.array(SelectOptionSchema).optional(),

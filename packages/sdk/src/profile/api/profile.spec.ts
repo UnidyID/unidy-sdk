@@ -76,6 +76,12 @@ describe("CustomFieldSchema", () => {
     expect(parsed.type).toBe("consent_checkbox");
     expect(parsed.value).toBe(value);
   });
+
+  it("accepts attribute types added by newer backends", () => {
+    const parsed = CustomFieldSchema.safeParse(customAttribute("favorite_nut", { type: "star_rating", value: "4" }));
+
+    expect(parsed.success).toBe(true);
+  });
 });
 
 describe("ProfileService", () => {
