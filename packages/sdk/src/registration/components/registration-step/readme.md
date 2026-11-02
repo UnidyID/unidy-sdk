@@ -56,6 +56,7 @@ Type: `Promise<void>`
 | ---- | ---------------- |
 |      | The default slot |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

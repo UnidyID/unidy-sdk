@@ -1,5 +1,7 @@
 # u-newsletter-preference-checkbox
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -39,6 +41,9 @@ Public method to toggle the checkbox programmatically
 
 Type: `Promise<void>`
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

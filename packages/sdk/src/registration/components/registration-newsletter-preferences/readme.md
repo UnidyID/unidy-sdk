@@ -1,5 +1,7 @@
 # u-registration-newsletter-preferences
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -12,6 +14,7 @@
 | `name` _(required)_       | `name`       | The internal name of the parent newsletter.     | `string`  | `undefined` |
 | `preference` _(required)_ | `preference` | The preference key (e.g. "football", "tennis"). | `string`  | `undefined` |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

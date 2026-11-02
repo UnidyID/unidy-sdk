@@ -1,5 +1,7 @@
 # u-registration-email-verification
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -11,6 +13,7 @@
 | `componentClassName` | `class-name`       | CSS classes to apply to the fieldset container.                                    | `string`  | `undefined` |
 | `inputClassName`     | `input-class-name` | CSS classes to apply to each individual digit input.                               | `string`  | `undefined` |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

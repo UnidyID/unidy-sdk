@@ -1,5 +1,7 @@
 # u-submit-button
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -17,14 +19,13 @@
 
 ### Used by
 
-- [u-full-profile](../../../profile/components/full-profile)
+ - [u-full-profile](../../../profile/components/full-profile)
 
 ### Depends on
 
 - [u-spinner](../spinner)
 
 ### Graph
-
 ```mermaid
 graph TD;
   u-submit-button --> u-spinner
@@ -32,6 +33,6 @@ graph TD;
   style u-submit-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

@@ -1,5 +1,7 @@
 # u-jump-to-unidy
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -20,13 +22,12 @@
 - [u-spinner](../../../shared/components/spinner)
 
 ### Graph
-
 ```mermaid
 graph TD;
   u-jump-to-unidy --> u-spinner
   style u-jump-to-unidy fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

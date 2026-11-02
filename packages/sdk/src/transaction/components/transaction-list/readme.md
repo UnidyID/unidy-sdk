@@ -1,5 +1,7 @@
 # u-transaction-list
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -34,6 +36,7 @@
 | `"empty"`      |                  |
 | `"pagination"` |                  |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

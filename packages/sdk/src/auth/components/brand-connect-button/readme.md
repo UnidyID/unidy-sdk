@@ -1,5 +1,7 @@
 # u-brand-connect-button
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -18,13 +20,12 @@
 - [u-spinner](../../../shared/components/spinner)
 
 ### Graph
-
 ```mermaid
 graph TD;
   u-brand-connect-button --> u-spinner
   style u-brand-connect-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

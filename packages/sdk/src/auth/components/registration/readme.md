@@ -1,5 +1,7 @@
 # u-registration-button
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -18,6 +20,7 @@
 | ------------------------ | ----------- |
 | `"registration-content"` |             |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

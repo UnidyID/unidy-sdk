@@ -1,5 +1,7 @@
 # u-oauth-logo
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -11,6 +13,7 @@
 | `height`             | `height`     | Height of the logo image in pixels.             | `string` | `"64"`  |
 | `width`              | `width`      | Width of the logo image in pixels.              | `string` | `"64"`  |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

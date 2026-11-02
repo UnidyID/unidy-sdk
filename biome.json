@@ -12,6 +12,7 @@
       "!**/components.d.ts",
       "!**/dist/**/*",
       "!**/hydrate/**/*",
+      "!**/readme.md",
       "!**/loader/**/*",
       "!**/www/**/*",
       "!**/playwright-report/**/*",

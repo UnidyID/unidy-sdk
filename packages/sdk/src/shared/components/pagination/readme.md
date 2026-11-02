@@ -1,5 +1,7 @@
 # u-pagination-page
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -9,6 +11,7 @@
 | -------------------- | ------------ | ----------------------------------------- | -------- | ----------- |
 | `componentClassName` | `class-name` | CSS classes to apply to the span element. | `string` | `undefined` |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

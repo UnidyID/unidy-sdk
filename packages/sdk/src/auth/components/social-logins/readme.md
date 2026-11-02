@@ -2,8 +2,8 @@
 
 ## Slots
 
-| Slot   | Description                                                                                                          |
-| ------ | -------------------------------------------------------------------------------------------------------------------- |
+| Slot   | Description                                                                                        |
+| ------ | -------------------------------------------------------------------------------------------------- |
 | `icon` | Override the default provider icon. Falls back to built-in logos for Google, LinkedIn, Apple, Discord, and Facebook. |
 
 ### Custom icon example
@@ -42,6 +42,7 @@
 | `"social-login-button-content"` |             |
 | `"social-login-button-text"`    |             |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

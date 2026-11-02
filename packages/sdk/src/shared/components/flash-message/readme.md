@@ -1,5 +1,7 @@
 # u-flash-message
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -10,6 +12,7 @@
 | `componentClassName` | `class-name`           |             | `string` | `""`    |
 | `removeAfterSeconds` | `remove-after-seconds` |             | `number` | `null`  |
 
----
 
-_Built with [StencilJS](https://stenciljs.com/)_
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

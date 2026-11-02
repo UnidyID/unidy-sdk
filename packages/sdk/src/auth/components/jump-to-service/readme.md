@@ -1,5 +1,7 @@
 # u-jump-to-service
 
+
+
 <!-- Auto Generated Below -->
 
 
@@ -22,13 +24,12 @@
 - [u-spinner](../../../shared/components/spinner)
 
 ### Graph
-
 ```mermaid
 graph TD;
   u-jump-to-service --> u-spinner
   style u-jump-to-service fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*
