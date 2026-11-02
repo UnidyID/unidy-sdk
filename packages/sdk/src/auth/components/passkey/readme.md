@@ -2,8 +2,8 @@
 
 ## Slots
 
-| Slot   | Description                                                                 |
-| ------ | --------------------------------------------------------------------------- |
+| Slot   | Description                                                                  |
+| ------ | ---------------------------------------------------------------------------- |
 | `icon` | Override the default passkey icon. Falls back to a built-in fingerprint SVG. |
 
 ### Custom icon example
@@ -33,7 +33,6 @@
 | -------- | ----------- |
 | `"icon"` |             |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

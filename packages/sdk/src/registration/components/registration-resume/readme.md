@@ -6,11 +6,11 @@ The component is hidden when there is no conflicting registration flow (`emailAl
 
 ## Slots
 
-| Slot        | Description                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------------- |
-| (default)   | Content for the initial "send resume link" button.                                                      |
-| `success`   | Message shown after the resume link has been sent (e.g. "Check your email").                            |
-| `resend`    | Content for the resend button, shown alongside the success message after the initial send.              |
+| Slot      | Description                                                                                |
+| --------- | ------------------------------------------------------------------------------------------ |
+| (default) | Content for the initial "send resume link" button.                                         |
+| `success` | Message shown after the resume link has been sent (e.g. "Check your email").               |
+| `resend`  | Content for the resend button, shown alongside the success message after the initial send. |
 
 The resend button exposes a `data-countdown` attribute with the remaining seconds while the cooldown is active, which can be used for styling or displaying the timer.
 
@@ -56,15 +56,16 @@ The resend button exposes a `data-countdown` attribute with the remaining second
 
 ### Used by
 
- - [u-registration-root](../registration-root)
+- [u-registration-root](../registration-root)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-registration-root --> u-registration-resume
   style u-registration-resume fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

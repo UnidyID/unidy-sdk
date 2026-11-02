@@ -1,7 +1,5 @@
 # u-signin-step
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -17,8 +15,6 @@
 
 ### `isActive() => Promise<boolean>`
 
-
-
 #### Returns
 
 Type: `Promise<boolean>`
@@ -26,8 +22,6 @@ Type: `Promise<boolean>`
 
 
 ### `submit() => Promise<void>`
-
-
 
 #### Returns
 
@@ -42,7 +36,6 @@ Type: `Promise<void>`
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

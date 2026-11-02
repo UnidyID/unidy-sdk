@@ -1,7 +1,5 @@
 # u-captcha-field
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -27,7 +25,6 @@ The component automatically:
 | `componentClassName` | `class-name` | Custom CSS class for the container                                  | `string`                                    | `""`                      |
 | `feature`            | `feature`    | The feature this captcha protects (login, registration, newsletter) | `"login" \| "newsletter" \| "registration"` | `"login"`                 |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

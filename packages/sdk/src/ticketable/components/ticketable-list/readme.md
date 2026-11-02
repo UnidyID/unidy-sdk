@@ -84,7 +84,6 @@ Dynamically sets HTML attributes from ticket/subscription data.
 | `"empty"`      |                  |
 | `"pagination"` |                  |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

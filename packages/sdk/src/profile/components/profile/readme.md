@@ -1,7 +1,5 @@
 # u-profile
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -47,8 +45,6 @@ Type: `Promise<void>`
 
 ### `submitProfile() => Promise<void>`
 
-
-
 #### Returns
 
 Type: `Promise<void>`
@@ -84,15 +80,16 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [u-full-profile](../full-profile)
+- [u-full-profile](../full-profile)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-full-profile --> u-profile
   style u-profile fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

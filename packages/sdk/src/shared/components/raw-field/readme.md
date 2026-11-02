@@ -1,7 +1,5 @@
 # u-raw-field
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -44,15 +42,16 @@
 
 ### Used by
 
- - [u-field](../../../profile/components/field)
+- [u-field](../../../profile/components/field)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-field --> u-raw-field
   style u-raw-field fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

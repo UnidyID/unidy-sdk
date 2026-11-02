@@ -1,7 +1,5 @@
 # u-newsletter-logout-button
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -25,7 +23,6 @@
 | ---------- | ----------- |
 | `"button"` |             |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

@@ -1,7 +1,5 @@
 # u-magic-code-field
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -18,7 +16,6 @@
 | --------------- | ----------- |
 | `"digit-input"` |             |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

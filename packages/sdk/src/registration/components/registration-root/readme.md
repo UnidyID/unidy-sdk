@@ -189,12 +189,13 @@ Type: `Promise<boolean>`
 - [u-registration-resume](../registration-resume)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-registration-root --> u-registration-resume
   style u-registration-root fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

@@ -1,7 +1,5 @@
 # u-ticket-transfer-action
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -38,7 +36,6 @@ attribute automatically and refetches when the action succeeds.
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

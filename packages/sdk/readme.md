@@ -87,11 +87,11 @@ Then, you can import the necessary parts into your application:
 
 ```javascript
 // 1. Import and define the web components
-import { defineCustomElements } from '@unidy.io/sdk/loader';
+import { defineCustomElements } from "@unidy.io/sdk/loader";
 defineCustomElements();
 
 // 2. Import the Auth helper class
-import { Auth } from '@unidy.io/sdk/auth';
+import { Auth } from "@unidy.io/sdk/auth";
 
 // Now you can use the components in your HTML and the Auth class in your scripts.
 ```
@@ -694,10 +694,10 @@ Used within `<u-profile>` to render a field for a specific user attribute. This 
 -   `placeholder`: The placeholder text for the input field.
 -   `pattern`: A custom regular expression (string) used to validate the field value.
 -   `patternErrorMessage`: A custom message shown when the `pattern` validation fails.
--   `validationFunc`:   A custom validation function that you assign **as a JavaScript property** on the element instance (not as an HTML attribute).
-  This allows you to implement field-specific validation logic (e.g. age checks, cross-field validation, external business rules).
-  The function must return `{ valid: boolean, message: string }`.
-  If it throws an error, the component logs it but does not block the user.
+-   `validationFunc`: A custom validation function that you assign **as a JavaScript property** on the element instance (not as an HTML attribute).
+    This allows you to implement field-specific validation logic (e.g. age checks, cross-field validation, external business rules).
+    The function must return `{ valid: boolean, message: string }`.
+    If it throws an error, the component logs it but does not block the user.
 
 **Example: Custom validation**
 
@@ -1050,10 +1050,10 @@ Renders a button to export a ticket or subscription to a file format (e.g., PDF 
 
 Ticket transfers let a ticket owner send a ticket to another person by email. The recipient accepts or declines the offer, and the owner can cancel a pending offer or revoke the ticket after it was accepted. The recipient (holder) can return it to the owner.
 
-| Component | Purpose |
-|---|---|
-| `<u-ticket-transfer-form>` | Form to send a transfer offer to an email address |
-| `<u-ticket-transfer-list>` | Lists pending incoming or outgoing transfer offers |
+| Component                    | Purpose                                                         |
+| ---------------------------- | --------------------------------------------------------------- |
+| `<u-ticket-transfer-form>`   | Form to send a transfer offer to an email address               |
+| `<u-ticket-transfer-list>`   | Lists pending incoming or outgoing transfer offers              |
 | `<u-ticket-transfer-action>` | Button for `accept`, `decline`, `cancel`, `revoke` and `return` |
 
 All components require a signed-in user and `<u-config>`. If the backend has ticket transfers disabled, requests fail with `feature_disabled`.
@@ -1144,13 +1144,13 @@ The list refetches automatically after a successful `<u-ticket-transfer-action>`
 
 A button that performs one transfer action.
 
-| `action` | Where | Needs | Who |
-|---|---|---|---|
-| `accept` | `<u-ticket-transfer-list direction="incoming">` template | `token` | Recipient |
-| `decline` | `<u-ticket-transfer-list direction="incoming">` template | `token` | Recipient |
-| `cancel` | `<u-ticket-transfer-list direction="outgoing">` template | `token` | Sender |
-| `revoke` | `<u-ticketable-list ticketable-type="ticket">` template | `ticket-id` | Owner, after the transfer was accepted |
-| `return` | `<u-ticketable-list ticketable-type="ticket">` template | `ticket-id` | Holder |
+| `action`  | Where                                                    | Needs       | Who                                    |
+| --------- | -------------------------------------------------------- | ----------- | -------------------------------------- |
+| `accept`  | `<u-ticket-transfer-list direction="incoming">` template | `token`     | Recipient                              |
+| `decline` | `<u-ticket-transfer-list direction="incoming">` template | `token`     | Recipient                              |
+| `cancel`  | `<u-ticket-transfer-list direction="outgoing">` template | `token`     | Sender                                 |
+| `revoke`  | `<u-ticketable-list ticketable-type="ticket">` template  | `ticket-id` | Owner, after the transfer was accepted |
+| `return`  | `<u-ticketable-list ticketable-type="ticket">` template  | `ticket-id` | Holder                                 |
 
 `token` is set automatically inside a `<u-ticket-transfer-list>` template and `ticket-id` inside a `<u-ticketable-list>` template. Both can also be set manually for standalone use.
 
@@ -1301,7 +1301,7 @@ The `UnidyClient` class provides access to all SDK services. Use `getUnidyClient
 Returns a singleton instance of the `UnidyClient`. This function requires `<u-config>` to be initialized first.
 
 ```javascript
-import { getUnidyClient } from '@unidy.io/sdk';
+import { getUnidyClient } from "@unidy.io/sdk";
 
 const client = getUnidyClient();
 const [error, profile] = await client.profile.get();
@@ -1309,13 +1309,13 @@ const [error, profile] = await client.profile.get();
 
 #### `UnidyClient` Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `auth` | `AuthService` | Authentication service for sign-in flows |
-| `profile` | `ProfileService` | User profile management |
-| `newsletters` | `NewsletterService` | Newsletter subscription management |
-| `tickets` | `TicketsService` | Ticket management |
-| `subscriptions` | `SubscriptionsService` | Subscription management |
+| Property        | Type                   | Description                              |
+| --------------- | ---------------------- | ---------------------------------------- |
+| `auth`          | `AuthService`          | Authentication service for sign-in flows |
+| `profile`       | `ProfileService`       | User profile management                  |
+| `newsletters`   | `NewsletterService`    | Newsletter subscription management       |
+| `tickets`       | `TicketsService`       | Ticket management                        |
+| `subscriptions` | `SubscriptionsService` | Subscription management                  |
 
 ### ProfileService
 
@@ -1338,7 +1338,7 @@ Updates the current user's profile. Returns the updated profile data.
 
 ```javascript
 const [error, updatedProfile] = await getUnidyClient().profile.update({
-  payload: { first_name: 'John', last_name: 'Doe' }
+  payload: { first_name: "John", last_name: "Doe" },
 });
 ```
 
@@ -1352,7 +1352,7 @@ Creates newsletter subscriptions for a user.
 
 ```javascript
 const [error, result] = await getUnidyClient().newsletters.create({
-  payload: { email: 'user@example.com', newsletters: ['weekly-digest'] }
+  payload: { email: "user@example.com", newsletters: ["weekly-digest"] },
 });
 ```
 
@@ -1434,34 +1434,34 @@ if (error === "transfer_already_pending") {
 
 #### `TicketTransfer`
 
-| Name | Type | Description |
-|---|---|---|
-| `token` | `string` | The transfer token used by `accept`, `decline` and `cancel`. |
-| `status` | `"pending" \| "accepted" \| "canceled" \| "declined" \| "expired"` | The status of the transfer. |
-| `sender_email` | `string` | The email of the ticket owner who sent the offer. |
-| `recipient_email` | `string` | The email the offer was sent to. |
-| `expires_at` | `Date` | When the offer expires. |
-| `created_at` | `Date` | When the offer was created. |
-| `ticket` | `Ticket` | The ticket being transferred. |
+| Name              | Type                                                               | Description                                                  |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
+| `token`           | `string`                                                           | The transfer token used by `accept`, `decline` and `cancel`. |
+| `status`          | `"pending" \| "accepted" \| "canceled" \| "declined" \| "expired"` | The status of the transfer.                                  |
+| `sender_email`    | `string`                                                           | The email of the ticket owner who sent the offer.            |
+| `recipient_email` | `string`                                                           | The email the offer was sent to.                             |
+| `expires_at`      | `Date`                                                             | When the offer expires.                                      |
+| `created_at`      | `Date`                                                             | When the offer was created.                                  |
+| `ticket`          | `Ticket`                                                           | The ticket being transferred.                                |
 
 ### Flash Messages
 
 The `Flash` class provides a simple API for displaying temporary messages to users. Messages are automatically displayed by the `<u-flash-message>` component.
 
 ```javascript
-import { Flash } from '@unidy.io/sdk';
+import { Flash } from "@unidy.io/sdk";
 
 // Add messages
-Flash.success.addMessage('Profile saved successfully!');
-Flash.error.addMessage('Something went wrong.');
-Flash.info.addMessage('Please check your email.');
+Flash.success.addMessage("Profile saved successfully!");
+Flash.error.addMessage("Something went wrong.");
+Flash.info.addMessage("Please check your email.");
 
 // Remove a specific message by ID
-const id = Flash.success.addMessage('Saved!');
+const id = Flash.success.addMessage("Saved!");
 Flash.remove(id);
 
 // Clear all messages of a specific type
-Flash.clear('error');
+Flash.clear("error");
 
 // Clear all messages
 Flash.clear();
@@ -1474,15 +1474,15 @@ The SDK exposes reactive state stores for advanced use cases. These allow you to
 #### Auth State
 
 ```javascript
-import { authState, authStore, onAuthChange } from '@unidy.io/sdk';
+import { authState, authStore, onAuthChange } from "@unidy.io/sdk";
 
 // Read current state
 console.log(authState.authenticated);
 console.log(authState.email);
 
 // Subscribe to changes
-const unsubscribe = onAuthChange('authenticated', (isAuthenticated) => {
-  console.log('Auth state changed:', isAuthenticated);
+const unsubscribe = onAuthChange("authenticated", (isAuthenticated) => {
+  console.log("Auth state changed:", isAuthenticated);
 });
 
 // Available state properties:
@@ -1496,15 +1496,15 @@ const unsubscribe = onAuthChange('authenticated', (isAuthenticated) => {
 #### Profile State
 
 ```javascript
-import { profileState, profileStore, onProfileChange } from '@unidy.io/sdk';
+import { profileState, profileStore, onProfileChange } from "@unidy.io/sdk";
 
 // Read current state
 console.log(profileState.data);
 console.log(profileState.loading);
 
 // Subscribe to changes
-const unsubscribe = onProfileChange('data', (profileData) => {
-  console.log('Profile updated:', profileData);
+const unsubscribe = onProfileChange("data", (profileData) => {
+  console.log("Profile updated:", profileData);
 });
 ```
 
@@ -1513,17 +1513,17 @@ const unsubscribe = onProfileChange('data', (profileData) => {
 For use outside of browser environments (e.g., Node.js, serverless functions), use the standalone client which has no browser-specific dependencies.
 
 ```javascript
-import { createStandaloneClient } from '@unidy.io/sdk/standalone';
+import { createStandaloneClient } from "@unidy.io/sdk/standalone";
 
 const client = createStandaloneClient({
-  baseUrl: 'https://your-unidy-instance.com',
-  apiKey: 'your-api-key',
+  baseUrl: "https://your-unidy-instance.com",
+  apiKey: "your-api-key",
   // Optional: inject custom dependencies
   deps: {
     logger: console,
     errorReporter: { captureException: (e) => console.error(e) },
-    getIdToken: async () => 'user-jwt-token', // For authenticated requests
-    getLocale: () => 'en',
+    getIdToken: async () => "user-jwt-token", // For authenticated requests
+    getLocale: () => "en",
   },
 });
 
@@ -1545,89 +1545,89 @@ An error object returned on failed authentication operations. It includes a `cod
 
 An object representing a user's profile. Each field in the profile is an object with a `value` property and additional metadata.
 
-| Name | Type | Description |
-|---|---|---|
-| `salutation` | `object` | The user's salutation (e.g., Mr., Ms.). |
-| `first_name` | `object` | The user's first name. |
-| `last_name` | `object` | The user's last name. |
-| `email` | `object` | The user's email address. |
-| `phone_number` | `object` | The user's phone number. |
-| `company_name` | `object` | The user's company name. |
-| `address_line_1` | `object` | The first line of the user's address. |
-| `address_line_2` | `object` | The second line of the user's address. |
-| `city` | `object` | The city of the user's address. |
-| `postal_code` | `object` | The postal code of the user's address. |
-| `country_code` | `object` | The country code of the user's address. |
-| `date_of_birth` | `object` | The user's date of birth. |
-| `preferred_language` | `object` | The user's preferred language. |
-| `custom_attributes` | `Record<string, object>` | A record of custom attributes. |
+| Name                 | Type                     | Description                             |
+| -------------------- | ------------------------ | --------------------------------------- |
+| `salutation`         | `object`                 | The user's salutation (e.g., Mr., Ms.). |
+| `first_name`         | `object`                 | The user's first name.                  |
+| `last_name`          | `object`                 | The user's last name.                   |
+| `email`              | `object`                 | The user's email address.               |
+| `phone_number`       | `object`                 | The user's phone number.                |
+| `company_name`       | `object`                 | The user's company name.                |
+| `address_line_1`     | `object`                 | The first line of the user's address.   |
+| `address_line_2`     | `object`                 | The second line of the user's address.  |
+| `city`               | `object`                 | The city of the user's address.         |
+| `postal_code`        | `object`                 | The postal code of the user's address.  |
+| `country_code`       | `object`                 | The country code of the user's address. |
+| `date_of_birth`      | `object`                 | The user's date of birth.               |
+| `preferred_language` | `object`                 | The user's preferred language.          |
+| `custom_attributes`  | `Record<string, object>` | A record of custom attributes.          |
 
 #### `NewsletterSubscription`
 
 An object representing a newsletter subscription.
 
-| Name | Type | Description |
-|---|---|---|
-| `id` | `number` | The unique identifier of the subscription. |
-| `email` | `string` | The email address of the subscriber. |
-| `newsletter_internal_name` | `string` | The internal name of the newsletter. |
-| `preference_identifiers` | `string[]` | A list of preference identifiers. |
-| `preference_token` | `string` | A token for managing preferences. |
-| `confirmed_at` | `string \| null` | The date the subscription was confirmed. |
+| Name                       | Type             | Description                                |
+| -------------------------- | ---------------- | ------------------------------------------ |
+| `id`                       | `number`         | The unique identifier of the subscription. |
+| `email`                    | `string`         | The email address of the subscriber.       |
+| `newsletter_internal_name` | `string`         | The internal name of the newsletter.       |
+| `preference_identifiers`   | `string[]`       | A list of preference identifiers.          |
+| `preference_token`         | `string`         | A token for managing preferences.          |
+| `confirmed_at`             | `string \| null` | The date the subscription was confirmed.   |
 
 #### `Subscription`
 
 An object representing a subscription.
 
-| Name | Type | Description |
-|---|---|---|
-| `id` | `string` | The unique identifier of the subscription. |
-| `title` | `string` | The title of the subscription. |
-| `text` | `string` | The description of the subscription. |
-| `payment_frequency` | `string \| null` | The payment frequency of the subscription. |
-| `metadata` | `Record<string, unknown> \| null` | Additional metadata for the subscription. |
-| `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the subscription to a wallet. |
-| `state` | `string` | The state of the subscription. |
-| `reference` | `string` | A reference for the subscription. |
-| `payment_state` | `string \| null` | The payment state of the subscription. |
-| `currency` | `string \| null` | The currency of the subscription price. |
-| `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
-| `created_at` | `Date` | The creation date of the subscription. |
-| `updated_at` | `Date` | The last update date of the subscription. |
-| `starts_at` | `Date \| null` | The start date of the subscription. |
-| `ends_at` | `Date \| null` | The end date of the subscription. |
-| `next_payment_at` | `Date \| null` | The date of the next payment. |
-| `price` | `number` | The price of the subscription. |
-| `user_id` | `string` | The ID of the user who owns the subscription. |
-| `subscription_category_id` | `string` | The ID of the subscription category. |
+| Name                       | Type                              | Description                                      |
+| -------------------------- | --------------------------------- | ------------------------------------------------ |
+| `id`                       | `string`                          | The unique identifier of the subscription.       |
+| `title`                    | `string`                          | The title of the subscription.                   |
+| `text`                     | `string`                          | The description of the subscription.             |
+| `payment_frequency`        | `string \| null`                  | The payment frequency of the subscription.       |
+| `metadata`                 | `Record<string, unknown> \| null` | Additional metadata for the subscription.        |
+| `wallet_export`            | `Record<string, unknown> \| null` | Data for exporting the subscription to a wallet. |
+| `state`                    | `string`                          | The state of the subscription.                   |
+| `reference`                | `string`                          | A reference for the subscription.                |
+| `payment_state`            | `string \| null`                  | The payment state of the subscription.           |
+| `currency`                 | `string \| null`                  | The currency of the subscription price.          |
+| `button_cta_url`           | `string \| null`                  | A URL for a call-to-action button.               |
+| `created_at`               | `Date`                            | The creation date of the subscription.           |
+| `updated_at`               | `Date`                            | The last update date of the subscription.        |
+| `starts_at`                | `Date \| null`                    | The start date of the subscription.              |
+| `ends_at`                  | `Date \| null`                    | The end date of the subscription.                |
+| `next_payment_at`          | `Date \| null`                    | The date of the next payment.                    |
+| `price`                    | `number`                          | The price of the subscription.                   |
+| `user_id`                  | `string`                          | The ID of the user who owns the subscription.    |
+| `subscription_category_id` | `string`                          | The ID of the subscription category.             |
 
 #### `Ticket`
 
 An object representing a ticket.
 
-| Name | Type | Description |
-|---|---|---|
-| `id` | `string` | The unique identifier of the ticket. |
-| `title` | `string` | The title of the ticket. |
-| `text` | `string \| null` | The description of the ticket. |
-| `reference` | `string` | A reference for the ticket. |
-| `metadata` | `Record<string, unknown> \| null` | Additional metadata for the ticket. |
-| `wallet_export` | `Record<string, unknown> \| null` | Data for exporting the ticket to a wallet. |
-| `state` | `string` | The state of the ticket. |
-| `payment_state` | `string \| null` | The payment state of the ticket. |
-| `button_cta_url` | `string \| null` | A URL for a call-to-action button. |
-| `info_banner` | `string \| null` | An informational banner for the ticket. |
-| `seating` | `string \| null` | Seating information for the ticket. |
-| `venue` | `string \| null` | The venue for the ticket. |
-| `currency` | `string \| null` | The currency of the ticket price. |
-| `starts_at` | `Date` | The start date of the ticket. |
-| `ends_at` | `Date \| null` | The end date of the ticket. |
-| `created_at` | `Date` | The creation date of the ticket. |
-| `updated_at` | `Date` | The last update date of the ticket. |
-| `price` | `number` | The price of the ticket. |
-| `user_id` | `string` | The ID of the user who owns the ticket. |
-| `ticket_category_id` | `string` | The ID of the ticket category. |
-| `holder_id` | `string \| null \| undefined` | The ID of the user currently holding the ticket after a transfer. Differs from `user_id` while the ticket is transferred away. While transferred, `wallet_export` and `metadata` are `null` and `exportable_to_wallet` is `false`. |
+| Name                 | Type                              | Description                                                                                                                                                                                                                        |
+| -------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                 | `string`                          | The unique identifier of the ticket.                                                                                                                                                                                               |
+| `title`              | `string`                          | The title of the ticket.                                                                                                                                                                                                           |
+| `text`               | `string \| null`                  | The description of the ticket.                                                                                                                                                                                                     |
+| `reference`          | `string`                          | A reference for the ticket.                                                                                                                                                                                                        |
+| `metadata`           | `Record<string, unknown> \| null` | Additional metadata for the ticket.                                                                                                                                                                                                |
+| `wallet_export`      | `Record<string, unknown> \| null` | Data for exporting the ticket to a wallet.                                                                                                                                                                                         |
+| `state`              | `string`                          | The state of the ticket.                                                                                                                                                                                                           |
+| `payment_state`      | `string \| null`                  | The payment state of the ticket.                                                                                                                                                                                                   |
+| `button_cta_url`     | `string \| null`                  | A URL for a call-to-action button.                                                                                                                                                                                                 |
+| `info_banner`        | `string \| null`                  | An informational banner for the ticket.                                                                                                                                                                                            |
+| `seating`            | `string \| null`                  | Seating information for the ticket.                                                                                                                                                                                                |
+| `venue`              | `string \| null`                  | The venue for the ticket.                                                                                                                                                                                                          |
+| `currency`           | `string \| null`                  | The currency of the ticket price.                                                                                                                                                                                                  |
+| `starts_at`          | `Date`                            | The start date of the ticket.                                                                                                                                                                                                      |
+| `ends_at`            | `Date \| null`                    | The end date of the ticket.                                                                                                                                                                                                        |
+| `created_at`         | `Date`                            | The creation date of the ticket.                                                                                                                                                                                                   |
+| `updated_at`         | `Date`                            | The last update date of the ticket.                                                                                                                                                                                                |
+| `price`              | `number`                          | The price of the ticket.                                                                                                                                                                                                           |
+| `user_id`            | `string`                          | The ID of the user who owns the ticket.                                                                                                                                                                                            |
+| `ticket_category_id` | `string`                          | The ID of the ticket category.                                                                                                                                                                                                     |
+| `holder_id`          | `string \| null \| undefined`     | The ID of the user currently holding the ticket after a transfer. Differs from `user_id` while the ticket is transferred away. While transferred, `wallet_export` and `metadata` are `null` and `exportable_to_wallet` is `false`. |
 
 ## Styling
 
@@ -1655,38 +1655,38 @@ u-field::part(input_field) {
 
 ### Available CSS Shadow Parts
 
-| Component                   | Part                              | Description                                                            |
-|-----------------------------|-----------------------------------|------------------------------------------------------------------------|
-| `<u-field>`                 | `field-container`                 | The main container for the field.                                      |
-|                             | `field-container--<field-name>`   | A field-specific container. e.g. `field-container--email`              |
-|                             | `field_label`                     | The label for the field.                                               |
-|                             | `field_label--<field-name>`       | A field-specific label. e.g. `field_label--email`                      |
-|                             | `field-error-message`             | The error message for the field.                                       |
-|                             | `input_field`                     | The `<input>` element.                                                 |
-|                             | `multi-select-group_field`        | The fieldset for a multi-select group.                                 |
-|                             | `multi-select-item_checkbox`      | A checkbox in a multi-select group.                                    |
-|                             | `multi-select-item_label`         | The label for a checkbox.                                              |
-|                             | `multi-select-readonly-container` | The container for readonly multi-select fields.                        |
-|                             | `multi-select-readonly-field`     | An individual readonly multi-select field.                             |
-|                             | `radio-group_field`               | The fieldset for a radio group.                                        |
-|                             | `radio-group-item_label`          | The label for a radio button.                                          |
-|                             | `radio-group-item_radio`          | A radio button in a radio group.                                       |
-|                             | `radio_checked`                   | A checked radio button.                                                |
-|                             | `readonly-indicator`              | The text displayed for readonly fields.                                |
-|                             | `required-indicator`              | The asterisk for required fields.                                      |
-|                             | `select_field`                    | The `<select>` element.                                                |
-|                             | `select_field--<field-name>`      | A field-specific `<select>` element. e.g. `select_field--country_code` |
-|                             | `textarea_field`                  | The `<textarea>` element.                                              |
-| `<u-magic-code-field>`      | `digit-input`                     | An individual digit input field.                                       |
-| `<u-submit-button>`         | `auth-submit-button`              | The submit button when used in auth context (part attribute).          |
-|                             | `profile-submit-button`           | The submit button when used in profile context (part attribute).       |
-|                             | `newsletter-submit-button`        | The submit button when used in newsletter context (part attribute).    |
-| `<u-social-login-button>`   | `social-login-button`             | The button element itself.                                             |
-|                             | `social-login-button-content`     | The container for the button's content.                                |
-|                             | `social-login-button-text`        | The text within the button.                                            |
-| `<u-spinner>`               | `spinner`                         | The inner rotating `<div>` element of the spinner.                     |
-| `<u-missing-fields-submit-button>` | `button`                   | The submit button element.                                             |
-| `<u-newsletter-logout-button>` | `button`                       | The logout button element.                                             |
+| Component                          | Part                              | Description                                                            |
+| ---------------------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| `<u-field>`                        | `field-container`                 | The main container for the field.                                      |
+|                                    | `field-container--<field-name>`   | A field-specific container. e.g. `field-container--email`              |
+|                                    | `field_label`                     | The label for the field.                                               |
+|                                    | `field_label--<field-name>`       | A field-specific label. e.g. `field_label--email`                      |
+|                                    | `field-error-message`             | The error message for the field.                                       |
+|                                    | `input_field`                     | The `<input>` element.                                                 |
+|                                    | `multi-select-group_field`        | The fieldset for a multi-select group.                                 |
+|                                    | `multi-select-item_checkbox`      | A checkbox in a multi-select group.                                    |
+|                                    | `multi-select-item_label`         | The label for a checkbox.                                              |
+|                                    | `multi-select-readonly-container` | The container for readonly multi-select fields.                        |
+|                                    | `multi-select-readonly-field`     | An individual readonly multi-select field.                             |
+|                                    | `radio-group_field`               | The fieldset for a radio group.                                        |
+|                                    | `radio-group-item_label`          | The label for a radio button.                                          |
+|                                    | `radio-group-item_radio`          | A radio button in a radio group.                                       |
+|                                    | `radio_checked`                   | A checked radio button.                                                |
+|                                    | `readonly-indicator`              | The text displayed for readonly fields.                                |
+|                                    | `required-indicator`              | The asterisk for required fields.                                      |
+|                                    | `select_field`                    | The `<select>` element.                                                |
+|                                    | `select_field--<field-name>`      | A field-specific `<select>` element. e.g. `select_field--country_code` |
+|                                    | `textarea_field`                  | The `<textarea>` element.                                              |
+| `<u-magic-code-field>`             | `digit-input`                     | An individual digit input field.                                       |
+| `<u-submit-button>`                | `auth-submit-button`              | The submit button when used in auth context (part attribute).          |
+|                                    | `profile-submit-button`           | The submit button when used in profile context (part attribute).       |
+|                                    | `newsletter-submit-button`        | The submit button when used in newsletter context (part attribute).    |
+| `<u-social-login-button>`          | `social-login-button`             | The button element itself.                                             |
+|                                    | `social-login-button-content`     | The container for the button's content.                                |
+|                                    | `social-login-button-text`        | The text within the button.                                            |
+| `<u-spinner>`                      | `spinner`                         | The inner rotating `<div>` element of the spinner.                     |
+| `<u-missing-fields-submit-button>` | `button`                          | The submit button element.                                             |
+| `<u-newsletter-logout-button>`     | `button`                          | The logout button element.                                             |
 
 ## Internationalization (i18n)
 
@@ -1825,11 +1825,13 @@ This is a page-load timing race. `<u-config check-signed-in="true">` restores th
 **Use the reactive pattern** — it works regardless of timing:
 
 ```js
-import { authState, onAuthChange } from '@unidy.io/sdk';
+import { authState, onAuthChange } from "@unidy.io/sdk";
 
-function render(isAuthenticated) { /* update your UI */ }
+function render(isAuthenticated) {
+  /* update your UI */
+}
 
-render(authState.authenticated);       // current value (may be false until restore settles)
+render(authState.authenticated); // current value (may be false until restore settles)
 onAuthChange("authenticated", render); // fires when restore settles, on sign-in, on sign-out
 ```
 
@@ -1914,8 +1916,8 @@ Most SDK components require a parent context. Ensure components are nested corre
 Steps are shown based on `authState.step`. Check the current step value:
 
 ```javascript
-import { authState } from '@unidy.io/sdk';
-console.log('Current step:', authState.step);
+import { authState } from "@unidy.io/sdk";
+console.log("Current step:", authState.step);
 // Possible values: 'email', 'verification', 'magic-code', 'reset-password', 'registration', 'missing-fields', 'single-login'
 ```
 
@@ -2089,25 +2091,25 @@ SDK components use `class-name` (not `class`) to pass CSS classes:
 
 ### Common Error Codes
 
-| Error Code | Description | Resolution |
-|------------|-------------|------------|
-| `connection_failed` | Cannot reach the Unidy backend | Check network connection and `base-url` configuration |
-| `unauthorized` | Invalid or expired authentication | User needs to sign in again |
-| `account_not_found` | Email not registered | Direct user to registration flow |
-| `invalid_password` | Wrong password | User should retry or reset password |
-| `password_not_set` | User has no password configured | Use magic code or social login instead |
-| `magic_code_expired` | Magic code timed out | Request a new magic code |
-| `magic_code_not_valid` | Wrong magic code entered | User should check code and retry |
-| `magic_code_used` | Magic code already used | Request a new magic code |
-| `magic_code_recently_created` | Magic code requested too soon | Wait for cooldown period (typically 60 seconds) |
-| `reset_password_already_sent` | Password reset email already sent | Check email or wait before requesting again |
-| `account_locked` | Account has been locked | Contact administrator |
-| `sign_in_expired` | Sign-in session timed out | Start the sign-in flow again |
-| `sign_in_not_found` | Sign-in session not found | Start the sign-in flow again |
-| `consent_required` | Newsletter consent not given | User must check consent checkbox |
-| `email_required` | Email field is empty | User must enter email address |
-| `schema_validation_error` | Invalid data format | Check field values match expected types |
-| `invalid_preference_token` | Newsletter preference token invalid | User should request a new preference link |
+| Error Code                    | Description                         | Resolution                                            |
+| ----------------------------- | ----------------------------------- | ----------------------------------------------------- |
+| `connection_failed`           | Cannot reach the Unidy backend      | Check network connection and `base-url` configuration |
+| `unauthorized`                | Invalid or expired authentication   | User needs to sign in again                           |
+| `account_not_found`           | Email not registered                | Direct user to registration flow                      |
+| `invalid_password`            | Wrong password                      | User should retry or reset password                   |
+| `password_not_set`            | User has no password configured     | Use magic code or social login instead                |
+| `magic_code_expired`          | Magic code timed out                | Request a new magic code                              |
+| `magic_code_not_valid`        | Wrong magic code entered            | User should check code and retry                      |
+| `magic_code_used`             | Magic code already used             | Request a new magic code                              |
+| `magic_code_recently_created` | Magic code requested too soon       | Wait for cooldown period (typically 60 seconds)       |
+| `reset_password_already_sent` | Password reset email already sent   | Check email or wait before requesting again           |
+| `account_locked`              | Account has been locked             | Contact administrator                                 |
+| `sign_in_expired`             | Sign-in session timed out           | Start the sign-in flow again                          |
+| `sign_in_not_found`           | Sign-in session not found           | Start the sign-in flow again                          |
+| `consent_required`            | Newsletter consent not given        | User must check consent checkbox                      |
+| `email_required`              | Email field is empty                | User must enter email address                         |
+| `schema_validation_error`     | Invalid data format                 | Check field values match expected types               |
+| `invalid_preference_token`    | Newsletter preference token invalid | User should request a new preference link             |
 
 ## Token Management & Session Handling
 
@@ -2117,12 +2119,12 @@ The SDK handles authentication tokens automatically, but understanding the under
 
 The SDK uses browser storage to persist authentication state:
 
-| Data | Storage | Reason |
-|------|---------|--------|
+| Data               | Storage          | Reason                                       |
+| ------------------ | ---------------- | -------------------------------------------- |
 | Access Token (JWT) | `sessionStorage` | Short-lived, cleared when browser tab closes |
-| Refresh Token | `localStorage` | Long-lived, persists across sessions |
-| Sign-in ID (`sid`) | `localStorage` | Identifies the current sign-in session |
-| Email | `localStorage` | Pre-fills email field on return visits |
+| Refresh Token      | `localStorage`   | Long-lived, persists across sessions         |
+| Sign-in ID (`sid`) | `localStorage`   | Identifies the current sign-in session       |
+| Email              | `localStorage`   | Pre-fills email field on return visits       |
 
 **Storage Keys:**
 
@@ -2140,21 +2142,21 @@ The SDK automatically refreshes expired tokens when you call `auth.getToken()` o
 3. If refresh fails (e.g., refresh token expired), the user must sign in again
 
 ```javascript
-import { Auth } from '@unidy.io/sdk';
+import { Auth } from "@unidy.io/sdk";
 
 const auth = await Auth.getInstance();
 
 // This automatically refreshes the token if needed
 const token = await auth.getToken();
 
-if (typeof token === 'string') {
+if (typeof token === "string") {
   // Token is valid, use it for API calls
-  fetch('/api/endpoint', {
-    headers: { Authorization: `Bearer ${token}` }
+  fetch("/api/endpoint", {
+    headers: { Authorization: `Bearer ${token}` },
   });
 } else {
   // Token refresh failed, user needs to re-authenticate
-  console.error('Auth error:', token.code);
+  console.error("Auth error:", token.code);
   if (token.requiresReauth) {
     // Redirect to login or show sign-in UI
   }
@@ -2181,6 +2183,7 @@ Newsletter preference management uses a special token-based authentication flow 
 
 1. **User subscribes to a newsletter** - After subscribing, the user receives confirmation emails containing a preference management link
 2. **Preference link format** - Links contain `preference_token` and `email` as URL parameters:
+
    ```
    https://your-site.com/preferences?preference_token=abc123&email=user@example.com
    ```
@@ -2256,37 +2259,37 @@ The SDK provides reactive state stores that you can use to build custom UIs or i
 ### Auth State (`authState`)
 
 ```javascript
-import { authState, authStore, onAuthChange, missingFieldNames } from '@unidy.io/sdk';
+import { authState, authStore, onAuthChange, missingFieldNames } from "@unidy.io/sdk";
 ```
 
 **Properties:**
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `authenticated` | `boolean` | Whether the user is currently authenticated |
-| `email` | `string` | The email address entered or used for sign-in |
-| `password` | `string` | The password entered (cleared after use) |
-| `step` | `AuthStep` | Current step in the auth flow (see below) |
-| `sid` | `string \| null` | Current sign-in session ID |
-| `loading` | `boolean` | Whether an auth operation is in progress |
-| `errors` | `Record<string, string \| null>` | Field-specific errors (`email`, `password`, `magicCode`, `resetPassword`, `passkey`) |
-| `globalErrors` | `Record<string, string \| null>` | Global errors (e.g., `auth`) |
-| `token` | `string \| null` | Current JWT access token |
-| `refreshToken` | `string \| null` | Current refresh token |
-| `magicCodeStep` | `null \| 'requested' \| 'sent'` | Magic code request state |
-| `resetPassword` | `object` | Reset password flow state |
-| `availableLoginOptions` | `LoginOptions \| null` | Available login methods for the current user |
-| `missingRequiredFields` | `object \| undefined` | Fields required to complete registration |
-| `backendSignedIn` | `boolean` | Whether user was signed in via backend SSO |
+| Property                | Type                             | Description                                                                          |
+| ----------------------- | -------------------------------- | ------------------------------------------------------------------------------------ |
+| `authenticated`         | `boolean`                        | Whether the user is currently authenticated                                          |
+| `email`                 | `string`                         | The email address entered or used for sign-in                                        |
+| `password`              | `string`                         | The password entered (cleared after use)                                             |
+| `step`                  | `AuthStep`                       | Current step in the auth flow (see below)                                            |
+| `sid`                   | `string \| null`                 | Current sign-in session ID                                                           |
+| `loading`               | `boolean`                        | Whether an auth operation is in progress                                             |
+| `errors`                | `Record<string, string \| null>` | Field-specific errors (`email`, `password`, `magicCode`, `resetPassword`, `passkey`) |
+| `globalErrors`          | `Record<string, string \| null>` | Global errors (e.g., `auth`)                                                         |
+| `token`                 | `string \| null`                 | Current JWT access token                                                             |
+| `refreshToken`          | `string \| null`                 | Current refresh token                                                                |
+| `magicCodeStep`         | `null \| 'requested' \| 'sent'`  | Magic code request state                                                             |
+| `resetPassword`         | `object`                         | Reset password flow state                                                            |
+| `availableLoginOptions` | `LoginOptions \| null`           | Available login methods for the current user                                         |
+| `missingRequiredFields` | `object \| undefined`            | Fields required to complete registration                                             |
+| `backendSignedIn`       | `boolean`                        | Whether user was signed in via backend SSO                                           |
 
 **`LoginOptions` Structure:**
 
 ```typescript
 interface LoginOptions {
-  magic_link: boolean;    // Magic code login available
-  password: boolean;      // Password login available
+  magic_link: boolean; // Magic code login available
+  password: boolean; // Password login available
   social_logins: string[]; // Available social providers
-  passkey: boolean;       // Passkey login available
+  passkey: boolean; // Passkey login available
 }
 ```
 
@@ -2301,23 +2304,23 @@ const fields = missingFieldNames();
 ### Profile State (`profileState`)
 
 ```javascript
-import { profileState, profileStore, onProfileChange } from '@unidy.io/sdk';
+import { profileState, profileStore, onProfileChange } from "@unidy.io/sdk";
 ```
 
 **Properties:**
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `loading` | `boolean` | Whether profile is being fetched/updated |
-| `data` | `ProfileRaw` | Current profile data |
-| `configuration` | `ProfileRaw` | Field configuration (types, options, etc.) |
-| `errors` | `Record<string, string \| null>` | Field validation errors |
-| `phoneValid` | `boolean` | Whether phone number passes validation |
+| Property        | Type                             | Description                                |
+| --------------- | -------------------------------- | ------------------------------------------ |
+| `loading`       | `boolean`                        | Whether profile is being fetched/updated   |
+| `data`          | `ProfileRaw`                     | Current profile data                       |
+| `configuration` | `ProfileRaw`                     | Field configuration (types, options, etc.) |
+| `errors`        | `Record<string, string \| null>` | Field validation errors                    |
+| `phoneValid`    | `boolean`                        | Whether phone number passes validation     |
 
 ### Newsletter State (`newsletterStore`)
 
 ```javascript
-import { newsletterStore } from '@unidy.io/sdk';
+import { newsletterStore } from "@unidy.io/sdk";
 
 // Access state
 const state = newsletterStore.state;
@@ -2325,33 +2328,33 @@ const state = newsletterStore.state;
 
 **Properties:**
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `email` | `string` | Email address for subscription |
-| `preferenceToken` | `string` | Token for preference management |
-| `checkedNewsletters` | `Record<string, string[]>` | Currently checked newsletters and their preferences |
-| `existingSubscriptions` | `ExistingSubscription[]` | User's current subscriptions |
-| `fetchingSubscriptions` | `boolean` | Whether subscriptions are being loaded |
-| `consentGiven` | `boolean` | Whether GDPR consent checkbox is checked |
-| `consentRequired` | `boolean` | Whether consent is required for this form |
-| `errors` | `Record<string, string>` | Newsletter-specific errors |
-| `isAuthenticated` | `boolean` | Whether user is authenticated or has preference token |
+| Property                | Type                       | Description                                           |
+| ----------------------- | -------------------------- | ----------------------------------------------------- |
+| `email`                 | `string`                   | Email address for subscription                        |
+| `preferenceToken`       | `string`                   | Token for preference management                       |
+| `checkedNewsletters`    | `Record<string, string[]>` | Currently checked newsletters and their preferences   |
+| `existingSubscriptions` | `ExistingSubscription[]`   | User's current subscriptions                          |
+| `fetchingSubscriptions` | `boolean`                  | Whether subscriptions are being loaded                |
+| `consentGiven`          | `boolean`                  | Whether GDPR consent checkbox is checked              |
+| `consentRequired`       | `boolean`                  | Whether consent is required for this form             |
+| `errors`                | `Record<string, string>`   | Newsletter-specific errors                            |
+| `isAuthenticated`       | `boolean`                  | Whether user is authenticated or has preference token |
 
 ### Subscribing to State Changes
 
 All stores support the `onChange` pattern:
 
 ```javascript
-import { onAuthChange, onProfileChange } from '@unidy.io/sdk';
+import { onAuthChange, onProfileChange } from "@unidy.io/sdk";
 
 // Subscribe to auth state changes
-const unsubscribeAuth = onAuthChange('authenticated', (isAuthenticated) => {
-  console.log('Auth changed:', isAuthenticated);
+const unsubscribeAuth = onAuthChange("authenticated", (isAuthenticated) => {
+  console.log("Auth changed:", isAuthenticated);
 });
 
 // Subscribe to profile data changes
-const unsubscribeProfile = onProfileChange('data', (profileData) => {
-  console.log('Profile updated:', profileData);
+const unsubscribeProfile = onProfileChange("data", (profileData) => {
+  console.log("Profile updated:", profileData);
 });
 
 // Clean up when done
@@ -2366,7 +2369,7 @@ unsubscribeProfile();
 Waits for the `<u-config>` component to be initialized. Useful when you need to ensure the SDK is ready before making API calls.
 
 ```javascript
-import { waitForConfig, getUnidyClient } from '@unidy.io/sdk';
+import { waitForConfig, getUnidyClient } from "@unidy.io/sdk";
 
 async function initializeApp() {
   // Wait for <u-config> to be ready
@@ -2383,12 +2386,12 @@ async function initializeApp() {
 Creates an external pagination store for advanced ticketable list scenarios.
 
 ```javascript
-import { createPaginationStore } from '@unidy.io/sdk';
+import { createPaginationStore } from "@unidy.io/sdk";
 
 const paginationStore = createPaginationStore();
 
 // Use with <u-ticketable-list>
-document.querySelector('u-ticketable-list').paginationStore = paginationStore;
+document.querySelector("u-ticketable-list").paginationStore = paginationStore;
 
 // Programmatically control pagination
 paginationStore.state.page = 2;
@@ -2448,26 +2451,26 @@ Special Steps:
 
 ### Step Triggers
 
-| Step | Triggered When |
-|------|----------------|
-| `email` | Initial state, or after password reset completion |
-| `verification` | Email submitted and account found |
-| `magic-code` | User requests magic code or `sendMagicCode` enabled |
-| `reset-password` | User clicks reset password, or visits reset link |
+| Step             | Triggered When                                      |
+| ---------------- | --------------------------------------------------- |
+| `email`          | Initial state, or after password reset completion   |
+| `verification`   | Email submitted and account found                   |
+| `magic-code`     | User requests magic code or `sendMagicCode` enabled |
+| `reset-password` | User clicks reset password, or visits reset link    |
 | `missing-fields` | Social login successful but required fields missing |
-| `single-login` | Account has only one login method (auto-detected) |
-| `registration` | Email not found (`account_not_found` error) |
+| `single-login`   | Account has only one login method (auto-detected)   |
+| `registration`   | Email not found (`account_not_found` error)         |
 
 ### Programmatic Step Control
 
 ```javascript
-import { authStore, authState } from '@unidy.io/sdk';
+import { authStore, authState } from "@unidy.io/sdk";
 
 // Check current step
-console.log('Current step:', authState.step);
+console.log("Current step:", authState.step);
 
 // Manually set step (use with caution)
-authStore.setStep('email');
+authStore.setStep("email");
 ```
 
 ## Registration Step Transitions
@@ -2509,10 +2512,10 @@ The registration flow is managed by `<u-registration-root>`, which orchestrates 
 
 ### Step Skip Logic
 
-| Step | Automatically Skipped When |
-|------|---------------------------|
-| `verification` | `requires-email-verification` is set and email is already verified (e.g. social login) |
-| `password` | `requires-password` is set and the user registered via social login or passwordless flow |
+| Step           | Automatically Skipped When                                                               |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| `verification` | `requires-email-verification` is set and email is already verified (e.g. social login)   |
+| `password`     | `requires-password` is set and the user registered via social login or passwordless flow |
 
 Steps without skip attributes are never automatically skipped. The passkey step is typically not skipped — the user can choose to continue without registering a passkey.
 
@@ -2579,16 +2582,16 @@ When a user abandons a registration and later returns (or opens a different brow
 
 ### Events
 
-| Event | Fired When | `event.detail` |
-|-------|------------|----------------|
+| Event                  | Fired When                           | `event.detail`                                             |
+| ---------------------- | ------------------------------------ | ---------------------------------------------------------- |
 | `registrationComplete` | Flow finalized, user account created | Full `RegistrationFlowResponse` (includes `auth.id_token`) |
-| `stepChange` | Active step changes | `{ stepName, stepIndex }` |
-| `errorEvent` | An error occurs during the flow | Error identifier string |
+| `stepChange`           | Active step changes                  | `{ stepName, stepIndex }`                                  |
+| `errorEvent`           | An error occurs during the flow      | Error identifier string                                    |
 
 ### Programmatic Control
 
 ```javascript
-const root = document.querySelector('u-registration-root');
+const root = document.querySelector("u-registration-root");
 
 // Advance to next step (with skip logic)
 await root.advanceToNextStep();
@@ -2606,14 +2609,14 @@ For a complete working example, see the [Quick Start: Registration Flow](./quick
 
 The SDK is built with modern web standards and supports the following browsers:
 
-| Browser | Minimum Version | Notes |
-|---------|-----------------|-------|
-| Chrome | 80+ | Full support |
-| Firefox | 78+ | Full support |
-| Safari | 14+ | Full support |
-| Edge | 80+ | Full support (Chromium-based) |
-| iOS Safari | 14+ | Full support |
-| Android Chrome | 80+ | Full support |
+| Browser        | Minimum Version | Notes                         |
+| -------------- | --------------- | ----------------------------- |
+| Chrome         | 80+             | Full support                  |
+| Firefox        | 78+             | Full support                  |
+| Safari         | 14+             | Full support                  |
+| Edge           | 80+             | Full support (Chromium-based) |
+| iOS Safari     | 14+             | Full support                  |
+| Android Chrome | 80+             | Full support                  |
 
 ### Feature Requirements
 
@@ -2728,6 +2731,7 @@ The SDK API key is designed to be used in client-side code. It identifies your a
 1. **Use HTTPS**: Always serve your application over HTTPS to protect tokens in transit
 2. **Domain Whitelisting**: Ensure only your domains are whitelisted in the Unidy SDK client configuration
 3. **Content Security Policy**: Consider adding CSP headers to prevent XSS attacks:
+
    ```
    Content-Security-Policy: script-src 'self' https://cdn.jsdelivr.net;
    ```
@@ -2744,7 +2748,7 @@ The SDK makes requests to your Unidy backend. Ensure your domain is configured i
 To fully log out a user (including backend session):
 
 ```javascript
-import { Auth } from '@unidy.io/sdk';
+import { Auth } from "@unidy.io/sdk";
 
 const auth = await Auth.getInstance();
 await auth.logout(); // Clears local tokens and invalidates backend session

@@ -1,7 +1,5 @@
 # u-ticket-transfer-list
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -41,7 +39,6 @@ refetches after a successful action.
 |           | The default slot |
 | `"empty"` |                  |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

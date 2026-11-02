@@ -1,7 +1,5 @@
 # u-newsletter-root
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -25,8 +23,6 @@
 
 ### `submit(forType?: NewsletterButtonFor) => Promise<void>`
 
-
-
 #### Parameters
 
 | Name      | Type                  | Description |
@@ -46,7 +42,6 @@ Type: `Promise<void>`
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

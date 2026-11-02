@@ -1,7 +1,5 @@
 # u-newsletter-consent-checkbox
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -17,8 +15,6 @@
 
 ### `setChecked(checked: boolean) => Promise<void>`
 
-
-
 #### Parameters
 
 | Name      | Type      | Description |
@@ -33,15 +29,10 @@ Type: `Promise<void>`
 
 ### `toggle() => Promise<void>`
 
-
-
 #### Returns
 
 Type: `Promise<void>`
 
+---
 
-
-
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

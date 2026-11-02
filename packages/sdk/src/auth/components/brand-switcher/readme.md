@@ -1,7 +1,5 @@
 # u-brand-switcher
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -45,7 +43,6 @@ to appear in; the step controls visibility.
 | `"brand-switcher-link"` |             |
 | `"brand-switcher-name"` |             |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

@@ -1,7 +1,5 @@
 # u-config
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -32,7 +30,6 @@
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

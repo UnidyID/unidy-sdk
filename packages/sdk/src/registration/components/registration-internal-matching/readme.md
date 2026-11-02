@@ -1,7 +1,5 @@
 # u-registration-internal-matching
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -37,12 +35,13 @@
 - [u-spinner](../../../shared/components/spinner)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-registration-internal-matching --> u-spinner
   style u-registration-internal-matching fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

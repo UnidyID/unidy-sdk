@@ -12,23 +12,25 @@ Reference document for investigations and debugging. Update after each investiga
 ## Packages
 
 ### `@unidy.io/sdk`
+
 Web components (Stencil) + API clients:
 
-| Component group | Components |
-|---|---|
-| Auth | `<u-signin-root>`, `<u-signin-step>`, `<u-email-field>`, `<u-password-field>`, `<u-social-login-button>` |
-| Profile | `<u-profile>`, `<u-field>`, `<u-full-profile>`, `<u-logout-button>` |
-| Newsletter | `<u-newsletter-root>`, `<u-newsletter-checkbox>`, `<u-newsletter-preference-checkbox>` |
-| Registration | `<u-registration-root>`, `<u-registration-step>` |
-| Ticketable | `<u-ticketable-list>`, `<u-ticketable-export>` |
-| Ticket transfers | `<u-ticket-transfer-list>`, `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>` |
-| Utilities | `<u-config>`, `<u-signed-in>`, `<u-flash-message>`, `<u-conditional-render>` |
+| Component group  | Components                                                                                               |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| Auth             | `<u-signin-root>`, `<u-signin-step>`, `<u-email-field>`, `<u-password-field>`, `<u-social-login-button>` |
+| Profile          | `<u-profile>`, `<u-field>`, `<u-full-profile>`, `<u-logout-button>`                                      |
+| Newsletter       | `<u-newsletter-root>`, `<u-newsletter-checkbox>`, `<u-newsletter-preference-checkbox>`                   |
+| Registration     | `<u-registration-root>`, `<u-registration-step>`                                                         |
+| Ticketable       | `<u-ticketable-list>`, `<u-ticketable-export>`                                                           |
+| Ticket transfers | `<u-ticket-transfer-list>`, `<u-ticket-transfer-form>`, `<u-ticket-transfer-action>`                     |
+| Utilities        | `<u-config>`, `<u-signed-in>`, `<u-flash-message>`, `<u-conditional-render>`                             |
 
 API classes: `Auth` (token management, passkey, magic-code), `UnidyClient` singleton (profile, newsletters, tickets, ticketTransfers, subscriptions), standalone client (Node.js/serverless compatible).
 
 New services must be registered in THREE places: `UnidyClient` (api/index.ts), `StandaloneUnidyClient` (api/standalone.ts, plus its `export`/`export type *` lines), and `ReactUnidyClient` (sdk-react/src/client.ts re-instantiates every service with its token-refreshing deps).
 
 ### `@unidy.io/sdk-react`
+
 React hooks: `useLogin`, `useSession`, `useProfile`, `useNewsletterSubscribe`, `useTicketables`, etc.
 
 ## Key Directories
@@ -81,10 +83,10 @@ packages/sdk/e2e/              → Playwright tests; demo pages in www/
 
 - `POST /api/sdk/v1/sign_ins` returns `brands` — the brands the looked-up user is connected to that the API key is also authorized for, current brand first (`current: true` marks the one matching the host the SDK is pointed at). Each entry carries `name`/`host`/`url`/`display_name`/`logo_url`/`colors` plus its own `login_options`. Backend added 2026-08 (UD-3079); `brands` and `connected_to_brand` are schema-defaulted so older Unidy instances still validate
 - A brand is a **separate login host** — `Current.brand` is derived server-side from `request.host_with_port`. Switching brand is therefore a navigation to that brand's `url`, not a client-side toggle: `unidyState.baseUrl` is captured when the `UnidyClient` singleton is constructed (`api/index.ts` `getUnidyClient`), so mutating it after `<u-config>` loads does not repoint the existing client
-- `<u-brand-switcher>` renders the *other* brands (`show-current` includes all). It stays empty on the `email` step, since brands in the store belong to the previous lookup until a new email is submitted
+- `<u-brand-switcher>` renders the _other_ brands (`show-current` includes all). It stays empty on the `email` step, since brands in the store belong to the previous lookup until a new email is submitted
 - **Profile custom attributes are brand-scoped server-side.** `GET`/`PATCH /api/sdk/v1/profile` take `lang` and `include_brand=1` (`profile/api/profile.ts`) — no `brand_id`, no brand header, and `<u-config>` has no brand prop. The brand is whatever the backend derives from the `base-url` host plus the API key's OAuth application (`brand_ids`). `custom_attributes` is a flat `Record<attr_name, CustomFieldSchema>`; only with `include_brand=1` (UD-3555) does each entry carry `brand: { id, name, display_name } | null` (the owning brand) and `cross_brand_visible` (not linked to the request's brand, shown only because the user has a value). The param is opt-in because `CustomFieldSchema` is `.strict()`: unknown keys fail older SDKs with `invalid_profile_data`, so any new per-attribute key needs the same treatment. `<u-full-profile hide-cross-brand>` drops `cross_brand_visible` attributes; `u-field` adds a `field-container--brand-<name>` part
-- Scoping applies to attribute *definitions/visibility*, not values: `User.custom_attribute_data` is a single JSON column (`e2e/lib/types/user.ts`), shared across brands. Backend history: UD-3246 (attributes leaked across brands; fixed by unidy#5774 "cross-brand custom attribute visibility toggle"), UD-3074/3075/3076 (admin UI for brand-scoped definitions), UD-3207 (three lock levels — unlocked / globally locked / brand-locked; unidy#5861). Brand-locking needs no SDK change: `BaseFieldDataSchema` already carries `locked`/`locked_text`, and `u-field` maps them to `disabled` + tooltip
-- `<u-full-profile>` without a `fields` prop renders *every* custom attribute the API returns, so any server-side scoping bug surfaces directly in customer UI. `fields="custom_attributes.x,…"` only hides fields — the values still travel in the API response
+- Scoping applies to attribute _definitions/visibility_, not values: `User.custom_attribute_data` is a single JSON column (`e2e/lib/types/user.ts`), shared across brands. Backend history: UD-3246 (attributes leaked across brands; fixed by unidy#5774 "cross-brand custom attribute visibility toggle"), UD-3074/3075/3076 (admin UI for brand-scoped definitions), UD-3207 (three lock levels — unlocked / globally locked / brand-locked; unidy#5861). Brand-locking needs no SDK change: `BaseFieldDataSchema` already carries `locked`/`locked_text`, and `u-field` maps them to `disabled` + tooltip
+- `<u-full-profile>` without a `fields` prop renders _every_ custom attribute the API returns, so any server-side scoping bug surfaces directly in customer UI. `fields="custom_attributes.x,…"` only hides fields — the values still travel in the API response
 - Registration is the only flow with an explicit brand selector: `<u-registration-root brand-id>` → `brand_id` in the payload (`registration-helpers.ts`). There is no profile equivalent
 
 ## E2E (local)

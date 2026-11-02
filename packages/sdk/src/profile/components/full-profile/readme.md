@@ -43,6 +43,7 @@ Type: `Promise<void>`
 - [u-submit-button](../../../shared/components/submit-button)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-full-profile --> u-profile
@@ -54,6 +55,6 @@ graph TD;
   style u-full-profile fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

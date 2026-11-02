@@ -193,38 +193,38 @@ The `not` attribute inverts any condition:
 
 ### Auth Namespace
 
-| Condition | Type | Description |
-|-----------|------|-------------|
-| `auth.passkeyEnabled` | Boolean | Passkey login is available |
-| `auth.passwordEnabled` | Boolean | Password login is available |
-| `auth.magicCodeEnabled` | Boolean | Magic code/link login is available |
-| `auth.socialLoginsEnabled` | Boolean | Social login options are available |
-| `auth.loading` | Boolean | Auth operation in progress |
-| `auth.authenticated` | Boolean | User is authenticated |
-| `auth.magicCodeSent` | Boolean | Magic code has been sent or requested |
-| `auth.magicCodeRequested` | Boolean | Magic code send is in progress |
-| `auth.resetPasswordSent` | Boolean | Password reset email has been sent or requested |
-| `auth.resetPasswordRequested` | Boolean | Password reset send is in progress |
+| Condition                     | Type    | Description                                     |
+| ----------------------------- | ------- | ----------------------------------------------- |
+| `auth.passkeyEnabled`         | Boolean | Passkey login is available                      |
+| `auth.passwordEnabled`        | Boolean | Password login is available                     |
+| `auth.magicCodeEnabled`       | Boolean | Magic code/link login is available              |
+| `auth.socialLoginsEnabled`    | Boolean | Social login options are available              |
+| `auth.loading`                | Boolean | Auth operation in progress                      |
+| `auth.authenticated`          | Boolean | User is authenticated                           |
+| `auth.magicCodeSent`          | Boolean | Magic code has been sent or requested           |
+| `auth.magicCodeRequested`     | Boolean | Magic code send is in progress                  |
+| `auth.resetPasswordSent`      | Boolean | Password reset email has been sent or requested |
+| `auth.resetPasswordRequested` | Boolean | Password reset send is in progress              |
 
 ### Newsletter Namespace
 
-| Condition | Type | Description |
-|-----------|------|-------------|
-| `newsletter.hasCheckedNewsletters` | Boolean | At least one newsletter is checked |
-| `newsletter.hasPreferenceToken` | Boolean | User has a preference token |
-| `newsletter.loggedIn` | Boolean | User is authenticated or has preference token |
-| `newsletter.subscribed` | Function | Check if subscribed to specific newsletter (requires `is` attribute) |
-| `newsletter.confirmed` | Function | Check if subscription is confirmed (requires `is` attribute) |
+| Condition                          | Type     | Description                                                          |
+| ---------------------------------- | -------- | -------------------------------------------------------------------- |
+| `newsletter.hasCheckedNewsletters` | Boolean  | At least one newsletter is checked                                   |
+| `newsletter.hasPreferenceToken`    | Boolean  | User has a preference token                                          |
+| `newsletter.loggedIn`              | Boolean  | User is authenticated or has preference token                        |
+| `newsletter.subscribed`            | Function | Check if subscribed to specific newsletter (requires `is` attribute) |
+| `newsletter.confirmed`             | Function | Check if subscription is confirmed (requires `is` attribute)         |
 
 ### Profile Namespace
 
-| Condition | Type | Description |
-|-----------|------|-------------|
-| `profile.loading` | Boolean | Profile operation in progress |
-| `profile.hasErrors` | Boolean | Profile has validation errors |
+| Condition                | Type    | Description                        |
+| ------------------------ | ------- | ---------------------------------- |
+| `profile.loading`        | Boolean | Profile operation in progress      |
+| `profile.hasErrors`      | Boolean | Profile has validation errors      |
 | `profile.hasFlashErrors` | Boolean | Profile has temporary flash errors |
-| `profile.phoneValid` | Boolean | Phone number is valid |
-| `profile.hasData` | Boolean | Profile data is loaded |
+| `profile.phoneValid`     | Boolean | Phone number is valid              |
+| `profile.hasData`        | Boolean | Profile data is loaded             |
 
 ## Advanced: Custom Condition Functions
 
@@ -260,7 +260,6 @@ const customCondition = (state: AuthState) => {
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

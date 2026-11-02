@@ -16,11 +16,11 @@ To use the spinner, simply include the `<u-spinner>` tag in your HTML or compone
 
 The recommended way to style the spinner is by using CSS Custom Properties. This provides a clean API for styling without needing to know the component's internal structure.
 
-| Property | Description | Example |
-|----------|-------------|---------|
-| `--u-spinner-font-size` | Controls the size of the spinner | `20px`, `1.5rem` |
-| `--spinner-color-primary` | Color of the main rotating part | `#fff`, `currentColor` |
-| `--spinner-color-secondary` | Color of the track/background | `rgba(255, 255, 255, 0.4)` |
+| Property                    | Description                      | Example                    |
+| --------------------------- | -------------------------------- | -------------------------- |
+| `--u-spinner-font-size`     | Controls the size of the spinner | `20px`, `1.5rem`           |
+| `--spinner-color-primary`   | Color of the main rotating part  | `#fff`, `currentColor`     |
+| `--spinner-color-secondary` | Color of the track/background    | `rgba(255, 255, 255, 0.4)` |
 
 **Example: A 20px white spinner for a dark button**
 
@@ -96,19 +96,20 @@ The recommended way to display text next to a spinner is to wrap both the `<u-sp
 
 ### Used by
 
- - [u-brand-connect-button](../../../auth/components/brand-connect-button)
- - [u-field](../../../profile/components/field)
- - [u-jump-to-service](../../../auth/components/jump-to-service)
- - [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
- - [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
- - [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
- - [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
- - [u-oauth-button](../../../oauth/components/oauth-button)
- - [u-oauth-missing-fields](../../../oauth/components/oauth-missing-fields)
- - [u-registration-internal-matching](../../../registration/components/registration-internal-matching)
- - [u-submit-button](../submit-button)
+- [u-brand-connect-button](../../../auth/components/brand-connect-button)
+- [u-field](../../../profile/components/field)
+- [u-jump-to-service](../../../auth/components/jump-to-service)
+- [u-jump-to-unidy](../../../auth/components/jump-to-unidy)
+- [u-missing-fields-submit-button](../../../auth/components/missing-fields-submit-button)
+- [u-newsletter-resend-doi-button](../../../newsletter/components/resend-doi-button)
+- [u-newsletter-toggle-subscription-button](../../../newsletter/components/toggle-subscription-button)
+- [u-oauth-button](../../../oauth/components/oauth-button)
+- [u-oauth-missing-fields](../../../oauth/components/oauth-missing-fields)
+- [u-registration-internal-matching](../../../registration/components/registration-internal-matching)
+- [u-submit-button](../submit-button)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-brand-connect-button --> u-spinner
@@ -125,6 +126,6 @@ graph TD;
   style u-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

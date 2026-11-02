@@ -1,7 +1,5 @@
 # u-ticket-transfer-form
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -40,7 +38,6 @@ Used standalone with an explicit `ticket-id`, or inside a
 | ---- | ---------------- |
 |      | The default slot |
 
+---
 
-----------------------------------------------
-
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

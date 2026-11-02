@@ -1,7 +1,5 @@
 # u-oauth-missing-fields
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -21,6 +19,7 @@
 - [u-field](../../../profile/components/field)
 
 ### Graph
+
 ```mermaid
 graph TD;
   u-oauth-missing-fields --> u-spinner
@@ -30,6 +29,6 @@ graph TD;
   style u-oauth-missing-fields fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_
