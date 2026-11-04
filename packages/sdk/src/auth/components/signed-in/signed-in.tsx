@@ -15,13 +15,7 @@ export class SignedIn {
     const shouldShow = this.not ? !authStore.state.authenticated : authStore.state.authenticated;
 
     return (
-      <Host
-        class={this.componentClassName}
-        hidden={!shouldShow}
-        style={{ display: shouldShow ? undefined : "none" }}
-        aria-hidden={!shouldShow ? "true" : null}
-        aria-live="polite"
-      >
+      <Host class={this.componentClassName} hidden={!shouldShow} aria-hidden={!shouldShow ? "true" : null} aria-live="polite">
         <slot />
       </Host>
     );
