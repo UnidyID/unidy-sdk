@@ -41,6 +41,7 @@ This is only needed for components that render elements accepting Tailwind class
 When adding or modifying Stencil components, ensure the following before committing:
 
 ### JSDoc Documentation
+
 Every `@Prop`, `@Event`, and public `@Method` must have a JSDoc comment describing its purpose:
 
 ```tsx
@@ -59,15 +60,18 @@ async authorize(): Promise<void> { ... }
 ```
 
 ### README Generation
+
 After adding JSDoc comments, run `bun run build` in packages/sdk. Stencil auto-generates README.md files with property/event/method tables from your JSDoc. Verify the generated README includes descriptions for all documented items.
 
 ### Demo Pages
+
 New components or features should have a demo page in `packages/sdk/src/`:
 - Add HTML file (e.g., `src/oauth/index.html`)
 - Register in `stencil.config.ts` under `www.copy`
 - Add route to `e2e/config.ts`
 
 ### E2E Test Coverage
+
 New features require e2e tests covering:
 - Component renders correctly
 - User interactions work (buttons, inputs, form submissions)
@@ -108,6 +112,7 @@ render() {
 ## Component Mixins
 
 ### UnidyComponent
+
 Base mixin for all components. Accepts additional mixin factories and provides `this.logger` and `this.element`
 ```tsx
 export class MyComponent extends UnidyComponent() { ... }
@@ -115,4 +120,5 @@ export class MyComponent extends UnidyComponent(HasSlotContent) { ... }
 ```
 
 ### HasSlotContent
+
 Mixin for slot content detection. Provides `this.hasSlot` (auto-detected in connectedCallback).

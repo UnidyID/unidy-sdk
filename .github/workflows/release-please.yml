@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - master
-      - '*-stable'
+      - "*-stable"
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Release type'
+        description: "Release type"
         required: true
-        default: 'stable'
+        default: "stable"
         type: choice
         options:
           - stable
@@ -100,7 +100,7 @@ jobs:
       - name: Setup Node.js for npm publish
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Publish to NPM
         run: |
@@ -149,7 +149,7 @@ jobs:
       - name: Setup Node.js for npm publish
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Publish to NPM
         run: |
@@ -209,7 +209,7 @@ jobs:
         if: steps.check.outputs.needs_publish == 'true'
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Publish to NPM
         if: steps.check.outputs.needs_publish == 'true'

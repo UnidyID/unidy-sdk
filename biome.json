@@ -12,6 +12,7 @@
       "!**/components.d.ts",
       "!**/dist/**/*",
       "!**/hydrate/**/*",
+      "!packages/sdk/src/**/readme.md",
       "!**/loader/**/*",
       "!**/www/**/*",
       "!**/playwright-report/**/*",
