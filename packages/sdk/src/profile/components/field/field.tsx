@@ -1,6 +1,7 @@
 import { Component, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
+import { fieldErrorMessage } from "../../../shared/components/raw-field/field-helpers";
 import { findParentProfile } from "../../../shared/context-utils";
 import { state as profileState } from "../../store/profile-store";
 /**
@@ -29,6 +30,10 @@ import { state as profileState } from "../../store/profile-store";
  * @part field-save-indicator - Base styles for save state indicators (spinner/checkmark).
  * @part field-save-indicator--saving - Shown while the field is being saved (displays spinner).
  * @part field-save-indicator--saved - Shown after successful save (displays checkmark, disappears after 2s).
+ * @part consent-checkbox_field - Styles the checkbox of a consent checkbox field.
+ * @part consent-checkbox_field--disabled - Present on the consent checkbox when the field is disabled or readonly.
+ * @part consent-checkbox_label - Label wrapping the consent checkbox and its text.
+ * @part consent-checkbox_text - The consent text next to the checkbox.
  */
 
 @Component({
@@ -53,14 +58,17 @@ export class Field extends UnidyComponent() {
   @Prop() emptyOption = true;
   /** Placeholder text for the input field. */
   @Prop() placeholder?: string;
-  /** If true, renders the default label above the field. */
+  /**
+   * If true, renders the default label above the field, or next to the checkbox for consent checkboxes.
+   * If false, a consent checkbox keeps the label as its accessible name (`aria-label`).
+   */
   @Prop() renderDefaultLabel = true;
 
   /** Regex pattern for custom validation. */
   @Prop() pattern?: string;
   /** Error message shown when pattern validation fails. */
   @Prop() patternErrorMessage?: string;
-  /** Custom validation function. Returns { valid: boolean, message?: string }. */
+  /** Custom validation function. Returns { valid: boolean, message?: string }. Not called for consent checkboxes. */
   @Prop() validationFunc?: (value: string | string[]) => { valid: boolean; message?: string };
 
   private parentProfile: HTMLUProfileElement | null = null;
@@ -80,10 +88,17 @@ export class Field extends UnidyComponent() {
       : profileState.data[this.field];
   }
 
+  // Every profile change re-renders all fields, so a field with an error must not take focus while the user edits another one
+  private isEditingAnotherField(): boolean {
+    let active = document.activeElement;
+    while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+    return !!active && ["INPUT", "TEXTAREA", "SELECT"].includes(active.tagName) && !this.element.shadowRoot?.contains(active);
+  }
+
   componentDidRender() {
     const fieldErrors = profileState.errors;
 
-    if (Object.keys(fieldErrors)[0] === this.field) {
+    if (Object.keys(fieldErrors)[0] === this.field && !this.isEditingAnotherField()) {
       this.element.shadowRoot?.getElementById(this.field)?.scrollIntoView({ behavior: "smooth", block: "center" });
       this.element.shadowRoot
         ?.getElementById(this.field)
@@ -142,10 +157,15 @@ export class Field extends UnidyComponent() {
     });
 
     const errorPrefix = t("errors.prefix", { defaultValue: "ERROR: " });
+    const fieldError = profileState.errors[this.field];
+    const errorMessage = fieldError ? fieldErrorMessage(fieldError) : fieldError;
 
     const isLocked = !!fieldData?.locked;
     const lockedText = fieldData?.locked_text ? fieldData.locked_text : "";
-    const isReadonly = fieldData?.readonly === true;
+    const isConsent = fieldData.type === "consent_checkbox";
+    // A readonly consent checkbox is rendered disabled instead of as text, so its state stays visible next to its label
+    const readonlyConsent = isConsent && fieldData.readonly === true;
+    const isReadonly = fieldData?.readonly === true && !readonlyConsent;
     const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
     const brandPart = fieldData.brand ? ` field-container--brand-${this.createSpecificPartKey(fieldData.brand.name)}` : "";
 
@@ -153,7 +173,7 @@ export class Field extends UnidyComponent() {
       <div part={`field-container field-container--${this.createSpecificPartKey(this.field)}${brandPart}`}>
         <slot name="label" />
 
-        {this.renderDefaultLabel && (
+        {this.renderDefaultLabel && !isConsent && (
           <label htmlFor={this.field} part={`field_label field_label--${this.createSpecificPartKey(this.field)}`}>
             {label}
             {fieldData?.required || this.required ? <span part="required-indicator"> *</span> : null}
@@ -179,12 +199,17 @@ export class Field extends UnidyComponent() {
               id={this.field}
               field={this.field}
               type={fieldData.type as string}
-              value={fieldData.value}
+              // Boolean values (consent, radio) are read from the store instead
+              value={typeof fieldData.value === "boolean" ? undefined : fieldData.value}
+              label={isConsent ? label : undefined}
+              hideLabel={isConsent && !this.renderDefaultLabel}
               options={fieldData.type === "select" ? translatedOptions : undefined}
               radioOptions={fieldData.type === "radio" ? translatedRadioOptions : undefined}
               multiSelectOptions={fieldData.type === "checkbox" ? translatedOptions : undefined}
               required={fieldData.required || this.required}
-              disabled={isLocked || (profileState.loading && profileState.activeField !== this.field) || this.field === "email"}
+              disabled={
+                isLocked || readonlyConsent || (profileState.loading && profileState.activeField !== this.field) || this.field === "email"
+              }
               tooltip={isLocked ? lockedText : undefined}
               placeholder={placeholder}
               componentClassName={this.componentClassName}
@@ -212,9 +237,9 @@ export class Field extends UnidyComponent() {
           </div>
         )}
 
-        {profileState.errors[this.field] && (
+        {fieldError && (
           <span id={`${this.field}-error`} part="field-error-message" aria-live="assertive">
-            {errorPrefix} {profileState.errors[this.field]}
+            {errorPrefix} {errorMessage}
           </span>
         )}
       </div>

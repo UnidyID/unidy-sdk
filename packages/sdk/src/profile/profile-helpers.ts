@@ -1,14 +1,15 @@
 import { t } from "../i18n";
 import { type ProfileRaw, state as profileState } from "./store/profile-store";
 
-type FieldWrapper = { value?: unknown; required?: boolean };
+type FieldWrapper = { value?: unknown; required?: boolean; readonly?: boolean; locked?: boolean };
 
 /** Extracts the value from a field wrapper */
 const extractValue = ([key, field]: [string, unknown]): [string, unknown] => [key, (field as FieldWrapper).value];
 
-/** Checks if a required field is empty */
+/** Checks if a required field is empty. Readonly and locked fields are skipped: the user can't fill them in. */
 function isRequiredFieldEmpty(field: FieldWrapper | undefined): boolean {
-  return field?.required === true && (field.value === "" || field.value === null);
+  if (field?.required !== true || field.readonly === true || field.locked === true) return false;
+  return field.value === "" || field.value === null;
 }
 
 /** Sets a validation error for a field and returns false */

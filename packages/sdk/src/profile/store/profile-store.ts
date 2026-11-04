@@ -5,7 +5,8 @@ export type Option = { value: string; label: string; icon?: string | null };
 export type RadioOption = { value: string; label: string; checked: boolean };
 
 export interface ProfileNode {
-  value?: string | undefined | string[];
+  /** Consent checkboxes (`type: "consent_checkbox"`) hold `true` when given and `null` when not. */
+  value?: string | undefined | string[] | boolean | null;
   type?: string;
   label?: string;
   required?: boolean;

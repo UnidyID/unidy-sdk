@@ -27,7 +27,7 @@ export type CheckedNewsletters = Record<NewsletterInternalName, PreferenceIdenti
 export type DefaultPreferences = Record<NewsletterInternalName, Set<PreferenceIdentifier>>;
 
 export interface AdditionalFieldNode {
-  value?: string | string[];
+  value?: string | string[] | boolean | null;
   type?: string;
 }
 export type AdditionalFieldsData = Record<string, AdditionalFieldNode>;
