@@ -1,4 +1,5 @@
 # Unidy SDK
+
 This contains all the frontend SDK that enable our customers to seamlessly integrate Unidy into their frontend applications. We always keep in mind, that our customers have no developer resources or technical knowledge.
 
 ## Setting up the SDK
@@ -11,9 +12,11 @@ bun install
 ```
 
 ## Structure
+
 This is a bun monorepo using bun. The `node_module` on the root folder structure are shared between all packages/SDK libraries that can be found in the `packages` folder. Refer to the individual package README files on how to develop and release them.
 
 ## Releasing
+
 Each package is released independently. First go to the package folder. Update the version in the `package.json`.
 Run the build command, which will also update the generated `README.md` files in the package folder:
 

@@ -7,16 +7,16 @@ This section contains small, self-contained examples that demonstrate common SDK
 Table of Contents
 
 - [Quick Start: Examples](#quick-start-examples)
-    - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
-    - [Quick Start: Registration Flow](#quick-start-registration-flow)
-    - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
-    - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
-    - [Quick Start: Profile Icon](#quick-start-profile-icon)
-      - [Simple Profile Icon with Logout:](#simple-profile-icon-with-logout)
-      - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
-    - [Quick Start: Modal login](#quick-start-modal-login)
-    - [Quick Start: Account Deletion](#quick-start-account-deletion)
-    - [Quick Start: Profile QR Code](#quick-start-profile-qr-code)
+  - [Quick Start: Authentication Flow](#quick-start-authentication-flow)
+  - [Quick Start: Registration Flow](#quick-start-registration-flow)
+  - [Quick Start: Newsletter implementation](#quick-start-newsletter-implementation)
+  - [Quick Start: Ticket implementation](#quick-start-ticket-implementation)
+  - [Quick Start: Profile Icon](#quick-start-profile-icon)
+    - [Simple Profile Icon with Logout:](#simple-profile-icon-with-logout)
+    - [Profile Icon with Hover Dropdown Menu:](#profile-icon-with-hover-dropdown-menu)
+  - [Quick Start: Modal login](#quick-start-modal-login)
+  - [Quick Start: Account Deletion](#quick-start-account-deletion)
+  - [Quick Start: Profile QR Code](#quick-start-profile-qr-code)
 
 
 

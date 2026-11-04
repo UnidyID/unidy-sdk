@@ -4,10 +4,10 @@ This document describes how releases are managed for `@unidy.io/sdk`.
 
 ## Branch Model
 
-| Branch | Purpose | npm dist-tag | Example version |
-|--------|---------|-------------|-----------------|
-| `master` | Next minor/major release | `latest` | `1.4.0` |
-| `X-Y-stable` (e.g. `1-3-stable`) | Patch releases for version X.Y | `latest` if >= current latest, otherwise `release-X.Y` | `1.3.1` |
+| Branch                           | Purpose                        | npm dist-tag                                           | Example version |
+| -------------------------------- | ------------------------------ | ------------------------------------------------------ | --------------- |
+| `master`                         | Next minor/major release       | `latest`                                               | `1.4.0`         |
+| `X-Y-stable` (e.g. `1-3-stable`) | Patch releases for version X.Y | `latest` if >= current latest, otherwise `release-X.Y` | `1.3.1`         |
 
 ## How Releases Work
 
@@ -124,8 +124,8 @@ npm view @unidy.io/sdk@release-1.3 version
 
 ## Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `release-please-config.json` | Release Please package configuration |
-| `.release-please-manifest.json` | Tracks current version per package |
-| `.github/workflows/release-please.yml` | Release and publish workflow |
+| File                                   | Purpose                              |
+| -------------------------------------- | ------------------------------------ |
+| `release-please-config.json`           | Release Please package configuration |
+| `.release-please-manifest.json`        | Tracks current version per package   |
+| `.github/workflows/release-please.yml` | Release and publish workflow         |
