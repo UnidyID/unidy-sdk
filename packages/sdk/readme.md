@@ -584,7 +584,7 @@ Renders a button that redirects authenticated users to an external OAuth applica
 
 **Attributes:**
 
--   `service-id` (required): The OAuth Application ID of the service to redirect to.
+-   `service-id` (required): The `unidy_id` (UUID) of the OAuth Application of the service to redirect to, as shown in the dashboard URL of the application. Plain integer IDs continue to work for existing integrations, but are deprecated and will be removed in a future release.
 -   `redirect-uri`: The OAuth redirect URI. If not provided, the service's default redirect URI is used.
 -   `scopes`: Comma-separated OAuth scopes to request. Defaults to `"openid"`.
 -   `newtab`: If set to `true`, opens the service in a new browser tab. Defaults to `false`.
@@ -599,7 +599,7 @@ Renders a button that redirects authenticated users to an external OAuth applica
 
 ```html
 <u-signed-in>
-  <u-jump-to-service service-id="your-oauth-app-id" newtab="true">
+  <u-jump-to-service service-id="0b9f4c2e-6a1d-4e7b-9c35-8d2a1f6e4b70" newtab="true">
     Open External App
   </u-jump-to-service>
 </u-signed-in>

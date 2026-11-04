@@ -14,8 +14,9 @@ import { authState } from "../../store/auth-store";
 })
 export class JumpToService extends UnidyComponent(HasSlotContent) {
   /**
-   * The OAuth Application ID (service ID) to jump to.
-   * @example "2"
+   * The `unidy_id` (UUID) of the OAuth Application (service) to jump to, as shown in the dashboard URL of the application.
+   * Plain integer IDs are still accepted for existing integrations, but are deprecated and will be removed in a future release.
+   * @example "0b9f4c2e-6a1d-4e7b-9c35-8d2a1f6e4b70"
    */
   @Prop({ attribute: "service-id" }) serviceId!: string;
 
