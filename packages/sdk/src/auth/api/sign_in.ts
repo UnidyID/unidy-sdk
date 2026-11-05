@@ -181,7 +181,7 @@ export type ResendInvitationResult =
   | ["invitation_recently_sent", ResendDelayError]
   | [null, ResendDelayResponse];
 
-export type GetPasskeyOptionsResult = CommonErrors | ["bad_request", ErrorResponse] | [null, PasskeyOptionsResponse];
+export type GetPasskeyOptionsResult = CommonErrors | [string, ErrorResponse] | [null, PasskeyOptionsResponse];
 
 export type AuthenticateWithPasskeyResult =
   | CommonErrors
@@ -669,7 +669,7 @@ export async function getPasskeyOptions(
   return handleResponse(response, () => {
     if (!response.success) {
       const error_response = parseErrorResponse(response.data);
-      return ["bad_request", error_response];
+      return [error_response.error_identifier, error_response];
     }
 
     return [null, PasskeyOptionsResponseSchema.parse(response.data)];

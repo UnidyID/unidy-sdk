@@ -16,6 +16,8 @@ export interface RegistrationState {
   /** Client-side only confirmation value for password match validation. Never sent to the server. */
   passwordConfirmation: string;
   passwordlessFlag: boolean;
+  /** UI preference from typed-email continuation; never proof of authentication or email ownership. */
+  passkeyIntent: boolean;
   profileData: Record<string, unknown>;
   customAttributes: Record<string, unknown>;
   newsletterPreferences: Record<string, string[]>;
@@ -65,6 +67,7 @@ const initialState: RegistrationState = {
   password: "",
   passwordConfirmation: "",
   passwordlessFlag: false,
+  passkeyIntent: false,
   profileData: {},
   customAttributes: {},
   newsletterPreferences: {},
@@ -162,6 +165,10 @@ class RegistrationStore {
     state.passwordlessFlag = flag;
   }
 
+  setPasskeyIntent(intent: boolean) {
+    state.passkeyIntent = intent;
+  }
+
   setProfileData(data: Record<string, unknown>) {
     state.profileData = { ...state.profileData, ...data };
   }
@@ -227,8 +234,10 @@ class RegistrationStore {
     }
 
     if (error === "registration_not_found" || error === "registration_expired") {
+      const steps = state.steps;
       this.reset();
-      return;
+      this.setSteps(steps);
+      state.globalErrors = { registration: error };
     }
 
     state.errors = { ...state.errors, [field]: error };
@@ -248,8 +257,9 @@ class RegistrationStore {
     }
 
     if (error === "registration_not_found" || error === "registration_expired") {
+      const steps = state.steps;
       this.reset();
-      return false;
+      this.setSteps(steps);
     }
 
     this.rootComponentRef?.onError(error);

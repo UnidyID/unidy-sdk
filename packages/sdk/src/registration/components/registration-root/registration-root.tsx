@@ -169,7 +169,11 @@ export class RegistrationRoot extends UnidyComponent() {
     }
 
     if (stepEl.hasAttribute("requires-password")) {
-      if (registrationState.passwordlessFlag || registrationState.socialProvider) {
+      if (
+        registrationState.passwordlessFlag ||
+        registrationState.socialProvider ||
+        (registrationState.passkeyIntent && registrationState.hasPasskey)
+      ) {
         return true;
       }
     }

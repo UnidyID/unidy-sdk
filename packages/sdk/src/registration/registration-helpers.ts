@@ -1,5 +1,5 @@
 import type { UnidyClient } from "../api";
-import { authStore } from "../auth";
+import { Auth } from "../auth";
 import type { TokenResponse } from "../auth/api";
 import type {
   CreateRegistrationPayload,
@@ -10,15 +10,16 @@ import type {
   SendVerificationCodeResponse,
   UpdateRegistrationPayload,
 } from "../auth/api/register";
+import { completeAuthSession } from "../auth/session";
 import { t } from "../i18n";
-import { createLogger } from "../logger";
-import { buildPublicKeyCreationOptions, formatCreationCredentialForServer, PASSKEY_ERRORS } from "../shared/passkey-utils";
+import { buildPublicKeyCreationOptions, formatCreationCredentialForServer } from "../shared/passkey-utils";
 import { registrationState, registrationStore } from "./store/registration-store";
-
-const logger = createLogger("RegistrationHelpers");
 
 export class RegistrationHelpers {
   private client: UnidyClient;
+  private passkeyPending?: Promise<boolean>;
+  private passkeyRevision = 0;
+  private passkeyAuth?: Auth;
 
   constructor(client: UnidyClient) {
     this.client = client;
@@ -66,8 +67,12 @@ export class RegistrationHelpers {
    * Create a new registration flow (first step).
    */
   async createRegistration(registrationUrl: string, brandId?: number): Promise<boolean> {
+    if (registrationState.submitting) return false;
+    const cancellation = this.cancelPasskeyRegistration();
     registrationStore.setLoading(true);
     registrationStore.setSubmitting(true);
+    await cancellation;
+    registrationStore.setLoading(true);
     registrationStore.clearErrors();
 
     const payload: CreateRegistrationPayload = {
@@ -122,13 +127,17 @@ export class RegistrationHelpers {
    * Update the current registration flow (subsequent steps).
    */
   async updateRegistration(): Promise<boolean> {
+    if (registrationState.submitting) return false;
     if (!registrationState.rid) {
       registrationStore.setGlobalError("registration", "registration_not_found");
       return false;
     }
 
+    const cancellation = this.cancelPasskeyRegistration();
     registrationStore.setLoading(true);
     registrationStore.setSubmitting(true);
+    await cancellation;
+    registrationStore.setLoading(true);
     registrationStore.clearErrors();
 
     const payload = this.buildPayload();
@@ -163,13 +172,17 @@ export class RegistrationHelpers {
    * Finalize the registration and create the user.
    */
   async finalizeRegistration(): Promise<boolean> {
+    if (registrationState.submitting) return false;
     if (!registrationState.rid) {
       registrationStore.setGlobalError("registration", "registration_not_found");
       return false;
     }
 
+    const cancellation = this.cancelPasskeyRegistration();
     registrationStore.setLoading(true);
     registrationStore.setSubmitting(true);
+    await cancellation;
+    registrationStore.setLoading(true);
     registrationStore.clearErrors();
 
     const [error, response] = await this.client.auth.finalizeRegistration({
@@ -213,9 +226,7 @@ export class RegistrationHelpers {
     // Process auth tokens returned after successful finalization
     if (flowResponse.auth) {
       const tokenResponse: TokenResponse = { jwt: flowResponse.auth.id_token, refresh_token: flowResponse.auth.refresh_token };
-      authStore.setToken(tokenResponse.jwt);
-      authStore.setRefreshToken(tokenResponse.refresh_token);
-      authStore.getRootComponentRef()?.onAuth(tokenResponse);
+      completeAuthSession(tokenResponse);
     }
 
     return true;
@@ -348,6 +359,7 @@ export class RegistrationHelpers {
    * Cancel the current registration flow.
    */
   async cancelRegistration(): Promise<boolean> {
+    await this.cancelPasskeyRegistration();
     if (!registrationState.rid) {
       return false;
     }
@@ -389,85 +401,97 @@ export class RegistrationHelpers {
    * Register a passkey for the current registration flow.
    * Gets creation options from server, triggers WebAuthn browser prompt, sends credential back.
    */
-  async registerPasskey(passkeyName?: string): Promise<boolean> {
-    if (!registrationState.rid) {
+  registerPasskey(passkeyName?: string): Promise<boolean> {
+    if (!this.passkeyPending && (registrationState.loading || registrationState.submitting)) return Promise.resolve(false);
+    this.passkeyPending ??= this.doRegisterPasskey(passkeyName).finally(() => {
+      this.passkeyPending = undefined;
+    });
+    return this.passkeyPending;
+  }
+
+  private async doRegisterPasskey(passkeyName?: string): Promise<boolean> {
+    const revision = ++this.passkeyRevision;
+    const step = registrationState.currentStepName;
+    const rid = registrationState.rid;
+    if (!rid) {
       registrationStore.setGlobalError("registration", "registration_not_found");
       return false;
     }
-
     if (!window.PublicKeyCredential) {
       registrationStore.setFieldError("passkey", "passkey_not_supported");
       return false;
     }
-
     registrationStore.setLoading(true);
-    registrationStore.clearErrors();
-
+    registrationStore.clearFieldError("passkey");
     try {
-      const [optionsError, options] = await this.client.auth.getPasskeyCreationOptions({
-        rid: registrationState.rid,
+      const auth = await Auth.getInstance();
+      this.passkeyAuth = auth;
+      if (revision !== this.passkeyRevision || registrationState.rid !== rid || registrationState.currentStepName !== step) return false;
+      return await auth.helpers.coordinatePasskeyRegistration(async ({ signal, isCurrent }) => {
+        const [optionsError, options] = await this.client.auth.getPasskeyCreationOptions({ rid });
+        if (!isCurrent() || registrationState.rid !== rid) return false;
+        if (optionsError || !options || !("challenge" in options)) {
+          registrationStore.setFieldError("passkey", optionsError || "bad_request");
+          return false;
+        }
+        const credential = (await navigator.credentials.create({
+          publicKey: buildPublicKeyCreationOptions(options as PasskeyCreationOptions),
+          signal,
+        })) as PublicKeyCredential | null;
+        if (!isCurrent() || registrationState.rid !== rid) return false;
+        if (!credential) {
+          registrationStore.setFieldError("passkey", "passkey_cancelled");
+          return false;
+        }
+        const [registerError, response] = await this.client.auth.registerPasskey(
+          {
+            publicKeyCredential: formatCreationCredentialForServer(credential),
+            passkey_name: passkeyName,
+          },
+          { rid },
+        );
+        if (!isCurrent() || registrationState.rid !== rid) return false;
+        if (registerError || !response || !("rid" in response)) {
+          registrationStore.setFieldError("passkey", registerError || "bad_request");
+          return false;
+        }
+        registrationStore.setFlowResponse(response);
+        return true;
       });
-
-      if (optionsError || !options) {
-        registrationStore.setFieldError("passkey", optionsError || "bad_request");
-        registrationStore.setLoading(false);
-        return false;
-      }
-
-      const publicKeyOptions = buildPublicKeyCreationOptions(options as PasskeyCreationOptions);
-
-      const credential = (await navigator.credentials.create({
-        publicKey: publicKeyOptions,
-      })) as PublicKeyCredential | null;
-
-      if (!credential) {
-        registrationStore.setFieldError("passkey", "passkey_cancelled");
-        registrationStore.setLoading(false);
-        return false;
-      }
-
-      const formattedCredential = formatCreationCredentialForServer(credential);
-
-      const [registerError, response] = await this.client.auth.registerPasskey(
-        {
-          publicKeyCredential: formattedCredential,
-          passkey_name: passkeyName,
-        },
-        { rid: registrationState.rid },
-      );
-
-      registrationStore.setLoading(false);
-
-      if (registerError) {
-        registrationStore.setFieldError("passkey", registerError);
-        return false;
-      }
-
-      registrationStore.setFlowResponse(response as RegistrationFlowResponse);
-      return true;
-    } catch (error) {
-      logger.error("Passkey registration error:", error);
-
-      let errorMessage = "passkey_error";
-      if (error instanceof DOMException) {
-        errorMessage = PASSKEY_ERRORS[error.name] || "passkey_error";
-      }
-
-      registrationStore.setFieldError("passkey", errorMessage);
-      registrationStore.setLoading(false);
+    } catch {
+      registrationStore.setFieldError("passkey", "passkey_error");
       return false;
+    } finally {
+      registrationStore.setLoading(false);
     }
+  }
+
+  /** Invalidate registration creation, abort its browser request, and drain pending challenge/verification writes. */
+  cancelPasskeyRegistration(): Promise<void> {
+    this.passkeyRevision++;
+    return Promise.all([this.passkeyAuth?.helpers.cancelPasskeyAuthentication(), this.passkeyPending]).then(() => undefined);
+  }
+
+  /** Choose the normal password path without treating passkey intent as an authentication method. */
+  continueWithPassword(): void {
+    registrationStore.setPasskeyIntent(false);
+    registrationStore.clearFieldError("passkey");
   }
 
   /**
    * Remove the passkey from the current registration flow.
    */
   async removePasskey(): Promise<boolean> {
+    if (registrationState.submitting) return false;
     if (!registrationState.rid) {
       registrationStore.setGlobalError("registration", "registration_not_found");
       return false;
     }
 
+    const cancellation = this.cancelPasskeyRegistration();
+    registrationStore.setLoading(true);
+    registrationStore.setSubmitting(true);
+    await cancellation;
     registrationStore.setLoading(true);
     registrationStore.clearErrors();
 
@@ -476,6 +500,7 @@ export class RegistrationHelpers {
     });
 
     registrationStore.setLoading(false);
+    registrationStore.setSubmitting(false);
 
     if (error) {
       registrationStore.setFieldError("passkey", error);

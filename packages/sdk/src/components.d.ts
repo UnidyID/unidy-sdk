@@ -13,6 +13,7 @@ import { NewsletterButtonFor } from "./newsletter/components/submit-button/newsl
 import { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
 import { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
 import { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
+import { PasskeySignInMode } from "./auth/passkey-auth";
 import { PasswordFieldFor } from "./auth/components/password-field/password-field";
 import { ProfileRaw } from "./profile/store/profile-store";
 import { Option } from "./shared/components/raw-field/components/Select";
@@ -37,6 +38,7 @@ export { NewsletterButtonFor } from "./newsletter/components/submit-button/newsl
 export { OAuthButtonAction } from "./oauth/components/oauth-button/oauth-button";
 export { OAuthErrorEvent, OAuthSuccessEvent } from "./oauth/components/oauth-provider/oauth-provider";
 export { OAuthTextType } from "./oauth/components/oauth-text/oauth-text";
+export { PasskeySignInMode } from "./auth/passkey-auth";
 export { PasswordFieldFor } from "./auth/components/password-field/password-field";
 export { ProfileRaw } from "./profile/store/profile-store";
 export { Option } from "./shared/components/raw-field/components/Select";
@@ -191,6 +193,11 @@ export namespace Components {
           * @default "Email"
          */
         "ariaLabel": string;
+        /**
+          * Input autocomplete tokens. Use "username webauthn" with opt-in conditional passkey sign-in.
+          * @default "email"
+         */
+        "autocomplete": string;
         /**
           * CSS classes to apply to the input element.
           * @default ""
@@ -637,22 +644,40 @@ export namespace Components {
     }
     interface UPasskey {
         /**
+          * Set false when closing or hiding a sign-in modal to cancel pending requests and discard prefetched challenges.
+          * @default true
+         */
+        "active": boolean;
+        /**
+          * ID of an element describing the passkey button.
           * @default ""
          */
         "ariaDescribedBy"?: string;
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName": string;
         /**
+          * Opt in to typed-email account lookup and new-account passkey registration via a sibling u-registration-root.
+          * @default false
+         */
+        "continueWithPasskey": boolean;
+        /**
+          * Disable this button and stop its automatic passkey flow.
           * @default false
          */
         "disabled": boolean;
         /**
-          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * Allow account discovery without an email lookup. Immediate and conditional modes always use discovery.
           * @default false
          */
         "discoverable": boolean;
+        /**
+          * Standard modal UI by default. Opt in to immediate UI with conditional autofill fallback, or conditional autofill alone.
+          * @default "standard"
+         */
+        "mode": PasskeySignInMode;
     }
     interface UPasswordField {
         /**
@@ -855,19 +880,43 @@ export namespace Components {
     }
     interface URegistrationPasskey {
         /**
-          * CSS classes to apply to the button element.
+          * Set false when hiding or closing registration to cancel and ignore pending creation results.
+          * @default true
+         */
+        "active": boolean;
+        /**
+          * Automatically try creation once per new flow with typed-email passkey intent, when this step becomes active.
+          * @default false
+         */
+        "autoStart": boolean;
+        /**
+          * CSS classes to apply to the passkey button element.
           * @default ""
          */
         "componentClassName": string;
         /**
-          * Disable the button.
+          * Cancel creation, choose password, and submit this step using the normal ordered onboarding flow.
+         */
+        "continueWithPassword": () => Promise<void>;
+        /**
+          * Disable the button and cancel any outstanding creation.
           * @default false
          */
         "disabled": boolean;
         /**
+          * Tailwind classes for the optional password fallback button.
+          * @default ""
+         */
+        "fallbackClassName": string;
+        /**
           * Optional name for the passkey (defaults to "Passkey").
          */
         "passkeyName"?: string;
+        /**
+          * Offer an explicit password path through the remaining configured registration steps.
+          * @default false
+         */
+        "passwordFallback": boolean;
     }
     interface URegistrationResend {
         /**
@@ -945,12 +994,12 @@ export namespace Components {
          */
         "name": string;
         /**
-          * If true, this step is automatically skipped when the user's email is already verified.
+          * If true, this step is skipped when email is verified and submission is blocked until verification succeeds.
           * @default false
          */
         "requiresEmailVerification": boolean;
         /**
-          * If true, this step is automatically skipped for social login or passwordless flows.
+          * If true, this step is automatically skipped for social login, passwordless flows, or successful opt-in passkey continuation.
           * @default false
          */
         "requiresPassword": boolean;
@@ -1019,6 +1068,9 @@ export namespace Components {
           * @default false
          */
         "alwaysRender": boolean;
+        /**
+          * Whether this step is currently active or configured to always render.
+         */
         "isActive": () => Promise<boolean>;
         /**
           * The name of this step in the sign-in flow.
@@ -1033,6 +1085,9 @@ export namespace Components {
     | "registration"
     | "unconfirmed"
     | "invited";
+        /**
+          * Submit the active step once, including while a previous passkey request is being cancelled.
+         */
         "submit": () => Promise<void>;
     }
     interface USocialLoginButton {
@@ -2216,6 +2271,11 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
+          * Input autocomplete tokens. Use "username webauthn" with opt-in conditional passkey sign-in.
+          * @default "email"
+         */
+        "autocomplete"?: string;
+        /**
           * CSS classes to apply to the input element.
           * @default ""
          */
@@ -2650,22 +2710,40 @@ declare namespace LocalJSX {
     }
     interface UPasskey {
         /**
+          * Set false when closing or hiding a sign-in modal to cancel pending requests and discard prefetched challenges.
+          * @default true
+         */
+        "active"?: boolean;
+        /**
+          * ID of an element describing the passkey button.
           * @default ""
          */
         "ariaDescribedBy"?: string;
         /**
+          * CSS classes to apply to the button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
+          * Opt in to typed-email account lookup and new-account passkey registration via a sibling u-registration-root.
+          * @default false
+         */
+        "continueWithPasskey"?: boolean;
+        /**
+          * Disable this button and stop its automatic passkey flow.
           * @default false
          */
         "disabled"?: boolean;
         /**
-          * When true, renders and triggers a discoverable-credential flow without requiring a prior email step.
+          * Allow account discovery without an email lookup. Immediate and conditional modes always use discovery.
           * @default false
          */
         "discoverable"?: boolean;
+        /**
+          * Standard modal UI by default. Opt in to immediate UI with conditional autofill fallback, or conditional autofill alone.
+          * @default "standard"
+         */
+        "mode"?: PasskeySignInMode;
     }
     interface UPasswordField {
         /**
@@ -2886,19 +2964,39 @@ declare namespace LocalJSX {
     }
     interface URegistrationPasskey {
         /**
-          * CSS classes to apply to the button element.
+          * Set false when hiding or closing registration to cancel and ignore pending creation results.
+          * @default true
+         */
+        "active"?: boolean;
+        /**
+          * Automatically try creation once per new flow with typed-email passkey intent, when this step becomes active.
+          * @default false
+         */
+        "autoStart"?: boolean;
+        /**
+          * CSS classes to apply to the passkey button element.
           * @default ""
          */
         "componentClassName"?: string;
         /**
-          * Disable the button.
+          * Disable the button and cancel any outstanding creation.
           * @default false
          */
         "disabled"?: boolean;
         /**
+          * Tailwind classes for the optional password fallback button.
+          * @default ""
+         */
+        "fallbackClassName"?: string;
+        /**
           * Optional name for the passkey (defaults to "Passkey").
          */
         "passkeyName"?: string;
+        /**
+          * Offer an explicit password path through the remaining configured registration steps.
+          * @default false
+         */
+        "passwordFallback"?: boolean;
     }
     interface URegistrationResend {
         /**
@@ -2972,12 +3070,12 @@ declare namespace LocalJSX {
          */
         "name": string;
         /**
-          * If true, this step is automatically skipped when the user's email is already verified.
+          * If true, this step is skipped when email is verified and submission is blocked until verification succeeds.
           * @default false
          */
         "requiresEmailVerification"?: boolean;
         /**
-          * If true, this step is automatically skipped for social login or passwordless flows.
+          * If true, this step is automatically skipped for social login, passwordless flows, or successful opt-in passkey continuation.
           * @default false
          */
         "requiresPassword"?: boolean;
@@ -3408,6 +3506,7 @@ declare namespace LocalJSX {
         "componentClassName": string;
         "ariaLabel": string;
         "disabled": boolean;
+        "autocomplete": string;
     }
     interface UErrorMessageAttributes {
         "componentClassName": string;
@@ -3542,6 +3641,9 @@ declare namespace LocalJSX {
         "componentClassName": string;
         "ariaDescribedBy": string;
         "discoverable": boolean;
+        "mode": PasskeySignInMode;
+        "active": boolean;
+        "continueWithPasskey": boolean;
     }
     interface UPasswordFieldAttributes {
         "for": PasswordFieldFor;
@@ -3611,6 +3713,10 @@ declare namespace LocalJSX {
         "componentClassName": string;
         "passkeyName": string;
         "disabled": boolean;
+        "active": boolean;
+        "autoStart": boolean;
+        "passwordFallback": boolean;
+        "fallbackClassName": string;
     }
     interface URegistrationResendAttributes {
         "componentClassName": string;

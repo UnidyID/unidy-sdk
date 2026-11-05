@@ -189,14 +189,137 @@ Defines a distinct step in the sign-in process (e.g., entering an email, enterin
 
 #### `<u-passkey>`
 
-Renders a button that initiates passkey authentication. This component only renders if passkey authentication is available and the browser supports WebAuthn.
+Renders a passkey sign-in button. Defaults to the existing standard modal flow, gated by the account's login options and browser WebAuthn support.
 
 **Attributes:**
--   `text`: The text to display on the button. Defaults to "Sign in with Passkey".
--   `loading-text`: The text to display on the button while authenticating. Defaults to "Authenticating..."
--   `class-name`: A string of classes to pass to the button.
--   `disabled`: If set to `true`, the button will be disabled. Defaults to `false`.
--   `aria-described-by`: ID of an element that describes the button for accessibility.
+
+- `mode`: `"standard"` (default), `"immediate"`, or `"conditional"`. Immediate prefetches a discoverable challenge and uses native immediate UI only from a trusted user gesture when `getClientCapabilities()?.immediateGet` is true. Missing/throwing capability detection, stale options, no credential, or `NotAllowedError` falls back to email and conditional autofill when supported. Conditional mode only listens for autofill.
+- `continue-with-passkey`: Defaults to `false`. With a nonempty valid email, change the action to **Continue with passkey**: look up that account and use its offered login methods, or start new-account registration after `account_not_found`. A sibling `u-registration-root` supplies the registration URL/brand and ordered onboarding steps. Empty email retains the selected discovery mode.
+- `discoverable`: Allow standard sign-in without an email lookup. Immediate/conditional always discover the account from the assertion.
+- `active`: Defaults to `true`. Set `false` when closing/hiding a modal; removing the component also cancels its flow. Only the active `u-signin-step` starts automatic listening. Use one automatic passkey component per sign-in surface.
+- `class-name`: Tailwind classes for the button.
+- `disabled`: Disable interaction and cancel automatic listening. Busy buttons use `aria-disabled` to retain keyboard focus.
+- `aria-described-by`: ID(s) of elements describing the button (including errors).
+
+Use `<u-email-field autocomplete="username webauthn">` for autofill and keep the email/password/social controls available. Include `<u-error-message for="passkey">` and `<u-error-message for="general">` so origin/security and verification errors remain visible. Keep an explicit `<u-passkey discoverable>` button for security keys and cross-device authentication. See the local `/auth/passkey.html` example (`src/auth/passkey.html`).
+
+#### Headless immediate and conditional passkey sign-in
+
+The browser `Auth` singleton exposes the same coordinator through `auth.helpers`. These browser-only helpers manage the normal sid, JWT, refresh token, errors/loading and `authEvent`. The low-level standalone HTTP service does not orchestrate browser ceremonies.
+
+```javascript
+import { Auth, authStore } from "@unidy.io/sdk";
+
+const auth = await Auth.getInstance();
+await auth.ready;
+const email = document.querySelector("#email");
+email.autocomplete = "username webauthn";
+const syncEmail = () => authStore.setEmail(email.value);
+email.addEventListener("input", syncEmail);
+email.addEventListener("change", syncEmail);
+const refocus = () => {
+  if (document.activeElement === email) {
+    email.blur();
+    email.focus();
+  }
+};
+
+// Prefetch while opening the sign-in surface, before the passkey click.
+if (!(await auth.helpers.prepareImmediatePasskey())) {
+  email.focus();
+  void auth.helpers.authenticateWithPasskey({ mode: "conditional", onConditionalReady: refocus });
+}
+// Do not await initialization, capabilities, cancellation or HTTP requests inside this handler before calling the helper.
+document.querySelector("#passkey").addEventListener("click", (event) => {
+  void auth.helpers.authenticateWithPasskey({
+    mode: "immediate",
+    event,
+    onFallback: () => email.focus(),
+    onConditionalReady: refocus,
+  });
+});
+document.querySelector("#other-device").addEventListener("click", () => {
+  void auth.helpers.authenticateWithPasskey({ mode: "standard", discoverable: true });
+});
+// Call and await this on close/unmount, or before custom auth/registration flows.
+// await auth.helpers.cancelPasskeyAuthentication();
+```
+
+`prepareImmediatePasskey(): Promise<boolean>` coalesces preparation and caps options at 60 seconds from request start (or the server's shorter timeout). Expired/unready options fall back to the form; the SDK never fetches a challenge and then launches immediate UI asynchronously. Prepare again when reopening the surface. `authenticateWithPasskey(options?)` returns `"authenticated" | "fallback" | "unavailable" | "cancelled" | "error" | "busy"`. Conditional listening remains pending until selection/cancellation and does not set global auth loading or disable email; loading begins on assertion verification. Immediate fallback returns `"fallback"` while conditional listening continues in the background. Subscribe to `authEvent` or auth state for its eventual success.
+
+`PasskeySignInOptions` also accepts `event`, `onFallback`, and `onConditionalReady` as shown above. Immediate requires both a trusted event and active transient user activation; programmatic clicks cannot invoke it. Its request uses `uiMode: "immediate"`, an empty allowlist, and no AbortSignal. The default standard request preserves email-first sid/allowlist behavior; `discoverable: true` omits the sid. Conditional always omits the sid, so the verified assertion selects the account even when a different email was typed.
+
+Cancellation invalidates stale results synchronously and waits for requests to settle before a replacement challenge is fetched. Immediate browser UI cannot be programmatically aborted; cancellation waits for it to close and ignores its result. SDK password/email/magic-code/social flows cancel listening, as do step changes and successful auth. For custom competing flows, await `cancelPasskeyAuthentication()` before issuing requests. Do not mix raw `client.auth.getPasskeyOptions()` calls with a running helper, since the backend stores a single challenge in an encrypted cookie. Separate tabs, separate SDK copies and raw API consumers need application-level coordination as well.
+
+Passkeys require **both** a secure context/RP ID valid for the current page's origin and server authorization of that **exact frontend origin**. `PasskeyConcern` builds WebAuthn allowed origins from SDK clients' `allowed_hosts` using `AllowedTargetMatcher.http_origin`, which discards wildcard hosts. A CORS entry such as `https://*.unidy.io` can permit API requests while still failing WebAuthn signature verification. The correct SDK client must also contain the concrete `window.location.origin`, including scheme and any non-default port, e.g. `https://frontend.example.com`. Preserve existing allowed-host entries when configuring this prerequisite. This is operator configuration; the SDK does not change it.
+
+Setting `base-url` or adding an allowed origin does not change the page origin or bypass the browser's RP ID/domain restrictions. A deployment on an unrelated domain still needs an RP arrangement the browser supports. See the [native immediate UI guidance](https://developer.chrome.com/docs/identity/immediate-ui-mode) for browser API constraints. The SDK preserves `passkey_security_error` for browser SecurityError, exact API error identifiers such as `verification_failed` / `passkey_verification_failed`, and options endpoint errors instead of rewriting them all to `bad_request`. API/CORS success alone is not evidence of working WebAuthn verification. No backend feature flag or tenant configuration is changed by opting in.
+
+#### Typed-email continuation and new-account passkeys
+
+`<u-passkey mode="immediate" continue-with-passkey>` adds the hosted flow's typed-email behavior without changing the default. Both `input` and `change` update the button label/auth state; the actual input value is read again on click to cover password-manager autofill. Invalid input stays on email with browser validation. The lookup trims and lowercases the email like the hosted flow.
+
+For existing emails, normal `/sign_ins` lookup remains authoritative. The SDK preserves password, magic-code, social, confirmation/invitation, brand and required-profile handling. If passkey login is offered, it requests standard WebAuthn options using the returned sid and requires a nonempty account allowlist. A missing/empty allowlist leaves the offered methods visible instead of starting discovery. Cancellation never starts enrollment. Email knowledge alone cannot enroll a passkey into an existing account.
+
+Only `account_not_found` can create a new registration flow, using its own rid and the configured registration URL/brand. An existing local registration draft is retained, with `registration_flow_already_exists`; there is no implicit resume/overwrite from an email alone. A lookup/create race returning `email_already_registered` stops before credential creation and retains that error. A component without a sibling `u-registration-root` reports `registration_not_configured` rather than creating an unusable flow.
+
+Configure a passkey step **before** the password step, with all required verification/profile/matching/consent/onboarding steps still in their normal order. For example:
+
+```html
+<u-signin-root>
+  <u-signin-step name="email">
+    <u-passkey mode="immediate" continue-with-passkey></u-passkey>
+    <u-email-field autocomplete="username webauthn"></u-email-field>
+    <u-submit-button for="email"></u-submit-button>
+    <u-passkey discoverable></u-passkey>
+  </u-signin-step>
+  <!-- Keep the normal verification, magic-code, confirmation, required-field and other sign-in steps here. -->
+  <u-signin-step name="registration">
+    <u-registration-root auto-resume="false" steps='["email","passkey","verification","profile","password","onboarding"]'>
+      <u-registration-step name="email"><!-- Your normal email collection UI. --></u-registration-step>
+      <u-registration-step name="passkey">
+        <u-registration-passkey auto-start password-fallback>Create passkey</u-registration-passkey>
+        <u-error-message for="passkey"></u-error-message>
+        <u-submit-button text="Continue registration"></u-submit-button>
+      </u-registration-step>
+      <u-registration-step name="verification" requires-email-verification>
+        <u-registration-email-verification></u-registration-email-verification>
+        <u-error-message for="verificationCode"></u-error-message>
+      </u-registration-step>
+      <u-registration-step name="profile"><!-- Your required profile fields and submit button. --></u-registration-step>
+      <u-registration-step name="password" requires-password><!-- Normal password fields and submit button. --></u-registration-step>
+      <u-registration-step name="onboarding"><!-- Remaining consent/matching/newsletter UI and final submit. --></u-registration-step>
+    </u-registration-root>
+  </u-signin-step>
+</u-signin-root>
+```
+
+The email step is advanced only after the flow is created. `u-registration-passkey auto-start` attempts creation once per new flow carrying typed-email passkey intent, only while its containing step is active. Ordinary/resumed flows do not acquire that intent automatically. If a browser blocks automatic creation, users can retry with the visible Create passkey button or choose the password path. Set `active=false` on **both** passkey components when hiding a modal (or unmount them).
+
+`password-fallback` adds **Continue with password** (`fallback-class-name` styles it). The component's `continueWithPassword()` method cancels/drains creation, clears only the passkey error/preference, and submits the current step through normal ordered registration. It does not jump over verification/profile/onboarding. A `requires-password` step is skipped for this opt-in flow only after the server reports `has_passkey=true`; cancelled creation leaves the normal password step available. `requires-email-verification` blocks submission until the server-verified email state is true. Passkey creation never sets `passwordless_flag` or `email_verified`, never finalizes the user, and never emits authEvent. Normal finalization still enforces backend requirements. A session/authEvent is completed exactly once only when finalization returns auth tokens; otherwise `registrationComplete.requiresEmailConfirmation` remains true.
+
+Headless applications use the same flow:
+
+```javascript
+import { Registration, registrationState } from "@unidy.io/sdk";
+
+const registration = await Registration.getInstance();
+const result = await auth.helpers.continueWithPasskey(email.value, {
+  registrationUrl: `${location.origin}/register`,
+  // brandId: 123, // optional, same meaning as registration-root's brand-id
+});
+if (result === "registration") {
+  // registrationState holds the new rid and passkeyIntent. Advance only past the completed email step.
+  // With components: await registrationRoot.advanceToNextStep();
+  // Headless: render your ordered registration steps and call Registration.helpers.registerPasskey()
+  // when the passkey step is active. Continue verification/profile/onboarding normally.
+}
+```
+
+`continueWithPasskey()` returns the sign-in result union plus `"verification"` (offered methods need user action) or `"registration"` (new flow ready). It never interprets arbitrary lookup errors as new accounts. For a headless password fallback, await `registration.helpers.cancelPasskeyRegistration()`, call `registration.helpers.continueWithPassword()`, then continue the configured onboarding steps. `Registration.helpers.registerPasskey()` deduplicates concurrent calls and shares sign-in's cancellation queue; step/rid changes, close and competing authentication invalidate late challenge/credential/verification completions. Registration completion shares normal sid/JWT/refresh-token/session event handling.
+
+
+`bun run e2e:passkey` runs isolated mocked WebAuthn/API regressions after building the SDK and demo CSS. The suite also checks native rejection of an unrelated RP ID without a credential. The remaining tests mock WebAuthn and API responses to validate SDK sequencing, UI, keyboard/focus and session handling; they do not establish immediate-mode availability, real authenticator interoperability, credential availability or tenant/RP configuration. Verify those separately in a compatible browser on the intended origin before release.
 
 #### `<u-email-field>`
 
@@ -204,6 +327,7 @@ Renders a pre-configured input for the user's email address.
 
 **Attributes:**
 
+- `autocomplete`: Defaults to `"email"`; use `"username webauthn"` for conditional passkey autofill. Input and change events synchronize values to auth state.
 - `placeholder`: The placeholder text for the input field. Defaults to "Enter your email".
 - `class-name`: A string of classes to pass to the input field.
 

@@ -17,15 +17,18 @@ import { captchaManager, isCaptchaError } from "../shared/captcha";
 import { Flash } from "../shared/store/flash-store";
 import { clearUrlParam } from "../shared/utils/url-utils";
 import type { TokenPayload } from "./auth";
-import { authenticateWithPasskey } from "./passkey-auth";
+import { PasskeyAuth, type PasskeyContinuationOptions, type PasskeyRegistrationContext, type PasskeySignInOptions } from "./passkey-auth";
+import { completeAuthSession } from "./session";
 
 export class AuthHelpers {
   private client: UnidyClient;
   private logger = createLogger("AuthHelpers");
   private refreshTokenPromise: Promise<void> | null = null;
+  private passkeys: PasskeyAuth;
 
   constructor(client: UnidyClient) {
     this.client = client;
+    this.passkeys = new PasskeyAuth(client, (response) => this.handleAuthSuccess(response));
   }
 
   async createSignIn(email: string, password?: string, sendMagicCode?: boolean) {
@@ -33,7 +36,9 @@ export class AuthHelpers {
       throw new Error(t("errors.required_field", { field: "Email" }));
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
     // Whatever this lookup returns, the previous one's brands no longer describe it
     authStore.setBrands([]);
@@ -116,7 +121,9 @@ export class AuthHelpers {
       throw new Error(t("errors.required_field", { field: "Password" }));
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     // Execute captcha if enabled for login
@@ -154,7 +161,9 @@ export class AuthHelpers {
       throw new Error(t("errors.magic_code_is_missing"));
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     // Execute captcha if enabled for login
@@ -182,11 +191,35 @@ export class AuthHelpers {
     this.handleAuthSuccess(response as TokenResponse);
   }
 
-  authenticateWithPasskey() {
-    return authenticateWithPasskey(this.client, (response) => this.handleAuthSuccess(response));
+  /** Prefetch fresh discoverable options before a user gesture. Returns false if immediate UI is unavailable. */
+  prepareImmediatePasskey(): Promise<boolean> {
+    return this.passkeys.prepareImmediate();
+  }
+
+  /** Authenticate with standard UI (default), opt-in immediate UI, or background conditional autofill. */
+  authenticateWithPasskey(options: PasskeySignInOptions = {}) {
+    return this.passkeys.authenticate(options);
+  }
+
+  /** Continue a typed email with account-scoped passkey login, or create a new registration flow with passkey intent. */
+  continueWithPasskey(email: string, options?: PasskeyContinuationOptions) {
+    return this.passkeys.continueWithEmail(email, options, (error, response) =>
+      this.handleAuthError(error, response, authState.step === "verification" ? undefined : "email"),
+    );
+  }
+
+  /** @internal Coordinate registration WebAuthn with the browser auth singleton's existing ceremonies. */
+  coordinatePasskeyRegistration(run: (context: PasskeyRegistrationContext) => Promise<boolean>): Promise<boolean> {
+    return this.passkeys.register(run);
+  }
+
+  /** Cancel listening and invalidate pending results; await before another flow replaces the challenge cookie. */
+  cancelPasskeyAuthentication(): Promise<void> {
+    return this.passkeys.cancel();
   }
 
   async logout(globalLogout?: boolean, signInId?: string | null, backendSignedIn?: boolean) {
+    await this.cancelPasskeyAuthentication();
     const [error, _] = await this.client.auth.signOut({
       signInId: (signInId ?? authState.sid) as string,
       globalLogout: globalLogout ?? backendSignedIn ?? authState.backendSignedIn,
@@ -316,7 +349,9 @@ export class AuthHelpers {
     }
 
     authStore.setMagicCodeStep("requested");
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     if (authState.step === "single-login") {
@@ -468,7 +503,9 @@ export class AuthHelpers {
       return;
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     const [error, response] = await this.client.auth.resetPassword({
@@ -588,7 +625,9 @@ export class AuthHelpers {
       return;
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     const [error, response] = await this.client.auth.acceptInvitation({
@@ -714,7 +753,9 @@ export class AuthHelpers {
       throw new Error(t("errors.no_sign_in_id"));
     }
 
+    const passkeyCancellation = this.cancelPasskeyAuthentication();
     authStore.setLoading(true);
+    await passkeyCancellation;
     authStore.clearErrors();
 
     const [error, response] = await this.client.auth.connectBrand({ signInId: authState.sid });
@@ -804,17 +845,6 @@ export class AuthHelpers {
   }
 
   private handleAuthSuccess(response: TokenResponse) {
-    authStore.setToken(response.jwt);
-    authStore.setRefreshToken(response.refresh_token);
-    authStore.setLoading(false);
-    const ref = authStore.getRootComponentRef();
-    if (ref) {
-      ref.onAuth(response);
-    } else {
-      // No sign-in root component registered yet (e.g. session restore via checkSignedIn()
-      // races component initialization). Dispatch on document so headless integrations
-      // that listen for authEvent can still react.
-      document.dispatchEvent(new CustomEvent("authEvent", { detail: response, bubbles: false }));
-    }
+    completeAuthSession(response);
   }
 }

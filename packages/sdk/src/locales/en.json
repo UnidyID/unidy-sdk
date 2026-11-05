@@ -17,6 +17,8 @@
     },
     "passkey": {
       "button_text": "Sign in with Passkey",
+      "continue_with_passkey": "Continue with passkey",
+      "continue_with_password": "Continue with password",
       "loading_text": "Authenticating..."
     },
     "password": {
@@ -84,10 +86,12 @@
     "code_expired": "Verification code has expired. Please request a new one",
     "connection_failed": "Unable to connect to the Unidy server",
     "email_already_registered": "This email is already registered. Please sign in instead",
+    "email_verification_required": "Please verify your email before continuing",
     "expired": "Expired",
     "failed_to_load_profile": "Failed to load profile data. Please check configuration",
     "field_required": "This field is required",
     "invalid_code": "Invalid verification code. Please try again",
+    "invalid_email": "Invalid email address",
     "invalid_id_token": "Invalid ID token",
     "invalid_format": "Invalid format",
     "invalid_input": "Invalid input",
@@ -129,6 +133,7 @@
     "refresh_token_revoked": "Refresh token revoked",
     "registration_expired": "Registration session expired. Please start again",
     "registration_flow_already_exists": "A registration is already in progress for this email",
+    "registration_not_configured": "Passkey registration is unavailable. Please use another sign-in method",
     "registration_not_found": "Registration session not found. Please start again",
     "required_field": "{{field}} is required",
     "reset_password_already_sent": "Reset password email already sent",
