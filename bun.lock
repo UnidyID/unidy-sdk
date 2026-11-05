@@ -75,7 +75,7 @@
         "vite": "^8.3.5",
       },
       "peerDependencies": {
-        "@unidy.io/sdk": ">=1.12.0",
+        "@unidy.io/sdk": ">=1.13.0",
         "react": ">=18",
       },
     },
