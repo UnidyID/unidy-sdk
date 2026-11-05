@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "@unidy.io/sdk": ">=1.12.0"
+    "@unidy.io/sdk": ">=1.13.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
