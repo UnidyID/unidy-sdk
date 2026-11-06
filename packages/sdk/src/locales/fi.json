@@ -1,0 +1,268 @@
+{
+  "auth": {
+    "brands": {
+      "continue_on": "Jatka brändissä {{brand}}",
+      "other_accounts": "Muut tilisi"
+    },
+    "email": {
+      "placeholder": "Kirjoita sähköpostiosoitteesi"
+    },
+    "magicCode": {
+      "already_sent_text": "Kertakäyttökoodi on jo lähetetty sähköpostiisi",
+      "button_text": "Lähetä kertakäyttökoodi",
+      "resend": {
+        "button_text": "Lähetä kertakäyttökoodi uudelleen"
+      },
+      "sending_text": "Lähetetään..."
+    },
+    "passkey": {
+      "button_text": "Kirjaudu sisään pääsyavaimella",
+      "loading_text": "Tunnistaudutaan..."
+    },
+    "password": {
+      "button_text": "Kirjaudu sisään salasanalla",
+      "confirmation": {
+        "placeholder": "Vahvista salasanasi"
+      },
+      "placeholder": "Kirjoita salasanasi"
+    },
+    "resetPassword": {
+      "button_text_resend": "Lähetä salasanan nollausviesti uudelleen",
+      "button_text_reset": "Nollaa salasana",
+      "button_text_set": "Aseta salasana",
+      "button_text_save": "Tallenna uusi salasana",
+      "success_message": "Salasanan nollausviesti on lähetetty. Tarkista sähköpostisi"
+    },
+    "resendConfirmation": {
+      "button_text": "Lähetä vahvistusviesti uudelleen",
+      "description": "Tarkista sähköpostisi ja vahvista sähköpostiosoitteesi. Jos et saanut viestiä, voit pyytää uuden vahvistusviestin.",
+      "title": "Vahvista sähköpostiosoitteesi"
+    },
+    "resendInvitation": {
+      "button_text": "Lähetä kutsu uudelleen",
+      "description": "Sinut on kutsuttu. Jos et saanut kutsua sähköpostiisi, voit pyytää uuden.",
+      "title": "Hyväksy kutsusi"
+    },
+    "single-login": {
+      "button_text": "Kirjaudu sisään"
+    },
+    "socialLogin": {
+      "button_text": "Jatka palvelulla {{provider}}"
+    },
+    "navigation": {
+      "back": "Takaisin",
+      "restart": "Aloita alusta"
+    }
+  },
+  "buttons": {
+    "cancel": "Peruuta",
+    "close": "Sulje",
+    "confirm": "Vahvista",
+    "connect": "Yhdistä",
+    "continue": "Jatka",
+    "jump_to_service": "Siirry palveluun",
+    "jump_to_unidy": "Siirry Unidy-palveluun",
+    "logout": "Kirjaudu ulos",
+    "registration": "Rekisteröi uusi tili",
+    "sign_in": "Kirjaudu sisään",
+    "submit": "Lähetä"
+  },
+  "errors": {
+    "account_locked": "Tili on lukittu",
+    "account_not_found": "Tiliä ei löytynyt",
+    "account_already_confirmed": "Sähköpostiosoitteesi on jo vahvistettu. Kirjaudu sisään",
+    "account_unconfirmed": "Tilin sähköpostiosoitetta ei ole vahvistettu",
+    "confirmation_recently_sent": "Vahvistusviesti on lähetetty äskettäin. Odota hetki ennen uuden pyytämistä",
+    "auth_method_required": "Aseta salasana tai vahvista sähköpostiosoitteesi jatkaaksesi",
+    "authentication_failed": "Todennus epäonnistui",
+    "bad_request": "Virheellinen pyyntö",
+    "cannot_finalize": "Rekisteröitymistä ei voi viimeistellä. Täytä kaikki pakolliset kentät",
+    "captcha_execution_failed": "Turvatarkistus epäonnistui. Yritä uudelleen",
+    "captcha_score_too_low": "Turvatarkistus epäonnistui. Yritä uudelleen",
+    "captcha_token_missing": "Suorita turvatarkistus",
+    "captcha_verification_failed": "Turvatarkistus epäonnistui. Yritä uudelleen",
+    "code_expired": "Vahvistuskoodi on vanhentunut. Pyydä uusi",
+    "connection_failed": "Yhteyttä Unidy-palvelimeen ei voitu muodostaa",
+    "email_already_registered": "Tämä sähköpostiosoite on jo rekisteröity. Kirjaudu sisään",
+    "expired": "Vanhentunut",
+    "failed_to_load_profile": "Profiilitietojen lataaminen epäonnistui. Tarkista asetukset",
+    "field_required": "Tämä kenttä on pakollinen",
+    "invalid_code": "Virheellinen vahvistuskoodi. Yritä uudelleen",
+    "invalid_id_token": "Virheellinen ID-token",
+    "invalid_format": "Virheellinen muoto",
+    "invalid_input": "Virheellinen syöte",
+    "invalid_passkey": "Virheellinen pääsyavain",
+    "invalid_password": "Virheellinen salasana",
+    "invalid_phone": "Anna kelvollinen puhelinnumero",
+    "invalid_refresh_token": "Virheellinen päivitystoken",
+    "invalid_required_fields_payload": "Virheelliset pakolliset kentät",
+    "invalid_reset_token": "Virheellinen nollaustoken. Pyydä uusi salasanan nollausviesti",
+    "invalid_response_format": "Virheellinen vastauksen muoto",
+    "internal_server_error": "Palvelinvirhe",
+    "magic_code_not_valid": "Kertakäyttökoodi ei ole kelvollinen",
+    "magic_code_is_missing": "Kertakäyttökoodi puuttuu",
+    "magic_code_recently_created": "Kertakäyttökoodi on luotu äskettäin",
+    "magic_link_not_enabled": "Kirjautuminen kirjautumislinkillä ei ole käytössä tälle tilille",
+    "missing_id_token": "ID-token puuttuu",
+    "missing_refresh_token": "Päivitystokenia ei ole",
+    "missing_required_fields": "Pakollisia kenttiä puuttuu",
+    "no_sign_in_id": "Kirjautumis-ID:tä ei ole saatavilla",
+    "not_valid": "Ei kelvollinen",
+    "passkey_cancelled": "Pääsyavaimella kirjautuminen peruutettiin",
+    "passkey_error": "Pääsyavaimessa tapahtui tuntematon virhe",
+    "passkey_invalid_state": "Pääsyavaimen tila on virheellinen",
+    "passkey_not_supported": "Pääsyavainta ei tueta",
+    "passkey_security_error": "Pääsyavaimen turvallisuusvirhe",
+    "password_not_set": "Salasanaa ei ole asetettu",
+    "password_required": "Salasana on pakollinen",
+    "password_validation_failed": "Salasana ei täytä vaatimuksia",
+    "password_requirements": {
+      "is too short (minimum is 6 characters)": "Salasana on liian lyhyt (vähintään 6 merkkiä)",
+      "min_length": "Vähintään 6 merkkiä",
+      "mixed_case": "Täytyy sisältää sekä isoja että pieniä kirjaimia",
+      "number": "Täytyy sisältää numero",
+      "symbol": "Täytyy sisältää erikoismerkki"
+    },
+    "passwords_do_not_match": "Salasanat eivät täsmää",
+    "prefix": "VIRHE: ",
+    "refresh_failed": "Tokenin päivitys epäonnistui. Kirjaudu sisään uudelleen",
+    "refresh_token_revoked": "Päivitystoken on peruutettu",
+    "registration_expired": "Rekisteröitymisistunto on vanhentunut. Aloita alusta",
+    "registration_flow_already_exists": "Tälle sähköpostiosoitteelle on jo käynnissä rekisteröityminen",
+    "registration_not_found": "Rekisteröitymisistuntoa ei löytynyt. Aloita alusta",
+    "required_field": "{{field}} on pakollinen",
+    "reset_password_already_sent": "Salasanan nollausviesti on jo lähetetty",
+    "reset_token_expired": "Nollaustoken on vanhentunut. Pyydä uusi salasanan nollausviesti",
+    "reset_token_missing": "Nollaustoken puuttuu",
+    "schema_validation_error": "Skeeman validointivirhe",
+    "validation": {
+      "accepted": "täytyy hyväksyä",
+      "blank": "ei voi olla tyhjä",
+      "empty": "ei voi olla tyhjä",
+      "even": "täytyy olla parillinen",
+      "exclusion": "on varattu",
+      "in": "ei ole luettelossa",
+      "inclusion": "ei ole luettelossa",
+      "invalid": "on virheellinen",
+      "not_a_number": "ei ole luku",
+      "odd": "täytyy olla pariton",
+      "present": "täytyy olla tyhjä",
+      "taken": "on jo käytössä",
+      "too_long": "on liian pitkä",
+      "too_short": "on liian lyhyt"
+    },
+    "sign_in_expired": "Kirjautuminen on vanhentunut",
+    "sign_in_not_found": "Kirjautumista ei löytynyt",
+    "sign_out_failed": "Uloskirjautuminen epäonnistui, syy: {{reason}}",
+    "unknown": "Tapahtui tuntematon virhe",
+    "used": "Käytetty",
+    "verification_code_recently_sent": "Vahvistuskoodi on lähetetty äskettäin. Odota hetki ennen uuden pyytämistä",
+    "verification_failed": "Vahvistus epäonnistui"
+  },
+  "loading": "Ladataan...",
+  "oauth": {
+    "errors": {
+      "application_not_found": "OAuth-sovellusta ei löytynyt",
+      "client_id_required": "client-id on pakollinen",
+      "connection_failed": "Verkkovirhe. Yritä uudelleen.",
+      "grant_failed": "Suostumuksen antaminen epäonnistui",
+      "invalid_field_values": "Virheelliset kenttien arvot",
+      "missing_required_fields": "Täytä kaikki pakolliset kentät",
+      "not_authenticated": "Käyttäjä ei ole kirjautunut. Kirjaudu ensin sisään.",
+      "unknown": "Tapahtui odottamaton virhe",
+      "update_failed": "Käyttäjätietojen päivittäminen epäonnistui"
+    }
+  },
+  "newsletter": {
+    "buttons": {
+      "logout": "x",
+      "resend_doi": "Lähetä vahvistus uudelleen",
+      "subscribe": "Tilaa",
+      "unsubscribe": "Lopeta tilaus"
+    },
+    "errors": {
+      "already_subscribed": "Tilaus on jo voimassa",
+      "consent_required": "Hyväksy ehdot tilataksesi",
+      "email_required": "Anna sähköpostiosoitteesi",
+      "invalid_email": "Virheellinen sähköpostiosoite",
+      "login_email_not_found": "Tälle sähköpostiosoitteelle ei ole tilausta",
+      "newsletter_not_found": "Uutiskirjettä ei löytynyt",
+      "preferences_not_found": "Asetusta ei löytynyt",
+      "rate_limit_exceeded": "Liian monta pyyntöä. Yritä myöhemmin uudelleen",
+      "unauthorized": "Istuntosi on vanhentunut. Kirjaudu sisään uudelleen",
+      "unconfirmed": "Sähköpostiosoitettasi ei ole vahvistettu tälle uutiskirjeelle",
+      "unsubscribe_failed": "Tilauksen lopettaminen epäonnistui",
+      "invalid_preference_token": "Virheellinen asetustoken. Kirjoita sähköpostiosoitteesi saadaksesi uuden linkin."
+    },
+    "success": {
+      "doi_sent": "Vahvistusviesti on lähetetty sähköpostiosoitteeseesi",
+      "login_email_sent": "Lähetimme sähköpostiosoitteeseesi linkin, jolla voit hallita olemassa olevaa tilaustasi",
+      "logout": "Olet kirjautunut ulos",
+      "preferences_updated": "Asetuksesi on päivitetty",
+      "subscribe": "Tilaus onnistui",
+      "unsubscribe": "Tilauksen lopetus onnistui"
+    }
+  },
+  "profile": {
+    "signInToView": "Kirjaudu sisään nähdäksesi profiilisi",
+    "updated": "Profiili on päivitetty"
+  },
+  "registration": {
+    "internal_matching": {
+      "check_button": "Etsi tili",
+      "checking": "Haetaan...",
+      "confirm_button": "Kyllä, käytä tätä tiliä",
+      "confirming": "Yhdistetään...",
+      "default_primary_label": "Asiakasnumero",
+      "error_expired": "Rekisteröitymisistuntosi on vanhentunut. Aloita alusta.",
+      "error_generic": "Tapahtui virhe. Yritä uudelleen.",
+      "error_match_mismatch": "Antamasi tiedot eivät vastaa mitään tiliä. Tarkista tiedot ja yritä uudelleen.",
+      "error_match_not_found": "Annetuilla tiedoilla ei löytynyt tiliä. Tarkista tiedot ja yritä uudelleen.",
+      "error_no_match": "Vastaavaa tiliä ei löytynyt. Voit jatkaa ilman yhdistämistä.",
+      "error_rate_limited": "Liian monta yritystä. Odota hetki ja yritä uudelleen.",
+      "match_confirm_question": "Haluatko yhdistää tämän olemassa olevan tilin?",
+      "match_found_description": "Löysimme tietoihisi liitetyn tilin.",
+      "match_found_title": "Tili löytyi!",
+      "preview_created_at": "Rekisteröity:",
+      "preview_email": "Sähköposti:",
+      "reject_button": "Ei, luo uusi tili",
+      "rejecting": "Jatketaan...",
+      "skip_button": "Jatka ilman yhdistämistä",
+      "skipping": "Jatketaan..."
+    }
+  },
+  "ticketTransfer": {
+    "actions": {
+      "accept": "Hyväksy",
+      "cancel": "Peruuta siirto",
+      "decline": "Hylkää",
+      "return": "Palauta omistajalle",
+      "revoke": "Mitätöi siirto"
+    },
+    "errors": {
+      "feature_disabled": "Lippujen siirrot eivät ole käytettävissä",
+      "fetch_failed": "Lippusiirtojen lataaminen epäonnistui",
+      "generic": "Jokin meni pieleen. Yritä uudelleen",
+      "missing_ticket": "Siirrettävää lippua ei ole valittu",
+      "not_found": "Siirtotarjousta ei löytynyt",
+      "not_ticket_owner": "Voit siirtää vain omistamasi liput",
+      "not_transfer_sender": "Vain lähettäjä voi peruuttaa tämän siirron",
+      "offer_email_failed": "Siirtoviestin lähettäminen epäonnistui. Yritä uudelleen",
+      "recipient_invite_failed": "Vastaanottajaa ei voitu kutsua. Yritä uudelleen",
+      "recipient_is_owner": "Et voi siirtää lippua itsellesi",
+      "recipient_mismatch": "Tämä siirtotarjous on osoitettu toiselle tilille",
+      "ticket_already_transferred": "Tämä lippu on jo siirretty",
+      "ticket_not_active": "Tämä lippu ei ole aktiivinen",
+      "ticket_not_transferred": "Tätä lippua ei ole siirretty",
+      "transfer_already_pending": "Tälle lipulle on jo odottava siirtotarjous",
+      "transfer_expired": "Tämä siirtotarjous on vanhentunut",
+      "transfer_not_pending": "Tämä siirtotarjous ei ole enää odottamassa"
+    },
+    "form": {
+      "email_label": "Vastaanottajan sähköpostiosoite",
+      "email_placeholder": "Kirjoita vastaanottajan sähköpostiosoite",
+      "submit": "Siirrä lippu",
+      "success": "Siirtotarjous lähetetty osoitteeseen {{email}}"
+    }
+  }
+}

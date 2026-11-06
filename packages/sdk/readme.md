@@ -928,7 +928,7 @@ This component fetches and renders a list of tickets or subscriptions. It requir
 
 -   `<ticketable-value>`: This component is used inside the template to display a value from the ticket or subscription object.
     -   `name` (required): The name of the attribute to display. Supports nested paths using dot notation (e.g., `title`, `starts_at`, `metadata.foo.bar`, `metadata.items.[0].name`).
-    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`). Supported locales: `en`, `de`, `fr`, `nl_be`, `ro`, `sv`.
+    -   `date-format`: A format string for date values (e.g., `dd.MM.yyyy`, `yyyy-MM-dd HH:mm`). Supported locales: `cs`, `de`, `en`, `fi`, `fr`, `it`, `ka`, `nb`, `nl_be`, `ro`, `sv`.
     -   `format`: A string to format the value (e.g., `Price: {{value}}`).
     -   `default`: A default value to display if the attribute is not present.
 
