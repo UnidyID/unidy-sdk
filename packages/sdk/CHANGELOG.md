@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.13.0...@unidy.io/sdk-v1.14.0) (2026-11-06)
+
+
+### Features
+
+* [UD-3857] add Finnish (fi) locale ([#358](https://github.com/UnidyID/unidy-sdk/issues/358)) ([5f5ff9d](https://github.com/UnidyID/unidy-sdk/commit/5f5ff9d57dd6fd28d8935edd20bfeb6e56d21324))
+* add Finnish (fi) locale ([5f5ff9d](https://github.com/UnidyID/unidy-sdk/commit/5f5ff9d57dd6fd28d8935edd20bfeb6e56d21324))
+
 ## [1.13.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.13.0) (2026-11-04)
 
 
