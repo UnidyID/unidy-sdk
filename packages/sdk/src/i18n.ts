@@ -3,6 +3,7 @@ import i18n from "i18next";
 import cs from "./locales/cs.json";
 import de from "./locales/de.json";
 import en from "./locales/en.json";
+import fi from "./locales/fi.json";
 import fr from "./locales/fr.json";
 import it from "./locales/it.json";
 import ka from "./locales/ka.json";
@@ -24,6 +25,7 @@ i18n.use(i18nLogger).init({
     cs: { translation: cs },
     de: { translation: de },
     en: { translation: en },
+    fi: { translation: fi },
     fr: { translation: fr },
     it: { translation: it },
     ka: { translation: ka },
