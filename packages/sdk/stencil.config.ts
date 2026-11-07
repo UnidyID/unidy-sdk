@@ -26,6 +26,7 @@ export const config: Config = {
         { src: "sdk.css", dest: "sdk.css" },
         { src: "demo-build.css", dest: "demo.css" },
         { src: "auth/index.html", dest: "auth/index.html" },
+        { src: "auth/passkey.html", dest: "auth/passkey.html" },
         { src: "newsletter/index.html", dest: "newsletter/index.html" },
         { src: "ticketable/index.html", dest: "ticketable/index.html" },
         { src: "ticketable/transfers.html", dest: "ticketable/transfers.html" },
@@ -45,6 +46,10 @@ export const config: Config = {
   },
 
   plugins: [tailwind({ injectTailwindConfiguration: (_filename) => '@import "tailwindcss" prefix(u);' }), tailwindHMR()],
-  testing: { browserHeadless: "shell", testPathIgnorePatterns: ["/node_modules/", "/e2e/"], setupFiles: ["<rootDir>/src/test-setup.ts"] },
+  testing: {
+    browserHeadless: "shell",
+    testPathIgnorePatterns: ["/node_modules/", "/e2e/", "/dist/", "/www/", "/loader/"],
+    setupFiles: ["<rootDir>/src/test-setup.ts"],
+  },
   devServer: { reloadStrategy: "pageReload", openBrowser: false },
 };

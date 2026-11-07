@@ -17,7 +17,10 @@
     },
     "passkey": {
       "button_text": "Kirjaudu sisään pääsyavaimella",
-      "loading_text": "Tunnistaudutaan..."
+      "continue_with_passkey": "Jatka pääsyavaimella",
+      "continue_with_password": "Jatka salasanalla",
+      "loading_text": "Tunnistaudutaan...",
+      "start_new_registration": "Aloita uusi rekisteröityminen"
     },
     "password": {
       "button_text": "Kirjaudu sisään salasanalla",
@@ -84,10 +87,12 @@
     "code_expired": "Vahvistuskoodi on vanhentunut. Pyydä uusi",
     "connection_failed": "Yhteyttä Unidy-palvelimeen ei voitu muodostaa",
     "email_already_registered": "Tämä sähköpostiosoite on jo rekisteröity. Kirjaudu sisään",
+    "email_verification_required": "Vahvista sähköpostiosoitteesi ennen jatkamista",
     "expired": "Vanhentunut",
     "failed_to_load_profile": "Profiilitietojen lataaminen epäonnistui. Tarkista asetukset",
     "field_required": "Tämä kenttä on pakollinen",
     "invalid_code": "Virheellinen vahvistuskoodi. Yritä uudelleen",
+    "invalid_email": "Virheellinen sähköpostiosoite",
     "invalid_id_token": "Virheellinen ID-token",
     "invalid_format": "Virheellinen muoto",
     "invalid_input": "Virheellinen syöte",
@@ -129,6 +134,7 @@
     "refresh_token_revoked": "Päivitystoken on peruutettu",
     "registration_expired": "Rekisteröitymisistunto on vanhentunut. Aloita alusta",
     "registration_flow_already_exists": "Tälle sähköpostiosoitteelle on jo käynnissä rekisteröityminen",
+    "registration_not_configured": "Rekisteröityminen pääsyavaimella ei ole käytettävissä. Käytä toista kirjautumistapaa",
     "registration_not_found": "Rekisteröitymisistuntoa ei löytynyt. Aloita alusta",
     "required_field": "{{field}} on pakollinen",
     "reset_password_already_sent": "Salasanan nollausviesti on jo lähetetty",

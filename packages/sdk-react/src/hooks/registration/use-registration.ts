@@ -496,7 +496,7 @@ export function useRegistration(args?: UseRegistrationArgs): UseRegistrationRetu
       try {
         const optionsResult = await client.auth.getPasskeyCreationOptions(resolveOptions(args?.options));
         const [optionsError, creationOptions] = optionsResult;
-        if (optionsError || !creationOptions) {
+        if (optionsError !== null || !creationOptions) {
           dispatch({ type: "error", error: optionsError || "bad_request" });
           callbacksRef.current?.onError?.(optionsError || "bad_request");
           return false;

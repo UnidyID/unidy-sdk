@@ -17,7 +17,7 @@
 
 ### `isActive() => Promise<boolean>`
 
-
+Whether this step is currently active or configured to always render.
 
 #### Returns
 
@@ -27,7 +27,7 @@ Type: `Promise<boolean>`
 
 ### `submit() => Promise<void>`
 
-
+Submit the active step once, including while a previous passkey request is being cancelled.
 
 #### Returns
 
