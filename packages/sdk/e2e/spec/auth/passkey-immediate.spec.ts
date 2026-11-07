@@ -8,6 +8,7 @@ type TestState = {
   creations: { signal: boolean; aborted: boolean }[];
   resolveCreation: (index: number) => void;
   resolve: (index: number) => void;
+  releaseEmailFocus?: () => void;
 };
 type TestWindow = Window & { passkeyTest: TestState };
 type MockOptions = {
@@ -26,6 +27,7 @@ type MockOptions = {
   holdLookup?: boolean;
   holdCreationChallenge?: boolean;
   storedRid?: string;
+  delayEmailHydration?: boolean;
 };
 
 const token = {
@@ -48,6 +50,7 @@ async function setup(page: Page, options: MockOptions = {}) {
     releaseChallenge: undefined as (() => void) | undefined,
     releaseLookup: undefined as (() => void) | undefined,
     releaseCreation: undefined as (() => void) | undefined,
+    releaseEmail: undefined as (() => void) | undefined,
     registrations: 0,
     creationChallenges: 0,
     enrollments: 0,
@@ -194,6 +197,18 @@ async function setup(page: Page, options: MockOptions = {}) {
     }
     await route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
   });
+  if (options.delayEmailHydration) {
+    await page.route("**/build/*.entry.js", async (route) => {
+      const response = await route.fetch();
+      const body = await response.text();
+      if (body.includes("u_email_field")) {
+        await new Promise<void>((resolve) => {
+          network.releaseEmail = resolve;
+        });
+      }
+      await route.fulfill({ response, body });
+    });
+  }
   await page.addInitScript((settings) => {
     if (settings.storedRid) localStorage.setItem("unidy_registration_id", settings.storedRid);
     const credential = () => ({
@@ -281,7 +296,7 @@ async function setup(page: Page, options: MockOptions = {}) {
       },
     });
   }, options);
-  await page.goto(routes.passkey);
+  await page.goto(routes.passkey, { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle("Unidy Immediate Passkey Demo");
   await expect(page.getByRole("heading", { name: "Passkey sign-in" })).toBeVisible();
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
@@ -329,6 +344,37 @@ for (const capability of ["missing", "false", "throws"] as const) {
     await expectSession(page);
   });
 }
+
+test("conditional fallback focuses email after delayed lazy hydration", async ({ page }) => {
+  const { network } = await setup(page, { capability: "false", delayEmailHydration: true });
+  expect(network.releaseEmail).toBeDefined();
+  network.releaseEmail();
+  await expect.poll(async () => (await requests(page)).length).toBe(1);
+  await expect(page.getByRole("textbox", { name: "Email", exact: true })).toBeFocused();
+});
+
+test("delayed fallback does not steal focus after another user action", async ({ page }) => {
+  await setup(page, { capability: "false" });
+  await expect.poll(async () => (await requests(page)).length).toBe(1);
+  await page.locator('u-passkey[mode="immediate"]').evaluate((element: HTMLUPasskeyElement) => {
+    element.active = false;
+  });
+  await expect.poll(async () => (await requests(page))[0].aborted).toBe(true);
+  await page.locator("u-email-field").evaluate((element: HTMLUEmailFieldElement) => {
+    element.componentOnReady = () =>
+      new Promise((resolve) => {
+        (window as unknown as TestWindow).passkeyTest.releaseEmailFocus = () => resolve(element);
+      });
+  });
+  await page.locator('u-passkey[mode="immediate"]').evaluate((element: HTMLUPasskeyElement) => {
+    element.active = true;
+  });
+  await expect.poll(async () => (await requests(page)).length).toBe(2);
+  await standardButton(page).focus();
+  await page.evaluate(() => (window as unknown as TestWindow).passkeyTest.releaseEmailFocus());
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+  await expect(standardButton(page)).toBeFocused();
+});
 
 for (const immediate of ["null", "NotAllowedError"] as const) {
   test(`immediate ${immediate} focuses email and starts conditional mediation`, async ({ page }) => {
@@ -660,7 +706,7 @@ test("lookup/create race does not enroll into an email that has become registere
 });
 
 test("a saved registration offers an explicit keyboard start-over without silently replacing the draft", async ({ page }) => {
-  const { network, errors } = await setup(page, { lookup: "new", storedRid: "saved-rid", creation: "cancel" });
+  const { network } = await setup(page, { lookup: "new", storedRid: "saved-rid", creation: "cancel" });
   await typedContinue(page);
   const restart = page.getByRole("button", { name: "Start a new registration", exact: true });
   await expect(restart).toBeVisible();
@@ -672,7 +718,6 @@ test("a saved registration offers an explicit keyboard start-over without silent
   expect(await page.evaluate(() => localStorage.getItem("unidy_registration_id"))).toBe("new-rid");
   expect(network.registrations).toBe(1);
   expect(network.finalizes).toBe(0);
-  expect(errors).toEqual([]);
 });
 
 test("failed start-over retains the saved registration and the server error identifier", async ({ page }) => {

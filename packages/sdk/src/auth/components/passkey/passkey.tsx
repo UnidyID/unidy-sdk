@@ -121,7 +121,17 @@ export class Passkey {
   }
 
   private focusEmail = () => {
-    this.emailField()?.focus();
+    const field = this.element.closest("u-signin-root")?.querySelector("u-email-field");
+    const revision = this.revision;
+    const focused = document.activeElement;
+    // Lazy hydration and ancestor hidden-state renders may finish after capability detection.
+    // Wait for the input to exist and become visible, without taking focus after another interaction.
+    void field?.componentOnReady().then(() => {
+      requestAnimationFrame(() => {
+        if (revision !== this.revision || !this.canListen() || document.activeElement !== focused) return;
+        this.emailField()?.focus();
+      });
+    });
   };
 
   private refocusEmail = () => {
