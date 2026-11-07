@@ -25,6 +25,7 @@ type MockOptions = {
   creationVerifyError?: string;
   holdLookup?: boolean;
   holdCreationChallenge?: boolean;
+  storedRid?: string;
 };
 
 const token = {
@@ -35,7 +36,7 @@ const registrationToken = {
   jwt: `e30.${Buffer.from(JSON.stringify({ sub: "new-user", sid: "new-sid", email: "new@example.com", exp: 9999999999 })).toString("base64url")}.sig`,
   refresh_token: "registration-refresh-token",
 };
-const immediateButton = (page: Page) => page.locator('u-passkey[mode="immediate"] button');
+const immediateButton = (page: Page) => page.locator('u-passkey[mode="immediate"] button').first();
 const standardButton = (page: Page) => page.locator('u-passkey[mode="standard"] button');
 const requests = (page: Page) => page.evaluate(() => (window as unknown as TestWindow).passkeyTest.requests);
 
@@ -194,6 +195,7 @@ async function setup(page: Page, options: MockOptions = {}) {
     await route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
   });
   await page.addInitScript((settings) => {
+    if (settings.storedRid) localStorage.setItem("unidy_registration_id", settings.storedRid);
     const credential = () => ({
       id: "asserted-user-passkey",
       rawId: new Uint8Array([1]).buffer,
@@ -654,6 +656,33 @@ test("lookup/create race does not enroll into an email that has become registere
     "This email is already registered. Please sign in instead",
   );
   expect(network.creationChallenges).toBe(0);
+  expect(network.enrollments).toBe(0);
+});
+
+test("a saved registration offers an explicit keyboard start-over without silently replacing the draft", async ({ page }) => {
+  const { network, errors } = await setup(page, { lookup: "new", storedRid: "saved-rid", creation: "cancel" });
+  await typedContinue(page);
+  const restart = page.getByRole("button", { name: "Start a new registration", exact: true });
+  await expect(restart).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("unidy_registration_id"))).toBe("saved-rid");
+  expect(network.registrations).toBe(0);
+  expect(network.creationChallenges).toBe(0);
+  await restart.press("Enter");
+  await expect(page.getByRole("button", { name: "Continue with password", exact: true })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("unidy_registration_id"))).toBe("new-rid");
+  expect(network.registrations).toBe(1);
+  expect(network.finalizes).toBe(0);
+  expect(errors).toEqual([]);
+});
+
+test("failed start-over retains the saved registration and the server error identifier", async ({ page }) => {
+  const { network } = await setup(page, { lookup: "new", storedRid: "saved-rid", lookupCreateRace: true });
+  await typedContinue(page);
+  await page.getByRole("button", { name: "Start a new registration", exact: true }).click();
+  await expect(page.locator('u-signin-root > u-error-message[for="general"]')).toHaveText(
+    "This email is already registered. Please sign in instead",
+  );
+  expect(await page.evaluate(() => localStorage.getItem("unidy_registration_id"))).toBe("saved-rid");
   expect(network.enrollments).toBe(0);
 });
 

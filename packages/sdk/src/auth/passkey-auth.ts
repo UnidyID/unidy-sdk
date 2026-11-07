@@ -28,6 +28,8 @@ export interface PasskeyContinuationOptions {
   registrationUrl: string;
   /** Optional brand ID for the new registration flow. */
   brandId?: number;
+  /** Explicitly replace a saved local draft after a new flow is created successfully. Does not cancel the saved server flow. */
+  replaceStoredRegistration?: boolean;
 }
 export type PasskeyContinuationResult = PasskeySignInResult | "verification" | "registration";
 /** @internal Lifecycle lease for an SDK registration ceremony. */
@@ -271,7 +273,8 @@ export class PasskeyAuth {
           return "error";
         }
         // Never silently replace or enroll into a previously stored registration flow.
-        if (registrationState.rid) {
+        const storedRid = registrationState.rid;
+        if (storedRid && !options.replaceStoredRegistration) {
           authStore.setGlobalError("auth", "registration_flow_already_exists");
           return "error";
         }
@@ -280,16 +283,19 @@ export class PasskeyAuth {
           registration_url: options.registrationUrl,
           ...(options.brandId ? { brand_id: options.brandId } : {}),
         });
-        if (!this.current(operation)) return "cancelled";
+        if (!this.current(operation) || registrationState.rid !== storedRid) return "cancelled";
         if (registrationError || !flow || !("rid" in flow)) {
           // A lookup/create race returning email_already_registered must never fall through to enrollment.
           authStore.setGlobalError("auth", registrationError || "bad_request");
           return "error";
         }
+        // This is a different account/flow. setFlowResponse intentionally merges partial updates,
+        // so reset all previous draft values first, retaining the integration's configured steps.
+        const steps = registrationState.steps;
+        registrationStore.reset();
+        registrationStore.setSteps(steps);
         registrationStore.setRid(flow.rid);
-        registrationStore.setPassword("");
-        registrationStore.setPasswordConfirmation("");
-        registrationStore.setPasswordlessFlag(false);
+        registrationStore.setEmail(email);
         registrationStore.setPasskeyIntent(true);
         registrationStore.clearErrors();
         registrationStore.setFlowResponse(flow);

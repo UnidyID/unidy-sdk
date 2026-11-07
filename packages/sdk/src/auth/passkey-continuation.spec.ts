@@ -210,6 +210,94 @@ describe("typed-email passkey continuation and enrollment (mocked WebAuthn)", ()
     expect(registrationState.profileData).toEqual({ first_name: "Existing draft" });
   });
 
+  it("clears previous account data before applying a fresh flow and sending subsequent updates", async () => {
+    const steps = [...registrationState.steps];
+    registrationStore.setRid("finished-rid");
+    registrationStore.setEmail("previous@example.com");
+    registrationStore.setProfileData({ first_name: "Previous person" });
+    registrationStore.setCustomAttribute("private_note", "Previous person's data");
+    registrationStore.setNewsletterPreference("main", ["previous-preference"]);
+    registrationStore.setPassword("previous-password");
+    registrationStore.setPasswordConfirmation("previous-password");
+    registrationStore.setVerificationCodeSent(true);
+    registrationStore.setEmailAlreadyInFlow(true);
+    registrationStore.setResumeEmailSent(true);
+    registrationStore.clearRid(); // Finalization keeps field values but clears the old rid.
+    api.createRegistration.mockResolvedValueOnce([null, flow({ newsletter_preferences: undefined })]);
+    api.createSignIn.mockResolvedValueOnce(["account_not_found", {}]);
+    expect(await helpers.continueWithPasskey("new@example.com", registrationOptions)).toBe("registration");
+    expect(registrationState.steps).toEqual(steps);
+    expect(registrationState.email).toBe("new@example.com");
+    expect(registrationState.customAttributes).toEqual({});
+    expect(registrationState.newsletterPreferences).toEqual({});
+    expect(registrationState.profileData).toEqual({});
+    expect(registrationState.password).toBe("");
+    expect(registrationState.passwordConfirmation).toBe("");
+    expect(registrationState.verificationCodeSent).toBe(false);
+    expect(registrationState.emailAlreadyInFlow).toBe(false);
+    expect(registrationState.resumeEmailSent).toBe(false);
+    registrationStore.setProfileField("first_name", "New person");
+    await registration.updateRegistration();
+    expect(api.updateRegistration).toHaveBeenCalledWith(
+      { email: "new@example.com", registration_profile_data: { first_name: "New person" } },
+      { rid: "new-rid" },
+    );
+  });
+
+  it("allows an explicit start-over without canceling or enrolling into the saved server flow", async () => {
+    registrationStore.setRid("saved-rid");
+    registrationStore.setCustomAttribute("old", "draft");
+    api.createSignIn.mockResolvedValueOnce(["account_not_found", {}]);
+    expect(await helpers.continueWithPasskey("new@example.com", { ...registrationOptions, replaceStoredRegistration: true })).toBe(
+      "registration",
+    );
+    expect(registrationState.rid).toBe("new-rid");
+    expect(localStorage.getItem("unidy_registration_id")).toBe("new-rid");
+    expect(registrationState.customAttributes).toEqual({});
+    expect(api.createRegistration).toHaveBeenCalledWith({
+      email: "new@example.com",
+      registration_url: registrationOptions.registrationUrl,
+      brand_id: 2,
+    });
+    expect(api.getPasskeyCreationOptions).not.toHaveBeenCalled();
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it("keeps the saved draft if explicit start-over fails", async () => {
+    registrationStore.setRid("saved-rid");
+    registrationStore.setCustomAttribute("old", "draft");
+    api.createSignIn.mockResolvedValueOnce(["account_not_found", {}]);
+    api.createRegistration.mockResolvedValueOnce(["email_already_registered", {}]);
+    expect(await helpers.continueWithPasskey("new@example.com", { ...registrationOptions, replaceStoredRegistration: true })).toBe("error");
+    expect(registrationState.rid).toBe("saved-rid");
+    expect(registrationState.customAttributes).toEqual({ old: "draft" });
+    expect(authState.globalErrors.auth).toBe("email_already_registered");
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it("still authenticates existing accounts normally when start-over is requested", async () => {
+    registrationStore.setRid("saved-rid");
+    expect(await helpers.continueWithPasskey("existing@example.com", { ...registrationOptions, replaceStoredRegistration: true })).toBe(
+      "authenticated",
+    );
+    expect(registrationState.rid).toBe("saved-rid");
+    expect(api.createRegistration).not.toHaveBeenCalled();
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it("does not overwrite another flow selected while start-over is pending", async () => {
+    registrationStore.setRid("saved-rid");
+    const creation = deferred<[null, RegistrationFlowResponse]>();
+    api.createSignIn.mockResolvedValueOnce(["account_not_found", {}]);
+    api.createRegistration.mockReturnValueOnce(creation.promise);
+    const pending = helpers.continueWithPasskey("new@example.com", { ...registrationOptions, replaceStoredRegistration: true });
+    await flush();
+    registrationStore.setRid("other-rid");
+    creation.resolve([null, flow()]);
+    expect(await pending).toBe("cancelled");
+    expect(registrationState.rid).toBe("other-rid");
+  });
+
   it("keeps an email lookup/create race safe and preserves email_already_registered", async () => {
     api.createSignIn.mockResolvedValueOnce(["account_not_found", {}]);
     api.createRegistration.mockResolvedValueOnce(["email_already_registered", {}]);

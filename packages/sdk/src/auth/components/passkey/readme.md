@@ -14,6 +14,8 @@
 </u-passkey>
 ```
 
+With `continue-with-passkey`, an existing saved registration produces a **Start a new registration** action. It repeats the normal account lookup and replaces the local draft only after a new flow is created successfully. The previous server flow is not canceled. Failed creation keeps the saved draft; a fresh flow keeps configured steps and clears values left by the previous account.
+
 <!-- Auto Generated Below -->
 
 

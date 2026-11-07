@@ -1,5 +1,6 @@
 import { Component, Element, Host, h, Prop, State, Watch } from "@stencil/core";
 import { t } from "../../../i18n";
+import { registrationState } from "../../../registration/store/registration-store";
 import { Auth } from "../../auth";
 import type { PasskeySignInMode } from "../../passkey-auth";
 import { authState, authStore, onChange } from "../../store/auth-store";
@@ -137,28 +138,7 @@ export class Passkey {
     if (this.continueWithPasskey && email?.value.trim()) {
       authStore.setEmail(email.value.trim());
       if (!email.reportValidity()) return;
-      this.continuing = true;
-      const root = this.element.closest("u-signin-root")?.querySelector("u-registration-root");
-      void (async () => {
-        const options = root ? { registrationUrl: await root.getRegistrationUrl(), brandId: await root.getBrandId() } : undefined;
-        if (!this.active || !this.element.isConnected) return;
-        const result = await this.auth.helpers.continueWithPasskey(email.value, options);
-        if (result === "registration" && root && this.active && this.element.isConnected) await root.advanceToNextStep();
-        else if (authState.step === "verification")
-          requestAnimationFrame(() => {
-            if (!this.active || !this.element.isConnected || authState.step !== "verification") return;
-            const focused = document.activeElement;
-            if (focused !== document.body && !focused?.closest("u-signin-step")?.hidden) return;
-            this.element
-              .closest("u-signin-root")
-              ?.querySelector<HTMLElement>(
-                'u-signin-step[name="verification"] input:not([disabled]), u-signin-step[name="verification"] button:not([disabled])',
-              )
-              ?.focus();
-          });
-      })().finally(() => {
-        this.continuing = false;
-      });
+      this.continueWithEmail();
       return;
     }
     if (this.preparing) return;
@@ -174,6 +154,35 @@ export class Passkey {
       event,
       onFallback: this.focusEmail,
       onConditionalReady: this.refocusEmail,
+    });
+  };
+
+  private continueWithEmail = (replaceStoredRegistration = false) => {
+    const email = this.emailField();
+    if (!this.active || this.disabled || this.continuing || authState.loading || !this.auth || !email?.reportValidity()) return;
+    this.continuing = true;
+    const root = this.element.closest("u-signin-root")?.querySelector("u-registration-root");
+    void (async () => {
+      const options = root
+        ? { registrationUrl: await root.getRegistrationUrl(), brandId: await root.getBrandId(), replaceStoredRegistration }
+        : undefined;
+      if (!this.active || !this.element.isConnected) return;
+      const result = await this.auth.helpers.continueWithPasskey(email.value, options);
+      if (result === "registration" && root && this.active && this.element.isConnected) await root.advanceToNextStep();
+      else if (authState.step === "verification")
+        requestAnimationFrame(() => {
+          if (!this.active || !this.element.isConnected || authState.step !== "verification") return;
+          const focused = document.activeElement;
+          if (focused !== document.body && !focused?.closest("u-signin-step")?.hidden) return;
+          this.element
+            .closest("u-signin-root")
+            ?.querySelector<HTMLElement>(
+              'u-signin-step[name="verification"] input:not([disabled]), u-signin-step[name="verification"] button:not([disabled])',
+            )
+            ?.focus();
+        });
+    })().finally(() => {
+      this.continuing = false;
     });
   };
 
@@ -207,6 +216,17 @@ export class Passkey {
             <span class="u:ml-4">{authState.loading ? loadingText : text}</span>
           </div>
         </button>
+        {this.continueWithPasskey && registrationState.rid && authState.globalErrors.auth === "registration_flow_already_exists" && (
+          <button
+            type="button"
+            class={this.componentClassName}
+            disabled={isDisabled}
+            onClick={() => this.continueWithEmail(true)}
+            aria-describedby={this.ariaDescribedBy || undefined}
+          >
+            {t("auth.passkey.start_new_registration", { defaultValue: "Start a new registration" })}
+          </button>
+        )}
       </Host>
     );
   }

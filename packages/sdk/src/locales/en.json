@@ -19,7 +19,8 @@
       "button_text": "Sign in with Passkey",
       "continue_with_passkey": "Continue with passkey",
       "continue_with_password": "Continue with password",
-      "loading_text": "Authenticating..."
+      "loading_text": "Authenticating...",
+      "start_new_registration": "Start a new registration"
     },
     "password": {
       "button_text": "Sign in with Password",
