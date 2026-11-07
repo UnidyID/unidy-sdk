@@ -40,6 +40,10 @@ export async function loadLocales(logger?: LocaleWarnLogger): Promise<void> {
         import("date-fns/locale/en-GB").then((module) => {
           LOCALES.en = module.enGB;
         }),
+      !LOCALES.fi &&
+        import("date-fns/locale/fi").then((module) => {
+          LOCALES.fi = module.fi;
+        }),
       !LOCALES.fr &&
         import("date-fns/locale/fr").then((module) => {
           LOCALES.fr = module.fr;

@@ -1,6 +1,6 @@
 {
   "name": "@unidy.io/sdk-react",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UnidyID/unidy-sdk.git",
@@ -31,7 +31,7 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "@unidy.io/sdk": ">=1.12.0"
+    "@unidy.io/sdk": ">=1.13.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.13.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.13.0) (2026-11-04)
+
+
+### Features
+
+* [UD-3555] Expose the owning brand of custom attributes in the profile ([#348](https://github.com/UnidyID/unidy-sdk/issues/348)) ([c255637](https://github.com/UnidyID/unidy-sdk/commit/c255637fb23e61fe7bed4ba1da0e12c0f5683dc3))
+* support consent_checkbox custom attributes in profile and registration fields ([#351](https://github.com/UnidyID/unidy-sdk/issues/351)) ([0fd5762](https://github.com/UnidyID/unidy-sdk/commit/0fd576202a60fa5071b24da1cf63c1e4f589763c))
+
+
+### Bug Fixes
+
+* [UD-3082] surface email required error on empty newsletter submit ([#333](https://github.com/UnidyID/unidy-sdk/issues/333)) ([653f05a](https://github.com/UnidyID/unidy-sdk/commit/653f05a210772963915bc9c5b9e81d4a5c1cce68))
+* [UD-3117] stop u-signed-in overwriting inline styles on its host ([#353](https://github.com/UnidyID/unidy-sdk/issues/353)) ([72e6a49](https://github.com/UnidyID/unidy-sdk/commit/72e6a4942ae960933165c7bf5a23f669ce7db35b))
+* [UD-3403] react to auth state changes after mount in all data components ([#335](https://github.com/UnidyID/unidy-sdk/issues/335)) ([698705b](https://github.com/UnidyID/unidy-sdk/commit/698705be1e9740ca8d023dc847ec68cf90326736))
+* [UD-3502] publish sdk-react with a resolvable [@unidy](https://github.com/unidy).io/sdk peer range ([#344](https://github.com/UnidyID/unidy-sdk/issues/344)) ([33a6892](https://github.com/UnidyID/unidy-sdk/commit/33a689232d72999cc77b9fb2eb3a18050b11e52f))
+* document ticket transfers and hide transfer UI when disabled ([#343](https://github.com/UnidyID/unidy-sdk/issues/343)) ([63f17e6](https://github.com/UnidyID/unidy-sdk/commit/63f17e670822701563de5af4ed8aff9cb433bf76))
+* stop u-signed-in overwriting inline styles on its host ([72e6a49](https://github.com/UnidyID/unidy-sdk/commit/72e6a4942ae960933165c7bf5a23f669ce7db35b))
+
 ## [1.12.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.11.0...@unidy.io/sdk-v1.12.0) (2026-09-01)
 
 ### Features
