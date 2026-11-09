@@ -23,25 +23,33 @@ export class SigninStep {
   /** If true, the step will always render regardless of the current authentication step. */
   @Prop() alwaysRender = false;
 
+  /** Whether this step is currently active or configured to always render. */
   @Method()
   async isActive(): Promise<boolean> {
     return authState.step === this.name || this.alwaysRender;
   }
 
+  private submitting = false;
+
+  /** Submit the active step once, including while a previous passkey request is being cancelled. */
   @Method()
   async submit() {
-    if (authState.loading) return;
+    if (authState.loading || this.submitting) return;
+    this.submitting = true;
+    try {
+      const authInstance = await Auth.getInstance();
 
-    const authInstance = await Auth.getInstance();
-
-    if (authState.step === "email" || authState.step === "single-login") {
-      await authInstance.helpers.createSignIn(authState.email, authState.password);
-    } else if (authState.step === "verification") {
-      await authInstance.helpers.authenticateWithPassword(authState.password);
-    } else if (authState.step === "reset-password") {
-      await authInstance.helpers.resetPassword();
-    } else if (authState.step === "invited") {
-      await authInstance.helpers.acceptInvitation();
+      if (authState.step === "email" || authState.step === "single-login") {
+        await authInstance.helpers.createSignIn(authState.email, authState.password);
+      } else if (authState.step === "verification") {
+        await authInstance.helpers.authenticateWithPassword(authState.password);
+      } else if (authState.step === "reset-password") {
+        await authInstance.helpers.resetPassword();
+      } else if (authState.step === "invited") {
+        await authInstance.helpers.acceptInvitation();
+      }
+    } finally {
+      this.submitting = false;
     }
   }
 

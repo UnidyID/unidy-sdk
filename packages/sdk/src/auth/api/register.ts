@@ -101,12 +101,17 @@ const SendResumeLinkPayloadSchema = z.object({
 });
 
 // Cannot finalize error schema
-const CannotFinalizeErrorSchema = z.object({
-  error: z.literal("cannot_finalize"),
+const CannotFinalizeRequirementsSchema = z.object({
   missing_fields: z.array(z.string()).optional(),
   email_missing: z.boolean().optional(),
   auth_method_missing: z.boolean().optional(),
 });
+const CannotFinalizeErrorSchema = z.union([
+  CannotFinalizeRequirementsSchema.extend({ error: z.literal("cannot_finalize") }),
+  z
+    .object({ error_identifier: z.literal("cannot_finalize"), meta: CannotFinalizeRequirementsSchema.optional() })
+    .transform(({ meta }) => ({ error: "cannot_finalize" as const, error_identifier: "cannot_finalize" as const, ...meta })),
+]);
 
 // Passkey creation options schema (WebAuthn PublicKeyCredentialCreationOptions from server)
 const PasskeyCreationOptionsSchema = z.object({
@@ -227,9 +232,11 @@ export type GetPasskeyCreationOptionsResult =
   | CommonErrors
   | ["registration_not_found", ErrorResponse]
   | ["registration_expired", ErrorResponse]
+  | [string, ErrorResponse]
   | [null, PasskeyCreationOptions];
 
 export type RegisterPasskeyResult =
+  | [string, ErrorResponse]
   | CommonErrors
   | ["registration_not_found", ErrorResponse]
   | ["registration_expired", ErrorResponse]

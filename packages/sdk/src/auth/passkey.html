@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unidy Immediate Passkey Demo</title>
+    <link rel="icon" href="data:," />
+    <script type="module" src="/build/sdk.esm.js"></script>
+    <link rel="stylesheet" href="/demo.css" />
+  </head>
+  <body class="min-h-screen bg-gray-100 text-gray-900 p-6">
+    <u-config base-url="http://localhost:3000" api-key="public-newsletter-api-key" locale="en"></u-config>
+    <main class="mx-auto max-w-lg space-y-6">
+      <h1 class="text-2xl font-bold">Passkey sign-in</h1>
+      <p>Sign in with a saved passkey, or continue with your email address.</p>
+      <button id="open-login" type="button" class="rounded bg-blue-700 px-4 py-2 text-white focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2">Sign in</button>
+      <u-signed-in><p role="status">You are signed in.</p></u-signed-in>
+      <dialog id="login" aria-labelledby="login-title" class="m-auto w-full max-w-lg rounded-xl p-6 backdrop:bg-gray-900/40">
+        <div class="flex items-center justify-between gap-4">
+          <h2 id="login-title" class="text-xl font-semibold">Sign in</h2>
+          <button id="close-login" type="button" class="rounded border px-3 py-2 focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2">Close</button>
+        </div>
+        <u-signin-root class-name="block space-y-4 mt-4">
+          <u-error-message for="general" class-name="block text-red-700"></u-error-message>
+          <u-error-message id="passkey-error" for="passkey" class-name="block text-red-700"></u-error-message>
+          <u-signin-step name="email">
+            <u-passkey mode="immediate" continue-with-passkey active="false" data-description="passkey-hint passkey-error"
+              class-name="w-full rounded bg-blue-700 px-4 py-3 text-white focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"></u-passkey>
+            <p id="passkey-hint" class="my-3 text-sm">Enter an email to continue with that account’s passkey or create a new account. Your browser may also offer saved passkeys in autofill.</p>
+            <u-email-field autocomplete="username webauthn" class-name="w-full rounded border border-gray-500 px-3 py-2 focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"></u-email-field>
+            <u-error-message for="email" class-name="text-red-700"></u-error-message>
+            <u-submit-button for="email" text="Continue with email" class-name="mt-3 w-full rounded border px-4 py-2 focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"></u-submit-button>
+            <p id="other-passkey" class="my-3 text-sm">Use a security key or a passkey on another device:</p>
+            <u-passkey mode="standard" discoverable active="false" data-description="other-passkey passkey-error"
+              class-name="w-full rounded border px-4 py-2 focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"></u-passkey>
+            <u-social-login-button provider="google"></u-social-login-button>
+          </u-signin-step>
+          <u-signin-step name="verification">
+            <u-password-field class-name="w-full rounded border border-gray-500 px-3 py-2"></u-password-field>
+            <u-error-message for="password" class-name="text-red-700"></u-error-message>
+            <u-submit-button for="password" class-name="mt-3 w-full rounded bg-blue-700 px-4 py-2 text-white"></u-submit-button>
+            <u-passkey class-name="mt-3 w-full rounded border px-4 py-2 focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"></u-passkey>
+            <u-send-magic-code-button class-name="mt-3 w-full rounded border px-4 py-2"></u-send-magic-code-button>
+            <u-social-login-button provider="google"></u-social-login-button>
+            <u-back-button class-name="mt-3 rounded border px-4 py-2"></u-back-button>
+          </u-signin-step>
+          <u-signin-step name="magic-code">
+            <u-magic-code-field></u-magic-code-field>
+            <u-error-message for="magicCode" class-name="block text-red-700"></u-error-message>
+            <u-back-button class-name="mt-3 rounded border px-4 py-2"></u-back-button>
+          </u-signin-step>
+          <u-signin-step name="registration">
+            <u-registration-root auto-resume="false" disable-resume-button steps='["email","passkey","verification","profile","password","finish"]'>
+              <u-error-message for="registration" class-name="block text-red-700"></u-error-message>
+              <u-registration-step name="email">
+                <h3 class="text-lg font-semibold">Create an account</h3>
+                <label class="block my-3">New account email
+                  <u-raw-field field="email" type="email" required class-name="w-full rounded border border-gray-500 px-3 py-2"></u-raw-field>
+                </label>
+                <u-error-message for="email" class-name="text-red-700"></u-error-message>
+                <u-submit-button text="Start registration" class-name="rounded border px-4 py-2"></u-submit-button>
+              </u-registration-step>
+              <u-registration-step name="passkey">
+                <h3 class="text-lg font-semibold">Create a passkey</h3>
+                <p class="my-3">A passkey is optional. You can choose a password instead.</p>
+                <u-registration-passkey auto-start password-fallback active="false"
+                  class-name="w-full rounded bg-blue-700 px-4 py-2 text-white focus-visible:outline-2 focus-visible:outline-blue-700 focus-visible:outline-offset-2"
+                  fallback-class-name="mt-3 w-full rounded border px-4 py-2 focus:outline-2 focus:outline-blue-700 focus:outline-offset-2">Create passkey</u-registration-passkey>
+                <u-error-message for="passkey" class-name="block text-red-700"></u-error-message>
+                <u-submit-button text="Continue registration" class-name="mt-3 w-full rounded border px-4 py-2 focus:outline-2 focus:outline-blue-700 focus:outline-offset-2"></u-submit-button>
+              </u-registration-step>
+              <u-registration-step name="verification" requires-email-verification>
+                <h3 class="text-lg font-semibold">Verify your email</h3>
+                <p class="my-3">Enter the code sent to your email address.</p>
+                <u-registration-email-verification input-class-name="w-12 rounded border border-gray-500 p-2 text-center"></u-registration-email-verification>
+                <u-error-message for="verificationCode" class-name="block text-red-700"></u-error-message>
+              </u-registration-step>
+              <u-registration-step name="profile">
+                <h3 class="text-lg font-semibold">Your profile</h3>
+                <label class="block my-3">First name
+                  <u-raw-field field="first_name" type="text" required class-name="w-full rounded border border-gray-500 px-3 py-2"></u-raw-field>
+                </label>
+                <u-error-message for="first_name" class-name="block text-red-700"></u-error-message>
+                <u-submit-button text="Save profile" class-name="w-full rounded border px-4 py-2"></u-submit-button>
+              </u-registration-step>
+              <u-registration-step name="password" requires-password>
+                <h3 class="text-lg font-semibold">Create a password</h3>
+                <label class="block my-3">New password
+                  <u-raw-field field="password" type="password" required class-name="w-full rounded border border-gray-500 px-3 py-2"></u-raw-field>
+                </label>
+                <u-error-message for="password" class-name="block text-red-700"></u-error-message>
+                <u-submit-button text="Save password" class-name="w-full rounded border px-4 py-2"></u-submit-button>
+              </u-registration-step>
+              <u-registration-step name="finish">
+                <h3 class="text-lg font-semibold">Complete registration</h3>
+                <p class="my-3">Review your details before creating your account.</p>
+                <u-submit-button text="Create account" class-name="w-full rounded bg-blue-700 px-4 py-2 text-white"></u-submit-button>
+              </u-registration-step>
+            </u-registration-root>
+          </u-signin-step>
+          <u-signin-step name="missing-fields">
+            <h3 class="text-lg font-semibold">Complete your profile</h3>
+            <u-missing-field></u-missing-field>
+            <u-missing-fields-submit-button class-name="mt-3 rounded border px-4 py-2"></u-missing-fields-submit-button>
+          </u-signin-step>
+          <u-signin-step name="connect-brand">
+            <p>Connect your account to this brand to continue.</p>
+            <u-brand-connect-button action="connect" class-name="mt-3 rounded border px-4 py-2"></u-brand-connect-button>
+          </u-signin-step>
+          <u-signin-step name="unconfirmed"><p>Please confirm your email before signing in.</p></u-signin-step>
+          <u-signin-step name="invited"><p>Complete your account invitation before signing in.</p></u-signin-step>
+        </u-signin-root>
+      </dialog>
+      <p class="text-sm">Passkeys require a secure context and a backend RP ID valid for this page's origin. Configure the demo's u-config for your tenant before real authenticator testing.</p>
+      <output id="registration-complete" hidden></output>
+    </main>
+    <script>
+      const dialog = document.getElementById("login");
+      const setActive = (active) => {
+        for (const passkey of dialog.querySelectorAll("u-passkey, u-registration-passkey")) {
+          if (passkey.dataset.description) passkey.ariaDescribedBy = passkey.dataset.description;
+          passkey.active = active;
+        }
+      };
+      document.getElementById("open-login").addEventListener("click", () => {
+        dialog.showModal();
+        setActive(true);
+      });
+      document.getElementById("close-login").addEventListener("click", () => {
+        setActive(false);
+        dialog.close();
+      });
+      dialog.addEventListener("cancel", () => setActive(false));
+      dialog.addEventListener("close", () => setActive(false));
+      dialog.addEventListener("authEvent", () => dialog.close());
+      dialog.addEventListener("registrationComplete", (event) => {
+        if (event.detail.requiresEmailConfirmation) {
+          const status = document.getElementById("registration-complete");
+          status.textContent = "Check your email to confirm your new account.";
+          status.hidden = false;
+        }
+        dialog.close();
+      });
+    </script>
+  </body>
+</html>

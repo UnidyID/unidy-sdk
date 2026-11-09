@@ -2,6 +2,7 @@ import { Component, Host, h, Prop } from "@stencil/core";
 import { t } from "../../../i18n";
 import { UnidyComponent } from "../../../shared/base/component";
 import { unidyState } from "../../../shared/store/unidy-store";
+import { Auth } from "../../auth";
 import { authState } from "../../store/auth-store";
 import { AppleLogo } from "./logos/apple";
 import { DiscordLogo } from "./logos/discord";
@@ -81,6 +82,8 @@ export class SocialLoginButton extends UnidyComponent() {
       return;
     }
 
+    const auth = await Auth.getInstance();
+    await auth.helpers.cancelPasskeyAuthentication();
     window.location.href = this.getAuthUrl();
   };
 

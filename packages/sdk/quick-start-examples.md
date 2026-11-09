@@ -923,3 +923,40 @@ This example demonstrates how to generate a QR code containing user profile data
 - You can adjust QR code options like `width`, `margin`, and `errorCorrectionLevel` as needed
 
 > **Page-load timing:** `<u-config check-signed-in="true">` restores sessions asynchronously. Reading `authState.authenticated` once at `DOMContentLoaded` (or using `auth.isAuthenticated()`) races against the restore network call and will often return `false` for signed-in users. Use `onAuthChange("authenticated", cb)` so your UI reacts when the restore settles — or `await auth.ready` for a one-shot read after everything settles.
+
+### Opt-in immediate passkeys with conditional autofill
+
+Keep manual email/password/social login and a standard passkey button alongside the immediate button:
+
+```html
+<u-signin-root>
+  <u-error-message for="general"></u-error-message>
+  <u-error-message id="passkey-error" for="passkey"></u-error-message>
+  <u-signin-step name="email">
+    <u-passkey mode="immediate" aria-described-by="passkey-error"></u-passkey>
+    <u-email-field autocomplete="username webauthn"></u-email-field>
+    <u-submit-button for="email"></u-submit-button>
+    <p>Use a security key or a passkey from another device:</p>
+    <u-passkey discoverable></u-passkey>
+    <u-social-login-button provider="google"></u-social-login-button>
+  </u-signin-step>
+  <u-signin-step name="verification">
+    <u-password-field></u-password-field>
+    <u-submit-button for="password"></u-submit-button>
+  </u-signin-step>
+</u-signin-root>
+```
+
+Set `active=false` on passkey components when hiding/closing a modal, and restore it on reopening. Removing components cancels automatically. The complete local demo at `/auth/passkey.html` handles native dialog Close and Escape. Use `mode="conditional"` to skip immediate UI and only offer passkeys in email autofill. Defaults remain the standard passkey flow.
+
+For headless integration, see **Headless immediate and conditional passkey sign-in** in `readme.md`. Real credentials require a secure origin permitted by the backend's RP ID; mocked e2e tests do not validate tenant configuration or real authenticators.
+
+### Typed email: continue with passkey or create a new account
+
+Opt in with `<u-passkey mode="immediate" continue-with-passkey>`. Include a sibling `u-registration-root` and order its steps as email → passkey → required verification/profile → password → remaining onboarding. Use `<u-registration-passkey auto-start password-fallback>` in the passkey step and `requires-password` on the password step. The complete local `/auth/passkey.html` example demonstrates this flow.
+
+Existing accounts keep their server-offered login methods and receive an account-scoped prompt only when passkey login is offered. New-account creation starts only after `account_not_found`; an email by itself never authorizes enrollment into an existing account. Successful collection skips only the password step for this opt-in flow. Cancellation offers normal password registration, with verification/profile/onboarding retained. Creation alone does not verify email, finalize an account or sign in.
+
+For headless integration, use `auth.helpers.continueWithPasskey(email, { registrationUrl, brandId? })`, then normal `Registration.helpers` and ordered registration UI. See the detailed typed-email section in `readme.md` for lifecycle handling and result types.
+
+**Deployment prerequisite:** The correct SDK client's `allowed_hosts` must include the concrete frontend origin (`window.location.origin`, including scheme/port). A wildcard such as `https://*.unidy.io` can satisfy CORS while `PasskeyConcern` discards it for WebAuthn origins. An explicit allowed origin also does not bypass the browser's RP ID/domain checks. Preserve API error identifiers when reporting failures. The SDK does not modify backend or tenant configuration.

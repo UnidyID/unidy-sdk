@@ -20,7 +20,11 @@ export class EmailField extends UnidyComponent() {
   /** If true, the input will be disabled. */
   @Prop() disabled = false;
 
+  /** Input autocomplete tokens. Use "username webauthn" with opt-in conditional passkey sign-in. */
+  @Prop() autocomplete = "email";
+
   @State() emailValue = "";
+  private input?: HTMLInputElement;
 
   private get context(): EmailFieldContext | null {
     const detectedContext = detectContext(this.element);
@@ -60,6 +64,8 @@ export class EmailField extends UnidyComponent() {
 
   private handleSubmit = async (event: Event) => {
     event.preventDefault();
+    // Some password managers only commit their value at submit time.
+    if (this.input) this.store.state.email = this.input.value;
 
     if (this.context === "auth") {
       if (this.store.state.email === "") return;
@@ -92,11 +98,13 @@ export class EmailField extends UnidyComponent() {
           id="email"
           type="email"
           value={this.store.state.email}
-          autocomplete="email"
+          autocomplete={this.autocomplete}
+          ref={(input) => (this.input = input)}
           placeholder={placeholderText}
           disabled={this.isDisabled()}
           class={`${this.componentClassName} u:disabled:opacity-40 u:disabled:bg-gray-200 u:disabled:cursor-not-allowed`}
           onInput={this.handleInput}
+          onChange={this.handleInput}
           aria-label={this.ariaLabel}
         />
         <slot />

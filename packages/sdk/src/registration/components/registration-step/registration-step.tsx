@@ -15,10 +15,10 @@ export class RegistrationStep extends UnidyComponent() {
   /** If true, the step's content is always rendered regardless of which step is active. */
   @Prop({ attribute: "always-render" }) alwaysRender = false;
 
-  /** If true, this step is automatically skipped when the user's email is already verified. */
+  /** If true, this step is skipped when email is verified and submission is blocked until verification succeeds. */
   @Prop({ attribute: "requires-email-verification" }) requiresEmailVerification = false;
 
-  /** If true, this step is automatically skipped for social login or passwordless flows. */
+  /** If true, this step is automatically skipped for social login, passwordless flows, or successful opt-in passkey continuation. */
   @Prop({ attribute: "requires-password" }) requiresPassword = false;
 
   @State() private renderTrigger = 0;
@@ -73,7 +73,11 @@ export class RegistrationStep extends UnidyComponent() {
     }
 
     if (this.requiresPassword) {
-      if (registrationState.passwordlessFlag || registrationState.socialProvider) {
+      if (
+        registrationState.passwordlessFlag ||
+        registrationState.socialProvider ||
+        (registrationState.passkeyIntent && registrationState.hasPasskey)
+      ) {
         return true;
       }
     }
@@ -85,6 +89,11 @@ export class RegistrationStep extends UnidyComponent() {
   @Method()
   async submit(): Promise<void> {
     if (registrationState.loading || registrationState.submitting) {
+      return;
+    }
+
+    if (this.requiresEmailVerification && !registrationState.emailVerified) {
+      registrationStore.setFieldError("verificationCode", "email_verification_required");
       return;
     }
 

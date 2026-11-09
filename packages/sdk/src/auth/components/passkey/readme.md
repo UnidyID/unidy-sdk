@@ -14,17 +14,22 @@
 </u-passkey>
 ```
 
+With `continue-with-passkey`, an existing saved registration produces a **Start a new registration** action. It repeats the normal account lookup and replaces the local draft only after a new flow is created successfully. The previous server flow is not canceled. Failed creation keeps the saved draft; a fresh flow keeps configured steps and clears values left by the previous account.
+
 <!-- Auto Generated Below -->
 
 
 ## Properties
 
-| Property             | Attribute           | Description                                                                                          | Type      | Default |
-| -------------------- | ------------------- | ---------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `ariaDescribedBy`    | `aria-described-by` |                                                                                                      | `string`  | `""`    |
-| `componentClassName` | `class-name`        |                                                                                                      | `string`  | `""`    |
-| `disabled`           | `disabled`          |                                                                                                      | `boolean` | `false` |
-| `discoverable`       | `discoverable`      | When true, renders and triggers a discoverable-credential flow without requiring a prior email step. | `boolean` | `false` |
+| Property              | Attribute               | Description                                                                                                             | Type                                         | Default      |
+| --------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------ |
+| `active`              | `active`                | Set false when closing or hiding a sign-in modal to cancel pending requests and discard prefetched challenges.          | `boolean`                                    | `true`       |
+| `ariaDescribedBy`     | `aria-described-by`     | ID of an element describing the passkey button.                                                                         | `string`                                     | `""`         |
+| `componentClassName`  | `class-name`            | CSS classes to apply to the button element.                                                                             | `string`                                     | `""`         |
+| `continueWithPasskey` | `continue-with-passkey` | Opt in to typed-email account lookup and new-account passkey registration via a sibling u-registration-root.            | `boolean`                                    | `false`      |
+| `disabled`            | `disabled`              | Disable this button and stop its automatic passkey flow.                                                                | `boolean`                                    | `false`      |
+| `discoverable`        | `discoverable`          | Allow account discovery without an email lookup. Immediate and conditional modes always use discovery.                  | `boolean`                                    | `false`      |
+| `mode`                | `mode`                  | Standard modal UI by default. Opt in to immediate UI with conditional autofill fallback, or conditional autofill alone. | `"conditional" \| "immediate" \| "standard"` | `"standard"` |
 
 
 ## Slots

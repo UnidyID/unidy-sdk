@@ -11,5 +11,12 @@
 export type { LoginOptions } from "./api/auth";
 export type { AuthError, TokenPayload } from "./auth";
 export * from "./auth";
+export type {
+  PasskeyContinuationOptions,
+  PasskeyContinuationResult,
+  PasskeySignInMode,
+  PasskeySignInOptions,
+  PasskeySignInResult,
+} from "./passkey-auth";
 export type { AuthState, AuthStep } from "./store/auth-store";
 export { authState, authStore, onChange as onAuthChange } from "./store/auth-store";
