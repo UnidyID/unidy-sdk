@@ -21,6 +21,7 @@ export const BaseFieldDataSchema = z
     required: z.boolean(),
     label: z.string(),
     attr_name: z.string(),
+    readonly: z.boolean().optional(),
     locked: z.boolean().optional(),
     locked_text: z.string().nullish(),
   })
