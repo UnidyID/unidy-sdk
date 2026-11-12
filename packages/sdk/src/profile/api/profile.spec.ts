@@ -1,6 +1,6 @@
 import type { ApiClientInterface } from "../../api/base-service";
 import { ProfileService } from "./profile";
-import { CustomFieldSchema, type UserProfileData } from "./schemas";
+import { CustomFieldSchema, type UserProfileData, UserProfileSchema } from "./schemas";
 
 const text = (attr_name: string, value: string | null = null) => ({ value, type: "text", label: attr_name, attr_name, required: false });
 
@@ -84,6 +84,51 @@ describe("CustomFieldSchema", () => {
   });
 });
 
+const STANDARD_FIELDS = [
+  "salutation",
+  "first_name",
+  "last_name",
+  "email",
+  "phone_number",
+  "company_name",
+  "address_line_1",
+  "address_line_2",
+  "city",
+  "postal_code",
+  "country_code",
+  "date_of_birth",
+] as const;
+
+const withStandardFieldExtras = (extras: Record<string, unknown>) => {
+  const payload = profilePayload({}) as Record<string, unknown>;
+  for (const field of STANDARD_FIELDS) {
+    payload[field] = { ...(payload[field] as object), ...extras };
+  }
+  return payload;
+};
+
+describe("UserProfileSchema", () => {
+  it("accepts readonly: false on every standard field", () => {
+    const parsed = UserProfileSchema.safeParse(withStandardFieldExtras({ readonly: false }));
+
+    expect(parsed.success).toBe(true);
+  });
+
+  it("keeps readonly: true on standard fields", () => {
+    const parsed = UserProfileSchema.parse(withStandardFieldExtras({ readonly: true }));
+
+    expect(parsed.first_name.readonly).toBe(true);
+    expect(parsed.salutation.readonly).toBe(true);
+    expect(parsed.date_of_birth.readonly).toBe(true);
+  });
+
+  it("accepts standard fields without readonly from older backends", () => {
+    const parsed = UserProfileSchema.parse(profilePayload({}));
+
+    expect(parsed.first_name.readonly).toBeUndefined();
+  });
+});
+
 describe("ProfileService", () => {
   const makeClient = (data: unknown) => {
     const response = { success: true, status: 200, headers: new Headers(), data };
@@ -127,6 +172,15 @@ describe("ProfileService", () => {
 
     expect(error).toBeNull();
     expect((data as UserProfileData).custom_attributes.terms_accepted).toEqual(consent);
+  });
+
+  it("loads a profile whose standard fields carry readonly", async () => {
+    const client = makeClient(withStandardFieldExtras({ readonly: false }));
+
+    const [error, data] = await new ProfileService(client, deps).get();
+
+    expect(error).toBeNull();
+    expect((data as UserProfileData).first_name.value).toBe("Jane");
   });
 
   it("omits lang when no locale is set", async () => {
