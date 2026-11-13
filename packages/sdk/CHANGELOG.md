@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.1](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.13.0...@unidy.io/sdk-v1.13.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* [UD-3882] accept readonly on standard profile fields ([#362](https://github.com/UnidyID/unidy-sdk/issues/362)) ([910ce8a](https://github.com/UnidyID/unidy-sdk/commit/910ce8acbda4cb98efa609102420e1ee54ee71fb))
+* accept readonly on standard profile fields ([910ce8a](https://github.com/UnidyID/unidy-sdk/commit/910ce8acbda4cb98efa609102420e1ee54ee71fb))
+
 ## [1.13.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.13.0) (2026-11-04)
 
 
