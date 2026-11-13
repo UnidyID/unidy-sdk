@@ -3,7 +3,7 @@ import type { BaseModel } from "./index";
 export interface User extends BaseModel {
   email: string;
   unidy_id: string;
-  role: "user" | "admin" | "superadmin";
+  role: "user" | "admin";
 
   // profile
   first_name: string | null;
