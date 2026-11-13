@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.14.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.13.0...@unidy.io/sdk-v1.14.0) (2026-11-13)
+
+
+### Features
+
+* [UD-3857] add Finnish (fi) locale ([#358](https://github.com/UnidyID/unidy-sdk/issues/358)) ([5f5ff9d](https://github.com/UnidyID/unidy-sdk/commit/5f5ff9d57dd6fd28d8935edd20bfeb6e56d21324))
+* add Finnish (fi) locale ([5f5ff9d](https://github.com/UnidyID/unidy-sdk/commit/5f5ff9d57dd6fd28d8935edd20bfeb6e56d21324))
+* add native immediate passkey sign-in and registration ([#357](https://github.com/UnidyID/unidy-sdk/issues/357)) ([1e9241b](https://github.com/UnidyID/unidy-sdk/commit/1e9241b9d8fbd7fb441748f8665cf3be8e013695))
+
+
+### Bug Fixes
+
+* [UD-3882] accept readonly on standard profile fields ([#361](https://github.com/UnidyID/unidy-sdk/issues/361)) ([d0d7335](https://github.com/UnidyID/unidy-sdk/commit/d0d7335fc1ba723c451d389d67704eda552d1019))
+* accept readonly on standard profile fields ([d0d7335](https://github.com/UnidyID/unidy-sdk/commit/d0d7335fc1ba723c451d389d67704eda552d1019))
+
 ## [1.13.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-v1.12.0...@unidy.io/sdk-v1.13.0) (2026-11-04)
 
 
