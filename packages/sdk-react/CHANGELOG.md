@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.8.0...@unidy.io/sdk-react-v0.9.0) (2026-11-13)
+
+
+### Features
+
+* add native immediate passkey sign-in and registration ([#357](https://github.com/UnidyID/unidy-sdk/issues/357)) ([1e9241b](https://github.com/UnidyID/unidy-sdk/commit/1e9241b9d8fbd7fb441748f8665cf3be8e013695))
+
 ## [0.8.0](https://github.com/UnidyID/unidy-sdk/compare/@unidy.io/sdk-react-v0.7.0...@unidy.io/sdk-react-v0.8.0) (2026-11-05)
 
 
