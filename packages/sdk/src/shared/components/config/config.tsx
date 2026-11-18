@@ -1,10 +1,10 @@
-import * as Sentry from "@sentry/browser";
 import { Component, Event, type EventEmitter, h, Prop, Watch } from "@stencil/core";
 import { getUnidyClient } from "../../../api/";
 import { Auth } from "../../../auth";
 import i18n from "../../../i18n";
 import { UnidyComponent } from "../../base/component";
 import { captchaManager } from "../../captcha";
+import { captureException } from "../../sentry";
 import { unidyState } from "../../store/unidy-store";
 
 let configInstance: UnidyConfig | null = null;
@@ -159,7 +159,7 @@ export class UnidyConfig extends UnidyComponent() {
           }
         }
       } catch (error) {
-        Sentry.captureException("Failed to parse customTranslations", error);
+        captureException(error, { extra: { message: "Failed to parse customTranslations" } });
       }
     }
   }

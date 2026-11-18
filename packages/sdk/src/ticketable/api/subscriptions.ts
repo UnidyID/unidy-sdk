@@ -69,6 +69,7 @@ export class SubscriptionsService extends TicketableService {
       const parsed = ExportLinkResponseSchema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid export link response", parsed.error);
+        this.reportSchemaFailure(parsed.error, { endpoint: "export_link", resourceName: "subscriptions" });
         return ["invalid_response", null];
       }
 

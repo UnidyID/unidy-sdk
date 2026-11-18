@@ -1,9 +1,9 @@
-import * as Sentry from "@sentry/browser";
 import { Component, Event, type EventEmitter, Host, h, Listen, Method, Prop, State } from "@stencil/core";
 import { getUnidyClient } from "../../../api";
 import { Auth } from "../../../auth";
 import { onChange as authOnChange, authStore } from "../../../auth/store/auth-store";
 import { t } from "../../../i18n";
+import { captureException } from "../../../shared/sentry";
 import { Flash } from "../../../shared/store/flash-store";
 import { onChange as unidyOnChange } from "../../../shared/store/unidy-store";
 import { buildPayload, validateRequiredFields } from "../../profile-helpers";
@@ -141,7 +141,7 @@ export class Profile {
         profileState.data = JSON.parse(JSON.stringify(data)) as ProfileRaw;
       }
     } catch (error) {
-      Sentry.captureException("Failed to fetch profile data:", error);
+      captureException(error, { extra: { message: "Failed to fetch profile data" } });
       Flash.error.addMessage(t("errors.failed_to_load_profile"));
     } finally {
       this.fetchingProfileData = false;

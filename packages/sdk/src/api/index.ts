@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/browser";
 import { AuthService } from "../auth/api/auth";
 import { Auth } from "../auth/auth";
 import { createLogger } from "../logger";
@@ -6,6 +5,7 @@ import { NewsletterService } from "../newsletter";
 import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile";
 import { CaptchaService } from "../shared/captcha";
+import { captureException } from "../shared/sentry";
 import { unidyState } from "../shared/store/unidy-store";
 import { SubscriptionsService, TicketsService, TicketTransfersService } from "../ticketable";
 import { TransactionsService } from "../transaction";
@@ -31,7 +31,7 @@ function createBrowserDeps(serviceName: string): ServiceDependencies {
   return {
     logger: createLogger(serviceName),
     errorReporter: {
-      captureException: (error, context) => Sentry.captureException(error, { extra: context }),
+      captureException: (error, context) => captureException(error, { extra: context }),
     },
     getIdToken: async () => {
       const auth = await Auth.getInstance();
