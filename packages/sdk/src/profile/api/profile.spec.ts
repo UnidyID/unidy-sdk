@@ -127,11 +127,18 @@ describe("UserProfileSchema", () => {
 
     expect(parsed.first_name.readonly).toBeUndefined();
   });
+
+  it("rejects invalid values for known fields", () => {
+    const payload = profilePayload({});
+    const parsed = UserProfileSchema.safeParse({ ...payload, first_name: { ...payload.first_name, value: 42 } });
+
+    expect(parsed.success).toBe(false);
+  });
 });
 
 describe("ProfileService", () => {
-  const makeClient = (data: unknown) => {
-    const response = { success: true, status: 200, headers: new Headers(), data };
+  const makeClient = (data: unknown, status = 200) => {
+    const response = { success: status >= 200 && status < 300, status, headers: new Headers(), data };
     return {
       baseUrl: "https://unidy.example.com",
       api_key: "api-key",
@@ -181,6 +188,40 @@ describe("ProfileService", () => {
 
     expect(error).toBeNull();
     expect((data as UserProfileData).first_name.value).toBe("Jane");
+  });
+
+  it("ignores extra response keys when fetching and updating a profile", async () => {
+    const favoriteNut = customAttribute("favorite_nut");
+    const radioOption = { value: "mr", label: "Mr", checked: false };
+    const payload = profilePayload({ favorite_nut: favoriteNut });
+    const profile = { ...payload, salutation: { ...payload.salutation, radio_options: [radioOption] } };
+
+    const response = {
+      ...profile,
+      extra: true,
+      first_name: { ...profile.first_name, extra: true },
+      salutation: { ...profile.salutation, radio_options: [{ ...radioOption, extra: true }] },
+      custom_attributes: {
+        favorite_nut: { ...favoriteNut, extra: true, options: [{ ...favoriteNut.options[0], extra: true }] },
+      },
+    };
+    const service = new ProfileService(makeClient(response), deps);
+    const expected = [null, profile, { httpStatus: 200, responseData: response }];
+
+    await expect(service.get()).resolves.toEqual(expected);
+    await expect(service.update({ payload: { first_name: "Jane" } })).resolves.toEqual(expected);
+  });
+
+  it("returns form validation errors when the response includes metadata", async () => {
+    const errors = { first_name: ["cannot be blank"] };
+    const response = { errors, request_id: "example-request" };
+    const service = new ProfileService(makeClient(response, 422), deps);
+
+    await expect(service.update({ payload: { first_name: "" } })).resolves.toEqual([
+      "validation_error",
+      { errors, flatErrors: { first_name: "cannot be blank" } },
+      { httpStatus: 422, responseData: response },
+    ]);
   });
 
   it("omits lang when no locale is set", async () => {
