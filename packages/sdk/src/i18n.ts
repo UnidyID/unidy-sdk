@@ -40,5 +40,9 @@ unidyOnChange("locale", (locale) => i18n.changeLanguage(locale));
 
 export default i18n;
 
+// `lng` must live inside the options object: i18next reads a third argument as `lastKey`, not as options.
+// Reading `unidyState.locale` here also subscribes the rendering component to locale changes.
+// A caller's own `lng` wins over the store locale. The cast keeps the string contract callers rely on
+// (untyped options could include `returnObjects`, which widens i18next's return type).
 // biome-ignore lint/suspicious/noExplicitAny: i18next options are dynamic
-export const t = (key: string, opts: any = {}) => i18n.t(key, opts, { lng: unidyState.locale });
+export const t = (key: string, opts: any = {}) => i18n.t(key, { lng: unidyState.locale, ...opts }) as string;
