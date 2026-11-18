@@ -1,4 +1,5 @@
 import { AuthService } from "../auth/api/auth";
+import { BrandConnectionsService } from "../brand-connections/api/brand-connections";
 import { NewsletterService } from "../newsletter/api/newsletters";
 import { OAuthService } from "../oauth/api/oauth";
 import { ProfileService } from "../profile/api/profile";
@@ -43,6 +44,8 @@ import type { ServiceDependencies } from "./base-service";
 export type * from "../auth/api/auth";
 // Re-export service classes
 export { AuthService } from "../auth/api/auth";
+export type * from "../brand-connections/api/brand-connections";
+export { BrandConnectionsService } from "../brand-connections/api/brand-connections";
 export type * from "../newsletter/api/newsletters";
 export { NewsletterService } from "../newsletter/api/newsletters";
 export type * from "../oauth/api/oauth";
@@ -129,6 +132,7 @@ export interface StandaloneUnidyClientConfig extends ApiClientConfig {
 
 export class StandaloneUnidyClient {
   public auth: AuthService;
+  public brandConnections: BrandConnectionsService;
   public newsletters: NewsletterService;
   public oauth: OAuthService;
   public profile: ProfileService;
@@ -143,6 +147,7 @@ export class StandaloneUnidyClient {
     const deps = config.deps;
 
     this.auth = new AuthService(apiClient, deps);
+    this.brandConnections = new BrandConnectionsService(apiClient, deps);
     this.newsletters = new NewsletterService(apiClient, deps);
     this.oauth = new OAuthService(apiClient, deps);
     this.profile = new ProfileService(apiClient, deps);
