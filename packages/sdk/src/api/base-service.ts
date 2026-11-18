@@ -120,6 +120,15 @@ export abstract class BaseService {
     }
   }
 
+  /** Reports a response that failed schema validation, sending only issue paths and codes (no response values). */
+  protected reportSchemaFailure(error: z.ZodError, context: Record<string, unknown>): void {
+    this.errorReporter.captureException(error, {
+      ...context,
+      error_type: "schema_validation",
+      issues: error.issues.map((issue) => ({ path: issue.path.join("."), code: issue.code })),
+    });
+  }
+
   protected buildAuthHeaders(headers: Record<string, string | undefined>): HeadersInit | undefined {
     const filtered = Object.entries(headers).reduce(
       (acc, [key, value]) => {

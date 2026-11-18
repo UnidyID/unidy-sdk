@@ -90,6 +90,7 @@ export class ProfileService extends BaseService {
       const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid profile data", parsed.error);
+        this.reportSchemaFailure(parsed.error, { endpoint: "/api/sdk/v1/profile" });
         return ["invalid_profile_data", null, responseInfo];
       }
 
@@ -148,6 +149,7 @@ export class ProfileService extends BaseService {
       const parsed = UserProfileSchema.safeParse(response.data);
       if (!parsed.success) {
         this.logger.error("Invalid profile data", parsed.error);
+        this.reportSchemaFailure(parsed.error, { endpoint: "/api/sdk/v1/profile" });
         return ["invalid_profile_data", null, responseInfo];
       }
 

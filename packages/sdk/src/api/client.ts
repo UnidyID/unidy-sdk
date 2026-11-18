@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/browser";
+import { captureException } from "../shared/sentry";
 import { unidyState } from "../shared/store/unidy-store";
 import { BaseApiClient } from "./base-client";
 
@@ -30,7 +30,7 @@ export class ApiClient extends BaseApiClient {
   }
 
   protected handleConnectionError(error: unknown, endpoint: string, method: string): void {
-    Sentry.captureException(error, {
+    captureException(error, {
       tags: { error_type: "connection_error" },
       extra: { endpoint, method },
     });

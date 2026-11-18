@@ -1,8 +1,8 @@
-import * as Sentry from "@sentry/browser";
 import { jwtDecode } from "jwt-decode";
 import type { UnidyClient } from "../api";
 import { getUnidyClient } from "../api";
 import { t } from "../i18n";
+import { captureException } from "../shared/sentry";
 import { waitForConfig } from "../shared/store/unidy-store";
 import { AuthHelpers } from "./auth-helpers";
 import { authState, authStore } from "./store/auth-store";
@@ -216,7 +216,7 @@ export class Auth {
       const currentTime = Date.now() / 1000;
       return decoded.exp > currentTime + expirationBuffer;
     } catch (error) {
-      Sentry.captureException(error);
+      captureException(error);
       return false;
     }
   }
@@ -267,7 +267,7 @@ export class Auth {
     try {
       return jwtDecode<TokenPayload>(token);
     } catch (error) {
-      Sentry.captureException(error);
+      captureException(error);
       return null;
     }
   }
