@@ -17,36 +17,30 @@ export const FieldTypeEnum = z.enum([
 ]);
 
 // Base field data schema
-export const BaseFieldDataSchema = z
-  .object({
-    required: z.boolean(),
-    label: z.string(),
-    attr_name: z.string(),
-    readonly: z.boolean().optional(),
-    locked: z.boolean().optional(),
-    locked_text: z.string().nullish(),
-  })
-  .strict();
+export const BaseFieldDataSchema = z.object({
+  required: z.boolean(),
+  label: z.string(),
+  attr_name: z.string(),
+  readonly: z.boolean().optional(),
+  locked: z.boolean().optional(),
+  locked_text: z.string().nullish(),
+});
 
 // Select option schema
-export const SelectOptionSchema = z
-  .object({
-    value: z.string(),
-    label: z.string(),
-  })
-  .strict();
+export const SelectOptionSchema = z.object({
+  value: z.string(),
+  label: z.string(),
+});
 
 // Radio value type
 export const RadioValue = z.union([z.string(), z.literal("_NOT_SET_"), z.boolean()]).nullable();
 
 // Radio option schema
-export const RadioOptionSchema = z
-  .object({
-    value: RadioValue,
-    label: z.string(),
-    checked: z.boolean(),
-  })
-  .strict();
+export const RadioOptionSchema = z.object({
+  value: RadioValue,
+  label: z.string(),
+  checked: z.boolean(),
+});
 
 // Text field type enum
 const TextFieldTypeEnum = z.enum(["text", "textarea"]);
@@ -55,27 +49,27 @@ const TextFieldTypeEnum = z.enum(["text", "textarea"]);
 export const TextFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: TextFieldTypeEnum,
-}).strict();
+});
 
 // Phone field schema
 export const PhoneFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: z.literal("tel"),
-}).strict();
+});
 
 // Radio field schema
 export const RadioFieldSchema = BaseFieldDataSchema.extend({
   value: RadioValue,
   type: z.literal("radio"),
   radio_options: z.array(RadioOptionSchema),
-}).strict();
+});
 
 // Select field schema
 export const SelectFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: z.literal("select"),
   options: z.array(SelectOptionSchema),
-}).strict();
+});
 
 // Date field type enum
 const DateFieldTypeEnum = z.enum(["date", "datetime-local"]);
@@ -84,9 +78,9 @@ const DateFieldTypeEnum = z.enum(["date", "datetime-local"]);
 export const DateFieldSchema = BaseFieldDataSchema.extend({
   value: z.string().nullable(),
   type: DateFieldTypeEnum,
-}).strict();
+});
 
-// Brand that owns a custom attribute definition; not strict so the backend can add keys without breaking parsing
+// Brand that owns a custom attribute definition
 export const AttributeBrandSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -103,7 +97,7 @@ export const CustomFieldSchema = BaseFieldDataSchema.extend({
   options: z.array(SelectOptionSchema).optional(),
   brand: AttributeBrandSchema.nullish(),
   cross_brand_visible: z.boolean().optional(),
-}).strict();
+});
 
 // User profile schema
 export const UserProfileSchema = z.object({
@@ -137,7 +131,6 @@ export const UserProfileFormErrorSchema = z
   .object({
     errors: FormErrorsRawSchema,
   })
-  .strict()
   .transform(({ errors }) => {
     const flatErrors = Object.fromEntries(
       Object.entries(errors).map(([field, value]) => {
