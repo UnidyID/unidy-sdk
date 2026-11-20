@@ -9,5 +9,6 @@
  */
 
 export * from "./api/profile";
-export type { ProfileNode, ProfileRaw, ProfileState } from "./store/profile-store";
+export type { ProfileErrorEventDetail } from "./components/profile/profile";
+export type { ProfileNode, ProfileRaw, ProfileState, ProfileValue } from "./store/profile-store";
 export { onChange as onProfileChange, profileStore, state as profileState } from "./store/profile-store";

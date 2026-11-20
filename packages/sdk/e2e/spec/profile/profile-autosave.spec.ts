@@ -1,8 +1,13 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
+import { stubProfile } from "./helpers";
 
 test.describe("Profile - autosave on blur", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
+
+  test.beforeEach(async ({ page }) => {
+    await stubProfile(page);
+  });
 
   test("saves profile automatically when field loses focus", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profile);

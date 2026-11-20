@@ -1,8 +1,15 @@
 import { routes } from "../../config";
 import { expect, test } from "../../fixtures";
+import { type ProfilePatch, stubProfile } from "./helpers";
 
 test.describe("Profile - partial validation", () => {
   test.use({ storageState: "playwright/.auth/user.json" });
+
+  let patches: ProfilePatch[];
+
+  test.beforeEach(async ({ page }) => {
+    patches = await stubProfile(page);
+  });
 
   // Skip WebKit due to timing issues with flash message detection
   test.skip(({ browserName }) => browserName === "webkit", "WebKit has timing issues with flash messages");
@@ -38,6 +45,29 @@ test.describe("Profile - partial validation", () => {
     // profile 2 would have first_name in its renderedFields Set)
   });
 
+  test("an error on a field the form doesn't render goes to the flash messages", async ({
+    page,
+    authenticatedContext: _authenticatedContext,
+  }) => {
+    const details = [{ field: "payload.data.date_of_birth", code: "invalid", message: "Date of birth is invalid" }];
+    await page.route("**/api/v2/me", (route) =>
+      route.request().method() === "PATCH"
+        ? route.fulfill({
+            status: 422,
+            contentType: "application/json",
+            body: JSON.stringify({ identifier: "unprocessable_content", details, meta: { request_id: "e2e" } }),
+          })
+        : route.fallback(),
+    );
+
+    await page.goto(routes.profilePartial);
+    await page.locator('[data-testid="profile1-first-name"]').getByRole("textbox").fill("Ada");
+    await page.locator('[data-testid="profile1-submit"]').click();
+
+    await expect(page.getByText("Date of birth is invalid")).toBeVisible();
+    await expect(page.locator('[data-testid="profile1-submit"]').getByRole("button")).toBeEnabled();
+  });
+
   test("partial validation only submits rendered fields", async ({ page, authenticatedContext: _authenticatedContext }) => {
     await page.goto(routes.profilePartial);
 
@@ -50,18 +80,11 @@ test.describe("Profile - partial validation", () => {
     const testFirstName = `ValidName${Date.now()}`;
     await profile1FirstName.fill(testFirstName);
 
-    const patchPromise = page.waitForRequest((req) => req.url().includes("/api/sdk/v1/profile") && req.method() === "PATCH");
     await page.locator('[data-testid="profile1-submit"]').click();
-    const patchRequest = await patchPromise;
+    await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
 
     // Payload must contain only first_name — not every profile field
-    const body = patchRequest.postDataJSON();
-    expect(body.first_name).toBe(testFirstName);
-    expect(body._validate_only_sent_fields).toBe(true);
-    const payloadKeys = Object.keys(body).filter((k) => k !== "_validate_only_sent_fields");
-    expect(payloadKeys).toEqual(["first_name"]);
-
-    await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
+    expect(patches).toEqual([{ payload: { data: { first_name: testFirstName }, validate_only_sent_fields: true } }]);
   });
 
   test("standalone u-raw-field value is included in partial-validation payload", async ({
@@ -81,20 +104,13 @@ test.describe("Profile - partial validation", () => {
     await firstNameInput.fill(testFirstName);
     await lastNameInput.fill(testLastName);
 
-    const patchPromise = page.waitForRequest((req) => req.url().includes("/api/sdk/v1/profile") && req.method() === "PATCH");
     await page.locator('[data-testid="profile4-submit"]').click();
-    const patchRequest = await patchPromise;
-
-    const body = patchRequest.postDataJSON();
-    expect(body.first_name).toBe(testFirstName);
-    expect(body.last_name).toBe(testLastName);
-    expect(body._validate_only_sent_fields).toBe(true);
-    // Only the two rendered fields — full-profile keys must not bleed in
-    const payloadKeys = Object.keys(body).filter((k) => k !== "_validate_only_sent_fields");
-    expect(payloadKeys).toEqual(expect.arrayContaining(["first_name", "last_name"]));
-    expect(payloadKeys).toHaveLength(2);
-
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
+
+    // Only the two rendered fields — full-profile keys must not bleed in
+    expect(patches).toEqual([
+      { payload: { data: { first_name: testFirstName, last_name: testLastName }, validate_only_sent_fields: true } },
+    ]);
   });
 
   test("explicit validateFields prop overrides auto-detection", async ({ page, authenticatedContext: _authenticatedContext }) => {
@@ -123,7 +139,9 @@ test.describe("Profile - partial validation", () => {
     // Submit - should succeed because date_of_birth is not in validateFields
     await page.locator('[data-testid="profile3-submit"]').click();
 
-    // Should succeed - the future date_of_birth is not validated
+    // Should succeed - the future date_of_birth is not sent
     await expect(page.getByText("Profile is updated")).toBeVisible({ timeout: 10000 });
+    expect(patches[0].payload.data).not.toHaveProperty("date_of_birth");
+    expect(patches[0].payload.validate_only_sent_fields).toBe(true);
   });
 });

@@ -78,7 +78,7 @@ describe("TicketsService", () => {
     expect(mocks.post).toHaveBeenCalledWith(
       "/api/v2/me/tickets/t-1/exports",
       { payload: { data: { format: "pdf" } } },
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
     );
   });
 });

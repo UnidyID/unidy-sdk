@@ -103,7 +103,7 @@ describe("MeNewsletterService", () => {
           redirect_to_after_confirmation: "https://shop.example/nl",
         },
       },
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
     );
   });
 
@@ -128,13 +128,16 @@ describe("MeNewsletterService", () => {
     expect(mocks.patch).toHaveBeenCalledWith(
       `/api/v2/me/newsletter_subscriptions/${MAIN_ID}`,
       { payload: { data: { preference_identifiers: [] } } },
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
     );
-    expect(mocks.delete).toHaveBeenCalledWith(`/api/v2/me/newsletter_subscriptions/${MAIN_ID}`, { "X-ID-Token": "id-token" });
+    expect(mocks.delete).toHaveBeenCalledWith(`/api/v2/me/newsletter_subscriptions/${MAIN_ID}`, {
+      "X-ID-Token": "id-token",
+      "Accept-Language": "en",
+    });
     expect(mocks.post).toHaveBeenCalledWith(
       `/api/v2/me/newsletter_subscriptions/${MAIN_ID}/request_confirmation`,
       { payload: { data: {}, redirect_to_after_confirmation: "https://shop.example/nl" } },
-      { "X-ID-Token": "id-token" },
+      { "X-ID-Token": "id-token", "Accept-Language": "en" },
     );
   });
 

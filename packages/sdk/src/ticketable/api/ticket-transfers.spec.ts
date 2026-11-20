@@ -103,7 +103,7 @@ function setup(...responses: ApiResponse<unknown>[]) {
   return { client, service };
 }
 
-const HEADERS = { "X-ID-Token": "id-token" };
+const HEADERS = { "X-ID-Token": "id-token", "Accept-Language": "en" };
 
 describe("TicketTransfersService", () => {
   describe("listing", () => {
