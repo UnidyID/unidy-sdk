@@ -21,15 +21,15 @@ export const MeUserSchema = z.object({
   country_code: z.string().nullable(),
   company_name: z.string().nullable(),
   preferred_language: z.string().nullable(),
-  verified: z.boolean(),
-  /** Names of the brands the user belongs to. */
+  /** Slugs of the brands the user belongs to. */
   brands: z.array(z.string()),
   confirmed_at: z.string().nullable(),
   verified_at: z.string().nullable(),
+  /** When the last ID verification expires; the user counts as verified until then. */
+  reverification_due_at: z.string().nullable(),
   invitation_created_at: z.string().nullable(),
   invitation_sent_at: z.string().nullable(),
   invitation_accepted_at: z.string().nullable(),
-  disabled: z.boolean(),
   disabled_at: z.string().nullable(),
   /** The custom attributes the user may read, by name. */
   custom_attributes: z.record(z.string(), CustomAttributeValueSchema),
@@ -58,7 +58,7 @@ export const ProfileFieldOptionSchema = z.object({
 
 /** The brand owning a custom attribute definition; not strict so the backend can add keys without breaking parsing. */
 export const AttributeBrandSchema = z.object({
-  name: z.string(),
+  slug: z.string(),
   display_name: z.string(),
 });
 

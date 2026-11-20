@@ -10,7 +10,7 @@ import { state as profileState } from "../../store/profile-store";
  *   Replace `example_field` with your field name.
  *   e.g. `custom_attributes.favorite_nut` → `select_field--custom_attributes-favorite_nut`, `country_code` → `select_field--country-code`
  * @part field-container--brand-example_brand - Present on the container of a custom attribute owned by a brand.
- *   Replace `example_brand` with the brand name, e.g. `field-container--brand-fczurich`.
+ *   Replace `example_brand` with the brand slug, e.g. `field-container--brand-fczurich`.
  * @part select_field--disabled - Present on select when the field is disabled.
  * @part select_field--readonly - Present on the readonly value display element.
  * @part radio-group-item_radio
@@ -142,7 +142,7 @@ export class Field extends UnidyComponent() {
     // The email can't be changed in the profile, but keeps rendering as a disabled input.
     const isReadonly = fieldData?.readonly === true && this.field !== "email";
     const multiSelectReadonlyLabels = this.multiSelectLabel(fieldData);
-    const brandPart = fieldData.brand ? ` field-container--brand-${this.createSpecificPartKey(fieldData.brand.name)}` : "";
+    const brandPart = fieldData.brand ? ` field-container--brand-${this.createSpecificPartKey(fieldData.brand.slug)}` : "";
 
     return (
       <div part={`field-container field-container--${this.createSpecificPartKey(this.field)}${brandPart}`}>
