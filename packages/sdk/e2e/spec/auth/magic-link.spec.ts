@@ -1,14 +1,15 @@
 import { expect, type Page, test } from "@playwright/test";
-import { routes, userLogin } from "../../config";
+import { routes } from "../../config";
 import { Database } from "../../lib/database";
+import { randomEmail } from "../../lib/helpers/random";
 
 const backendUrl = process.env.E2E_SDK_BASE_URL || "http://localhost:3000";
 
-async function requestMagicCode(page: Page) {
+async function requestMagicCode(page: Page, userEmail: string) {
   await page.goto(routes.auth);
 
   const email = page.getByRole("textbox", { name: "Email" });
-  await email.fill(userLogin.email);
+  await email.fill(userEmail);
   await email.press("Enter");
 
   await page.getByRole("button", { name: "Send Magic Code" }).click();
@@ -16,14 +17,23 @@ async function requestMagicCode(page: Page) {
 }
 
 test.describe("Auth - Magic link", () => {
+  let email: string;
   let magicLinks: Database<"MagicLink">;
 
   test.beforeEach(async () => {
-    const users = new Database("User");
-    const user = await users.ensureGetBy({ email: userLogin.email });
+    email = randomEmail();
+
+    const [brand] = await new Database("Brand", { scope: { default: true } }).list();
+    const user = await new Database("User", { scope: { email } }).create({
+      email,
+      password: "Ch4ngeme!",
+      first_name: "Peter",
+      current_brand: brand.id,
+      confirmed_at: new Date().toISOString(),
+    });
+    if (!user) throw new Error("Failed to create user");
 
     magicLinks = new Database("MagicLink", { scope: { user_id: String(user.id) } });
-    await magicLinks.destroy_all();
   });
 
   async function clickEmailedLink(page: Page) {
@@ -32,7 +42,7 @@ test.describe("Auth - Magic link", () => {
   }
 
   test("signs the user in when the emailed link is opened in the same browser", async ({ page }) => {
-    await requestMagicCode(page);
+    await requestMagicCode(page, email);
     await clickEmailedLink(page);
 
     await expect(page.getByTestId("signed.in.view")).toBeVisible();
@@ -40,7 +50,7 @@ test.describe("Auth - Magic link", () => {
   });
 
   test("removes the redirect parameters from the URL after signing in", async ({ page }) => {
-    await requestMagicCode(page);
+    await requestMagicCode(page, email);
     await clickEmailedLink(page);
 
     await expect(page.getByTestId("signed.in.view")).toBeVisible();
@@ -52,7 +62,7 @@ test.describe("Auth - Magic link", () => {
   });
 
   test("signs the user in when the emailed link is opened in a different browser", async ({ page, browser }) => {
-    await requestMagicCode(page);
+    await requestMagicCode(page, email);
 
     const otherBrowser = await browser.newContext();
     try {
