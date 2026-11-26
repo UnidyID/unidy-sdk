@@ -378,8 +378,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
 
     if (socialCallback.error === "brand_connection_required") {
       // Social auth returned brand connection required — extract sid from URL
-      const params = new URLSearchParams(window.location.search);
-      const sid = params.get("sid");
+      const sid = socialCallback.signInId;
       if (sid) {
         dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
         authStorage.setSignInId(sid);
@@ -389,8 +388,7 @@ export function useLoginActions({ client, stateRef, dispatch, callbacks }: UseLo
     }
 
     if (socialCallback.error === "missing_required_fields" && socialCallback.fields) {
-      const params = new URLSearchParams(window.location.search);
-      const sid = params.get("sid");
+      const sid = socialCallback.signInId;
       if (sid) {
         dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
         authStorage.setSignInId(sid);

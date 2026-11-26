@@ -1,3 +1,5 @@
+import { deleteSignInIdParams, readSignInId } from "./helpers/url";
+
 /**
  * Build the OAuth redirect URL for a social auth provider.
  * Matches the URL pattern used by the Stencil SDK's social-login-button component.
@@ -16,7 +18,7 @@ export interface SocialAuthCallbackResult {
 /**
  * Parse social auth callback parameters from the current URL.
  * After a social auth redirect, the URL will contain:
- * - `sid`: sign-in ID
+ * - `sdk_login_sid` (or the legacy `sid`): sign-in ID
  * - `auth_payload`: base64-encoded JSON with id_token and refresh_token
  * - `error`: error identifier (e.g. "brand_connection_required", "missing_required_fields")
  * - `fields`: JSON-encoded missing fields (when error is "missing_required_fields")
@@ -27,11 +29,12 @@ export function parseSocialAuthCallback(search: string): {
   result?: SocialAuthCallbackResult;
   error?: string;
   fields?: Record<string, unknown>;
+  signInId?: string;
 } | null {
   const params = new URLSearchParams(search);
 
   const error = params.get("error");
-  const sid = params.get("sid");
+  const sid = readSignInId(params);
 
   // Not a social auth redirect if neither error nor sid present
   if (!error && !sid) {
@@ -49,7 +52,7 @@ export function parseSocialAuthCallback(search: string): {
         // ignore malformed fields
       }
     }
-    return { error, fields: parsedFields };
+    return { error, fields: parsedFields, signInId: sid ?? undefined };
   }
 
   // Success case: decode auth_payload
@@ -84,9 +87,9 @@ export function parseSocialAuthCallback(search: string): {
  */
 export function cleanSocialAuthParams(): void {
   const url = new URL(window.location.href);
-  const paramsToRemove = ["sid", "auth_payload", "error", "fields"];
+  const paramsToRemove = ["auth_payload", "error", "fields"];
 
-  let changed = false;
+  let changed = deleteSignInIdParams(url);
   for (const param of paramsToRemove) {
     if (url.searchParams.has(param)) {
       url.searchParams.delete(param);
