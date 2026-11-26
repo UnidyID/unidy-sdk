@@ -38,8 +38,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
       }
 
       if (socialCallback.error === "brand_connection_required") {
-        const params = new URLSearchParams(window.location.search);
-        const sid = params.get("sid");
+        const sid = socialCallback.signInId;
         if (sid) {
           dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
           authStorage.setSignInId(sid);
@@ -49,8 +48,7 @@ export function useLogin(options?: UseLoginOptions): UseLoginReturn {
       }
 
       if (socialCallback.error === "missing_required_fields" && socialCallback.fields) {
-        const params = new URLSearchParams(window.location.search);
-        const sid = params.get("sid");
+        const sid = socialCallback.signInId;
         if (sid) {
           dispatch({ type: "SET_SIGNIN_ID", signInId: sid });
           authStorage.setSignInId(sid);

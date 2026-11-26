@@ -297,7 +297,7 @@ export class AuthHelpers {
   }
 
   extractSidFromUrl() {
-    const sid = clearUrlParam("sid");
+    const sid = this.clearRedirectSignInId();
     if (sid) {
       authStore.setSignInId(sid);
     }

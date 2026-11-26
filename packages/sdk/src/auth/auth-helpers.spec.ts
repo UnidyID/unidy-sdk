@@ -189,3 +189,57 @@ describe("Auth.getToken", () => {
     expect(authState.refreshToken).toBe("rt-new");
   });
 });
+
+describe("AuthHelpers.extractSidFromUrl", () => {
+  const helpers = new AuthHelpers({} as UnidyClient);
+  let replaceState: jest.SpyInstance;
+  let lastUrl: string;
+
+  const setUrl = (url: string) => {
+    lastUrl = url;
+    jest.spyOn(window, "location", "get").mockReturnValue({ href: url } as Location);
+  };
+
+  beforeEach(() => {
+    authStore.reset();
+    replaceState = jest.spyOn(window.history, "replaceState").mockImplementation((_state, _title, url) => {
+      lastUrl = String(url);
+      jest.spyOn(window, "location", "get").mockReturnValue({ href: lastUrl } as Location);
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each([
+    ["sdk_login_sid only", "?sdk_login_sid=abc"],
+    ["sid only", "?sid=abc"],
+    ["both", "?sdk_login_sid=abc&sid=abc"],
+  ])("stores the sign-in id and clears both params with %s", (_name, search) => {
+    setUrl(`https://shop.example.com/login${search}&returnTo=%2F`);
+
+    helpers.extractSidFromUrl();
+
+    expect(authState.sid).toBe("abc");
+    expect(new URL(lastUrl).search).toBe("?returnTo=%2F");
+  });
+
+  it("prefers sdk_login_sid over a colliding sid", () => {
+    setUrl("https://shop.example.com/login?sdk_login_sid=ours&sid=customer");
+
+    helpers.extractSidFromUrl();
+
+    expect(authState.sid).toBe("ours");
+    expect(new URL(lastUrl).search).toBe("");
+  });
+
+  it("does nothing without a sign-in id", () => {
+    setUrl("https://shop.example.com/login?returnTo=%2F");
+
+    helpers.extractSidFromUrl();
+
+    expect(authState.sid).toBeNull();
+    expect(replaceState).not.toHaveBeenCalled();
+  });
+});
